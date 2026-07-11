@@ -1,0 +1,52 @@
+$item-height-min-height: 264px;
+$item-height-max-height: 320px;
+$sm-item-width: 250px;
+$md-item-width: $sm-item-width * 2;
+$lg-item-width: $sm-item-width * 4;
+
+@mixin dashboard-item {
+  display: block;
+  min-height: $item-height-min-height;
+  --ion-background-color: #3a3a3a;
+}
+@mixin dashboard-item-card {
+  /* Ensure the card is a flex column so content can take the remaining height */
+  ion-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 1rem;
+
+    ion-card-header {
+      padding: 0 0 1rem 0;
+    }
+
+    ion-card-content {
+      flex: 1 1 auto;
+      min-height: 0; /* important to allow children to overflow/scroll */
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+  }
+}
+
+@mixin dashboard-item-card-with-list {
+  @include dashboard-item-card();
+  ion-card-content {
+    overflow: auto;
+    height: $item-height-max-height;
+    max-height: $item-height-max-height;
+    ion-list {
+      padding: 0;
+    }
+  }
+}
+@mixin dashboard-item-card-with-calendar {
+  @include dashboard-item-card();
+  ion-datetime {
+    max-width: unset;
+  }
+}

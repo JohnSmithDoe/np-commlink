@@ -1,0 +1,91 @@
+<ion-app class="">
+  <ion-menu contentId="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>np-time-tracker</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <main>
+        <ion-list>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/commlink"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="hardware-chip-outline" />
+              <ion-label>{{ 'page-title.commlink' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/soykaf"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="cafe-outline" />
+              <ion-label>{{ 'page-title.soykaf' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/tracking"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="timer-outline" />
+              <ion-label>{{ 'page-title.tracking' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/notifications"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="notifications-outline" />
+              <ion-label>{{
+                'page-title.notifications' | translate
+              }}</ion-label>
+              @if (notificationsBadge() > 0) {
+                <ion-badge slot="end" color="danger">
+                  {{ notificationsBadge() }}
+                </ion-badge>
+              }
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/office-time"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="business-outline" />
+              <ion-label>{{ 'page-title.office-time' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/barcode"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="barcode-outline" />
+              <ion-label>{{ 'page-title.barcode' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </main>
+    </ion-content>
+  </ion-menu>
+  <div class="ion-page" id="main-content">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+</ion-app>

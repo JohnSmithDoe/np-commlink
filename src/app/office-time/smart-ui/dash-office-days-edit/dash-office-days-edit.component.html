@@ -1,0 +1,20 @@
+<ion-card>
+  @if (title()) {
+    <ion-card-header>
+      <ion-card-title>{{ title() }}</ion-card-title>
+    </ion-card-header>
+  }
+  <ion-card-content>
+    <ion-datetime
+      presentation="date"
+      color="data"
+      [multiple]="true"
+      [value]="officedates()"
+      [locale]="'de-DE'"
+      [firstDayOfWeek]="1"
+      [highlightedDates]="holidaysAndFreedays()"
+      [preferWheel]="false"
+      (ionChange)="updateOfficeDates($event)"
+    />
+  </ion-card-content>
+</ion-card>

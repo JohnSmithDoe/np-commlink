@@ -1,0 +1,55 @@
+<app-page-header
+  icon="settings-outline"
+  [label]="'page-title.settings' | translate"
+  hideButtons="true"
+/>
+
+<ion-content>
+  @let settings = dashboardSettings();
+  @let targetDays = targetOfficeDaysPerWeek();
+  @if (targetDays !== null && settings) {
+    <ion-list>
+      <ion-item>
+        <ion-range
+          labelPlacement="start"
+          [label]="
+            'officetime.page.settings.targetOfficeDaysPerWeek' | translate
+          "
+          [min]="0"
+          [max]="5"
+          [pin]="true"
+          [pinFormatter]="pinFormatter"
+          [snaps]="true"
+          [step]="0.5"
+          [value]="targetDays"
+          (ionChange)="changeTargetOfficeDaysPerWeek($any($event))"
+        />
+      </ion-item>
+      @for (setting of settings; track setting.key) {
+        <ion-item>
+          <ion-toggle
+            [value]="setting.key"
+            [checked]="setting.value"
+            (ionChange)="changeDashboardSettings($event)"
+          >
+            <ion-label>{{
+              'officetime.page.settings.dashboard.' + setting.key | translate
+            }}</ion-label>
+          </ion-toggle>
+        </ion-item>
+      }
+      <ion-item>
+        <ion-button id="present-alert" [color]="'danger'">
+          Daten zurücksetzen
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  }
+  <ion-alert
+    trigger="present-alert"
+    [header]="'officetime.page.settings.reset.header' | translate"
+    [subHeader]="'officetime.page.settings.reset.subheader' | translate"
+    [message]="'officetime.page.settings.reset.message' | translate"
+    [buttons]="alertButtons"
+  />
+</ion-content>

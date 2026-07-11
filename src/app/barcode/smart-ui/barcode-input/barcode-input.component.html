@@ -1,0 +1,12 @@
+<ion-button color="secondary" expand="block" (click)="fileInput.click()">
+  <label for="image-input" (click)="$event.preventDefault()">{{
+    'officetime.page.settings.barcode.button' | translate
+  }}</label>
+</ion-button>
+<input
+  #fileInput
+  id="image-input"
+  type="file"
+  accept="image/*"
+  (change)="onFileSelected($event)"
+/>

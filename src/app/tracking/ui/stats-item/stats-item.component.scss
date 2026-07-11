@@ -1,0 +1,21 @@
+:host {
+  ion-item {
+    &.tracking-item-running {
+      --ion-background-color: #2d7c3e59;
+    }
+    &.tracking-item-paused {
+      --ion-background-color: #ffc4092e;
+    }
+  }
+}
+
+.status-bar {
+  display: flex;
+  width: 0.5rem;
+  height: 100%;
+  margin-right: 1rem;
+  ion-text {
+    flex: 1;
+    background: currentColor;
+  }
+}

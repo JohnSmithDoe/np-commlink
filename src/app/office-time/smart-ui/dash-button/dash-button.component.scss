@@ -1,0 +1,10 @@
+@use '../../../../theme/dashboard';
+:host {
+  @include dashboard.dashboard-item();
+}
+@include dashboard.dashboard-item-card();
+
+.dash-button {
+  width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,40 @@
+<app-page-header
+  [icon]="icon()"
+  [label]="pageHeader()"
+  [disabled]="!!searchResult()?.exactMatch"
+  (addItem)="showCreateDialog()"
+>
+  <app-item-list-searchbar
+    [query]="state().searchQuery"
+    (queryChange)="searchFor($event)"
+    (hitEnter)="addItemFromSearch()"
+  />
+  <app-item-list-toolbar (selectSortMode)="setSortMode($event)">
+    <ng-content select="[toolbarActions]" />
+
+    <ng-content toolbarActionsEnd select="[toolbarActionsEnd]" />
+  </app-item-list-toolbar>
+
+  <ion-button slot="end" toolbar color="office-time" routerLink="/data/daily">
+    <ion-icon slot="icon-only" icon="settings-sharp" color="primary"></ion-icon>
+  </ion-button>
+</app-page-header>
+
+<ion-content>
+  <app-item-list
+    [header]="listHeader()"
+    [items]="items()"
+    [itemTemplate]="itemTemplate()"
+    [reorderDisabled]="true"
+  >
+    <ng-content select="[listActions]" />
+  </app-item-list>
+  <app-item-list-empty
+    [isEmptyList]="!items()?.length"
+    [isSearching]="searchResult()?.hasSearchTerm"
+    [searchTerm]="searchResult()?.searchTerm"
+    (emptyList)="showCreateDialog()"
+    (emptySearch)="addItemFromSearch()"
+  />
+  <ng-content select="[afterList]" />
+</ion-content>

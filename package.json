@@ -1,0 +1,24 @@
+{
+  "name": "np-commlink",
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.9.0",
+  "author": "Leto da c0dem0nkey",
+  "description": "np-commlink — shadowrun deck merging tracking + kitchen into one shell",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --base-href ./ --configuration production",
+    "build:android": "ionic capacitor build android",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test --no-watch",
+    "test:watch": "ng test",
+    "test:coverage": "ng test --no-watch --coverage",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report",
+    "lint": "ng lint",
+    "serve:prod": "ionic serve --prod",
+    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --sort --format json"
+  }
+}

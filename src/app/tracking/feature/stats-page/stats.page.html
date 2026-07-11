@@ -1,0 +1,48 @@
+<app-page-header
+  icon="documents-outline"
+  [label]="'page-title.data' | translate"
+  hideButtons="true"
+>
+  <ion-list>
+    <ion-item lines="none" class="">
+      <ion-button slot="end" color="data" size="default" (click)="shareCSV()"
+        >Share Data</ion-button
+      >
+      <ion-select
+        [value]="viewMode()"
+        (ionChange)="selectViewMode($event)"
+        label="Ansicht"
+      >
+        <ion-select-option value="raw">
+          {{ 'data.page.title.raw' | translate }}
+        </ion-select-option>
+        <ion-select-option value="today">
+          {{ 'data.page.title.today' | translate }}
+        </ion-select-option>
+        <ion-select-option value="daily">
+          {{ 'data.page.title.daily' | translate }}
+        </ion-select-option>
+        <ion-select-option value="monthly">
+          {{ 'data.page.title.monthly' | translate }}
+        </ion-select-option>
+        <ion-select-option value="all">
+          {{ 'data.page.title.all' | translate }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</app-page-header>
+
+<ion-content>
+  <app-sessions-chart />
+  <ion-list #ionList>
+    @for (item of data(); track item.id) {
+      <app-data-item
+        [item]="item"
+        [view]="viewMode()"
+        [ionList]="ionList"
+        (deleteItem)="deleteItem(item)"
+      />
+    }
+  </ion-list>
+</ion-content>

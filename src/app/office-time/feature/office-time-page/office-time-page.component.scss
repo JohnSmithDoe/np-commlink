@@ -1,0 +1,29 @@
+@use '../../../../theme/dashboard' as dashboard;
+@use 'sass:math' as math;
+
+:host {
+  --app-content-max-width: 100%;
+  --app-content-bg: transparent;
+}
+
+$padding: 16px;
+.dash-grid {
+  padding: $padding;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(dashboard.$sm-item-width, 1fr)
+  );
+  gap: 1rem;
+  align-items: stretch;
+  grid-auto-flow: dense;
+
+  @media (min-width: #{dashboard.$sm-item-width * 2 + $padding * 3}) {
+    app-dash-officedays-edit,
+    app-dash-freedays-edit,
+    app-dash-holidays,
+    app-dash-days-list {
+      grid-column: span 2;
+    }
+  }
+}

@@ -1,0 +1,5 @@
+@use '../../../../theme/dashboard';
+:host {
+  @include dashboard.dashboard-item();
+}
+@include dashboard.dashboard-item-card-with-calendar();

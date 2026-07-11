@@ -1,0 +1,20 @@
+@use '../../../../theme/dashboard';
+:host {
+  @include dashboard.dashboard-item();
+  ion-card-content {
+    justify-content: space-between;
+  }
+}
+@include dashboard.dashboard-item-card();
+
+.week {
+  font-size: 4rem;
+  line-height: 1;
+}
+.day,
+.date {
+  font-size: 1rem;
+}
+.time {
+  font-size: 2rem;
+}

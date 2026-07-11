@@ -1,0 +1,51 @@
+<div class="daily-sessions-header">
+  <ion-button fill="clear" size="small" (click)="prevDay()">
+    <ion-icon slot="icon-only" [icon]="'chevron-back'" />
+  </ion-button>
+  <div class="daily-sessions-title">
+    @if (isToday()) {
+      {{ 'tracking.daily-sessions.title' | translate }}
+    } @else {
+      {{ selectedDateIso() | date: 'EEEE, dd.MM.yyyy' }}
+    }
+  </div>
+  <ion-button
+    fill="clear"
+    size="small"
+    [disabled]="isToday()"
+    (click)="nextDay()"
+  >
+    <ion-icon slot="icon-only" [icon]="'chevron-forward'" />
+  </ion-button>
+</div>
+
+@if (sessions().length) {
+  <ion-list class="daily-sessions">
+    <ion-list-header class="daily-sessions-totals">
+      {{
+        'tracking.daily-sessions.totals'
+          | translate: { count: totals().count, duration: totals().duration }
+      }}
+    </ion-list-header>
+    @for (session of sessions(); track session.id) {
+      <ion-item lines="full">
+        <ion-label class="ion-text-wrap">
+          <h2>{{ session.name }}</h2>
+          <ion-note>{{ session.startTime | date: 'HH:mm' }}</ion-note>
+        </ion-label>
+        @if (session.state === 'running') {
+          <ion-badge slot="end" color="success">
+            {{ 'tracking.daily-sessions.running' | translate }}
+          </ion-badge>
+        }
+        <ion-label slot="end" class="duration">
+          {{ session | npTrackingTime }}
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+} @else {
+  <p class="daily-sessions-empty ion-padding ion-text-center">
+    {{ 'tracking.daily-sessions.empty' | translate }}
+  </p>
+}

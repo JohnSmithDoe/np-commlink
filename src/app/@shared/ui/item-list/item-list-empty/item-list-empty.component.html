@@ -1,0 +1,13 @@
+@if (isEmptyList() && isSearching()) {
+  <app-text-item
+    [label]="'item-list.empty.notfound' | translate: { value: searchTerm() }"
+    [note]="'item-list.empty.notfound.note' | translate"
+    (selectItem)="emptySearch.emit()"
+  />
+} @else if (isEmptyList()) {
+  <app-text-item
+    [label]="'item-list.empty.isempty' | translate"
+    [note]="'item-list.empty.isempty.note' | translate"
+    (selectItem)="emptyList.emit()"
+  />
+}

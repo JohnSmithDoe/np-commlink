@@ -1,0 +1,75 @@
+:host {
+  ion-item {
+    --padding-start: 0;
+    &.tracking-item-running {
+      --ion-background-color: #2d7c3e59;
+    }
+    &.tracking-item-paused {
+      --ion-background-color: #ffc4092e;
+    }
+  }
+}
+
+.status-bar {
+  display: flex;
+  width: 4px;
+  height: 100%;
+  margin-right: 1rem;
+  ion-text {
+    flex: 1;
+    background: currentColor;
+  }
+}
+
+.tracking-item-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tracking-item-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+}
+.tracking-item-badge-running {
+  background: var(--ion-color-success);
+  color: var(--ion-color-success-contrast);
+}
+.tracking-item-badge-paused {
+  background: var(--ion-color-warning);
+  color: var(--ion-color-warning-contrast);
+}
+.tracking-item-badge-stopped {
+  background: var(--ion-color-tracking);
+  color: var(--ion-color-step-650);
+}
+
+.tracking-item-timer {
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  margin: 0;
+}
+.tracking-item-timer-paused {
+  color: var(--ion-color-warning);
+}
+.tracking-item-timer-stopped {
+  color: var(--ion-color-step-650);
+}
+.tracking-item-timer-running {
+  color: var(--ion-color-success);
+}
+
+.item-buttons {
+  @media (max-width: 420px) {
+    max-width: 96px;
+  }
+}

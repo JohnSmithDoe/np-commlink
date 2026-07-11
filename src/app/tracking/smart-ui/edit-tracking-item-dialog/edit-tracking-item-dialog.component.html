@@ -1,0 +1,39 @@
+@let item = rxItem();
+<app-item-edit-modal [listItems]="rxItems()">
+  <ion-item>
+    <ion-toggle
+      [checked]="item?.notifications?.onStart ?? false"
+      (ionChange)="
+        updateNotifications(item, 'onStart', $any($event).detail.checked)
+      "
+    >
+      <ion-label>{{
+        'edit.item.dialog.notifications.onStart' | translate
+      }}</ion-label>
+    </ion-toggle>
+  </ion-item>
+  <ion-item>
+    <ion-toggle
+      [checked]="item?.notifications?.onStop ?? false"
+      (ionChange)="
+        updateNotifications(item, 'onStop', $any($event).detail.checked)
+      "
+    >
+      <ion-label>{{
+        'edit.item.dialog.notifications.onStop' | translate
+      }}</ion-label>
+    </ion-toggle>
+  </ion-item>
+  <ion-item>
+    <ion-toggle
+      [checked]="item?.notifications?.onProcess ?? false"
+      (ionChange)="
+        updateNotifications(item, 'onProcess', $any($event).detail.checked)
+      "
+    >
+      <ion-label>{{
+        'edit.item.dialog.notifications.onProcess' | translate
+      }}</ion-label>
+    </ion-toggle>
+  </ion-item>
+</app-item-edit-modal>

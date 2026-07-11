@@ -1,0 +1,17 @@
+<ion-card>
+  @if (title()) {
+    <ion-card-header>
+      <ion-card-title>{{ title() }}</ion-card-title>
+    </ion-card-header>
+  }
+  <ion-card-content>
+    <ion-list class="dash-holidays-list">
+      @for (holiday of holidays(); track holiday.date.valueOf()) {
+        <ion-item>
+          {{ holiday.date.format('DD.MMMM YYYY, dddd') }}
+          {{ holiday.name }}
+        </ion-item>
+      }
+    </ion-list>
+  </ion-card-content>
+</ion-card>

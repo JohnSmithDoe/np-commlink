@@ -1,0 +1,7 @@
+{
+  "name": "np-commlink",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

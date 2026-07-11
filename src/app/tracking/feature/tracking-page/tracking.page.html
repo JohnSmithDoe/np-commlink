@@ -1,0 +1,48 @@
+<app-list-page
+  class="ion-page"
+  icon="timer-outline"
+  pageHeader="{{ 'page-title.tracking' | translate }} "
+  listHeader="{{ 'list-header.tracking' | translate }}  "
+  [itemTemplate]="trackingItem"
+>
+  <ng-container listActions>
+    <span slot="end" style="margin-right: 1rem">
+      {{ total() }}
+    </span>
+  </ng-container>
+  <ng-container toolbarActionsEnd>
+    <ion-button (click)="resetAll()"
+      ><ion-icon [icon]="'trash'" slot="start" />
+      {{ 'tracking.action.reset-all' | translate }}</ion-button
+    >
+    <ion-button (click)="saveAndResetAll()"
+      ><ion-icon [icon]="'save'" slot="start" />
+      {{ 'tracking.action.save-and-reset' | translate }}</ion-button
+    >
+    @if (isDev) {
+      <ion-button color="warning" (click)="generateDummyData()"
+        ><ion-icon [icon]="'flask'" slot="start" />
+        {{ 'tracking.action.generate-dummy-data' | translate }}</ion-button
+      >
+      <ion-button color="warning" (click)="generateTaskByTicket()"
+        ><ion-icon [icon]="'flask'" slot="start" /> add ticket</ion-button
+      >
+    }
+  </ng-container>
+  <div afterList class="after-list">
+    <app-daily-sessions />
+  </div>
+</app-list-page>
+
+<ng-template #trackingItem let-item let-ionList="ionList">
+  <app-tracking-item
+    [item]="item"
+    [ionList]="ionList"
+    (editItem)="showEditDialog(item)"
+    (resetItem)="resetItem(item)"
+    (selectItem)="toggleTracking(item)"
+    (deleteItem)="removeItem(item)"
+  />
+</ng-template>
+
+<app-edit-tracking-item-dialog />

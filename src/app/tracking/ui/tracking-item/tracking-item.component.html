@@ -1,0 +1,105 @@
+<ion-item
+  [button]="true"
+  lines="full"
+  [class]="'tracking-page-item-' + item().state"
+>
+  <div class="status-bar">
+    <ion-text [color]="getColor(item())"></ion-text>
+  </div>
+  <ion-label class="ion-text-wrap" (click)="selectItem.emit()">
+    @let trackingItem = item();
+    @if (trackingItem) {
+      <h2 class="tracking-item-title">
+        <span>{{ trackingItem.name }}</span>
+        <span
+          class="tracking-item-badge tracking-item-badge-{{
+            trackingItem.state
+          }}"
+        >
+          @if (trackingItem.state === 'paused') {
+            paused
+          } @else if (trackingItem.state === 'running') {
+            running
+          } @else {
+            done
+          }
+        </span>
+      </h2>
+
+      @if (trackingItem.state !== 'stopped') {
+        <div
+          class="tracking-item-timer tracking-item-timer-{{
+            trackingItem.state
+          }}"
+        >
+          {{ trackingItem.trackedTimeInSeconds | npTimeWithUnit }}
+        </div>
+      }
+
+      <ion-note>
+        @if (
+          trackingItem.state === 'stopped' &&
+          (trackingItem.trackedTimeInSeconds ?? 0) > 0
+        ) {
+          <div>{{ item().trackedTimeInSeconds | npTimeWithUnit }}</div>
+        }
+        @if (trackingItem.startTime) {
+          {{
+            'tracking.item.start'
+              | translate: { time: trackingItem.startTime | date: 'HH:mm' }
+          }}
+          @if (trackingItem.breakTime) {
+            {{
+              'tracking.item.break'
+                | translate: { time: trackingItem.breakTime | date: 'HH:mm' }
+            }}
+          } @else {
+            {{ 'tracking.item.nobreak' | translate }}
+          }
+        }
+        @if ((trackingItem.breakInSeconds ?? 0) >= 60) {
+          {{
+            'tracking.item.breaktime'
+              | translate
+                : { time: trackingItem.breakInSeconds | npTimeFromSeconds }
+          }}
+        }
+      </ion-note>
+    }
+  </ion-label>
+
+  <ion-buttons slot="end" class="item-buttons">
+    <ion-button [id]="'kebab-' + item().id" fill="clear" color="medium">
+      <ion-icon slot="icon-only" name="ellipsis-vertical" />
+    </ion-button>
+  </ion-buttons>
+  <ion-reorder slot="end" />
+
+  <ion-popover
+    [trigger]="'kebab-' + item().id"
+    triggerAction="click"
+    [dismissOnSelect]="true"
+  >
+    <ng-template>
+      <ion-list lines="none">
+        <ion-item button (click)="selectItem.emit()">
+          <ion-icon slot="start" [name]="getIcon(item())" />
+        </ion-item>
+        <ion-item button (click)="emitEditItem()">
+          <ion-icon slot="start" name="create-outline" />
+          <ion-label>{{ 'tracking.item.action.edit' | translate }}</ion-label>
+        </ion-item>
+        <ion-item button (click)="emitResetItem()">
+          <ion-icon slot="start" name="refresh-outline" />
+          <ion-label>{{ 'tracking.item.action.reset' | translate }}</ion-label>
+        </ion-item>
+        <ion-item button (click)="emitDeleteItem()">
+          <ion-icon slot="start" name="trash-outline" color="danger" />
+          <ion-label color="danger">
+            {{ 'tracking.item.action.delete' | translate }}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-template>
+  </ion-popover>
+</ion-item>

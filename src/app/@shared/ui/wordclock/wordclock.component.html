@@ -1,0 +1,30 @@
+@if (config()?.showCorners) {
+  <div class="minCornerRowTop">
+    <span class="minCornerLeft" [class.active]="mins().topLeft">&middot;</span
+    ><span class="minCornerRight" [class.active]="mins().topRight"
+      >&middot;</span
+    >
+  </div>
+}
+<div class="ion-padding char-wrapper" flex-col flex-between-center>
+  @for (row of rows; track $index; let rowIdx = $index) {
+    <div flex-row class="char-row">
+      @for (col of row; track $index; let colIdx = $index) {
+        <span
+          flex-item
+          [class.active]="isActive(row, col, colIdx, rowIdx)"
+          class="char"
+          >{{ col }}</span
+        >
+      }
+    </div>
+  }
+</div>
+@if (config()?.showCorners) {
+  <div class="minCornerRowBot">
+    <span class="minCornerLeft" [class.active]="mins().botLeft">&middot;</span
+    ><span class="minCornerRight" [class.active]="mins().botRight"
+      >&middot;</span
+    >
+  </div>
+}

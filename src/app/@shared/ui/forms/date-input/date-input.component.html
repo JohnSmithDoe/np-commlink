@@ -1,0 +1,26 @@
+<ion-item>
+  <ion-input
+    [label]="label"
+    [disabled]="disabled"
+    class="trigger ion-text-end"
+    [value]="value ?? '' | date: undefined : undefined : 'de-DE'"
+    type="date_event"
+    id="open_cal"
+  ></ion-input>
+  <ion-modal
+    trigger="open_cal"
+    [keepContentsMounted]="true"
+    [initialBreakpoint]="0.65"
+  >
+    <ng-template>
+      <ion-datetime
+        presentation="date"
+        mode="md"
+        (ionChange)="updateInputValue($event)"
+        [value]="value"
+        [showDefaultButtons]="true"
+        [showClearButton]="true"
+      ></ion-datetime>
+    </ng-template>
+  </ion-modal>
+</ion-item>

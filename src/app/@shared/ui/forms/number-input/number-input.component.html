@@ -1,0 +1,12 @@
+<ion-item>
+  <ion-input
+    type="number"
+    class="ion-text-end"
+    [label]="label"
+    [clearOnEdit]="true"
+    [value]="value"
+    [disabled]="disabled"
+    (ionInput)="updateInputValue($event)"
+    ><ng-content></ng-content
+  ></ion-input>
+</ion-item>

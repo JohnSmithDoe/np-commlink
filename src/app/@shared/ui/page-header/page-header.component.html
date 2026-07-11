@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button />
+    </ion-buttons>
+    @if (label()) {
+      <div class="app-brand">
+        @if (icon()) {
+          <ion-icon
+            [name]="icon()"
+            class="app-brand__icon"
+            aria-hidden="true"
+          />
+        }
+        <span class="app-brand__name">{{ label() | translate }}</span>
+      </div>
+    }
+    <ng-content select="[toolbar]" />
+    @if (!hideButtons()) {
+      <ion-buttons slot="end">
+        <ion-button (click)="addItem.emit()" [disabled]="disabled()">
+          <ion-icon name="add" slot="icon-only" />
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+  <ng-content />
+</ion-header>

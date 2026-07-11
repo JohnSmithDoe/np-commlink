@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  ion-list {
+    padding-top: 0;
+    padding-bottom: 0;
+    ion-toolbar {
+      --min-height: 3rem;
+      //  background: var(--ion-color-tint);
+    }
+  }
+}

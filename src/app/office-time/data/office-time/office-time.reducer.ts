@@ -1,0 +1,179 @@
+import { createReducer, on } from '@ngrx/store';
+import { IOfficeTimeState } from '../../../@shared/types';
+import { applicationActions } from '../../../@shared/data/application.actions';
+import { officeTimeActions } from './office-time.actions';
+import {
+  deserializeIsoStringMap,
+  deserializeIsoStrings,
+  validateFreedays,
+} from './office-time.utils';
+
+export const initialOfficeTime: IOfficeTimeState = {
+  targetOfficeDaysPerWeek: 2.5,
+  freedays: [],
+  holidays: {},
+  officedays: [],
+  dashboardSettings: {
+    showDateCard: true,
+    showPercentageCard: true,
+    showOfficedaysCardEdit: true,
+    showOfficedaysCardList: false,
+    showFreedaysCardEdit: true,
+    showFreedaysCardList: false,
+    showHolidaysCard: true,
+    showStatsWeek: true,
+    showStatsMonth: true,
+    showStatsQuarter: true,
+    showStatsYear: true,
+    showWordclockCard: true,
+  },
+  dashboardItems: [
+    'date',
+    'button',
+    'wordclock',
+    'officedays-edit',
+    'officedays-list',
+    'freedays-edit',
+    'freedays-list',
+    'stats-year',
+    'stats-quarter',
+    'stats-month',
+    'stats-week',
+    'holidays',
+  ],
+};
+
+export const officeTimeReducer = createReducer(
+  initialOfficeTime,
+  on(
+    officeTimeActions.loadHolidaysSuccess,
+    (_state, { holidays }): IOfficeTimeState => ({
+      ..._state,
+      holidays: { ...holidays },
+    })
+  ),
+  on(officeTimeActions.loadHolidaysFailure, (_state): IOfficeTimeState => ({
+    ..._state,
+    holidays: {},
+  })),
+  on(officeTimeActions.addOfficeTime, (_state, { today }): IOfficeTimeState => {
+    if (_state.officedays?.find((day) => day.isSame(today, 'day')))
+      return _state;
+
+    return {
+      ..._state,
+      officedays: [...(_state.officedays ?? []), today],
+    };
+  }),
+  on(
+    officeTimeActions.addOfficeday,
+    (_state, { officeday }): IOfficeTimeState => {
+      if (_state.officedays?.find((day) => day.isSame(officeday, 'day')))
+        return _state;
+
+      return {
+        ..._state,
+        officedays: [...(_state.officedays ?? []), officeday],
+      };
+    }
+  ),
+  on(
+    officeTimeActions.setOfficedays,
+    (_state, { officedays }): IOfficeTimeState => {
+      return {
+        ..._state,
+        officedays: [...officedays],
+      };
+    }
+  ),
+  on(
+    officeTimeActions.saveTargetOfficeDaysPerWeek,
+    (_state, { daysPerWeek }): IOfficeTimeState => {
+      return { ..._state, targetOfficeDaysPerWeek: daysPerWeek };
+    }
+  ),
+
+  on(officeTimeActions.resetData, (_state): IOfficeTimeState => {
+    return {
+      ...initialOfficeTime,
+      holidays: _state.holidays,
+      barcode: _state.barcode,
+    };
+  }),
+  on(officeTimeActions.addFreeday, (_state, { freeday }): IOfficeTimeState => {
+    if (_state.freedays?.find((day) => day.isSame(freeday, 'day')))
+      return _state;
+
+    return {
+      ..._state,
+      freedays: [...(_state.freedays ?? []), freeday],
+    };
+  }),
+  on(
+    officeTimeActions.setFreedays,
+    (_state, { freedays }): IOfficeTimeState => {
+      return {
+        ..._state,
+        freedays: [...validateFreedays(freedays, _state.holidays)],
+      };
+    }
+  ),
+  on(
+    officeTimeActions.saveBarcode,
+    (_state, { base64Blob }): IOfficeTimeState => ({
+      ..._state,
+      barcode: base64Blob,
+    })
+  ),
+  on(
+    officeTimeActions.rotateBarcodeSuccess,
+    (_state, { barcode }): IOfficeTimeState => ({
+      ..._state,
+      barcode,
+    })
+  ),
+  on(officeTimeActions.deleteBarcode, (_state): IOfficeTimeState => ({
+    ..._state,
+    barcode: undefined,
+  })),
+  on(
+    officeTimeActions.saveDashboardSettings,
+    (_state, { key, active }): IOfficeTimeState => ({
+      ..._state,
+      dashboardSettings: {
+        ..._state.dashboardSettings,
+        [key]: active,
+      },
+    })
+  ),
+  on(
+    applicationActions.loadedSuccessfully,
+    (_state, { datastore }): IOfficeTimeState => {
+      const stored = datastore.officeTime;
+      if (!stored) return _state;
+
+      // Merge over initialOfficeTime so corrupted or partially-migrated
+      // storage doesn't leave required fields (dashboardSettings,
+      // dashboardItems, targetOfficeDaysPerWeek) undefined.
+      const storedItems =
+        stored.dashboardItems ?? initialOfficeTime.dashboardItems;
+      // Self-heal: append any dashboard item added since this user last
+      // persisted (e.g. 'wordclock'), preserving their existing order.
+      const missingItems = initialOfficeTime.dashboardItems.filter(
+        (item) => !storedItems.includes(item)
+      );
+      return {
+        ...initialOfficeTime,
+        ...stored,
+        dashboardSettings: {
+          ...initialOfficeTime.dashboardSettings,
+          ...(stored.dashboardSettings ?? {}),
+        },
+        dashboardItems: [...storedItems, ...missingItems],
+        holidays: deserializeIsoStringMap(stored.holidays),
+        officedays: deserializeIsoStrings(stored.officedays),
+        freedays: deserializeIsoStrings(stored.freedays),
+      };
+    }
+  )
+);

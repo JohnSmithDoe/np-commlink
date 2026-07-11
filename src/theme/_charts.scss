@@ -1,0 +1,32 @@
+$thickness: 12px;
+$bar: #078507;
+$track: #a82727;
+@mixin circular-meter {
+  .circular-meter {
+    --p: 0; /* percentage 0..100 */
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: conic-gradient(
+      $bar calc(min(100, max(0, var(--p))) * 1%),
+      $track 0
+    );
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .circular-meter::after {
+    content: '';
+    position: absolute;
+    inset: $thickness;
+    background: var(--ion-background-color, #fff);
+    border-radius: 50%;
+  }
+  .circular-meter .center-text {
+    position: relative;
+    font-weight: 600;
+    font-size: 1.5rem;
+    z-index: 1;
+    color: var(--ion-text-color);
+  }
+}

@@ -1,0 +1,10 @@
+@if (hasData()) {
+  <div class="sessions-chart-wrapper">
+    <canvas
+      baseChart
+      type="bar"
+      [data]="chartData()"
+      [options]="chartOptions"
+    ></canvas>
+  </div>
+}

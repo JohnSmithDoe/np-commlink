@@ -1,0 +1,78 @@
+@let stats = data();
+@if (stats) {
+  <ion-card>
+    @if (title()) {
+      <ion-card-header>
+        <ion-card-title>{{ title() }}</ion-card-title>
+      </ion-card-header>
+    }
+    <ion-card-content>
+      @if (showPercentage()) {
+        <app-dash-percentage [stats]="stats" />
+      }
+      <div class="dash-stats-grid">
+        <span>
+          {{ 'officetime.page.stats.officedays.label' | translate }}
+        </span>
+        <span>
+          {{
+            'officetime.page.stats.officedays'
+              | translate: { value: stats.officedays, target: stats.targetdays }
+          }}
+        </span>
+        <span>
+          {{ 'officetime.page.stats.workdays.label' | translate }}
+        </span>
+        <span>
+          @if (stats.workdaysTotal !== stats.workdays) {
+            {{
+              'officetime.page.stats.workdays'
+                | translate
+                  : { value: stats.workdays, total: stats.workdaysTotal }
+            }}
+          } @else {
+            {{
+              'officetime.page.stats.workdays.single'
+                | translate: { value: stats.workdays }
+            }}
+          }
+        </span>
+        <span>
+          {{ 'officetime.page.stats.remaining.label' | translate }}
+        </span>
+        <span>
+          {{
+            'officetime.page.stats.remaining'
+              | translate: { value: stats.remaining }
+          }}
+        </span>
+        <span>
+          {{ 'officetime.page.stats.freedays.label' | translate }}
+        </span>
+        <span>
+          {{
+            'officetime.page.stats.freedays'
+              | translate: { value: stats.freedays }
+          }}
+        </span>
+        <span>
+          {{ 'officetime.page.stats.holidays.label' | translate }}
+        </span>
+        <span>
+          @if (stats.holidaysNotOnWeekend !== stats.holidays) {
+            {{
+              'officetime.page.stats.holidays'
+                | translate
+                  : { value: stats.holidaysNotOnWeekend, total: stats.holidays }
+            }}
+          } @else {
+            {{
+              'officetime.page.stats.holidays.single'
+                | translate: { value: stats.holidays }
+            }}
+          }
+        </span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+}

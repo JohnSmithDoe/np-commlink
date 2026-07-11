@@ -1,0 +1,130 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// np-commlink — Shadowrun / cyberdeck theme (shared, app-wide)
+// ═══════════════════════════════════════════════════════════════════════════
+// The look established on the /commlink deck, lifted into reusable tokens and
+// applied to the Ionic primitives so every page reads like the same terminal.
+// This file is @use'd once from global.scss — do NOT @use it from a component
+// (it emits global CSS; components should consume the tokens/classes below).
+//
+//   tokens     → --sr-* CSS custom properties (on :root)
+//   primitives → ion-content / ion-card / ion-toolbar / titles / focus / …
+//   utilities  → .sr-scanlines, .sr-glow, .sr-hud  (opt-in signature effects)
+//
+// Colours are WCAG-AA verified (amber/cyan ≥6:1, body ≥13:1 on slate). The one
+// rule to keep: muted amber label text must stay at alpha ≥ 0.85 to hold AA.
+// ═══════════════════════════════════════════════════════════════════════════
+
+:root {
+  // Neon duo — aliased to the Ionic brand colours so hue lives in one place.
+  --sr-amber: var(--ion-color-primary);
+  --sr-amber-rgb: var(--ion-color-primary-rgb);
+  --sr-cyan: var(--ion-color-freeday);
+  --sr-cyan-rgb: var(--ion-color-freeday-rgb);
+
+  --sr-red: #ff3b47; // neon — LEDs / borders / large icons only
+  --sr-red-deep: #c1121f; // AA-safe red for text backgrounds (badges, danger)
+
+  // Terminal slate.
+  --sr-bg: #0f141b; // app / content backdrop
+  --sr-panel: #171d26; // cards, items, toolbars
+  --sr-panel-2: #10141b; // gradient floor
+  --sr-line: rgba(var(--sr-amber-rgb), 0.35); // HUD hairline
+  --sr-text: #dfe4ea; // body copy
+  --sr-text-dim: rgba(var(--sr-amber-rgb), 0.85); // muted label (AA floor)
+
+  --sr-mono:
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
+    monospace;
+  --sr-glow: 0 0 12px rgba(var(--sr-amber-rgb), 0.45);
+}
+
+// ── content backdrop: deep matrix slate behind every page ───────────────────
+ion-content {
+  --background: radial-gradient(
+    circle at 50% -10%,
+    #1a222e 0%,
+    var(--sr-bg) 60%,
+    #0a0d12 100%
+  );
+}
+
+// ── terminal typography (chrome + headings; body copy stays as-is) ──────────
+ion-title,
+ion-card-title,
+ion-card-subtitle,
+ion-list-header {
+  font-family: var(--sr-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+ion-card-title {
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow);
+}
+
+// ── HUD-framed surfaces ─────────────────────────────────────────────────────
+ion-card {
+  --background: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
+  border: 1px solid var(--sr-line);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+// A thin amber rule under every toolbar reads like a deck seam.
+ion-toolbar {
+  --border-color: var(--sr-line);
+  --border-width: 0 0 1px 0;
+}
+
+// ── accessible neon focus ring (keyboard) ───────────────────────────────────
+:focus-visible {
+  outline: 2px solid var(--sr-cyan);
+  outline-offset: 2px;
+}
+
+// ── thin cyber scrollbars ───────────────────────────────────────────────────
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sr-line) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sr-line);
+}
+
+// ═══ opt-in signature effects (add the class / include the mixin) ═══════════
+
+// Static CRT scanline wash — put `.sr-scanlines` on any positioned container.
+.sr-scanlines {
+  position: relative;
+}
+.sr-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    transparent 4px
+  );
+}
+
+// Amber terminal glow on any text.
+.sr-glow {
+  text-shadow: var(--sr-glow);
+}
+
+// Uppercase monospace label, HUD-style.
+.sr-hud {
+  font-family: var(--sr-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--sr-text-dim);
+}

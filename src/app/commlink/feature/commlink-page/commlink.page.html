@@ -1,0 +1,94 @@
+<app-page-header hideButtons="true">
+  <div toolbar class="cl-brand">
+    <ion-icon name="hardware-chip-outline" class="cl-brand__chip" />
+    <span class="cl-brand__name">np-commlink</span>
+    <span class="cl-cursor">▊</span>
+  </div>
+</app-page-header>
+
+<ion-content>
+  @let now = time();
+
+  <div class="cl">
+    <!-- ── STATUS STRIP ─────────────────────────────────────── -->
+    <div class="cl-bar">
+      <span class="cl-bar__seg">
+        <i class="cl-led cl-led--on"></i> SIN://np-commlink
+      </span>
+      <span class="cl-bar__seg">GRID <b>ONLINE</b></span>
+      <span class="cl-bar__seg"
+        >NOISE <b>{{ noise() }}</b></span
+      >
+      <span class="cl-bar__seg cl-bar__seg--sig">SIGNAL <b>▚▚▚▚▚</b></span>
+      <span class="cl-bar__seg cl-bar__clock">{{ now }}</span>
+    </div>
+
+    <!-- ── BANNER ───────────────────────────────────────────── -->
+    <header class="cl-hero">
+      <p class="cl-hero__kicker">// matrix link established</p>
+      <h1 class="cl-hero__title" data-text="COMMLINK ONLINE">
+        COMMLINK ONLINE
+      </h1>
+      <p class="cl-hero__meta">
+        {{ bootDate }} · RES {{ res() }} · FIREWALL 5 ·
+        <b>{{ onlineCount }}/{{ total }}</b> PROGRAMS LOADED
+      </p>
+    </header>
+
+    <!-- ── PROGRAM GRID ─────────────────────────────────────── -->
+    <div class="cl-grid">
+      @for (p of programs; track p.hex) {
+        <a
+          class="cl-node"
+          [class.cl-node--standby]="p.status === 'standby'"
+          [class.cl-node--offline]="p.status === 'offline'"
+          [routerLink]="p.route"
+        >
+          <span class="cl-node__scan"></span>
+          <div class="cl-node__top">
+            <span class="cl-node__hex">{{ p.hex }}</span>
+            <span class="cl-node__flags">
+              @if (p.badgeKey === 'unread' && noise() > 0) {
+                <span class="cl-node__badge">{{ noise() }}</span>
+              }
+              <i
+                class="cl-led"
+                [class.cl-led--on]="p.status === 'online'"
+                [class.cl-led--standby]="p.status === 'standby'"
+                [class.cl-led--off]="p.status === 'offline'"
+              ></i>
+            </span>
+          </div>
+          <ion-icon class="cl-node__icon" [name]="p.icon" />
+          <div class="cl-node__name">{{ p.codename }}</div>
+          <div class="cl-node__desc">{{ p.desc }}</div>
+          <div class="cl-node__foot">
+            @switch (p.status) {
+              @case ('online') {
+                &gt; RUN
+              }
+              @case ('standby') {
+                &gt; STANDBY
+              }
+              @case ('offline') {
+                &gt; NO SIGNAL
+              }
+            }
+          </div>
+        </a>
+      }
+    </div>
+
+    <!-- ── TELEMETRY ────────────────────────────────────────── -->
+    <footer class="cl-tele">
+      <span
+        >◈ NUYEN <b>¥ {{ nuyen() }}</b></span
+      >
+      <span>◈ TRACE <b>CLEAN</b></span>
+      <span>◈ ICE <b>PASSIVE</b></span>
+      <span
+        >◈ UPTIME <b>{{ now }}</b></span
+      >
+    </footer>
+  </div>
+</ion-content>

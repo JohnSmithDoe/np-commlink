@@ -1,0 +1,137 @@
+<app-page-header
+  icon="notifications-outline"
+  [label]="'page-title.notifications' | translate"
+  hideButtons="true"
+/>
+
+<ion-content>
+  @let newItems = newNotifications();
+  @let doneItems = doneNotifications();
+  @let collapsed = doneCollapsed();
+
+  <ion-list>
+    <ion-item lines="full" class="section-header">
+      <ion-label>
+        <h2>
+          {{ 'notifications.section.new' | translate }}
+          <ion-note>({{ newItems?.length ?? 0 }})</ion-note>
+        </h2>
+      </ion-label>
+    </ion-item>
+
+    @if (!newItems?.length) {
+      <ion-item lines="none" class="empty">
+        <ion-icon slot="start" name="notifications-off-outline" />
+        <ion-label>
+          <p>{{ 'notifications.empty.new' | translate }}</p>
+        </ion-label>
+      </ion-item>
+    }
+
+    @for (n of newItems; track n.id) {
+      <ion-item lines="full" class="notification new">
+        <ion-icon
+          slot="start"
+          [name]="n.icon"
+          [style.color]="'var(--ion-color-' + n.color + ')'"
+        />
+        <ion-label>
+          <h3>{{ n.name }}</h3>
+          <p>{{ n.body }}</p>
+          <div class="actions">
+            @if (n.action) {
+              <ion-button
+                size="small"
+                [color]="n.color"
+                (click)="triggerAction(n, $event)"
+              >
+                {{ actionLabelKey(n) | translate }}
+              </ion-button>
+            }
+            <ion-button
+              size="small"
+              fill="clear"
+              color="medium"
+              (click)="markDone(n, $event)"
+            >
+              <ion-icon slot="start" name="checkmark-circle" />
+              {{ 'notifications.action.mark-done' | translate }}
+            </ion-button>
+          </div>
+        </ion-label>
+      </ion-item>
+    }
+
+    <ion-item
+      lines="full"
+      class="section-header"
+      [button]="true"
+      (click)="toggleDoneSection()"
+    >
+      <ion-label>
+        <h2>
+          {{ 'notifications.section.done' | translate }}
+          <ion-note>({{ doneItems?.length ?? 0 }})</ion-note>
+        </h2>
+      </ion-label>
+      <ion-buttons slot="end">
+        @if (doneItems?.length) {
+          <ion-button
+            fill="clear"
+            color="medium"
+            (click)="clearDone(); $event.stopPropagation()"
+          >
+            <ion-icon slot="icon-only" name="trash-outline" />
+          </ion-button>
+        }
+        <ion-icon
+          [name]="collapsed ? 'chevron-down' : 'chevron-up'"
+          aria-hidden="true"
+        />
+      </ion-buttons>
+    </ion-item>
+
+    @if (!collapsed) {
+      @if (!doneItems?.length) {
+        <ion-item lines="none" class="empty">
+          <ion-icon slot="start" name="notifications-off-outline" />
+          <ion-label>
+            <p>{{ 'notifications.empty.done' | translate }}</p>
+          </ion-label>
+        </ion-item>
+      }
+
+      @for (n of doneItems; track n.id) {
+        <ion-item lines="full" class="notification done">
+          <ion-icon
+            slot="start"
+            [name]="n.icon"
+            [style.color]="'var(--ion-color-' + n.color + ')'"
+          />
+          <ion-label>
+            <h3>{{ n.name }}</h3>
+            <p>{{ n.body }}</p>
+          </ion-label>
+          <ion-buttons slot="end">
+            <ion-button fill="clear" color="medium" (click)="remove(n, $event)">
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      }
+    }
+  </ion-list>
+
+  <div class="debug-actions">
+    <ion-button size="small" color="warning" (click)="fireTestOsNotification()">
+      {{ 'settings.debug.os-notification' | translate }}
+    </ion-button>
+    <ion-button
+      size="small"
+      color="notifications"
+      (click)="addDebugNotification()"
+    >
+      {{ 'settings.debug.in-app-notification' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

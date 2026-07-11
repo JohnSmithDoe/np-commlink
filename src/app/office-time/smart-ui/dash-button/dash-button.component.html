@@ -1,0 +1,36 @@
+@let isOfficeDay = todayIsOfficeDay();
+<ion-card>
+  @if (title()) {
+    <ion-card-header>
+      <ion-card-title>{{ title() }}</ion-card-title>
+    </ion-card-header>
+  }
+  <ion-card-content>
+    <ion-button
+      (click)="addOfficeDay()"
+      [disabled]="isOfficeDay ?? false"
+      class="dash-button"
+      expand="block"
+      [color]="isOfficeDay ? 'dark' : 'secondary'"
+      size="large"
+    >
+      <div flex-col flex-center-center>
+        @if (isOfficeDay) {
+          <ion-icon
+            name="beer"
+            size="large"
+            class="ion-margin-bottom"
+          ></ion-icon>
+          <p>{{ 'officetime.page.add-office-day.done' | translate }}</p>
+        } @else {
+          <ion-icon
+            name="business"
+            size="large"
+            class="ion-margin-bottom"
+          ></ion-icon>
+          <p>{{ 'officetime.page.add-office-day' | translate }}</p>
+        }
+      </div>
+    </ion-button>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,10 @@
+<ion-card>
+  @if (title()) {
+    <ion-card-header>
+      <ion-card-title>{{ title() }}</ion-card-title>
+    </ion-card-header>
+  }
+  <ion-card-content>
+    <app-wordclock [config]="wordclockConfig" />
+  </ion-card-content>
+</ion-card>

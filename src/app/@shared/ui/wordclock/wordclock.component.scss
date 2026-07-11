@@ -1,0 +1,69 @@
+$back-ground: #3e3e3e;
+:root {
+  --qlock-max-height: unset;
+}
+
+:host {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+
+  background-color: $back-ground;
+  max-height: var(--qlock-max-height);
+
+  .char-wrapper {
+    height: 100%;
+
+    .char-row {
+      width: 100%;
+      height: 100%;
+
+      .char {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background-color: $back-ground;
+        transition: color 1s ease-in-out;
+        box-shadow: 0 0 5px black;
+
+        &.active {
+          color: antiquewhite;
+        }
+      }
+    }
+  }
+
+  .minCornerRowTop,
+  .minCornerRowBot {
+    font-size: 32px;
+    line-height: 0;
+    position: relative;
+  }
+
+  .minCornerRowTop {
+    top: 10px;
+  }
+
+  .minCornerRowBot {
+    bottom: 8px;
+  }
+
+  .minCornerLeft,
+  .minCornerRight {
+    position: absolute;
+    transition: color 1s ease-in-out;
+
+    &.active {
+      color: antiquewhite;
+    }
+  }
+
+  .minCornerLeft {
+    left: 4px;
+  }
+
+  .minCornerRight {
+    right: 4px;
+  }
+}
