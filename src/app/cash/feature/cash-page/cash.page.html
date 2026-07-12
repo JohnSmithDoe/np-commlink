@@ -1,0 +1,15 @@
+<app-page-header
+  label="cash.page-title.cash"
+  icon="wallet-outline"
+  color="cash"
+  hideButtons="true"
+/>
+
+<ion-content class="ion-padding">
+  <div class="cash-scaffold">
+    <ion-icon name="wallet-outline" class="cash-scaffold__icon" />
+    <p class="cash-scaffold__hint">{{ 'cash.landing.hint' | translate }}</p>
+    <p class="cash-scaffold__count">{{ accounts().length }}</p>
+    <a routerLink="/commlink">&lt; BACK TO DECK</a>
+  </div>
+</ion-content>

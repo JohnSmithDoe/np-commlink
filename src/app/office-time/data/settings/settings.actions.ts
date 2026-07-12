@@ -1,7 +1,7 @@
 import { createActionGroup } from '@ngrx/store';
 import { BooleanKeys, ISettingsState } from '../../../@shared/types';
 
-export const settingsActions = createActionGroup({
+export const SettingsActions = createActionGroup({
   source: 'Settings',
   events: {
     'Update Settings': (settings: ISettingsState) => ({ settings }),

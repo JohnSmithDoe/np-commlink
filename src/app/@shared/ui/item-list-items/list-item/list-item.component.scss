@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.with-status {
+  --padding-start: 0;
+}
+
+.status-bar {
+  display: flex;
+  width: 0.5rem;
+  height: 100%;
+  margin-right: 1rem;
+
+  ion-text {
+    flex: 1;
+    background: currentColor;
+  }
+}
+
+.bought {
+  text-decoration: line-through;
+}

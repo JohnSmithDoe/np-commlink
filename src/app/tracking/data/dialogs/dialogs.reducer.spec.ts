@@ -1,6 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { ITrackingItem } from '../../../@shared/types';
-import { dialogsActions } from './dialogs.actions';
+import { DialogsActions } from './dialogs.actions';
 import { dialogsReducer, initialSettings } from './dialogs.reducer';
 
 const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
@@ -16,7 +15,7 @@ describe('dialogsReducer', () => {
     const item = track({ id: 'a', name: 'Edit me' });
     const state = dialogsReducer(
       initialSettings,
-      dialogsActions.showEditDialog(item)
+      DialogsActions.showEditDialog(item)
     );
 
     expect(state.isEditing).toBe(true);
@@ -30,17 +29,17 @@ describe('dialogsReducer', () => {
   it('patches the edited item, and no-ops when nothing is being edited', () => {
     const open = dialogsReducer(
       initialSettings,
-      dialogsActions.showEditDialog(track({ name: 'Old' }))
+      DialogsActions.showEditDialog(track({ name: 'Old' }))
     );
     const patched = dialogsReducer(
       open,
-      dialogsActions.updateItem({ name: 'New' })
+      DialogsActions.updateItem({ name: 'New' })
     );
     expect(patched.item?.name).toBe('New');
 
     const untouched = dialogsReducer(
       initialSettings,
-      dialogsActions.updateItem({ name: 'New' })
+      DialogsActions.updateItem({ name: 'New' })
     );
     expect(untouched).toBe(initialSettings);
   });
@@ -48,15 +47,15 @@ describe('dialogsReducer', () => {
   it('closes the dialog on hide, confirm and abort', () => {
     const open = dialogsReducer(
       initialSettings,
-      dialogsActions.showEditDialog(track())
+      DialogsActions.showEditDialog(track())
     );
-    expect(dialogsReducer(open, dialogsActions.hideDialog()).isEditing).toBe(
+    expect(dialogsReducer(open, DialogsActions.hideDialog()).isEditing).toBe(
       false
     );
     expect(
-      dialogsReducer(open, dialogsActions.confirmChanges()).isEditing
+      dialogsReducer(open, DialogsActions.confirmChanges()).isEditing
     ).toBe(false);
-    expect(dialogsReducer(open, dialogsActions.abortChanges()).isEditing).toBe(
+    expect(dialogsReducer(open, DialogsActions.abortChanges()).isEditing).toBe(
       false
     );
   });

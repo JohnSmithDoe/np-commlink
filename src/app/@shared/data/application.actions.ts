@@ -1,7 +1,7 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import { LoadedDatastore } from '../types';
 
-export const applicationActions = createActionGroup({
+export const ApplicationActions = createActionGroup({
   source: 'Application',
   events: {
     load: emptyProps(),

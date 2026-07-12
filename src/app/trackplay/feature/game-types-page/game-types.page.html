@@ -1,0 +1,33 @@
+<app-page-header
+  label="trackplay.page-title.game-types"
+  color="trackplay"
+  (addItem)="openCreate()"
+/>
+
+<ion-content class="ion-padding">
+  <p class="sr-hud">{{ 'trackplay.list-header.game-types' | translate }}</p>
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    color="trackplay"
+    class="ion-text-left"
+    (click)="openCreate()"
+  >
+    <ion-icon slot="start" name="add" aria-hidden="true" />
+    <ion-label>{{ 'trackplay.action.new-game-type' | translate }}</ion-label>
+  </ion-button>
+
+  <ion-list #typeList lines="full">
+    @for (type of rxTypes(); track type.id) {
+      <app-trackplay-game-type-list-item
+        [gameType]="type"
+        [canDelete]="type.id !== defaultTypeId"
+        [ionList]="typeList"
+        (selectType)="openEdit(type)"
+        (editType)="openEdit(type)"
+        (deleteType)="deleteType(type)"
+      />
+    }
+  </ion-list>
+</ion-content>

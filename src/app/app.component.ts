@@ -24,11 +24,18 @@ import {
   barcodeOutline,
   businessOutline,
   cafeOutline,
+  cartOutline,
+  checkboxOutline,
+  diceOutline,
+  fileTrayStackedOutline,
   hardwareChipOutline,
   notificationsOutline,
+  optionsOutline,
+  pricetagsOutline,
   timerOutline,
+  walletOutline,
 } from 'ionicons/icons';
-import { selectNotificationsBadgeCount } from './notifications/data/notifications.selectors';
+import { selectNotificationsBadgeCount } from './notifications/data/notifications.selector';
 
 @Component({
   selector: 'app-root',
@@ -67,6 +74,13 @@ export class AppComponent {
       businessOutline,
       notificationsOutline,
       barcodeOutline,
+      cartOutline,
+      fileTrayStackedOutline,
+      checkboxOutline,
+      pricetagsOutline,
+      optionsOutline,
+      walletOutline,
+      diceOutline,
     });
   }
 }

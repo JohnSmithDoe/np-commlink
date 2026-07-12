@@ -1,0 +1,88 @@
+<app-page-header
+  [label]="'grocery.page-title.settings' | translate"
+  hideButtons="true"
+></app-page-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>{{
+      'grocery.list-settings.section.quick-add' | translate
+    }}</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showQuickAdd"
+        (ionChange)="toggleFlag('showQuickAdd')"
+        >{{ 'grocery.list-settings.show-quick-add' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showQuickAddGlobal"
+        (ionChange)="toggleFlag('showQuickAddGlobal')"
+        >{{
+          'grocery.list-settings.show-quick-add-global' | translate
+        }}</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showQuickAddCategory"
+        (ionChange)="toggleFlag('showQuickAddCategory')"
+        >{{
+          'grocery.list-settings.show-quick-add-category' | translate
+        }}</ion-toggle
+      >
+    </ion-item>
+    <ion-list-header>{{
+      'grocery.list-settings.section.storage-results' | translate
+    }}</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showGlobalsInStorage"
+        (ionChange)="toggleFlag('showGlobalsInStorage')"
+        >{{ 'grocery.list-settings.show-globals' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showShoppingInStorage"
+        (ionChange)="toggleFlag('showShoppingInStorage')"
+        >{{ 'grocery.list-settings.show-shopping' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-list-header>{{
+      'grocery.list-settings.section.shopping-results' | translate
+    }}</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showGlobalsInShopping"
+        (ionChange)="toggleFlag('showGlobalsInShopping')"
+        >{{ 'grocery.list-settings.show-globals' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showStorageInShopping"
+        (ionChange)="toggleFlag('showStorageInShopping')"
+        >{{ 'grocery.list-settings.show-storage' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-list-header>{{
+      'grocery.list-settings.section.globals-results' | translate
+    }}</ion-list-header>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showStorageInGlobals"
+        (ionChange)="toggleFlag('showStorageInGlobals')"
+        >{{ 'grocery.list-settings.show-storage' | translate }}</ion-toggle
+      >
+    </ion-item>
+    <ion-item>
+      <ion-toggle
+        [checked]="!!settings().showShoppingInGlobals"
+        (ionChange)="toggleFlag('showShoppingInGlobals')"
+        >{{ 'grocery.list-settings.show-shopping' | translate }}</ion-toggle
+      >
+    </ion-item>
+  </ion-list>
+</ion-content>

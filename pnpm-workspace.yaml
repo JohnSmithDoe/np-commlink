@@ -15,3 +15,7 @@ allowBuilds:
   esbuild: false
   lmdb: false
   msgpackr-extract: false
+minimumReleaseAgeExclude:
+  - '@eslint/eslintrc@3.3.6'
+  - '@eslint/js@9.39.5'
+  - eslint@9.39.5

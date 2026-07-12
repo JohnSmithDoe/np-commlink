@@ -6,8 +6,8 @@ import {
   TDialogsState,
   TEditItemMode,
 } from '../../../@shared/types';
-import { applicationActions } from '../../../@shared/data/application.actions';
-import { dialogsActions } from './dialogs.actions';
+import { ApplicationActions } from '../../../@shared/data/application.actions';
+import { DialogsActions } from './dialogs.actions';
 
 export const initialSettings: TDialogsState = {
   isEditing: false,
@@ -16,24 +16,24 @@ export const initialSettings: TDialogsState = {
 
 export const dialogsReducer = createReducer(
   initialSettings,
-  on(dialogsActions.showEditDialog, (state, { item }): TDialogsState => {
+  on(DialogsActions.showEditDialog, (state, { item }): TDialogsState => {
     return showEditDialog(state, { ...item }, item ? 'update' : 'create');
   }),
-  on(dialogsActions.updateItem, (state, { data }): TDialogsState => {
+  on(DialogsActions.updateItem, (state, { data }): TDialogsState => {
     if (!state.item) return state;
     return { ...state, item: { ...state.item, ...data } };
   }),
-  on(dialogsActions.hideDialog, (state): TDialogsState => {
+  on(DialogsActions.hideDialog, (state): TDialogsState => {
     return { ...state, isEditing: false };
   }),
-  on(dialogsActions.confirmChanges, (state): TDialogsState => {
+  on(DialogsActions.confirmChanges, (state): TDialogsState => {
     return { ...state, isEditing: false };
   }),
-  on(dialogsActions.abortChanges, (state): TDialogsState => {
+  on(DialogsActions.abortChanges, (state): TDialogsState => {
     return { ...state, isEditing: false };
   }),
 
-  on(applicationActions.loadedSuccessfully, (_state): TDialogsState => {
+  on(ApplicationActions.loadedSuccessfully, (_state): TDialogsState => {
     return _state;
   })
 );

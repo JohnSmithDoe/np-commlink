@@ -18,7 +18,7 @@ import {
   selectTrackingData,
   selectTrackingDataViewId,
 } from '../../data/tracking.selector';
-import { trackingActions } from '../../data/tracking.actions';
+import { TrackingActions } from '../../data/tracking.actions';
 import { IDataItem, IonViewWillEnter } from '../../../@shared/types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 
@@ -51,18 +51,18 @@ export class StatsPage implements IonViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(trackingActions.enterPage());
+    this.#store.dispatch(TrackingActions.enterPage());
   }
 
   shareCSV() {
-    this.#store.dispatch(trackingActions.shareData());
+    this.#store.dispatch(TrackingActions.shareData());
   }
 
   deleteItem(item: IDataItem) {
-    this.#store.dispatch(trackingActions.removeDataItem(item));
+    this.#store.dispatch(TrackingActions.removeDataItem(item));
   }
 
   selectViewMode({ detail }: CustomEvent<{ value: string }>) {
-    this.#store.dispatch(trackingActions.changeDataView(detail.value));
+    this.#store.dispatch(TrackingActions.changeDataView(detail.value));
   }
 }

@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { csvRow, formatSecondsAsClock } from './tracking.utils';
 
 describe('tracking.utils', () => {

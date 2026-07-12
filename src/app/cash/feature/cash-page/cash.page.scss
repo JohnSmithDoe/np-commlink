@@ -1,0 +1,32 @@
+// P0 scaffold styling — replaced by the accounts overview in P1. Consumes the
+// shared shadowrun tokens via var(--sr-*/--ion-*); no @use of the theme.
+.cash-scaffold {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 18vh;
+  text-align: center;
+  color: var(--ion-text-color);
+
+  &__icon {
+    font-size: 3rem;
+    color: var(--ion-color-primary);
+  }
+
+  &__hint {
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+
+  &__count {
+    font-size: 2rem;
+    color: var(--ion-color-primary);
+  }
+
+  a {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+  }
+}

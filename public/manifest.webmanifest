@@ -1,7 +1,9 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "CommLink",
+  "short_name": "CL",
   "display": "standalone",
+  "theme_color": "#0f141b",
+  "background_color": "#0f141b",
   "scope": "./",
   "start_url": "./",
   "icons": [

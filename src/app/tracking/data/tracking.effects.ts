@@ -11,13 +11,13 @@ import {
   timer,
   withLatestFrom,
 } from 'rxjs';
-import { trackingActions } from './tracking.actions';
+import { TrackingActions } from './tracking.actions';
 import {
   selectRunningTrackingItem,
   selectTrackingData,
   selectTrackingDataViewId,
 } from './tracking.selector';
-import { applicationActions } from '../../@shared/data/application.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
 import { Share } from '@capacitor/share';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -53,15 +53,15 @@ export class TrackingEffects {
   trackTime$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(
-        trackingActions.toggleTrackingItem,
-        applicationActions.loadedSuccessfully
+        TrackingActions.toggleTrackingItem,
+        ApplicationActions.loadedSuccessfully
       ),
       switchMap(() => {
         return timer(0, 1000).pipe(
           withLatestFrom(this.#store.select(selectRunningTrackingItem)),
           map(([, item]) => item),
           takeWhile((item): item is NonNullable<typeof item> => !!item),
-          map((item) => trackingActions.updateTracking(item, dayjs().format()))
+          map((item) => TrackingActions.updateTracking(item, dayjs().format()))
         );
       })
     );
@@ -70,7 +70,7 @@ export class TrackingEffects {
   shareData$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.shareData),
+        ofType(TrackingActions.shareData),
         withLatestFrom(
           this.#store.select(selectTrackingData),
           this.#store.select(selectTrackingDataViewId)

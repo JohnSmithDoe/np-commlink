@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { IonViewWillEnter } from '../../../@shared/types';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import { DashButtonComponent } from '../../smart-ui/dash-button/dash-button.component';
 import { DashCardSkeletonComponent } from '../../ui/dash-card-skeleton/dash-card-skeleton.component';
 import { DashDateComponent } from '../../ui/dash-date/dash-date.component';
@@ -27,13 +27,13 @@ import {
   selectHolidayDays,
   selectHolidays,
   selectOfficedays,
-} from '../../data/office-time/office-time.selectors';
+} from '../../data/office-time/office-time.selector';
 import {
   selectDashboardStatsMonth,
   selectDashboardStatsQuarter,
   selectDashboardStatsWeek,
   selectDashboardStatsYear,
-} from '../../data/office-time/office-time.stats.selectors';
+} from '../../data/office-time/office-time.stats.selector';
 import { DashStatsComponent } from '../../ui/dash-stats/dash-stats.component';
 import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.component';
 
@@ -119,6 +119,6 @@ export class OfficeTimePage implements IonViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(officeTimeActions.initOfficeTime());
+    this.#store.dispatch(OfficeTimeActions.initOfficeTime());
   }
 }

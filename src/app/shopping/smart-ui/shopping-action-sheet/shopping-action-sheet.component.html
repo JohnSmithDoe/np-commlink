@@ -1,0 +1,6 @@
+<ion-action-sheet
+  [isOpen]="(rxState())?.showActionSheet === true"
+  header="Actions"
+  [buttons]="actionSheetButtons()"
+  (didDismiss)="triggerAction($event)"
+></ion-action-sheet>

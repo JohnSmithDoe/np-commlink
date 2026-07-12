@@ -15,7 +15,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatetimeCustomEvent } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import {
   dayjsToString,
   daysToHolidaysHighlightsInputTransform,
@@ -59,6 +59,6 @@ export class DashFreedaysEditComponent {
       ? ev.detail.value
       : [ev.detail.value];
 
-    this.#store.dispatch(officeTimeActions.setFreedays(dates));
+    this.#store.dispatch(OfficeTimeActions.setFreedays(dates));
   }
 }

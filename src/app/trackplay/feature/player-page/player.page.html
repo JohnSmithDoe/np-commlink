@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar color="trackplay">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ rxPlayer()?.name }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openPlayerEdit()" color="primary" aria-label="edit">
+        <ion-icon slot="icon-only" name="create-outline" />
+      </ion-button>
+      <ion-button (click)="openSettings($event)" color="primary">
+        <ion-icon slot="icon-only" name="options-outline" />
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (rxPlayer(); as player) {
+    <div class="ion-padding">
+      <p class="sr-hud">
+        {{
+          'trackplay.stats.win-loss-open'
+            | translate
+              : {
+                  win: rxStats().win,
+                  loss: rxStats().loss,
+                  open: rxStats().open,
+                }
+        }}
+      </p>
+      <p class="sr-hud">
+        {{ 'trackplay.stats.play' | translate: { count: rxStats().play } }}
+      </p>
+    </div>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="trackplay"
+      class="ion-text-left ion-margin-horizontal"
+      (click)="newGame()"
+    >
+      <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+      {{ 'trackplay.action.new-game' | translate }}
+    </ion-button>
+
+    <p class="sr-hud ion-padding-horizontal">
+      {{ 'trackplay.list-header.games-for-player' | translate }}
+    </p>
+    <ion-list #list>
+      @for (game of rxGames(); track game.id) {
+        <app-trackplay-game-list-item
+          [game]="game"
+          [typeName]="typeName(game)"
+          [disabled]="game.players.length <= 0"
+          [ionList]="list"
+          (selectGame)="goToGame(game.id)"
+          (editGame)="openGameEdit(game)"
+          (deleteGame)="deleteGame(game)"
+        />
+      }
+    </ion-list>
+  }
+</ion-content>

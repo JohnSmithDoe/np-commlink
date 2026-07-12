@@ -1,0 +1,46 @@
+<ion-item-sliding (ionDrag)="handleItemOptionsOnDrag($event)">
+  @if (showCartAction()) {
+    <ion-item-options side="start">
+      <ion-item-option color="success" expandable (click)="emitCartItem()">
+        <ion-icon name="cart" slot="icon-only"></ion-icon>
+      </ion-item-option>
+    </ion-item-options>
+  }
+
+  <ion-item
+    [button]="true"
+    (click)="selectItem.emit()"
+    lines="full"
+    [class.with-status]="hasStatusBar()"
+  >
+    @if (hasStatusBar()) {
+      <div class="status-bar">
+        <ion-text [color]="statusColor()"></ion-text>
+      </div>
+    }
+
+    <ion-reorder slot="start"></ion-reorder>
+    <ion-label class="ion-text-wrap" [class.bought]="crossedOut()">
+      <h2>{{ title() }}</h2>
+      <ion-note [appCategoryNote]="item()"></ion-note>
+      <ng-content select="[itemDetails]"></ng-content>
+    </ion-label>
+
+    @if (showQuantityActions()) {
+      <ion-buttons slot="end">
+        <ion-button (click)="incrementQuantity($event)">
+          <ion-icon name="add"></ion-icon>
+        </ion-button>
+        <ion-button (click)="decrementQuantity($event)">
+          <ion-icon name="remove"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-item>
+
+  <ion-item-options side="end">
+    <ion-item-option color="danger" expandable (click)="emitDeleteItem()">
+      {{ 'grocery.action.delete' | translate }}
+    </ion-item-option>
+  </ion-item-options>
+</ion-item-sliding>

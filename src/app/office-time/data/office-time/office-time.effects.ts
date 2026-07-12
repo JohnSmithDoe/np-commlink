@@ -13,10 +13,10 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import { DatabaseService } from '../../../@shared/util/database.service';
-import { officeTimeActions } from './office-time.actions';
+import { OfficeTimeActions } from './office-time.actions';
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
-import { selectHolidays, selectOfficeTimeState } from './office-time.selectors';
+import { selectHolidays, selectOfficeTimeState } from './office-time.selector';
 import { Dayjs } from 'dayjs';
 import {
   dayjsFromString,
@@ -35,14 +35,14 @@ export class OfficeTimeEffects {
 
   initOfficeTime$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(officeTimeActions.initOfficeTime),
-      map(() => officeTimeActions.loadHolidays())
+      ofType(OfficeTimeActions.initOfficeTime),
+      map(() => OfficeTimeActions.loadHolidays())
     );
   });
 
   rotateBarcode$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(officeTimeActions.rotateBarcode),
+      ofType(OfficeTimeActions.rotateBarcode),
       withLatestFrom(this.#store.select(selectOfficeTimeState)),
       switchMap(([_, state]) => {
         return from(rotateBase64(state.barcode, 90)).pipe(
@@ -52,7 +52,7 @@ export class OfficeTimeEffects {
           // identical write.
           mergeMap((rotated) =>
             rotated && rotated !== state.barcode
-              ? of(officeTimeActions.rotateBarcodeSuccess(rotated))
+              ? of(OfficeTimeActions.rotateBarcodeSuccess(rotated))
               : EMPTY
           ),
           catchError(() => EMPTY)
@@ -63,11 +63,11 @@ export class OfficeTimeEffects {
 
   loadHolidays$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(officeTimeActions.loadHolidays),
+      ofType(OfficeTimeActions.loadHolidays),
       switchMap(() =>
         this.#loadHolidays().pipe(
-          map(officeTimeActions.loadHolidaysSuccess),
-          catchError(() => of(officeTimeActions.loadHolidaysFailure()))
+          map(OfficeTimeActions.loadHolidaysSuccess),
+          catchError(() => of(OfficeTimeActions.loadHolidaysFailure()))
         )
       )
     );
@@ -87,32 +87,32 @@ export class OfficeTimeEffects {
         const sample = Object.values(holidays ?? {})[0];
         return !!sample && sample.year() !== new Date().getFullYear();
       }),
-      map(() => officeTimeActions.loadHolidays())
+      map(() => OfficeTimeActions.loadHolidays())
     );
   });
 
   saveOn$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(
-        officeTimeActions.addFreeday,
-        officeTimeActions.addOfficeTime,
-        officeTimeActions.addOfficeday,
-        officeTimeActions.deleteBarcode,
-        officeTimeActions.resetData,
-        officeTimeActions.rotateBarcodeSuccess,
-        officeTimeActions.saveBarcode,
-        officeTimeActions.saveDashboardSettings,
-        officeTimeActions.saveTargetOfficeDaysPerWeek,
-        officeTimeActions.setFreedays,
-        officeTimeActions.setOfficedays
+        OfficeTimeActions.addFreeday,
+        OfficeTimeActions.addOfficeTime,
+        OfficeTimeActions.addOfficeday,
+        OfficeTimeActions.deleteBarcode,
+        OfficeTimeActions.resetData,
+        OfficeTimeActions.rotateBarcodeSuccess,
+        OfficeTimeActions.saveBarcode,
+        OfficeTimeActions.saveDashboardSettings,
+        OfficeTimeActions.saveTargetOfficeDaysPerWeek,
+        OfficeTimeActions.setFreedays,
+        OfficeTimeActions.setOfficedays
       ),
-      map(() => officeTimeActions.saveOfficeTime())
+      map(() => OfficeTimeActions.saveOfficeTime())
     );
   });
 
   saveOfficeTime$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(officeTimeActions.saveOfficeTime),
+      ofType(OfficeTimeActions.saveOfficeTime),
       withLatestFrom(this.#store.select(selectOfficeTimeState)),
       switchMap(([_, state]) => {
         const toSave: IOfficeTimeStateStorage = {
@@ -122,7 +122,7 @@ export class OfficeTimeEffects {
           freedays: serializeDates(state.freedays),
         };
         return from(this.#database.save('officeTime', toSave)).pipe(
-          map(() => officeTimeActions.saveOfficeTimeSuccess()),
+          map(() => OfficeTimeActions.saveOfficeTimeSuccess()),
           // localforage can reject (storage quota, IndexedDB blocked).
           // Swallow so the effect stays alive for the next save attempt.
           catchError(() => EMPTY)

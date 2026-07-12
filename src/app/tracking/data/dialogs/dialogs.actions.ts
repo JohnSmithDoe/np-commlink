@@ -2,7 +2,7 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import { ITrackingItem } from '../../../@shared/types';
 
 //prettier-ignore
-export const dialogsActions = createActionGroup({
+export const DialogsActions = createActionGroup({
   source: 'Dialogs',
   events: {
     'Show Edit Dialog': (item: ITrackingItem) => ({ item }),

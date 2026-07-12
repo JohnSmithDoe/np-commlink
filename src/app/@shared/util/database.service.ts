@@ -18,6 +18,18 @@ export class DatabaseService {
       settings: await this.#loadAs('settings'),
       officeTime: await this.#loadAs('officeTime'),
       notifications: await this.#loadAs('notifications'),
+      // grocery slices (null on a fresh install → each reducer's
+      // loadedSuccessfully handler falls back to its initialState).
+      globals: await this.#loadAs('globals'),
+      shopping: await this.#loadAs('shopping'),
+      storage: await this.#loadAs('storage'),
+      tasks: await this.#loadAs('tasks'),
+      listSettings: await this.#loadAs('listSettings'),
+      // cash ledger (null on a fresh install → reducer initialState)
+      cash: await this.#loadAs('cash'),
+      // trackplay slice (null on a fresh install → the reducer seeds the
+      // default game types via its loadedSuccessfully handler).
+      trackplay: await this.#loadAs('trackplay'),
     };
     const { data, changed } = migrate(loaded, VERSION);
     if (changed) {
@@ -34,13 +46,13 @@ export class DatabaseService {
   async #loadAs<T extends keyof IDatastore>(
     key: T
   ): Promise<IDatastore[T] | null> {
-    return await this.#storageService.get('nptt-' + key);
+    return await this.#storageService.get('npc-' + key);
   }
 
   async save<T extends keyof IDatastore>(
     key: T,
     value: IDatastore[T] | null | undefined
   ) {
-    return await this.#storageService.set('nptt-' + key, value);
+    return await this.#storageService.set('npc-' + key, value);
   }
 }

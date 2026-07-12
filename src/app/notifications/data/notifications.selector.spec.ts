@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { INotification, INotificationsState } from '../../@shared/types';
 import {
   selectDoneCollapsed,
@@ -6,7 +5,7 @@ import {
   selectNewNotifications,
   selectNotificationById,
   selectNotificationsBadgeCount,
-} from './notifications.selectors';
+} from './notifications.selector';
 
 const notification = (over: Partial<INotification> = {}): INotification => ({
   id: '1',
@@ -29,7 +28,7 @@ const state = (
   ...over,
 });
 
-describe('notifications.selectors', () => {
+describe('notifications.selector', () => {
   const items = [
     notification({
       id: 'n1',

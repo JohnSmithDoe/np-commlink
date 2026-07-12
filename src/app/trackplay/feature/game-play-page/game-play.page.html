@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar color="trackplay">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ rxGame()?.name }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleEnded()" color="primary">
+        <ion-icon
+          slot="start"
+          [name]="ended() ? 'play' : 'square'"
+          aria-hidden="true"
+        />
+        {{
+          (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
+            | translate
+        }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (rxGame(); as game) {
+    @if (!ended()) {
+      <!-- ── ACTIVE: the scoring spreadsheet ─────────────────────────── -->
+      <div class="tp-grid sr-scanlines">
+        <!-- header: round marker + one cell per player -->
+        <div class="tp-row tp-row--header" #headerRow (scroll)="onScroll($event)">
+          <div class="tp-cell tp-cell--head tp-cell--round">#</div>
+          @for (pid of playerIds(); track pid) {
+            <div class="tp-cell tp-cell--head">{{ playerName(pid) }}</div>
+          }
+        </div>
+
+        <!-- body: one row per round, editable numeric cells -->
+        <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
+          @for (round of rxRounds(); track round.id) {
+            <div class="tp-row tp-row--data">
+              <div class="tp-cell tp-cell--round">{{ round.idx }}</div>
+              @for (pid of playerIds(); track pid) {
+                <div class="tp-cell tp-cell--edit">
+                  <ion-input
+                    type="number"
+                    inputmode="numeric"
+                    [value]="valueFor(round, pid)"
+                    (ionBlur)="onValue(round.id, pid, $event)"
+                    (keyup.enter)="blurInput($event)"
+                  />
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- footer: sum marker + per-player totals -->
+        <div class="tp-row tp-row--footer" #footerRow (scroll)="onScroll($event)">
+          <div class="tp-cell tp-cell--foot tp-cell--round">&sum;</div>
+          @for (pid of playerIds(); track pid) {
+            <div class="tp-cell tp-cell--foot">
+              {{ rxScores()[pid] | score }}
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <!-- ── ENDED: ranked result screen ─────────────────────────────── -->
+      <div class="tp-result ion-padding">
+        <p class="sr-hud">{{ 'trackplay.game.ended' | translate }}</p>
+
+        @if (rxWinner(); as winner) {
+          <p class="tp-result__winner">
+            <span>
+              <strong class="sr-glow">{{
+                'trackplay.game.winner' | translate: { name: winner.name }
+              }}</strong>
+            </span>
+            <span class="tp-result__score">
+              {{ rxScores()[winner.id] | score }}
+              {{ 'trackplay.game.points-label' | translate }}
+            </span>
+          </p>
+
+          <div class="tp-result__image">
+            <img [src]="winnerGif" alt="winner" />
+          </div>
+        }
+
+        @for (player of rxResult(); track player.id; let i = $index) {
+          @if (i !== 0) {
+            <p class="tp-result__row">
+              <span>{{ i + 1 }}. {{ player.name }}</span>
+              <span class="tp-result__score">
+                {{ rxScores()[player.id] | score }}
+                {{ 'trackplay.game.points-label' | translate }}
+              </span>
+            </p>
+          }
+        }
+      </div>
+    }
+  }
+</ion-content>

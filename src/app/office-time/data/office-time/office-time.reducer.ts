@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { IOfficeTimeState } from '../../../@shared/types';
-import { applicationActions } from '../../../@shared/data/application.actions';
-import { officeTimeActions } from './office-time.actions';
+import { ApplicationActions } from '../../../@shared/data/application.actions';
+import { OfficeTimeActions } from './office-time.actions';
 import {
   deserializeIsoStringMap,
   deserializeIsoStrings,
@@ -46,17 +46,17 @@ export const initialOfficeTime: IOfficeTimeState = {
 export const officeTimeReducer = createReducer(
   initialOfficeTime,
   on(
-    officeTimeActions.loadHolidaysSuccess,
+    OfficeTimeActions.loadHolidaysSuccess,
     (_state, { holidays }): IOfficeTimeState => ({
       ..._state,
       holidays: { ...holidays },
     })
   ),
-  on(officeTimeActions.loadHolidaysFailure, (_state): IOfficeTimeState => ({
+  on(OfficeTimeActions.loadHolidaysFailure, (_state): IOfficeTimeState => ({
     ..._state,
     holidays: {},
   })),
-  on(officeTimeActions.addOfficeTime, (_state, { today }): IOfficeTimeState => {
+  on(OfficeTimeActions.addOfficeTime, (_state, { today }): IOfficeTimeState => {
     if (_state.officedays?.find((day) => day.isSame(today, 'day')))
       return _state;
 
@@ -66,7 +66,7 @@ export const officeTimeReducer = createReducer(
     };
   }),
   on(
-    officeTimeActions.addOfficeday,
+    OfficeTimeActions.addOfficeday,
     (_state, { officeday }): IOfficeTimeState => {
       if (_state.officedays?.find((day) => day.isSame(officeday, 'day')))
         return _state;
@@ -78,7 +78,7 @@ export const officeTimeReducer = createReducer(
     }
   ),
   on(
-    officeTimeActions.setOfficedays,
+    OfficeTimeActions.setOfficedays,
     (_state, { officedays }): IOfficeTimeState => {
       return {
         ..._state,
@@ -87,20 +87,20 @@ export const officeTimeReducer = createReducer(
     }
   ),
   on(
-    officeTimeActions.saveTargetOfficeDaysPerWeek,
+    OfficeTimeActions.saveTargetOfficeDaysPerWeek,
     (_state, { daysPerWeek }): IOfficeTimeState => {
       return { ..._state, targetOfficeDaysPerWeek: daysPerWeek };
     }
   ),
 
-  on(officeTimeActions.resetData, (_state): IOfficeTimeState => {
+  on(OfficeTimeActions.resetData, (_state): IOfficeTimeState => {
     return {
       ...initialOfficeTime,
       holidays: _state.holidays,
       barcode: _state.barcode,
     };
   }),
-  on(officeTimeActions.addFreeday, (_state, { freeday }): IOfficeTimeState => {
+  on(OfficeTimeActions.addFreeday, (_state, { freeday }): IOfficeTimeState => {
     if (_state.freedays?.find((day) => day.isSame(freeday, 'day')))
       return _state;
 
@@ -110,7 +110,7 @@ export const officeTimeReducer = createReducer(
     };
   }),
   on(
-    officeTimeActions.setFreedays,
+    OfficeTimeActions.setFreedays,
     (_state, { freedays }): IOfficeTimeState => {
       return {
         ..._state,
@@ -119,25 +119,25 @@ export const officeTimeReducer = createReducer(
     }
   ),
   on(
-    officeTimeActions.saveBarcode,
+    OfficeTimeActions.saveBarcode,
     (_state, { base64Blob }): IOfficeTimeState => ({
       ..._state,
       barcode: base64Blob,
     })
   ),
   on(
-    officeTimeActions.rotateBarcodeSuccess,
+    OfficeTimeActions.rotateBarcodeSuccess,
     (_state, { barcode }): IOfficeTimeState => ({
       ..._state,
       barcode,
     })
   ),
-  on(officeTimeActions.deleteBarcode, (_state): IOfficeTimeState => ({
+  on(OfficeTimeActions.deleteBarcode, (_state): IOfficeTimeState => ({
     ..._state,
     barcode: undefined,
   })),
   on(
-    officeTimeActions.saveDashboardSettings,
+    OfficeTimeActions.saveDashboardSettings,
     (_state, { key, active }): IOfficeTimeState => ({
       ..._state,
       dashboardSettings: {
@@ -147,7 +147,7 @@ export const officeTimeReducer = createReducer(
     })
   ),
   on(
-    applicationActions.loadedSuccessfully,
+    ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): IOfficeTimeState => {
       const stored = datastore.officeTime;
       if (!stored) return _state;

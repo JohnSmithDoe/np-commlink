@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { describe, expect, it } from 'vitest';
 import { ITrackingItem, ITrackingState } from '../../@shared/types';
 import {
   selectRunningTrackingItem,
@@ -19,6 +18,8 @@ const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
 const state = (over: Partial<ITrackingState> = {}): ITrackingState => ({
   title: 'Time tracking',
   items: [],
+  categories: [],
+  mode: 'alphabetical',
   data: [],
   dataViewId: 'all',
   ...over,

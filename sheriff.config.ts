@@ -1,4 +1,13 @@
-import { sameTag, SheriffConfig } from '@softarc/sheriff-core';
+import { anyTag, sameTag, SheriffConfig } from '@softarc/sheriff-core';
+
+// Spec files (only) may import the @shared/testing kit (type:testing) regardless
+// of which layer they live in. Production (non-spec) modules importing
+// type:testing stay blocked, because no production type lists type:testing as an
+// allowed dependency. Appended to every layer's dep rule below.
+const specMayUseTesting = (ctx: {
+  to: string;
+  fromFilePath: string;
+}): boolean => ctx.to === 'type:testing' && /\.spec\.ts$/.test(ctx.fromFilePath);
 
 /**
  * Sheriff config — Hahnekamp two-axis tagging.
@@ -48,6 +57,7 @@ export const config: SheriffConfig = {
       'type:data',
       'type:util',
       'type:model',
+      specMayUseTesting,
     ],
     'type:feature': [
       sameTag,
@@ -56,18 +66,35 @@ export const config: SheriffConfig = {
       'type:data',
       'type:util',
       'type:model',
+      specMayUseTesting,
     ],
     // Smart UI: stateful presentational components. May touch the store
     // but still belong on the UI side. Pairs with strict-dumb type:ui.
     // Strict-leaf: smart components compose dumb UI, not other smart UI.
     // Composition of smart components belongs in a feature/.
-    'type:smart-ui': ['type:ui', 'type:data', 'type:util', 'type:model'],
+    // Relaxed from the original TT model (which forbade smart-ui→smart-ui):
+    // kitchen-bot's grocery dialogs genuinely compose store-connected
+    // sub-components (edit-*-item-dialog → category-input + item-edit-modal;
+    // category-input → categories-dialog). Permitting smart-ui→smart-ui keeps
+    // those at their natural layer instead of forcing them up to type:feature.
+    'type:smart-ui': [
+      'type:smart-ui',
+      'type:ui',
+      'type:data',
+      'type:util',
+      'type:model',
+      specMayUseTesting,
+    ],
     // Strict dumb: inputs in, events out, no store, no service injects
     // beyond pure helpers. Sheriff guarantees this mechanically.
-    'type:ui': [sameTag, 'type:util', 'type:model'],
-    'type:data': [sameTag, 'type:util', 'type:model'],
-    'type:util': [sameTag, 'type:model'],
-    'type:model': [sameTag],
+    'type:ui': [sameTag, 'type:util', 'type:model', specMayUseTesting],
+    'type:data': [sameTag, 'type:util', 'type:model', specMayUseTesting],
+    'type:util': [sameTag, 'type:model', specMayUseTesting],
+    'type:model': [sameTag, specMayUseTesting],
+
+    // Test kit: may reach into any layer it exercises. The reverse is fenced
+    // by the rule above (only *.spec.ts files may depend on type:testing).
+    'type:testing': [anyTag],
 
     // ─── Domain axis ───────────────────────────────────────────
     'domain:*': [sameTag, 'domain:shared'],
@@ -85,6 +112,23 @@ export const config: SheriffConfig = {
       'domain:shared',
       'domain:notifications',
       'domain:office-time',
+    ],
+
+    // Grocery domains: `tasks` is fully sealed; `globals` is the master-product
+    // catalog referenced by the others but referencing none. `shopping`/`storage`
+    // couple to each other (copy-to-list) and both render globals' edit dialog
+    // (create-global flow) — hence the bridges below.
+    'domain:shopping': [
+      sameTag,
+      'domain:shared',
+      'domain:storage',
+      'domain:globals',
+    ],
+    'domain:storage': [
+      sameTag,
+      'domain:shared',
+      'domain:shopping',
+      'domain:globals',
     ],
   },
 };

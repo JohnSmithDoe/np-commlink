@@ -16,7 +16,7 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { IBaseItem } from '../../../@shared/types';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
 import {
   selectEditItem,
   selectEditState,
@@ -51,20 +51,20 @@ export class ItemEditModalComponent {
   constructor() {}
 
   cancelChanges() {
-    this.#store.dispatch(dialogsActions.abortChanges());
+    this.#store.dispatch(DialogsActions.abortChanges());
   }
 
   closedDialog() {
-    this.#store.dispatch(dialogsActions.hideDialog());
+    this.#store.dispatch(DialogsActions.hideDialog());
   }
 
   submitChanges() {
-    this.#store.dispatch(dialogsActions.confirmChanges());
+    this.#store.dispatch(DialogsActions.confirmChanges());
   }
 
   updateName(value: string) {
     this.#store.dispatch(
-      dialogsActions.updateItem({
+      DialogsActions.updateItem({
         name: value,
       })
     );

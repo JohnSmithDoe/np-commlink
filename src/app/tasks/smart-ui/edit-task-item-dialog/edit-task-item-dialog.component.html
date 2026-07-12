@@ -1,0 +1,17 @@
+<app-item-edit-modal listId="_tasks" [listItems]="rxTasksItems()">
+  <app-number-input
+    [label]="'grocery.item.prio' | translate"
+    [value]="(rxItem())?.prio"
+    (updateValue)="updatePrio($event)"
+  ></app-number-input>
+
+  <app-date-input
+    [label]="'grocery.edit.item.dialog.dueAt' | translate"
+    [value]="(rxItem())?.dueAt"
+    (updateValue)="updateDueAt($event)"
+  ></app-date-input>
+
+  <app-category-input
+    [categories]="(rxItem())?.category"
+  ></app-category-input>
+</app-item-edit-modal>

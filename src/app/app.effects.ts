@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import {
   catchError,
+  filter,
   from,
   map,
   of,
@@ -18,9 +19,9 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addTrackingItemFromSearch } from './tracking/data/item-list.effects';
 
 import { updatedSearchQuery } from './@shared/data/item-list/item-list.utils';
-import { applicationActions } from './@shared/data/application.actions';
-import { trackingActions } from './tracking/data/tracking.actions';
-import { notificationsActions } from './notifications/data/notifications.actions';
+import { ApplicationActions } from './@shared/data/application.actions';
+import { TrackingActions } from './tracking/data/tracking.actions';
+import { NotificationsActions } from './notifications/data/notifications.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AppEffects {
@@ -31,12 +32,12 @@ export class AppEffects {
 
   initializeApplication$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(applicationActions.load),
+      ofType(ApplicationActions.load),
       // switchMap (not combineLatestWith) so each load triggers a fresh
       // read of storage rather than re-emitting a cached promise value.
       switchMap(() =>
         from(this.#database.create()).pipe(
-          map((data) => applicationActions.loadedSuccessfully(data)),
+          map((data) => ApplicationActions.loadedSuccessfully(data)),
           // Storage init can fail (IndexedDB blocked, quota, Safari private
           // mode). Surface a toast and fall back to empty slices so the
           // reducers' initialState takes over and the app stays usable.
@@ -46,11 +47,18 @@ export class AppEffects {
               'warning'
             );
             return of(
-              applicationActions.loadedSuccessfully({
+              ApplicationActions.loadedSuccessfully({
                 tracking: null,
                 settings: null,
                 officeTime: null,
                 notifications: null,
+                globals: null,
+                shopping: null,
+                storage: null,
+                tasks: null,
+                listSettings: null,
+                cash: null,
+                trackplay: null,
               })
             );
           })
@@ -61,14 +69,14 @@ export class AppEffects {
 
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(trackingActions.addItemFromSearch),
+      ofType(TrackingActions.addItemFromSearch),
       withLatestFrom(this.#store),
       map(([, state]: [unknown, IAppState]) => addTrackingItemFromSearch(state))
     );
   });
   addOrUpdateItem$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(trackingActions.addOrUpdateItem),
+      ofType(TrackingActions.addOrUpdateItem),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
@@ -76,28 +84,28 @@ export class AppEffects {
       map(({ action, state }) => {
         const localState = state.tracking;
         return matchesItemExactly(action.item, localState.items)
-          ? trackingActions.updateItem(action.item)
-          : trackingActions.addItem(action.item);
+          ? TrackingActions.updateItem(action.item)
+          : TrackingActions.addItem(action.item);
       })
     );
   });
 
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(trackingActions.addItem),
-      map(() => trackingActions.updateSearch(''))
+      ofType(TrackingActions.addItem),
+      map(() => TrackingActions.updateSearch(''))
     );
   });
   updateSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(trackingActions.updateItem),
+      ofType(TrackingActions.updateItem),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
       })),
       map(({ action, state }) => {
         const searchQuery = state.tracking.searchQuery;
-        return trackingActions.updateSearch(
+        return TrackingActions.updateSearch(
           updatedSearchQuery(action.item, searchQuery)
         );
       })
@@ -112,14 +120,14 @@ export class AppEffects {
         // startTime + breakInSeconds on next load. Persisting on toggle /
         // reset / save-and-reset is enough.
         ofType(
-          trackingActions.addItem,
-          trackingActions.removeItem,
-          trackingActions.updateItem,
-          trackingActions.toggleTrackingItem,
-          trackingActions.resetTracking,
-          trackingActions.saveAndResetTracking,
-          trackingActions.resetAllTracking,
-          trackingActions.removeDataItem
+          TrackingActions.addItem,
+          TrackingActions.removeItem,
+          TrackingActions.updateItem,
+          TrackingActions.toggleTrackingItem,
+          TrackingActions.resetTracking,
+          TrackingActions.saveAndResetTracking,
+          TrackingActions.resetAllTracking,
+          TrackingActions.removeDataItem
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({
           action,
@@ -137,15 +145,15 @@ export class AppEffects {
     () => {
       return this.#actions$.pipe(
         ofType(
-          notificationsActions.addNotification,
-          notificationsActions.upsertNotification,
-          notificationsActions.updateNotificationBody,
-          notificationsActions.markDone,
-          notificationsActions.markNew,
-          notificationsActions.removeNotification,
-          notificationsActions.clearDone,
-          notificationsActions.toggleDoneSection,
-          notificationsActions.markPageViewed
+          NotificationsActions.addNotification,
+          NotificationsActions.upsertNotification,
+          NotificationsActions.updateNotificationBody,
+          NotificationsActions.markDone,
+          NotificationsActions.markNew,
+          NotificationsActions.removeNotification,
+          NotificationsActions.clearDone,
+          NotificationsActions.toggleDoneSection,
+          NotificationsActions.markPageViewed
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({
           action,
@@ -153,6 +161,54 @@ export class AppEffects {
         })),
         tap(({ state }) => {
           void this.#database.save('notifications', state.notifications);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  // Persist the grocery slices whenever one of their domains dispatches. The
+  // action-source prefix (`[Globals]`/`[Shopping]`/…) identifies which slice to
+  // write; the list-settings slice persists via its own effect. quickadd and
+  // itemDialogs are ephemeral UI state and are deliberately not stored.
+  saveGroceryOnChange$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        filter((action: { type: string }) =>
+          /^\[(Globals|Shopping|Storage|Tasks|Trackplay)\]/.test(action.type)
+        ),
+        withLatestFrom(this.#store, (action, state: IAppState) => ({
+          action,
+          state,
+        })),
+        tap(({ action, state }) => {
+          if (action.type.startsWith('[Globals]')) {
+            void this.#database.save('globals', state.globals);
+          } else if (action.type.startsWith('[Shopping]')) {
+            void this.#database.save('shopping', state.shopping);
+          } else if (action.type.startsWith('[Storage]')) {
+            void this.#database.save('storage', state.storage);
+          } else if (action.type.startsWith('[Tasks]')) {
+            void this.#database.save('tasks', state.tasks);
+          } else if (action.type.startsWith('[Trackplay]')) {
+            void this.#database.save('trackplay', state.trackplay);
+          }
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  // Persist the cash ledger slice on any [Cash] action. Cash is a purpose-built
+  // ledger (not a grocery list), so it gets its own effect rather than joining
+  // saveGroceryOnChange$.
+  saveCashOnChange$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        filter((action: { type: string }) => /^\[Cash\]/.test(action.type)),
+        withLatestFrom(this.#store, (_action, state: IAppState) => state),
+        tap((state) => {
+          void this.#database.save('cash', state.cash);
         })
       );
     },

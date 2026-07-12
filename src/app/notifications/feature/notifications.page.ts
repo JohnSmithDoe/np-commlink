@@ -26,12 +26,12 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
 import { INotification, IonViewWillEnter } from '../../@shared/types';
 import { NotificationService } from '../util/notification.service';
-import { notificationsActions } from '../data/notifications.actions';
+import { NotificationsActions } from '../data/notifications.actions';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,
   selectNewNotifications,
-} from '../data/notifications.selectors';
+} from '../data/notifications.selector';
 
 marker('notifications.action.start');
 marker('notifications.action.stop');
@@ -66,7 +66,7 @@ export class NotificationsPage implements IonViewWillEnter {
   readonly doneCollapsed = this.#store.selectSignal(selectDoneCollapsed);
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(notificationsActions.markPageViewed());
+    this.#store.dispatch(NotificationsActions.markPageViewed());
   }
 
   constructor() {
@@ -88,25 +88,25 @@ export class NotificationsPage implements IonViewWillEnter {
 
   triggerAction(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(notificationsActions.triggerAction(n.id));
+    this.#store.dispatch(NotificationsActions.triggerAction(n.id));
   }
 
   markDone(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(notificationsActions.markDone(n.id));
+    this.#store.dispatch(NotificationsActions.markDone(n.id));
   }
 
   remove(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(notificationsActions.removeNotification(n.id));
+    this.#store.dispatch(NotificationsActions.removeNotification(n.id));
   }
 
   toggleDoneSection() {
-    this.#store.dispatch(notificationsActions.toggleDoneSection());
+    this.#store.dispatch(NotificationsActions.toggleDoneSection());
   }
 
   clearDone() {
-    this.#store.dispatch(notificationsActions.clearDone());
+    this.#store.dispatch(NotificationsActions.clearDone());
   }
 
   fireTestOsNotification() {
@@ -114,7 +114,7 @@ export class NotificationsPage implements IonViewWillEnter {
   }
 
   addDebugNotification() {
-    this.#store.dispatch(notificationsActions.addDebugNotification());
+    this.#store.dispatch(NotificationsActions.addDebugNotification());
   }
 
   actionLabelKey(n: INotification): string {

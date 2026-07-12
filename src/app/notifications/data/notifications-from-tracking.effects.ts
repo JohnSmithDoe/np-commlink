@@ -5,9 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { from, mergeMap, timer, withLatestFrom } from 'rxjs';
 import { IAppState, INotification, ITrackingItem } from '../../@shared/types';
-import { applicationActions } from '../../@shared/data/application.actions';
-import { trackingActions } from '../../tracking/data/tracking.actions';
-import { notificationsActions } from './notifications.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
+import { TrackingActions } from '../../tracking/data/tracking.actions';
+import { NotificationsActions } from './notifications.actions';
 import {
   isTrackingStateNotificationId,
   kindForState,
@@ -37,11 +37,11 @@ export class NotificationsFromTrackingEffects {
   reconcileState$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(
-        trackingActions.toggleTrackingItem,
-        trackingActions.resetTracking,
-        trackingActions.resetAllTracking,
-        trackingActions.saveAndResetTracking,
-        trackingActions.removeItem
+        TrackingActions.toggleTrackingItem,
+        TrackingActions.resetTracking,
+        TrackingActions.resetAllTracking,
+        TrackingActions.saveAndResetTracking,
+        TrackingActions.removeItem
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
@@ -55,7 +55,7 @@ export class NotificationsFromTrackingEffects {
 
   runningUpdates$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(applicationActions.loadedSuccessfully),
+      ofType(ApplicationActions.loadedSuccessfully),
       mergeMap(() =>
         timer(RUNNING_UPDATE_INTERVAL_MS, RUNNING_UPDATE_INTERVAL_MS).pipe(
           withLatestFrom(this.#store, (_, state: IAppState) => state),
@@ -64,7 +64,7 @@ export class NotificationsFromTrackingEffects {
               (i) => i.state === 'running'
             );
             const updates = running.map((item) =>
-              notificationsActions.updateNotificationBody(
+              NotificationsActions.updateNotificationBody(
                 trackingStateNotificationId(item.id),
                 this.#translate.instant(
                   'notifications.tracking.running.update',
@@ -98,7 +98,7 @@ export class NotificationsFromTrackingEffects {
       if (liveItemsById.has(itemId)) {
         itemIdsWithNotification.add(itemId);
       } else {
-        actions.push(notificationsActions.removeNotification(n.id));
+        actions.push(NotificationsActions.removeNotification(n.id));
       }
     }
 
@@ -120,7 +120,7 @@ export class NotificationsFromTrackingEffects {
       const updatedAt =
         isTarget || stateChanged ? now : (existing?.updatedAt ?? now);
       actions.push(
-        notificationsActions.upsertNotification(
+        NotificationsActions.upsertNotification(
           this.#buildNotification(item, newKind, updatedAt)
         )
       );

@@ -68,7 +68,7 @@ export const migrate = (
   // didn't quite land on target), stamp it. For fresh users (settings-page
   // is null) we deliberately do nothing — the reducer's initialState
   // is the single source of truth for defaults, and the first
-  // settingsActions.updateSettings will persist it.
+  // SettingsActions.updateSettings will persist it.
   if (next.settings && next.settings.version !== target) {
     next = {
       ...next,

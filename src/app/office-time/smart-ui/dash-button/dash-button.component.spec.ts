@@ -3,9 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
-import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selectors';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
+import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selector';
 import { DashButtonComponent } from './dash-button.component';
 
 describe('DashButtonComponent', () => {
@@ -37,9 +36,9 @@ describe('DashButtonComponent', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof officeTimeActions.addOfficeTime
+      typeof OfficeTimeActions.addOfficeTime
     >;
-    expect(action.type).toBe(officeTimeActions.addOfficeTime.type);
+    expect(action.type).toBe(OfficeTimeActions.addOfficeTime.type);
     expect(dayjs.isDayjs(action.today)).toBe(true);
   });
 });

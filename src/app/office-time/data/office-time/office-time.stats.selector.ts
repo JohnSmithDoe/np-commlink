@@ -5,7 +5,7 @@ import {
   selectHolidays,
   selectOfficedays,
   selectTargetOfficeDaysPerWeek,
-} from './office-time.selectors';
+} from './office-time.selector';
 import dayjs from 'dayjs';
 
 export const selectTodayIsOfficeDay = createSelector(

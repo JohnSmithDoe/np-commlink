@@ -1,0 +1,29 @@
+<app-item-edit-modal listId="_globals" [listItems]="rxGlobalItems()">
+  <ion-item>
+    <ion-select
+      [label]="'grocery.item.best-before' | translate"
+      interface="popover"
+      [value]="(rxItem())?.bestBeforeTimespan"
+      (ionChange)="setBestBeforeTimespan($event)"
+    >
+      <ion-select-option value="forever">{{ 'grocery.timespan.forever' | translate }}</ion-select-option>
+      <ion-select-option value="days">{{ 'grocery.timespan.days' | translate }}</ion-select-option>
+      <ion-select-option value="weeks">{{ 'grocery.timespan.weeks' | translate }}</ion-select-option>
+      <ion-select-option value="months">{{ 'grocery.timespan.months' | translate }}</ion-select-option>
+      <ion-select-option value="years">{{ 'grocery.timespan.years' | translate }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <app-number-input
+    [disabled]="(rxItem())?.bestBeforeTimespan === 'forever'"
+    [value]="(rxItem())?.bestBeforeTimevalue"
+    (updateValue)="setBestBeforeTimevalue($event)"
+  >
+    <div slot="label">
+      {{ 'grocery.item.best-before' | translate }}
+      <ion-text><small>{{ 'grocery.item.best-before.count' | translate }}</small></ion-text>
+    </div>
+  </app-number-input>
+  <app-category-input
+    [categories]="(rxItem())?.category"
+  ></app-category-input>
+</app-item-edit-modal>

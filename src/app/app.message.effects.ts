@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { tap } from 'rxjs';
 import { UiService } from './@shared/util/ui.service';
-import { trackingActions } from './tracking/data/tracking.actions';
+import { TrackingActions } from './tracking/data/tracking.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AppMessageEffects {
@@ -12,7 +12,7 @@ export class AppMessageEffects {
   savedSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.saveAndResetTracking),
+        ofType(TrackingActions.saveAndResetTracking),
         tap(() => {
           void this.#uiService.showSavedToast();
         })
@@ -24,7 +24,7 @@ export class AppMessageEffects {
   addItemSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.addItem),
+        ofType(TrackingActions.addItem),
         tap(({ item }) => {
           if (!item.name.length) return;
           void this.#uiService.showAddItemToast(item.name);
@@ -37,7 +37,7 @@ export class AppMessageEffects {
   addItemFailure$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.addItemFailure),
+        ofType(TrackingActions.addItemFailure),
         tap(({ item }) => {
           void this.#uiService.showItemContainedToast(item.name);
         })
@@ -49,7 +49,7 @@ export class AppMessageEffects {
   updateItemSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.updateItem),
+        ofType(TrackingActions.updateItem),
         tap(({ item }) => {
           if (!item) return;
           void this.#uiService.showUpdateItemToast(item);
@@ -62,7 +62,7 @@ export class AppMessageEffects {
   removeItemSuccess$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(trackingActions.removeItem),
+        ofType(TrackingActions.removeItem),
         tap(({ item }) => {
           void this.#uiService.showRemoveItemToast(item.name);
         })

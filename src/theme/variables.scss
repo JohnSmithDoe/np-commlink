@@ -226,3 +226,139 @@
   --ion-color-shade: var(--ion-color-commlink-shade);
   --ion-color-tint: var(--ion-color-commlink-tint);
 }
+
+// trackplay (game-score tracker) — one distinct slate blue-grey, sitting
+// between office-time and notifications in the shadowrun slate family.
+:root {
+  --ion-color-trackplay: #3f4f66;
+  --ion-color-trackplay-rgb: 63, 79, 102;
+  --ion-color-trackplay-contrast: #ffffff;
+  --ion-color-trackplay-contrast-rgb: 255, 255, 255;
+  --ion-color-trackplay-shade: #37455a;
+  --ion-color-trackplay-tint: #526175;
+}
+
+.ion-color-trackplay {
+  --ion-color-base: var(--ion-color-trackplay);
+  --ion-color-base-rgb: var(--ion-color-trackplay-rgb);
+  --ion-color-contrast: var(--ion-color-trackplay-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-trackplay-contrast-rgb);
+  --ion-color-shade: var(--ion-color-trackplay-shade);
+  --ion-color-tint: var(--ion-color-trackplay-tint);
+}
+
+// --- Grocery domains (shopping / storage / tasks / globals) ---
+// kitchen-bot shipped a purple/teal set; retuned here into the shadowrun slate
+// family (one distinct blue-grey tint each) so `color="shopping"` etc. read as
+// deck panels. `category` keeps the amber accent. Re-skin audit (plan §47–48)
+// may refine these once the ported pages are on screen.
+:root {
+  --ion-color-shopping: #35485a;
+  --ion-color-shopping-rgb: 53, 72, 90;
+  --ion-color-shopping-contrast: #ffffff;
+  --ion-color-shopping-contrast-rgb: 255, 255, 255;
+  --ion-color-shopping-shade: #2f3f4f;
+  --ion-color-shopping-tint: #495a6b;
+}
+
+.ion-color-shopping {
+  --ion-color-base: var(--ion-color-shopping);
+  --ion-color-base-rgb: var(--ion-color-shopping-rgb);
+  --ion-color-contrast: var(--ion-color-shopping-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-shopping-contrast-rgb);
+  --ion-color-shade: var(--ion-color-shopping-shade);
+  --ion-color-tint: var(--ion-color-shopping-tint);
+}
+
+:root {
+  --ion-color-storage: #2d3f54;
+  --ion-color-storage-rgb: 45, 63, 84;
+  --ion-color-storage-contrast: #ffffff;
+  --ion-color-storage-contrast-rgb: 255, 255, 255;
+  --ion-color-storage-shade: #283747;
+  --ion-color-storage-tint: #425265;
+}
+
+.ion-color-storage {
+  --ion-color-base: var(--ion-color-storage);
+  --ion-color-base-rgb: var(--ion-color-storage-rgb);
+  --ion-color-contrast: var(--ion-color-storage-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-storage-contrast-rgb);
+  --ion-color-shade: var(--ion-color-storage-shade);
+  --ion-color-tint: var(--ion-color-storage-tint);
+}
+
+:root {
+  --ion-color-task: #48546a;
+  --ion-color-task-rgb: 72, 84, 106;
+  --ion-color-task-contrast: #ffffff;
+  --ion-color-task-contrast-rgb: 255, 255, 255;
+  --ion-color-task-shade: #3f4a5d;
+  --ion-color-task-tint: #5a6579;
+}
+
+.ion-color-task {
+  --ion-color-base: var(--ion-color-task);
+  --ion-color-base-rgb: var(--ion-color-task-rgb);
+  --ion-color-contrast: var(--ion-color-task-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-task-contrast-rgb);
+  --ion-color-shade: var(--ion-color-task-shade);
+  --ion-color-tint: var(--ion-color-task-tint);
+}
+
+:root {
+  --ion-color-global: #3a4760;
+  --ion-color-global-rgb: 58, 71, 96;
+  --ion-color-global-contrast: #ffffff;
+  --ion-color-global-contrast-rgb: 255, 255, 255;
+  --ion-color-global-shade: #333e54;
+  --ion-color-global-tint: #4e5a70;
+}
+
+.ion-color-global {
+  --ion-color-base: var(--ion-color-global);
+  --ion-color-base-rgb: var(--ion-color-global-rgb);
+  --ion-color-contrast: var(--ion-color-global-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-global-contrast-rgb);
+  --ion-color-shade: var(--ion-color-global-shade);
+  --ion-color-tint: var(--ion-color-global-tint);
+}
+
+:root {
+  --ion-color-category: #de8b27;
+  --ion-color-category-rgb: 222, 139, 39;
+  --ion-color-category-contrast: #000000;
+  --ion-color-category-contrast-rgb: 0, 0, 0;
+  --ion-color-category-shade: #c37a22;
+  --ion-color-category-tint: #e1973d;
+}
+
+.ion-color-category {
+  --ion-color-base: var(--ion-color-category);
+  --ion-color-base-rgb: var(--ion-color-category-rgb);
+  --ion-color-contrast: var(--ion-color-category-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-category-contrast-rgb);
+  --ion-color-shade: var(--ion-color-category-shade);
+  --ion-color-tint: var(--ion-color-category-tint);
+}
+
+// --- Cash ledger (CREDSTICK) ---
+// A jade-tinted slate so `color="cash"` reads as a distinct deck panel while
+// staying in the shadowrun slate family. Re-skin audit may retune this.
+:root {
+  --ion-color-cash: #2f4a43;
+  --ion-color-cash-rgb: 47, 74, 67;
+  --ion-color-cash-contrast: #ffffff;
+  --ion-color-cash-contrast-rgb: 255, 255, 255;
+  --ion-color-cash-shade: #29413b;
+  --ion-color-cash-tint: #445c56;
+}
+
+.ion-color-cash {
+  --ion-color-base: var(--ion-color-cash);
+  --ion-color-base-rgb: var(--ion-color-cash-rgb);
+  --ion-color-contrast: var(--ion-color-cash-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-cash-contrast-rgb);
+  --ion-color-shade: var(--ion-color-cash-shade);
+  --ion-color-tint: var(--ion-color-cash-tint);
+}

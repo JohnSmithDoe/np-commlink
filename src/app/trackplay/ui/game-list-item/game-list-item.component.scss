@@ -1,0 +1,13 @@
+:host {
+  .second-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .value {
+    font-family: var(--sr-mono);
+    color: var(--sr-text);
+  }
+}

@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { describe, expect, it } from 'vitest';
 import { NpTimeWithUnitPipe } from './np-time-with-unit.pipe';
 
 // The pipe only calls translate.instant(key); a stub that echoes the key lets

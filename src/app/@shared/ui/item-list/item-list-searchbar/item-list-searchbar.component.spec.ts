@@ -1,7 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ItemListSearchbarComponent } from './item-list-searchbar.component';
 
 describe('ItemListSearchbarComponent', () => {

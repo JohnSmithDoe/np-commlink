@@ -1,0 +1,71 @@
+<app-page-header
+  label="trackplay.page-title.games"
+  icon="dice-outline"
+  color="trackplay"
+  (addItem)="newGame()"
+>
+  <ion-button slot="end" toolbar routerLink="/trackplay/players" color="primary">
+    <ion-icon slot="icon-only" name="people-outline" />
+  </ion-button>
+  <ion-button
+    slot="end"
+    toolbar
+    routerLink="/trackplay/game-types"
+    color="primary"
+  >
+    <ion-icon slot="icon-only" name="dice-outline" />
+  </ion-button>
+  <ion-button
+    slot="end"
+    toolbar
+    (click)="openSettings($event)"
+    [color]="settingsActive() ? 'warning' : 'primary'"
+  >
+    <ion-icon slot="icon-only" name="options-outline" />
+  </ion-button>
+</app-page-header>
+
+<ion-content>
+  <p class="sr-hud ion-padding-horizontal">
+    {{ 'trackplay.list-header.games' | translate }} ({{ shownCount() }} /
+    {{ totalCount() }})
+  </p>
+  <ion-list #list>
+    @if (runningGames().length) {
+      <ion-item-divider>
+        <ion-label>{{
+          'trackplay.list-header.running-games' | translate
+        }}</ion-label>
+      </ion-item-divider>
+      @for (game of runningGames(); track game.id) {
+        <app-trackplay-game-list-item
+          [game]="game"
+          [typeName]="typeName(game)"
+          [disabled]="game.players.length <= 0"
+          [ionList]="list"
+          (selectGame)="goToGame(game.id)"
+          (editGame)="openGameEdit(game)"
+          (deleteGame)="deleteGame(game)"
+        />
+      }
+    }
+    @if (endedGames().length) {
+      <ion-item-divider>
+        <ion-label>{{
+          'trackplay.list-header.ended-games' | translate
+        }}</ion-label>
+      </ion-item-divider>
+      @for (game of endedGames(); track game.id) {
+        <app-trackplay-game-list-item
+          [game]="game"
+          [typeName]="typeName(game)"
+          [disabled]="game.players.length <= 0"
+          [ionList]="list"
+          (selectGame)="goToGame(game.id)"
+          (editGame)="openGameEdit(game)"
+          (deleteGame)="deleteGame(game)"
+        />
+      }
+    }
+  </ion-list>
+</ion-content>

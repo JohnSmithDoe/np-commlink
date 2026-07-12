@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, tap, withLatestFrom } from 'rxjs';
 import { DatabaseService } from '../../../@shared/util/database.service';
-import { settingsActions } from './settings.actions';
+import { SettingsActions } from './settings.actions';
 import { selectSettingsState } from './settings.selector';
 
 @Injectable({ providedIn: 'root' })
@@ -13,10 +13,10 @@ export class SettingsEffects {
   #database = inject(DatabaseService);
   toggleFlag$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(settingsActions.toggleFlag),
+      ofType(SettingsActions.toggleFlag),
       withLatestFrom(this.#store.select(selectSettingsState)),
       map(([{ flag }, settings]) =>
-        settingsActions.updateSettings({
+        SettingsActions.updateSettings({
           ...settings,
           [flag]: !settings[flag],
         })
@@ -27,7 +27,7 @@ export class SettingsEffects {
   saveSettingsOnChange$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(settingsActions.updateSettings),
+        ofType(SettingsActions.updateSettings),
         tap(({ settings }) => {
           void this.#database.save('settings', settings);
         })

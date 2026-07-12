@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
 import { DatetimeCustomEvent } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import {
   dayjsFromString,
   dayjsToString,
@@ -66,6 +66,6 @@ export class DashOfficeDaysEditComponent {
       .filter((date): date is string => !!date)
       .map(dayjsFromString)
       .filter((day): day is Dayjs => day !== null);
-    this.#store.dispatch(officeTimeActions.setOfficedays(dates));
+    this.#store.dispatch(OfficeTimeActions.setOfficedays(dates));
   }
 }

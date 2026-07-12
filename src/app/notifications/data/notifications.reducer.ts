@@ -1,8 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { INotification, INotificationsState } from '../../@shared/types';
-import { applicationActions } from '../../@shared/data/application.actions';
-import { notificationsActions } from './notifications.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
+import { NotificationsActions } from './notifications.actions';
 
 // Epoch initial value: never been viewed, so any updatedAt > epoch counts
 // as unread for badge purposes. Overwritten the first time the page opens.
@@ -34,21 +34,21 @@ const patchById = (
 export const notificationsReducer = createReducer(
   initialNotificationsState,
   on(
-    notificationsActions.addNotification,
+    NotificationsActions.addNotification,
     (state, { notification }): INotificationsState => ({
       ...state,
       items: upsert(state.items, notification),
     })
   ),
   on(
-    notificationsActions.upsertNotification,
+    NotificationsActions.upsertNotification,
     (state, { notification }): INotificationsState => ({
       ...state,
       items: upsert(state.items, notification),
     })
   ),
   on(
-    notificationsActions.updateNotificationBody,
+    NotificationsActions.updateNotificationBody,
     (state, { id, body }): INotificationsState => ({
       ...state,
       // Body refresh from the periodic tick — deliberately does NOT touch
@@ -56,7 +56,7 @@ export const notificationsReducer = createReducer(
       items: patchById(state.items, id, (n) => ({ ...n, body })),
     })
   ),
-  on(notificationsActions.markDone, (state, { id }): INotificationsState => ({
+  on(NotificationsActions.markDone, (state, { id }): INotificationsState => ({
     ...state,
     items: patchById(state.items, id, (n) => ({
       ...n,
@@ -64,7 +64,7 @@ export const notificationsReducer = createReducer(
       updatedAt: dayjs().format(),
     })),
   })),
-  on(notificationsActions.markNew, (state, { id }): INotificationsState => ({
+  on(NotificationsActions.markNew, (state, { id }): INotificationsState => ({
     ...state,
     items: patchById(state.items, id, (n) => ({
       ...n,
@@ -73,26 +73,26 @@ export const notificationsReducer = createReducer(
     })),
   })),
   on(
-    notificationsActions.removeNotification,
+    NotificationsActions.removeNotification,
     (state, { id }): INotificationsState => ({
       ...state,
       items: state.items.filter((n) => n.id !== id),
     })
   ),
-  on(notificationsActions.clearDone, (state): INotificationsState => ({
+  on(NotificationsActions.clearDone, (state): INotificationsState => ({
     ...state,
     items: state.items.filter((n) => n.status !== 'done'),
   })),
-  on(notificationsActions.toggleDoneSection, (state): INotificationsState => ({
+  on(NotificationsActions.toggleDoneSection, (state): INotificationsState => ({
     ...state,
     doneCollapsed: !state.doneCollapsed,
   })),
-  on(notificationsActions.markPageViewed, (state): INotificationsState => ({
+  on(NotificationsActions.markPageViewed, (state): INotificationsState => ({
     ...state,
     lastViewedAt: dayjs().format(),
   })),
   on(
-    applicationActions.loadedSuccessfully,
+    ApplicationActions.loadedSuccessfully,
     (state, { datastore }): INotificationsState => {
       const loaded = datastore.notifications;
       if (!loaded) return state;

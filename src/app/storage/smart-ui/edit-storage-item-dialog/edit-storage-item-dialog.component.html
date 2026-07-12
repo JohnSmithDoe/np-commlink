@@ -1,0 +1,17 @@
+<app-item-edit-modal listId="_storage" [listItems]="rxStorageItems()">
+  <app-number-input
+    [label]="'grocery.item.min-amount' | translate"
+    [value]="(rxItem())?.minAmount ?? undefined"
+    (updateValue)="updateMinAmount($event)"
+  ></app-number-input>
+
+  <app-date-input
+    [label]="'grocery.edit.item.dialog.mhd' | translate"
+    [value]="(rxItem())?.bestBefore"
+    (updateValue)="updateBestBefore($event)"
+  ></app-date-input>
+
+  <app-category-input
+    [categories]="(rxItem())?.category"
+  ></app-category-input>
+</app-item-edit-modal>

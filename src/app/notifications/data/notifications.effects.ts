@@ -4,8 +4,8 @@ import { Store } from '@ngrx/store';
 import { EMPTY, from, mergeMap, of, withLatestFrom } from 'rxjs';
 import dayjs from 'dayjs';
 import { IAppState, INotification, ITrackingItem } from '../../@shared/types';
-import { trackingActions } from '../../tracking/data/tracking.actions';
-import { notificationsActions } from './notifications.actions';
+import { TrackingActions } from '../../tracking/data/tracking.actions';
+import { NotificationsActions } from './notifications.actions';
 import { uuidv4 } from '../../@shared/util/app.utils';
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +15,7 @@ export class NotificationsEffects {
 
   triggerAction$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(notificationsActions.triggerAction),
+      ofType(NotificationsActions.triggerAction),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
@@ -27,21 +27,21 @@ export class NotificationsEffects {
         if (!notification?.action) return EMPTY;
         const trackingItemId = notification.action.trackingItemId;
         const item = state.tracking.items.find((i) => i.id === trackingItemId);
-        if (!item) return of(notificationsActions.markDone(notification.id));
+        if (!item) return of(NotificationsActions.markDone(notification.id));
 
         // toggleTrackingItem looks at item.state: 'running' → stop, else start.
         // The CTA tells us which side of the toggle the user wants, so we
         // flip the state hint to force the matching branch in the reducer.
         const hintState: ITrackingItem['state'] =
           notification.action.type === 'tracking.start' ? 'stopped' : 'running';
-        const triggered = trackingActions.toggleTrackingItem(
+        const triggered = TrackingActions.toggleTrackingItem(
           { ...item, state: hintState },
           dayjs().format()
         );
 
         return from([
           triggered,
-          notificationsActions.markDone(notification.id),
+          NotificationsActions.markDone(notification.id),
         ]);
       })
     );
@@ -49,7 +49,7 @@ export class NotificationsEffects {
 
   addDebugNotification$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(notificationsActions.addDebugNotification),
+      ofType(NotificationsActions.addDebugNotification),
       withLatestFrom(this.#store, (_, state: IAppState) => state),
       mergeMap((state) => {
         const items = state.tracking.items;
@@ -105,7 +105,7 @@ export class NotificationsEffects {
           trackingItemId: item?.id,
           action: item ? { type, trackingItemId: item.id } : undefined,
         };
-        return of(notificationsActions.addNotification(notification));
+        return of(NotificationsActions.addNotification(notification));
       })
     );
   });

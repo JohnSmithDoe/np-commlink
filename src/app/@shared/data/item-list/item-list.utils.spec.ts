@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { IListState, ITrackingItem } from '../../types';
 import {
   addListItem,
@@ -18,6 +17,8 @@ const item = (id: string, name: string): ITrackingItem => ({
 const list = (items: ITrackingItem[]): IListState<ITrackingItem> => ({
   title: 'list',
   items,
+  categories: [],
+  mode: 'alphabetical',
 });
 
 describe('item-list.utils', () => {

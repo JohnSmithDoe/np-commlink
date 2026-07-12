@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { IListState, ITrackingItem } from '../../types';
 import {
   filterAndSortItemList,
@@ -16,7 +15,13 @@ const item = (id: string, name: string): ITrackingItem => ({
 const list = (
   items: ITrackingItem[],
   extra: Partial<IListState<ITrackingItem>> = {}
-): IListState<ITrackingItem> => ({ title: 'list', items, ...extra });
+): IListState<ITrackingItem> => ({
+  title: 'list',
+  items,
+  categories: [],
+  mode: 'alphabetical',
+  ...extra,
+});
 
 describe('item-list.selector', () => {
   describe('filterBySearchQuery', () => {

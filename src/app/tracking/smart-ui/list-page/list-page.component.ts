@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, bagAdd, clipboard, remove, settingsSharp } from 'ionicons/icons';
 import { IAppState, TItemListSortType } from '../../../@shared/types';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
 import { ItemListEmptyComponent } from '../../../@shared/ui/item-list/item-list-empty/item-list-empty.component';
 import { ItemListSearchbarComponent } from '../../../@shared/ui/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../../@shared/ui/item-list/item-list-toolbar/item-list-toolbar.component';
@@ -25,7 +25,7 @@ import {
   selectListSearchResult,
   selectListState,
 } from '../../../@shared/data/item-list/item-list.selector';
-import { itemListActions } from '../../../@shared/data/item-list/item-list.actions';
+import { ItemListActions } from '../../../@shared/data/item-list/item-list.actions';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -64,18 +64,18 @@ export class ListPageComponent {
   }
 
   addItemFromSearch() {
-    this.#store.dispatch(itemListActions.addItemFromSearch());
+    this.#store.dispatch(ItemListActions.addItemFromSearch());
   }
 
   searchFor(searchTerm?: string) {
-    this.#store.dispatch(itemListActions.updateSearch(searchTerm));
+    this.#store.dispatch(ItemListActions.updateSearch(searchTerm));
   }
 
   setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(itemListActions.updateSort(type, 'toggle'));
+    this.#store.dispatch(ItemListActions.updateSort(type, 'toggle'));
   }
 
   showCreateDialog() {
-    this.#store.dispatch(dialogsActions.showCreateDialogWithSearch());
+    this.#store.dispatch(DialogsActions.showCreateDialogWithSearch());
   }
 }

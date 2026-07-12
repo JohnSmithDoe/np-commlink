@@ -13,11 +13,11 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import { beer, business } from 'ionicons/icons';
-import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selectors';
+import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selector';
 import { dayjsToday } from '../../data/office-time/office-time.utils';
 
 @Component({
@@ -46,6 +46,6 @@ export class DashButtonComponent {
   }
 
   addOfficeDay() {
-    this.#store.dispatch(officeTimeActions.addOfficeTime(dayjsToday()));
+    this.#store.dispatch(OfficeTimeActions.addOfficeTime(dayjsToday()));
   }
 }

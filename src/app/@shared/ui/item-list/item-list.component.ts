@@ -9,18 +9,17 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ItemReorderEventDetail } from '@ionic/angular';
 import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonReorderGroup,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
-import { IBaseItem } from '../../types';
+import { IBaseItem, TColor, TItemListCategory } from '../../types';
+import { CategoryItemComponent } from '../category-item/category-item.component';
 
 export type ItemListTemplateContext = {
   $implicit: IBaseItem;
@@ -35,12 +34,12 @@ export type ItemListTemplateContext = {
   imports: [
     IonToolbar,
     IonList,
-    IonReorderGroup,
     IonLabel,
     IonListHeader,
     NgTemplateOutlet,
     FormsModule,
     TranslateModule,
+    CategoryItemComponent,
   ],
 })
 export class ItemListComponent {
@@ -50,12 +49,19 @@ export class ItemListComponent {
     input.required<TemplateRef<ItemListTemplateContext>>();
   readonly items = input.required<(Array<IBaseItem> | null) | undefined>();
   readonly header = input<string>();
+  readonly headerColor = input<TColor>();
   readonly listHeader = input<boolean, unknown>(false, {
     transform: booleanAttribute,
   });
-  readonly reorderDisabled = input(true);
+  // Grocery lists render either a flat item list or a category overview.
+  readonly categories = input<ReadonlyArray<{
+    category: TItemListCategory;
+    count: number;
+  }> | null>();
+  readonly mode = input<'alphabetical' | 'categories'>('alphabetical');
 
-  readonly reorder = output<ItemReorderEventDetail>();
+  readonly selectCategory = output<TItemListCategory>();
+  readonly deleteCategory = output<TItemListCategory>();
 
   constructor() {
     addIcons({ add, remove, cart, list });
@@ -63,11 +69,5 @@ export class ItemListComponent {
 
   async closeSlidingItems() {
     await this.ionList()?.closeSlidingItems();
-  }
-
-  async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-    this.reorder.emit(ev.detail);
-    // Finish the reorder and position the item in the DOM
-    ev.detail.complete();
   }
 }

@@ -1,12 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright end-to-end configuration for np-kitchen-bot.
+ * Playwright end-to-end configuration for np-commlink.
  *
  * The suite drives the web build of the Ionic app via `ng serve` (dev
- * configuration — the production build tree-shakes the modals away, see
- * README). A single Chromium project with a mobile viewport mirrors the
- * primary Capacitor/Android target.
+ * configuration). A single Chromium project with a mobile viewport mirrors the
+ * primary Capacitor/Android target. Routes are reached by hash URLs
+ * (`withHashLocation()`), e.g. `/#/storage/_storage`.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -38,7 +38,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'pnpm start -- --port 4321',
+    command: 'pnpm exec ng serve --port 4321',
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env['CI'],
     timeout: 180_000,

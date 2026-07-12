@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { ITrackingItem } from '../../@shared/types';
-import { applicationActions } from '../../@shared/data/application.actions';
-import { trackingActions } from './tracking.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
+import { TrackingActions } from './tracking.actions';
 import { initialState, trackingReducer } from './tracking.reducer';
 
 const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
@@ -18,13 +17,13 @@ describe('trackingReducer', () => {
   it('adds, updates, removes and searches list items', () => {
     const added = trackingReducer(
       initialState,
-      trackingActions.addItem(track({ id: 'a', name: 'A' }))
+      TrackingActions.addItem(track({ id: 'a', name: 'A' }))
     );
     expect(added.items.map((i) => i.id)).toEqual(['a']);
 
     const updated = trackingReducer(
       added,
-      trackingActions.updateItem({
+      TrackingActions.updateItem({
         id: 'a',
         name: 'A2',
         createdAt: '2026-01-01',
@@ -34,13 +33,13 @@ describe('trackingReducer', () => {
 
     const removed = trackingReducer(
       updated,
-      trackingActions.removeItem(track({ id: 'a' }))
+      TrackingActions.removeItem(track({ id: 'a' }))
     );
     expect(removed.items).toHaveLength(0);
 
     const searched = trackingReducer(
       initialState,
-      trackingActions.updateSearch('foo')
+      TrackingActions.updateSearch('foo')
     );
     expect(searched.searchQuery).toBe('foo');
   });
@@ -55,7 +54,7 @@ describe('trackingReducer', () => {
       ]);
       const next = trackingReducer(
         state,
-        trackingActions.toggleTrackingItem(track({ id: 'a' }), now)
+        TrackingActions.toggleTrackingItem(track({ id: 'a' }), now)
       );
 
       const a = next.items.find((i) => i.id === 'a')!;
@@ -73,7 +72,7 @@ describe('trackingReducer', () => {
       ]);
       const next = trackingReducer(
         state,
-        trackingActions.toggleTrackingItem(
+        TrackingActions.toggleTrackingItem(
           track({ id: 'a', state: 'running' }),
           now
         )
@@ -95,7 +94,7 @@ describe('trackingReducer', () => {
     ]);
     const next = trackingReducer(
       state,
-      trackingActions.updateTracking(track({ id: 'a' }), '2026-06-01T10:00:00')
+      TrackingActions.updateTracking(track({ id: 'a' }), '2026-06-01T10:00:00')
     );
     // 3600s running - 600s break = 3000s
     expect(next.items[0].trackedTimeInSeconds).toBe(3000);
@@ -119,14 +118,14 @@ describe('trackingReducer', () => {
 
     const one = trackingReducer(
       state,
-      trackingActions.resetTracking(track({ id: 'a' }))
+      TrackingActions.resetTracking(track({ id: 'a' }))
     );
     expect(
       one.items.find((i) => i.id === 'a')!.trackedTimeInSeconds
     ).toBeUndefined();
     expect(one.items.find((i) => i.id === 'b')!.trackedTimeInSeconds).toBe(5);
 
-    const all = trackingReducer(state, trackingActions.resetAllTracking());
+    const all = trackingReducer(state, TrackingActions.resetAllTracking());
     expect(all.items.every((i) => i.state === 'stopped' && !i.startTime)).toBe(
       true
     );
@@ -143,7 +142,7 @@ describe('trackingReducer', () => {
       }),
       track({ id: 'b', name: 'Untouched', state: 'stopped' }),
     ]);
-    const next = trackingReducer(state, trackingActions.saveAndResetTracking());
+    const next = trackingReducer(state, TrackingActions.saveAndResetTracking());
 
     expect(next.data).toHaveLength(1);
     expect(next.data[0].name).toBe('Started');
@@ -156,7 +155,7 @@ describe('trackingReducer', () => {
   it('changes the data view and removes archived data items', () => {
     const view = trackingReducer(
       initialState,
-      trackingActions.changeDataView('monthly')
+      TrackingActions.changeDataView('monthly')
     );
     expect(view.dataViewId).toBe('monthly');
 
@@ -166,7 +165,7 @@ describe('trackingReducer', () => {
     };
     const removed = trackingReducer(
       withData,
-      trackingActions.removeDataItem({ id: 'd1', name: 'Task' })
+      TrackingActions.removeDataItem({ id: 'd1', name: 'Task' })
     );
     expect(removed.data.map((i) => i.id)).toEqual(['d2']);
   });
@@ -174,7 +173,7 @@ describe('trackingReducer', () => {
   it('sets the sort descriptor', () => {
     const next = trackingReducer(
       initialState,
-      trackingActions.updateSort('name', 'asc')
+      TrackingActions.updateSort('name', 'asc')
     );
     expect(next.sort).toEqual({ sortBy: 'name', sortDir: 'asc' });
   });
@@ -182,7 +181,7 @@ describe('trackingReducer', () => {
   it('hydrates from the datastore and forces the today view', () => {
     const next = trackingReducer(
       initialState,
-      applicationActions.loadedSuccessfully({
+      ApplicationActions.loadedSuccessfully({
         tracking: {
           title: 'Time tracking',
           items: [track({ id: 'a' })],

@@ -1,0 +1,29 @@
+<app-page-header
+  label="trackplay.page-title.players"
+  icon="people-outline"
+  color="trackplay"
+  (addItem)="newPlayer()"
+>
+  <ion-button slot="end" toolbar (click)="openSettings($event)" color="primary">
+    <ion-icon slot="icon-only" name="options-outline" />
+  </ion-button>
+</app-page-header>
+
+<ion-content>
+  <p class="sr-hud ion-padding-horizontal">
+    {{ 'trackplay.list-header.players' | translate }} ({{ shown() }} /
+    {{ total() }})
+  </p>
+  <ion-list #list>
+    @for (player of rxPlayers(); track player.id) {
+      <app-trackplay-player-list-item
+        [player]="player"
+        [stats]="statsFor(player)"
+        [ionList]="list"
+        (selectPlayer)="goToPlayer(player.id)"
+        (editPlayer)="openPlayerEdit(player)"
+        (deletePlayer)="deletePlayer(player)"
+      />
+    }
+  </ion-list>
+</ion-content>

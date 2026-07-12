@@ -2,8 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
 import {
   selectEditItem,
   selectEditState,
@@ -40,9 +39,9 @@ describe('ItemEditModalComponent', () => {
     expect(
       dispatch.mock.calls.map((c) => (c[0] as unknown as { type: string }).type)
     ).toEqual([
-      dialogsActions.abortChanges.type,
-      dialogsActions.hideDialog.type,
-      dialogsActions.confirmChanges.type,
+      DialogsActions.abortChanges.type,
+      DialogsActions.hideDialog.type,
+      DialogsActions.confirmChanges.type,
     ]);
   });
 
@@ -52,9 +51,9 @@ describe('ItemEditModalComponent', () => {
     component.updateName('Groceries');
 
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof dialogsActions.updateItem
+      typeof DialogsActions.updateItem
     >;
-    expect(action.type).toBe(dialogsActions.updateItem.type);
+    expect(action.type).toBe(DialogsActions.updateItem.type);
     expect(action.data).toEqual({ name: 'Groceries' });
   });
 });

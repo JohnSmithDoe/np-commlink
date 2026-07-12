@@ -2,8 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import { DashFreedaysEditComponent } from './dash-freedays-edit.component';
 
 describe('DashFreedaysEditComponent', () => {
@@ -29,9 +28,9 @@ describe('DashFreedaysEditComponent', () => {
     } as never);
 
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof officeTimeActions.setFreedays
+      typeof OfficeTimeActions.setFreedays
     >;
-    expect(action.type).toBe(officeTimeActions.setFreedays.type);
+    expect(action.type).toBe(OfficeTimeActions.setFreedays.type);
     expect(action.freedays).toEqual(['2026-07-01', '2026-07-02']);
   });
 
@@ -43,7 +42,7 @@ describe('DashFreedaysEditComponent', () => {
     } as never);
 
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof officeTimeActions.setFreedays
+      typeof OfficeTimeActions.setFreedays
     >;
     expect(action.freedays).toEqual(['2026-07-01']);
   });

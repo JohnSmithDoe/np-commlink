@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { LoadedDatastore } from '../types';
 import { migrate, VERSION } from './migrations';
 

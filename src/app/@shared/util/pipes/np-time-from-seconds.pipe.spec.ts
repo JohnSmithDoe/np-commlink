@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { NpTimeFromSecondsPipe } from './np-time-from-seconds.pipe';
 
 describe('NpTimeFromSecondsPipe', () => {

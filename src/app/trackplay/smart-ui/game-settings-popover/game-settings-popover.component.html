@@ -1,0 +1,115 @@
+<ion-content>
+  <ion-list lines="full">
+    @if (isPlayers()) {
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          label="{{ 'trackplay.settings.search' | translate }}"
+          [clearInput]="true"
+          [value]="playersConfig().filter"
+          (ionInput)="setPlayersFilter($any($event.target).value ?? '')"
+        />
+      </ion-item>
+      <ion-item>
+        <ion-select
+          label="{{ 'trackplay.settings.direction' | translate }}"
+          [value]="playersConfig().dir"
+          (ionChange)="setPlayersDir($any($event).detail.value)"
+        >
+          <ion-select-option value="asc">{{
+            'trackplay.settings.asc' | translate
+          }}</ion-select-option>
+          <ion-select-option value="desc">{{
+            'trackplay.settings.desc' | translate
+          }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-select
+          label="{{ 'trackplay.settings.sort-by' | translate }}"
+          [value]="playersConfig().sort"
+          (ionChange)="setPlayersSort($any($event).detail.value)"
+        >
+          <ion-select-option value="name">{{
+            'trackplay.settings.by-name' | translate
+          }}</ion-select-option>
+          <ion-select-option value="date">{{
+            'trackplay.settings.by-date' | translate
+          }}</ion-select-option>
+          <ion-select-option value="last">{{
+            'trackplay.settings.by-last' | translate
+          }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    } @else {
+      <ion-item>
+        <ion-toggle
+          slot="start"
+          color="trackplay"
+          [checked]="gamesConfig().showEndedGames"
+          (ionChange)="setShowEnded($any($event).detail.checked)"
+        />
+        <ion-label>{{ 'trackplay.settings.show-ended' | translate }}</ion-label>
+      </ion-item>
+      @if (mode === 'games') {
+        <ion-item>
+          <ion-select
+            labelPlacement="stacked"
+            label="{{ 'trackplay.settings.game-type' | translate }}"
+            [value]="gamesConfig().typeId"
+            (ionChange)="setTypeId($any($event).detail.value)"
+          >
+            <ion-select-option value="">{{
+              'trackplay.settings.all' | translate
+            }}</ion-select-option>
+            @for (type of rxGameTypes(); track type.id) {
+              <ion-select-option [value]="type.id">{{
+                type.name
+              }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            labelPlacement="stacked"
+            label="{{ 'trackplay.settings.search' | translate }}"
+            [clearInput]="true"
+            [value]="gamesConfig().filter"
+            (ionInput)="setGamesFilter($any($event.target).value ?? '')"
+          />
+        </ion-item>
+      }
+      <ion-item>
+        <ion-select
+          label="{{ 'trackplay.settings.direction' | translate }}"
+          [value]="gamesConfig().dir"
+          (ionChange)="setGamesDir($any($event).detail.value)"
+        >
+          <ion-select-option value="asc">{{
+            'trackplay.settings.asc' | translate
+          }}</ion-select-option>
+          <ion-select-option value="desc">{{
+            'trackplay.settings.desc' | translate
+          }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-select
+          label="{{ 'trackplay.settings.sort-by' | translate }}"
+          [value]="gamesConfig().sort"
+          (ionChange)="setGamesSort($any($event).detail.value)"
+        >
+          <ion-select-option value="name">{{
+            'trackplay.settings.by-name' | translate
+          }}</ion-select-option>
+          <ion-select-option value="date">{{
+            'trackplay.settings.by-date' | translate
+          }}</ion-select-option>
+          <ion-select-option value="updated">{{
+            'trackplay.settings.by-updated' | translate
+          }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    }
+  </ion-list>
+</ion-content>

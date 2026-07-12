@@ -8,9 +8,12 @@
 # You can see what browsers were selected by your queries by running:
 #   npx browserslist
 
-Chrome >=100
-ChromeAndroid >=100
-Firefox >=100
-Edge >=100
-Safari >=16
-iOS >=16
+# NOTE: valid browserslist syntax is `last N <Browser> versions` — the
+# kitchen-bot original used the invalid `<Browser> latest N versions`, which
+# hard-fails the esbuild target parser ("Unknown browser query").
+last 2 Chrome versions
+last 2 ChromeAndroid versions
+last 2 Firefox versions
+last 2 Edge versions
+last 2 Safari versions
+last 2 iOS versions

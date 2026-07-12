@@ -18,11 +18,11 @@ import { AlertButton, ToggleChangeEventDetail } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { officeTimeActions } from '../../data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import {
   selectDashboardSettings,
   selectTargetOfficeDaysPerWeek,
-} from '../../data/office-time/office-time.selectors';
+} from '../../data/office-time/office-time.selector';
 
 @Component({
   selector: 'app-page-settings',
@@ -78,7 +78,7 @@ export class SettingsPage {
 
   changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {
     this.#store.dispatch(
-      officeTimeActions.saveDashboardSettings(
+      OfficeTimeActions.saveDashboardSettings(
         $event.detail.value,
         $event.detail.checked
       )
@@ -87,11 +87,11 @@ export class SettingsPage {
 
   changeTargetOfficeDaysPerWeek($event: CustomEvent<{ value: number }>) {
     this.#store.dispatch(
-      officeTimeActions.saveTargetOfficeDaysPerWeek($event.detail.value)
+      OfficeTimeActions.saveTargetOfficeDaysPerWeek($event.detail.value)
     );
   }
 
   resetData() {
-    this.#store.dispatch(officeTimeActions.resetData());
+    this.#store.dispatch(OfficeTimeActions.resetData());
   }
 }

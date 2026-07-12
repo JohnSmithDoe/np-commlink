@@ -2,7 +2,7 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import { DashboardSettingsType } from '../../../@shared/types';
 
-export const officeTimeActions = createActionGroup({
+export const OfficeTimeActions = createActionGroup({
   source: 'Office Time',
   events: {
     'Init Office Time': emptyProps(),

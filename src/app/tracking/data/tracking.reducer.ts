@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { ITrackingItem, ITrackingState, TTimestamp } from '../../@shared/types';
-import { applicationActions } from '../../@shared/data/application.actions';
-import { trackingActions } from './tracking.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
+import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';
 import {
   addListItem,
@@ -14,6 +14,10 @@ import { uuidv4 } from '../../@shared/util/app.utils';
 export const initialState: ITrackingState = {
   title: 'Time tracking',
   items: [],
+  // categories/mode are required by the shared IItemList base (grocery lists
+  // use them); the tracking list keeps an empty set and the default mode.
+  categories: [],
+  mode: 'alphabetical',
   data: [],
   dataViewId: 'all',
 };
@@ -159,20 +163,20 @@ const saveAndReset = (state: ITrackingState): ITrackingState => {
 
 export const trackingReducer = createReducer(
   initialState,
-  on(trackingActions.addItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.addItem, (state, { item }): ITrackingState =>
     addListItem(state, item)
   ),
-  on(trackingActions.removeItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.removeItem, (state, { item }): ITrackingState =>
     removeListItem(state, item)
   ),
-  on(trackingActions.updateItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.updateItem, (state, { item }): ITrackingState =>
     updateListItem(state, item)
   ),
-  on(trackingActions.updateSearch, (state, { searchQuery }): ITrackingState =>
+  on(TrackingActions.updateSearch, (state, { searchQuery }): ITrackingState =>
     searchQuery === state.searchQuery ? state : { ...state, searchQuery }
   ),
   on(
-    trackingActions.toggleTrackingItem,
+    TrackingActions.toggleTrackingItem,
     (state, { item, now }): ITrackingState => {
       if (item.state !== 'running') {
         return startTracking(state, item, now);
@@ -181,27 +185,27 @@ export const trackingReducer = createReducer(
       }
     }
   ),
-  on(trackingActions.resetTracking, (state, { item }): ITrackingState => {
+  on(TrackingActions.resetTracking, (state, { item }): ITrackingState => {
     return resetTracking(state, item);
   }),
-  on(trackingActions.resetAllTracking, (state): ITrackingState => {
+  on(TrackingActions.resetAllTracking, (state): ITrackingState => {
     return resetTracking(state);
   }),
-  on(trackingActions.saveAndResetTracking, (state): ITrackingState => {
+  on(TrackingActions.saveAndResetTracking, (state): ITrackingState => {
     return saveAndReset(state);
   }),
-  on(trackingActions.generateDummyData, (state): ITrackingState => {
+  on(TrackingActions.generateDummyData, (state): ITrackingState => {
     return generateDummyData(state);
   }),
-  on(trackingActions.updateTracking, (state, { item, now }): ITrackingState => {
+  on(TrackingActions.updateTracking, (state, { item, now }): ITrackingState => {
     return updateTracking(state, item, now);
   }),
 
-  on(trackingActions.changeDataView, (state, { viewId }): ITrackingState => {
+  on(TrackingActions.changeDataView, (state, { viewId }): ITrackingState => {
     return { ...state, dataViewId: viewId };
   }),
 
-  on(trackingActions.removeDataItem, (state, { item }): ITrackingState => {
+  on(TrackingActions.removeDataItem, (state, { item }): ITrackingState => {
     return {
       ...state,
       data: state.data.filter((aitem) => aitem.id !== item.id),
@@ -209,7 +213,7 @@ export const trackingReducer = createReducer(
   }),
 
   on(
-    trackingActions.updateSort,
+    TrackingActions.updateSort,
     (state, { sortBy, sortDir }): ITrackingState => ({
       ...state,
       sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),
@@ -217,7 +221,7 @@ export const trackingReducer = createReducer(
   ),
 
   on(
-    applicationActions.loadedSuccessfully,
+    ApplicationActions.loadedSuccessfully,
     (_state, { datastore }): ITrackingState => {
       return {
         ...(datastore.tracking ?? _state),

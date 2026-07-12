@@ -2,7 +2,7 @@
   <ion-menu contentId="main-content">
     <ion-header>
       <ion-toolbar>
-        <ion-title>np-time-tracker</ion-title>
+        <ion-title>commlink</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -79,6 +79,93 @@
             >
               <ion-icon slot="start" name="barcode-outline" />
               <ion-label>{{ 'page-title.barcode' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/shopping/_shopping"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="cart-outline" />
+              <ion-label>{{
+                'grocery.page-title.shopping' | translate
+              }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/storage/_storage"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="file-tray-stacked-outline" />
+              <ion-label>{{
+                'grocery.page-title.storage' | translate
+              }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/tasks/_tasks"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="checkbox-outline" />
+              <ion-label>{{
+                'grocery.page-title.tasks' | translate
+              }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/database/_globals"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="pricetags-outline" />
+              <ion-label>{{
+                'grocery.page-title.globals' | translate
+              }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/list-settings"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="options-outline" />
+              <ion-label>{{
+                'grocery.page-title.settings' | translate
+              }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/cash"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="wallet-outline" />
+              <ion-label>{{ 'cash.page-title.cash' | translate }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-item
+              [button]="true"
+              routerLink="/trackplay"
+              color="commlink"
+              lines="none"
+            >
+              <ion-icon slot="start" name="dice-outline" />
+              <ion-label>{{ 'trackplay.page-title.games' | translate }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
         </ion-list>

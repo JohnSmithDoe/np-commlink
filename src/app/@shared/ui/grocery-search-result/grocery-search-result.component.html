@@ -1,0 +1,60 @@
+<!--  global search result-->
+@if (results?.globalItems?.length) {
+  <app-item-list
+    header="{{ 'grocery.list-header.global.search' | translate }}"
+    headerColor="global"
+    [listHeader]="true"
+    [items]="results?.globalItems ?? []"
+    [itemTemplate]="globalItem"
+  ></app-item-list>
+  <ng-template #globalItem let-item>
+    <app-text-item
+      color="global"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'grocery.item-helper.search' | translate"
+      (selectItem)="selectGlobalItem.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}
+<!--  shopping search result-->
+@if (results?.shoppingItems?.length) {
+  <app-item-list
+    header="{{ 'grocery.list-header.shopping.search' | translate }}"
+    headerColor="shopping"
+    [listHeader]="true"
+    [items]="results?.shoppingItems ?? []"
+    [itemTemplate]="shoppingItem"
+  ></app-item-list>
+  <ng-template #shoppingItem let-item>
+    <app-text-item
+      color="shopping"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'grocery.item-helper.search' | translate"
+      (selectItem)="selectShoppingItem.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}
+<!--  storage search result-->
+@if (results?.storageItems?.length) {
+  <app-item-list
+    header="{{ 'grocery.list-header.storage.search' | translate }}"
+    headerColor="storage"
+    [listHeader]="true"
+    [items]="results?.storageItems ?? []"
+    [itemTemplate]="storageItem"
+  ></app-item-list>
+  <ng-template #storageItem let-item>
+    <app-text-item
+      color="storage"
+      class="tinted"
+      [label]="item.name"
+      [note]="item | appCategories"
+      [helper]="'grocery.item-helper.search' | translate"
+      (selectItem)="selectStorageItem.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}

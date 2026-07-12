@@ -13,15 +13,21 @@ import {
   barcodeOutline,
   businessOutline,
   cafeOutline,
+  cartOutline,
+  checkboxOutline,
+  diceOutline,
+  fileTrayStackedOutline,
   hardwareChipOutline,
   notificationsOutline,
+  pricetagsOutline,
   timerOutline,
+  walletOutline,
 } from 'ionicons/icons';
 import dayjs from 'dayjs';
 import { interval, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { selectNotificationsBadgeCount } from '../../../notifications/data/notifications.selectors';
-import { selectDashboardStatsYear } from '../../../office-time/data/office-time/office-time.stats.selectors';
+import { selectNotificationsBadgeCount } from '../../../notifications/data/notifications.selector';
+import { selectDashboardStatsYear } from '../../../office-time/data/office-time/office-time.stats.selector';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 type ProgramStatus = 'online' | 'standby' | 'offline';
@@ -95,6 +101,55 @@ export class CommlinkPage {
       route: '/soykaf',
       status: 'standby',
     },
+    {
+      hex: '0x06',
+      codename: 'MARKET',
+      desc: 'shopping list',
+      icon: 'cart-outline',
+      route: '/shopping/_shopping',
+      status: 'online',
+    },
+    {
+      hex: '0x07',
+      codename: 'STASH',
+      desc: 'pantry stock',
+      icon: 'file-tray-stacked-outline',
+      route: '/storage/_storage',
+      status: 'online',
+    },
+    {
+      hex: '0x08',
+      codename: 'AGENDA',
+      desc: 'task list',
+      icon: 'checkbox-outline',
+      route: '/tasks/_tasks',
+      status: 'online',
+    },
+    {
+      hex: '0x09',
+      codename: 'CATALOG',
+      desc: 'master products',
+      icon: 'pricetags-outline',
+      route: '/database/_globals',
+      status: 'online',
+    },
+    {
+      hex: '0x0A',
+      codename: 'CREDSTICK',
+      desc: 'nuyen // ledger',
+      icon: 'wallet-outline',
+      route: '/cash',
+      status: 'online',
+    },
+    // Trackplay seam — game-score tracker merged in as one sealed domain.
+    {
+      hex: '0x0B',
+      codename: 'TRACKPLAY',
+      desc: 'game-score deck',
+      icon: 'dice-outline',
+      route: '/trackplay',
+      status: 'online',
+    },
   ];
 
   readonly #store = inject(Store);
@@ -131,6 +186,12 @@ export class CommlinkPage {
       notificationsOutline,
       barcodeOutline,
       cafeOutline,
+      cartOutline,
+      fileTrayStackedOutline,
+      checkboxOutline,
+      pricetagsOutline,
+      walletOutline,
+      diceOutline,
     });
   }
 }

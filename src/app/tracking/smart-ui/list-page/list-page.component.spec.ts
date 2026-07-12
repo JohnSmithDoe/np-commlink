@@ -3,14 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { itemListActions } from '../../../@shared/data/item-list/item-list.actions';
+import { ItemListActions } from '../../../@shared/data/item-list/item-list.actions';
 import {
   selectListItems,
   selectListSearchResult,
   selectListState,
 } from '../../../@shared/data/item-list/item-list.selector';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
 import { ListPageComponent } from './list-page.component';
 
 describe('ListPageComponent', () => {
@@ -45,14 +44,14 @@ describe('ListPageComponent', () => {
   it('dispatches a search update', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
     component.searchFor('milk');
-    expect(dispatch).toHaveBeenCalledWith(itemListActions.updateSearch('milk'));
+    expect(dispatch).toHaveBeenCalledWith(ItemListActions.updateSearch('milk'));
   });
 
   it('toggles the sort mode', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
     component.setSortMode('name');
     expect(dispatch).toHaveBeenCalledWith(
-      itemListActions.updateSort('name', 'toggle')
+      ItemListActions.updateSort('name', 'toggle')
     );
   });
 
@@ -60,9 +59,9 @@ describe('ListPageComponent', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
     component.addItemFromSearch();
     component.showCreateDialog();
-    expect(dispatch).toHaveBeenCalledWith(itemListActions.addItemFromSearch());
+    expect(dispatch).toHaveBeenCalledWith(ItemListActions.addItemFromSearch());
     expect(dispatch).toHaveBeenCalledWith(
-      dialogsActions.showCreateDialogWithSearch()
+      DialogsActions.showCreateDialogWithSearch()
     );
   });
 });

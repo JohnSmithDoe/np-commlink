@@ -1,7 +1,7 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import { INotification } from '../../@shared/types';
 
-export const notificationsActions = createActionGroup({
+export const NotificationsActions = createActionGroup({
   source: 'Notifications',
   events: {
     'Add Notification': (notification: INotification) => ({ notification }),

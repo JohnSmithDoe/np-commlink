@@ -1,0 +1,11 @@
+<app-item-edit-modal listId="_shopping" [listItems]="(rxState())?.items">
+  <app-number-input
+    [label]="'grocery.item.quantity' | translate"
+    [value]="(rxItem())?.quantity ?? 1"
+    (updateValue)="updateQuantity($event)"
+  ></app-number-input>
+
+  <app-category-input
+    [categories]="(rxItem())?.category"
+  ></app-category-input>
+</app-item-edit-modal>

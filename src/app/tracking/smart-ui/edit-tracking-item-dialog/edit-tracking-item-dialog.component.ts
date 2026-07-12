@@ -7,7 +7,7 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ItemEditModalComponent } from '../item-edit-modal/item-edit-modal.component';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
 import { selectEditItemTracking } from '../../data/dialogs/dialogs.selector';
 import { selectListItemsTracking } from '../../data/tracking.selector';
 import {
@@ -57,7 +57,7 @@ export class EditTrackingItemDialogComponent {
   ) {
     const current = item?.notifications ?? DEFAULT_NOTIFICATIONS;
     this.#store.dispatch(
-      dialogsActions.updateItem({
+      DialogsActions.updateItem({
         notifications: { ...current, [key]: checked },
       })
     );

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
-import { officeTimeActions } from '../../../office-time/data/office-time/office-time.actions';
+import { OfficeTimeActions } from '../../../office-time/data/office-time/office-time.actions';
 import { IonButton } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { UiService } from '../../../@shared/util/ui.service';
@@ -24,7 +24,7 @@ export class BarcodeInputComponent {
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
-      this.#store.dispatch(officeTimeActions.saveBarcode(dataUrl));
+      this.#store.dispatch(OfficeTimeActions.saveBarcode(dataUrl));
     };
     reader.onerror = () => {
       const msg = this.#translate.instant(

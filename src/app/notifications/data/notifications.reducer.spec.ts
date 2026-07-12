@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { INotification } from '../../@shared/types';
-import { applicationActions } from '../../@shared/data/application.actions';
-import { notificationsActions } from './notifications.actions';
+import { ApplicationActions } from '../../@shared/data/application.actions';
+import { NotificationsActions } from './notifications.actions';
 import {
   initialNotificationsState,
   notificationsReducer,
@@ -28,7 +27,7 @@ describe('notificationsReducer', () => {
   it('prepends a new notification and replaces one with the same id on upsert', () => {
     const added = notificationsReducer(
       initialNotificationsState,
-      notificationsActions.addNotification(
+      NotificationsActions.addNotification(
         notification({ id: 'a', body: 'first' })
       )
     );
@@ -36,7 +35,7 @@ describe('notificationsReducer', () => {
 
     const upserted = notificationsReducer(
       added,
-      notificationsActions.upsertNotification(
+      NotificationsActions.upsertNotification(
         notification({ id: 'a', body: 'second' })
       )
     );
@@ -48,7 +47,7 @@ describe('notificationsReducer', () => {
     const state = withItems([notification({ id: 'a', updatedAt: 'FIXED' })]);
     const next = notificationsReducer(
       state,
-      notificationsActions.updateNotificationBody('a', 'tick')
+      NotificationsActions.updateNotificationBody('a', 'tick')
     );
     expect(next.items[0].body).toBe('tick');
     expect(next.items[0].updatedAt).toBe('FIXED');
@@ -58,11 +57,11 @@ describe('notificationsReducer', () => {
     const state = withItems([notification({ id: 'a', status: 'new' })]);
     const done = notificationsReducer(
       state,
-      notificationsActions.markDone('a')
+      NotificationsActions.markDone('a')
     );
     expect(done.items[0].status).toBe('done');
 
-    const again = notificationsReducer(done, notificationsActions.markNew('a'));
+    const again = notificationsReducer(done, NotificationsActions.markNew('a'));
     expect(again.items[0].status).toBe('new');
   });
 
@@ -73,13 +72,13 @@ describe('notificationsReducer', () => {
     ]);
     const removed = notificationsReducer(
       state,
-      notificationsActions.removeNotification('a')
+      NotificationsActions.removeNotification('a')
     );
     expect(removed.items.map((n) => n.id)).toEqual(['b']);
 
     const cleared = notificationsReducer(
       state,
-      notificationsActions.clearDone()
+      NotificationsActions.clearDone()
     );
     expect(cleared.items.map((n) => n.id)).toEqual(['a']);
   });
@@ -87,13 +86,13 @@ describe('notificationsReducer', () => {
   it('toggles the done section and records a page view', () => {
     const toggled = notificationsReducer(
       initialNotificationsState,
-      notificationsActions.toggleDoneSection()
+      NotificationsActions.toggleDoneSection()
     );
     expect(toggled.doneCollapsed).toBe(false);
 
     const viewed = notificationsReducer(
       initialNotificationsState,
-      notificationsActions.markPageViewed()
+      NotificationsActions.markPageViewed()
     );
     expect(viewed.lastViewedAt).not.toBe(
       initialNotificationsState.lastViewedAt
@@ -103,7 +102,7 @@ describe('notificationsReducer', () => {
   it('backfills updatedAt from createdAt on hydration', () => {
     const next = notificationsReducer(
       initialNotificationsState,
-      applicationActions.loadedSuccessfully({
+      ApplicationActions.loadedSuccessfully({
         notifications: {
           items: [
             notification({

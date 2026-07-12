@@ -25,13 +25,31 @@ import {
 } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideEffects } from '@ngrx/effects';
+import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideStore, Store } from '@ngrx/store';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
-import { applicationActions } from './app/@shared/data/application.actions';
+import { ApplicationActions } from './app/@shared/data/application.actions';
+import { itemDialogsReducer } from './app/@shared/data/item-dialogs/item-dialogs.reducer';
+import { listSettingsReducer } from './app/@shared/data/list-settings/list-settings.reducer';
+import { ListSettingsEffects } from './app/@shared/data/list-settings/list-settings.effects';
+import { quickAddReducer } from './app/@shared/data/quick-add/quick-add.reducer';
+import { globalsReducer } from './app/globals/data/globals.reducer';
+import { GlobalsEffects } from './app/globals/data/globals.effects';
+import { shoppingReducer } from './app/shopping/data/shopping.reducer';
+import { ShoppingEffects } from './app/shopping/data/shopping.effects';
+import { storageReducer } from './app/storage/data/storage.reducer';
+import { StorageEffects } from './app/storage/data/storage.effects';
+import { tasksReducer } from './app/tasks/data/tasks.reducer';
+import { TasksEffects } from './app/tasks/data/tasks.effects';
+import { cashReducer } from './app/cash/data/cash.reducer';
+import { GroceryListEffects } from './app/grocery-list.effects';
+import { ItemDialogsEffects } from './app/item-dialogs.effects';
+import { trackplayReducer } from './app/trackplay/data/trackplay.reducer';
+import { TrackplayEffects } from './app/trackplay/data/trackplay.effects';
 import { DialogsEffects } from './app/tracking/data/dialogs/dialogs.effects';
 
 import { dialogsReducer } from './app/tracking/data/dialogs/dialogs.reducer';
@@ -68,11 +86,16 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
+// Unified datastore for the merged super-app. `provideIonicStorageAngular` isn't
+// exported by the installed @ionic/storage-angular, so we keep the module form
+// but retarget the DB name to `np-commlink` (key prefix unified to `npc-` in the
+// DatabaseService — see step 24). Fresh install path; no migration from the old
+// np-time-tracker / kitchen-bot databases (brand-new repo).
 const storageConfig = {
-  name: 'np-time-tracker',
-  dbKey: 'npTimeTracker',
-  description: 'np-time-tracker task to time spent management',
-  storeName: 'npTimeTracker',
+  name: 'np-commlink',
+  dbKey: 'npCommlink',
+  description: 'np-commlink unified datastore',
+  storeName: 'npCommlink',
 };
 void bootstrapApplication(AppComponent, {
   providers: [
@@ -93,22 +116,41 @@ void bootstrapApplication(AppComponent, {
       })
     ),
     provideStore({
+      router: routerReducer,
       settings: settingsReducer,
       tracking: trackingReducer,
       dialogs: dialogsReducer,
       officeTime: officeTimeReducer,
       notifications: notificationsReducer,
+      itemDialogs: itemDialogsReducer,
+      listSettings: listSettingsReducer,
+      quickadd: quickAddReducer,
+      globals: globalsReducer,
+      shopping: shoppingReducer,
+      storage: storageReducer,
+      tasks: tasksReducer,
+      cash: cashReducer,
+      trackplay: trackplayReducer,
     }),
+    provideRouterStore(),
     provideEffects(
       AppEffects,
       AppMessageEffects,
       ItemListEffects,
+      ListSettingsEffects,
       SettingsEffects,
       DialogsEffects,
       TrackingEffects,
       OfficeTimeEffects,
       NotificationsEffects,
-      NotificationsFromTrackingEffects
+      NotificationsFromTrackingEffects,
+      GlobalsEffects,
+      ShoppingEffects,
+      StorageEffects,
+      TasksEffects,
+      GroceryListEffects,
+      ItemDialogsEffects,
+      TrackplayEffects
     ),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
     {
@@ -116,7 +158,7 @@ void bootstrapApplication(AppComponent, {
       useValue: 'de-DE',
     },
     provideAppInitializer(() => {
-      inject(Store).dispatch(applicationActions.load());
+      inject(Store).dispatch(ApplicationActions.load());
       void inject(NotificationService).init();
     }),
     provideServiceWorker('ngsw-worker.js', {

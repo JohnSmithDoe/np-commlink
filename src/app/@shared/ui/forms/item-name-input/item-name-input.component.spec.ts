@@ -1,7 +1,6 @@
 import { provideZonelessChangeDetection, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { IBaseItem } from '../../../types';
 import { ItemNameInputComponent } from './item-name-input.component';
 

@@ -14,8 +14,8 @@ import {
   TItemListSortType,
 } from '../../../@shared/types';
 import { ListPageComponent } from '../../smart-ui/list-page/list-page.component';
-import { dialogsActions } from '../../data/dialogs/dialogs.actions';
-import { trackingActions } from '../../data/tracking.actions';
+import { DialogsActions } from '../../data/dialogs/dialogs.actions';
+import { TrackingActions } from '../../data/tracking.actions';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
@@ -50,43 +50,43 @@ export class TrackingPage implements IonViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(trackingActions.enterPage());
+    this.#store.dispatch(TrackingActions.enterPage());
   }
 
   removeItem(item: ITrackingItem) {
-    this.#store.dispatch(trackingActions.removeItem(item));
+    this.#store.dispatch(TrackingActions.removeItem(item));
   }
 
   showEditDialog(item: ITrackingItem) {
-    this.#store.dispatch(dialogsActions.showEditDialog(item));
+    this.#store.dispatch(DialogsActions.showEditDialog(item));
   }
 
   setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(trackingActions.updateSort(type, 'toggle'));
+    this.#store.dispatch(TrackingActions.updateSort(type, 'toggle'));
   }
 
   toggleTracking(item: ITrackingItem) {
     this.#store.dispatch(
-      trackingActions.toggleTrackingItem(item, dayjs().format())
+      TrackingActions.toggleTrackingItem(item, dayjs().format())
     );
   }
 
   resetAll() {
-    this.#store.dispatch(trackingActions.resetAllTracking());
+    this.#store.dispatch(TrackingActions.resetAllTracking());
   }
   resetItem(item: ITrackingItem) {
-    this.#store.dispatch(trackingActions.resetTracking(item));
+    this.#store.dispatch(TrackingActions.resetTracking(item));
   }
 
   saveAndResetAll() {
-    this.#store.dispatch(trackingActions.saveAndResetTracking());
+    this.#store.dispatch(TrackingActions.saveAndResetTracking());
   }
 
   generateDummyData() {
-    this.#store.dispatch(trackingActions.generateDummyData());
+    this.#store.dispatch(TrackingActions.generateDummyData());
   }
 
   protected generateTaskByTicket() {
-    this.#store.dispatch(dialogsActions.showCreateByTicketDialog());
+    this.#store.dispatch(DialogsActions.showCreateByTicketDialog());
   }
 }

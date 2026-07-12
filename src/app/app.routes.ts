@@ -65,6 +65,95 @@ export const routes: Routes = [
         (m) => m.KitchenPage
       ),
   },
+  // Grocery features (from np-kitchen-bot) — each an independent top-level
+  // domain; the active list is derived from the :listId route param.
+  {
+    path: 'shopping/:listId',
+    data: { title: marker('grocery.page-title.shopping') },
+    loadComponent: () =>
+      import('./shopping/feature/shopping-page/shopping.page').then(
+        (m) => m.ShoppingPage
+      ),
+  },
+  {
+    path: 'storage/:listId',
+    data: { title: marker('grocery.page-title.storage') },
+    loadComponent: () =>
+      import('./storage/feature/storage-page/storage.page').then(
+        (m) => m.StoragePage
+      ),
+  },
+  {
+    path: 'tasks/:listId',
+    data: { title: marker('grocery.page-title.tasks') },
+    loadComponent: () =>
+      import('./tasks/feature/tasks-page/tasks.page').then((m) => m.TasksPage),
+  },
+  {
+    path: 'database/:listId',
+    data: { title: marker('grocery.page-title.globals') },
+    loadComponent: () =>
+      import('./globals/feature/globals-page/globals.page').then(
+        (m) => m.GlobalsPage
+      ),
+  },
+  {
+    path: 'list-settings',
+    data: { title: marker('grocery.page-title.settings') },
+    loadComponent: () =>
+      import('./list-settings/feature/list-settings-page/list-settings.page').then(
+        (m) => m.ListSettingsPage
+      ),
+  },
+  // Cash — offline multi-account finance ledger (purpose-built; no :listId).
+  {
+    path: 'cash',
+    data: { title: marker('cash.page-title.cash') },
+    loadComponent: () =>
+      import('./cash/feature/cash-page/cash.page').then((m) => m.CashPage),
+  },
+  // Trackplay (game-score tracker) — one sealed domain. `/trackplay` is the
+  // program home (games list); the rest are its sub-pages.
+  {
+    path: 'trackplay',
+    data: { title: marker('trackplay.page-title.games') },
+    loadComponent: () =>
+      import('./trackplay/feature/games-page/games.page').then(
+        (m) => m.TrackplayGamesPage
+      ),
+  },
+  {
+    path: 'trackplay/players',
+    data: { title: marker('trackplay.page-title.players') },
+    loadComponent: () =>
+      import('./trackplay/feature/players-page/players.page').then(
+        (m) => m.TrackplayPlayersPage
+      ),
+  },
+  {
+    path: 'trackplay/player/:id',
+    data: { title: marker('trackplay.page-title.player') },
+    loadComponent: () =>
+      import('./trackplay/feature/player-page/player.page').then(
+        (m) => m.TrackplayPlayerPage
+      ),
+  },
+  {
+    path: 'trackplay/game-types',
+    data: { title: marker('trackplay.page-title.game-types') },
+    loadComponent: () =>
+      import('./trackplay/feature/game-types-page/game-types.page').then(
+        (m) => m.TrackplayGameTypesPage
+      ),
+  },
+  {
+    path: 'trackplay/game/:id',
+    data: { title: marker('trackplay.page-title.game') },
+    loadComponent: () =>
+      import('./trackplay/feature/game-play-page/game-play.page').then(
+        (m) => m.TrackplayGamePlayPage
+      ),
+  },
   {
     path: '**',
     redirectTo: 'commlink',

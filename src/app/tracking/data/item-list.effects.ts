@@ -3,8 +3,8 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs';
 import { IAppState } from '../../@shared/types';
-import { trackingActions } from './tracking.actions';
-import { itemListActions } from '../../@shared/data/item-list/item-list.actions';
+import { TrackingActions } from './tracking.actions';
+import { ItemListActions } from '../../@shared/data/item-list/item-list.actions';
 import { createTrackingItem } from '../../@shared/util/app.factory';
 import { matchesItemExactly } from '../../@shared/util/app.utils';
 
@@ -15,13 +15,13 @@ export class ItemListEffects {
   // 'Add Item From Search': (listId:TItemListId) => ({ listId }),
   addItemFromSearch = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(itemListActions.addItemFromSearch),
+      ofType(ItemListActions.addItemFromSearch),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
       })),
       map(({ action, state }) => {
-        return trackingActions.addItemFromSearch();
+        return TrackingActions.addItemFromSearch();
       })
     );
   });
@@ -29,15 +29,15 @@ export class ItemListEffects {
   // 'Update Sort': (listId:TItemListId, sortBy?:
   updateSort = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(itemListActions.updateSort),
-      map(({ sortBy, sortDir }) => trackingActions.updateSort(sortBy, sortDir))
+      ofType(ItemListActions.updateSort),
+      map(({ sortBy, sortDir }) => TrackingActions.updateSort(sortBy, sortDir))
     );
   });
   // 'Update Search': (listId:TItemListId, searchQuery?: string) => ({ searchQuery, listId }),
   updateSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(itemListActions.updateSearch),
-      map(({ searchQuery }) => trackingActions.updateSearch(searchQuery))
+      ofType(ItemListActions.updateSearch),
+      map(({ searchQuery }) => TrackingActions.updateSearch(searchQuery))
     );
   });
 }
@@ -46,6 +46,6 @@ export const addTrackingItemFromSearch = (state: IAppState) => {
   const trackingItem = createTrackingItem(state.tracking.searchQuery ?? '');
   const foundItem = matchesItemExactly(trackingItem, state.tracking.items);
   return foundItem
-    ? trackingActions.addItemFailure(foundItem)
-    : trackingActions.addItem(trackingItem);
+    ? TrackingActions.addItemFailure(foundItem)
+    : TrackingActions.addItem(trackingItem);
 };

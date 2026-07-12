@@ -7,7 +7,7 @@ import {
   TUpdateDTO,
 } from '../../@shared/types';
 
-export const trackingActions = createActionGroup({
+export const TrackingActions = createActionGroup({
   source: 'Tracking',
   events: {
     // Effects only

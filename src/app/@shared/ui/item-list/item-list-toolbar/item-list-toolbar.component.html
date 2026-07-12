@@ -7,6 +7,12 @@
     <ng-content />
   </ion-buttons>
   <ion-buttons slot="end">
+    <ion-button (click)="selectDisplayMode.emit('alphabetical')">
+      {{ 'grocery.list-toolbar.list' | translate }}
+    </ion-button>
+    <ion-button (click)="selectDisplayMode.emit('categories')">
+      {{ 'grocery.list-toolbar.categories' | translate }}
+    </ion-button>
     <ng-content select="[toolbarActionsEnd]" />
   </ion-buttons>
 </ion-toolbar>
