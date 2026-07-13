@@ -20,7 +20,7 @@ export class DatabaseService {
       notifications: await this.#loadAs('notifications'),
       // grocery slices (null on a fresh install → each reducer's
       // loadedSuccessfully handler falls back to its initialState).
-      globals: await this.#loadAs('globals'),
+      products: await this.#loadProducts(),
       shopping: await this.#loadAs('shopping'),
       storage: await this.#loadAs('storage'),
       tasks: await this.#loadAs('tasks'),
@@ -47,6 +47,21 @@ export class DatabaseService {
     key: T
   ): Promise<IDatastore[T] | null> {
     return await this.#storageService.get('npc-' + key);
+  }
+
+  // Expand/Contract rename (globals → products): read the new `npc-products`
+  // key; if it's absent, fall back to the legacy `npc-globals` key once and
+  // re-persist it under `npc-products` so existing local data survives the
+  // rename instead of being wiped.
+  async #loadProducts(): Promise<IDatastore['products'] | null> {
+    const current = await this.#loadAs('products');
+    if (current) return current;
+    const legacy = (await this.#storageService.get('npc-globals')) as
+      IDatastore['products'] | null;
+    if (legacy) {
+      await this.save('products', legacy);
+    }
+    return legacy ?? null;
   }
 
   async save<T extends keyof IDatastore>(

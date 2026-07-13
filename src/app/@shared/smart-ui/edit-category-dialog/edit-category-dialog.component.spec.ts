@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InputCustomEvent } from '@ionic/angular';
 import { MockStore } from '@ngrx/store/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { CategoriesActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
+import { CategoriesActions } from '../../data/item-dialogs/item-dialogs.actions';
 import { EditCategoryDialogComponent } from './edit-category-dialog.component';
 
 describe('EditCategoryDialogComponent', () => {

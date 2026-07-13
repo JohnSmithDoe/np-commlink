@@ -6,10 +6,11 @@ import {
   ICashState,
   ICashTransaction,
   ICategoriesState,
+  IDashboardState,
   IGame,
   IGameType,
-  IGlobalItem,
-  IGlobalsState,
+  IProduct,
+  IProductsState,
   IListSettings,
   INotificationsState,
   IOfficeTimeState,
@@ -139,6 +140,12 @@ export function mockNotificationsState(
   };
 }
 
+export function mockDashboardState(
+  overrides: Partial<IDashboardState> = {}
+): IDashboardState {
+  return { bySource: {}, ...overrides };
+}
+
 function mockRouterState(): RouterReducerState {
   return {
     state: {
@@ -196,9 +203,7 @@ export function mockTaskItem(overrides: Partial<ITaskItem> = {}): ITaskItem {
   };
 }
 
-export function mockGlobalItem(
-  overrides: Partial<IGlobalItem> = {}
-): IGlobalItem {
+export function mockProduct(overrides: Partial<IProduct> = {}): IProduct {
   return {
     id: 'global-1',
     name: 'Sugar',
@@ -238,11 +243,11 @@ export function mockShoppingState(
   };
 }
 
-export function mockGlobalsState(
-  overrides: Partial<IGlobalsState> = {}
-): IGlobalsState {
+export function mockProductsState(
+  overrides: Partial<IProductsState> = {}
+): IProductsState {
   return {
-    id: '_globals',
+    id: '_products',
     title: 'Global Items',
     items: [],
     categories: [],
@@ -441,6 +446,7 @@ export function mockTrackplayState(
 export function mockAppState(overrides: Partial<IAppState> = {}): IAppState {
   return {
     router: mockRouterState(),
+    dashboard: mockDashboardState(),
     tracking: mockTrackingState(),
     dialogs: mockTrackingDialogsState(),
     settings: mockSettingsState(),
@@ -448,7 +454,7 @@ export function mockAppState(overrides: Partial<IAppState> = {}): IAppState {
     notifications: mockNotificationsState(),
     storage: mockStorageState(),
     shopping: mockShoppingState(),
-    globals: mockGlobalsState(),
+    products: mockProductsState(),
     tasks: mockTasksState(),
     listSettings: mockListSettings(),
     itemDialogs: mockItemDialogsState(),

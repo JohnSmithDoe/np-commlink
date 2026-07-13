@@ -3,17 +3,17 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { GlobalsActions } from './globals/data/globals.actions';
-import { ShoppingActions } from './shopping/data/shopping.actions';
-import { StorageActions } from './storage/data/storage.actions';
-import { GroceryListActions } from './@shared/data/grocery-list/grocery-list.actions';
+import { ProductsActions } from './groceries/data/products.actions';
+import { ShoppingActions } from './groceries/data/shopping.actions';
+import { StorageActions } from './groceries/data/storage.actions';
+import { GroceryListActions } from './groceries/data/grocery-list/grocery-list.actions';
 import { TasksActions } from './tasks/data/tasks.actions';
 import { QuickAddActions } from './@shared/data/quick-add/quick-add.actions';
-import { updateQuickAddState } from './@shared/data/grocery-list/grocery-list.utils';
+import { updateQuickAddState } from './groceries/data/grocery-list/grocery-list.utils';
 import { actionsByListId, GroceryListEffects } from './grocery-list.effects';
 import {
   mockAppState,
-  mockGlobalItem,
+  mockProduct,
   mockShoppingItem,
   mockStorageItem,
   mockStorageState,
@@ -38,7 +38,7 @@ describe('GroceryListEffects', () => {
     it('maps each list id to its action group', () => {
       expect(actionsByListId('_storage')).toBe(StorageActions);
       expect(actionsByListId('_shopping')).toBe(ShoppingActions);
-      expect(actionsByListId('_globals')).toBe(GlobalsActions);
+      expect(actionsByListId('_products')).toBe(ProductsActions);
     });
   });
 
@@ -110,26 +110,24 @@ describe('GroceryListEffects', () => {
     );
   });
 
-  describe('addGlobalItem$', () => {
+  describe('addProduct$', () => {
     it('routes a global item to storage or shopping', async () => {
       setup();
-      const item = mockGlobalItem();
-      actions$ = of(GroceryListActions.addGlobalItem('_storage', item));
-      expect(await firstValueFrom(effects.addGlobalItem$)).toEqual(
-        StorageActions.addGlobalItem(item)
+      const item = mockProduct();
+      actions$ = of(GroceryListActions.addProduct('_storage', item));
+      expect(await firstValueFrom(effects.addProduct$)).toEqual(
+        StorageActions.addProduct(item)
       );
-      actions$ = of(GroceryListActions.addGlobalItem('_shopping', item));
-      expect(await firstValueFrom(effects.addGlobalItem$)).toEqual(
-        ShoppingActions.addGlobalItem(item)
+      actions$ = of(GroceryListActions.addProduct('_shopping', item));
+      expect(await firstValueFrom(effects.addProduct$)).toEqual(
+        ShoppingActions.addProduct(item)
       );
     });
 
     it('emits a configuration error for an unsupported list', async () => {
       setup();
-      actions$ = of(
-        GroceryListActions.addGlobalItem('_tasks', mockGlobalItem())
-      );
-      expect(await firstValueFrom(effects.addGlobalItem$)).toEqual(
+      actions$ = of(GroceryListActions.addProduct('_tasks', mockProduct()));
+      expect(await firstValueFrom(effects.addProduct$)).toEqual(
         GroceryListActions.configurationError()
       );
     });
@@ -138,9 +136,9 @@ describe('GroceryListEffects', () => {
   it('addStorageItem$ routes a storage item to globals or shopping', async () => {
     setup();
     const item = mockStorageItem();
-    actions$ = of(GroceryListActions.addStorageItem('_globals', item));
+    actions$ = of(GroceryListActions.addStorageItem('_products', item));
     expect(await firstValueFrom(effects.addStorageItem$)).toEqual(
-      GlobalsActions.addStorageItem(item)
+      ProductsActions.addStorageItem(item)
     );
     actions$ = of(GroceryListActions.addStorageItem('_shopping', item));
     expect(await firstValueFrom(effects.addStorageItem$)).toEqual(
@@ -155,9 +153,9 @@ describe('GroceryListEffects', () => {
     expect(await firstValueFrom(effects.addShoppingItem$)).toEqual(
       StorageActions.addShoppingItem(item)
     );
-    actions$ = of(GroceryListActions.addShoppingItem('_globals', item));
+    actions$ = of(GroceryListActions.addShoppingItem('_products', item));
     expect(await firstValueFrom(effects.addShoppingItem$)).toEqual(
-      GlobalsActions.addShoppingItem(item)
+      ProductsActions.addShoppingItem(item)
     );
   });
 
@@ -196,7 +194,7 @@ describe('GroceryListEffects', () => {
 
   it('addItemFromGlobal$ converts a global into a storage add-or-update', async () => {
     setup();
-    actions$ = of(StorageActions.addGlobalItem(mockGlobalItem()));
+    actions$ = of(StorageActions.addProduct(mockProduct()));
     const emitted = await firstValueFrom(effects.addItemFromGlobal$);
     expect(emitted.type).toBe('[Storage] Add Or Update Item');
   });

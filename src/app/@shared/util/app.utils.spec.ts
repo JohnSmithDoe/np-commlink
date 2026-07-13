@@ -25,7 +25,7 @@ import {
   validateNameInput,
 } from './app.utils';
 import {
-  mockGlobalItem,
+  mockProduct,
   mockShoppingItem,
   mockStorageItem,
   mockTaskItem,
@@ -41,7 +41,7 @@ const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
 describe('app.utils', () => {
   describe('type guards', () => {
     it('isGlobalItem detects the "unit" property', () => {
-      expect(isGlobalItem(mockGlobalItem())).toBe(true);
+      expect(isGlobalItem(mockProduct())).toBe(true);
       expect(isGlobalItem(mockStorageItem())).toBe(false);
     });
 
@@ -61,13 +61,13 @@ describe('app.utils', () => {
 
     it('isShoppingItem detects the "state" property', () => {
       expect(isShoppingItem(mockShoppingItem())).toBe(true);
-      expect(isShoppingItem(mockGlobalItem())).toBe(false);
+      expect(isShoppingItem(mockProduct())).toBe(false);
     });
 
     it('hasQuantity requires both quantity and name', () => {
       expect(hasQuantity(mockStorageItem({ quantity: 3 }))).toBe(true);
       expect(hasQuantity({ quantity: 3 })).toBe(false);
-      expect(hasQuantity(mockGlobalItem())).toBe(false);
+      expect(hasQuantity(mockProduct())).toBe(false);
       expect(hasQuantity(undefined)).toBe(false);
     });
   });

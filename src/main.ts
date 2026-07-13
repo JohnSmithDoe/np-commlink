@@ -33,18 +33,11 @@ import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
 import { ApplicationActions } from './app/@shared/data/application.actions';
+import { dashboardReducer } from './app/@shared/data/dashboard/dashboard.reducer';
 import { itemDialogsReducer } from './app/@shared/data/item-dialogs/item-dialogs.reducer';
 import { listSettingsReducer } from './app/@shared/data/list-settings/list-settings.reducer';
 import { ListSettingsEffects } from './app/@shared/data/list-settings/list-settings.effects';
 import { quickAddReducer } from './app/@shared/data/quick-add/quick-add.reducer';
-import { globalsReducer } from './app/globals/data/globals.reducer';
-import { GlobalsEffects } from './app/globals/data/globals.effects';
-import { shoppingReducer } from './app/shopping/data/shopping.reducer';
-import { ShoppingEffects } from './app/shopping/data/shopping.effects';
-import { storageReducer } from './app/storage/data/storage.reducer';
-import { StorageEffects } from './app/storage/data/storage.effects';
-import { tasksReducer } from './app/tasks/data/tasks.reducer';
-import { TasksEffects } from './app/tasks/data/tasks.effects';
 import { cashReducer } from './app/cash/data/cash.reducer';
 import { GroceryListEffects } from './app/grocery-list.effects';
 import { ItemDialogsEffects } from './app/item-dialogs.effects';
@@ -61,8 +54,9 @@ import { TrackingEffects } from './app/tracking/data/tracking.effects';
 import { officeTimeReducer } from './app/office-time/data/office-time/office-time.reducer';
 import { OfficeTimeEffects } from './app/office-time/data/office-time/office-time.effects';
 import { notificationsReducer } from './app/notifications/data/notifications.reducer';
-import { NotificationsEffects } from './app/notifications/data/notifications.effects';
-import { NotificationsFromTrackingEffects } from './app/notifications/data/notifications-from-tracking.effects';
+import { NotificationsTelemetryEffects } from './app/notifications/data/notifications-telemetry.effects';
+import { OfficeTimeTelemetryEffects } from './app/office-time/data/office-time/office-time-telemetry.effects';
+import { TrackingNotificationsEffects } from './app/tracking/data/tracking-notifications.effects';
 import { AppTitleStrategy } from './app/app-title.strategy';
 import dayjs from 'dayjs';
 import 'dayjs/locale/de';
@@ -117,6 +111,7 @@ void bootstrapApplication(AppComponent, {
     ),
     provideStore({
       router: routerReducer,
+      dashboard: dashboardReducer,
       settings: settingsReducer,
       tracking: trackingReducer,
       dialogs: dialogsReducer,
@@ -125,10 +120,9 @@ void bootstrapApplication(AppComponent, {
       itemDialogs: itemDialogsReducer,
       listSettings: listSettingsReducer,
       quickadd: quickAddReducer,
-      globals: globalsReducer,
-      shopping: shoppingReducer,
-      storage: storageReducer,
-      tasks: tasksReducer,
+      // groceries (products/shopping/storage) + tasks are lazy: their reducers
+      // register per-route via provideState (see provide-groceries-lazy.ts /
+      // provide-tasks-lazy.ts) and hydrate via datastoreHydrationResolver.
       cash: cashReducer,
       trackplay: trackplayReducer,
     }),
@@ -142,12 +136,14 @@ void bootstrapApplication(AppComponent, {
       DialogsEffects,
       TrackingEffects,
       OfficeTimeEffects,
-      NotificationsEffects,
-      NotificationsFromTrackingEffects,
-      GlobalsEffects,
-      ShoppingEffects,
-      StorageEffects,
-      TasksEffects,
+      TrackingNotificationsEffects,
+      NotificationsTelemetryEffects,
+      OfficeTimeTelemetryEffects,
+      // ProductsEffects/ShoppingEffects/StorageEffects and TasksEffects are
+      // registered lazily on their routes (see provide-*-lazy.ts). The shell
+      // orchestrators below stay eager: they only react to grocery/tasks
+      // actions (dispatched exclusively while those routes are active) and read
+      // the matching slice via withLatestFrom, so it is always present.
       GroceryListEffects,
       ItemDialogsEffects,
       TrackplayEffects

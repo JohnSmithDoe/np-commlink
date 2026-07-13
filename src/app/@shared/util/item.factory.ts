@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import {
   IBaseItem,
-  IGlobalItem,
+  IProduct,
   IShoppingItem,
   IStorageItem,
   ITaskItem,
@@ -27,7 +27,7 @@ export function createStorageItem(
 }
 
 export function createStorageItemFromGlobal(
-  global: IGlobalItem,
+  global: IProduct,
   quantity = 1
 ): IStorageItem {
   let bestBefore: string | undefined;
@@ -56,7 +56,7 @@ export function createShoppingItem(
 }
 
 export function createShoppingItemFromGlobal(
-  global: IGlobalItem,
+  global: IProduct,
   quantity = 1
 ): IShoppingItem {
   return createShoppingItem(global.name, global.category, quantity);
@@ -69,10 +69,10 @@ export function createShoppingItemFromStorage(
   return createShoppingItem(storage.name, storage.category, quantity);
 }
 
-export function createGlobalItem(
+export function createProduct(
   name: string,
   category?: string | string[]
-): IGlobalItem {
+): IProduct {
   const base = createBaseItem(name, category);
   return {
     ...base,
@@ -83,8 +83,8 @@ export function createGlobalItem(
   };
 }
 
-export function createGlobalItemFrom(item: IBaseItem): IGlobalItem {
-  return createGlobalItem(item.name, item.category);
+export function createProductFrom(item: IBaseItem): IProduct {
+  return createProduct(item.name, item.category);
 }
 
 export function createTaskItem(

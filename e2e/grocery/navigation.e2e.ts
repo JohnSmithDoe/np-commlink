@@ -14,7 +14,7 @@ test.describe('grocery navigation', () => {
     await gotoFeature(page, ROUTE.shopping);
     await gotoFeature(page, ROUTE.tasks);
     await gotoFeature(page, ROUTE.storage);
-    await gotoFeature(page, ROUTE.globals);
+    await gotoFeature(page, ROUTE.products);
   });
 
   test('opens the list-settings page', async ({ page }) => {

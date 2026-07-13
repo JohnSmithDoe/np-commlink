@@ -23,4 +23,4 @@ pnpm build:android  # ionic capacitor build android
 
 ## Layout
 
-DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `merge-plan.md` for the merge strategy and `CLAUDE.md` (added in the final commit) for the authoritative developer guide.
+DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `CLAUDE.md` for the authoritative developer guide, `docs/merge-notes.md` for the merge decision log, and `docs/todo.md` for open work.

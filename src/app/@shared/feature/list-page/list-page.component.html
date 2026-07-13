@@ -1,0 +1,69 @@
+<app-page-header
+  [color]="color"
+  [label]="pageHeader"
+  [disabled]="!!facade.searchResult()?.exactMatch"
+  (addItem)="showCreateDialog()"
+>
+  <app-item-list-searchbar
+    [query]="facade.state()?.searchQuery"
+    (queryChange)="search($event)"
+    (hitEnter)="addItemFromSearch()"
+  ></app-item-list-searchbar>
+  <app-item-list-toolbar
+    (selectDisplayMode)="setDisplayMode($event)"
+    (selectSortMode)="setSortMode($event)"
+  >
+    <ng-content select="[toolbarActions]"></ng-content>
+  </app-item-list-toolbar>
+</app-page-header>
+
+<ion-content>
+  <app-item-list-quickadd
+    (quickCreateCategory)="addCategoryFromSearch()"
+    (quickAddItem)="addItemFromSearch()"
+    (quickCreateGlobal)="quickCreateGlobal.emit()"
+  ></app-item-list-quickadd>
+
+  <app-item-list
+    [headerColor]="
+      facade.filter().isCategoryModeOrHasFilter === true ? 'category' : color
+    "
+    [header]="
+      facade.filter().isCategoryModeOrHasFilter === true
+        ? facade.filter().hasFilter === true
+          ? ('grocery.list-header.category.filter'
+            | translate: { category: facade.state()?.filterBy })
+          : ('grocery.list-header.category' | translate)
+        : listHeader
+    "
+    [mode]="facade.state()?.mode ?? 'alphabetical'"
+    [items]="facade.items()"
+    [categories]="facade.categories()"
+    [itemTemplate]="itemTemplate"
+    (selectCategory)="selectCategory($event)"
+    (deleteCategory)="deleteCategory($event)"
+  >
+    <ng-content select="[listActions]"></ng-content>
+  </app-item-list>
+  @if (facade.state()?.mode === 'categories') {
+    <app-item-list-empty
+      [isEmptyList]="!facade.categories().length"
+      [isSearching]="!!facade.state()?.searchQuery"
+      [searchTerm]="facade.state()?.searchQuery"
+      (emptyList)="showCreateDialog()"
+      (emptySearch)="addCategoryFromSearch()"
+    ></app-item-list-empty>
+  } @else {
+    <app-item-list-empty
+      [isEmptyList]="!facade.items()?.length"
+      [isSearching]="facade.searchResult()?.hasSearchTerm"
+      [searchTerm]="facade.searchResult()?.searchTerm"
+      (emptyList)="showCreateDialog()"
+      (emptySearch)="addItemFromSearch()"
+    ></app-item-list-empty>
+  }
+
+  <ng-content select="[searchExtras]"></ng-content>
+</ion-content>
+
+<app-edit-category-dialog />

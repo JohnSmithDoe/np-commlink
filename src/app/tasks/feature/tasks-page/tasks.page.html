@@ -1,6 +1,5 @@
-<app-grocery-list-page
+<app-list-page
   class="ion-page"
-  listId="_tasks"
   pageHeader="{{ 'grocery.page-title.tasks' | translate }}"
   listHeader="{{ 'grocery.list-header.tasks' | translate }}"
   [itemTemplate]="taskItem"
@@ -9,7 +8,7 @@
     <ion-button (click)="setSortMode('prio')">{{ 'grocery.list-toolbar.prio' | translate }}</ion-button>
     <ion-button (click)="setSortMode('dueAt')">{{ 'grocery.list-toolbar.due' | translate }}</ion-button>
   </ng-container>
-</app-grocery-list-page>
+</app-list-page>
 
 <ng-template #taskItem let-item let-ionList="ionList">
   <app-list-item
@@ -21,19 +20,23 @@
     (deleteItem)="removeItem(item)"
   >
     @if (item.dueAt) {
-      <ion-note itemDetails>
-        {{ 'grocery.item.due.note' | translate }}:
-        {{ item.dueAt | date: undefined : undefined : 'de-DE' }}
-      </ion-note>
-      <br itemDetails />
+      <ng-container itemDetails>
+        <ion-note>
+          {{ 'grocery.item.due.note' | translate }}:
+          {{ item.dueAt | date: undefined : undefined : 'de-DE' }}
+        </ion-note>
+        <br />
+      </ng-container>
     }
 
     @if (item.prio) {
-      <ion-note itemDetails>
-        {{ 'grocery.item.prio' | translate }}:
-        {{ item.prio }}
-      </ion-note>
-      <br itemDetails />
+      <ng-container itemDetails>
+        <ion-note>
+          {{ 'grocery.item.prio' | translate }}:
+          {{ item.prio }}
+        </ion-note>
+        <br />
+      </ng-container>
     }
   </app-list-item>
 </ng-template>

@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { IAppState, IBaseItem, TItemListId } from './@shared/types';
 import {
-  createGlobalItem,
+  createProduct,
   createShoppingItem,
   createStorageItem,
   createTaskItem,
@@ -16,16 +16,16 @@ import {
   filterByByListId,
   searchQueryByListId,
   stateByListId,
-} from './@shared/data/grocery-list/grocery-list.utils';
-import { GlobalsActions } from './globals/data/globals.actions';
-import { ShoppingActions } from './shopping/data/shopping.actions';
-import { StorageActions } from './storage/data/storage.actions';
+} from './groceries/data/grocery-list/grocery-list.utils';
+import { ProductsActions } from './groceries/data/products.actions';
+import { ShoppingActions } from './groceries/data/shopping.actions';
+import { StorageActions } from './groceries/data/storage.actions';
 import {
   CategoriesActions,
   ItemDialogsActions,
 } from './@shared/data/item-dialogs/item-dialogs.actions';
 import {
-  selectEditGlobalState,
+  selectEditProductState,
   selectEditState,
 } from './@shared/data/item-dialogs/item-dialogs.selector';
 
@@ -39,8 +39,8 @@ function createItemByListId(
     case '_storage':
       item = createStorageItem(name, category);
       break;
-    case '_globals':
-      item = createGlobalItem(name, category);
+    case '_products':
+      item = createProduct(name, category);
       break;
     case '_shopping':
       item = createShoppingItem(name, category);
@@ -111,7 +111,7 @@ export class ItemDialogsEffects {
 
   showCreateGlobalDialogWithSearch$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(ItemDialogsActions.showCreateAndAddGlobalDialog),
+      ofType(ItemDialogsActions.showCreateAndAddProductDialog),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
         action,
         state,
@@ -120,8 +120,8 @@ export class ItemDialogsEffects {
         const searchQuery = searchQueryByListId(state, action.listId);
         const filterBy = filterByByListId(state, action.listId);
         return ItemDialogsActions.showEditDialog(
-          createGlobalItem(searchQuery ?? '', filterBy),
-          '_globals',
+          createProduct(searchQuery ?? '', filterBy),
+          '_products',
           action.listId
         );
       })
@@ -156,20 +156,20 @@ export class ItemDialogsEffects {
   confirmGlobalItemChangesAndAddToList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ItemDialogsActions.confirmChanges),
-      concatLatestFrom(() => this.#store.select(selectEditGlobalState)),
+      concatLatestFrom(() => this.#store.select(selectEditProductState)),
       filter(
         ([_, state]) =>
-          state.listId === '_globals' && !!state.addToAdditionalList
+          state.listId === '_products' && !!state.addToAdditionalList
       ),
       map(([_, state]) => {
         switch (state.addToAdditionalList!) {
           case '_storage':
-            return StorageActions.addGlobalItem(state.item);
-          case '_globals':
+            return StorageActions.addProduct(state.item);
+          case '_products':
           case '_tasks':
-            return GlobalsActions.addItemFailure(state.item);
+            return ProductsActions.addItemFailure(state.item);
           case '_shopping':
-            return ShoppingActions.addGlobalItem(state.item);
+            return ShoppingActions.addProduct(state.item);
         }
       })
     );

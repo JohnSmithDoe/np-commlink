@@ -1,0 +1,26 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="{{ 'grocery.page-title.globals' | translate }}"
+  listHeader="{{ 'grocery.list-header.globals' | translate }}"
+  [itemTemplate]="globalItem"
+>
+  <app-grocery-search-result
+    searchExtras
+    [results]="facade.searchResult()"
+    (selectProduct)="facade.addProduct($event)"
+    (selectStorageItem)="facade.addStorageItem($event)"
+    (selectShoppingItem)="facade.addShoppingItem($event)"
+  ></app-grocery-search-result>
+</app-list-page>
+
+<ng-template #globalItem let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    (selectItem)="showEditDialog(item)"
+    (deleteItem)="removeItem(item)"
+  ></app-list-item>
+</ng-template>
+
+<app-edit-product-dialog></app-edit-product-dialog>

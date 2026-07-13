@@ -79,7 +79,7 @@ export type TItemListSort = {
 
 export type TItemListCategory = string;
 export type TItemListMode = 'alphabetical' | 'categories';
-export type TItemListId = '_storage' | '_globals' | '_shopping' | '_tasks';
+export type TItemListId = '_storage' | '_products' | '_shopping' | '_tasks';
 
 // The generic list shape shared by tracking and the grocery lists. `categories`
 // and `mode` are required (kitchen-bot's grocery code reads them unguarded);
@@ -134,6 +134,21 @@ export interface INotificationsState {
   lastViewedAt: TTimestamp;
 }
 
+// Published dashboard-telemetry contract (§4). A program reports a `source`
+// (its context id, used for grouping), an optional `status`, and a bag of
+// display `metrics` (numbers or strings) the deck renders.
+export type IDashboardTelemetry = {
+  source: string;
+  status?: 'online' | 'standby';
+  metrics: Record<string, number | string>;
+};
+
+// Eager dashboard read-model (CQRS). Latest telemetry per source; ephemeral
+// (rebuilt by live push each run) — deliberately NOT part of IDatastore.
+export interface IDashboardState {
+  bySource: Record<string, IDashboardTelemetry>;
+}
+
 export interface IDatastore {
   // timetracker slices
   tracking: ITrackingState;
@@ -142,7 +157,7 @@ export interface IDatastore {
   notifications: INotificationsState;
   // grocery slices (persisted; the itemDialogs + quickAdd slices are ephemeral
   // UI state and deliberately NOT stored — mirrors kitchen-bot).
-  globals: TGlobalsList;
+  products: TProductsList;
   shopping: TShoppingList;
   storage: TStorageList;
   tasks: TTasksList;
@@ -168,7 +183,7 @@ export interface ISearchResult<T extends IBaseItem> {
   // grocery cross-list search buckets (optional — tracking search never sets
   // them). Populated by the shared item-list selector when the corresponding
   // list-settings flag is on (e.g. showGlobalsInStorage).
-  globalItems?: IGlobalItem[];
+  products?: IProduct[];
   storageItems?: IStorageItem[];
   shoppingItems?: IShoppingItem[];
 }
@@ -205,6 +220,8 @@ export type IOfficeTimeStateStorage = Omit<
 
 export interface IAppState {
   router: RouterReducerState;
+  // eager dashboard read-model (CQRS) — not persisted (not in IDatastore)
+  dashboard: IDashboardState;
   // timetracker
   tracking: ITrackingState;
   dialogs: TDialogsState;
@@ -212,7 +229,7 @@ export interface IAppState {
   officeTime: IOfficeTimeState;
   notifications: INotificationsState;
   // grocery (independent domains + shared slices)
-  globals: IGlobalsState;
+  products: IProductsState;
   shopping: IShoppingState;
   storage: IStorageState;
   tasks: ITasksState;
@@ -311,7 +328,7 @@ export type TPackagingUnit = 'bottle' | 'package' | 'loose' | 'tin-can';
 export type TBestBeforeTimespan =
   'forever' | 'days' | 'weeks' | 'months' | 'years';
 
-export interface IGlobalItem extends IBaseItem {
+export interface IProduct extends IBaseItem {
   unit: TItemUnit;
   packaging: TPackagingUnit;
   packagingWeight?: number;
@@ -335,8 +352,7 @@ export type IStorageItem = IBaseItem & {
   bestBefore?: TTimestamp;
 };
 
-export type TAllItemTypes =
-  IGlobalItem | IShoppingItem | IStorageItem | ITaskItem;
+export type TAllItemTypes = IProduct | IShoppingItem | IStorageItem | ITaskItem;
 
 // Concrete grocery lists narrow `id`/`title` and re-require categories/mode
 // (optional on the shared IItemList base above) so grocery selectors can read
@@ -347,8 +363,8 @@ export type TStorageList = IItemList<IStorageItem> & {
   categories: TItemListCategory[];
   mode: TItemListMode;
 };
-export type TGlobalsList = IItemList<IGlobalItem> & {
-  id: '_globals';
+export type TProductsList = IItemList<IProduct> & {
+  id: '_products';
   title: 'Global Items';
   categories: TItemListCategory[];
   mode: TItemListMode;
@@ -370,7 +386,7 @@ export type IStorageState = Readonly<TStorageList>;
 export type IShoppingState = Readonly<TShoppingList> & {
   showActionSheet: boolean;
 };
-export type IGlobalsState = Readonly<TGlobalsList>;
+export type IProductsState = Readonly<TProductsList>;
 export type ITasksState = Readonly<TTasksList>;
 
 // Grocery feature-flags (kitchen-bot `ISettings`). Shared slice key `listSettings`.
@@ -413,7 +429,7 @@ export type TItemDialogsState = IItemDialogState<TAllItemTypes>;
 export type IEditStorageItemState = IItemDialogState<IStorageItem>;
 export type IEditTaskItemState = IItemDialogState<ITaskItem>;
 export type IEditShoppingItemState = IItemDialogState<IShoppingItem>;
-export type IEditGlobalItemState = IItemDialogState<IGlobalItem>;
+export type IEditProductState = IItemDialogState<IProduct>;
 
 export type IQuickAddState = Readonly<{
   listName?: string;

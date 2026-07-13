@@ -10,7 +10,7 @@ const CASES: { route: (typeof ROUTE)[keyof typeof ROUTE]; item: string }[] = [
   { route: ROUTE.shopping, item: 'Milk' },
   { route: ROUTE.storage, item: 'Rice' },
   { route: ROUTE.tasks, item: 'Sweep' },
-  { route: ROUTE.globals, item: 'Sugar' },
+  { route: ROUTE.products, item: 'Sugar' },
 ];
 
 test.describe('grocery first paint', () => {

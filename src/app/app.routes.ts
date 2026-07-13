@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { datastoreHydrationResolver } from './@shared/data/datastore-hydration.resolver';
+import { groceriesLazyProviders } from './groceries/data/provide-groceries-lazy';
+import { tasksLazyProviders } from './tasks/data/provide-tasks-lazy';
 
 export const routes: Routes = [
   {
@@ -70,38 +73,46 @@ export const routes: Routes = [
   {
     path: 'shopping/:listId',
     data: { title: marker('grocery.page-title.shopping') },
+    providers: groceriesLazyProviders,
+    resolve: { hydrated: datastoreHydrationResolver },
     loadComponent: () =>
-      import('./shopping/feature/shopping-page/shopping.page').then(
+      import('./groceries/feature/shopping-page/shopping.page').then(
         (m) => m.ShoppingPage
       ),
   },
   {
     path: 'storage/:listId',
     data: { title: marker('grocery.page-title.storage') },
+    providers: groceriesLazyProviders,
+    resolve: { hydrated: datastoreHydrationResolver },
     loadComponent: () =>
-      import('./storage/feature/storage-page/storage.page').then(
+      import('./groceries/feature/storage-page/storage.page').then(
         (m) => m.StoragePage
       ),
   },
   {
     path: 'tasks/:listId',
     data: { title: marker('grocery.page-title.tasks') },
+    providers: tasksLazyProviders,
+    resolve: { hydrated: datastoreHydrationResolver },
     loadComponent: () =>
       import('./tasks/feature/tasks-page/tasks.page').then((m) => m.TasksPage),
   },
   {
-    path: 'database/:listId',
+    path: 'products/:listId',
     data: { title: marker('grocery.page-title.globals') },
+    providers: groceriesLazyProviders,
+    resolve: { hydrated: datastoreHydrationResolver },
     loadComponent: () =>
-      import('./globals/feature/globals-page/globals.page').then(
-        (m) => m.GlobalsPage
+      import('./groceries/feature/products-page/products.page').then(
+        (m) => m.ProductsPage
       ),
   },
   {
     path: 'list-settings',
     data: { title: marker('grocery.page-title.settings') },
     loadComponent: () =>
-      import('./list-settings/feature/list-settings-page/list-settings.page').then(
+      import('./groceries/feature/list-settings-page/list-settings.page').then(
         (m) => m.ListSettingsPage
       ),
   },

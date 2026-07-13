@@ -8,7 +8,7 @@ import {
   TItemListCategory,
   TItemListId,
 } from '../../types';
-import { createGlobalItem, createStorageItem } from '../../util/item.factory';
+import { createProduct, createStorageItem } from '../../util/item.factory';
 import { matchingTxt } from '../../util/app.utils';
 import { ApplicationActions } from '../application.actions';
 import { CategoriesActions, ItemDialogsActions } from './item-dialogs.actions';
@@ -228,13 +228,13 @@ export const itemDialogsReducer = createReducer(
   // NEW (merge): barcode scanner → open the global-item edit dialog prefilled
   // with the scanned EAN as the initial name; keep the raw code on the state.
   on(
-    ItemDialogsActions.openEditGlobalItem,
+    ItemDialogsActions.openEditProduct,
     (state, { scannedEan }): TItemDialogsState => ({
       ...showEditDialog(
         state,
-        createGlobalItem(scannedEan),
+        createProduct(scannedEan),
         'create',
-        '_globals'
+        '_products'
       ),
       scannedEan,
     })

@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { INotification, INotificationsState } from '../../@shared/types';
 import { ApplicationActions } from '../../@shared/data/application.actions';
-import { NotificationsActions } from './notifications.actions';
+import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 
 // Epoch initial value: never been viewed, so any updatedAt > epoch counts
 // as unread for badge purposes. Overwritten the first time the page opens.

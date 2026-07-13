@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import { PageHeaderComponent } from './page-header.component';
 
 describe('PageHeaderComponent', () => {

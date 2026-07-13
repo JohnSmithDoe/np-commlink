@@ -1,7 +1,7 @@
 import {
   filterAndSortItemList,
-  filterBySearchQuery,
-} from '../../@shared/data/grocery-list/grocery-list.selector';
+  filterListBySearchQuery,
+} from '../../@shared/data/list/list.selector';
 import {
   selectTasksListItems,
   selectTasksListSearchResult,
@@ -22,10 +22,7 @@ describe('tasks.selector', () => {
   describe('selectTasksListSearchResult', () => {
     it('returns undefined without a search query', () => {
       const listState = mockTasksState();
-      const appState = mockAppState({ tasks: listState });
-      expect(
-        selectTasksListSearchResult.projector(listState, appState)
-      ).toBeUndefined();
+      expect(selectTasksListSearchResult.projector(listState)).toBeUndefined();
     });
 
     it('returns the search result matching the query', () => {
@@ -36,10 +33,9 @@ describe('tasks.selector', () => {
           mockTaskItem({ id: 'b', name: 'Mop' }),
         ],
       });
-      const appState = mockAppState({ tasks: listState });
-      const result = selectTasksListSearchResult.projector(listState, appState);
+      const result = selectTasksListSearchResult.projector(listState);
       expect(result?.listItems.map((i) => i.name)).toEqual(['Sweep']);
-      expect(result).toEqual(filterBySearchQuery(appState, listState));
+      expect(result).toEqual(filterListBySearchQuery(listState));
     });
   });
 

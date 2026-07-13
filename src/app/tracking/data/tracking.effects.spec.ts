@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { EMPTY, Observable } from 'rxjs';
-import { provideEffectsTestingProviders } from '../../@shared/testing/test-providers';
 import { TrackingEffects } from './tracking.effects';
 
 describe('TrackingEffects', () => {
@@ -9,7 +11,15 @@ describe('TrackingEffects', () => {
 
   it('is created', () => {
     TestBed.configureTestingModule({
-      providers: [TrackingEffects, ...provideEffectsTestingProviders(actions$)],
+      providers: [
+        TrackingEffects,
+        provideMockActions(() => actions$),
+        provideMockStore(),
+        {
+          provide: TranslateService,
+          useValue: { instant: (key: string) => key },
+        },
+      ],
     });
     expect(TestBed.inject(TrackingEffects)).toBeTruthy();
   });

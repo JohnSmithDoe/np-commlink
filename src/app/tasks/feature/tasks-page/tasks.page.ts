@@ -13,9 +13,11 @@ import {
   TItemListSortType,
 } from '../../../@shared/types';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { GroceryListPageComponent } from '../../../@shared/feature/grocery-list-page/grocery-list-page.component';
+import { LIST_FACADE } from '../../../@shared/data/list/list-page.facade';
+import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { TasksActions } from '../../data/tasks.actions';
+import { TasksListPageFacade } from '../../data/tasks-list-page.facade';
 import { EditTaskItemDialogComponent } from '../../smart-ui/edit-task-item-dialog/edit-task-item-dialog.component';
 
 @Component({
@@ -28,10 +30,11 @@ import { EditTaskItemDialogComponent } from '../../smart-ui/edit-task-item-dialo
     DatePipe,
     IonButton,
     IonNote,
-    GroceryListPageComponent,
+    ListPageComponent,
     ListItemComponent,
     EditTaskItemDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: TasksListPageFacade }],
 })
 export class TasksPage implements IonViewWillEnter {
   readonly #store = inject(Store);

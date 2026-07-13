@@ -4,8 +4,8 @@ import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { IAppState, TItemListId } from './@shared/types';
 import {
-  createGlobalItem,
-  createGlobalItemFrom,
+  createProduct,
+  createProductFrom,
   createShoppingItem,
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
@@ -15,11 +15,11 @@ import {
   createTaskItem,
 } from './@shared/util/item.factory';
 import { matchesItemExactly } from './@shared/util/app.utils';
-import { GlobalsActions } from './globals/data/globals.actions';
-import { ShoppingActions } from './shopping/data/shopping.actions';
-import { StorageActions } from './storage/data/storage.actions';
+import { ProductsActions } from './groceries/data/products.actions';
+import { ShoppingActions } from './groceries/data/shopping.actions';
+import { StorageActions } from './groceries/data/storage.actions';
 import { TasksActions } from './tasks/data/tasks.actions';
-import { GroceryListActions } from './@shared/data/grocery-list/grocery-list.actions';
+import { GroceryListActions } from './groceries/data/grocery-list/grocery-list.actions';
 import { QuickAddActions } from './@shared/data/quick-add/quick-add.actions';
 import {
   listIdByPrefix,
@@ -27,15 +27,15 @@ import {
   stateByListId,
   updatedSearchQuery,
   updateQuickAddState,
-} from './@shared/data/grocery-list/grocery-list.utils';
+} from './groceries/data/grocery-list/grocery-list.utils';
 
 export const actionsByListId = (listId: TItemListId) => {
   //prettier-ignore
   switch (listId) {
     case '_storage':
       return StorageActions;
-    case '_globals':
-      return GlobalsActions;
+    case '_products':
+      return ProductsActions;
     case '_shopping':
       return ShoppingActions;
     case '_tasks':
@@ -133,17 +133,17 @@ export class GroceryListEffects {
       )
     );
   });
-  // 'Add Global Item': (listId:TItemListId, item: IGlobalItem) => ({ item, listId }),
-  addGlobalItem$ = createEffect(() => {
+  // 'Add Product': (listId:TItemListId, item: IProduct) => ({ item, listId }),
+  addProduct$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(GroceryListActions.addGlobalItem),
+      ofType(GroceryListActions.addProduct),
       map(({ item, listId }) => {
         switch (listId) {
           case '_storage':
-            return StorageActions.addGlobalItem(item);
+            return StorageActions.addProduct(item);
           case '_shopping':
-            return ShoppingActions.addGlobalItem(item);
-          case '_globals':
+            return ShoppingActions.addProduct(item);
+          case '_products':
           case '_tasks':
           default:
             return GroceryListActions.configurationError();
@@ -157,8 +157,8 @@ export class GroceryListEffects {
       ofType(GroceryListActions.addStorageItem),
       map(({ item, listId }) => {
         switch (listId) {
-          case '_globals':
-            return GlobalsActions.addStorageItem(item);
+          case '_products':
+            return ProductsActions.addStorageItem(item);
           case '_shopping':
             return ShoppingActions.addStorageItem(item);
           case '_storage':
@@ -177,8 +177,8 @@ export class GroceryListEffects {
         switch (listId) {
           case '_storage':
             return StorageActions.addShoppingItem(item);
-          case '_globals':
-            return GlobalsActions.addShoppingItem(item);
+          case '_products':
+            return ProductsActions.addShoppingItem(item);
           case '_shopping':
           case '_tasks':
           default:
@@ -199,7 +199,7 @@ export class GroceryListEffects {
       ofType(
         StorageActions.addItemFromSearch,
         ShoppingActions.addItemFromSearch,
-        GlobalsActions.addItemFromSearch,
+        ProductsActions.addItemFromSearch,
         TasksActions.addItemFromSearch
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
@@ -212,8 +212,8 @@ export class GroceryListEffects {
             return addStorageItemFromSearch(state);
           case '[Shopping] Add Item From Search':
             return addShoppingItemFromSearch(state);
-          case '[Globals] Add Item From Search':
-            return addGlobalItemFromSearch(state);
+          case '[Products] Add Item From Search':
+            return addProductFromSearch(state);
           default:
             return addTaskItemFromSearch(state);
         }
@@ -228,7 +228,7 @@ export class GroceryListEffects {
       ofType(
         StorageActions.addOrUpdateItem,
         ShoppingActions.addOrUpdateItem,
-        GlobalsActions.addOrUpdateItem,
+        ProductsActions.addOrUpdateItem,
         TasksActions.addOrUpdateItem
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
@@ -250,10 +250,10 @@ export class GroceryListEffects {
   // the target list's item shape.
   addItemFromGlobal$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.addGlobalItem, ShoppingActions.addGlobalItem),
+      ofType(StorageActions.addProduct, ShoppingActions.addProduct),
       map(({ item, type }) => {
         switch (type) {
-          case '[Storage] Add Global Item':
+          case '[Storage] Add Product':
             return StorageActions.addOrUpdateItem(
               createStorageItemFromGlobal(item)
             );
@@ -268,7 +268,7 @@ export class GroceryListEffects {
 
   addItemFromShopping$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(StorageActions.addShoppingItem, GlobalsActions.addShoppingItem),
+      ofType(StorageActions.addShoppingItem, ProductsActions.addShoppingItem),
       map(({ item, type }) => {
         switch (type) {
           case '[Storage] Add Shopping Item':
@@ -276,7 +276,7 @@ export class GroceryListEffects {
               createStorageItemFromShopping(item)
             );
           default:
-            return GlobalsActions.addOrUpdateItem(createGlobalItemFrom(item));
+            return ProductsActions.addOrUpdateItem(createProductFrom(item));
         }
       })
     );
@@ -284,7 +284,7 @@ export class GroceryListEffects {
 
   addItemFromStorage$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(ShoppingActions.addStorageItem, GlobalsActions.addStorageItem),
+      ofType(ShoppingActions.addStorageItem, ProductsActions.addStorageItem),
       map(({ item, type }) => {
         switch (type) {
           case '[Shopping] Add Storage Item':
@@ -292,7 +292,7 @@ export class GroceryListEffects {
               createShoppingItemFromStorage(item)
             );
           default:
-            return GlobalsActions.addOrUpdateItem(createGlobalItemFrom(item));
+            return ProductsActions.addOrUpdateItem(createProductFrom(item));
         }
       })
     );
@@ -303,7 +303,7 @@ export class GroceryListEffects {
     return this.#actions$.pipe(
       ofType(
         StorageActions.updateMode,
-        GlobalsActions.updateMode,
+        ProductsActions.updateMode,
         ShoppingActions.updateMode,
         TasksActions.updateMode
       ),
@@ -321,11 +321,11 @@ export class GroceryListEffects {
         StorageActions.updateMode,
         StorageActions.addCategory,
         StorageActions.removeCategory,
-        GlobalsActions.addItem,
-        GlobalsActions.updateFilter,
-        GlobalsActions.updateMode,
-        GlobalsActions.addCategory,
-        GlobalsActions.removeCategory,
+        ProductsActions.addItem,
+        ProductsActions.updateFilter,
+        ProductsActions.updateMode,
+        ProductsActions.addCategory,
+        ProductsActions.removeCategory,
         ShoppingActions.addItem,
         ShoppingActions.updateFilter,
         ShoppingActions.updateMode,
@@ -347,7 +347,7 @@ export class GroceryListEffects {
       ofType(
         StorageActions.updateItem,
         ShoppingActions.updateItem,
-        GlobalsActions.updateItem,
+        ProductsActions.updateItem,
         TasksActions.updateItem
       ),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
@@ -374,9 +374,9 @@ export class GroceryListEffects {
         StorageActions.updateSearch,
         StorageActions.updateMode,
         StorageActions.enterPage,
-        GlobalsActions.updateSearch,
-        GlobalsActions.updateMode,
-        GlobalsActions.enterPage,
+        ProductsActions.updateSearch,
+        ProductsActions.updateMode,
+        ProductsActions.enterPage,
         TasksActions.updateSearch,
         TasksActions.updateMode,
         TasksActions.enterPage
@@ -417,15 +417,15 @@ export const addShoppingItemFromSearch = (state: IAppState) => {
     ? ShoppingActions.addItemFailure(foundShoppingItem)
     : ShoppingActions.addItem(shoppingItem);
 };
-export const addGlobalItemFromSearch = (state: IAppState) => {
-  const item = createGlobalItem(
-    state.globals.searchQuery ?? '',
-    state.globals.filterBy
+export const addProductFromSearch = (state: IAppState) => {
+  const item = createProduct(
+    state.products.searchQuery ?? '',
+    state.products.filterBy
   );
-  const found = matchesItemExactly(item, state.globals.items);
+  const found = matchesItemExactly(item, state.products.items);
   return found
-    ? GlobalsActions.addItemFailure(found)
-    : GlobalsActions.addItem(item);
+    ? ProductsActions.addItemFailure(found)
+    : ProductsActions.addItem(item);
 };
 export const addTaskItemFromSearch = (state: IAppState) => {
   const item = createTaskItem(

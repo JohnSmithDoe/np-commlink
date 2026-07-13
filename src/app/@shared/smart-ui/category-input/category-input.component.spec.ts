@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import {
   CategoriesActions,
   ItemDialogsActions,
-} from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+} from '../../data/item-dialogs/item-dialogs.actions';
 import { CategoryInputComponent } from './category-input.component';
 
 describe('CategoryInputComponent', () => {

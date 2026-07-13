@@ -26,8 +26,7 @@ import {
 import dayjs from 'dayjs';
 import { interval, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { selectNotificationsBadgeCount } from '../../../notifications/data/notifications.selector';
-import { selectDashboardStatsYear } from '../../../office-time/data/office-time/office-time.stats.selector';
+import { selectTelemetry } from '../../../@shared/data/dashboard/dashboard.selector';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 type ProgramStatus = 'online' | 'standby' | 'offline';
@@ -130,7 +129,7 @@ export class CommlinkPage {
       codename: 'CATALOG',
       desc: 'master products',
       icon: 'pricetags-outline',
-      route: '/database/_globals',
+      route: '/products/_products',
       status: 'online',
     },
     {
@@ -159,14 +158,21 @@ export class CommlinkPage {
   readonly total = this.programs.length;
 
   // ── live telemetry (signals, zoneless-safe) ──────────────────
+  // Read ONLY the shared dashboard read-model (CQRS): each supplier pushes its
+  // telemetry via DashboardActions.report; commlink imports no other domain.
+  readonly #comms = this.#store.selectSignal(selectTelemetry('notifications'));
   /** Unread signals → drives NOISE + the COMMS tile badge. */
-  readonly noise = this.#store.selectSignal(selectNotificationsBadgeCount);
-  readonly #statsYear = this.#store.selectSignal(selectDashboardStatsYear);
+  readonly noise = computed(() =>
+    Number(this.#comms()?.metrics['unread'] ?? 0)
+  );
+  readonly #office = this.#store.selectSignal(selectTelemetry('office-time'));
   /** Nuyen "banked" == office days logged this year. */
-  readonly nuyen = computed(() => this.#statsYear()?.officedays ?? 0);
+  readonly nuyen = computed(() =>
+    Number(this.#office()?.metrics['officedays'] ?? 0)
+  );
   /** Resonance rating derived from year office-day target progress (0–6+). */
   readonly res = computed(() =>
-    (((this.#statsYear()?.percentage ?? 0) / 100) * 6).toFixed(1)
+    ((Number(this.#office()?.metrics['percentage'] ?? 0) / 100) * 6).toFixed(1)
   );
 
   readonly bootDate = dayjs().format('ddd DD MMM YYYY').toUpperCase();

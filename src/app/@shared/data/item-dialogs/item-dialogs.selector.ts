@@ -2,12 +2,12 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   IBaseItem,
   ICategoriesState,
-  IEditGlobalItemState,
+  IEditProductState,
   IItemDialogState,
   IEditShoppingItemState,
   IEditStorageItemState,
   IEditTaskItemState,
-  IGlobalItem,
+  IProduct,
   IShoppingItem,
   IStorageItem,
   ITaskItem,
@@ -18,8 +18,8 @@ import { matchesSearchString } from '../../util/app.utils';
 export const selectEditState =
   createFeatureSelector<IItemDialogState<TAllItemTypes>>('itemDialogs');
 
-export const selectEditGlobalState =
-  createFeatureSelector<IEditGlobalItemState>('itemDialogs');
+export const selectEditProductState =
+  createFeatureSelector<IEditProductState>('itemDialogs');
 
 export const selectEditShoppingState =
   createFeatureSelector<IEditShoppingItemState>('itemDialogs');
@@ -39,9 +39,9 @@ export const selectEditTaskItem = createSelector(
   selectEditTaskState,
   (state): ITaskItem | undefined => state.item
 );
-export const selectEditGlobalItem = createSelector(
-  selectEditGlobalState,
-  (state): IGlobalItem | undefined => state.item
+export const selectEditProduct = createSelector(
+  selectEditProductState,
+  (state): IProduct | undefined => state.item
 );
 
 export const selectEditShoppingItem = createSelector(

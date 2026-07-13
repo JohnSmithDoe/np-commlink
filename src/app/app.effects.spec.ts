@@ -16,8 +16,8 @@ import { DatabaseService } from './@shared/util/database.service';
 import { UiService } from './@shared/util/ui.service';
 import { ApplicationActions } from './@shared/data/application.actions';
 import { TrackingActions } from './tracking/data/tracking.actions';
-import { NotificationsActions } from './notifications/data/notifications.actions';
-import { StorageActions } from './storage/data/storage.actions';
+import { NotificationsActions } from './@shared/data/notifications/notifications.actions';
+import { StorageActions } from './groceries/data/storage.actions';
 import { AppEffects } from './app.effects';
 
 describe('AppEffects', () => {

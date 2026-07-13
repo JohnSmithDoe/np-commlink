@@ -21,7 +21,7 @@ import { addTrackingItemFromSearch } from './tracking/data/item-list.effects';
 import { updatedSearchQuery } from './@shared/data/item-list/item-list.utils';
 import { ApplicationActions } from './@shared/data/application.actions';
 import { TrackingActions } from './tracking/data/tracking.actions';
-import { NotificationsActions } from './notifications/data/notifications.actions';
+import { NotificationsActions } from './@shared/data/notifications/notifications.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AppEffects {
@@ -52,7 +52,7 @@ export class AppEffects {
                 settings: null,
                 officeTime: null,
                 notifications: null,
-                globals: null,
+                products: null,
                 shopping: null,
                 storage: null,
                 tasks: null,
@@ -168,22 +168,22 @@ export class AppEffects {
   );
 
   // Persist the grocery slices whenever one of their domains dispatches. The
-  // action-source prefix (`[Globals]`/`[Shopping]`/…) identifies which slice to
+  // action-source prefix (`[Products]`/`[Shopping]`/…) identifies which slice to
   // write; the list-settings slice persists via its own effect. quickadd and
   // itemDialogs are ephemeral UI state and are deliberately not stored.
   saveGroceryOnChange$ = createEffect(
     () => {
       return this.#actions$.pipe(
         filter((action: { type: string }) =>
-          /^\[(Globals|Shopping|Storage|Tasks|Trackplay)\]/.test(action.type)
+          /^\[(Products|Shopping|Storage|Tasks|Trackplay)\]/.test(action.type)
         ),
         withLatestFrom(this.#store, (action, state: IAppState) => ({
           action,
           state,
         })),
         tap(({ action, state }) => {
-          if (action.type.startsWith('[Globals]')) {
-            void this.#database.save('globals', state.globals);
+          if (action.type.startsWith('[Products]')) {
+            void this.#database.save('products', state.products);
           } else if (action.type.startsWith('[Shopping]')) {
             void this.#database.save('shopping', state.shopping);
           } else if (action.type.startsWith('[Storage]')) {

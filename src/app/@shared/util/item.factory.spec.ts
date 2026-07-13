@@ -1,6 +1,6 @@
 import {
-  createGlobalItem,
-  createGlobalItemFrom,
+  createProduct,
+  createProductFrom,
   createShoppingItem,
   createShoppingItemFromGlobal,
   createShoppingItemFromStorage,
@@ -10,7 +10,7 @@ import {
   createTaskItem,
 } from './item.factory';
 import {
-  mockGlobalItem,
+  mockProduct,
   mockShoppingItem,
   mockStorageItem,
 } from '../testing/test-data';
@@ -31,12 +31,12 @@ describe('item.factory', () => {
 
   describe('createStorageItemFromGlobal', () => {
     it('does not set a best-before for a "forever" item', () => {
-      const global = mockGlobalItem({ bestBeforeTimespan: 'forever' });
+      const global = mockProduct({ bestBeforeTimespan: 'forever' });
       expect(createStorageItemFromGlobal(global).bestBefore).toBeUndefined();
     });
 
     it('computes a best-before date for a time-limited item', () => {
-      const global = mockGlobalItem({
+      const global = mockProduct({
         bestBeforeTimespan: 'days',
         bestBeforeTimevalue: 5,
       });
@@ -69,7 +69,7 @@ describe('item.factory', () => {
 
     it('createShoppingItemFromGlobal / FromStorage copy the source', () => {
       expect(
-        createShoppingItemFromGlobal(mockGlobalItem({ name: 'Sugar' })).name
+        createShoppingItemFromGlobal(mockProduct({ name: 'Sugar' })).name
       ).toBe('Sugar');
       expect(
         createShoppingItemFromStorage(mockStorageItem({ name: 'Milk' }), 2)
@@ -78,9 +78,9 @@ describe('item.factory', () => {
     });
   });
 
-  describe('createGlobalItem', () => {
+  describe('createProduct', () => {
     it('creates a loose, piece-based, forever item', () => {
-      const item = createGlobalItem('Sugar', 'Baking');
+      const item = createProduct('Sugar', 'Baking');
       expect(item.unit).toBe('pieces');
       expect(item.packaging).toBe('loose');
       expect(item.bestBeforeTimespan).toBe('forever');
@@ -88,8 +88,8 @@ describe('item.factory', () => {
       expect(item.category).toEqual(['Baking']);
     });
 
-    it('createGlobalItemFrom reuses name and category of the source', () => {
-      const item = createGlobalItemFrom(
+    it('createProductFrom reuses name and category of the source', () => {
+      const item = createProductFrom(
         mockStorageItem({ name: 'Milk', category: ['Dairy'] })
       );
       expect(item.name).toBe('Milk');

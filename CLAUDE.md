@@ -25,6 +25,16 @@ The full merge decision log, architectural deviations, and acceptance record liv
 
 ## Architecture
 
+> **⚠️ Re-domained (2026-07, branch `feature/ddd-refactor`).** The grocery subsystem was
+> restructured by a DDD refactor: `shopping`/`storage`/`products` (was `globals`) are now
+> features of a **single `groceries` domain** (`src/app/groceries/`); `tasks` is its own domain,
+> sealed off the grocery engine via a `ListPageFacade` (`@shared/data/list/`); the shared page
+> is the domain-blind `list-page` (was `grocery-list-page`); `notifications` and `commlink` no
+> longer import any domain (inverted behind `@shared` `notify`/`dashboardTelemetry` contracts);
+> and the grocery cluster + `tasks` are **lazy** (co-hydrated via a route resolver). Some
+> descriptions below predate this — **`docs/target-architecture.md` (esp. §11) is the current,
+> authoritative structure.**
+
 Standalone app bootstrapped from `src/main.ts` (no `AppModule`). All providers (router, store, effects, Ionic, translate, storage) are wired in `bootstrapApplication(...)`.
 
 ### Folder layout (Hahnekamp-style, Sheriff-enforced)
@@ -55,15 +65,15 @@ src/app/
   list-settings/feature/list-settings-page/                      ← grocery feature-flags page
 ```
 
-**Sheriff dep rules** (`pnpm exec sheriff verify`): domains sealed (`domain:* → sameTag, domain:shared`). Explicit bridges: `notifications→tracking`, `barcode→office-time`, `commlink→notifications+office-time`, and the grocery ones — `shopping↔storage` (copy-to-list) and `shopping/storage→globals` (create-global dialog); `tasks` and `globals` are otherwise sealed. Type axis: `feature → smart-ui/ui/data/util/model`, `smart-ui → smart-ui/ui/data/util/model` (**relaxed** to allow smart-ui composition — kitchen-bot's dialogs compose store-connected sub-components), `ui → util/model`, `data → util/model`, `util → model`. `type:testing` may reach any layer but only `*.spec.ts` may depend on it.
+**Sheriff dep rules** (`pnpm exec sheriff verify`): domains sealed (`domain:* → sameTag, domain:shared`). After the re-domaining the **only** explicit bridge is `barcode→office-time` (SIGIL image). The old grocery bridges (`shopping↔storage`, `shopping/storage→globals`) are gone — those are now intra-`groceries` (`sameTag`); `notifications→tracking` and `commlink→…` are gone — inverted behind `@shared` contracts. `tasks`, `notifications`, `commlink` inherit the sealed default. Type axis: `feature → smart-ui/ui/data/util/model`, `smart-ui → smart-ui/ui/data/util/model` (**relaxed** to allow smart-ui composition — kitchen-bot's dialogs compose store-connected sub-components), `ui → util/model`, `data → util/model`, `util → model`. `type:testing` may reach any layer but only `*.spec.ts` may depend on it.
 
 ### Routing (`src/app/app.routes.ts`)
 
-Hash routing (`withHashLocation()`). Lazy pages: `commlink` (home/deck), `tracking`, `data/:listId`, `office-time`, `settings`, `barcode`, `notifications`, `soykaf` (**standby stub**), and the grocery routes `shopping/:listId`, `storage/:listId`, `tasks/:listId`, `database/:listId` (the globals domain — route path renamed from `/globals`; the listId stays `_globals` and the slice/selector are unchanged), `list-settings`. `**` → `commlink`. Titles via `data.title` + `AppTitleStrategy`.
+Hash routing (`withHashLocation()`). Lazy pages: `commlink` (home/deck), `tracking`, `data/:listId`, `office-time`, `settings`, `barcode`, `notifications`, `soykaf` (**standby stub**), and the grocery routes `shopping/:listId`, `storage/:listId`, `tasks/:listId`, `products/:listId` (was `/database`; listId is `_products`), `list-settings`, plus `cash` and `trackplay/*`. The grocery routes + `tasks` additionally carry **lazy `providers` (state+effects) + a `datastoreHydrationResolver`** — the grocery cluster co-registers all three slices so cross-list reads never hit an unregistered sibling. `**` → `commlink`. Titles via `data.title` + `AppTitleStrategy`.
 
 ### State (NgRx)
 
-Root `provideStore` slices: `router`, `settings`/`tracking`/`dialogs`/`officeTime`/`notifications` (timetracker), and `globals`/`shopping`/`storage`/`tasks`/`quickadd`/`listSettings`/`itemDialogs` (grocery). Every reducer hydrates on `ApplicationActions.loadedSuccessfully`.
+Root (eager) `provideStore` slices: `router`, `dashboard` (commlink read-model), `settings`/`tracking`/`dialogs`/`officeTime`/`notifications` (timetracker), `quickadd`/`listSettings`/`itemDialogs` (shared grocery kit), `cash`, `trackplay`. The `products`/`shopping`/`storage`/`tasks` slices are **lazy** — registered per-route via `provideState` (`groceries/data/provide-groceries-lazy.ts`, `tasks/data/provide-tasks-lazy.ts`) and hydrated by the route resolver, not eager. Every reducer still hydrates on `ApplicationActions.loadedSuccessfully`.
 
 - **Two item-list engines.** `@shared/data/item-list/*` is tracking-flavoured (`selectListState = state.tracking`, source `[ItemList]`). `@shared/data/grocery-list/*` is the multi-list engine (source `[GroceryList]`) — `selectListState` derives the active list from the `:listId` route param via `router.selector` + `stateByListId`.
 - **Grocery slice renames vs kitchen-bot** (to avoid timetracker collisions): store keys `settings→listSettings`, `dialogs→itemDialogs`; action sources `[Settings]→[ListSettings]`, `[Dialogs]→[ItemDialogs]`, `[ItemList]→[GroceryList]`; types `ISettings→IListSettings`, `IEditItemState→IItemDialogState`, `TDialogsState→TItemDialogsState`.

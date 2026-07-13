@@ -26,7 +26,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
 import { INotification, IonViewWillEnter } from '../../@shared/types';
 import { NotificationService } from '../util/notification.service';
-import { NotificationsActions } from '../data/notifications.actions';
+import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,

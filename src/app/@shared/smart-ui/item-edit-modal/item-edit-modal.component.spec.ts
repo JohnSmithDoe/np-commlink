@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
+import { ItemDialogsActions } from '../../data/item-dialogs/item-dialogs.actions';
 import { ItemEditModalComponent } from './item-edit-modal.component';
 
 describe('ItemEditModalComponent', () => {

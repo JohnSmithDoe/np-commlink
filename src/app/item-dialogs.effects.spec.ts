@@ -10,7 +10,7 @@ import {
   mockStorageItem,
   mockStorageState,
 } from './@shared/testing/test-data';
-import { StorageActions } from './storage/data/storage.actions';
+import { StorageActions } from './groceries/data/storage.actions';
 import {
   CategoriesActions,
   ItemDialogsActions,

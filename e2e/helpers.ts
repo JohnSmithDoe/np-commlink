@@ -16,7 +16,7 @@ export const ROUTE = {
   shopping: 'shopping/_shopping',
   storage: 'storage/_storage',
   tasks: 'tasks/_tasks',
-  globals: 'database/_globals',
+  products: 'products/_products',
 } as const;
 
 /**

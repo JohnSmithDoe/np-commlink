@@ -1,7 +1,8 @@
 # np-commlink — merge notes
 
 Running record of non-obvious merge decisions, diffs, and verification output.
-Companion to `merge-plan.md` (the ordered commit list).
+The merge is complete and committed; the ordered commit plan and the A/B/C follow-up
+handover have been retired (recoverable from git history). Open work lives in `todo.md`.
 
 ---
 

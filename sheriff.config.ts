@@ -100,35 +100,21 @@ export const config: SheriffConfig = {
     'domain:*': [sameTag, 'domain:shared'],
 
     // Explicit cross-domain bridges, each documented:
-    //   notifications is a supporting subdomain reacting to tracking events
+    //   notifications knows no domain — tracking owns the tracking→notify
+    //     coupling and dispatches the @shared notification write contract, so
+    //     notifications inherits the default `domain:*` rule (no bridge).
     //   barcode display reads the image stored in office-time state
-    //   commlink is the super-app deck — its dashboard surfaces live
-    //     telemetry (unread signals, office-day stats) from the programs it
-    //     launches, so it reads those domains' selectors read-only.
-    'domain:notifications': [sameTag, 'domain:shared', 'domain:tracking'],
+    //   commlink is the super-app deck — it reads ONLY the eager @shared
+    //     dashboard read-model (CQRS). Suppliers push telemetry via
+    //     DashboardActions.report, so commlink imports no other domain and
+    //     inherits the default `domain:*` rule (no bridge).
     'domain:barcode': [sameTag, 'domain:shared', 'domain:office-time'],
-    'domain:commlink': [
-      sameTag,
-      'domain:shared',
-      'domain:notifications',
-      'domain:office-time',
-    ],
 
-    // Grocery domains: `tasks` is fully sealed; `globals` is the master-product
-    // catalog referenced by the others but referencing none. `shopping`/`storage`
-    // couple to each other (copy-to-list) and both render globals' edit dialog
-    // (create-global flow) — hence the bridges below.
-    'domain:shopping': [
-      sameTag,
-      'domain:shared',
-      'domain:storage',
-      'domain:globals',
-    ],
-    'domain:storage': [
-      sameTag,
-      'domain:shared',
-      'domain:shopping',
-      'domain:globals',
-    ],
+    // Grocery bounded context: shopping/storage/products (+ the list-settings
+    // page and the multi-list engine) now live in ONE `domain:groceries` folder,
+    // so what used to be three cross-domain bridges (shopping↔storage,
+    // shopping→products, storage→products) are intra-domain imports covered by
+    // `sameTag`. `tasks` stays fully sealed (inherits the default `domain:*`
+    // rule; it shares no data with groceries).
   },
 };

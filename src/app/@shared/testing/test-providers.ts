@@ -8,11 +8,8 @@ import {
 import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
-import { Action } from '@ngrx/store';
-import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 import { IAppState } from '../types';
 import { mockAppState } from './test-data';
 
@@ -53,20 +50,9 @@ export function provideTestingProviders(
 /**
  * Convenience provider set with a default seeded MockStore — enough for the
  * "should create" smoke tests and any presentational component.
+ *
+ * Effects specs deliberately do NOT use a shared helper: they wire
+ * `provideMockActions(() => actions$)` + `provideMockStore(...)` (plus the
+ * effect's own deps) inline, so each spec provides exactly what it needs.
  */
 export const COMMON_TEST_PROVIDERS: TestProvider[] = provideTestingProviders();
-
-/**
- * Provider array for effects specs: a seeded MockStore plus
- * {@link provideMockActions} wired to the given actions stream. Use with
- * `firstValueFrom(effects.someEffect$)` after emitting an action on `actions$`.
- */
-export function provideEffectsTestingProviders(
-  actions$: Observable<Action>,
-  initialState: Partial<IAppState> = {}
-): TestProvider[] {
-  return [
-    ...provideTestingProviders(initialState),
-    provideMockActions(() => actions$),
-  ];
-}

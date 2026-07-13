@@ -1,7 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
 import { EMPTY, Observable } from 'rxjs';
-import { provideEffectsTestingProviders } from '../../../@shared/testing/test-providers';
 import { DatabaseService } from '../../../@shared/util/database.service';
 import { OfficeTimeEffects } from './office-time.effects';
 
@@ -12,7 +14,9 @@ describe('OfficeTimeEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         OfficeTimeEffects,
-        ...provideEffectsTestingProviders(actions$),
+        provideMockActions(() => actions$),
+        provideMockStore(),
+        provideHttpClient(),
         {
           provide: DatabaseService,
           useValue: {

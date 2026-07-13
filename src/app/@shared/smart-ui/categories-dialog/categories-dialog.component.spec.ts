@@ -4,9 +4,9 @@ import { MockStore } from '@ngrx/store/testing';
 import {
   mockCategoriesState,
   mockItemDialogsState,
-} from '../../../@shared/testing/test-data';
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { CategoriesActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+} from '../../testing/test-data';
+import { provideTestingProviders } from '../../testing/test-providers';
+import { CategoriesActions } from '../../data/item-dialogs/item-dialogs.actions';
 import { CategoriesDialogComponent } from './categories-dialog.component';
 
 describe('CategoriesDialogComponent', () => {

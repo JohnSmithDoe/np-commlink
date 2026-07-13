@@ -9,7 +9,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../../@shared/data/grocery-list/grocery-list.utils';
+} from '../../@shared/data/list/list.utils';
 import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TasksActions } from './tasks.actions';
 
