@@ -2,14 +2,56 @@
   label="cash.page-title.cash"
   icon="wallet-outline"
   color="cash"
-  hideButtons="true"
-/>
+  (addItem)="openNew()"
+>
+  <ion-buttons slot="end" toolbar>
+    <ion-button (click)="goToReport()" aria-label="report">
+      <ion-icon slot="icon-only" name="bar-chart-outline" />
+    </ion-button>
+    @if (canTransfer()) {
+      <ion-button (click)="openTransfer()" aria-label="transfer">
+        <ion-icon slot="icon-only" name="swap-horizontal-outline" />
+      </ion-button>
+    }
+    <ion-button (click)="goToRules()" aria-label="rules">
+      <ion-icon slot="icon-only" name="funnel-outline" />
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
 
 <ion-content class="ion-padding">
-  <div class="cash-scaffold">
-    <ion-icon name="wallet-outline" class="cash-scaffold__icon" />
-    <p class="cash-scaffold__hint">{{ 'cash.landing.hint' | translate }}</p>
-    <p class="cash-scaffold__count">{{ accounts().length }}</p>
-    <a routerLink="/commlink">&lt; BACK TO DECK</a>
-  </div>
+  <header class="cash-networth">
+    <span class="cash-networth__label">{{ 'cash.net-worth' | translate }}</span>
+    <span class="cash-networth__value">{{ netWorthCents() | moneyEur }}</span>
+  </header>
+
+  @if (accounts().length) {
+    <ion-list lines="full">
+      @for (account of accounts(); track account.id) {
+        <ion-item-sliding>
+          <ion-item button detail="true" (click)="goToAccount(account)">
+            <ion-icon
+              slot="start"
+              [name]="iconFor(account.kind)"
+              aria-hidden="true"
+            />
+            <ion-label>
+              <h2>{{ account.name }}</h2>
+              <p>{{ 'cash.account.kind.' + account.kind | translate }}</p>
+            </ion-label>
+            <ion-note slot="end" class="cash-account__balance">
+              {{ account.balanceCents | moneyEur }}
+            </ion-note>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmDelete(account)">
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <p class="cash-empty">{{ 'cash.accounts.empty' | translate }}</p>
+  }
 </ion-content>

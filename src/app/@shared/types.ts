@@ -464,11 +464,16 @@ export type IQuickAddState = Readonly<{
 // ============================================================================
 
 export type TAccountKind = 'giro' | 'creditcard' | 'savings' | 'cash';
+// Banks with a dedicated CSV import parser (cash/util/import). An account's
+// `bank` implicitly selects its parser — see docs/cash-plan.md P4.
+export type TBank = 'volksbank' | 'dkb';
 
 export interface ICashAccount {
   id: string;
   name: string;
   kind: TAccountKind;
+  // Optional: selects the CSV import parser. A manual-only account has none.
+  bank?: TBank;
   // Opening balance in integer cents as of `openingDateISO`; the running
   // balance is `openingBalanceCents + Σ signed transaction amounts`.
   openingBalanceCents: number;
@@ -498,15 +503,22 @@ export interface ICashTransaction {
   matchedTxnId?: string;
   // Transfer legs are excluded from spend/income totals.
   isTransfer?: boolean;
+  // The two legs of one transfer share this id (distinct from matchedTxnId,
+  // which is reconciliation). Deleting either leg deletes the whole group.
+  transferGroupId?: string;
   importBatchId?: string;
 }
 
 // Email-style categorization filter. A rule fires when its conditions match
 // (`all` = AND, `any` = OR), assigning `category`. Rules are ordered and the
-// first matching rule wins.
-export type TFilterOp =
-  'contains' | 'startsWith' | 'endsWith' | 'equals' | 'regex';
+// first matching rule wins. Ops are split by field: string ops apply to
+// `description`, numeric ops to `amount` (matched against signed cents — see
+// cash/util/categorize.ts and docs/cash-plan.md).
 export type TFilterField = 'description' | 'amount';
+export type TDescriptionOp =
+  'contains' | 'startsWith' | 'endsWith' | 'equals' | 'regex';
+export type TAmountOp = 'eq' | 'lt' | 'lte' | 'gt' | 'gte';
+export type TFilterOp = TDescriptionOp | TAmountOp;
 
 export interface ICashFilterCondition {
   field: TFilterField;

@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ (isEdit() ? 'cash.txn-dialog.title-edit' : 'cash.txn-dialog.title-new') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="!canSave()" (click)="save()">
+        {{ 'cash.action.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment
+    [value]="direction()"
+    (ionChange)="onDirection($any($event).detail.value)"
+  >
+    <ion-segment-button value="expense">
+      {{ 'cash.txn.expense' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="income">
+      {{ 'cash.txn.income' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list lines="full">
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.description' | translate }}"
+        [clearInput]="true"
+        [value]="description()"
+        (ionInput)="onDescription($any($event.target).value ?? '')"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.amount' | translate }}"
+        inputmode="decimal"
+        placeholder="0,00"
+        [value]="amount()"
+        (ionInput)="onAmount($any($event.target).value ?? '')"
+      />
+    </ion-item>
+    @if (amountInvalid()) {
+      <ion-note color="danger" class="cash-txn-dialog__error">
+        {{ 'cash.txn-dialog.amount-invalid' | translate }}
+      </ion-note>
+    }
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'cash.label.date' | translate }}"
+        [value]="date()"
+        (ionInput)="onDate($any($event.target).value ?? '')"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.category' | translate }}"
+        [clearInput]="true"
+        [value]="category()"
+        (ionInput)="onCategory($any($event.target).value ?? '')"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-toggle
+        [checked]="pending()"
+        (ionChange)="onPending($any($event).detail.checked)"
+      >
+        {{ 'cash.txn.pending' | translate }}
+      </ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

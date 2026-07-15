@@ -38,11 +38,38 @@ export const cashReducer = createReducer(
   // ── Transactions ─────────────────────────────────────────────
   on(CashActions.addTransaction, (state, { transaction }): ICashState => ({ ...state, transactions: [...state.transactions, transaction] })),
   on(CashActions.updateTransaction, (state, { transaction }): ICashState => ({ ...state, transactions: upsertById(state.transactions, transaction) })),
-  on(CashActions.removeTransaction, (state, { id }): ICashState => ({ ...state, transactions: state.transactions.filter((t) => t.id !== id) })),
+  on(CashActions.removeTransaction, (state, { id }): ICashState => {
+    // Deleting either leg of a transfer removes the whole group.
+    const groupId = state.transactions.find((t) => t.id === id)?.transferGroupId;
+    return {
+      ...state,
+      transactions: state.transactions.filter((t) =>
+        groupId ? t.transferGroupId !== groupId : t.id !== id
+      ),
+    };
+  }),
+  on(CashActions.importTransactions, (state, { transactions }): ICashState => ({ ...state, transactions: [...state.transactions, ...transactions] })),
+  on(CashActions.bookTransfer, (state, { fromLeg, toLeg }): ICashState => ({ ...state, transactions: [...state.transactions, fromLeg, toLeg] })),
   on(CashActions.setTransactionCategory, (state, { id, category, manual }): ICashState => ({
     ...state,
     transactions: state.transactions.map((t): ICashTransaction => t.id === id ? { ...t, category, categoryManual: manual } : t),
   })),
+  on(CashActions.reconcileTransaction, (state, { manualId, importedId }): ICashState => {
+    const manual = state.transactions.find((t) => t.id === manualId);
+    const imported = state.transactions.find((t) => t.id === importedId);
+    if (!manual || !imported) return state;
+    // Carry a hand-set category from the manual leg onto the survivor so the
+    // user's categorization isn't lost when the manual leg is hidden.
+    const carry = manual.categoryManual && manual.category && !imported.categoryManual;
+    return {
+      ...state,
+      transactions: state.transactions.map((t): ICashTransaction => {
+        if (t.id === manualId) return { ...t, matchedTxnId: importedId, status: 'confirmed' };
+        if (t.id === importedId && carry) return { ...t, category: manual.category, categoryManual: true };
+        return t;
+      }),
+    };
+  }),
 
   // ── Categories ───────────────────────────────────────────────
   on(CashActions.addCategory, (state, { category }): ICashState => state.categories.includes(category) ? state : ({ ...state, categories: [...state.categories, category] })),

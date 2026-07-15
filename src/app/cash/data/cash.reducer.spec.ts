@@ -58,6 +58,17 @@ describe('cashReducer', () => {
     expect(removed.transactions).toHaveLength(0);
   });
 
+  it('appends a batch of imported transactions in one action', () => {
+    const existing = mockCashTransaction({ id: 't0' });
+    const start = mockCashState({ transactions: [existing] });
+    const batch = [
+      mockCashTransaction({ id: 'i1', source: 'imported' }),
+      mockCashTransaction({ id: 'i2', source: 'imported' }),
+    ];
+    const state = cashReducer(start, CashActions.importTransactions(batch));
+    expect(state.transactions.map((t) => t.id)).toEqual(['t0', 'i1', 'i2']);
+  });
+
   it('sets a transaction category and flags it as manual', () => {
     const txn = mockCashTransaction({ id: 't1', category: 'groceries' });
     const start = mockCashState({ transactions: [txn] });
@@ -67,6 +78,55 @@ describe('cashReducer', () => {
     );
     expect(state.transactions[0].category).toBe('rent');
     expect(state.transactions[0].categoryManual).toBe(true);
+  });
+
+  it('books both legs of a transfer and deletes the group as a unit', () => {
+    const fromLeg = mockCashTransaction({
+      id: 'f',
+      accountId: 'giro',
+      amountCents: -5000,
+      isTransfer: true,
+      transferGroupId: 'g1',
+    });
+    const toLeg = mockCashTransaction({
+      id: 't',
+      accountId: 'savings',
+      amountCents: 5000,
+      isTransfer: true,
+      transferGroupId: 'g1',
+    });
+    const booked = cashReducer(
+      initialState,
+      CashActions.bookTransfer(fromLeg, toLeg)
+    );
+    expect(booked.transactions.map((t) => t.id)).toEqual(['f', 't']);
+
+    // removing either leg removes the whole group
+    const removed = cashReducer(booked, CashActions.removeTransaction('f'));
+    expect(removed.transactions).toHaveLength(0);
+  });
+
+  it('reconciles a pending manual entry into an imported survivor', () => {
+    const manual = mockCashTransaction({
+      id: 'm1',
+      source: 'manual',
+      status: 'pending',
+      category: 'restaurant',
+      categoryManual: true,
+    });
+    const imported = mockCashTransaction({ id: 'i1', source: 'imported' });
+    const start = mockCashState({ transactions: [manual, imported] });
+    const state = cashReducer(
+      start,
+      CashActions.reconcileTransaction('m1', 'i1')
+    );
+    const m = state.transactions.find((t) => t.id === 'm1')!;
+    const i = state.transactions.find((t) => t.id === 'i1')!;
+    expect(m.matchedTxnId).toBe('i1');
+    expect(m.status).toBe('confirmed');
+    // the hand-set category carried onto the survivor
+    expect(i.category).toBe('restaurant');
+    expect(i.categoryManual).toBe(true);
   });
 
   it('adds a category once (no duplicates) and removes it', () => {

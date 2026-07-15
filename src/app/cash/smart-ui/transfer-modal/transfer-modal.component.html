@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'cash.transfer.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="!canSave()" (click)="save()">
+        {{ 'cash.action.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list lines="full">
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        label="{{ 'cash.transfer.from' | translate }}"
+        [value]="fromId()"
+        (ionChange)="onFrom($any($event).detail.value)"
+      >
+        @for (account of accounts(); track account.id) {
+          <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        label="{{ 'cash.transfer.to' | translate }}"
+        [value]="toId()"
+        (ionChange)="onTo($any($event).detail.value)"
+      >
+        @for (account of accounts(); track account.id) {
+          <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    @if (sameAccount()) {
+      <ion-note color="danger" class="cash-transfer__error">
+        {{ 'cash.transfer.same-account' | translate }}
+      </ion-note>
+    }
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.amount' | translate }}"
+        inputmode="decimal"
+        placeholder="0,00"
+        [value]="amount()"
+        (ionInput)="onAmount($any($event.target).value ?? '')"
+      />
+    </ion-item>
+    @if (amountInvalid()) {
+      <ion-note color="danger" class="cash-transfer__error">
+        {{ 'cash.txn-dialog.amount-invalid' | translate }}
+      </ion-note>
+    }
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'cash.label.date' | translate }}"
+        [value]="date()"
+        (ionInput)="onDate($any($event.target).value ?? '')"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.description' | translate }}"
+        [clearInput]="true"
+        [value]="description()"
+        (ionInput)="onDescription($any($event.target).value ?? '')"
+      />
+    </ion-item>
+  </ion-list>
+</ion-content>

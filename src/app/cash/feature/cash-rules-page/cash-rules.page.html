@@ -1,0 +1,113 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'cash.page-title.rules' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Categories palette -->
+  <ion-list-header>{{ 'cash.section.categories' | translate }}</ion-list-header>
+  <ion-item>
+    <ion-input
+      label="＋"
+      placeholder="{{ 'cash.category.add.placeholder' | translate }}"
+      [value]="newCategory()"
+      (ionInput)="onNewCategory($any($event.target).value ?? '')"
+      (keyup.enter)="addCategory()"
+    />
+    <ion-button
+      slot="end"
+      fill="clear"
+      [disabled]="!canAddCategory()"
+      (click)="addCategory()"
+      aria-label="add category"
+    >
+      <ion-icon slot="icon-only" name="add-outline" />
+    </ion-button>
+  </ion-item>
+
+  @if (categories().length) {
+    <ion-list lines="full">
+      @for (cat of categories(); track cat) {
+        <ion-item-sliding>
+          <ion-item>
+            <ion-label>{{ cat }}</ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="removeCategory(cat)">
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="cash-hint">{{ 'cash.categories.empty' | translate }}</ion-note>
+  }
+
+  <!-- Rules -->
+  <ion-list-header>{{ 'cash.section.rules' | translate }}</ion-list-header>
+  @if (rules().length) {
+    <ion-list lines="full">
+      @for (rule of rules(); track rule.id; let first = $first; let last = $last) {
+        <ion-item-sliding>
+          <ion-item button detail="false" (click)="openEditRule(rule)">
+            <ion-buttons slot="start">
+              <ion-button
+                [disabled]="first"
+                (click)="moveRule(rule, -1); $event.stopPropagation()"
+                aria-label="move up"
+              >
+                <ion-icon slot="icon-only" name="arrow-up-outline" />
+              </ion-button>
+              <ion-button
+                [disabled]="last"
+                (click)="moveRule(rule, 1); $event.stopPropagation()"
+                aria-label="move down"
+              >
+                <ion-icon slot="icon-only" name="arrow-down-outline" />
+              </ion-button>
+            </ion-buttons>
+            <ion-label>
+              <h2>{{ rule.name || rule.category }}</h2>
+              <p>{{ rule.category }} · {{ summarize(rule) }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmDeleteRule(rule)">
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="cash-hint">{{ 'cash.rules.empty' | translate }}</ion-note>
+  }
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    color="cash"
+    class="ion-margin-top"
+    (click)="openNewRule()"
+  >
+    <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+    {{ 'cash.rule.add' | translate }}
+  </ion-button>
+
+  <ion-button
+    expand="block"
+    color="cash"
+    [disabled]="!rules().length"
+    (click)="applyRules()"
+  >
+    <ion-icon slot="start" name="play-outline" aria-hidden="true" />
+    {{ 'cash.rules.apply' | translate }}
+  </ion-button>
+</ion-content>

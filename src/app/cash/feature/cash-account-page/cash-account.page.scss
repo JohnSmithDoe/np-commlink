@@ -1,12 +1,13 @@
-// Accounts overview (P1). Consumes the shared shadowrun tokens via
+// Per-account ledger (P2). Reuses the .cash-networth strip look from the
+// overview for the balance header. Consumes shared shadowrun tokens via
 // var(--sr-*/--ion-*); no @use of the theme.
 .cash-networth {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.25rem 0.25rem 0.75rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--sr-line);
 
   &__label {
@@ -25,9 +26,17 @@
   }
 }
 
-.cash-account__balance {
+.cash-txn__amount {
   font-family: var(--sr-mono);
   font-size: 1rem;
+
+  &--out {
+    color: var(--ion-color-danger);
+  }
+
+  &--in {
+    color: var(--ion-color-success);
+  }
 }
 
 .cash-empty {

@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'cash.page-title.report' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (hasData()) {
+    <div class="cash-report__totals">
+      <div class="cash-report__stat">
+        <span class="cash-report__label">{{ 'cash.report.income' | translate }}</span>
+        <span class="cash-report__value cash-report__value--in">
+          {{ totals().incomeCents | moneyEur }}
+        </span>
+      </div>
+      <div class="cash-report__stat">
+        <span class="cash-report__label">{{ 'cash.report.spend' | translate }}</span>
+        <span class="cash-report__value cash-report__value--out">
+          {{ totals().spendCents | moneyEur }}
+        </span>
+      </div>
+      <div class="cash-report__stat">
+        <span class="cash-report__label">{{ 'cash.report.net' | translate }}</span>
+        <span class="cash-report__value">{{ totals().netCents | moneyEur }}</span>
+      </div>
+    </div>
+
+    <h2 class="cash-report__heading">{{ 'cash.report.by-month' | translate }}</h2>
+    <div class="cash-report__chart">
+      <canvas
+        baseChart
+        [type]="'bar'"
+        [data]="monthlyData()"
+        [options]="barOptions"
+      ></canvas>
+    </div>
+
+    @if (spendByCategory().length) {
+      <h2 class="cash-report__heading">{{ 'cash.report.by-category' | translate }}</h2>
+      <div class="cash-report__chart">
+        <canvas
+          baseChart
+          [type]="'doughnut'"
+          [data]="categoryData()"
+          [options]="doughnutOptions"
+        ></canvas>
+      </div>
+
+      <ion-list lines="full">
+        @for (row of spendByCategory(); track row.category) {
+          <ion-item>
+            <ion-label>{{ row.category || ('cash.report.uncategorized' | translate) }}</ion-label>
+            <ion-note slot="end" class="cash-report__cat-amount">
+              {{ row.cents | moneyEur }}
+            </ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  } @else {
+    <p class="cash-empty">{{ 'cash.report.empty' | translate }}</p>
+  }
+</ion-content>

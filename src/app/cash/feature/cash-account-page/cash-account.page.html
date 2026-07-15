@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back">
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ account()?.name }}</ion-title>
+    <ion-buttons slot="end">
+      @if (canImport()) {
+        <ion-button (click)="csv.click()" aria-label="import csv">
+          <ion-icon slot="icon-only" name="cloud-upload-outline" />
+        </ion-button>
+      }
+      <ion-button (click)="editAccount()" aria-label="edit account">
+        <ion-icon slot="icon-only" name="create-outline" />
+      </ion-button>
+      <ion-button (click)="addTransaction()" aria-label="add transaction">
+        <ion-icon slot="icon-only" name="add-outline" />
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<input
+  #csv
+  type="file"
+  accept=".csv,text/csv"
+  hidden
+  (change)="importCsv($event)"
+/>
+
+<ion-content>
+  @if (account()) {
+    <header class="cash-networth ion-padding-horizontal">
+      <span class="cash-networth__label">{{ 'cash.balance' | translate }}</span>
+      <span class="cash-networth__value">{{ balanceCents() | moneyEur }}</span>
+    </header>
+
+    @if (transactions().length) {
+      <ion-list lines="full">
+        @for (txn of transactions(); track txn.id) {
+          <ion-item-sliding>
+            <ion-item button detail="false" (click)="editTransaction(txn)">
+              <ion-label>
+                <h2>{{ txn.description }}</h2>
+                <p>
+                  {{ formatDate(txn.dateISO) }}
+                  @if (txn.category) {
+                    · {{ txn.category }}
+                  }
+                  @if (txn.status === 'pending') {
+                    · {{ 'cash.txn.pending' | translate }}
+                  }
+                </p>
+              </ion-label>
+              <ion-note
+                slot="end"
+                class="cash-txn__amount"
+                [class.cash-txn__amount--out]="txn.amountCents < 0"
+                [class.cash-txn__amount--in]="txn.amountCents > 0"
+              >
+                {{ txn.amountCents | moneyEur }}
+              </ion-note>
+            </ion-item>
+            @if (txn.status === 'pending') {
+              <ion-item-options side="start">
+                <ion-item-option color="cash" (click)="reconcile(txn)">
+                  <ion-icon slot="icon-only" name="swap-horizontal-outline" />
+                </ion-item-option>
+              </ion-item-options>
+            }
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="confirmDelete(txn)">
+                <ion-icon slot="icon-only" name="trash-outline" />
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
+    } @else {
+      <p class="cash-empty">{{ 'cash.txns.empty' | translate }}</p>
+    }
+  }
+</ion-content>

@@ -1,0 +1,7 @@
+// Consumes the shared shadowrun tokens via var(--sr-*/--ion-*); no @use here.
+.cash-account-dialog__error {
+  display: block;
+  padding: 0.35rem 1rem 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}

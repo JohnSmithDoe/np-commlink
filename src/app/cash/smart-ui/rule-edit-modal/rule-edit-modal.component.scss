@@ -1,0 +1,34 @@
+// Consumes the shared shadowrun tokens via var(--sr-*/--ion-*); no @use here.
+.cash-rule-dialog__error {
+  display: block;
+  padding: 0.35rem 1rem 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.cash-rule-dialog__match {
+  margin: 0.75rem 0;
+}
+
+.cash-condition {
+  border-bottom: 1px solid var(--sr-line);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem 0;
+
+    ion-select {
+      flex: 1;
+    }
+
+    ion-button {
+      flex: 0 0 auto;
+      --padding-start: 0.25rem;
+      --padding-end: 0.25rem;
+    }
+  }
+}

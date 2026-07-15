@@ -29,11 +29,26 @@ export const CashActions = createActionGroup({
     'Add Transaction': (transaction: ICashTransaction) => ({ transaction }),
     'Update Transaction': (transaction: ICashTransaction) => ({ transaction }),
     'Remove Transaction': (id: string) => ({ id }),
+    // Bulk append from a CSV import — one action = one persist.
+    'Import Transactions': (transactions: ICashTransaction[]) => ({
+      transactions,
+    }),
+    // A transfer between own accounts: both legs booked atomically.
+    'Book Transfer': (fromLeg: ICashTransaction, toLeg: ICashTransaction) => ({
+      fromLeg,
+      toLeg,
+    }),
     'Set Transaction Category': (
       id: string,
       category: string | undefined,
       manual: boolean
     ) => ({ id, category, manual }),
+    // Merge a pending manual entry into the imported txn it turned out to be:
+    // the manual leg points at the survivor and is hidden from balance/spend.
+    'Reconcile Transaction': (manualId: string, importedId: string) => ({
+      manualId,
+      importedId,
+    }),
 
     // Categories (user-managed name list)
     'Add Category': (category: string) => ({ category }),

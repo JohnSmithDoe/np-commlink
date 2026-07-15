@@ -1,0 +1,28 @@
+// Reuses the ledger amount colours. Consumes shared shadowrun tokens via
+// var(--sr-*/--ion-*); no @use of the theme.
+.cash-import__summary {
+  display: block;
+  padding: 0 0.25rem 0.75rem;
+  font-family: var(--sr-mono);
+  letter-spacing: 0.06em;
+  color: var(--sr-text-dim);
+}
+
+.cash-txn__amount {
+  font-family: var(--sr-mono);
+
+  &--out {
+    color: var(--ion-color-danger);
+  }
+
+  &--in {
+    color: var(--ion-color-success);
+  }
+}
+
+.cash-empty {
+  padding-top: 10vh;
+  text-align: center;
+  letter-spacing: 0.1em;
+  color: var(--sr-text-dim);
+}

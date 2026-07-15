@@ -1,0 +1,81 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonNote,
+  IonTitle,
+  IonToolbar,
+  ModalController,
+} from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+import { Store } from '@ngrx/store';
+import dayjs from 'dayjs';
+import { ICashTransaction } from '../../../@shared/types';
+import { CashActions } from '../../data/cash.actions';
+import { selectCashTransactions } from '../../data/cash.selector';
+import { MoneyEurPipe } from '../../util/money.pipe';
+import { findReconciliationCandidates } from '../../util/reconcile';
+
+/**
+ * Pick the imported transaction a `pending` manual entry should merge into (via
+ * `ModalController`). The pending `transaction` is an imperative componentProp;
+ * candidates come from the pure `findReconciliationCandidates` heuristic. Tapping
+ * one dispatches `Reconcile Transaction` and dismisses. We never auto-pick.
+ */
+@Component({
+  selector: 'app-cash-reconcile-modal',
+  templateUrl: './reconcile-modal.component.html',
+  styleUrls: ['./reconcile-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonNote,
+    TranslateModule,
+    MoneyEurPipe,
+  ],
+})
+export class CashReconcileModalComponent {
+  readonly #store = inject(Store);
+  readonly #modalCtrl = inject(ModalController);
+  readonly #transactions = this.#store.selectSignal(selectCashTransactions);
+
+  /** The pending manual entry to reconcile (imperative componentProp). */
+  transaction!: ICashTransaction;
+
+  readonly candidates = computed(() =>
+    findReconciliationCandidates(this.transaction, this.#transactions())
+  );
+
+  formatDate(iso: string): string {
+    return dayjs(iso).format('DD.MM.YYYY');
+  }
+
+  reconcileWith(imported: ICashTransaction): void {
+    this.#store.dispatch(
+      CashActions.reconcileTransaction(this.transaction.id, imported.id)
+    );
+    void this.#modalCtrl.dismiss();
+  }
+
+  cancel(): void {
+    void this.#modalCtrl.dismiss();
+  }
+}

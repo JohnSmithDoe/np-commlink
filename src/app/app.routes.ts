@@ -176,6 +176,7 @@ export const routes: Routes = [
       ),
   },
   // Cash — offline multi-account finance ledger (purpose-built; no :listId).
+  // `cash` is an eager slice, so these routes need no providers/resolver.
   {
     path: 'cash',
     data: { title: marker('cash.page-title.cash') },
@@ -185,6 +186,31 @@ export const routes: Routes = [
     },
     loadComponent: () =>
       import('./cash/feature/cash-page/cash.page').then((m) => m.CashPage),
+  },
+  {
+    // Static paths must precede `cash/:accountId` so they aren't captured as a param.
+    path: 'cash/rules',
+    data: { title: marker('cash.page-title.rules') },
+    loadComponent: () =>
+      import('./cash/feature/cash-rules-page/cash-rules.page').then(
+        (m) => m.CashRulesPage
+      ),
+  },
+  {
+    path: 'cash/report',
+    data: { title: marker('cash.page-title.report') },
+    loadComponent: () =>
+      import('./cash/feature/cash-report-page/cash-report.page').then(
+        (m) => m.CashReportPage
+      ),
+  },
+  {
+    path: 'cash/:accountId',
+    data: { title: marker('cash.page-title.cash') },
+    loadComponent: () =>
+      import('./cash/feature/cash-account-page/cash-account.page').then(
+        (m) => m.CashAccountPage
+      ),
   },
   // Trackplay (game-score tracker) — one sealed domain. `/trackplay` is the
   // program home (games list); the rest are its sub-pages.

@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar color="cash">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'cash.import.title' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        strong="true"
+        [disabled]="!transactions.length"
+        (click)="confirm()"
+      >
+        {{ 'cash.import.confirm' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-note class="cash-import__summary">
+    {{ 'cash.import.summary' | translate: { count: transactions.length, duplicates: duplicates } }}
+  </ion-note>
+
+  @if (transactions.length) {
+    <ion-list lines="full">
+      @for (txn of transactions; track txn.id) {
+        <ion-item>
+          <ion-label>
+            <h2>{{ txn.description }}</h2>
+            <p>
+              {{ formatDate(txn.dateISO) }}
+              @if (txn.category) {
+                · {{ txn.category }}
+              }
+            </p>
+          </ion-label>
+          <ion-note
+            slot="end"
+            class="cash-txn__amount"
+            [class.cash-txn__amount--out]="txn.amountCents < 0"
+            [class.cash-txn__amount--in]="txn.amountCents > 0"
+          >
+            {{ txn.amountCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <p class="cash-empty">{{ 'cash.import.empty' | translate }}</p>
+  }
+</ion-content>
