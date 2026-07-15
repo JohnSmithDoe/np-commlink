@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import { ICashState, ICashTransaction } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { CashActions } from './cash.actions';
 
 export const initialState: ICashState = {
@@ -61,5 +60,5 @@ export const cashReducer = createReducer(
     }),
   })),
 
-  on(ApplicationActions.loadedSuccessfully, (_state, { datastore }): ICashState => datastore.cash ?? _state),
+  on(CashActions.loaded, (_state, { cash }): ICashState => cash ?? _state),
 );

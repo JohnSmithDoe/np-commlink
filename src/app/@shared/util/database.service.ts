@@ -1,67 +1,72 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { Store } from '@ngrx/store';
-import { IDatastore, LoadedDatastore } from '../types';
-import { migrate, VERSION } from './migrations';
+import { IDashboardSummary, IDatastore } from '../types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DatabaseService {
   readonly #storageService = inject(Storage);
-  readonly store = inject(Store);
 
-  async create(): Promise<LoadedDatastore> {
-    await this.#storageService.create();
-    const loaded: LoadedDatastore = {
-      tracking: await this.#loadAs('tracking'),
-      settings: await this.#loadAs('settings'),
-      officeTime: await this.#loadAs('officeTime'),
-      notifications: await this.#loadAs('notifications'),
-      // grocery slices (null on a fresh install → each reducer's
-      // loadedSuccessfully handler falls back to its initialState).
-      products: await this.#loadProducts(),
-      shopping: await this.#loadAs('shopping'),
-      storage: await this.#loadAs('storage'),
-      tasks: await this.#loadAs('tasks'),
-      listSettings: await this.#loadAs('listSettings'),
-      // cash ledger (null on a fresh install → reducer initialState)
-      cash: await this.#loadAs('cash'),
-      // trackplay slice (null on a fresh install → the reducer seeds the
-      // default game types via its loadedSuccessfully handler).
-      trackplay: await this.#loadAs('trackplay'),
-    };
-    const { data, changed } = migrate(loaded, VERSION);
-    if (changed) {
-      await Promise.all([
-        this.save('tracking', data.tracking),
-        this.save('settings', data.settings),
-        this.save('officeTime', data.officeTime),
-        this.save('notifications', data.notifications),
-      ]);
-    }
-    return data;
+  // Init-once guard. Every storage entry point — `bootstrap()` (dashboard
+  // read-model) at boot, per-module `load()`/`save()` on route entry, and
+  // `saveSummary()` from the telemetry reporters — needs the backend, but
+  // Storage.create() builds a fresh LocalForage instance on every call. Memoize
+  // it so the backend is initialized exactly once regardless of which caller
+  // wins the race. (Idempotent-initialization pattern.)
+  #ready?: Promise<void>;
+  #ensureStorage(): Promise<void> {
+    return (this.#ready ??= this.#storageService
+      .create()
+      .then(() => undefined));
   }
 
-  async #loadAs<T extends keyof IDatastore>(
-    key: T
-  ): Promise<IDatastore[T] | null> {
-    return await this.#storageService.get('npc-' + key);
+  /**
+   * Boot path for the persisted dashboard read-model (lazy-modules plan §3):
+   * ensure the storage backend, then read every `npc-summary-*` doc so the deck
+   * can render cold-launch numbers before any producing module is loaded. This
+   * is the single eager storage read at boot (the whole-datastore `create()`
+   * was retired in Phase C). Migrations no longer run here — the framework is
+   * kept but empty (VERSION '1', §6); when steps return they run on raw keys
+   * here, before any lazy module loads.
+   */
+  async bootstrap(): Promise<{ summaries: IDashboardSummary[] }> {
+    await this.#ensureStorage();
+    return { summaries: await this.#loadSummaries() };
   }
 
-  // Expand/Contract rename (globals → products): read the new `npc-products`
-  // key; if it's absent, fall back to the legacy `npc-globals` key once and
-  // re-persist it under `npc-products` so existing local data survives the
-  // rename instead of being wiped.
-  async #loadProducts(): Promise<IDatastore['products'] | null> {
-    const current = await this.#loadAs('products');
-    if (current) return current;
-    const legacy = (await this.#storageService.get('npc-globals')) as
-      IDatastore['products'] | null;
-    if (legacy) {
-      await this.save('products', legacy);
-    }
-    return legacy ?? null;
+  async saveSummary(source: string, metrics: Record<string, number | string>) {
+    // Route through the init-once guard: the eager telemetry reporters emit
+    // their first `report` synchronously at effect-registration time (before
+    // provideAppInitializer dispatches the load actions), so persistSummary$
+    // can call this before create()/bootstrap() have run. Ionic Storage.set()
+    // throws synchronously when the backend isn't created yet — await here so
+    // the write always sees an initialized store.
+    await this.#ensureStorage();
+    const summary: IDashboardSummary = { source, metrics };
+    return this.#storageService.set('npc-summary-' + source, summary);
+  }
+
+  /**
+   * Per-key read for a module's own lazy load effect (lazy-modules plan §5).
+   * Awaits the init-once storage guard so a caller firing before boot init
+   * (e.g. a module load dispatched at registration) never hits an uncreated
+   * backend. Returns null when the key is absent → the reducer's `loaded`
+   * handler falls back to its initialState.
+   */
+  async load<T>(key: string): Promise<T | null> {
+    await this.#ensureStorage();
+    return this.#storageService.get('npc-' + key);
+  }
+
+  async #loadSummaries(): Promise<IDashboardSummary[]> {
+    const summaries: IDashboardSummary[] = [];
+    await this.#storageService.forEach(
+      (value: IDashboardSummary, key: string) => {
+        if (key.startsWith('npc-summary-')) summaries.push(value);
+      }
+    );
+    return summaries;
   }
 
   async save<T extends keyof IDatastore>(

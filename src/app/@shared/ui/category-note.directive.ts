@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, Input } from '@angular/core';
+import { Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { IBaseItem } from '../types';
 
 @Directive({
@@ -8,13 +8,18 @@ import { IBaseItem } from '../types';
 export class CategoryNoteDirective {
   readonly #element = inject(ElementRef<HTMLIonNoteElement>);
 
-  @Input()
-  set appCategoryNote(val: IBaseItem | undefined) {
-    if (val?.category?.length) {
-      this.#element.nativeElement.style.display = 'block';
-      this.#element.nativeElement.innerText = val.category.join(', ');
-    } else {
-      this.#element.nativeElement.style.display = 'none';
-    }
+  readonly appCategoryNote = input<IBaseItem>();
+
+  constructor() {
+    effect(() => {
+      const val = this.appCategoryNote();
+      const el = this.#element.nativeElement;
+      if (val?.category?.length) {
+        el.style.display = 'block';
+        el.innerText = val.category.join(', ');
+      } else {
+        el.style.display = 'none';
+      }
+    });
   }
 }

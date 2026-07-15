@@ -1,7 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
-  ITaskItem,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
@@ -76,17 +75,9 @@ export class TasksListPageFacade implements IListPageFacade {
     this.#store.dispatch(TasksActions.removeCategory(category));
   }
 
-  addCategory(category: TItemListCategory): void {
-    this.#store.dispatch(TasksActions.addCategory(category));
-  }
-
   showCreateDialog(): void {
     this.#store.dispatch(
       ItemDialogsActions.showCreateDialogWithSearch('_tasks')
     );
-  }
-
-  showEditDialog(item: ITaskItem): void {
-    this.#store.dispatch(ItemDialogsActions.showEditDialog(item, '_tasks'));
   }
 }

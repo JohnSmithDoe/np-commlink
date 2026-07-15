@@ -11,7 +11,7 @@ import {
   updateListMode,
   updateListSort,
 } from './grocery-list/grocery-list.utils';
-import { ApplicationActions } from '../../@shared/data/application.actions';
+import { GroceriesActions } from './groceries.actions';
 import { ShoppingActions } from './shopping.actions';
 
 export const initialState: IShoppingState = {
@@ -49,7 +49,7 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
   on(ShoppingActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
-  on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IShoppingState => {
-    return {...(datastore.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};
+  on(GroceriesActions.loaded,(_state, { data }): IShoppingState => {
+    return {...(data.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};
   }),
 );

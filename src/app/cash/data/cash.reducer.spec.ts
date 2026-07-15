@@ -1,5 +1,3 @@
-import { IDatastore } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { CashActions } from './cash.actions';
 import { cashReducer, initialState } from './cash.reducer';
 import {
@@ -109,22 +107,16 @@ describe('cashReducer', () => {
     expect(state.rules.map((r) => r.order)).toEqual([0, 1, 2]);
   });
 
-  it('hydrates from a loaded datastore', () => {
-    const datastore = {
-      cash: mockCashState({ accounts: [mockCashAccount()] }),
-    } as IDatastore;
+  it('hydrates from a loaded slice', () => {
     const state = cashReducer(
       initialState,
-      ApplicationActions.loadedSuccessfully(datastore)
+      CashActions.loaded(mockCashState({ accounts: [mockCashAccount()] }))
     );
     expect(state.accounts).toHaveLength(1);
   });
 
   it('falls back to current state when the loaded cash slice is absent', () => {
-    const state = cashReducer(
-      initialState,
-      ApplicationActions.loadedSuccessfully({} as IDatastore)
-    );
+    const state = cashReducer(initialState, CashActions.loaded(null));
     expect(state).toBe(initialState);
   });
 });

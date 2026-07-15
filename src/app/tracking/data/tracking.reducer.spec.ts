@@ -1,5 +1,4 @@
 import { ITrackingItem } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TrackingActions } from './tracking.actions';
 import { initialState, trackingReducer } from './tracking.reducer';
 
@@ -181,14 +180,12 @@ describe('trackingReducer', () => {
   it('hydrates from the datastore and forces the today view', () => {
     const next = trackingReducer(
       initialState,
-      ApplicationActions.loadedSuccessfully({
-        tracking: {
-          title: 'Time tracking',
-          items: [track({ id: 'a' })],
-          data: [],
-          dataViewId: 'all',
-          searchQuery: 'stale',
-        },
+      TrackingActions.loaded({
+        title: 'Time tracking',
+        items: [track({ id: 'a' })],
+        data: [],
+        dataViewId: 'all',
+        searchQuery: 'stale',
       } as never)
     );
     expect(next.items.map((i) => i.id)).toEqual(['a']);

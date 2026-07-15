@@ -1,9 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Output,
+  output,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,7 +10,7 @@ import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import {
   selectQuickAddCanAddCategory,
-  selectQuickAddCanAddGlobal,
+  selectQuickAddCanAddProduct,
   selectQuickAddCanAddLocal,
   selectQuickAddState,
 } from '../../data/quick-add/quick-add.selector';
@@ -28,12 +27,12 @@ export class ItemListQuickaddComponent {
   readonly #store = inject(Store);
   rxState = this.#store.selectSignal(selectQuickAddState);
   rxShowLocal = this.#store.selectSignal(selectQuickAddCanAddLocal);
-  rxShowGlobal = this.#store.selectSignal(selectQuickAddCanAddGlobal);
+  rxShowProduct = this.#store.selectSignal(selectQuickAddCanAddProduct);
   rxShowCategoy = this.#store.selectSignal(selectQuickAddCanAddCategory);
 
-  @Output() quickAddItem = new EventEmitter<void>();
-  @Output() quickCreateGlobal = new EventEmitter<void>();
-  @Output() quickCreateCategory = new EventEmitter<void>();
+  quickAddItem = output<void>();
+  quickCreateProduct = output<void>();
+  quickCreateCategory = output<void>();
 
   constructor() {
     addIcons({ add, remove, cart, list });

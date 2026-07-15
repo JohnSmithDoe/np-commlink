@@ -26,7 +26,10 @@ import {
 import dayjs from 'dayjs';
 import { interval, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { selectTelemetry } from '../../../@shared/data/dashboard/dashboard.selector';
+import {
+  selectDashboardState,
+  selectTelemetry,
+} from '../../../@shared/data/dashboard/dashboard.selector';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 type ProgramStatus = 'online' | 'standby' | 'offline';
@@ -34,8 +37,12 @@ type ProgramStatus = 'online' | 'standby' | 'offline';
 /**
  * A single "program" node on the commlink deck. Codenames lean into
  * Shadowrun jargon (MEATSPACE = the physical world, SOYKAF = the
- * kitchen-bot's coffee/food, SIGIL = paydata scan). `badgeKey` overlays a
- * live count (e.g. unread signals) onto the tile.
+ * kitchen-bot's coffee/food, SIGIL = paydata scan).
+ *
+ * `source` + `metric` overlay a live count from the shared dashboard
+ * read-model onto the tile (via `selectTelemetry(source).metrics[metric]`) —
+ * commlink stays domain-blind, reading only the CQRS read-model. Tiles with
+ * no data domain (SIGIL, SOYKAF) leave them unset and render no badge.
  */
 type CommlinkProgram = {
   hex: string;
@@ -44,7 +51,8 @@ type CommlinkProgram = {
   icon: string;
   route: string | null;
   status: ProgramStatus;
-  badgeKey?: 'unread';
+  source?: string;
+  metric?: string;
 };
 
 @Component({
@@ -63,6 +71,8 @@ export class CommlinkPage {
       icon: 'timer-outline',
       route: '/tracking',
       status: 'online',
+      source: 'tracking',
+      metric: 'count',
     },
     {
       hex: '0x02',
@@ -71,6 +81,8 @@ export class CommlinkPage {
       icon: 'business-outline',
       route: '/office-time',
       status: 'online',
+      source: 'office-time',
+      metric: 'officedays',
     },
     {
       hex: '0x03',
@@ -79,7 +91,8 @@ export class CommlinkPage {
       icon: 'notifications-outline',
       route: '/notifications',
       status: 'online',
-      badgeKey: 'unread',
+      source: 'notifications',
+      metric: 'unread',
     },
     {
       hex: '0x04',
@@ -107,6 +120,8 @@ export class CommlinkPage {
       icon: 'cart-outline',
       route: '/shopping/_shopping',
       status: 'online',
+      source: 'shopping',
+      metric: 'active',
     },
     {
       hex: '0x07',
@@ -115,6 +130,8 @@ export class CommlinkPage {
       icon: 'file-tray-stacked-outline',
       route: '/storage/_storage',
       status: 'online',
+      source: 'storage',
+      metric: 'low',
     },
     {
       hex: '0x08',
@@ -123,6 +140,8 @@ export class CommlinkPage {
       icon: 'checkbox-outline',
       route: '/tasks/_tasks',
       status: 'online',
+      source: 'tasks',
+      metric: 'open',
     },
     {
       hex: '0x09',
@@ -131,6 +150,8 @@ export class CommlinkPage {
       icon: 'pricetags-outline',
       route: '/products/_products',
       status: 'online',
+      source: 'products',
+      metric: 'count',
     },
     {
       hex: '0x0A',
@@ -139,6 +160,8 @@ export class CommlinkPage {
       icon: 'wallet-outline',
       route: '/cash',
       status: 'online',
+      source: 'cash',
+      metric: 'balance',
     },
     // Trackplay seam — game-score tracker merged in as one sealed domain.
     {
@@ -148,6 +171,8 @@ export class CommlinkPage {
       icon: 'dice-outline',
       route: '/trackplay',
       status: 'online',
+      source: 'trackplay',
+      metric: 'games',
     },
   ];
 
@@ -160,8 +185,22 @@ export class CommlinkPage {
   // ── live telemetry (signals, zoneless-safe) ──────────────────
   // Read ONLY the shared dashboard read-model (CQRS): each supplier pushes its
   // telemetry via DashboardActions.report; commlink imports no other domain.
+  readonly #telemetry = this.#store.selectSignal(selectDashboardState);
+
+  /**
+   * Live badge value for a program's configured metric from the read-model, or
+   * null when the tile has no telemetry source. Reads the `#telemetry` signal,
+   * so tiles re-render when any source reports (zoneless-safe).
+   */
+  badge(program: CommlinkProgram): number | null {
+    if (!program.source || !program.metric) return null;
+    const value =
+      this.#telemetry().bySource[program.source]?.metrics[program.metric];
+    return value == null ? null : Number(value);
+  }
+
   readonly #comms = this.#store.selectSignal(selectTelemetry('notifications'));
-  /** Unread signals → drives NOISE + the COMMS tile badge. */
+  /** Unread signals → drives the NOISE status-strip readout. */
   readonly noise = computed(() =>
     Number(this.#comms()?.metrics['unread'] ?? 0)
   );

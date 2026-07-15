@@ -1,7 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { INotification, INotificationsState } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 
 // Epoch initial value: never been viewed, so any updatedAt > epoch counts
@@ -92,9 +91,9 @@ export const notificationsReducer = createReducer(
     lastViewedAt: dayjs().format(),
   })),
   on(
-    ApplicationActions.loadedSuccessfully,
-    (state, { datastore }): INotificationsState => {
-      const loaded = datastore.notifications;
+    NotificationsActions.loaded,
+    (state, { notifications }): INotificationsState => {
+      const loaded = notifications;
       if (!loaded) return state;
       // Defensive backfill: notifications persisted before updatedAt /
       // lastViewedAt existed.

@@ -42,13 +42,13 @@ const LIST_SETTINGS_VERSION = '1';
 
 const initialListSettings: IListSettings = {
   showQuickAdd: false,
-  showQuickAddGlobal: false,
+  showQuickAddProduct: false,
   showQuickAddCategory: false,
-  showGlobalsInShopping: false,
-  showGlobalsInStorage: false,
-  showShoppingInGlobals: false,
+  showProductsInShopping: false,
+  showProductsInStorage: false,
+  showShoppingInProducts: false,
   showShoppingInStorage: false,
-  showStorageInGlobals: false,
+  showStorageInProducts: false,
   showStorageInShopping: false,
   version: LIST_SETTINGS_VERSION,
 };
@@ -99,7 +99,7 @@ export function mockTrackingDialogsState(
 export function mockSettingsState(
   overrides: Partial<ISettingsState> = {}
 ): ISettingsState {
-  return { showTotalTime: false, version: '3', ...overrides };
+  return { showTotalTime: false, version: '1', ...overrides };
 }
 
 export function mockOfficeTimeState(
@@ -205,7 +205,7 @@ export function mockTaskItem(overrides: Partial<ITaskItem> = {}): ITaskItem {
 
 export function mockProduct(overrides: Partial<IProduct> = {}): IProduct {
   return {
-    id: 'global-1',
+    id: 'product-1',
     name: 'Sugar',
     createdAt: TEST_TIMESTAMP,
     unit: 'pieces',
@@ -248,7 +248,7 @@ export function mockProductsState(
 ): IProductsState {
   return {
     id: '_products',
-    title: 'Global Items',
+    title: 'Product Items',
     items: [],
     categories: [],
     mode: 'alphabetical',
@@ -305,7 +305,7 @@ export function mockQuickAddState(
 ): IQuickAddState {
   return {
     canAddLocal: false,
-    canAddGlobal: false,
+    canAddProduct: false,
     canAddCategory: false,
     searchQuery: undefined,
     ...overrides,

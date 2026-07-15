@@ -26,17 +26,22 @@ export function createStorageItem(
   return { ...base, quantity, bestBefore };
 }
 
-export function createStorageItemFromGlobal(
-  global: IProduct,
+export function createStorageItemFromProduct(
+  product: IProduct,
   quantity = 1
 ): IStorageItem {
   let bestBefore: string | undefined;
-  if (global.bestBeforeTimespan !== 'forever') {
+  if (product.bestBeforeTimespan !== 'forever') {
     bestBefore = dayjs()
-      .add(global.bestBeforeTimevalue ?? 1, global.bestBeforeTimespan)
+      .add(product.bestBeforeTimevalue ?? 1, product.bestBeforeTimespan)
       .format();
   }
-  return createStorageItem(global.name, global.category, quantity, bestBefore);
+  return createStorageItem(
+    product.name,
+    product.category,
+    quantity,
+    bestBefore
+  );
 }
 
 export function createStorageItemFromShopping(
@@ -55,11 +60,11 @@ export function createShoppingItem(
   return { ...base, quantity, state: 'active' };
 }
 
-export function createShoppingItemFromGlobal(
-  global: IProduct,
+export function createShoppingItemFromProduct(
+  product: IProduct,
   quantity = 1
 ): IShoppingItem {
-  return createShoppingItem(global.name, global.category, quantity);
+  return createShoppingItem(product.name, product.category, quantity);
 }
 
 export function createShoppingItemFromStorage(

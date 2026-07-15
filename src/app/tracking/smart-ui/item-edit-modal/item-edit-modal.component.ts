@@ -48,8 +48,6 @@ export class ItemEditModalComponent {
 
   readonly listItems = input<IBaseItem[] | null>();
 
-  constructor() {}
-
   cancelChanges() {
     this.#store.dispatch(DialogsActions.abortChanges());
   }

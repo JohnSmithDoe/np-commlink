@@ -1,4 +1,9 @@
-import { Component, inject, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -22,6 +27,7 @@ import { ItemNameInputComponent } from '../../ui/forms/item-name-input/item-name
   selector: 'app-item-edit-modal',
   templateUrl: './item-edit-modal.component.html',
   styleUrls: ['./item-edit-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,
     IonHeader,
@@ -40,10 +46,8 @@ export class ItemEditModalComponent {
   readonly rxState = this.#store.selectSignal(selectEditState);
   readonly rxItem = this.#store.selectSignal(selectEditItem);
 
-  @Input({ required: true }) listId!: TItemListId;
-  @Input() listItems?: IBaseItem[] | null;
-
-  constructor() {}
+  listId = input.required<TItemListId>();
+  listItems = input<IBaseItem[] | null>();
 
   cancelChanges() {
     this.#store.dispatch(ItemDialogsActions.abortChanges());

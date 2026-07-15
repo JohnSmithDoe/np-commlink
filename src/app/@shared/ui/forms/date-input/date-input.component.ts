@@ -3,9 +3,8 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import { DatetimeCustomEvent } from '@ionic/angular';
 import {
@@ -31,12 +30,10 @@ import { TranslateModule } from '@ngx-translate/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateInputComponent {
-  @Input() label?: string;
-  @Input({ transform: booleanAttribute }) disabled = false;
-  @Input() value?: string | null;
-  @Output() updateValue = new EventEmitter<string>();
-
-  constructor() {}
+  label = input<string>();
+  disabled = input(false, { transform: booleanAttribute });
+  value = input<string | null>();
+  updateValue = output<string | undefined>();
 
   updateInputValue(ev: DatetimeCustomEvent) {
     const value =

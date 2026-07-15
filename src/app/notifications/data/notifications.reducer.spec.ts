@@ -1,5 +1,4 @@
 import { INotification } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 import {
   initialNotificationsState,
@@ -102,18 +101,16 @@ describe('notificationsReducer', () => {
   it('backfills updatedAt from createdAt on hydration', () => {
     const next = notificationsReducer(
       initialNotificationsState,
-      ApplicationActions.loadedSuccessfully({
-        notifications: {
-          items: [
-            notification({
-              id: 'a',
-              updatedAt: undefined as never,
-              createdAt: 'C',
-            }),
-          ],
-          doneCollapsed: false,
-          lastViewedAt: undefined as never,
-        },
+      NotificationsActions.loaded({
+        items: [
+          notification({
+            id: 'a',
+            updatedAt: undefined as never,
+            createdAt: 'C',
+          }),
+        ],
+        doneCollapsed: false,
+        lastViewedAt: undefined as never,
       } as never)
     );
     expect(next.items[0].updatedAt).toBe('C');

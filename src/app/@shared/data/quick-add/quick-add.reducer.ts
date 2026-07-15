@@ -4,7 +4,7 @@ import { QuickAddActions } from './quick-add.actions';
 
 export const initialQuickAdd: IQuickAddState = {
   canAddLocal: false,
-  canAddGlobal: false,
+  canAddProduct: false,
   canAddCategory: false,
   searchQuery: undefined,
 };

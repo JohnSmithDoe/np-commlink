@@ -1,9 +1,13 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { INotification } from '../../types';
+import { INotification, INotificationsState } from '../../types';
 
 export const NotificationsActions = createActionGroup({
   source: 'Notifications',
   events: {
+    // Own-data lazy load lifecycle (lazy-modules plan §2).
+    load: emptyProps(),
+    loaded: (notifications: INotificationsState | null) => ({ notifications }),
+
     'Add Notification': (notification: INotification) => ({ notification }),
     'Upsert Notification': (notification: INotification) => ({ notification }),
     'Update Notification Body': (id: string, body: string) => ({ id, body }),

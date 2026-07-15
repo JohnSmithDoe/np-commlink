@@ -10,7 +10,6 @@ import {
   updateListMode,
   updateListSort,
 } from '../../@shared/data/list/list.utils';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TasksActions } from './tasks.actions';
 
 export const initialState: ITasksState = {
@@ -41,7 +40,7 @@ export const tasksReducer = createReducer(
   on(TasksActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
   on(TasksActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
-  on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): ITasksState => {
-    return {...(datastore.tasks ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
+  on(TasksActions.loaded,(_state, { tasks }): ITasksState => {
+    return {...(tasks ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
   })
 );

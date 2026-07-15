@@ -4,12 +4,18 @@ import {
   IGameType,
   IGameConfig,
   IPlayer,
+  ITrackplayState,
   TID,
 } from '../../@shared/types';
 
 export const TrackplayActions = createActionGroup({
   source: 'Trackplay',
   events: {
+    // Own-data lazy load lifecycle (lazy-modules plan §2). saveGroceryOnChange$
+    // matches [Trackplay] but excludes the load/loaded lifecycle.
+    load: emptyProps(),
+    loaded: (trackplay: ITrackplayState | null) => ({ trackplay }),
+
     // ── Page entry (orchestration hooks; also ensure derived shape) ──────────
     'Enter Games Page': emptyProps(),
     'Enter Players Page': emptyProps(),

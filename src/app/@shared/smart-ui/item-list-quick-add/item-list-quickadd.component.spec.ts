@@ -27,17 +27,17 @@ describe('ItemListQuickaddComponent', () => {
     });
 
     expect(component.rxShowLocal()).toBe(true);
-    expect(component.rxShowGlobal()).toBe(false);
+    expect(component.rxShowProduct()).toBe(false);
     expect(component.rxShowCategoy()).toBe(false);
   });
 
-  it('exposes rxShowGlobal=true when the store allows a global quick-add', async () => {
+  it('exposes rxShowProduct=true when the store allows a global quick-add', async () => {
     const { component } = await setup({
-      quickadd: mockQuickAddState({ canAddGlobal: true }),
-      listSettings: mockListSettings({ showQuickAddGlobal: true }),
+      quickadd: mockQuickAddState({ canAddProduct: true }),
+      listSettings: mockListSettings({ showQuickAddProduct: true }),
     });
 
-    expect(component.rxShowGlobal()).toBe(true);
+    expect(component.rxShowProduct()).toBe(true);
     expect(component.rxShowLocal()).toBe(false);
   });
 
@@ -94,12 +94,12 @@ describe('ItemListQuickaddComponent', () => {
     expect(emitted).toHaveLength(1);
   });
 
-  it('emits quickCreateGlobal', async () => {
+  it('emits quickCreateProduct', async () => {
     const { component } = await setup({});
     const emitted: void[] = [];
-    component.quickCreateGlobal.subscribe((v) => emitted.push(v));
+    component.quickCreateProduct.subscribe((v) => emitted.push(v));
 
-    component.quickCreateGlobal.emit();
+    component.quickCreateProduct.emit();
 
     expect(emitted).toHaveLength(1);
   });

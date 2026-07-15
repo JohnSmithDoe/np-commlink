@@ -22,7 +22,11 @@ test.describe('list-settings', () => {
     const toggle = page.locator('ion-toggle').first();
     await expect(toggle).toBeVisible({ timeout: 30_000 });
 
+    const before = await toggle.getAttribute('aria-checked');
     await toggle.click();
+    // Wait for the click to actually flip the toggle before capturing the
+    // expected value — reading immediately races the stale pre-click value.
+    await expect.poll(() => toggle.getAttribute('aria-checked')).not.toBe(before);
     const checked = await toggle.getAttribute('aria-checked');
 
     await page.goto('/#/storage/_storage');

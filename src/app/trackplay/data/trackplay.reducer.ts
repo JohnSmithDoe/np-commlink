@@ -8,7 +8,6 @@ import {
   ITrackplayState,
   TID,
 } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TrackplayActions } from './trackplay.actions';
 import {
   createGame,
@@ -293,8 +292,8 @@ export const trackplayReducer = createReducer(
   // ── Hydration ──────────────────────────────────────────────────────────────
   // Seed the 3 default game types when the loaded slice has none. Undo state
   // never survives a reload.
-  on(ApplicationActions.loadedSuccessfully, (_state, { datastore }): ITrackplayState => {
-    const loaded = datastore.trackplay ?? initialState;
+  on(TrackplayActions.loaded, (_state, { trackplay }): ITrackplayState => {
+    const loaded = trackplay ?? initialState;
     const gameTypes = Object.keys(loaded.gameTypes ?? {}).length
       ? loaded.gameTypes
       : { ...DEFAULT_GAME_TYPES };

@@ -13,4 +13,25 @@ test.describe('tasks list', () => {
       timeout: 10_000,
     });
   });
+
+  test('keeps tasks across a full reload (hydration must not clobber storage)', async ({
+    page,
+  }) => {
+    // Regression: a returning user re-entering /tasks must not lose data — the
+    // route's `[Tasks] load` fires at empty initialState, and the persist
+    // effect must ignore it so the load effect reads the real saved tasks.
+    await addViaSearch(page, 'Persist me');
+    await expect(page.getByText(/Persist me/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.waitForTimeout(400); // let the save flush to IndexedDB
+
+    // Cold reload → fresh boot → re-enter the lazy tasks route.
+    await page.reload();
+    await waitForListPage(page);
+
+    await expect(page.getByText(/Persist me/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+  });
 });

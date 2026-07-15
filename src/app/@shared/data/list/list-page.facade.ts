@@ -18,7 +18,7 @@ import {
  * — and keeps the page smart yet identity-free.
  *
  * Grocery-only operations (`addProduct`/`addStorageItem`/`addShoppingItem`,
- * `showCreateGlobalDialog`) are deliberately NOT on this contract; they live on
+ * `showCreateProductDialog`) are deliberately NOT on this contract; they live on
  * the concrete grocery facade and are wired only from the grocery pages.
  */
 export interface IListPageFacade {

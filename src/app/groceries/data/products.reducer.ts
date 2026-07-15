@@ -10,11 +10,11 @@ import {
   updateListMode,
   updateListSort,
 } from './grocery-list/grocery-list.utils';
-import { ApplicationActions } from '../../@shared/data/application.actions';
+import { GroceriesActions } from './groceries.actions';
 import { ProductsActions } from './products.actions';
 
 export const initialState: IProductsState = {
-  title: 'Global Items',
+  title: 'Product Items',
   id: '_products',
   items: [],
   mode: 'alphabetical',
@@ -44,7 +44,7 @@ export const productsReducer = createReducer(
   on(ProductsActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
   on(ProductsActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
-  on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IProductsState => {
-    return {...(datastore.products ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
+  on(GroceriesActions.loaded,(_state, { data }): IProductsState => {
+    return {...(data.products ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
   })
 );

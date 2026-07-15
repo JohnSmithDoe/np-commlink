@@ -54,8 +54,8 @@ export const updateQuickAddState = (
       break;
     case '_products':
       searchQuery = state.products.searchQuery;
-      listName = marker('grocery.list-header.globals');
-      color = 'global';
+      listName = marker('grocery.list-header.products');
+      color = 'product';
       isCategoryMode = state.products.mode === 'categories';
       categories = state.products.categories;
       exactMatchLocal = !!state.products.items.find((item) =>
@@ -90,10 +90,10 @@ export const updateQuickAddState = (
   return {
     searchQuery,
     canAddLocal: !isCategoryMode && doShow && !exactMatchLocal,
-    canAddGlobal:
+    canAddProduct:
       !isCategoryMode &&
       doShow &&
-      listId !== '_products' && // dont show in globals
+      listId !== '_products' && // dont show in products
       listId !== '_tasks' && // dont show in tasks
       !state.products.items.find((item) =>
         matchesSearchExactly(item, searchQuery)

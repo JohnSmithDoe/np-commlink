@@ -2,10 +2,10 @@
   <ion-input
     type="number"
     class="ion-text-end"
-    [label]="label"
+    [label]="label()"
     [clearOnEdit]="true"
-    [value]="value"
-    [disabled]="disabled"
+    [value]="value()"
+    [disabled]="disabled()"
     (ionInput)="updateInputValue($event)"
     ><ng-content></ng-content
   ></ion-input>

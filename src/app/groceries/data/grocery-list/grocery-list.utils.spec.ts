@@ -303,7 +303,7 @@ describe('item-list.utils', () => {
       expect(result.searchQuery).toBe('Milk');
       expect(result.color).toBe('storage');
       expect(result.canAddLocal).toBe(true);
-      expect(result.canAddGlobal).toBe(true);
+      expect(result.canAddProduct).toBe(true);
       expect(result.canAddCategory).toBe(false);
     });
 
@@ -330,9 +330,9 @@ describe('item-list.utils', () => {
       const productsState = mockAppState({
         products: mockStorageState({ searchQuery: 'Milk' }) as never,
       });
-      expect(updateQuickAddState(productsState, '_products').canAddGlobal).toBe(
-        false
-      );
+      expect(
+        updateQuickAddState(productsState, '_products').canAddProduct
+      ).toBe(false);
     });
 
     it('shows nothing for an empty search', () => {
@@ -341,7 +341,7 @@ describe('item-list.utils', () => {
       });
       const result = updateQuickAddState(state, '_storage');
       expect(result.canAddLocal).toBe(false);
-      expect(result.canAddGlobal).toBe(false);
+      expect(result.canAddProduct).toBe(false);
     });
   });
 });

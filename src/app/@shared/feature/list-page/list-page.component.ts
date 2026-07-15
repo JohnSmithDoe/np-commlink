@@ -1,9 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   TemplateRef,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
@@ -36,6 +36,7 @@ import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog
   selector: 'app-list-page',
   templateUrl: './list-page.component.html',
   styleUrls: ['./list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     ItemListComponent,
@@ -51,18 +52,18 @@ import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog
 export class ListPageComponent {
   readonly facade = inject(LIST_FACADE);
 
-  @Input({ required: true }) itemTemplate!: TemplateRef<any>;
+  itemTemplate = input.required<TemplateRef<any>>();
   // Optional: grocery pages omit this for uniform amber chrome (per-domain
   // identity lives on the commlink deck tiles). When unset, page-header +
   // item-list fall back to the default shadowrun toolbar styling.
-  @Input() color?: TColor;
-  @Input({ required: true }) listHeader!: string;
-  @Input({ required: true }) pageHeader!: string;
+  color = input<TColor>();
+  listHeader = input.required<string>();
+  pageHeader = input.required<string>();
 
-  // Passthrough for the quick-add "create global/catalog item" affordance —
+  // Passthrough for the quick-add "create product/catalog item" affordance —
   // a grocery-only concern the page stays blind to. Grocery pages bind it to
-  // their facade's showCreateGlobalDialog(); tasks never fires it.
-  @Output() quickCreateGlobal = new EventEmitter<void>();
+  // their facade's showCreateProductDialog(); tasks never fires it.
+  quickCreateProduct = output<void>();
 
   constructor() {
     addIcons({ add, remove });

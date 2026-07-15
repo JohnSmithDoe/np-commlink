@@ -17,7 +17,6 @@ import {
   selectTrackingData,
   selectTrackingDataViewId,
 } from './tracking.selector';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { Share } from '@capacitor/share';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -52,10 +51,7 @@ export class TrackingEffects {
 
   trackTime$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(
-        TrackingActions.toggleTrackingItem,
-        ApplicationActions.loadedSuccessfully
-      ),
+      ofType(TrackingActions.toggleTrackingItem, TrackingActions.loaded),
       switchMap(() => {
         return timer(0, 1000).pipe(
           withLatestFrom(this.#store.select(selectRunningTrackingItem)),

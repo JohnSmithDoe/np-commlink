@@ -2,10 +2,10 @@ import {
   createProduct,
   createProductFrom,
   createShoppingItem,
-  createShoppingItemFromGlobal,
+  createShoppingItemFromProduct,
   createShoppingItemFromStorage,
   createStorageItem,
-  createStorageItemFromGlobal,
+  createStorageItemFromProduct,
   createStorageItemFromShopping,
   createTaskItem,
 } from './item.factory';
@@ -29,10 +29,10 @@ describe('item.factory', () => {
     });
   });
 
-  describe('createStorageItemFromGlobal', () => {
+  describe('createStorageItemFromProduct', () => {
     it('does not set a best-before for a "forever" item', () => {
       const global = mockProduct({ bestBeforeTimespan: 'forever' });
-      expect(createStorageItemFromGlobal(global).bestBefore).toBeUndefined();
+      expect(createStorageItemFromProduct(global).bestBefore).toBeUndefined();
     });
 
     it('computes a best-before date for a time-limited item', () => {
@@ -40,7 +40,7 @@ describe('item.factory', () => {
         bestBeforeTimespan: 'days',
         bestBeforeTimevalue: 5,
       });
-      const item = createStorageItemFromGlobal(global, 2);
+      const item = createStorageItemFromProduct(global, 2);
       expect(item.bestBefore).toBeTruthy();
       expect(item.quantity).toBe(2);
       expect(item.name).toBe(global.name);
@@ -67,9 +67,9 @@ describe('item.factory', () => {
       expect(item.quantity).toBe(1);
     });
 
-    it('createShoppingItemFromGlobal / FromStorage copy the source', () => {
+    it('createShoppingItemFromProduct / FromStorage copy the source', () => {
       expect(
-        createShoppingItemFromGlobal(mockProduct({ name: 'Sugar' })).name
+        createShoppingItemFromProduct(mockProduct({ name: 'Sugar' })).name
       ).toBe('Sugar');
       expect(
         createShoppingItemFromStorage(mockStorageItem({ name: 'Milk' }), 2)

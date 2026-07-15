@@ -7,10 +7,10 @@ import {
   createProduct,
   createProductFrom,
   createShoppingItem,
-  createShoppingItemFromGlobal,
+  createShoppingItemFromProduct,
   createShoppingItemFromStorage,
   createStorageItem,
-  createStorageItemFromGlobal,
+  createStorageItemFromProduct,
   createStorageItemFromShopping,
   createTaskItem,
 } from './@shared/util/item.factory';
@@ -246,20 +246,20 @@ export class GroceryListEffects {
     );
   });
 
-  // Cross-list copy: a global item added to storage/shopping is converted to
+  // Cross-list copy: a product item added to storage/shopping is converted to
   // the target list's item shape.
-  addItemFromGlobal$ = createEffect(() => {
+  addItemFromProduct$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addProduct, ShoppingActions.addProduct),
       map(({ item, type }) => {
         switch (type) {
           case '[Storage] Add Product':
             return StorageActions.addOrUpdateItem(
-              createStorageItemFromGlobal(item)
+              createStorageItemFromProduct(item)
             );
           default:
             return ShoppingActions.addOrUpdateItem(
-              createShoppingItemFromGlobal(item)
+              createShoppingItemFromProduct(item)
             );
         }
       })

@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { EMPTY, from, mergeMap, of, timer, withLatestFrom } from 'rxjs';
 import { IAppState, INotification, ITrackingItem } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 import { uuidv4 } from '../../@shared/util/app.utils';
 import { TrackingActions } from './tracking.actions';
@@ -61,7 +60,7 @@ export class TrackingNotificationsEffects {
 
   runningUpdates$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(ApplicationActions.loadedSuccessfully),
+      ofType(TrackingActions.loaded),
       mergeMap(() =>
         timer(RUNNING_UPDATE_INTERVAL_MS, RUNNING_UPDATE_INTERVAL_MS).pipe(
           withLatestFrom(this.#store, (_, state: IAppState) => state),

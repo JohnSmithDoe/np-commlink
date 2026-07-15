@@ -109,7 +109,7 @@ export class ItemDialogsEffects {
     );
   });
 
-  showCreateGlobalDialogWithSearch$ = createEffect(() => {
+  showCreateProductDialogWithSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ItemDialogsActions.showCreateAndAddProductDialog),
       withLatestFrom(this.#store, (action, state: IAppState) => ({
@@ -153,7 +153,7 @@ export class ItemDialogsEffects {
     );
   });
 
-  confirmGlobalItemChangesAndAddToList$ = createEffect(() => {
+  confirmProductItemChangesAndAddToList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ItemDialogsActions.confirmChanges),
       concatLatestFrom(() => this.#store.select(selectEditProductState)),

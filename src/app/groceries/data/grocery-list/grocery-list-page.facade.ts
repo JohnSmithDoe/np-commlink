@@ -5,7 +5,6 @@ import {
   IProduct,
   IShoppingItem,
   IStorageItem,
-  TAllItemTypes,
   TItemListCategory,
   TItemListId,
   TItemListMode,
@@ -89,21 +88,9 @@ export class GroceryListPageFacade implements IListPageFacade {
     );
   }
 
-  addCategory(category: TItemListCategory): void {
-    this.#store.dispatch(
-      GroceryListActions.addCategory(this.#activeListId(), category)
-    );
-  }
-
   showCreateDialog(): void {
     this.#store.dispatch(
       ItemDialogsActions.showCreateDialogWithSearch(this.#activeListId())
-    );
-  }
-
-  showEditDialog(item: TAllItemTypes): void {
-    this.#store.dispatch(
-      ItemDialogsActions.showEditDialog(item, this.#activeListId())
     );
   }
 
@@ -129,7 +116,7 @@ export class GroceryListPageFacade implements IListPageFacade {
     );
   }
 
-  showCreateGlobalDialog(): void {
+  showCreateProductDialog(): void {
     this.#store.dispatch(
       ItemDialogsActions.showCreateAndAddProductDialog(this.#activeListId())
     );

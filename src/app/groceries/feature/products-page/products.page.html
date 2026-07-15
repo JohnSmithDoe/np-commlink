@@ -1,8 +1,8 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'grocery.page-title.globals' | translate }}"
-  listHeader="{{ 'grocery.list-header.globals' | translate }}"
-  [itemTemplate]="globalItem"
+  pageHeader="{{ 'grocery.page-title.products' | translate }}"
+  listHeader="{{ 'grocery.list-header.products' | translate }}"
+  [itemTemplate]="productItem"
 >
   <app-grocery-search-result
     searchExtras
@@ -13,7 +13,7 @@
   ></app-grocery-search-result>
 </app-list-page>
 
-<ng-template #globalItem let-item let-ionList="ionList">
+<ng-template #productItem let-item let-ionList="ionList">
   <app-list-item
     [item]="item"
     [title]="item.name"

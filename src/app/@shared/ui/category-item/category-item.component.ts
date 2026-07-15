@@ -2,9 +2,8 @@ import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import {
   IonItem,
@@ -36,14 +35,14 @@ import { checkItemOptionsOnDrag } from '../../util/app.utils';
   ],
 })
 export class CategoryItemComponent {
-  @Input({ required: true }) category!: TItemListCategory;
-  @Input({ required: true }) count!: number;
-  @Input({ required: true }) ionList!: IonList;
+  category = input.required<TItemListCategory>();
+  count = input.required<number>();
+  ionList = input.required<IonList>();
 
-  @Input() color?: TColor;
+  color = input<TColor>();
 
-  @Output() selectCategory = new EventEmitter<void>();
-  @Output() deleteCategory = new EventEmitter<void>();
+  selectCategory = output<void>();
+  deleteCategory = output<void>();
 
   async handleItemOptionsOnDrag(ev: TIonDragEvent) {
     if (checkItemOptionsOnDrag(ev) === 'end') {
@@ -53,7 +52,7 @@ export class CategoryItemComponent {
   }
 
   async emitDeleteItem() {
-    await this.ionList.closeSlidingItems();
+    await this.ionList().closeSlidingItems();
     this.deleteCategory.emit();
   }
 }

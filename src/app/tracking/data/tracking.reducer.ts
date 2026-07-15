@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import { ITrackingItem, ITrackingState, TTimestamp } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';
 import {
@@ -220,17 +219,14 @@ export const trackingReducer = createReducer(
     })
   ),
 
-  on(
-    ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): ITrackingState => {
-      return {
-        ...(datastore.tracking ?? _state),
-        items: (datastore.tracking?.items ?? _state.items).map(
-          (trackingItem) => ({ ...trackingItem })
-        ),
-        searchQuery: undefined,
-        dataViewId: 'today',
-      };
-    }
-  )
+  on(TrackingActions.loaded, (_state, { tracking }): ITrackingState => {
+    return {
+      ...(tracking ?? _state),
+      items: (tracking?.items ?? _state.items).map((trackingItem) => ({
+        ...trackingItem,
+      })),
+      searchQuery: undefined,
+      dataViewId: 'today',
+    };
+  })
 );

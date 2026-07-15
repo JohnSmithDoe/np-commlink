@@ -1,6 +1,6 @@
 <app-page-header
-  [color]="color"
-  [label]="pageHeader"
+  [color]="color()"
+  [label]="pageHeader()"
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="showCreateDialog()"
 >
@@ -21,12 +21,12 @@
   <app-item-list-quickadd
     (quickCreateCategory)="addCategoryFromSearch()"
     (quickAddItem)="addItemFromSearch()"
-    (quickCreateGlobal)="quickCreateGlobal.emit()"
+    (quickCreateProduct)="quickCreateProduct.emit()"
   ></app-item-list-quickadd>
 
   <app-item-list
     [headerColor]="
-      facade.filter().isCategoryModeOrHasFilter === true ? 'category' : color
+      facade.filter().isCategoryModeOrHasFilter === true ? 'category' : color()
     "
     [header]="
       facade.filter().isCategoryModeOrHasFilter === true
@@ -34,12 +34,12 @@
           ? ('grocery.list-header.category.filter'
             | translate: { category: facade.state()?.filterBy })
           : ('grocery.list-header.category' | translate)
-        : listHeader
+        : listHeader()
     "
     [mode]="facade.state()?.mode ?? 'alphabetical'"
     [items]="facade.items()"
     [categories]="facade.categories()"
-    [itemTemplate]="itemTemplate"
+    [itemTemplate]="itemTemplate()"
     (selectCategory)="selectCategory($event)"
     (deleteCategory)="deleteCategory($event)"
   >

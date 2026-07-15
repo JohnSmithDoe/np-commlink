@@ -22,8 +22,8 @@ export type TColor =
   | 'cash'
   // trackplay domain (game-score tracker)
   | 'trackplay'
-  // grocery domains (shopping / storage / tasks / globals + categories)
-  | 'global'
+  // grocery domains (shopping / storage / tasks / products + categories)
+  | 'product'
   | 'task'
   | 'category'
   | 'storage'
@@ -143,8 +143,22 @@ export type IDashboardTelemetry = {
   metrics: Record<string, number | string>;
 };
 
-// Eager dashboard read-model (CQRS). Latest telemetry per source; ephemeral
-// (rebuilt by live push each run) — deliberately NOT part of IDatastore.
+// Persisted dashboard read-model doc (one `npc-summary-<source>` key each).
+// The persistence model deliberately drops `status`: a summary on disk is
+// cold, so it can only ever hydrate to `standby`; `online` is stamped by a
+// live `report`. Persisting metrics only keeps the standby→online lifecycle
+// structurally enforced by the reducer rather than by remembering to strip a
+// field on the way to disk (lazy-modules plan §3).
+export type IDashboardSummary = {
+  source: string;
+  metrics: Record<string, number | string>;
+};
+
+// Eager dashboard read-model (CQRS). Latest telemetry per source. Hydrated at
+// boot from the persisted `npc-summary-*` docs (at `standby`) so the deck can
+// render cold-launch numbers before any producing module loads; live `report`s
+// then flip sources to `online`. NOT part of IDatastore — persisted centrally
+// by DashboardEffects, not via the slice-keyed datastore.
 export interface IDashboardState {
   bySource: Record<string, IDashboardTelemetry>;
 }
@@ -182,7 +196,7 @@ export interface ISearchResult<T extends IBaseItem> {
   exactMatch?: T; // the item from the list where the name matches exactly
   // grocery cross-list search buckets (optional — tracking search never sets
   // them). Populated by the shared item-list selector when the corresponding
-  // list-settings flag is on (e.g. showGlobalsInStorage).
+  // list-settings flag is on (e.g. showProductsInStorage).
   products?: IProduct[];
   storageItems?: IStorageItem[];
   shoppingItems?: IShoppingItem[];
@@ -365,7 +379,7 @@ export type TStorageList = IItemList<IStorageItem> & {
 };
 export type TProductsList = IItemList<IProduct> & {
   id: '_products';
-  title: 'Global Items';
+  title: 'Product Items';
   categories: TItemListCategory[];
   mode: TItemListMode;
 };
@@ -392,14 +406,14 @@ export type ITasksState = Readonly<TTasksList>;
 // Grocery feature-flags (kitchen-bot `ISettings`). Shared slice key `listSettings`.
 export interface IListSettings {
   showQuickAdd: boolean;
-  showQuickAddGlobal: boolean;
+  showQuickAddProduct: boolean;
   showQuickAddCategory: boolean;
-  showGlobalsInStorage: boolean;
+  showProductsInStorage: boolean;
   showShoppingInStorage: boolean;
-  showGlobalsInShopping: boolean;
+  showProductsInShopping: boolean;
   showStorageInShopping: boolean;
-  showStorageInGlobals: boolean;
-  showShoppingInGlobals: boolean;
+  showStorageInProducts: boolean;
+  showShoppingInProducts: boolean;
   version: string;
 }
 
@@ -436,7 +450,7 @@ export type IQuickAddState = Readonly<{
   color?: TColor;
   searchQuery?: string;
   canAddLocal?: boolean;
-  canAddGlobal?: boolean;
+  canAddProduct?: boolean;
   canAddCategory: boolean;
 }>;
 

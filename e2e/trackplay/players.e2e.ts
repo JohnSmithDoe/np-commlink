@@ -54,4 +54,34 @@ test.describe('trackplay players', () => {
       mainContent(page).getByText('Charlie', { exact: true })
     ).toBeVisible();
   });
+
+  test('keeps players across a full reload (hydration must not clobber storage)', async ({
+    page,
+  }) => {
+    // Regression guard for the lazy trackplay save (Phase D): trackplay's
+    // persist was split out of the shell into its own lazy TrackplaySaveEffects.
+    // On reload the /trackplay/players route re-registers the slice at empty
+    // initialState and the resolver dispatches `[Trackplay] load`; if that load
+    // were not excluded from the save filter it would clobber the saved player
+    // before the load effect reads it back (the data-loss bug that bit [Tasks]
+    // and [Cash]).
+    await gotoTrackplay(
+      page,
+      'trackplay/players',
+      'app-trackplay-players-page'
+    );
+    await createPlayer(page, 'Dunkelzahn');
+    await page.waitForTimeout(300); // let the fire-and-forget disk write flush
+
+    await page.reload();
+    await expect(
+      mainContent(page).locator('app-trackplay-players-page')
+    ).toBeVisible({ timeout: 30_000 });
+
+    await expect(
+      mainContent(page)
+        .locator('app-trackplay-player-list-item')
+        .filter({ hasText: 'Dunkelzahn' })
+    ).toBeVisible();
+  });
 });

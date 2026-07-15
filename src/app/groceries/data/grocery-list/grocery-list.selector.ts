@@ -79,19 +79,19 @@ export const filterBySearchQuery = <
   //prettier-ignore
   switch (listState.id) {
     case '_storage':
-      if (state.listSettings.showGlobalsInStorage)
+      if (state.listSettings.showProductsInStorage)
         result.products = additionalSearch(state.products.items, result, searchQuery);
       if (state.listSettings.showShoppingInStorage)
         result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.products);
       break;
     case '_products':
-      if (state.listSettings.showStorageInGlobals)
+      if (state.listSettings.showStorageInProducts)
         result.storageItems = additionalSearch(state.storage.items, result, searchQuery);
-      if (state.listSettings.showShoppingInGlobals)
+      if (state.listSettings.showShoppingInProducts)
         result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.storageItems);
       break;
     case '_shopping':
-      if (state.listSettings.showGlobalsInShopping)
+      if (state.listSettings.showProductsInShopping)
         result.products = additionalSearch(state.products.items, result, searchQuery);
       if (state.listSettings.showStorageInShopping)
         result.storageItems = additionalSearch(state.storage.items, result, searchQuery, result.products);

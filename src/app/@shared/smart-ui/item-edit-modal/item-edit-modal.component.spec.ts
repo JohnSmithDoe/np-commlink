@@ -17,7 +17,7 @@ describe('ItemEditModalComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(ItemEditModalComponent);
     component = fixture.componentInstance;
-    component.listId = '_storage';
+    fixture.componentRef.setInput('listId', '_storage');
     store = TestBed.inject(MockStore);
     dispatch = vi.spyOn(store, 'dispatch');
   });

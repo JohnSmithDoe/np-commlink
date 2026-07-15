@@ -1,11 +1,22 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { ICashAccount, ICashRule, ICashTransaction } from '../../@shared/types';
+import {
+  ICashAccount,
+  ICashRule,
+  ICashState,
+  ICashTransaction,
+} from '../../@shared/types';
 
 // Source prefix `[Cash]` is load-bearing: AppEffects.saveCashOnChange$
-// persists the slice whenever any `[Cash]` action fires.
+// persists the slice whenever any `[Cash]` action fires — EXCEPT the
+// load/loaded lifecycle below, which that effect excludes (hydration is not a
+// mutation; persisting on `[Cash] load` would clobber the ledger at boot).
 export const CashActions = createActionGroup({
   source: 'Cash',
   events: {
+    // Own-data lazy load lifecycle (lazy-modules plan §2).
+    load: emptyProps(),
+    loaded: (cash: ICashState | null) => ({ cash }),
+
     // Effects only
     'Enter Page': emptyProps(),
 

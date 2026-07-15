@@ -247,7 +247,7 @@
   --ion-color-tint: var(--ion-color-trackplay-tint);
 }
 
-// --- Grocery domains (shopping / storage / tasks / globals) ---
+// --- Grocery domains (shopping / storage / tasks / products) ---
 // kitchen-bot shipped a purple/teal set; retuned here into the shadowrun slate
 // family (one distinct blue-grey tint each) so `color="shopping"` etc. read as
 // deck panels. `category` keeps the amber accent. Re-skin audit (plan §47–48)
@@ -307,21 +307,21 @@
 }
 
 :root {
-  --ion-color-global: #3a4760;
-  --ion-color-global-rgb: 58, 71, 96;
-  --ion-color-global-contrast: #ffffff;
-  --ion-color-global-contrast-rgb: 255, 255, 255;
-  --ion-color-global-shade: #333e54;
-  --ion-color-global-tint: #4e5a70;
+  --ion-color-product: #3a4760;
+  --ion-color-product-rgb: 58, 71, 96;
+  --ion-color-product-contrast: #ffffff;
+  --ion-color-product-contrast-rgb: 255, 255, 255;
+  --ion-color-product-shade: #333e54;
+  --ion-color-product-tint: #4e5a70;
 }
 
-.ion-color-global {
-  --ion-color-base: var(--ion-color-global);
-  --ion-color-base-rgb: var(--ion-color-global-rgb);
-  --ion-color-contrast: var(--ion-color-global-contrast);
-  --ion-color-contrast-rgb: var(--ion-color-global-contrast-rgb);
-  --ion-color-shade: var(--ion-color-global-shade);
-  --ion-color-tint: var(--ion-color-global-tint);
+.ion-color-product {
+  --ion-color-base: var(--ion-color-product);
+  --ion-color-base-rgb: var(--ion-color-product-rgb);
+  --ion-color-contrast: var(--ion-color-product-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-product-contrast-rgb);
+  --ion-color-shade: var(--ion-color-product-shade);
+  --ion-color-tint: var(--ion-color-product-tint);
 }
 
 :root {

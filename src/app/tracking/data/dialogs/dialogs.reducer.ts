@@ -6,7 +6,6 @@ import {
   TDialogsState,
   TEditItemMode,
 } from '../../../@shared/types';
-import { ApplicationActions } from '../../../@shared/data/application.actions';
 import { DialogsActions } from './dialogs.actions';
 
 export const initialSettings: TDialogsState = {
@@ -31,10 +30,6 @@ export const dialogsReducer = createReducer(
   }),
   on(DialogsActions.abortChanges, (state): TDialogsState => {
     return { ...state, isEditing: false };
-  }),
-
-  on(ApplicationActions.loadedSuccessfully, (_state): TDialogsState => {
-    return _state;
   })
 );
 

@@ -52,7 +52,7 @@ describe('item-list.selector', () => {
         products: mockProductsState({
           items: [mockProduct({ name: 'Sugar' })],
         }),
-        listSettings: mockListSettings({ showGlobalsInStorage: true }),
+        listSettings: mockListSettings({ showProductsInStorage: true }),
       });
       const result = filterBySearchQuery(state, listState);
       expect(result?.products?.map((i) => i.name)).toEqual(['Sugar']);
@@ -68,7 +68,7 @@ describe('item-list.selector', () => {
         products: mockProductsState({
           items: [mockProduct({ name: 'Sugar' })],
         }),
-        listSettings: mockListSettings({ showGlobalsInStorage: false }),
+        listSettings: mockListSettings({ showProductsInStorage: false }),
       });
       expect(filterBySearchQuery(state, listState)?.products).toEqual([]);
     });

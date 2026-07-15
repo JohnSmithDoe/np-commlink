@@ -1,5 +1,3 @@
-import { IDatastore } from '../../types';
-import { ApplicationActions } from '../application.actions';
 import { ListSettingsActions } from './list-settings.actions';
 import {
   initialListSettings,
@@ -18,7 +16,7 @@ describe('listSettingsReducer', () => {
   it('replaces the whole settings object on updateSettings', () => {
     const next = mockListSettings({
       showQuickAdd: true,
-      showQuickAddGlobal: true,
+      showQuickAddProduct: true,
     });
     const state = listSettingsReducer(
       initialListSettings,
@@ -27,21 +25,19 @@ describe('listSettingsReducer', () => {
     expect(state).toBe(next);
   });
 
-  it('uses the loaded datastore settings when present', () => {
-    const loaded = mockListSettings({ showGlobalsInStorage: true });
-    const datastore = { listSettings: loaded } as IDatastore;
+  it('uses the loaded settings when present', () => {
+    const loaded = mockListSettings({ showProductsInStorage: true });
     const state = listSettingsReducer(
       initialListSettings,
-      ApplicationActions.loadedSuccessfully(datastore)
+      ListSettingsActions.loaded(loaded)
     );
     expect(state).toBe(loaded);
   });
 
-  it('falls back to the current state when the datastore has no settings', () => {
-    const datastore = {} as IDatastore;
+  it('falls back to the current state when the loaded settings are absent', () => {
     const state = listSettingsReducer(
       initialListSettings,
-      ApplicationActions.loadedSuccessfully(datastore)
+      ListSettingsActions.loaded(null)
     );
     expect(state).toBe(initialListSettings);
   });

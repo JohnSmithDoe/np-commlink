@@ -1,5 +1,5 @@
 <ion-modal
-  [isOpen]="rxState().isEditing === true && rxState().listId === listId"
+  [isOpen]="rxState().isEditing === true && rxState().listId === listId()"
   (didDismiss)="closedDialog()"
 >
   <ng-template>
@@ -28,7 +28,7 @@
         <app-item-name-input
           #nameInput
           [item]="rxItem()"
-          [listItems]="listItems"
+          [listItems]="listItems()"
           (updateValue)="updateName($event)"
         ></app-item-name-input>
         <ng-content></ng-content>

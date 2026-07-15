@@ -13,7 +13,7 @@ import {
 export const uuidv4 = () => crypto.randomUUID();
 
 // --- grocery item type guards (from kitchen-bot) ---
-export const isGlobalItem = (value: TAllItemTypes): value is IProduct =>
+export const isProductItem = (value: TAllItemTypes): value is IProduct =>
   Object.prototype.hasOwnProperty.call(value, 'unit');
 export const isStorageItem = (value?: TAllItemTypes): value is IStorageItem =>
   !!value && Object.prototype.hasOwnProperty.call(value, 'bestBefore');

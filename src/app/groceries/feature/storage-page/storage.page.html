@@ -3,7 +3,7 @@
   pageHeader="{{ 'grocery.page-title.storage' | translate }}"
   listHeader="{{ 'grocery.list-header.storage' | translate }}"
   [itemTemplate]="storageItem"
-  (quickCreateGlobal)="facade.showCreateGlobalDialog()"
+  (quickCreateProduct)="facade.showCreateProductDialog()"
 >
   <ion-button (click)="setSortMode('bestBefore')" toolbarActions
     >{{ 'grocery.list-toolbar.mhd' | translate }}</ion-button

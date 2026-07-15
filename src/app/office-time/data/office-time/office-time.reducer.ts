@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import { IOfficeTimeState } from '../../../@shared/types';
-import { ApplicationActions } from '../../../@shared/data/application.actions';
 import { OfficeTimeActions } from './office-time.actions';
 import {
   deserializeIsoStringMap,
@@ -146,34 +145,31 @@ export const officeTimeReducer = createReducer(
       },
     })
   ),
-  on(
-    ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): IOfficeTimeState => {
-      const stored = datastore.officeTime;
-      if (!stored) return _state;
+  on(OfficeTimeActions.loaded, (_state, { officeTime }): IOfficeTimeState => {
+    const stored = officeTime;
+    if (!stored) return _state;
 
-      // Merge over initialOfficeTime so corrupted or partially-migrated
-      // storage doesn't leave required fields (dashboardSettings,
-      // dashboardItems, targetOfficeDaysPerWeek) undefined.
-      const storedItems =
-        stored.dashboardItems ?? initialOfficeTime.dashboardItems;
-      // Self-heal: append any dashboard item added since this user last
-      // persisted (e.g. 'wordclock'), preserving their existing order.
-      const missingItems = initialOfficeTime.dashboardItems.filter(
-        (item) => !storedItems.includes(item)
-      );
-      return {
-        ...initialOfficeTime,
-        ...stored,
-        dashboardSettings: {
-          ...initialOfficeTime.dashboardSettings,
-          ...(stored.dashboardSettings ?? {}),
-        },
-        dashboardItems: [...storedItems, ...missingItems],
-        holidays: deserializeIsoStringMap(stored.holidays),
-        officedays: deserializeIsoStrings(stored.officedays),
-        freedays: deserializeIsoStrings(stored.freedays),
-      };
-    }
-  )
+    // Merge over initialOfficeTime so corrupted or partially-migrated
+    // storage doesn't leave required fields (dashboardSettings,
+    // dashboardItems, targetOfficeDaysPerWeek) undefined.
+    const storedItems =
+      stored.dashboardItems ?? initialOfficeTime.dashboardItems;
+    // Self-heal: append any dashboard item added since this user last
+    // persisted (e.g. 'wordclock'), preserving their existing order.
+    const missingItems = initialOfficeTime.dashboardItems.filter(
+      (item) => !storedItems.includes(item)
+    );
+    return {
+      ...initialOfficeTime,
+      ...stored,
+      dashboardSettings: {
+        ...initialOfficeTime.dashboardSettings,
+        ...(stored.dashboardSettings ?? {}),
+      },
+      dashboardItems: [...storedItems, ...missingItems],
+      holidays: deserializeIsoStringMap(stored.holidays),
+      officedays: deserializeIsoStrings(stored.officedays),
+      freedays: deserializeIsoStrings(stored.freedays),
+    };
+  })
 );

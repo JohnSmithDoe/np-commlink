@@ -10,11 +10,11 @@ export const selectQuickAddCanAddLocal = createSelector(
   selectListSettingsState,
   (state, settings): boolean => !!state.canAddLocal && settings.showQuickAdd
 );
-export const selectQuickAddCanAddGlobal = createSelector(
+export const selectQuickAddCanAddProduct = createSelector(
   selectQuickAddState,
   selectListSettingsState,
   (state, settings): boolean =>
-    !!state.canAddGlobal && settings.showQuickAddGlobal
+    !!state.canAddProduct && settings.showQuickAddProduct
 );
 export const selectQuickAddCanAddCategory = createSelector(
   selectQuickAddState,

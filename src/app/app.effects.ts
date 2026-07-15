@@ -1,25 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import {
-  catchError,
-  filter,
-  from,
-  map,
-  of,
-  switchMap,
-  tap,
-  withLatestFrom,
-} from 'rxjs';
+import { map, tap, withLatestFrom } from 'rxjs';
 import { IAppState } from './@shared/types';
 import { matchesItemExactly } from './@shared/util/app.utils';
 import { DatabaseService } from './@shared/util/database.service';
-import { UiService } from './@shared/util/ui.service';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addTrackingItemFromSearch } from './tracking/data/item-list.effects';
 
 import { updatedSearchQuery } from './@shared/data/item-list/item-list.utils';
-import { ApplicationActions } from './@shared/data/application.actions';
 import { TrackingActions } from './tracking/data/tracking.actions';
 import { NotificationsActions } from './@shared/data/notifications/notifications.actions';
 
@@ -28,44 +16,6 @@ export class AppEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
   #database = inject(DatabaseService);
-  #ui = inject(UiService);
-
-  initializeApplication$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(ApplicationActions.load),
-      // switchMap (not combineLatestWith) so each load triggers a fresh
-      // read of storage rather than re-emitting a cached promise value.
-      switchMap(() =>
-        from(this.#database.create()).pipe(
-          map((data) => ApplicationActions.loadedSuccessfully(data)),
-          // Storage init can fail (IndexedDB blocked, quota, Safari private
-          // mode). Surface a toast and fall back to empty slices so the
-          // reducers' initialState takes over and the app stays usable.
-          catchError(() => {
-            void this.#ui.showToast(
-              this.#ui.translate.instant(marker('toast.storage.unavailable')),
-              'warning'
-            );
-            return of(
-              ApplicationActions.loadedSuccessfully({
-                tracking: null,
-                settings: null,
-                officeTime: null,
-                notifications: null,
-                products: null,
-                shopping: null,
-                storage: null,
-                tasks: null,
-                listSettings: null,
-                cash: null,
-                trackplay: null,
-              })
-            );
-          })
-        )
-      )
-    );
-  });
 
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -167,51 +117,8 @@ export class AppEffects {
     { dispatch: false }
   );
 
-  // Persist the grocery slices whenever one of their domains dispatches. The
-  // action-source prefix (`[Products]`/`[Shopping]`/…) identifies which slice to
-  // write; the list-settings slice persists via its own effect. quickadd and
-  // itemDialogs are ephemeral UI state and are deliberately not stored.
-  saveGroceryOnChange$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        filter((action: { type: string }) =>
-          /^\[(Products|Shopping|Storage|Tasks|Trackplay)\]/.test(action.type)
-        ),
-        withLatestFrom(this.#store, (action, state: IAppState) => ({
-          action,
-          state,
-        })),
-        tap(({ action, state }) => {
-          if (action.type.startsWith('[Products]')) {
-            void this.#database.save('products', state.products);
-          } else if (action.type.startsWith('[Shopping]')) {
-            void this.#database.save('shopping', state.shopping);
-          } else if (action.type.startsWith('[Storage]')) {
-            void this.#database.save('storage', state.storage);
-          } else if (action.type.startsWith('[Tasks]')) {
-            void this.#database.save('tasks', state.tasks);
-          } else if (action.type.startsWith('[Trackplay]')) {
-            void this.#database.save('trackplay', state.trackplay);
-          }
-        })
-      );
-    },
-    { dispatch: false }
-  );
-
-  // Persist the cash ledger slice on any [Cash] action. Cash is a purpose-built
-  // ledger (not a grocery list), so it gets its own effect rather than joining
-  // saveGroceryOnChange$.
-  saveCashOnChange$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        filter((action: { type: string }) => /^\[Cash\]/.test(action.type)),
-        withLatestFrom(this.#store, (_action, state: IAppState) => state),
-        tap((state) => {
-          void this.#database.save('cash', state.cash);
-        })
-      );
-    },
-    { dispatch: false }
-  );
+  // The grocery + tasks slices persist via their own lazy save effects
+  // (GrocerySaveEffects / TasksSaveEffects, registered on their routes —
+  // lazy-modules Phase E). Trackplay + cash likewise (Phase D). What remains
+  // eager here is tracking + notifications only (both eager contexts).
 }

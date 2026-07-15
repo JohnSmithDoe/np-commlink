@@ -3,7 +3,7 @@
   pageHeader="{{ 'grocery.page-title.shopping' | translate }}"
   listHeader="{{ 'grocery.list-header.shopping' | translate }}"
   [itemTemplate]="shoppingItem"
-  (quickCreateGlobal)="facade.showCreateGlobalDialog()"
+  (quickCreateProduct)="facade.showCreateProductDialog()"
 >
   <ion-buttons slot="end" listActions>
     <ion-button [hidden]="!rxState().items.length" (click)="openActionSheet()">

@@ -23,8 +23,6 @@ export class TextItemComponent {
 
   readonly selectItem = output<void>();
 
-  constructor() {}
-
   selectCurrent() {
     this.selectItem.emit();
   }

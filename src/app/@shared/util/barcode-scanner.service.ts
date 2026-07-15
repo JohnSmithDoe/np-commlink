@@ -8,7 +8,7 @@ import { Capacitor } from '@capacitor/core';
 /**
  * mlkit EAN-13 scanner (extracted from kitchen-bot's app.component, where it was
  * disabled behind a hard-coded `isSupported = false`). This is a pure util: it
- * returns the scanned code, leaving the dispatch (open the global-item dialog)
+ * returns the scanned code, leaving the dispatch (open the product-item dialog)
  * to the caller so the service never reaches into the data layer.
  *
  * Distinct from the SIGIL barcode feature (`barcode/`), which only displays an

@@ -1,5 +1,4 @@
-import { IDatastore } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
+import { GroceriesActions } from './groceries.actions';
 import { StorageActions } from './storage.actions';
 import { initialState, storageReducer } from './storage.reducer';
 import {
@@ -90,17 +89,18 @@ describe('storageReducer', () => {
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {
-    const datastore = {
-      storage: mockStorageState({
-        items: [mockStorageItem()],
-        searchQuery: 'stale',
-        mode: 'categories',
-        filterBy: 'Dairy',
-      }),
-    } as IDatastore;
     const state = storageReducer(
       initialState,
-      ApplicationActions.loadedSuccessfully(datastore)
+      GroceriesActions.loaded({
+        products: null,
+        shopping: null,
+        storage: mockStorageState({
+          items: [mockStorageItem()],
+          searchQuery: 'stale',
+          mode: 'categories',
+          filterBy: 'Dairy',
+        }),
+      })
     );
     expect(state.items).toHaveLength(1);
     expect(state.searchQuery).toBeUndefined();

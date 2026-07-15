@@ -11,7 +11,7 @@ describe('quickAddReducer', () => {
   it('replaces the state on updateState', () => {
     const next = mockQuickAddState({
       canAddLocal: true,
-      canAddGlobal: true,
+      canAddProduct: true,
       searchQuery: 'milk',
     });
     const state = quickAddReducer(

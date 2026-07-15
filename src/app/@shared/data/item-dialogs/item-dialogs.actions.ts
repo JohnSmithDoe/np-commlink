@@ -14,7 +14,7 @@ export const ItemDialogsActions = createActionGroup({
     'Show Create Dialog With Search': (listId: TItemListId) => ({ listId }),
     'Show Create And Add Product Dialog': (listId: TItemListId) => ({ listId }),
     // NEW (merge): the mlkit barcode scanner dispatches this with a scanned
-    // EAN-13 to open the global-item edit dialog prefilled with the code.
+    // EAN-13 to open the product-item edit dialog prefilled with the code.
     'Open Edit Product': (scannedEan: string) => ({ scannedEan }),
     'Update Item': (data: Partial<TAllItemTypes>) => ({ data }),
     'Remove Category': (category: TItemListCategory) => ({ category }),

@@ -1,15 +1,15 @@
-<!--  global search result-->
-@if (results?.products?.length) {
+<!--  product search result-->
+@if (results()?.products?.length) {
   <app-item-list
-    header="{{ 'grocery.list-header.global.search' | translate }}"
-    headerColor="global"
+    header="{{ 'grocery.list-header.product.search' | translate }}"
+    headerColor="product"
     [listHeader]="true"
-    [items]="results?.products ?? []"
-    [itemTemplate]="globalItem"
+    [items]="results()?.products ?? []"
+    [itemTemplate]="productItem"
   ></app-item-list>
-  <ng-template #globalItem let-item>
+  <ng-template #productItem let-item>
     <app-text-item
-      color="global"
+      color="product"
       class="tinted"
       [label]="item.name"
       [note]="item | appCategories"
@@ -19,12 +19,12 @@
   </ng-template>
 }
 <!--  shopping search result-->
-@if (results?.shoppingItems?.length) {
+@if (results()?.shoppingItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.shopping.search' | translate }}"
     headerColor="shopping"
     [listHeader]="true"
-    [items]="results?.shoppingItems ?? []"
+    [items]="results()?.shoppingItems ?? []"
     [itemTemplate]="shoppingItem"
   ></app-item-list>
   <ng-template #shoppingItem let-item>
@@ -39,12 +39,12 @@
   </ng-template>
 }
 <!--  storage search result-->
-@if (results?.storageItems?.length) {
+@if (results()?.storageItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.storage.search' | translate }}"
     headerColor="storage"
     [listHeader]="true"
-    [items]="results?.storageItems ?? []"
+    [items]="results()?.storageItems ?? []"
     [itemTemplate]="storageItem"
   ></app-item-list>
   <ng-template #storageItem let-item>

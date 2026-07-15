@@ -4,7 +4,6 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
 import {
   mockAppState,
@@ -298,7 +297,7 @@ describe('TrackingNotificationsEffects', () => {
         state: 'running',
         startTime: TEST_TIMESTAMP,
       });
-      setup(of(ApplicationActions.loadedSuccessfully({} as never)), {
+      setup(of(TrackingActions.loaded(null)), {
         tracking: mockTrackingState({ items: [running] }),
       });
 

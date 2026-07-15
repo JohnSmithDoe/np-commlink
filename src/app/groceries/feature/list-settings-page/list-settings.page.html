@@ -17,10 +17,10 @@
     </ion-item>
     <ion-item>
       <ion-toggle
-        [checked]="!!settings().showQuickAddGlobal"
-        (ionChange)="toggleFlag('showQuickAddGlobal')"
+        [checked]="!!settings().showQuickAddProduct"
+        (ionChange)="toggleFlag('showQuickAddProduct')"
         >{{
-          'grocery.list-settings.show-quick-add-global' | translate
+          'grocery.list-settings.show-quick-add-product' | translate
         }}</ion-toggle
       >
     </ion-item>
@@ -38,9 +38,9 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
-        [checked]="!!settings().showGlobalsInStorage"
-        (ionChange)="toggleFlag('showGlobalsInStorage')"
-        >{{ 'grocery.list-settings.show-globals' | translate }}</ion-toggle
+        [checked]="!!settings().showProductsInStorage"
+        (ionChange)="toggleFlag('showProductsInStorage')"
+        >{{ 'grocery.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
@@ -55,9 +55,9 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
-        [checked]="!!settings().showGlobalsInShopping"
-        (ionChange)="toggleFlag('showGlobalsInShopping')"
-        >{{ 'grocery.list-settings.show-globals' | translate }}</ion-toggle
+        [checked]="!!settings().showProductsInShopping"
+        (ionChange)="toggleFlag('showProductsInShopping')"
+        >{{ 'grocery.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
@@ -68,19 +68,19 @@
       >
     </ion-item>
     <ion-list-header>{{
-      'grocery.list-settings.section.globals-results' | translate
+      'grocery.list-settings.section.products-results' | translate
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
-        [checked]="!!settings().showStorageInGlobals"
-        (ionChange)="toggleFlag('showStorageInGlobals')"
+        [checked]="!!settings().showStorageInProducts"
+        (ionChange)="toggleFlag('showStorageInProducts')"
         >{{ 'grocery.list-settings.show-storage' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
       <ion-toggle
-        [checked]="!!settings().showShoppingInGlobals"
-        (ionChange)="toggleFlag('showShoppingInGlobals')"
+        [checked]="!!settings().showShoppingInProducts"
+        (ionChange)="toggleFlag('showShoppingInProducts')"
         >{{ 'grocery.list-settings.show-shopping' | translate }}</ion-toggle
       >
     </ion-item>

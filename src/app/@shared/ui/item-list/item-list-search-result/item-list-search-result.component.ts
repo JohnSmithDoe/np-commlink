@@ -1,9 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ISearchResult, ITrackingItem } from '../../../types';
@@ -18,6 +17,6 @@ import { ItemListComponent } from '../item-list.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemListSearchResultComponent<T extends ITrackingItem> {
-  @Input() results?: ISearchResult<T> | null;
-  @Output() selectTrackingItem = new EventEmitter<ITrackingItem>();
+  results = input<ISearchResult<T> | null>();
+  selectTrackingItem = output<ITrackingItem>();
 }

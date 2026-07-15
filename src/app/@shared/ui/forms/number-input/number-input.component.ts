@@ -2,9 +2,8 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import { InputCustomEvent } from '@ionic/angular';
 import { IonInput, IonItem } from '@ionic/angular/standalone';
@@ -18,12 +17,10 @@ import { parseNumberInput } from '../../../util/app.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberInputComponent {
-  @Input() label?: string;
-  @Input({ transform: booleanAttribute }) disabled = false;
-  @Input() value?: string | number | null;
-  @Output() updateValue = new EventEmitter<number>();
-
-  constructor() {}
+  label = input<string>();
+  disabled = input(false, { transform: booleanAttribute });
+  value = input<string | number | null>();
+  updateValue = output<number>();
 
   updateInputValue(ev: InputCustomEvent) {
     this.updateValue.emit(parseNumberInput(ev));

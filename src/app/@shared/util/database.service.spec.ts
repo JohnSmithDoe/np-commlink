@@ -9,6 +9,7 @@ describe('DatabaseService', () => {
     create: ReturnType<typeof vi.fn>;
     get: ReturnType<typeof vi.fn>;
     set: ReturnType<typeof vi.fn>;
+    forEach: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -16,6 +17,7 @@ describe('DatabaseService', () => {
       create: vi.fn().mockResolvedValue(undefined),
       get: vi.fn().mockResolvedValue(null),
       set: vi.fn().mockResolvedValue(undefined),
+      forEach: vi.fn().mockResolvedValue(undefined),
     };
     TestBed.configureTestingModule({
       providers: [
@@ -40,21 +42,71 @@ describe('DatabaseService', () => {
     });
   });
 
-  describe('create', () => {
-    it('initializes storage and loads every slice (timetracker + grocery) with the "npc-" prefix', async () => {
-      await expect(service.create()).resolves.toBeTruthy();
+  describe('saveSummary', () => {
+    it('persists metrics only under "npc-summary-<source>"', async () => {
+      await service.saveSummary('office-time', { officedays: 12 });
+
+      expect(mockStorage.set).toHaveBeenCalledWith('npc-summary-office-time', {
+        source: 'office-time',
+        metrics: { officedays: 12 },
+      });
+    });
+
+    it('initializes the storage backend before writing (guards the boot race)', async () => {
+      await service.saveSummary('office-time', { officedays: 12 });
+
+      expect(mockStorage.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('bootstrap', () => {
+    it('initializes storage and returns only the npc-summary-* docs', async () => {
+      mockStorage.forEach.mockImplementation(
+        async (cb: (v: unknown, k: string, i: number) => void) => {
+          cb(
+            { source: 'notifications', metrics: { unread: 2 } },
+            'npc-summary-notifications',
+            0
+          );
+          cb({ items: [] }, 'npc-tracking', 1);
+          cb(
+            { source: 'office-time', metrics: { officedays: 12 } },
+            'npc-summary-office-time',
+            2
+          );
+        }
+      );
+
+      const { summaries } = await service.bootstrap();
 
       expect(mockStorage.create).toHaveBeenCalledTimes(1);
-      // timetracker slices
+      expect(summaries).toEqual([
+        { source: 'notifications', metrics: { unread: 2 } },
+        { source: 'office-time', metrics: { officedays: 12 } },
+      ]);
+    });
+
+    it('initializes the storage backend only once across bootstrap + load', async () => {
+      await service.bootstrap();
+      await service.load('tracking');
+
+      expect(mockStorage.create).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('load', () => {
+    it('reads a single slice by its plain "npc-" prefixed key', async () => {
+      const value = { items: [] };
+      mockStorage.get.mockResolvedValue(value);
+
+      await expect(service.load('tracking')).resolves.toBe(value);
       expect(mockStorage.get).toHaveBeenCalledWith('npc-tracking');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-officeTime');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-notifications');
-      // grocery slices
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-globals');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-shopping');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-storage');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-tasks');
-      expect(mockStorage.get).toHaveBeenCalledWith('npc-listSettings');
+    });
+
+    it('initializes the storage backend before reading', async () => {
+      await service.load('cash');
+
+      expect(mockStorage.create).toHaveBeenCalled();
     });
   });
 });

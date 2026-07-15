@@ -1,4 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import {
   IBaseItem,
@@ -15,6 +20,7 @@ import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.compo
   selector: 'app-grocery-search-result',
   templateUrl: './grocery-search-result.component.html',
   styleUrls: ['./grocery-search-result.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ItemListComponent,
     TextItemComponent,
@@ -23,8 +29,8 @@ import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.compo
   ],
 })
 export class GrocerySearchResultComponent<T extends IBaseItem> {
-  @Input() results?: ISearchResult<T> | null;
-  @Output() selectProduct = new EventEmitter<IProduct>();
-  @Output() selectShoppingItem = new EventEmitter<IShoppingItem>();
-  @Output() selectStorageItem = new EventEmitter<IStorageItem>();
+  results = input<ISearchResult<T> | null>();
+  selectProduct = output<IProduct>();
+  selectShoppingItem = output<IShoppingItem>();
+  selectStorageItem = output<IStorageItem>();
 }

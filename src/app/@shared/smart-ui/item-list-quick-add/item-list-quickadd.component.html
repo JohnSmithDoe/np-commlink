@@ -13,11 +13,11 @@
     (selectItem)="quickAddItem.emit()"
   ></app-text-item>
 }
-@if (rxShowGlobal() === true) {
+@if (rxShowProduct() === true) {
   <app-text-item
-    color="global"
+    color="product"
     helper="{{
-      'grocery.item-list.quickadd.add.global'
+      'grocery.item-list.quickadd.add.product'
         | translate
           : {
               value: rxState().searchQuery,
@@ -25,7 +25,7 @@
             }
     }}"
     [label]="rxState().searchQuery"
-    (selectItem)="quickCreateGlobal.emit()"
+    (selectItem)="quickCreateProduct.emit()"
   ></app-text-item>
 }
 @if (rxShowCategoy() === true) {

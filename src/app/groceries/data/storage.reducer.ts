@@ -11,7 +11,7 @@ import {
   updateListMode,
   updateListSort,
 } from './grocery-list/grocery-list.utils';
-import { ApplicationActions } from '../../@shared/data/application.actions';
+import { GroceriesActions } from './groceries.actions';
 import { StorageActions } from './storage.actions';
 
 export const initialState: IStorageState = {
@@ -37,7 +37,7 @@ export const storageReducer = createReducer(
   on(StorageActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
   on(StorageActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
 
-  on(ApplicationActions.loadedSuccessfully,(_state, { datastore }): IStorageState => {
-    return {...(datastore.storage ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
+  on(GroceriesActions.loaded,(_state, { data }): IStorageState => {
+    return {...(data.storage ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};
   })
 );

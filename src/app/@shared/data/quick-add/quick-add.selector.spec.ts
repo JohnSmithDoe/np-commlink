@@ -1,6 +1,6 @@
 import {
   selectQuickAddCanAddCategory,
-  selectQuickAddCanAddGlobal,
+  selectQuickAddCanAddProduct,
   selectQuickAddCanAddLocal,
 } from './quick-add.selector';
 import { mockListSettings, mockQuickAddState } from '../../testing/test-data';
@@ -35,21 +35,21 @@ describe('quick-add.selector', () => {
     });
   });
 
-  describe('selectQuickAddCanAddGlobal', () => {
+  describe('selectQuickAddCanAddProduct', () => {
     it('is true only when the item allows it and the setting is on', () => {
       expect(
-        selectQuickAddCanAddGlobal.projector(
-          mockQuickAddState({ canAddGlobal: true }),
-          mockListSettings({ showQuickAddGlobal: true })
+        selectQuickAddCanAddProduct.projector(
+          mockQuickAddState({ canAddProduct: true }),
+          mockListSettings({ showQuickAddProduct: true })
         )
       ).toBe(true);
     });
 
     it('is false when the setting is off', () => {
       expect(
-        selectQuickAddCanAddGlobal.projector(
-          mockQuickAddState({ canAddGlobal: true }),
-          mockListSettings({ showQuickAddGlobal: false })
+        selectQuickAddCanAddProduct.projector(
+          mockQuickAddState({ canAddProduct: true }),
+          mockListSettings({ showQuickAddProduct: false })
         )
       ).toBe(false);
     });

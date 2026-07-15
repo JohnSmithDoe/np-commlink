@@ -29,7 +29,7 @@ describe('CategoryInputComponent', () => {
   });
 
   it('renders a chip per category', () => {
-    component.categories = ['Dairy', 'Fresh'];
+    fixture.componentRef.setInput('categories', ['Dairy', 'Fresh']);
     fixture.detectChanges();
 
     const chips = fixture.nativeElement.querySelectorAll('ion-chip');

@@ -46,8 +46,6 @@ export class StatsItemComponent implements OnInit {
 
   readonly deleteItem = output<void>();
 
-  constructor() {}
-
   ngOnInit() {
     if (!this.item()) throw new Error('Item must be set');
   }

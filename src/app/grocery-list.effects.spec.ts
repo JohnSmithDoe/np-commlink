@@ -192,10 +192,10 @@ describe('GroceryListEffects', () => {
     });
   });
 
-  it('addItemFromGlobal$ converts a global into a storage add-or-update', async () => {
+  it('addItemFromProduct$ converts a global into a storage add-or-update', async () => {
     setup();
     actions$ = of(StorageActions.addProduct(mockProduct()));
-    const emitted = await firstValueFrom(effects.addItemFromGlobal$);
+    const emitted = await firstValueFrom(effects.addItemFromProduct$);
     expect(emitted.type).toBe('[Storage] Add Or Update Item');
   });
 

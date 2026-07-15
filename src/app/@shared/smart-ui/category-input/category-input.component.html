@@ -1,7 +1,7 @@
 <ion-item button (click)="showCategoryDialog()">
   <ion-label class="ion-text-wrap">
     {{ 'grocery.edit.item.dialog.categories' | translate }}
-    @for (cat of categories; track cat) {
+    @for (cat of categories(); track cat) {
       <ion-chip color="category">
         <ion-label class="ion-text-wrap">{{ cat }}</ion-label>
         <ion-icon

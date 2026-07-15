@@ -1,19 +1,18 @@
 import { createReducer, on } from '@ngrx/store';
 import { IListSettings } from '../../types';
-import { ApplicationActions } from '../application.actions';
 import { ListSettingsActions } from './list-settings.actions';
 
 export const VERSION: string = '1';
 
 export const initialListSettings: IListSettings = {
   showQuickAdd: false,
-  showQuickAddGlobal: false,
+  showQuickAddProduct: false,
   showQuickAddCategory: false,
-  showGlobalsInShopping: false,
-  showGlobalsInStorage: false,
-  showShoppingInGlobals: false,
+  showProductsInShopping: false,
+  showProductsInStorage: false,
+  showShoppingInProducts: false,
   showShoppingInStorage: false,
-  showStorageInGlobals: false,
+  showStorageInProducts: false,
   showStorageInShopping: false,
   version: VERSION,
 };
@@ -25,7 +24,7 @@ export const listSettingsReducer = createReducer(
     (_state, { settings }): IListSettings => settings
   ),
   on(
-    ApplicationActions.loadedSuccessfully,
-    (_state, { datastore }): IListSettings => datastore.listSettings ?? _state
+    ListSettingsActions.loaded,
+    (_state, { listSettings }): IListSettings => listSettings ?? _state
   )
 );

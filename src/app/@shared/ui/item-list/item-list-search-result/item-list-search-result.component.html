@@ -1,10 +1,10 @@
 <!--  tracking-page search result-->
-@if (results?.listItems?.length) {
+@if (results()?.listItems?.length) {
   <app-item-list
     header="{{ 'list-header.tracking.search' | translate }}"
     headerColor="tracking"
     [listHeader]="true"
-    [items]="results?.listItems ?? []"
+    [items]="results()?.listItems ?? []"
     [itemTemplate]="trackingItem"
   ></app-item-list>
   <ng-template #trackingItem let-item>

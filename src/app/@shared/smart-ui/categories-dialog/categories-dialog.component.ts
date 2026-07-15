@@ -57,8 +57,6 @@ export class CategoriesDialogComponent {
   rxItems = this.#store.selectSignal(selectCategories);
   rxSelection = this.#store.selectSignal(selectSelectedCategories);
 
-  constructor() {}
-
   searchbarInput(ev: any) {
     this.#store.dispatch(CategoriesActions.updateSearchQuery(ev.target.value));
   }

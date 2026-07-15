@@ -6,25 +6,20 @@ import { firstValueFrom, Observable, of } from 'rxjs';
 import {
   mockAppState,
   mockNotificationsState,
-  mockStorageItem,
-  mockStorageState,
   mockTrackingItem,
   mockTrackingState,
 } from './@shared/testing/test-data';
 import { updatedSearchQuery } from './@shared/data/item-list/item-list.utils';
 import { DatabaseService } from './@shared/util/database.service';
 import { UiService } from './@shared/util/ui.service';
-import { ApplicationActions } from './@shared/data/application.actions';
 import { TrackingActions } from './tracking/data/tracking.actions';
 import { NotificationsActions } from './@shared/data/notifications/notifications.actions';
-import { StorageActions } from './groceries/data/storage.actions';
 import { AppEffects } from './app.effects';
 
 describe('AppEffects', () => {
   let actions$: Observable<Action>;
   let effects: AppEffects;
   let database: {
-    create: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
   };
   let ui: {
@@ -34,7 +29,6 @@ describe('AppEffects', () => {
 
   const setup = (initialState = mockAppState()) => {
     database = {
-      create: vi.fn().mockResolvedValue({ tracking: mockTrackingState() }),
       save: vi.fn().mockResolvedValue(undefined),
     };
     ui = {
@@ -53,16 +47,6 @@ describe('AppEffects', () => {
     effects = TestBed.inject(AppEffects);
     return initialState;
   };
-
-  it('initializeApplication$ loads the datastore from the database', async () => {
-    setup();
-    const datastore = { tracking: mockTrackingState() };
-    database.create.mockResolvedValue(datastore);
-    actions$ = of(ApplicationActions.load());
-    expect(await firstValueFrom(effects.initializeApplication$)).toEqual(
-      ApplicationActions.loadedSuccessfully(datastore as never)
-    );
-  });
 
   describe('addOrUpdateItem$', () => {
     it('updates a tracking item that already exists', async () => {
@@ -123,16 +107,5 @@ describe('AppEffects', () => {
       'notifications',
       initialState.notifications
     );
-  });
-
-  it('saveGroceryOnChange$ persists the slice named by the action-source prefix', async () => {
-    const initialState = setup(
-      mockAppState({
-        storage: mockStorageState({ items: [mockStorageItem()] }),
-      })
-    );
-    actions$ = of(StorageActions.addItem(mockStorageItem()));
-    await firstValueFrom(effects.saveGroceryOnChange$);
-    expect(database.save).toHaveBeenCalledWith('storage', initialState.storage);
   });
 });

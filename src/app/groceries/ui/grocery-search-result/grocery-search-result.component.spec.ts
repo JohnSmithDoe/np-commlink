@@ -42,7 +42,7 @@ describe('GrocerySearchResultComponent', () => {
   });
 
   it('renders no sub-lists when there are no results', () => {
-    component.results = mockResults();
+    fixture.componentRef.setInput('results', mockResults());
     fixture.detectChanges();
 
     expect(
@@ -51,25 +51,29 @@ describe('GrocerySearchResultComponent', () => {
   });
 
   it('renders a global result sub-list with the item name', () => {
-    component.results = mockResults({
-      products: [mockProduct({ name: 'Sugar' })],
-    });
+    fixture.componentRef.setInput(
+      'results',
+      mockResults({ products: [mockProduct({ name: 'Sugar' })] })
+    );
     fixture.detectChanges();
 
     const lists = fixture.nativeElement.querySelectorAll('app-item-list');
     expect(lists).toHaveLength(1);
     expect(fixture.nativeElement.textContent).toContain('Sugar');
     expect(fixture.nativeElement.textContent).toContain(
-      'list-header.global.search'
+      'list-header.product.search'
     );
   });
 
   it('renders one sub-list per non-empty result group', () => {
-    component.results = mockResults({
-      products: [mockProduct()],
-      shoppingItems: [mockShoppingItem()],
-      storageItems: [mockStorageItem()],
-    });
+    fixture.componentRef.setInput(
+      'results',
+      mockResults({
+        products: [mockProduct()],
+        shoppingItems: [mockShoppingItem()],
+        storageItems: [mockStorageItem()],
+      })
+    );
     fixture.detectChanges();
 
     expect(

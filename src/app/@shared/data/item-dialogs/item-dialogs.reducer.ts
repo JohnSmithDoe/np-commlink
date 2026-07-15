@@ -10,7 +10,6 @@ import {
 } from '../../types';
 import { createProduct, createStorageItem } from '../../util/item.factory';
 import { matchingTxt } from '../../util/app.utils';
-import { ApplicationActions } from '../application.actions';
 import { CategoriesActions, ItemDialogsActions } from './item-dialogs.actions';
 
 export const initialItemDialogs: TItemDialogsState = {
@@ -225,7 +224,7 @@ export const itemDialogsReducer = createReducer(
     }
   ),
 
-  // NEW (merge): barcode scanner → open the global-item edit dialog prefilled
+  // NEW (merge): barcode scanner → open the product-item edit dialog prefilled
   // with the scanned EAN as the initial name; keep the raw code on the state.
   on(
     ItemDialogsActions.openEditProduct,
@@ -238,11 +237,7 @@ export const itemDialogsReducer = createReducer(
       ),
       scannedEan,
     })
-  ),
-
-  on(ApplicationActions.loadedSuccessfully, (_state): TItemDialogsState => {
-    return _state;
-  })
+  )
 );
 
 const showEditDialog = <R extends IBaseItem>(

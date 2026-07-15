@@ -1,6 +1,11 @@
 import { LoadedDatastore } from '../types';
 
-export const VERSION: string = '3';
+// Fresh baseline (start-over, 2026-07-14): the current on-disk shapes ARE
+// version 1. All pre-1 data-format migrations (targetPercentage→days,
+// notifications backfill, and the globals→products key renames that lived in
+// database.service.ts) were dropped when the store was reset. The framework
+// below is kept alive so the format can evolve again — see `migrations`.
+export const VERSION: string = '1';
 
 type Migration = {
   from: string;
@@ -8,46 +13,12 @@ type Migration = {
   apply: (data: LoadedDatastore) => LoadedDatastore;
 };
 
-// Append a new entry whenever VERSION (settings.reducer.ts) is bumped.
-// Each step receives the full datastore at version `from` and returns it
-// at version `to`. Steps are applied in order until the persisted version
-// matches the target.
-export const migrations: Migration[] = [
-  {
-    from: '1',
-    to: '2',
-    apply: (data) => {
-      const officeTime = data.officeTime as
-        | (NonNullable<LoadedDatastore['officeTime']> & {
-            targetPercentage?: number;
-          })
-        | null
-        | undefined;
-      if (!officeTime) return data;
-      const { targetPercentage, ...rest } = officeTime;
-      const daysPerWeek = Math.min(
-        5,
-        Math.max(0, Math.round(((targetPercentage ?? 50) / 20) * 2) / 2)
-      );
-      return {
-        ...data,
-        officeTime: { ...rest, targetOfficeDaysPerWeek: daysPerWeek },
-      };
-    },
-  },
-  {
-    from: '2',
-    to: '3',
-    apply: (data) => ({
-      ...data,
-      notifications: data.notifications ?? {
-        items: [],
-        doneCollapsed: true,
-        lastViewedAt: '1970-01-01T00:00:00.000Z',
-      },
-    }),
-  },
-];
+// Intentionally empty at the fresh baseline. To evolve the persisted format:
+// bump VERSION and append a step, e.g.
+//   { from: '1', to: '2', apply: (data) => ({ ...data, /* transform */ }) }
+// Each step receives the full datastore at version `from` and returns it at
+// version `to`; steps apply in order until the persisted version matches VERSION.
+export const migrations: Migration[] = [];
 
 export const migrate = (
   data: LoadedDatastore,

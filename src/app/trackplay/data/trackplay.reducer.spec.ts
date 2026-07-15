@@ -1,5 +1,3 @@
-import { LoadedDatastore } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TrackplayActions } from './trackplay.actions';
 import { initialState, trackplayReducer } from './trackplay.reducer';
 import {
@@ -123,12 +121,7 @@ describe('trackplayReducer', () => {
   });
 
   it('hydrates from a datastore and seeds default types when none exist', () => {
-    const fresh = trackplayReducer(
-      initialState,
-      ApplicationActions.loadedSuccessfully({
-        trackplay: null,
-      } as LoadedDatastore)
-    );
+    const fresh = trackplayReducer(initialState, TrackplayActions.loaded(null));
     expect(Object.keys(fresh.gameTypes)).toEqual(['default', 'rommee', 'skat']);
 
     const persisted = mockTrackplayState({
@@ -146,9 +139,7 @@ describe('trackplayReducer', () => {
     });
     const loaded = trackplayReducer(
       initialState,
-      ApplicationActions.loadedSuccessfully({
-        trackplay: persisted,
-      } as LoadedDatastore)
+      TrackplayActions.loaded(persisted)
     );
     expect(loaded.players['p1']).toBeDefined();
     expect(loaded.lastDeleted).toBeNull();

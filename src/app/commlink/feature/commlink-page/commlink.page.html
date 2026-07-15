@@ -48,8 +48,13 @@
           <div class="cl-node__top">
             <span class="cl-node__hex">{{ p.hex }}</span>
             <span class="cl-node__flags">
-              @if (p.badgeKey === 'unread' && noise() > 0) {
-                <span class="cl-node__badge">{{ noise() }}</span>
+              <!-- Live metric from the dashboard read-model. Only positive
+                   values badge: a 0 count is nothing to flag, and a
+                   non-positive balance (e.g. overdraft) is intentionally not
+                   surfaced as a glanceable count. -->
+              @let b = badge(p);
+              @if (b !== null && b > 0) {
+                <span class="cl-node__badge">{{ b }}</span>
               }
               <i
                 class="cl-led"

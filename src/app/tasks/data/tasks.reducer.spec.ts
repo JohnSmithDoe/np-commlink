@@ -1,5 +1,3 @@
-import { IDatastore } from '../../@shared/types';
-import { ApplicationActions } from '../../@shared/data/application.actions';
 import { TasksActions } from './tasks.actions';
 import { initialState, tasksReducer } from './tasks.reducer';
 import { mockTaskItem, mockTasksState } from '../../@shared/testing/test-data';
@@ -71,17 +69,16 @@ describe('tasksReducer', () => {
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {
-    const datastore = {
-      tasks: mockTasksState({
-        items: [mockTaskItem()],
-        searchQuery: 'stale',
-        mode: 'categories',
-        filterBy: 'Chores',
-      }),
-    } as IDatastore;
     const state = tasksReducer(
       initialState,
-      ApplicationActions.loadedSuccessfully(datastore)
+      TasksActions.loaded(
+        mockTasksState({
+          items: [mockTaskItem()],
+          searchQuery: 'stale',
+          mode: 'categories',
+          filterBy: 'Chores',
+        })
+      )
     );
     expect(state.items).toHaveLength(1);
     expect(state.searchQuery).toBeUndefined();

@@ -23,9 +23,9 @@ describe('CategoryItemComponent', () => {
     ionList = {
       closeSlidingItems: vi.fn().mockResolvedValue(undefined),
     } as unknown as IonList;
-    component.category = 'Dairy';
-    component.count = 3;
-    component.ionList = ionList;
+    fixture.componentRef.setInput('category', 'Dairy');
+    fixture.componentRef.setInput('count', 3);
+    fixture.componentRef.setInput('ionList', ionList);
   });
 
   it('should create', () => {
@@ -34,8 +34,8 @@ describe('CategoryItemComponent', () => {
   });
 
   it('renders the category name and count in the heading', () => {
-    component.category = 'Dairy';
-    component.count = 3;
+    fixture.componentRef.setInput('category', 'Dairy');
+    fixture.componentRef.setInput('count', 3);
     fixture.detectChanges();
 
     const h2 = fixture.nativeElement.querySelector('h2');

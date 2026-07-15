@@ -1,4 +1,9 @@
-import { Component, inject, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+} from '@angular/core';
 import { IonChip, IonIcon, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
@@ -15,6 +20,7 @@ import {
   selector: 'app-category-input',
   templateUrl: './category-input.component.html',
   styleUrls: ['./category-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonItem,
     IonLabel,
@@ -26,7 +32,7 @@ import {
 })
 export class CategoryInputComponent {
   readonly #store = inject(Store);
-  @Input() categories?: TItemListCategory[];
+  categories = input<TItemListCategory[]>();
 
   constructor() {
     addIcons({ closeCircle });

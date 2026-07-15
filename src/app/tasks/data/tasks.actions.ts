@@ -1,6 +1,7 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
   ITaskItem,
+  ITasksState,
   TItemListCategory,
   TItemListMode,
   TUpdateDTO,
@@ -9,6 +10,12 @@ import {
 export const TasksActions = createActionGroup({
   source: 'Tasks',
   events: {
+    // Own-data lazy load lifecycle (lazy-modules plan §2): `load` is dispatched
+    // by the route's moduleHydrationResolver on entry; the load effect reads
+    // the `tasks` key and emits `loaded`, which the reducer hydrates on.
+    load: emptyProps(),
+    loaded: (tasks: ITasksState | null) => ({ tasks }),
+
     // Effects only
     'Enter Page': emptyProps(),
     'Add Or Update Item': (item: ITaskItem) => ({ item }),

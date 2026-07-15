@@ -2,6 +2,7 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
   IDataItem,
   ITrackingItem,
+  ITrackingState,
   TItemListSortType,
   TTimestamp,
   TUpdateDTO,
@@ -10,6 +11,12 @@ import {
 export const TrackingActions = createActionGroup({
   source: 'Tracking',
   events: {
+    // Own-data lazy load lifecycle (lazy-modules plan §2). `load` is dispatched
+    // at boot; the load effect reads the `tracking` key and emits `loaded`,
+    // which the reducer (and trackTime$/runningUpdates$) hydrate on.
+    load: emptyProps(),
+    loaded: (tracking: ITrackingState | null) => ({ tracking }),
+
     // Effects only
     'Enter Page': emptyProps(),
     'Add Or Update Item': (item: ITrackingItem) => ({ item }),

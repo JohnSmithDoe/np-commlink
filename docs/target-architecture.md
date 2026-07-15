@@ -463,6 +463,11 @@ sheriff · eslint · 619 unit · 23 e2e) and reviewed by adversarial lenses.
   `loadChildren`) is negligible gain — deliberately not chased (matches the phase-0 baseline).
 - **Only grocery + tasks are lazy.** tracking/office-time/notifications/cash/trackplay stay
   eager by design, so the dashboard read-model needs no boot-summary-doc machinery.
+  → **SUPERSEDED (branch `feature/lazy-modules`, 2026-07-15):** the follow-up refactor made
+  the dashboard a **persisted** read-model and lazified `cash`, `trackplay`, and `office-time`
+  too. Only `tracking` + `notifications` remain eager — they're locked together by the
+  background tracking→notifications timer bridge (a capability sink), pending the deferred
+  background-stat-change decision. Authoritative status: **`lazy-modules-plan.md` §9.**
 
 **Deferred polish (low-risk, non-blocking):**
 - Residual `_storage`/`_products` etc. **string literals** in `@shared/types` (the centralized

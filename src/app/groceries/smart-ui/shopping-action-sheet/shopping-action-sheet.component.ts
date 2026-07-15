@@ -1,4 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { ActionSheetButton } from '@ionic/angular';
 import { IonActionSheet } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
@@ -37,6 +42,7 @@ const cancelButton: ActionSheetButton = {
   selector: 'app-shopping-action-sheet',
   templateUrl: './shopping-action-sheet.component.html',
   styleUrls: ['./shopping-action-sheet.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonActionSheet],
 })
 export class ShoppingActionSheetComponent {

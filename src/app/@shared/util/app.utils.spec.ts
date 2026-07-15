@@ -4,7 +4,7 @@ import { IBaseItem, TIonDragEvent } from '../types';
 import {
   checkItemOptionsOnDrag,
   hasQuantity,
-  isGlobalItem,
+  isProductItem,
   isShoppingItem,
   isStorageItem,
   isTaskItem,
@@ -40,9 +40,9 @@ const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
 
 describe('app.utils', () => {
   describe('type guards', () => {
-    it('isGlobalItem detects the "unit" property', () => {
-      expect(isGlobalItem(mockProduct())).toBe(true);
-      expect(isGlobalItem(mockStorageItem())).toBe(false);
+    it('isProductItem detects the "unit" property', () => {
+      expect(isProductItem(mockProduct())).toBe(true);
+      expect(isProductItem(mockStorageItem())).toBe(false);
     });
 
     it('isStorageItem detects an own "bestBefore" property', () => {
