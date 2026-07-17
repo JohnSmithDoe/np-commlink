@@ -301,7 +301,7 @@ describe('item-list.utils', () => {
       });
       const result = updateQuickAddState(state, '_storage');
       expect(result.searchQuery).toBe('Milk');
-      expect(result.color).toBe('storage');
+      expect(result.color).toBe('primary');
       expect(result.canAddLocal).toBe(true);
       expect(result.canAddProduct).toBe(true);
       expect(result.canAddCategory).toBe(false);

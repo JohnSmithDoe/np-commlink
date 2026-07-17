@@ -17,8 +17,8 @@ import { Store } from '@ngrx/store';
 import {
   selectTrackingData,
   selectTrackingDataViewId,
-} from '../../data/tracking.selector';
-import { TrackingActions } from '../../data/tracking.actions';
+  TrackingActions,
+} from '../../data';
 import { IDataItem, IonViewWillEnter } from '../../../@shared/types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 

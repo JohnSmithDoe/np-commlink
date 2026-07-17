@@ -2,10 +2,10 @@
   ion-item {
     --padding-start: 0;
     &.tracking-item-running {
-      --ion-background-color: #2d7c3e59;
+      --ion-background-color: rgba(var(--ion-color-success-rgb), 0.35);
     }
     &.tracking-item-paused {
-      --ion-background-color: #ffc4092e;
+      --ion-background-color: rgba(var(--ion-color-warning-rgb), 0.18);
     }
   }
 }
@@ -46,7 +46,7 @@
   color: var(--ion-color-warning-contrast);
 }
 .tracking-item-badge-stopped {
-  background: var(--ion-color-tracking);
+  background: var(--sr-panel);
   color: var(--ion-color-step-650);
 }
 

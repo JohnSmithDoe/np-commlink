@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { tap } from 'rxjs';
 import { UiService } from './@shared/util/ui.service';
-import { TrackingActions } from './tracking/data/tracking.actions';
+import { TrackingActions } from './tracking/data';
 
 @Injectable({ providedIn: 'root' })
 export class AppMessageEffects {

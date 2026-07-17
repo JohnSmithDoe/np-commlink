@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="trackplay">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'trackplay.toast.close' | translate }}
@@ -34,7 +34,9 @@
         (ionChange)="onTypeChange($any($event).detail.value)"
       >
         @for (type of rxGameTypes(); track type.id) {
-          <ion-select-option [value]="type.id">{{ type.name }}</ion-select-option>
+          <ion-select-option [value]="type.id">{{
+            type.name
+          }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
@@ -49,7 +51,6 @@
 
   <ion-button
     expand="block"
-    color="trackplay"
     class="tp-play-btn"
     [disabled]="!canPlay()"
     (click)="goToGame()"

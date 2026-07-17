@@ -7,7 +7,7 @@ $lg-item-width: $sm-item-width * 4;
 @mixin dashboard-item {
   display: block;
   min-height: $item-height-min-height;
-  --ion-background-color: #3a3a3a;
+  --ion-background-color: var(--sr-panel);
 }
 @mixin dashboard-item-card {
   /* Ensure the card is a flex column so content can take the remaining height */

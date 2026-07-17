@@ -5,7 +5,7 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { mockAppState, mockTrackingItem } from './@shared/testing/test-data';
 import { UiService } from './@shared/util/ui.service';
-import { TrackingActions } from './tracking/data/tracking.actions';
+import { TrackingActions } from './tracking/data';
 import { AppMessageEffects } from './app.message.effects';
 
 describe('AppMessageEffects', () => {

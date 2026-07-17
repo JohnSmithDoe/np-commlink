@@ -1,7 +1,7 @@
 <app-page-header hideButtons="true">
-  <div toolbar class="cl-brand">
-    <ion-icon name="hardware-chip-outline" class="cl-brand__chip" />
-    <span class="cl-brand__name">np-commlink</span>
+  <div toolbar class="sr-brand">
+    <ion-icon name="hardware-chip-outline" class="sr-brand__icon" />
+    <span class="sr-brand__name">np-commlink</span>
     <span class="cl-cursor">▊</span>
   </div>
 </app-page-header>
@@ -9,11 +9,11 @@
 <ion-content>
   @let now = time();
 
-  <div class="cl">
+  <div class="cl sr-scanlines">
     <!-- ── STATUS STRIP ─────────────────────────────────────── -->
     <div class="cl-bar">
       <span class="cl-bar__seg">
-        <i class="cl-led cl-led--on"></i> SIN://np-commlink
+        <i class="sr-led sr-led--on"></i> SIN://np-commlink
       </span>
       <span class="cl-bar__seg">GRID <b>ONLINE</b></span>
       <span class="cl-bar__seg"
@@ -39,7 +39,7 @@
     <div class="cl-grid">
       @for (p of programs; track p.hex) {
         <a
-          class="cl-node"
+          class="cl-node sr-panel sr-corners"
           [class.cl-node--standby]="p.status === 'standby'"
           [class.cl-node--offline]="p.status === 'offline'"
           [routerLink]="p.route"
@@ -57,10 +57,10 @@
                 <span class="cl-node__badge">{{ b }}</span>
               }
               <i
-                class="cl-led"
-                [class.cl-led--on]="p.status === 'online'"
-                [class.cl-led--standby]="p.status === 'standby'"
-                [class.cl-led--off]="p.status === 'offline'"
+                class="sr-led"
+                [class.sr-led--on]="p.status === 'online'"
+                [class.sr-led--standby]="p.status === 'standby'"
+                [class.sr-led--off]="p.status === 'offline'"
               ></i>
             </span>
           </div>

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" aria-label="back">
         <ion-icon slot="icon-only" name="arrow-back-outline" />
@@ -65,7 +65,7 @@
             </ion-item>
             @if (txn.status === 'pending') {
               <ion-item-options side="start">
-                <ion-item-option color="cash" (click)="reconcile(txn)">
+                <ion-item-option (click)="reconcile(txn)">
                   <ion-icon slot="icon-only" name="swap-horizontal-outline" />
                 </ion-item-option>
               </ion-item-options>

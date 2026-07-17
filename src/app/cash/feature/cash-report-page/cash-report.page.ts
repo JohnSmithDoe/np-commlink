@@ -30,7 +30,7 @@ import {
   selectMonthlyTotals,
   selectReportTotals,
   selectSpendByCategory,
-} from '../../data/cash.selector';
+} from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 Chart.register(...registerables);

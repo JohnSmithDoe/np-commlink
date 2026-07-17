@@ -13,12 +13,11 @@ import {
   TItemListSortType,
 } from '../../../@shared/types';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { LIST_FACADE } from '../../../@shared/data/list/list-page.facade';
+import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
-import { TasksActions } from '../../data/tasks.actions';
-import { TasksListPageFacade } from '../../data/tasks-list-page.facade';
-import { EditTaskItemDialogComponent } from '../../smart-ui/edit-task-item-dialog/edit-task-item-dialog.component';
+import { TasksActions, TasksListPageFacade } from '../../data';
+import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-item-dialog.component';
 
 @Component({
   selector: 'app-page-task',

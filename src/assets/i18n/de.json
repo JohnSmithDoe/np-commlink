@@ -40,7 +40,6 @@
   "notifications.tracking.paused.title": "Pausiert",
   "notifications.tracking.running.body": "{{name}} läuft.",
   "notifications.tracking.running.title": "Läuft",
-  "notifications.tracking.running.update": "{{name}} läuft seit {{minutes}} min.",
   "notifications.tracking.stopped.body": "{{name}} wurde gestoppt.",
   "notifications.tracking.stopped.title": "Gestoppt",
   "officetime.barcode.upload.error": "Barcode konnte nicht eingelesen werden",

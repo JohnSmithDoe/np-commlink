@@ -6,7 +6,7 @@ import {
   ICashTransaction,
 } from '../../@shared/types';
 
-// Source prefix `[Cash]` is load-bearing: AppEffects.saveCashOnChange$
+// Source prefix `[Cash]` is load-bearing: CashSaveEffects.saveCashOnChange$
 // persists the slice whenever any `[Cash]` action fires — EXCEPT the
 // load/loaded lifecycle below, which that effect excludes (hydration is not a
 // mutation; persisting on `[Cash] load` would clobber the ledger at boot).

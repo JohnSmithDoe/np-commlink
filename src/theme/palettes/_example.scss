@@ -1,0 +1,56 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// THEME SEAM — alternate palette placeholder (NOT active; emits no CSS).
+// ═══════════════════════════════════════════════════════════════════════════
+// np-commlink ships ONE theme: the dark Shadowrun deck, authored directly on
+// `:root` (variables.scss + _shadowrun.scss). A SECOND theme does NOT re-import
+// Ionic's prebuilt dark.class.css — our default is already dark. Instead, author
+// an alternate palette here under a single `.ion-palette-<name>` class and
+// toggle it at runtime:
+//
+//   document.documentElement.classList.add('ion-palette-<name>');   // activate
+//   document.documentElement.classList.remove('ion-palette-<name>'); // back to default
+//
+// Because every hue in the app derives from ONE token group (Phases 2–4 pushed
+// all colour through primitive → semantic → consumer), overriding just that
+// group under the class reskins BOTH the Ionic chrome and the cyberdeck together
+// — no component or page needs to change. That group is exactly the block below.
+//
+// This file is intentionally all-comments (a documented seam), so `@use`ing it
+// from global.scss emits nothing. To ship a real second theme: copy this file to
+// `_<name>.scss`, uncomment, retune the values, `@use` it from global.scss, and
+// add the class toggle to a ThemeService.
+//
+// -----------------------------------------------------------------------------
+// .ion-palette-example {
+//   // ── Ionic brand hues (the two neons) ──────────────────────────────────
+//   --ion-color-primary: #……;        // amber → new accent
+//   --ion-color-primary-rgb: …, …, …;
+//   --ion-color-primary-contrast: #……;
+//   --ion-color-primary-contrast-rgb: …, …, …;
+//   --ion-color-primary-shade: #……;
+//   --ion-color-primary-tint: #……;
+//   --ion-color-secondary: #……;      // teal → new second neon
+//   --ion-color-secondary-rgb: …, …, …;
+//   --ion-color-secondary-contrast: #……;
+//   --ion-color-secondary-contrast-rgb: …, …, …;
+//   --ion-color-secondary-shade: #……;
+//   --ion-color-secondary-tint: #……;
+//
+//   // ── Terminal slate surfaces (the raw --sr-* palette) ──────────────────
+//   --sr-bg: #……;
+//   --sr-panel: #……;
+//   --sr-panel-2: #……;
+//   --sr-toolbar: #……;
+//   --sr-bg-hi: #……;
+//   --sr-bg-mid: #……;
+//   --sr-bg-lo: #……;
+//   --sr-text: #……;
+//   --sr-red: #……;
+//   --sr-red-rgb: …, …, …;
+//   --sr-red-deep: #……;
+//
+//   // ── rgb mirrors Ionic derives its own rgba() from (keep in sync with the
+//   //    hexes above; variables.scss holds these as literals) ──────────────
+//   --ion-background-color-rgb: …, …, …;   // mirror of --sr-bg
+//   --ion-text-color-rgb: …, …, …;         // mirror of --sr-text
+// }

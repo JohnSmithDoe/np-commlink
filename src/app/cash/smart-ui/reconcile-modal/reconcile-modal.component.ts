@@ -21,8 +21,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { ICashTransaction } from '../../../@shared/types';
-import { CashActions } from '../../data/cash.actions';
-import { selectCashTransactions } from '../../data/cash.selector';
+import { CashActions, selectCashTransactions } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { findReconciliationCandidates } from '../../util/reconcile';
 

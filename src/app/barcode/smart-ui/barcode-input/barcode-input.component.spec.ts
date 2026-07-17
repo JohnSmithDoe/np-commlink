@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { OfficeTimeActions } from '../../../office-time/data/office-time/office-time.actions';
+import { BarcodeActions } from '../../data';
 import { UiService } from '../../../@shared/util/ui.service';
 import { BarcodeInputComponent } from './barcode-input.component';
 
@@ -44,9 +44,9 @@ describe('BarcodeInputComponent', () => {
 
     await vi.waitFor(() => expect(dispatch).toHaveBeenCalledTimes(1));
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof OfficeTimeActions.saveBarcode
+      typeof BarcodeActions.saveBarcode
     >;
-    expect(action.type).toBe(OfficeTimeActions.saveBarcode.type);
+    expect(action.type).toBe(BarcodeActions.saveBarcode.type);
     expect(action.base64Blob.startsWith('data:')).toBe(true);
   });
 

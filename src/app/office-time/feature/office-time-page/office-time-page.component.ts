@@ -10,7 +10,6 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { IonViewWillEnter } from '../../../@shared/types';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import { DashButtonComponent } from '../../smart-ui/dash-button/dash-button.component';
 import { DashCardSkeletonComponent } from '../../ui/dash-card-skeleton/dash-card-skeleton.component';
 import { DashDateComponent } from '../../ui/dash-date/dash-date.component';
@@ -21,19 +20,18 @@ import { DashOfficeDaysEditComponent } from '../../smart-ui/dash-office-days-edi
 import { add, remove, settingsSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import {
+  OfficeTimeActions,
   selectDashboardItems,
   selectDashboardSettings,
   selectFreedays,
   selectHolidayDays,
   selectHolidays,
   selectOfficedays,
-} from '../../data/office-time/office-time.selector';
-import {
   selectDashboardStatsMonth,
   selectDashboardStatsQuarter,
   selectDashboardStatsWeek,
   selectDashboardStatsYear,
-} from '../../data/office-time/office-time.stats.selector';
+} from '../../data';
 import { DashStatsComponent } from '../../ui/dash-stats/dash-stats.component';
 import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.component';
 

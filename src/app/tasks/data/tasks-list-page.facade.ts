@@ -6,11 +6,11 @@ import {
   TItemListSortType,
 } from '../../@shared/types';
 import { ItemDialogsActions } from '../../@shared/data/item-dialogs/item-dialogs.actions';
-import { IListPageFacade } from '../../@shared/data/list/list-page.facade';
+import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
 import {
   listCategoriesWithCount,
   listStateFilter,
-} from '../../@shared/data/list/list.selector';
+} from '../../@shared/util/list/list.selector';
 import { TasksActions } from './tasks.actions';
 import {
   selectTasksListItems,

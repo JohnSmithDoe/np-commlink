@@ -15,7 +15,7 @@ import { expect, test } from '@playwright/test';
  * NB: cash is a P0 read-only scaffold (no add-transaction UI yet), so this can
  * only exercise the load/hydrate wiring. A full mutate → reload persistence
  * guard (parity with the trackplay/tasks reload e2e, covering CashSaveEffects)
- * must be added when the P1 ledger UI lands — see docs/todo.md.
+ * is still outstanding now that the ledger UI has landed — see docs/open-tasks.md.
  */
 test.describe('cash first paint', () => {
   test('hydrates and paints the CREDSTICK scaffold', async ({ page }) => {
@@ -24,8 +24,12 @@ test.describe('cash first paint', () => {
     const scaffold = page.locator('#main-content app-page-cash');
     await expect(scaffold).toBeVisible({ timeout: 30_000 });
 
-    // Fresh browser context → empty ledger hydrates to 0 accounts. Seeing the
-    // count at all means the resolver resolved (load effect emitted `loaded`).
-    await expect(scaffold.locator('.cash-scaffold__count')).toHaveText('0');
+    // Fresh browser context → empty ledger hydrates to zero accounts. Seeing the
+    // net-worth header plus the "no accounts" empty state means the resolver
+    // resolved (the load effect emitted `loaded`) and the page painted its
+    // hydrated content — the `@else` empty branch only renders once `accounts()`
+    // has hydrated to an empty array.
+    await expect(scaffold.locator('.cash-networth__value')).toBeVisible();
+    await expect(scaffold.locator('.cash-empty')).toBeVisible();
   });
 });

@@ -21,14 +21,15 @@ import {
   createOutline,
   optionsOutline,
 } from 'ionicons/icons';
-import { IGame, IonViewWillEnter, TID } from '../../../@shared/types';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { IonViewWillEnter } from '../../../@shared/types';
+import { IGame, TID } from '../../model';
 import {
+  TrackplayActions,
   selectGamesForPlayer,
   selectGameTypes,
   selectPlayerById,
   selectStatsForPlayer,
-} from '../../data/trackplay.selector';
+} from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
 import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
 import { TrackplayPlayerEditDialogComponent } from '../../smart-ui/player-edit-dialog/player-edit-dialog.component';

@@ -9,7 +9,7 @@ import {
   updateListItem,
   updateListMode,
   updateListSort,
-} from '../../@shared/data/list/list.utils';
+} from '../../@shared/util/list/list.utils';
 import { TasksActions } from './tasks.actions';
 
 export const initialState: ITasksState = {

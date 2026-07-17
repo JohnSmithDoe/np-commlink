@@ -21,7 +21,7 @@ import { DatePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
-import { selectAllTrackingSessions } from '../../data/tracking.selector';
+import { selectAllTrackingSessions } from '../../data';
 import { NpTrackingTimePipe } from '../../util/np-tracking-time.pipe';
 
 @Component({

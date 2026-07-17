@@ -9,8 +9,7 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
 import { BarcodeInputComponent } from '../smart-ui/barcode-input/barcode-input.component';
-import { OfficeTimeActions } from '../../office-time/data/office-time/office-time.actions';
-import { selectBarcodeDataUrl } from '../../office-time/data/office-time/office-time.selector';
+import { BarcodeActions, selectBarcodeDataUrl } from '../data';
 
 @Component({
   selector: 'app-page-barcode',
@@ -32,10 +31,10 @@ export class BarcodePage {
   readonly barcode = this.#store.selectSignal(selectBarcodeDataUrl);
 
   rotateBarcode() {
-    this.#store.dispatch(OfficeTimeActions.rotateBarcode());
+    this.#store.dispatch(BarcodeActions.rotateBarcode());
   }
 
   deleteBarcode() {
-    this.#store.dispatch(OfficeTimeActions.deleteBarcode());
+    this.#store.dispatch(BarcodeActions.deleteBarcode());
   }
 }

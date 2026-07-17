@@ -1,10 +1,14 @@
 <app-page-header
   label="trackplay.page-title.games"
   icon="dice-outline"
-  color="trackplay"
   (addItem)="newGame()"
 >
-  <ion-button slot="end" toolbar routerLink="/trackplay/players" color="primary">
+  <ion-button
+    slot="end"
+    toolbar
+    routerLink="/trackplay/players"
+    color="primary"
+  >
     <ion-icon slot="icon-only" name="people-outline" />
   </ion-button>
   <ion-button

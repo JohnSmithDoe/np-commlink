@@ -3,7 +3,7 @@ import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockShoppingItem } from '../../../@shared/testing/test-data';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { ShoppingActions } from '../../data/shopping.actions';
+import { ShoppingActions } from '../../data';
 import { ShoppingPage } from './shopping.page';
 
 describe('ShoppingPage', () => {

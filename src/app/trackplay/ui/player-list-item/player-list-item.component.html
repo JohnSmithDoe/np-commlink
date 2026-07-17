@@ -7,7 +7,7 @@
   </ion-item-options>
 
   <ion-item [button]="true" lines="full" (click)="selectPlayer.emit()">
-    <ion-icon slot="start" color="trackplay" name="person" aria-hidden="true" />
+    <ion-icon slot="start" name="person" aria-hidden="true" />
     <ion-label class="ion-text-wrap">
       <h2>{{ player().name }}</h2>
       <p class="second-line">
@@ -25,7 +25,8 @@
         <span class="value">
           @if (player().lastPlayed) {
             {{
-              player().lastPlayed | date: 'dd.MM.yyyy, HH:mm' : undefined : 'de-DE'
+              player().lastPlayed
+                | date: 'dd.MM.yyyy, HH:mm' : undefined : 'de-DE'
             }}
           } @else {
             —

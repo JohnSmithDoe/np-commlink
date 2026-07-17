@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { TIonDragEvent } from '../../../@shared/types';
-import { mockGame } from '../../../@shared/testing/test-data';
+import { mockGame } from '../../testing/trackplay.test-data';
 import { TrackplayGameListItemComponent } from './game-list-item.component';
 
 // A fake sliding-list handle: the emit helpers only await closeSlidingItems().

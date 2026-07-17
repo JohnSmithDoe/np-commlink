@@ -19,15 +19,16 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline, diceOutline } from 'ionicons/icons';
-import { IGame, IonViewWillEnter, TID } from '../../../@shared/types';
+import { IonViewWillEnter } from '../../../@shared/types';
+import { IGame, TID } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TrackplayActions } from '../../data/trackplay.actions';
 import {
+  TrackplayActions,
   selectGameList,
   selectGames,
   selectGameTypes,
   selectTrackplayConfig,
-} from '../../data/trackplay.selector';
+} from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
 import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
 import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';

@@ -1,17 +1,19 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { moduleHydrationResolver } from './@shared/data/module-hydration.resolver';
-import { GroceriesActions } from './groceries/data/groceries.actions';
-import { groceriesLazyProviders } from './groceries/data/provide-groceries-lazy';
-import { TasksActions } from './tasks/data/tasks.actions';
-import { tasksLazyProviders } from './tasks/data/provide-tasks-lazy';
-import { CashActions } from './cash/data/cash.actions';
-import { cashLazyProviders } from './cash/data/provide-cash-lazy';
-import { TrackplayActions } from './trackplay/data/trackplay.actions';
-import { trackplayLazyProviders } from './trackplay/data/provide-trackplay-lazy';
-import { SettingsActions } from './office-time/data/settings/settings.actions';
-import { OfficeTimeActions } from './office-time/data/office-time/office-time.actions';
-import { officeTimeLazyProviders } from './office-time/data/provide-office-time-lazy';
+import { GroceriesActions, groceriesLazyProviders } from './groceries/data';
+import { TasksActions, tasksLazyProviders } from './tasks/data';
+import { CashActions, cashLazyProviders } from './cash/data';
+import { TrackplayActions, trackplayLazyProviders } from './trackplay/data';
+import {
+  SettingsActions,
+  OfficeTimeActions,
+  officeTimeLazyProviders,
+} from './office-time/data';
+import { TrackingActions, trackingLazyProviders } from './tracking/data';
+import { NotificationsActions } from './@shared/util/notifications/notifications.actions';
+import { notificationsLazyProviders } from './notifications/data';
+import { BarcodeActions, barcodeLazyProviders } from './barcode/data';
 
 // Shared across the five `/trackplay/*` routes: they form one section over a
 // single lazy slice, so each carries the same providers + hydration resolver
@@ -24,9 +26,19 @@ const trackplayResolve = {
   ),
 };
 
-// Shared across the three routes that touch the office-time context
-// (`/settings`, `/office-time`, `/barcode`). The context owns two slices, so
-// two resolve keys hydrate them independently (lazy-modules Phase D).
+// Shared across the two routes that read `state.tracking` — `/tracking` (the
+// tracker) and `/data/:listId` (the stats page). Both carry the tracking lazy
+// providers + this resolver so tracking hydrates on entry (lazy-modules §7).
+const trackingResolve = {
+  hydrated: moduleHydrationResolver(
+    TrackingActions.load,
+    TrackingActions.loaded
+  ),
+};
+
+// Shared across the two routes that touch the office-time context
+// (`/settings`, `/office-time`). The context owns two slices, so two resolve
+// keys hydrate them independently (lazy-modules Phase D).
 const officeTimeResolve = {
   settings: moduleHydrationResolver(
     SettingsActions.load,
@@ -50,6 +62,8 @@ export const routes: Routes = [
   {
     path: 'tracking',
     data: { title: marker('page-title.tracking') },
+    providers: trackingLazyProviders,
+    resolve: trackingResolve,
     loadComponent: () =>
       import('./tracking/feature/tracking-page/tracking.page').then(
         (m) => m.TrackingPage
@@ -58,6 +72,8 @@ export const routes: Routes = [
   {
     path: 'data/:listId',
     data: { title: marker('page-title.data') },
+    providers: trackingLazyProviders,
+    resolve: trackingResolve,
     loadComponent: () =>
       import('./tracking/feature/stats-page/stats.page').then(
         (m) => m.StatsPage
@@ -86,16 +102,30 @@ export const routes: Routes = [
   {
     path: 'barcode',
     data: { title: marker('page-title.barcode') },
-    // The SIGIL badge lives in the office-time `officeTime` slice (the one
-    // cross-domain bridge), so /barcode co-registers + hydrates office-time.
-    providers: officeTimeLazyProviders,
-    resolve: officeTimeResolve,
+    // The SIGIL badge is its own sealed lazy context now (sheriff-tighten §1) —
+    // no longer a field inside office-time, so no cross-domain bridge.
+    providers: barcodeLazyProviders,
+    resolve: {
+      hydrated: moduleHydrationResolver(
+        BarcodeActions.load,
+        BarcodeActions.loaded
+      ),
+    },
     loadComponent: () =>
       import('./barcode/feature/barcode.page').then((m) => m.BarcodePage),
   },
   {
     path: 'notifications',
     data: { title: marker('page-title.notifications') },
+    // notifications is lazy too (§7): its own list registers + hydrates here.
+    // Off-route writers (tracking) go through the durable NotificationsStore.
+    providers: notificationsLazyProviders,
+    resolve: {
+      hydrated: moduleHydrationResolver(
+        NotificationsActions.load,
+        NotificationsActions.loaded
+      ),
+    },
     loadComponent: () =>
       import('./notifications/feature/notifications.page').then(
         (m) => m.NotificationsPage
@@ -176,7 +206,9 @@ export const routes: Routes = [
       ),
   },
   // Cash — offline multi-account finance ledger (purpose-built; no :listId).
-  // `cash` is an eager slice, so these routes need no providers/resolver.
+  // `cash` is a lazy bounded context: every cash route registers the slice via
+  // `cashLazyProviders` and hydrates through the module resolver — cash is torn
+  // down on leaving the subtree, so each sibling route must re-register it.
   {
     path: 'cash',
     data: { title: marker('cash.page-title.cash') },
@@ -191,6 +223,10 @@ export const routes: Routes = [
     // Static paths must precede `cash/:accountId` so they aren't captured as a param.
     path: 'cash/rules',
     data: { title: marker('cash.page-title.rules') },
+    providers: cashLazyProviders,
+    resolve: {
+      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
+    },
     loadComponent: () =>
       import('./cash/feature/cash-rules-page/cash-rules.page').then(
         (m) => m.CashRulesPage
@@ -199,6 +235,10 @@ export const routes: Routes = [
   {
     path: 'cash/report',
     data: { title: marker('cash.page-title.report') },
+    providers: cashLazyProviders,
+    resolve: {
+      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
+    },
     loadComponent: () =>
       import('./cash/feature/cash-report-page/cash-report.page').then(
         (m) => m.CashReportPage
@@ -207,6 +247,10 @@ export const routes: Routes = [
   {
     path: 'cash/:accountId',
     data: { title: marker('cash.page-title.cash') },
+    providers: cashLazyProviders,
+    resolve: {
+      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
+    },
     loadComponent: () =>
       import('./cash/feature/cash-account-page/cash-account.page').then(
         (m) => m.CashAccountPage

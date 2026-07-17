@@ -39,7 +39,10 @@ export const BASE_TEST_PROVIDERS: TestProvider[] = [
  * anything more specific (e.g. router-derived selectors).
  */
 export function provideTestingProviders(
-  initialState: Partial<IAppState> = {}
+  // Known kernel slices stay type-checked; lazy-feature slices no longer in
+  // IAppState (e.g. `trackplay`, split into its own model — DDD review #1) are
+  // allowed as extra MockStore initial state.
+  initialState: Partial<IAppState> & Record<string, unknown> = {}
 ): TestProvider[] {
   return [
     ...BASE_TEST_PROVIDERS,

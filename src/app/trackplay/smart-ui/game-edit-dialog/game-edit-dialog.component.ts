@@ -27,13 +27,13 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle, playCircle } from 'ionicons/icons';
-import { TID } from '../../../@shared/types';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { TID } from '../../model';
 import {
+  TrackplayActions,
   selectGames,
   selectGameTypeList,
   selectPlayers,
-} from '../../data/trackplay.selector';
+} from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-select.component';
 

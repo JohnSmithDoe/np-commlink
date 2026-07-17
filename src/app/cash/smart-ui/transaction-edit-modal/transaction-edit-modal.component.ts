@@ -27,8 +27,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { ICashTransaction, TCashTxnStatus } from '../../../@shared/types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions } from '../../data/cash.actions';
-import { selectCashTransactions } from '../../data/cash.selector';
+import { CashActions, selectCashTransactions } from '../../data';
 import { centsToInput, eurToCents } from '../../util/money';
 
 type TDirection = 'expense' | 'income';

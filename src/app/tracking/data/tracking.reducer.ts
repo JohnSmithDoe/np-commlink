@@ -7,7 +7,7 @@ import {
   removeListItem,
   updateListItem,
   updateListSort,
-} from '../../@shared/data/item-list/item-list.utils';
+} from '../../@shared/util/item-list/item-list.utils';
 import { uuidv4 } from '../../@shared/util/app.utils';
 
 export const initialState: ITrackingState = {

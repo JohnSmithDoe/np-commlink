@@ -13,7 +13,7 @@ const notification = (over: Partial<INotification> = {}): INotification => ({
   createdAt: '2026-06-01T08:00:00.000Z',
   body: 'body',
   icon: 'alarm',
-  color: 'notifications',
+  color: 'primary',
   status: 'new',
   updatedAt: '2026-06-01T08:00:00.000Z',
   ...over,

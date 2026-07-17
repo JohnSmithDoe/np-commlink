@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { IDashboardSummary, IDatastore } from '../types';
+import { IDashboardSummary } from '../types';
 
 @Injectable({
   providedIn: 'root',
@@ -69,10 +69,10 @@ export class DatabaseService {
     return summaries;
   }
 
-  async save<T extends keyof IDatastore>(
-    key: T,
-    value: IDatastore[T] | null | undefined
-  ) {
+  // Per-key persistence port. Keyed by a plain string (not `keyof IDatastore`)
+  // so the kernel doesn't have to enumerate every context's slice type — each
+  // bounded context owns its own key + shape and calls save<TItsOwnSlice>(...).
+  async save<T>(key: string, value: T | null | undefined) {
     return await this.#storageService.set('npc-' + key, value);
   }
 }

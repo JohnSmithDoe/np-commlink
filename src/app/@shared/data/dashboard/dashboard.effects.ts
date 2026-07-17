@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, skipUntil, switchMap, tap } from 'rxjs';
 import { DatabaseService } from '../../util/database.service';
 import { UiService } from '../../util/ui.service';
-import { DashboardActions } from './dashboard.actions';
+import { DashboardActions } from '../../util/dashboard/dashboard.actions';
 
 // Eager persistence for the dashboard read-model (lazy-modules plan §3). The
 // dashboard is a capability SINK — every module writes to it while inside that

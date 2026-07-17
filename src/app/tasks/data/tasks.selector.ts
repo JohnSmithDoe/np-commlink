@@ -3,7 +3,7 @@ import { ISearchResult, ITaskItem, ITasksState } from '../../@shared/types';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
-} from '../../@shared/data/list/list.selector';
+} from '../../@shared/util/list/list.selector';
 
 export const selectTasksState = createFeatureSelector<ITasksState>('tasks');
 

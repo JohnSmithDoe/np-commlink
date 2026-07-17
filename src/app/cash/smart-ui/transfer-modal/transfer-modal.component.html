@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'cash.action.cancel' | translate }}
@@ -24,7 +24,9 @@
         (ionChange)="onFrom($any($event).detail.value)"
       >
         @for (account of accounts(); track account.id) {
-          <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
+          <ion-select-option [value]="account.id">{{
+            account.name
+          }}</ion-select-option>
         }
       </ion-select>
     </ion-item>
@@ -37,7 +39,9 @@
         (ionChange)="onTo($any($event).detail.value)"
       >
         @for (account of accounts(); track account.id) {
-          <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
+          <ion-select-option [value]="account.id">{{
+            account.name
+          }}</ion-select-option>
         }
       </ion-select>
     </ion-item>

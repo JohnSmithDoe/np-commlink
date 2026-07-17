@@ -2,11 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
-import {
-  dayjsFromString,
-  dayjsToString,
-} from '../../data/office-time/office-time.utils';
+import { OfficeTimeActions, dayjsFromString, dayjsToString } from '../../data';
 import { DashOfficeDaysEditComponent } from './dash-office-days-edit.component';
 
 describe('DashOfficeDaysEditComponent', () => {

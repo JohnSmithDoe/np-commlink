@@ -38,13 +38,13 @@ import {
 } from 'ionicons/icons';
 import { ICashTransaction } from '../../../@shared/types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions } from '../../data/cash.actions';
 import {
+  CashActions,
   selectAccountBalances,
   selectAccountById,
   selectCashRules,
   selectTransactionsForAccount,
-} from '../../data/cash.selector';
+} from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { parserForBank } from '../../util/import/bank-parsers';
 import { planImport } from '../../util/import/plan-import';

@@ -1,7 +1,7 @@
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
-} from '../../@shared/data/list/list.selector';
+} from '../../@shared/util/list/list.selector';
 import {
   selectTasksListItems,
   selectTasksListSearchResult,

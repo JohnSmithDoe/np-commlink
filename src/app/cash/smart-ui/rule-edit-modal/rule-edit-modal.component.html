@@ -1,12 +1,17 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'cash.action.cancel' | translate }}
       </ion-button>
     </ion-buttons>
     <ion-title>
-      {{ (isEdit() ? 'cash.rule-dialog.title-edit' : 'cash.rule-dialog.title-new') | translate }}
+      {{
+        (isEdit()
+          ? 'cash.rule-dialog.title-edit'
+          : 'cash.rule-dialog.title-new'
+        ) | translate
+      }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button strong="true" [disabled]="!canSave()" (click)="save()">
@@ -105,7 +110,12 @@
         <ion-item>
           <ion-input
             aria-label="value"
-            [placeholder]="(condition.field === 'amount' ? 'cash.label.amount' : 'cash.label.value') | translate"
+            [placeholder]="
+              (condition.field === 'amount'
+                ? 'cash.label.amount'
+                : 'cash.label.value'
+              ) | translate
+            "
             [value]="condition.value"
             (ionInput)="onValue($index, $any($event.target).value ?? '')"
           />
@@ -128,7 +138,6 @@
   <ion-button
     expand="block"
     fill="outline"
-    color="cash"
     class="ion-margin-top"
     (click)="addCondition()"
   >

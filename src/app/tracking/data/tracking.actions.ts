@@ -11,9 +11,9 @@ import {
 export const TrackingActions = createActionGroup({
   source: 'Tracking',
   events: {
-    // Own-data lazy load lifecycle (lazy-modules plan §2). `load` is dispatched
-    // at boot; the load effect reads the `tracking` key and emits `loaded`,
-    // which the reducer (and trackTime$/runningUpdates$) hydrate on.
+    // Own-data lazy load lifecycle (lazy-modules plan §2). The load effect
+    // reads the `tracking` key and emits `loaded`, which the reducer (and
+    // trackTime$) hydrate on.
     load: emptyProps(),
     loaded: (tracking: ITrackingState | null) => ({ tracking }),
 
@@ -21,6 +21,13 @@ export const TrackingActions = createActionGroup({
     'Enter Page': emptyProps(),
     'Add Or Update Item': (item: ITrackingItem) => ({ item }),
     'Add Item From Search': emptyProps(),
+    // A notification CTA (fired from the eager /notifications page) deep-links
+    // to /tracking?cmd=<notificationId>; the tracking page dispatches this so
+    // tracking applies its own command on activation (see
+    // tracking-notifications.effects — lazy-modules §7 decision).
+    'Apply Notification Command': (notificationId: string) => ({
+      notificationId,
+    }),
 
     // Operations
     'Toggle Tracking Item': (item: ITrackingItem, now: TTimestamp) => ({

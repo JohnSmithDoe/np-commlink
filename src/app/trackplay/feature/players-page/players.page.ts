@@ -17,19 +17,15 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline } from 'ionicons/icons';
-import {
-  IonViewWillEnter,
-  IPlayer,
-  IPlayerStats,
-  TID,
-} from '../../../@shared/types';
+import { IonViewWillEnter } from '../../../@shared/types';
+import { IPlayer, IPlayerStats, TID } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TrackplayActions } from '../../data/trackplay.actions';
 import {
+  TrackplayActions,
   selectPlayerList,
   selectPlayers,
   selectPlayerStats,
-} from '../../data/trackplay.selector';
+} from '../../data';
 import { TrackplayPlayerListItemComponent } from '../../ui/player-list-item/player-list-item.component';
 import { TrackplayPlayerEditDialogComponent } from '../../smart-ui/player-edit-dialog/player-edit-dialog.component';
 import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';

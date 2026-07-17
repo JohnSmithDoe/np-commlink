@@ -2,52 +2,17 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   IBaseItem,
   ICategoriesState,
-  IEditProductState,
   IItemDialogState,
-  IEditShoppingItemState,
-  IEditStorageItemState,
-  IEditTaskItemState,
-  IProduct,
-  IShoppingItem,
-  IStorageItem,
-  ITaskItem,
   TAllItemTypes,
 } from '../../types';
 import { matchesSearchString } from '../../util/app.utils';
 
+// Domain-blind edit-dialog kernel: this shared slice exposes only the generic
+// edit state + item. Each consuming context (groceries, tasks) casts these to
+// its own item type in its OWN data module (e.g. groceries/data/
+// item-dialogs.selector) — the kernel never references a domain item type.
 export const selectEditState =
   createFeatureSelector<IItemDialogState<TAllItemTypes>>('itemDialogs');
-
-export const selectEditProductState =
-  createFeatureSelector<IEditProductState>('itemDialogs');
-
-export const selectEditShoppingState =
-  createFeatureSelector<IEditShoppingItemState>('itemDialogs');
-
-export const selectEditStorageState =
-  createFeatureSelector<IEditStorageItemState>('itemDialogs');
-
-export const selectEditTaskState =
-  createFeatureSelector<IEditTaskItemState>('itemDialogs');
-
-export const selectEditStorageItem = createSelector(
-  selectEditStorageState,
-  (state): IStorageItem | undefined => state.item
-);
-
-export const selectEditTaskItem = createSelector(
-  selectEditTaskState,
-  (state): ITaskItem | undefined => state.item
-);
-export const selectEditProduct = createSelector(
-  selectEditProductState,
-  (state): IProduct | undefined => state.item
-);
-
-export const selectEditShoppingItem = createSelector(
-  selectEditShoppingState,
-  (state): IShoppingItem | undefined => state.item
-);
 
 export const selectEditItem = createSelector(
   selectEditState,

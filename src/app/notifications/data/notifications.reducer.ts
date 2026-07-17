@@ -1,86 +1,59 @@
 import { createReducer, on } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { INotification, INotificationsState } from '../../@shared/types';
-import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
+import { INotificationsState } from '../../@shared/types';
+import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
+import {
+  clearDoneNotifications,
+  EMPTY_NOTIFICATIONS_STATE,
+  markNotificationDone,
+  markNotificationNew,
+  removeNotificationById,
+  upsertNotification,
+} from '../../@shared/util/notifications/notifications.transforms';
 
-// Epoch initial value: never been viewed, so any updatedAt > epoch counts
-// as unread for badge purposes. Overwritten the first time the page opens.
-export const initialNotificationsState: INotificationsState = {
-  items: [],
-  doneCollapsed: true,
-  lastViewedAt: '1970-01-01T00:00:00.000Z',
-};
+// The empty baseline (epoch lastViewedAt) is shared with the durable
+// NotificationsStore fallback so the on-route reducer and off-route writer can't
+// drift (§7).
+export const initialNotificationsState: INotificationsState =
+  EMPTY_NOTIFICATIONS_STATE;
 
-// Replace by id, else prepend. Ordering in the array is irrelevant —
-// selectors sort by updatedAt — so no positional logic lives here.
-const upsert = (
-  items: INotification[],
-  next: INotification
-): INotification[] => {
-  const idx = items.findIndex((n) => n.id === next.id);
-  if (idx < 0) return [next, ...items];
-  const out = [...items];
-  out[idx] = next;
-  return out;
-};
-
-const patchById = (
-  items: INotification[],
-  id: string,
-  patch: (n: INotification) => INotification
-): INotification[] => items.map((n) => (n.id === id ? patch(n) : n));
-
+// The list mutations delegate to the shared pure transforms
+// (notifications.transforms) so the off-route durable writer applies identical
+// logic once notifications is lazy (§7).
 export const notificationsReducer = createReducer(
   initialNotificationsState,
   on(
     NotificationsActions.addNotification,
     (state, { notification }): INotificationsState => ({
       ...state,
-      items: upsert(state.items, notification),
+      items: upsertNotification(state.items, notification),
     })
   ),
   on(
     NotificationsActions.upsertNotification,
     (state, { notification }): INotificationsState => ({
       ...state,
-      items: upsert(state.items, notification),
-    })
-  ),
-  on(
-    NotificationsActions.updateNotificationBody,
-    (state, { id, body }): INotificationsState => ({
-      ...state,
-      // Body refresh from the periodic tick — deliberately does NOT touch
-      // updatedAt, so running items don't drift to the top every minute.
-      items: patchById(state.items, id, (n) => ({ ...n, body })),
+      items: upsertNotification(state.items, notification),
     })
   ),
   on(NotificationsActions.markDone, (state, { id }): INotificationsState => ({
     ...state,
-    items: patchById(state.items, id, (n) => ({
-      ...n,
-      status: 'done',
-      updatedAt: dayjs().format(),
-    })),
+    items: markNotificationDone(state.items, id, dayjs().format()),
   })),
   on(NotificationsActions.markNew, (state, { id }): INotificationsState => ({
     ...state,
-    items: patchById(state.items, id, (n) => ({
-      ...n,
-      status: 'new',
-      updatedAt: dayjs().format(),
-    })),
+    items: markNotificationNew(state.items, id, dayjs().format()),
   })),
   on(
     NotificationsActions.removeNotification,
     (state, { id }): INotificationsState => ({
       ...state,
-      items: state.items.filter((n) => n.id !== id),
+      items: removeNotificationById(state.items, id),
     })
   ),
   on(NotificationsActions.clearDone, (state): INotificationsState => ({
     ...state,
-    items: state.items.filter((n) => n.status !== 'done'),
+    items: clearDoneNotifications(state.items),
   })),
   on(NotificationsActions.toggleDoneSection, (state): INotificationsState => ({
     ...state,

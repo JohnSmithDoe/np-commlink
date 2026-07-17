@@ -14,7 +14,6 @@ import {
   IonIcon,
   IonInput,
   IonItem,
-  IonLabel,
   IonList,
   IonListHeader,
   IonNote,
@@ -40,11 +39,7 @@ import {
   TFilterOp,
 } from '../../../@shared/types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions } from '../../data/cash.actions';
-import {
-  selectCashCategories,
-  selectCashRules,
-} from '../../data/cash.selector';
+import { CashActions, selectCashCategories, selectCashRules } from '../../data';
 
 const DESCRIPTION_OPS: readonly TDescriptionOp[] = [
   'contains',
@@ -84,7 +79,6 @@ const newCondition = (): ICashFilterCondition => ({
     IonListHeader,
     IonNote,
     IonItem,
-    IonLabel,
     IonInput,
     IonSelect,
     IonSelectOption,

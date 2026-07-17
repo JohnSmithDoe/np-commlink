@@ -16,11 +16,7 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { IBaseItem } from '../../../@shared/types';
-import { DialogsActions } from '../../data/dialogs/dialogs.actions';
-import {
-  selectEditItem,
-  selectEditState,
-} from '../../data/dialogs/dialogs.selector';
+import { DialogsActions, selectEditItem, selectEditState } from '../../data';
 import { ItemNameInputComponent } from '../../../@shared/ui/forms/item-name-input/item-name-input.component';
 
 @Component({

@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
-import { IListPageFacade, LIST_FACADE } from '../../data/list/list-page.facade';
+import { IListPageFacade, LIST_FACADE } from '../../util/list/list-page.facade';
 import { ListPageComponent } from './list-page.component';
 
 // Domain-blind stub of the facade contract: the generic page must be testable

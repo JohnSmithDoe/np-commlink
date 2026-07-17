@@ -16,7 +16,7 @@ import {
   TItemListMode,
   TItemListSortType,
 } from '../../types';
-import { LIST_FACADE } from '../../data/list/list-page.facade';
+import { LIST_FACADE } from '../../util/list/list-page.facade';
 import { ItemListEmptyComponent } from '../../ui/item-list/item-list-empty/item-list-empty.component';
 import { ItemListQuickaddComponent } from '../../smart-ui/item-list-quick-add/item-list-quickadd.component';
 import { ItemListSearchbarComponent } from '../../ui/item-list/item-list-searchbar/item-list-searchbar.component';

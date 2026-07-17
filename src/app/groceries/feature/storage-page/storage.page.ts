@@ -12,15 +12,14 @@ import {
   TItemListSortType,
 } from '../../../@shared/types';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { GroceryListPageFacade } from '../../data/grocery-list/grocery-list-page.facade';
-import { LIST_FACADE } from '../../../@shared/data/list/list-page.facade';
+import { GroceryListPageFacade, StorageActions } from '../../data';
+import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { BarcodeScannerService } from '../../../@shared/util/barcode-scanner.service';
-import { EditProductDialogComponent } from '../../smart-ui/edit-product-dialog/edit-product-dialog.component';
-import { StorageActions } from '../../data/storage.actions';
-import { EditStorageItemDialogComponent } from '../../smart-ui/edit-storage-item-dialog/edit-storage-item-dialog.component';
+import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
+import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit-storage-item-dialog.component';
 
 @Component({
   selector: 'app-page-storage',

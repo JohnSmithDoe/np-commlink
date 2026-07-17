@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs';
 import { IAppState } from '../../@shared/types';
 import { TrackingActions } from './tracking.actions';
-import { ItemListActions } from '../../@shared/data/item-list/item-list.actions';
+import { ItemListActions } from '../../@shared/util/item-list/item-list.actions';
 import { createTrackingItem } from '../../@shared/util/app.factory';
 import { matchesItemExactly } from '../../@shared/util/app.utils';
 

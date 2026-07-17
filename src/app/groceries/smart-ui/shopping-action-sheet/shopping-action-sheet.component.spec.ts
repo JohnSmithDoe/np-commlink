@@ -5,7 +5,7 @@ import {
   mockShoppingState,
 } from '../../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { ShoppingActions } from '../../data/shopping.actions';
+import { ShoppingActions } from '../../data';
 import { ShoppingActionSheetComponent } from './shopping-action-sheet.component';
 
 describe('ShoppingActionSheetComponent', () => {

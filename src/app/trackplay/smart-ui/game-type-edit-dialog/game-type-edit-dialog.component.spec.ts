@@ -6,9 +6,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import {
   mockGameType,
   mockTrackplayState,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { TrackplayActions } from '../../data';
 import { TrackplayGameTypeEditDialogComponent } from './game-type-edit-dialog.component';
 
 const toggle = (checked: boolean): ToggleChangeEventDetail =>

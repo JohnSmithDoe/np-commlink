@@ -60,7 +60,7 @@ export async function gotoTrackplay(
 
 /** The visible page-header title text (scoped to the routed page). */
 export function headerTitle(page: Page): Locator {
-  return mainContent(page).locator('.app-brand__name').first();
+  return mainContent(page).locator('.sr-brand__name').first();
 }
 
 /**

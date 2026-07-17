@@ -6,6 +6,8 @@ import { TasksEffects } from './tasks.effects';
 import { TasksTelemetryEffects } from './tasks-telemetry.effects';
 import { TasksLoadEffects } from './tasks-load.effects';
 import { TasksSaveEffects } from './tasks-save.effects';
+import { TasksListEffects } from './tasks-list.effects';
+import { TasksItemDialogsEffects } from './tasks-item-dialogs.effects';
 
 /**
  * Lazy state + effects for the `tasks` domain, registered on the `tasks` route.
@@ -26,6 +28,12 @@ export const tasksLazyProviders: Array<Provider | EnvironmentProviders> = [
     TasksLoadEffects,
     TasksSaveEffects,
     TasksEffects,
-    TasksTelemetryEffects
+    TasksTelemetryEffects,
+    // Tasks' OWN switch-free item-flow + dialog orchestration, folded off the
+    // eager shell GroceryListEffects/ItemDialogsEffects (lazy-modules §2b).
+    // Separate classes (not the grocery ones) so a grocery↔tasks transition
+    // can't double-dispatch, and so tasks imports nothing from groceries/.
+    TasksListEffects,
+    TasksItemDialogsEffects
   ),
 ];

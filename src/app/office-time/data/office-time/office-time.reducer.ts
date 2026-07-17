@@ -96,7 +96,6 @@ export const officeTimeReducer = createReducer(
     return {
       ...initialOfficeTime,
       holidays: _state.holidays,
-      barcode: _state.barcode,
     };
   }),
   on(OfficeTimeActions.addFreeday, (_state, { freeday }): IOfficeTimeState => {
@@ -117,24 +116,6 @@ export const officeTimeReducer = createReducer(
       };
     }
   ),
-  on(
-    OfficeTimeActions.saveBarcode,
-    (_state, { base64Blob }): IOfficeTimeState => ({
-      ..._state,
-      barcode: base64Blob,
-    })
-  ),
-  on(
-    OfficeTimeActions.rotateBarcodeSuccess,
-    (_state, { barcode }): IOfficeTimeState => ({
-      ..._state,
-      barcode,
-    })
-  ),
-  on(OfficeTimeActions.deleteBarcode, (_state): IOfficeTimeState => ({
-    ..._state,
-    barcode: undefined,
-  })),
   on(
     OfficeTimeActions.saveDashboardSettings,
     (_state, { key, active }): IOfficeTimeState => ({

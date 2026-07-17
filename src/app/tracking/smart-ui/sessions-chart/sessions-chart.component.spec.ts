@@ -1,10 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import {
-  DailySeries,
-  selectSessionsByDayAndName,
-} from '../../data/tracking.selector';
+import { DailySeries, selectSessionsByDayAndName } from '../../data';
 import { SessionsChartComponent } from './sessions-chart.component';
 
 // Store-connected component: MockStore feeds the aggregated series selector and

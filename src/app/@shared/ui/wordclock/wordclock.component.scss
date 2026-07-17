@@ -1,4 +1,3 @@
-$back-ground: #3e3e3e;
 :root {
   --qlock-max-height: unset;
 }
@@ -8,7 +7,7 @@ $back-ground: #3e3e3e;
   height: 100%;
   overflow: hidden;
 
-  background-color: $back-ground;
+  background-color: var(--sr-bg);
   max-height: var(--qlock-max-height);
 
   .char-wrapper {
@@ -23,12 +22,13 @@ $back-ground: #3e3e3e;
         align-items: center;
         justify-content: center;
         height: 100%;
-        background-color: $back-ground;
+        background-color: var(--sr-panel);
         transition: color 1s ease-in-out;
-        box-shadow: 0 0 5px black;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 
         &.active {
-          color: antiquewhite;
+          color: var(--sr-amber);
+          text-shadow: var(--sr-glow);
         }
       }
     }
@@ -55,7 +55,8 @@ $back-ground: #3e3e3e;
     transition: color 1s ease-in-out;
 
     &.active {
-      color: antiquewhite;
+      color: var(--sr-amber);
+      text-shadow: var(--sr-glow);
     }
   }
 

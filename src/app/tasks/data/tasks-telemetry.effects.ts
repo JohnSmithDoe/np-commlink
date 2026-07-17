@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { createEffect } from '@ngrx/effects';
 import { createSelector, Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { DashboardActions } from '../../@shared/data/dashboard/dashboard.actions';
+import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
 import { selectTasksState } from './tasks.selector';
 
 // Count of open tasks for the deck's AGENDA tile. Tasks have no completion

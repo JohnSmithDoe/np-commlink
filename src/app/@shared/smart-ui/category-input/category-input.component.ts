@@ -10,7 +10,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { TItemListCategory } from '../../types';
-import { CategoriesDialogComponent } from '../categories-dialog/categories-dialog.component';
 import {
   CategoriesActions,
   ItemDialogsActions,
@@ -21,14 +20,7 @@ import {
   templateUrl: './category-input.component.html',
   styleUrls: ['./category-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    IonItem,
-    IonLabel,
-    IonChip,
-    IonIcon,
-    TranslateModule,
-    CategoriesDialogComponent,
-  ],
+  imports: [IonItem, IonLabel, IonChip, IonIcon, TranslateModule],
 })
 export class CategoryInputComponent {
   readonly #store = inject(Store);

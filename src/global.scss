@@ -1,5 +1,9 @@
 @use 'theme/consts';
 @use 'theme/shadowrun';
+// THEME SEAM: alternate palettes live under theme/palettes/ as commented-out
+// `.ion-palette-<name>` blocks. The example is all-comments today (emits no CSS)
+// — the documented hook for a future second theme. See theme/palettes/_example.scss.
+@use 'theme/palettes/example';
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------

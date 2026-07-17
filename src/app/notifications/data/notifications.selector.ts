@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { INotification, INotificationsState } from '../../@shared/types';
+import { unreadCount } from '../../@shared/util/notifications/notifications.transforms';
 
 export const selectNotificationsState =
   createFeatureSelector<INotificationsState>('notifications');
@@ -29,10 +30,7 @@ export const selectDoneCollapsed = createSelector(
 // updates between views collapse to a single unread tally naturally.
 export const selectNotificationsBadgeCount = createSelector(
   selectNotificationsState,
-  (state): number =>
-    state.items.filter(
-      (n) => n.status === 'new' && n.updatedAt > state.lastViewedAt
-    ).length
+  unreadCount
 );
 
 export const selectNotificationById = (id: string) =>

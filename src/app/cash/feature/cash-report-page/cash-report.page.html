@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" aria-label="back">
         <ion-icon slot="icon-only" name="arrow-back-outline" />
@@ -13,24 +13,34 @@
   @if (hasData()) {
     <div class="cash-report__totals">
       <div class="cash-report__stat">
-        <span class="cash-report__label">{{ 'cash.report.income' | translate }}</span>
+        <span class="cash-report__label">{{
+          'cash.report.income' | translate
+        }}</span>
         <span class="cash-report__value cash-report__value--in">
           {{ totals().incomeCents | moneyEur }}
         </span>
       </div>
       <div class="cash-report__stat">
-        <span class="cash-report__label">{{ 'cash.report.spend' | translate }}</span>
+        <span class="cash-report__label">{{
+          'cash.report.spend' | translate
+        }}</span>
         <span class="cash-report__value cash-report__value--out">
           {{ totals().spendCents | moneyEur }}
         </span>
       </div>
       <div class="cash-report__stat">
-        <span class="cash-report__label">{{ 'cash.report.net' | translate }}</span>
-        <span class="cash-report__value">{{ totals().netCents | moneyEur }}</span>
+        <span class="cash-report__label">{{
+          'cash.report.net' | translate
+        }}</span>
+        <span class="cash-report__value">{{
+          totals().netCents | moneyEur
+        }}</span>
       </div>
     </div>
 
-    <h2 class="cash-report__heading">{{ 'cash.report.by-month' | translate }}</h2>
+    <h2 class="cash-report__heading">
+      {{ 'cash.report.by-month' | translate }}
+    </h2>
     <div class="cash-report__chart">
       <canvas
         baseChart
@@ -41,7 +51,9 @@
     </div>
 
     @if (spendByCategory().length) {
-      <h2 class="cash-report__heading">{{ 'cash.report.by-category' | translate }}</h2>
+      <h2 class="cash-report__heading">
+        {{ 'cash.report.by-category' | translate }}
+      </h2>
       <div class="cash-report__chart">
         <canvas
           baseChart
@@ -54,7 +66,9 @@
       <ion-list lines="full">
         @for (row of spendByCategory(); track row.category) {
           <ion-item>
-            <ion-label>{{ row.category || ('cash.report.uncategorized' | translate) }}</ion-label>
+            <ion-label>{{
+              row.category || ('cash.report.uncategorized' | translate)
+            }}</ion-label>
             <ion-note slot="end" class="cash-report__cat-amount">
               {{ row.cents | moneyEur }}
             </ion-note>

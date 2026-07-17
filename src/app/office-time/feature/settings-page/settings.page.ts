@@ -18,11 +18,11 @@ import { AlertButton, ToggleChangeEventDetail } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import {
+  OfficeTimeActions,
   selectDashboardSettings,
   selectTargetOfficeDaysPerWeek,
-} from '../../data/office-time/office-time.selector';
+} from '../../data';
 
 @Component({
   selector: 'app-page-settings',

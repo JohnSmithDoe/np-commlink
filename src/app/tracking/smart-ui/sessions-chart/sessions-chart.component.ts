@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
-import { selectSessionsByDayAndName } from '../../data/tracking.selector';
+import { selectSessionsByDayAndName } from '../../data';
 
 Chart.register(...registerables);
 

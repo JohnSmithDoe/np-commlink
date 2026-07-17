@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, tap, withLatestFrom } from 'rxjs';
-import { IAppState } from '../../@shared/types';
 import { DatabaseService } from '../../@shared/util/database.service';
+import { selectTrackplayState } from './trackplay.selector';
 
 // Persist the trackplay slice on any [Trackplay] action (lazy-modules plan §4:
 // each module owns its own save). Split out of the shell's saveGroceryOnChange$
@@ -31,9 +31,12 @@ export class TrackplaySaveEffects {
             /^\[Trackplay\]/.test(action.type) &&
             !/\] (load|loaded)$/.test(action.type)
         ),
-        withLatestFrom(this.#store, (_action, state: IAppState) => state),
-        tap((state) => {
-          void this.#database.save('trackplay', state.trackplay);
+        withLatestFrom(
+          this.#store.select(selectTrackplayState),
+          (_action, trackplay) => trackplay
+        ),
+        tap((trackplay) => {
+          void this.#database.save('trackplay', trackplay);
         })
       );
     },

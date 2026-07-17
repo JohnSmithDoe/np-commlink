@@ -3,13 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemListActions } from '../../../@shared/data/item-list/item-list.actions';
+import { ItemListActions } from '../../../@shared/util/item-list/item-list.actions';
 import {
   selectListItems,
   selectListSearchResult,
   selectListState,
 } from '../../../@shared/data/item-list/item-list.selector';
-import { DialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data';
 import { ListPageComponent } from './list-page.component';
 
 describe('ListPageComponent', () => {

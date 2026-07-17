@@ -3,7 +3,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { DashboardActions } from '../../@shared/data/dashboard/dashboard.actions';
+import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
 import {
   mockAppState,
   mockNotificationsState,

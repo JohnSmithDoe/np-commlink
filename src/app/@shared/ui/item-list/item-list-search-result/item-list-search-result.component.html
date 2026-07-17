@@ -2,15 +2,12 @@
 @if (results()?.listItems?.length) {
   <app-item-list
     header="{{ 'list-header.tracking.search' | translate }}"
-    headerColor="tracking"
     [listHeader]="true"
     [items]="results()?.listItems ?? []"
     [itemTemplate]="trackingItem"
   ></app-item-list>
   <ng-template #trackingItem let-item>
     <app-text-item
-      color="tracking"
-      class="tinted"
       [label]="item.name"
       [helper]="'item-helper.search' | translate"
       (selectItem)="selectTrackingItem.emit(item)"

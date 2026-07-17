@@ -1,0 +1,102 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// np-commlink — deck primitives (Sass MIXINS ONLY — side-effect free).
+// ═══════════════════════════════════════════════════════════════════════════
+// The single source of truth for the /commlink cyberdeck's signature pieces
+// (HUD frame, corner brackets, status LEDs, brand row). This file emits NO CSS
+// when `@use`d, so — unlike _shadowrun.scss — a component MAY safely
+// `@use 'theme/deck'` and `@include` a mixin where a global class can't reach
+// (a `:host` or a pseudo-element). Everywhere else, prefer the `.sr-*` utility
+// classes in _shadowrun.scss (which wrap these mixins and are emitted once).
+//
+// Consumers of the animation states below must ensure `@keyframes sr-pulse`
+// exists (declared once in _shadowrun.scss).
+// ═══════════════════════════════════════════════════════════════════════════
+
+// HUD-framed surface: slate gradient panel + amber hairline + inset bevel.
+// `$bg-prop` lets Ionic hosts paint through their `--background` var (e.g.
+// ion-card) while plain elements use the real `background` property.
+@mixin hud-frame($bg-prop: background) {
+  #{$bg-prop}: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
+  border: 1px solid var(--sr-line);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+// Amber L-bracket corners (top-left + bottom-right) via ::before/::after.
+// Self-contained: sets position:relative so it works as a standalone class.
+@mixin hud-corners($size: 14px) {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: $size;
+    height: $size;
+    border: 2px solid var(--sr-amber);
+    opacity: 0.7;
+    transition: opacity 0.18s ease;
+  }
+  &::before {
+    top: 6px;
+    left: 6px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  &::after {
+    right: 6px;
+    bottom: 6px;
+    border-top: 0;
+    border-left: 0;
+  }
+}
+
+// Status LED — shared dot shape. Pair with `led-state()` for the lit variants.
+@mixin led-base {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #444; // unlit / dim default
+  vertical-align: middle;
+}
+
+// Lit LED states. `on` = cyan (live), `standby` = amber (wired, idle),
+// `off` = red (no signal). on/standby pulse; off is steady.
+@mixin led-state($state) {
+  @if $state == on {
+    background: var(--sr-cyan);
+    box-shadow:
+      0 0 6px var(--sr-cyan),
+      0 0 12px rgba(var(--sr-cyan-rgb), 0.6);
+    animation: sr-pulse 2s ease-in-out infinite;
+  } @else if $state == standby {
+    background: var(--sr-amber);
+    box-shadow:
+      0 0 6px var(--sr-amber),
+      0 0 12px rgba(var(--sr-amber-rgb), 0.55);
+    animation: sr-pulse 2.6s ease-in-out infinite;
+  } @else if $state == off {
+    background: var(--sr-red);
+    box-shadow: 0 0 6px rgba(var(--sr-red-rgb), 0.8);
+  }
+}
+
+// Lowercase monospace brand row (deck header): icon chip + name.
+@mixin brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--sr-mono);
+  letter-spacing: 0.18em;
+  text-transform: lowercase;
+}
+@mixin brand-icon {
+  font-size: 1.25rem;
+  color: var(--sr-amber);
+  filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.6));
+}
+@mixin brand-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}

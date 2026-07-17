@@ -8,26 +8,44 @@
 //
 //   tokens     → --sr-* CSS custom properties (on :root)
 //   primitives → ion-content / ion-card / ion-toolbar / titles / focus / …
-//   utilities  → .sr-scanlines, .sr-glow, .sr-hud  (opt-in signature effects)
+//   utilities  → .sr-panel/.sr-corners/.sr-led*/.sr-brand* (deck pieces, from
+//                _deck.scss mixins) + .sr-scanlines/.sr-glow/.sr-hud (effects)
 //
 // Colours are WCAG-AA verified (amber/cyan ≥6:1, body ≥13:1 on slate). The one
 // rule to keep: muted amber label text must stay at alpha ≥ 0.85 to hold AA.
+//
+// THEME SEAM: this :root token group (the neon duo + the raw slate surfaces) is
+// the single source every hue derives from — variables.scss feeds it into the
+// Ionic --ion-* chrome, _deck.scss/the .sr-* utilities feed it into the deck.
+// A second theme therefore overrides ONLY this group, under a
+// `.ion-palette-<name>` class, and reskins Ionic + the deck together. The
+// documented placeholder lives in theme/palettes/_example.scss.
 // ═══════════════════════════════════════════════════════════════════════════
+
+@use 'deck';
 
 :root {
   // Neon duo — aliased to the Ionic brand colours so hue lives in one place.
   --sr-amber: var(--ion-color-primary);
   --sr-amber-rgb: var(--ion-color-primary-rgb);
-  --sr-cyan: var(--ion-color-freeday);
-  --sr-cyan-rgb: var(--ion-color-freeday-rgb);
+  --sr-cyan: var(--ion-color-secondary);
+  --sr-cyan-rgb: var(--ion-color-secondary-rgb);
 
   --sr-red: #ff3b47; // neon — LEDs / borders / large icons only
+  --sr-red-rgb: 255, 59, 71; // rgb form of --sr-red (for rgba() glows/borders)
   --sr-red-deep: #c1121f; // AA-safe red for text backgrounds (badges, danger)
 
-  // Terminal slate.
+  // ── Terminal slate — THE raw surface palette (single source of truth). ────
+  // variables.scss consumes these into the Ionic --ion-* chrome; nothing else
+  // should redeclare a raw slate hex. A second theme overrides this group.
   --sr-bg: #0f141b; // app / content backdrop
-  --sr-panel: #171d26; // cards, items, toolbars
+  --sr-panel: #171d26; // cards, items
   --sr-panel-2: #10141b; // gradient floor
+  --sr-toolbar: #12161d; // toolbar chrome (→ --ion-toolbar-background)
+  // ion-content backdrop radial-gradient stops (hi = centre, lo = edge).
+  --sr-bg-hi: #1e2732;
+  --sr-bg-mid: #12161d;
+  --sr-bg-lo: #0b0e13;
   --sr-line: rgba(var(--sr-amber-rgb), 0.35); // HUD hairline
   --sr-text: #dfe4ea; // body copy
   --sr-text-dim: rgba(var(--sr-amber-rgb), 0.85); // muted label (AA floor)
@@ -36,15 +54,20 @@
     'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
     monospace;
   --sr-glow: 0 0 12px rgba(var(--sr-amber-rgb), 0.45);
+  // Two-layer amber bloom for hero / page-title glow (the /commlink hero + the
+  // /soykaf title both read from this).
+  --sr-glow-lg:
+    0 0 12px rgba(var(--sr-amber-rgb), 0.55),
+    0 0 40px rgba(var(--sr-amber-rgb), 0.22);
 }
 
 // ── content backdrop: deep matrix slate behind every page ───────────────────
 ion-content {
   --background: radial-gradient(
     circle at 50% -10%,
-    #1a222e 0%,
-    var(--sr-bg) 60%,
-    #0a0d12 100%
+    var(--sr-bg-hi) 0%,
+    var(--sr-bg-mid) 60%,
+    var(--sr-bg-lo) 100%
   );
 }
 
@@ -63,17 +86,25 @@ ion-card-title {
 }
 
 // ── HUD-framed surfaces ─────────────────────────────────────────────────────
+// ion-card paints its slate frame through Ionic's --background var; .sr-panel
+// is the same frame for plain elements (deck tiles, standby panel, …).
 ion-card {
-  --background: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
-  border: 1px solid var(--sr-line);
-  border-radius: 2px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  @include deck.hud-frame(--background);
+}
+.sr-panel {
+  @include deck.hud-frame;
 }
 
 // A thin amber rule under every toolbar reads like a deck seam.
 ion-toolbar {
   --border-color: var(--sr-line);
   --border-width: 0 0 1px 0;
+}
+
+// Side-menu navigation items keep the amber deck contrast (label + icon) now
+// that the per-item `color="commlink"` binding is gone — uniform deck chrome.
+ion-menu ion-item {
+  --color: var(--sr-amber);
 }
 
 // ── accessible neon focus ring (keyboard) ───────────────────────────────────
@@ -95,6 +126,48 @@ ion-toolbar {
   background: var(--sr-line);
 }
 
+// ═══ deck utilities — global classes wrapping the _deck.scss mixins ══════════
+// Emitted ONCE here; pages apply the class in HTML (single CSS output).
+
+// HUD corner brackets.
+.sr-corners {
+  @include deck.hud-corners;
+}
+
+// Status LEDs — base dot + lit variants.
+.sr-led {
+  @include deck.led-base;
+}
+.sr-led--on {
+  @include deck.led-state(on);
+}
+.sr-led--standby {
+  @include deck.led-state(standby);
+}
+.sr-led--off {
+  @include deck.led-state(off);
+}
+@keyframes sr-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+// Deck brand row (icon chip + lowercase name).
+.sr-brand {
+  @include deck.brand;
+}
+.sr-brand__icon {
+  @include deck.brand-icon;
+}
+.sr-brand__name {
+  @include deck.brand-name;
+}
+
 // ═══ opt-in signature effects (add the class / include the mixin) ═══════════
 
 // Static CRT scanline wash — put `.sr-scanlines` on any positioned container.
@@ -111,7 +184,7 @@ ion-toolbar {
     to bottom,
     transparent 0,
     transparent 2px,
-    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.22) 3px,
     transparent 4px
   );
 }
@@ -127,4 +200,12 @@ ion-toolbar {
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--sr-text-dim);
+}
+
+// Honour reduced-motion for the pulsing deck LEDs.
+@media (prefers-reduced-motion: reduce) {
+  .sr-led--on,
+  .sr-led--standby {
+    animation: none;
+  }
 }

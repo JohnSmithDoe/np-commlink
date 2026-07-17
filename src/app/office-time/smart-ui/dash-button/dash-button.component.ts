@@ -13,12 +13,14 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import { beer, business } from 'ionicons/icons';
-import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selector';
-import { dayjsToday } from '../../data/office-time/office-time.utils';
+import {
+  OfficeTimeActions,
+  selectTodayIsOfficeDay,
+  dayjsToday,
+} from '../../data';
 
 @Component({
   selector: 'app-dash-button',

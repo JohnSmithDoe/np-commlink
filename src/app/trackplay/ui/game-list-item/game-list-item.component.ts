@@ -19,7 +19,8 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, playCircle, trash } from 'ionicons/icons';
-import { IGame, TIonDragEvent } from '../../../@shared/types';
+import { TIonDragEvent } from '../../../@shared/types';
+import { IGame } from '../../model';
 import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
 
 /**

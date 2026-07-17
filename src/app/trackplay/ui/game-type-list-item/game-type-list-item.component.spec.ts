@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { TIonDragEvent } from '../../../@shared/types';
-import { mockGameType } from '../../../@shared/testing/test-data';
+import { mockGameType } from '../../testing/trackplay.test-data';
 import { TrackplayGameTypeListItemComponent } from './game-type-list-item.component';
 
 const fakeIonList = () =>

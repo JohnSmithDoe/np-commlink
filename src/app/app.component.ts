@@ -35,7 +35,7 @@ import {
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
-import { selectNotificationsBadgeCount } from './notifications/data/notifications.selector';
+import { selectNotificationsUnread } from './@shared/data/dashboard/dashboard.selector';
 
 @Component({
   selector: 'app-root',
@@ -61,8 +61,10 @@ import { selectNotificationsBadgeCount } from './notifications/data/notification
 })
 export class AppComponent {
   readonly #store = inject(Store);
+  // Reads the eager dashboard read-model, not the notifications slice — the
+  // shell must not depend on a lazy domain slice (lazy-modules §7).
   readonly notificationsBadge = this.#store.selectSignal(
-    selectNotificationsBadgeCount
+    selectNotificationsUnread
   );
 
   constructor() {

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { DashboardActions } from '../../@shared/data/dashboard/dashboard.actions';
+import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
 import { selectNotificationsBadgeCount } from './notifications.selector';
 
 // Telemetry inversion (§4, CQRS): notifications *pushes* its unread count to

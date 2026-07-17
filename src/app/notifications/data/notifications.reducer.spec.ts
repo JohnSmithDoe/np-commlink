@@ -1,5 +1,5 @@
 import { INotification } from '../../@shared/types';
-import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
+import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
 import {
   initialNotificationsState,
   notificationsReducer,
@@ -11,7 +11,7 @@ const notification = (over: Partial<INotification> = {}): INotification => ({
   createdAt: '2026-06-01T08:00:00.000Z',
   body: 'body',
   icon: 'alarm',
-  color: 'notifications',
+  color: 'primary',
   status: 'new',
   updatedAt: '2026-06-01T08:00:00.000Z',
   ...over,
@@ -40,16 +40,6 @@ describe('notificationsReducer', () => {
     );
     expect(upserted.items).toHaveLength(1);
     expect(upserted.items[0].body).toBe('second');
-  });
-
-  it('updates the body without bumping updatedAt', () => {
-    const state = withItems([notification({ id: 'a', updatedAt: 'FIXED' })]);
-    const next = notificationsReducer(
-      state,
-      NotificationsActions.updateNotificationBody('a', 'tick')
-    );
-    expect(next.items[0].body).toBe('tick');
-    expect(next.items[0].updatedAt).toBe('FIXED');
   });
 
   it('marks a notification done and back to new', () => {

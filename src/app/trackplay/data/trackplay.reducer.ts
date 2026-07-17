@@ -7,7 +7,7 @@ import {
   ITrackplayDeleted,
   ITrackplayState,
   TID,
-} from '../../@shared/types';
+} from '../model';
 import { TrackplayActions } from './trackplay.actions';
 import {
   createGame,

@@ -23,7 +23,7 @@ describe('PageHeaderComponent', () => {
     fixture.componentRef.setInput('label', 'page-title.storage');
     fixture.detectChanges();
 
-    const title = fixture.nativeElement.querySelector('.app-brand__name');
+    const title = fixture.nativeElement.querySelector('.sr-brand__name');
     expect(title.textContent).toContain('page-title.storage');
   });
 

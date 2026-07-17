@@ -6,7 +6,7 @@ import {
   mockPlayer,
   mockRound,
   mockTrackplayState,
-} from '../../@shared/testing/test-data';
+} from '../testing/trackplay.test-data';
 
 describe('trackplayReducer', () => {
   it('returns the initial state for an unknown action and seeds default types', () => {

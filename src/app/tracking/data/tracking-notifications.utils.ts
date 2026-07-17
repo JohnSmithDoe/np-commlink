@@ -8,7 +8,6 @@ import {
 
 marker('notifications.tracking.running.title');
 marker('notifications.tracking.running.body');
-marker('notifications.tracking.running.update');
 marker('notifications.tracking.paused.title');
 marker('notifications.tracking.paused.body');
 marker('notifications.tracking.stopped.title');

@@ -7,16 +7,13 @@ import {
   ICashTransaction,
   ICategoriesState,
   IDashboardState,
-  IGame,
-  IGameType,
   IProduct,
   IProductsState,
   IListSettings,
   INotificationsState,
+  IBarcodeState,
   IOfficeTimeState,
-  IPlayer,
   IQuickAddState,
-  IRound,
   ISettingsState,
   IShoppingItem,
   IShoppingState,
@@ -26,9 +23,7 @@ import {
   ITasksState,
   ITrackingItem,
   ITrackingState,
-  ITrackplayState,
   TDialogsState,
-  TID,
   TItemDialogsState,
 } from '../types';
 
@@ -127,6 +122,12 @@ export function mockOfficeTimeState(
     dashboardItems: [],
     ...overrides,
   };
+}
+
+export function mockBarcodeState(
+  overrides: Partial<IBarcodeState> = {}
+): IBarcodeState {
+  return { ...overrides };
 }
 
 export function mockNotificationsState(
@@ -328,19 +329,6 @@ export function mockCashAccount(
   };
 }
 
-// --- trackplay slice (deterministic epoch-ms timestamps) ---
-
-export const TEST_EPOCH = 1_704_110_400_000; // 2024-01-01T12:00:00.000Z
-
-export function mockPlayer(overrides: Partial<IPlayer> = {}): IPlayer {
-  return {
-    id: 'player-1',
-    name: 'Alice',
-    created: TEST_EPOCH,
-    ...overrides,
-  };
-}
-
 export function mockCashTransaction(
   overrides: Partial<ICashTransaction> = {}
 ): ICashTransaction {
@@ -356,24 +344,6 @@ export function mockCashTransaction(
   };
 }
 
-export function mockGameType(overrides: Partial<IGameType> = {}): IGameType {
-  return { id: 'default', name: 'Standard', winHigh: true, ...overrides };
-}
-
-export function mockGame(overrides: Partial<IGame> = {}): IGame {
-  return {
-    id: 'game-1',
-    name: 'Game',
-    created: TEST_EPOCH,
-    updated: TEST_EPOCH,
-    type: 'default',
-    players: [],
-    rounds: [],
-    ended: false,
-    ...overrides,
-  };
-}
-
 export function mockCashRule(overrides: Partial<ICashRule> = {}): ICashRule {
   return {
     id: 'cash-rule-1',
@@ -381,17 +351,6 @@ export function mockCashRule(overrides: Partial<ICashRule> = {}): ICashRule {
     match: 'any',
     conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
     category: 'groceries',
-    ...overrides,
-  };
-}
-
-export function mockRound(overrides: Partial<IRound> = {}): IRound {
-  return {
-    id: 'round-1',
-    name: 'round 0',
-    created: TEST_EPOCH,
-    idx: 0,
-    values: {},
     ...overrides,
   };
 }
@@ -406,44 +365,10 @@ export function mockCashState(overrides: Partial<ICashState> = {}): ICashState {
   };
 }
 
-const defaultTrackplayGameTypes: Record<TID, IGameType> = {
-  default: { id: 'default', name: 'Standard', winHigh: true },
-  rommee: { id: 'rommee', name: 'Rommé', winHigh: false },
-  skat: { id: 'skat', name: 'Skat', winHigh: true },
-};
-
-export function mockTrackplayState(
-  overrides: Partial<ITrackplayState> = {}
-): ITrackplayState {
-  return {
-    players: {},
-    games: {},
-    gameTypes: { ...defaultTrackplayGameTypes },
-    rounds: {},
-    config: {
-      games: {
-        dir: 'desc',
-        filter: '',
-        sort: 'updated',
-        typeId: '',
-        showEndedGames: true,
-      },
-      gamesForPlayer: {
-        dir: 'desc',
-        filter: '',
-        sort: 'updated',
-        typeId: '',
-        showEndedGames: false,
-      },
-      players: { dir: 'asc', filter: '', sort: 'name' },
-    },
-    lastDeleted: null,
-    ...overrides,
-  };
-}
-
 /** A complete, overridable {@link IAppState} for use with `provideMockStore`. */
-export function mockAppState(overrides: Partial<IAppState> = {}): IAppState {
+export function mockAppState(
+  overrides: Partial<IAppState> & Record<string, unknown> = {}
+): IAppState {
   return {
     router: mockRouterState(),
     dashboard: mockDashboardState(),
@@ -451,6 +376,7 @@ export function mockAppState(overrides: Partial<IAppState> = {}): IAppState {
     dialogs: mockTrackingDialogsState(),
     settings: mockSettingsState(),
     officeTime: mockOfficeTimeState(),
+    barcode: mockBarcodeState(),
     notifications: mockNotificationsState(),
     storage: mockStorageState(),
     shopping: mockShoppingState(),
@@ -460,7 +386,6 @@ export function mockAppState(overrides: Partial<IAppState> = {}): IAppState {
     itemDialogs: mockItemDialogsState(),
     quickadd: mockQuickAddState(),
     cash: mockCashState(),
-    trackplay: mockTrackplayState(),
     ...overrides,
   };
 }

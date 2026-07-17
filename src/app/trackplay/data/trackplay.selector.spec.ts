@@ -7,14 +7,14 @@ import {
   selectScoresByGame,
   selectWinnerByGame,
 } from './trackplay.selector';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockGame,
   mockGameType,
   mockPlayer,
   mockRound,
   mockTrackplayState,
-} from '../../@shared/testing/test-data';
+} from '../testing/trackplay.test-data';
 
 describe('trackplay.selector', () => {
   const buildState = () => {

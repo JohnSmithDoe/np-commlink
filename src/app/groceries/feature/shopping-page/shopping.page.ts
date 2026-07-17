@@ -6,16 +6,18 @@ import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
 import { IonViewWillEnter, IShoppingItem } from '../../../@shared/types';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { GroceryListPageFacade } from '../../data/grocery-list/grocery-list-page.facade';
-import { LIST_FACADE } from '../../../@shared/data/list/list-page.facade';
+import {
+  GroceryListPageFacade,
+  ShoppingActions,
+  selectShoppingState,
+} from '../../data';
+import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { BarcodeScannerService } from '../../../@shared/util/barcode-scanner.service';
-import { EditProductDialogComponent } from '../../smart-ui/edit-product-dialog/edit-product-dialog.component';
-import { ShoppingActions } from '../../data/shopping.actions';
-import { selectShoppingState } from '../../data/shopping.selector';
-import { EditShoppingItemDialogComponent } from '../../smart-ui/edit-shopping-item-dialog/edit-shopping-item-dialog.component';
+import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
+import { EditShoppingItemDialogComponent } from '../edit-shopping-item-dialog/edit-shopping-item-dialog.component';
 import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-sheet/shopping-action-sheet.component';
 
 @Component({

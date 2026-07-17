@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { IDashboardState } from '../../types';
-import { DashboardActions } from './dashboard.actions';
+import { DashboardActions } from '../../util/dashboard/dashboard.actions';
 
 // Dashboard read-model (CQRS materialized view). Latest telemetry wins per
 // source. Seeded at boot from the persisted `npc-summary-*` docs via `hydrate`

@@ -1,12 +1,15 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'cash.action.cancel' | translate }}
       </ion-button>
     </ion-buttons>
     <ion-title>
-      {{ (isEdit() ? 'cash.txn-dialog.title-edit' : 'cash.txn-dialog.title-new') | translate }}
+      {{
+        (isEdit() ? 'cash.txn-dialog.title-edit' : 'cash.txn-dialog.title-new')
+          | translate
+      }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button strong="true" [disabled]="!canSave()" (click)="save()">

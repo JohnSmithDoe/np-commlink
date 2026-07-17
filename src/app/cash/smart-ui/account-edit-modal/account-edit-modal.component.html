@@ -1,12 +1,17 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'cash.action.cancel' | translate }}
       </ion-button>
     </ion-buttons>
     <ion-title>
-      {{ (isEdit() ? 'cash.account-dialog.title-edit' : 'cash.account-dialog.title-new') | translate }}
+      {{
+        (isEdit()
+          ? 'cash.account-dialog.title-edit'
+          : 'cash.account-dialog.title-new'
+        ) | translate
+      }}
     </ion-title>
     <ion-buttons slot="end">
       <ion-button strong="true" [disabled]="!canSave()" (click)="save()">
@@ -50,9 +55,13 @@
         [value]="bank()"
         (ionChange)="onBank($any($event).detail.value)"
       >
-        <ion-select-option value="">{{ 'cash.bank.none' | translate }}</ion-select-option>
+        <ion-select-option value="">{{
+          'cash.bank.none' | translate
+        }}</ion-select-option>
         @for (b of banks; track b) {
-          <ion-select-option [value]="b">{{ 'cash.bank.' + b | translate }}</ion-select-option>
+          <ion-select-option [value]="b">{{
+            'cash.bank.' + b | translate
+          }}</ion-select-option>
         }
       </ion-select>
     </ion-item>

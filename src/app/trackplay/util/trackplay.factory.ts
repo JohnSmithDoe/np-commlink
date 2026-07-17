@@ -5,7 +5,7 @@ import {
   IRound,
   ITrackplayConfig,
   TID,
-} from '../../@shared/types';
+} from '../model';
 import { uuidv4 } from '../../@shared/util/app.utils';
 
 /**

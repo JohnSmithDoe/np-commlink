@@ -40,12 +40,12 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { ICashRule } from '../../../@shared/types';
-import { CashActions } from '../../data/cash.actions';
 import {
+  CashActions,
   selectCashCategories,
   selectCashRules,
   selectCashTransactions,
-} from '../../data/cash.selector';
+} from '../../data';
 import { categorize } from '../../util/categorize';
 import { CashRuleEditModalComponent } from '../../smart-ui/rule-edit-modal/rule-edit-modal.component';
 

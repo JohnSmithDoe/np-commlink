@@ -12,18 +12,18 @@ import { OfficeTimeLoadEffects } from './office-time-load.effects';
  * Lazy state + effects for the `office-time` bounded context, registered as ONE
  * unit on every route that touches it (lazy-modules Phase D). The context owns
  * two slices — `settings` (feature flags, edited on /settings via
- * SettingsEffects) and `officeTime` (the tracked days + stats + the SIGIL badge
- * image). They're co-registered as one context because both belong to it and
- * its routes/effects read each independently (SettingsEffects → `settings`;
- * the stats telemetry + office-time/barcode pages → `officeTime`); registering
- * only one would leave the other `undefined` for its consumer.
+ * SettingsEffects) and `officeTime` (the tracked days + stats). They're
+ * co-registered as one context because both belong to it and its routes/effects
+ * read each independently (SettingsEffects → `settings`; the stats telemetry +
+ * office-time page → `officeTime`); registering only one would leave the other
+ * `undefined` for its consumer.
  *
- * Three routes carry these providers:
+ * Two routes carry these providers:
  * - `/settings`     — edits the settings slice
  * - `/office-time`  — reads settings + officeTime (the day tracker + stats)
- * - `/barcode`      — reads/writes the SIGIL badge, which lives in `officeTime`
- *   (the one cross-domain Sheriff bridge `barcode → office-time`); the barcode
- *   page must find `officeTime` hydrated, so it joins the set.
+ *
+ * (The SIGIL badge used to live here too, dragging `/barcode` into this context;
+ * it now owns the sealed `barcode` slice — sheriff-tighten §1.)
  *
  * Hydration: `moduleHydrationResolver` runs once per slice on the route (two
  * resolve keys — see app.routes.ts). Save lives in the module's own effects

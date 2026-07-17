@@ -12,7 +12,7 @@ import {
 } from '../../../@shared/types';
 import { selectRouteParams } from '../../../@shared/data/router.selector';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { IListPageFacade } from '../../../@shared/data/list/list-page.facade';
+import { IListPageFacade } from '../../../@shared/util/list/list-page.facade';
 import { GroceryListActions } from './grocery-list.actions';
 import {
   selectListCategories,

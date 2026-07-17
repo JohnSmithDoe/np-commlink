@@ -4,9 +4,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import {
   mockGameType,
   mockTrackplayState,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { TrackplayActions } from '../../data';
 import { TrackplayGameTypesPage } from './game-types.page';
 
 describe('TrackplayGameTypesPage', () => {

@@ -16,12 +16,12 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { IGameConfig, ITrackplayConfig } from '../../../@shared/types';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { IGameConfig, ITrackplayConfig } from '../../model';
 import {
+  TrackplayActions,
   selectGameTypeList,
   selectTrackplayConfig,
-} from '../../data/trackplay.selector';
+} from '../../data';
 
 type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
 

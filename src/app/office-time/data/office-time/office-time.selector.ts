@@ -41,10 +41,3 @@ export const selectOfficedays = createSelector(
 export const selectFreedays = createSelector(selectOfficeTimeState, (state) => {
   return state.freedays ?? [];
 });
-
-export const selectBarcodeDataUrl = createSelector(
-  selectOfficeTimeState,
-  (state) => {
-    return state.barcode;
-  }
-);

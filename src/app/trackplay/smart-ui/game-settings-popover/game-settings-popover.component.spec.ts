@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { mockTrackplayState } from '../../../@shared/testing/test-data';
+import { mockTrackplayState } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { TrackplayActions } from '../../data';
 import { TrackplayGameSettingsPopoverComponent } from './game-settings-popover.component';
 
 type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';

@@ -22,16 +22,17 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, play, square } from 'ionicons/icons';
-import { IonViewWillEnter, IRound, TID } from '../../../@shared/types';
-import { TrackplayActions } from '../../data/trackplay.actions';
+import { IonViewWillEnter } from '../../../@shared/types';
+import { IRound, TID } from '../../model';
 import {
+  TrackplayActions,
   selectGameById,
   selectPlayers,
   selectResultByGame,
   selectRoundsByGame,
   selectScoresByGame,
   selectWinnerByGame,
-} from '../../data/trackplay.selector';
+} from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
 
 /**

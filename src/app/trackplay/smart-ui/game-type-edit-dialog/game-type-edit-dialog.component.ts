@@ -25,8 +25,7 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { TrackplayActions } from '../../data/trackplay.actions';
-import { selectGameTypes } from '../../data/trackplay.selector';
+import { TrackplayActions, selectGameTypes } from '../../data';
 
 /**
  * Game-type create/edit dialog (presented via ModalController). `gameTypeId` is

@@ -2,15 +2,12 @@
 @if (results()?.products?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.product.search' | translate }}"
-    headerColor="product"
     [listHeader]="true"
     [items]="results()?.products ?? []"
     [itemTemplate]="productItem"
   ></app-item-list>
   <ng-template #productItem let-item>
     <app-text-item
-      color="product"
-      class="tinted"
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'grocery.item-helper.search' | translate"
@@ -22,15 +19,12 @@
 @if (results()?.shoppingItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.shopping.search' | translate }}"
-    headerColor="shopping"
     [listHeader]="true"
     [items]="results()?.shoppingItems ?? []"
     [itemTemplate]="shoppingItem"
   ></app-item-list>
   <ng-template #shoppingItem let-item>
     <app-text-item
-      color="shopping"
-      class="tinted"
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'grocery.item-helper.search' | translate"
@@ -42,15 +36,12 @@
 @if (results()?.storageItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.storage.search' | translate }}"
-    headerColor="storage"
     [listHeader]="true"
     [items]="results()?.storageItems ?? []"
     [itemTemplate]="storageItem"
   ></app-item-list>
   <ng-template #storageItem let-item>
     <app-text-item
-      color="storage"
-      class="tinted"
       [label]="item.name"
       [note]="item | appCategories"
       [helper]="'grocery.item-helper.search' | translate"

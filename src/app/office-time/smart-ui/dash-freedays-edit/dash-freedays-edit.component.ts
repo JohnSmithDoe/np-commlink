@@ -15,11 +15,11 @@ import { TranslateModule } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
 import { DatetimeCustomEvent } from '@ionic/angular';
 import { Store } from '@ngrx/store';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
 import {
+  OfficeTimeActions,
   dayjsToString,
   daysToHolidaysHighlightsInputTransform,
-} from '../../data/office-time/office-time.utils';
+} from '../../data';
 import { DateTimeHighlight } from '../../../@shared/types';
 
 @Component({

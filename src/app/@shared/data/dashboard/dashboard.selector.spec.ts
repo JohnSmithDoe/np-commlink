@@ -1,5 +1,8 @@
 import { IDashboardTelemetry } from '../../types';
-import { selectTelemetry } from './dashboard.selector';
+import {
+  selectNotificationsUnread,
+  selectTelemetry,
+} from './dashboard.selector';
 
 const notifications: IDashboardTelemetry = {
   source: 'notifications',
@@ -21,5 +24,17 @@ describe('selectTelemetry', () => {
         bySource: { notifications },
       })
     ).toBeUndefined();
+  });
+});
+
+describe('selectNotificationsUnread', () => {
+  it('surfaces the unread metric from the read-model for the badge', () => {
+    expect(
+      selectNotificationsUnread.projector({ bySource: { notifications } })
+    ).toBe(5);
+  });
+
+  it('is 0 when notifications has not reported (cold, pre-visit)', () => {
+    expect(selectNotificationsUnread.projector({ bySource: {} })).toBe(0);
   });
 });

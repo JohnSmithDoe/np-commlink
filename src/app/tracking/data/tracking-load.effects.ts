@@ -6,8 +6,8 @@ import { DatabaseService } from '../../@shared/util/database.service';
 import { TrackingActions } from './tracking.actions';
 
 // Own-data load for the tracking context (lazy-modules plan §4). Reads only the
-// `tracking` key and emits `loaded`; the reducer + trackTime$/runningUpdates$
-// hydrate on it. On a storage failure it still emits `loaded(null)`.
+// `tracking` key and emits `loaded`; the reducer + trackTime$ hydrate on it. On
+// a storage failure it still emits `loaded(null)`.
 @Injectable({ providedIn: 'root' })
 export class TrackingLoadEffects {
   readonly #actions$ = inject(Actions);

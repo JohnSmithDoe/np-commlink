@@ -6,7 +6,7 @@ import {
   IPlayer,
   ITrackplayState,
   TID,
-} from '../../@shared/types';
+} from '../model';
 
 export const TrackplayActions = createActionGroup({
   source: 'Trackplay',

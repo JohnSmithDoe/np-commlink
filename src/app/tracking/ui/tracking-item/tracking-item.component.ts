@@ -118,7 +118,7 @@ export class TrackingItemComponent implements OnInit {
       case 'running':
         return 'success';
       case 'stopped':
-        return 'tracking';
+        return 'medium';
       case 'paused':
         return 'warning';
     }

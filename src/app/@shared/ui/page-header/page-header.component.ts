@@ -30,7 +30,6 @@ import {
   selector: 'app-page-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './page-header.component.html',
-  styleUrls: ['./page-header.component.scss'],
   imports: [
     IonToolbar,
     IonHeader,

@@ -1,10 +1,10 @@
 :host {
   ion-item {
     &.tracking-item-running {
-      --ion-background-color: #2d7c3e59;
+      --ion-background-color: rgba(var(--ion-color-success-rgb), 0.35);
     }
     &.tracking-item-paused {
-      --ion-background-color: #ffc4092e;
+      --ion-background-color: rgba(var(--ion-color-warning-rgb), 0.18);
     }
   }
 }

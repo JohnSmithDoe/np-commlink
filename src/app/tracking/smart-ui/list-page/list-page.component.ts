@@ -11,7 +11,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, bagAdd, clipboard, remove, settingsSharp } from 'ionicons/icons';
 import { IAppState, TItemListSortType } from '../../../@shared/types';
-import { DialogsActions } from '../../data/dialogs/dialogs.actions';
+import { DialogsActions } from '../../data';
 import { ItemListEmptyComponent } from '../../../@shared/ui/item-list/item-list-empty/item-list-empty.component';
 import { ItemListSearchbarComponent } from '../../../@shared/ui/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../../@shared/ui/item-list/item-list-toolbar/item-list-toolbar.component';
@@ -25,7 +25,7 @@ import {
   selectListSearchResult,
   selectListState,
 } from '../../../@shared/data/item-list/item-list.selector';
-import { ItemListActions } from '../../../@shared/data/item-list/item-list.actions';
+import { ItemListActions } from '../../../@shared/util/item-list/item-list.actions';
 import { RouterLink } from '@angular/router';
 
 @Component({

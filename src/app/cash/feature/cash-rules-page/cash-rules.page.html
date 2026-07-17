@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" aria-label="back">
         <ion-icon slot="icon-only" name="arrow-back-outline" />
@@ -47,14 +47,21 @@
       }
     </ion-list>
   } @else {
-    <ion-note class="cash-hint">{{ 'cash.categories.empty' | translate }}</ion-note>
+    <ion-note class="cash-hint">{{
+      'cash.categories.empty' | translate
+    }}</ion-note>
   }
 
   <!-- Rules -->
   <ion-list-header>{{ 'cash.section.rules' | translate }}</ion-list-header>
   @if (rules().length) {
     <ion-list lines="full">
-      @for (rule of rules(); track rule.id; let first = $first; let last = $last) {
+      @for (
+        rule of rules();
+        track rule.id;
+        let first = $first;
+        let last = $last
+      ) {
         <ion-item-sliding>
           <ion-item button detail="false" (click)="openEditRule(rule)">
             <ion-buttons slot="start">
@@ -93,7 +100,6 @@
   <ion-button
     expand="block"
     fill="outline"
-    color="cash"
     class="ion-margin-top"
     (click)="openNewRule()"
   >
@@ -103,7 +109,6 @@
 
   <ion-button
     expand="block"
-    color="cash"
     [disabled]="!rules().length"
     (click)="applyRules()"
   >

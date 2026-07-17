@@ -20,17 +20,6 @@ describe('officeTimeReducer', () => {
     expect(state.dashboardSettings.showWordclockCard).toBe(true);
   });
 
-  it('stores and clears the barcode', () => {
-    const saved = officeTimeReducer(
-      initialOfficeTime,
-      OfficeTimeActions.saveBarcode('data:image/png;base64,AAA')
-    );
-    expect(saved.barcode).toBe('data:image/png;base64,AAA');
-
-    const cleared = officeTimeReducer(saved, OfficeTimeActions.deleteBarcode());
-    expect(cleared.barcode).toBeUndefined();
-  });
-
   it('does not add the same freeday twice', () => {
     const once = officeTimeReducer(
       initialOfficeTime,
@@ -44,18 +33,16 @@ describe('officeTimeReducer', () => {
     expect(twice.freedays).toHaveLength(1);
   });
 
-  it('resets data while preserving holidays and barcode', () => {
+  it('resets data while preserving holidays', () => {
     const dirty = {
       ...initialOfficeTime,
       targetOfficeDaysPerWeek: 5,
-      barcode: 'keep-me',
       holidays: { '2026-12-25': dayjs('2026-12-25') },
     };
     const state = officeTimeReducer(dirty, OfficeTimeActions.resetData());
     expect(state.targetOfficeDaysPerWeek).toBe(
       initialOfficeTime.targetOfficeDaysPerWeek
     );
-    expect(state.barcode).toBe('keep-me');
     expect(state.holidays).toEqual(dirty.holidays);
   });
 });

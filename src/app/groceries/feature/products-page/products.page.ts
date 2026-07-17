@@ -3,13 +3,12 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { IProduct, IonViewWillEnter } from '../../../@shared/types';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { GroceryListPageFacade } from '../../data/grocery-list/grocery-list-page.facade';
-import { LIST_FACADE } from '../../../@shared/data/list/list-page.facade';
+import { GroceryListPageFacade, ProductsActions } from '../../data';
+import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
-import { ProductsActions } from '../../data/products.actions';
-import { EditProductDialogComponent } from '../../smart-ui/edit-product-dialog/edit-product-dialog.component';
+import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
 
 @Component({
   // selector kept as `app-page-products` for cosmetic continuity (kitchen-bot).

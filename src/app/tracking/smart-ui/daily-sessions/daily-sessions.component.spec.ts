@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { ITrackingItem } from '../../../@shared/types';
-import { selectAllTrackingSessions } from '../../data/tracking.selector';
+import { selectAllTrackingSessions } from '../../data';
 import { DailySessionsComponent } from './daily-sessions.component';
 
 // Proof-of-concept: an Ionic + store-connected component unit-tested via

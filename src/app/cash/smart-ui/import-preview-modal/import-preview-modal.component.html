@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="cash">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">
         {{ 'cash.action.cancel' | translate }}
@@ -20,7 +20,10 @@
 
 <ion-content class="ion-padding">
   <ion-note class="cash-import__summary">
-    {{ 'cash.import.summary' | translate: { count: transactions.length, duplicates: duplicates } }}
+    {{
+      'cash.import.summary'
+        | translate: { count: transactions.length, duplicates: duplicates }
+    }}
   </ion-note>
 
   @if (transactions.length) {

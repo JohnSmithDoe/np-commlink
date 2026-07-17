@@ -2,8 +2,9 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IPlayerStats, TIonDragEvent } from '../../../@shared/types';
-import { mockPlayer } from '../../../@shared/testing/test-data';
+import { TIonDragEvent } from '../../../@shared/types';
+import { IPlayerStats } from '../../model';
+import { mockPlayer } from '../../testing/trackplay.test-data';
 import { TrackplayPlayerListItemComponent } from './player-list-item.component';
 
 const fakeIonList = () =>

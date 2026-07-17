@@ -1,11 +1,4 @@
-@use '../../../../../theme/consts';
 :host {
-  &.tinted {
-    ion-item {
-      --ion-color-base: var(--ion-color-tint);
-    }
-  }
-
   .text-item-helper {
     align-self: center;
     text-align: end;

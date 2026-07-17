@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { createEffect } from '@ngrx/effects';
 import { createSelector, Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { DashboardActions } from '../../@shared/data/dashboard/dashboard.actions';
+import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
 import { selectTrackingState } from './tracking.selector';
 
 // Number of tracked activities on the deck's CHRONO tile.

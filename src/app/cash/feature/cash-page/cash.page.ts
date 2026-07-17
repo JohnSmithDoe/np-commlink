@@ -36,11 +36,11 @@ import {
 } from 'ionicons/icons';
 import { ICashAccount, TAccountKind } from '../../../@shared/types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { CashActions } from '../../data/cash.actions';
 import {
+  CashActions,
   selectAccountsWithBalances,
   selectNetWorthCents,
-} from '../../data/cash.selector';
+} from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { CashAccountEditModalComponent } from '../../smart-ui/account-edit-modal/account-edit-modal.component';
 import { CashTransferModalComponent } from '../../smart-ui/transfer-modal/transfer-modal.component';

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="trackplay">
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" aria-label="back">
         <ion-icon slot="icon-only" name="arrow-back-outline" />
@@ -28,7 +28,11 @@
       <!-- ── ACTIVE: the scoring spreadsheet ─────────────────────────── -->
       <div class="tp-grid sr-scanlines">
         <!-- header: round marker + one cell per player -->
-        <div class="tp-row tp-row--header" #headerRow (scroll)="onScroll($event)">
+        <div
+          class="tp-row tp-row--header"
+          #headerRow
+          (scroll)="onScroll($event)"
+        >
           <div class="tp-cell tp-cell--head tp-cell--round">#</div>
           @for (pid of playerIds(); track pid) {
             <div class="tp-cell tp-cell--head">{{ playerName(pid) }}</div>
@@ -56,7 +60,11 @@
         </div>
 
         <!-- footer: sum marker + per-player totals -->
-        <div class="tp-row tp-row--footer" #footerRow (scroll)="onScroll($event)">
+        <div
+          class="tp-row tp-row--footer"
+          #footerRow
+          (scroll)="onScroll($event)"
+        >
           <div class="tp-cell tp-cell--foot tp-cell--round">&sum;</div>
           @for (pid of playerIds(); track pid) {
             <div class="tp-cell tp-cell--foot">

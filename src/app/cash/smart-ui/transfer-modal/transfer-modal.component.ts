@@ -25,8 +25,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions } from '../../data/cash.actions';
-import { selectCashAccounts } from '../../data/cash.selector';
+import { CashActions, selectCashAccounts } from '../../data';
 import { eurToCents } from '../../util/money';
 import { buildTransferLegs } from '../../util/transfer';
 

@@ -12,6 +12,8 @@ import { StorageTelemetryEffects } from './storage-telemetry.effects';
 import { ProductsTelemetryEffects } from './products-telemetry.effects';
 import { GroceriesLoadEffects } from './groceries-load.effects';
 import { GrocerySaveEffects } from './grocery-save.effects';
+import { GroceryListEffects } from './grocery-list/grocery-list.effects';
+import { GroceryItemDialogsEffects } from './grocery-list/grocery-item-dialogs.effects';
 
 /**
  * Lazy state + effects for the whole grocery bounded context, registered as ONE
@@ -30,15 +32,16 @@ import { GrocerySaveEffects } from './grocery-save.effects';
  * dispatches `[Groceries] load`; GroceriesLoadEffects reads only the three
  * grocery keys and emits one atomic `loaded` so all three hydrate together.
  *
- * The shell orchestrators (`GroceryListEffects`, `ItemDialogsEffects`) stay
- * eager at the composition root: they are `type:shell` bridges spanning BOTH
- * groceries and tasks (one generic effect routes all four lists), so they
- * can't live in a domain's data layer, and registering one shared class in
- * both route injectors would double-dispatch across a grocery↔tasks
- * transition. They only *react* to grocery/tasks actions (which fire only
- * while a grocery/tasks route is active) and read the matching slice via
- * `withLatestFrom`, so the slice is always present when they run. The grocery
- * SAVE, by contrast, is own-data and rides here lazily (GrocerySaveEffects).
+ * The multi-list ENGINE now rides here too: `GroceryListEffects` (routes the
+ * generic GroceryListActions to the concrete P/S/S groups + the cross-list
+ * copy rules) and `GroceryItemDialogsEffects` (the edit/category-dialog
+ * orchestration + product flow). They were eager shell orchestrators spanning
+ * all four lists; they are now scoped to the three grocery lists and folded
+ * into this domain (tasks got its own switch-free copy — TasksListEffects /
+ * TasksItemDialogsEffects — in tasksLazyProviders). Splitting into per-domain
+ * classes is what lets them go lazy: one shared class in both the grocery and
+ * tasks route injectors would double-dispatch across a grocery↔tasks
+ * transition. The grocery SAVE is own-data and rides here too (GrocerySaveEffects).
  */
 export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
   provideState('products', productsReducer),
@@ -54,6 +57,10 @@ export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
     ProductsEffects,
     ShoppingEffects,
     StorageEffects,
+    // The multi-list engine + dialog orchestration (grocery-scoped), folded off
+    // the eager shell (lazy-modules §2b).
+    GroceryListEffects,
+    GroceryItemDialogsEffects,
     // Dashboard reporters ride with their slices: registered here (not eagerly)
     // so their store.select never reads an unregistered sibling. On route entry
     // each fires its first `report`, flipping the tile standby→online; the

@@ -22,8 +22,7 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { TrackplayActions } from '../../data/trackplay.actions';
-import { selectPlayers } from '../../data/trackplay.selector';
+import { TrackplayActions, selectPlayers } from '../../data';
 
 /**
  * Player create/rename dialog (presented via ModalController). `playerId` is an

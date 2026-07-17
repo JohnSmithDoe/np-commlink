@@ -28,7 +28,7 @@ describe('TrackingItemComponent', () => {
 
   it('maps the tracking state to a status color', () => {
     expect(component.getColor(track('running'))).toBe('success');
-    expect(component.getColor(track('stopped'))).toBe('tracking');
+    expect(component.getColor(track('stopped'))).toBe('medium');
     expect(component.getColor(track('paused'))).toBe('warning');
   });
 

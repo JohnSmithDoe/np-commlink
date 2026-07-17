@@ -9,11 +9,11 @@ import { IonActionSheet } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { IAppState } from '../../../@shared/types';
-import { ShoppingActions } from '../../data/shopping.actions';
 import {
+  ShoppingActions,
   selectShoppingListHasBoughtItems,
   selectShoppingState,
-} from '../../data/shopping.selector';
+} from '../../data';
 
 const moveToShoppingListButton: ActionSheetButton = {
   text: 'In die Vorräte übernehmen',

@@ -7,7 +7,23 @@ import { anyTag, sameTag, SheriffConfig } from '@softarc/sheriff-core';
 const specMayUseTesting = (ctx: {
   to: string;
   fromFilePath: string;
-}): boolean => ctx.to === 'type:testing' && /\.spec\.ts$/.test(ctx.fromFilePath);
+}): boolean =>
+  ctx.to === 'type:testing' && ctx.fromFilePath.endsWith('.spec.ts');
+
+// A feature may depend on another feature ONLY when the target is a *shared*
+// feature (domain:shared) — i.e. the reusable @shared/feature kit (the
+// domain-blind list-page shell). Same-domain feature composition (a list page +
+// its edit-dialog wrappers) lives in the SAME `<domain>/feature` module, which
+// Sheriff treats as intra-module and never checks — so this governs the sole
+// cross-module case. Unlike a plain `sameTag`, it keeps banning
+// `<domainA>/feature → <domainB>/feature` even if a domain bridge is later
+// added: a feature may ride a bridge to another domain's data/ui/util, but never
+// compose that domain's feature layer.
+const featureMayUseSharedFeature = (ctx: {
+  to: string;
+  toModulePath: string;
+}): boolean =>
+  ctx.to === 'type:feature' && ctx.toModulePath.includes('/@shared/');
 
 /**
  * Sheriff config — Hahnekamp two-axis tagging.
@@ -18,8 +34,8 @@ const specMayUseTesting = (ctx: {
  *
  * Type axis:
  *   shell    → feature, smart-ui, ui, data, util, model
- *   feature  → self, smart-ui, ui, data, util, model
- *   smart-ui → self, ui, data, util, model     (stateful presentational)
+ *   feature  → smart-ui, ui, data, util, model (+ shared feature only)
+ *   smart-ui → ui, data, util, model           (stateful presentational, leaf)
  *   ui       → self, util, model               (strict — pure dumb)
  *   data     → self, util, model
  *   util     → self, model
@@ -59,8 +75,13 @@ export const config: SheriffConfig = {
       'type:model',
       specMayUseTesting,
     ],
+    // Feature composes the presentational + data/util layers, plus OTHER
+    // features only when they're shared (see featureMayUseSharedFeature). No
+    // plain `sameTag`: same-domain feature composition is intra-module (one
+    // <domain>/feature dir) and never checked, so the only cross-module
+    // feature→feature we permit is a domain feature reusing @shared/feature.
     'type:feature': [
-      sameTag,
+      featureMayUseSharedFeature,
       'type:smart-ui',
       'type:ui',
       'type:data',
@@ -70,15 +91,13 @@ export const config: SheriffConfig = {
     ],
     // Smart UI: stateful presentational components. May touch the store
     // but still belong on the UI side. Pairs with strict-dumb type:ui.
-    // Strict-leaf: smart components compose dumb UI, not other smart UI.
-    // Composition of smart components belongs in a feature/.
-    // Relaxed from the original TT model (which forbade smart-ui→smart-ui):
-    // kitchen-bot's grocery dialogs genuinely compose store-connected
-    // sub-components (edit-*-item-dialog → category-input + item-edit-modal;
-    // category-input → categories-dialog). Permitting smart-ui→smart-ui keeps
-    // those at their natural layer instead of forcing them up to type:feature.
+    // Strict-leaf (no `sameTag`): a smart component composes dumb UI, never
+    // another smart component — composition of stateful components is
+    // orchestration and belongs in a type:feature. The grocery/tracking
+    // edit-*-item-dialog wrappers (which compose category-input + item-edit-modal)
+    // therefore live in <domain>/feature/, and categories-dialog is rendered by
+    // those wrappers rather than nested inside category-input (sheriff-tighten §2).
     'type:smart-ui': [
-      'type:smart-ui',
       'type:ui',
       'type:data',
       'type:util',
@@ -99,16 +118,16 @@ export const config: SheriffConfig = {
     // ─── Domain axis ───────────────────────────────────────────
     'domain:*': [sameTag, 'domain:shared'],
 
-    // Explicit cross-domain bridges, each documented:
+    // No cross-domain bridges remain — every domain is sealed to the default
+    // `domain:* → sameTag, domain:shared` rule:
     //   notifications knows no domain — tracking owns the tracking→notify
-    //     coupling and dispatches the @shared notification write contract, so
-    //     notifications inherits the default `domain:*` rule (no bridge).
-    //   barcode display reads the image stored in office-time state
+    //     coupling and dispatches the @shared notification write contract.
+    //   barcode owns its own `barcode` slice (the SIGIL badge) — formerly a
+    //     field inside office-time, which required a `barcode → office-time`
+    //     bridge; that bridge is gone (sheriff-tighten §1).
     //   commlink is the super-app deck — it reads ONLY the eager @shared
     //     dashboard read-model (CQRS). Suppliers push telemetry via
-    //     DashboardActions.report, so commlink imports no other domain and
-    //     inherits the default `domain:*` rule (no bridge).
-    'domain:barcode': [sameTag, 'domain:shared', 'domain:office-time'],
+    //     DashboardActions.report, so commlink imports no other domain.
 
     // Grocery bounded context: shopping/storage/products (+ the list-settings
     // page and the multi-list engine) now live in ONE `domain:groceries` folder,

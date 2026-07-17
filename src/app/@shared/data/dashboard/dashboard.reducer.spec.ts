@@ -1,5 +1,5 @@
 import { IDashboardSummary, IDashboardTelemetry } from '../../types';
-import { DashboardActions } from './dashboard.actions';
+import { DashboardActions } from '../../util/dashboard/dashboard.actions';
 import { dashboardReducer, initialDashboardState } from './dashboard.reducer';
 
 const telemetry = (

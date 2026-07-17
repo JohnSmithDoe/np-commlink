@@ -29,12 +29,6 @@ export const OfficeTimeActions = createActionGroup({
     'Set Officedays': (officedays: Dayjs[]) => ({ officedays }),
     'Add Freeday': (freeday: Dayjs) => ({ freeday }),
     'Set Freedays': (freedays: (string | undefined | null)[]) => ({ freedays }),
-    'Save Barcode': (base64Blob: string) => ({ base64Blob }),
-    'Delete Barcode': emptyProps(),
-    'Rotate Barcode': emptyProps(),
-    'Rotate Barcode Success': (barcode: string) => ({
-      barcode,
-    }),
     'Save Dashboard Settings': (
       key: DashboardSettingsType,
       active: boolean

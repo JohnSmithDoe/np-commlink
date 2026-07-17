@@ -1,25 +1,29 @@
 // @ts-check
-const tseslint = require('typescript-eslint');
+const { defineConfig, globalIgnores } = require('eslint/config');
 const angular = require('angular-eslint');
 const ngrx = require('@ngrx/eslint-plugin/v9');
 const sheriff = require('@softarc/eslint-plugin-sheriff');
 const prettierPlugin = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
 
-module.exports = tseslint.config(
-  {
-    ignores: [
-      'www/**',
-      'dist/**',
-      'coverage/**',
-      'android/**',
-      'out-tsc/**',
-      'projects/**',
-    ],
-  },
+module.exports = defineConfig(
+  globalIgnores([
+    'www/**',
+    'dist/**',
+    'coverage/**',
+    'android/**',
+    'out-tsc/**',
+    'projects/**',
+  ]),
   sheriff.configs.all,
   {
     files: ['**/*.ts'],
+    // angular-eslint / @ngrx flat configs are typed against
+    // @typescript-eslint/utils, whose LanguageOptions differ structurally from
+    // @eslint/core's — a runtime-harmless type mismatch that only surfaces
+    // under defineConfig's stricter `extends` typing (typescript-eslint#10899,
+    // explicitly documented as safe to ignore). Remove once upstream aligns.
+    // @ts-expect-error -- see note above
     extends: [
       ...angular.configs.tsRecommended,
       ...ngrx.configs.all,

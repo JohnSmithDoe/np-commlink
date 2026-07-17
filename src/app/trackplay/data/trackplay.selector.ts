@@ -10,7 +10,7 @@ import {
   ITrackplayDeleted,
   ITrackplayState,
   TID,
-} from '../../@shared/types';
+} from '../model';
 import { DEFAULT_GAME_TYPE_ID } from '../util/trackplay.factory';
 
 export const selectTrackplayState =

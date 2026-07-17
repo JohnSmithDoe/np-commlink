@@ -1,4 +1,4 @@
-import { Color } from '@ionic/core/dist/types/interface';
+import { PredefinedColors } from '@ionic/core/dist/types/interface';
 import { Dayjs } from 'dayjs';
 import { RouterReducerState } from '@ngrx/router-store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -9,27 +9,11 @@ export type BooleanKeys<T> = {
 
 export type TIonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 export type TMarker = string;
-export type TColor =
-  | Color
-  | 'tracking'
-  | 'settings'
-  | 'office-time'
-  | 'barcode'
-  | 'data'
-  | 'freeday'
-  | 'commlink'
-  | 'notifications'
-  | 'cash'
-  // trackplay domain (game-score tracker)
-  | 'trackplay'
-  // grocery domains (shopping / storage / tasks / products + categories)
-  | 'product'
-  | 'task'
-  | 'category'
-  | 'storage'
-  | 'shopping'
-  | 'low-stock-warn'
-  | 'low-stock';
+// The Ionic base palette only. The per-domain color names (tracking, cash,
+// storage, category, freeday, …) were dropped in the SCSS simplification for a
+// uniform amber/teal deck, so a color is now always one of Ionic's predefined
+// palette entries — anything else is a compile error.
+export type TColor = PredefinedColors;
 
 export type TTimestamp = string;
 
@@ -168,6 +152,7 @@ export interface IDatastore {
   tracking: ITrackingState;
   settings: ISettingsState;
   officeTime: IOfficeTimeStateStorage;
+  barcode: IBarcodeState;
   notifications: INotificationsState;
   // grocery slices (persisted; the itemDialogs + quickAdd slices are ephemeral
   // UI state and deliberately NOT stored — mirrors kitchen-bot).
@@ -178,8 +163,6 @@ export interface IDatastore {
   listSettings: IListSettings;
   // cash ledger (offline multi-account finance)
   cash: ICashState;
-  // trackplay slice (game-score tracker)
-  trackplay: ITrackplayState;
 }
 
 // At load time each slice may be null (fresh user, cleared storage), so
@@ -218,9 +201,14 @@ export interface IOfficeTimeState {
   holidays: Record<string, Dayjs>;
   officedays: Array<Dayjs>;
   freedays: Array<Dayjs>;
-  barcode?: string;
   dashboardSettings: DashboardSettings;
   dashboardItems: DashboardItemType[];
+}
+
+// SIGIL badge — its own bounded context (sheriff-tighten §1). Persisted under
+// `npc-barcode`; the uploaded/rotated badge image as a data URL.
+export interface IBarcodeState {
+  dataUrl?: string;
 }
 
 export type IOfficeTimeStateStorage = Omit<
@@ -241,6 +229,7 @@ export interface IAppState {
   dialogs: TDialogsState;
   settings: ISettingsState;
   officeTime: IOfficeTimeState;
+  barcode: IBarcodeState;
   notifications: INotificationsState;
   // grocery (independent domains + shared slices)
   products: IProductsState;
@@ -252,8 +241,6 @@ export interface IAppState {
   itemDialogs: TItemDialogsState;
   // cash ledger
   cash: ICashState;
-  // trackplay (single sealed domain, normalized maps)
-  trackplay: ITrackplayState;
 }
 
 export interface IonViewWillEnter {
@@ -541,102 +528,4 @@ export interface ICashState {
   transactions: ICashTransaction[];
   rules: ICashRule[];
   categories: string[];
-}
-// Trackplay domain types (game-score tracker, ported from npTrackplay).
-//
-// One sealed Sheriff domain `trackplay` with a single NgRx slice holding
-// NORMALIZED maps (players / games / gameTypes / rounds) keyed by TID. Player
-// counters and per-game scores/winners are DERIVED in selectors — never stored.
-// Timestamps are epoch-ms numbers (TDateTime), distinct from the ISO-string
-// TTimestamp used by the timetracker/grocery item types.
-// ============================================================================
-
-export type TID = string;
-export type TDateTime = number; // epoch ms (Date.now())
-
-export interface IBase {
-  id: TID;
-  name: string;
-  created: TDateTime;
-}
-
-// One scoring round: playerId -> points scored that round.
-export interface IRound extends IBase {
-  idx: number;
-  values: Record<TID, number>;
-}
-
-// A player. NOTE: play/win/loss/open counters are DERIVED (see playerStats
-// selector), not stored — only `lastPlayed` is persisted.
-export interface IPlayer extends IBase {
-  lastPlayed?: TDateTime;
-}
-
-// A game variant. Does NOT extend IBase (no `created`). winHigh=true means the
-// highest total wins; false means the lowest total wins.
-export interface IGameType {
-  id: TID;
-  name: string;
-  winHigh: boolean;
-}
-
-export interface IGame extends IBase {
-  type: TID; // -> IGameType.id
-  players: TID[]; // -> IPlayer.id[]
-  rounds: TID[]; // -> IRound.id[] (ordered)
-  ended: boolean;
-  updated: TDateTime;
-}
-
-// Per-list sort/filter config (games list, games-for-player list).
-export interface IGameConfig {
-  sort: 'name' | 'date' | 'updated';
-  dir: 'asc' | 'desc';
-  filter: string;
-  typeId: TID; // '' = no type filter
-  showEndedGames: boolean;
-}
-
-export interface ITrackplayConfig {
-  games: IGameConfig;
-  gamesForPlayer: IGameConfig;
-  players: {
-    sort: 'name' | 'date' | 'last';
-    dir: 'asc' | 'desc';
-    filter: string;
-  };
-}
-
-// Derived per-player counters (from games + rounds). `loss` replaces the
-// legacy "loose" misspelling.
-export interface IPlayerStats {
-  play: number;
-  win: number;
-  loss: number;
-  open: number;
-}
-
-// Full snapshot of the mutable trackplay maps + config, captured before a
-// destructive action so a single-level undo can re-insert it verbatim.
-export interface ITrackplaySnapshot {
-  players: Record<TID, IPlayer>;
-  games: Record<TID, IGame>;
-  gameTypes: Record<TID, IGameType>;
-  rounds: Record<TID, IRound>;
-  config: ITrackplayConfig;
-}
-
-// Single-slot undo payload: the snapshot + a human name for the toast.
-export interface ITrackplayDeleted {
-  name: string;
-  snapshot: ITrackplaySnapshot;
-}
-
-export interface ITrackplayState {
-  players: Record<TID, IPlayer>;
-  games: Record<TID, IGame>;
-  gameTypes: Record<TID, IGameType>;
-  rounds: Record<TID, IRound>;
-  config: ITrackplayConfig;
-  lastDeleted: ITrackplayDeleted | null;
 }

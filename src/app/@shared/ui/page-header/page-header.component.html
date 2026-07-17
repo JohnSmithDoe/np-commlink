@@ -4,15 +4,11 @@
       <ion-menu-button />
     </ion-buttons>
     @if (label()) {
-      <div class="app-brand">
+      <div class="sr-brand">
         @if (icon()) {
-          <ion-icon
-            [name]="icon()"
-            class="app-brand__icon"
-            aria-hidden="true"
-          />
+          <ion-icon [name]="icon()" class="sr-brand__icon" aria-hidden="true" />
         }
-        <span class="app-brand__name">{{ label() | translate }}</span>
+        <span class="sr-brand__name">{{ label() | translate }}</span>
       </div>
     }
     <ng-content select="[toolbar]" />

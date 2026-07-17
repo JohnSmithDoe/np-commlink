@@ -26,8 +26,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { ICashAccount, TAccountKind, TBank } from '../../../@shared/types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions } from '../../data/cash.actions';
-import { selectCashAccounts } from '../../data/cash.selector';
+import { CashActions, selectCashAccounts } from '../../data';
 import { centsToInput, eurToCents } from '../../util/money';
 import { BANK_OPTIONS } from '../../util/import/bank-parsers';
 

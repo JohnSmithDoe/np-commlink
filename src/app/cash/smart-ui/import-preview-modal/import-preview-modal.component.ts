@@ -16,7 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { ICashTransaction } from '../../../@shared/types';
-import { CashActions } from '../../data/cash.actions';
+import { CashActions } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 /**

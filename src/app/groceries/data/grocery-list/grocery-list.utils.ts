@@ -21,14 +21,14 @@ import {
   addListItem,
   updateCategories,
   updateListItem,
-} from '../../../@shared/data/list/list.utils';
+} from '../../../@shared/util/list/list.utils';
 
 // Re-export the domain-blind list helpers so existing grocery importers keep
 // resolving them from here. The generic implementations now live in the shared
-// kernel (`@shared/data/list/list.utils`); only the grocery-specific engine
+// kernel (`@shared/util/list/list.utils`); only the grocery-specific engine
 // helpers below (which read concrete list identities / cross-list state) stay
 // in this file.
-export * from '../../../@shared/data/list/list.utils';
+export * from '../../../@shared/util/list/list.utils';
 
 // hmmm this is a bit much...
 export const updateQuickAddState = (
@@ -38,14 +38,14 @@ export const updateQuickAddState = (
   let searchQuery: string | undefined;
   let exactMatchLocal = false;
   let listName: string | undefined;
-  let color: TColor | undefined;
+  // Uniform amber quick-add accent across every list (per-domain tint dropped).
+  const color: TColor = 'primary';
   let isCategoryMode: boolean | undefined;
   let categories: TItemListCategory[] | undefined;
   switch (listId) {
     case '_storage':
       searchQuery = state.storage.searchQuery;
       listName = marker('grocery.list-header.storage');
-      color = 'storage';
       isCategoryMode = state.storage.mode === 'categories';
       categories = state.storage.categories;
       exactMatchLocal = !!state.storage.items.find((item) =>
@@ -55,7 +55,6 @@ export const updateQuickAddState = (
     case '_products':
       searchQuery = state.products.searchQuery;
       listName = marker('grocery.list-header.products');
-      color = 'product';
       isCategoryMode = state.products.mode === 'categories';
       categories = state.products.categories;
       exactMatchLocal = !!state.products.items.find((item) =>
@@ -65,7 +64,6 @@ export const updateQuickAddState = (
     case '_shopping':
       searchQuery = state.shopping.searchQuery;
       listName = marker('grocery.list-header.shopping');
-      color = 'shopping';
       isCategoryMode = state.shopping.mode === 'categories';
       categories = state.shopping.categories;
       exactMatchLocal = !!state.shopping.items.find((item) =>
@@ -75,7 +73,6 @@ export const updateQuickAddState = (
     case '_tasks':
       searchQuery = state.tasks.searchQuery;
       listName = marker('grocery.list-header.tasks');
-      color = 'task';
       isCategoryMode = state.tasks.mode === 'categories';
       categories = state.tasks.categories;
       exactMatchLocal = !!state.tasks.items.find((item) =>

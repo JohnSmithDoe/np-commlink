@@ -3,12 +3,9 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { DashboardActions } from '../../@shared/data/dashboard/dashboard.actions';
-import {
-  mockAppState,
-  mockGame,
-  mockTrackplayState,
-} from '../../@shared/testing/test-data';
+import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockGame, mockTrackplayState } from '../testing/trackplay.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   selectGameCount,
@@ -18,7 +15,7 @@ import {
 describe('TrackplayTelemetryEffects', () => {
   let effects: TrackplayTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         TrackplayTelemetryEffects,

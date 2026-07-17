@@ -2,11 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { DialogsActions } from '../../data/dialogs/dialogs.actions';
-import {
-  selectEditItem,
-  selectEditState,
-} from '../../data/dialogs/dialogs.selector';
+import { DialogsActions, selectEditItem, selectEditState } from '../../data';
 import { ItemEditModalComponent } from './item-edit-modal.component';
 
 describe('ItemEditModalComponent', () => {

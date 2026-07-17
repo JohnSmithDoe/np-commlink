@@ -3,8 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
-import { OfficeTimeActions } from '../../data/office-time/office-time.actions';
-import { selectTodayIsOfficeDay } from '../../data/office-time/office-time.stats.selector';
+import { OfficeTimeActions, selectTodayIsOfficeDay } from '../../data';
 import { DashButtonComponent } from './dash-button.component';
 
 describe('DashButtonComponent', () => {

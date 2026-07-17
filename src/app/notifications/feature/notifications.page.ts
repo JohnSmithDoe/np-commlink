@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -26,12 +27,12 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
 import { INotification, IonViewWillEnter } from '../../@shared/types';
 import { NotificationService } from '../util/notification.service';
-import { NotificationsActions } from '../../@shared/data/notifications/notifications.actions';
+import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,
   selectNewNotifications,
-} from '../data/notifications.selector';
+} from '../data';
 
 marker('notifications.action.start');
 marker('notifications.action.stop');
@@ -57,6 +58,7 @@ marker('notifications.action.pause');
 })
 export class NotificationsPage implements IonViewWillEnter {
   readonly #store = inject(Store);
+  readonly #router = inject(Router);
   readonly #osNotifications = inject(NotificationService);
 
   readonly newNotifications = this.#store.selectSignal(selectNewNotifications);
@@ -88,7 +90,12 @@ export class NotificationsPage implements IonViewWillEnter {
 
   triggerAction(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(NotificationsActions.triggerAction(n.id));
+    // The action targets the tracking aggregate, which is lazy and not
+    // registered here. Deep-link to /tracking; it activates (hydrates) and
+    // applies its own command (see TrackingNotificationsEffects
+    // .applyNotificationCommand$ — lazy-modules §7). Notifications stays
+    // dependency-free: a string route, no tracking import.
+    void this.#router.navigate(['/tracking'], { queryParams: { cmd: n.id } });
   }
 
   markDone(n: INotification, event: Event) {

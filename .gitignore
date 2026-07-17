@@ -86,3 +86,5 @@ Thumbs.db
 
 # Merge-planning workspace (transient; delete once execution done)
 /.plan-workspace
+# codegraph
+.codegraph

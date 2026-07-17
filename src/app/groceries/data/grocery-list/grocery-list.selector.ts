@@ -18,17 +18,17 @@ import {
   filterListBySearchQuery,
   listCategoriesWithCount,
   listStateFilter,
-} from '../../../@shared/data/list/list.selector';
+} from '../../../@shared/util/list/list.selector';
 import { stateByListId } from './grocery-list.utils';
 
 // Re-export the domain-blind selector helpers so existing grocery importers
 // (shopping/storage/products selectors) keep resolving them from here. The
-// generic implementations now live in `@shared/data/list/list.selector`.
+// generic implementations now live in `@shared/util/list/list.selector`.
 export {
   filterAndSortItemList,
   sortCategoriesFn,
   sortItemListFn,
-} from '../../../@shared/data/list/list.selector';
+} from '../../../@shared/util/list/list.selector';
 
 export const selectListState = createSelector(
   selectRouteParams,

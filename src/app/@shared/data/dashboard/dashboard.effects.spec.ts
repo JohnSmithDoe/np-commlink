@@ -5,7 +5,7 @@ import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { DatabaseService } from '../../util/database.service';
 import { UiService } from '../../util/ui.service';
 import { IDashboardSummary } from '../../types';
-import { DashboardActions } from './dashboard.actions';
+import { DashboardActions } from '../../util/dashboard/dashboard.actions';
 import { DashboardEffects } from './dashboard.effects';
 
 describe('DashboardEffects', () => {

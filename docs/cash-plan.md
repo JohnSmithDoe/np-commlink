@@ -144,7 +144,7 @@ matches the rest of the app. Precedent for the `Intl` style is
 > the cash side is a one-line change (feed the active locale instead of the
 > literal). The *broader* work is app-wide — the same hardcoded-`de-DE` assumption
 > lives in `LOCALE_ID`, `dayjs.locale`, `registerLocaleData`, and
-> `trackplay/util/score.pipe.ts`. Tracked in `docs/todo.md`. **Parsing** (`,` vs
+> `trackplay/util/score.pipe.ts`. Tracked in `docs/open-tasks.md`. **Parsing** (`,` vs
 > `.` as decimal) must become locale-aware in the same pass, or an en user typing
 > `12.34` gets `1234 €`.
 
@@ -168,20 +168,26 @@ matches the rest of the app. Precedent for the `Intl` style is
 - We assume every txn's `dateISO` is on/after its account's `openingDateISO`; the
   balance sums **all** of an account's txns regardless (no date gate).
 
-### Slice registration & the `enterPage` hook
+### Slice registration & hydration
 
-- **`cash` is an *eager* root slice** (`provideStore` in `main.ts`), unlike the
-  lazy grocery/tasks cluster. Its `/cash` route is therefore a plain lazy
-  component with **no `provideState` / effects providers / hydration resolver** —
-  correct, because `cash` is one self-contained slice with no cross-list sibling
-  reads. Keep it eager unless the slice grows heavy enough to be worth code-split.
-- **`CashActions.enterPage` is currently dead** — no `cash.effects.ts` exists and
-  the page never dispatches it (every other domain's page does). Decision:
-  **leave it unwired until a phase needs an on-enter effect** (the likely first
-  need is P4 "auto-run rules after import"). When that lands, add
-  `cash/data/cash.effects.ts` and have the page dispatch `enterPage()` on init.
-  Until then it stays a documented, unused hook — do not add an empty effects
-  file just to consume it.
+> **Updated after the `main` rebase (2026-07-15).** P1–P5 were built while `cash`
+> was an eager root slice; the `feature/lazy-modules` work (now on `main`) made
+> `cash` a **lazy bounded context**, and this branch was rebased onto it keeping
+> that new hydration. The text below reflects the lazy reality.
+
+- **`cash` is a *lazy* bounded context.** It is **not** in the root
+  `provideStore`; `cashLazyProviders` (`cash/data/provide-cash-lazy.ts`) registers
+  `provideState('cash', …)` + `CashLoadEffects`/`CashSaveEffects`/
+  `CashTelemetryEffects`, and **every** cash route (`/cash`, `/cash/rules`,
+  `/cash/report`, `/cash/:accountId`) carries those `providers` plus
+  `resolve: moduleHydrationResolver(CashActions.load, CashActions.loaded)`. Cash
+  is torn down on leaving the subtree, so each sibling route must re-register +
+  re-hydrate — hence the resolver on all of them.
+- **Hydration is per-module `load`/`loaded`.** `CashLoadEffects` reads the `cash`
+  key and emits `CashActions.loaded(cash)`; the reducer hydrates
+  `on(CashActions.loaded, …)` — the old `ApplicationActions.loadedSuccessfully`
+  path is gone. The `enterPage` hook stays unused (the telemetry reporter in
+  `cashLazyProviders` handles the CREDSTICK standby→online flip on entry).
 
 ### Scope guards (non-goals)
 
@@ -312,7 +318,7 @@ survivor. Never auto-picks.
   `categorize.spec.ts`, `csv.spec.ts` alongside their utils.
 - **Shadowrun re-skin:** the `--ion-color-cash` jade tint and the P1+ views need
   the same contrast/monospace/German-string audit noted for the grocery pages in
-  `merge-notes.md`.
+  `open-tasks.md`.
 - **i18n:** all cash keys stay namespaced under `cash.` (only `cash.page-title.cash`
   + `cash.landing.hint` exist today); TS-side keys use `marker('cash.…')`.
 
@@ -323,8 +329,8 @@ survivor. Never auto-picks.
   rules + categorization engine, per-bank CSV import + reconciliation, transfers
   + reporting. **The roadmap is complete.**
 - `cash` is auto-tagged `domain:cash` and fully **sealed** — no `sheriff.config.ts`
-  bridge (it references no other domain), and it is an **eager** root slice (see
-  § Slice registration).
+  bridge (it references no other domain), and (after the `main` rebase) it is a
+  **lazy** bounded context (see § Slice registration & hydration).
 - Every phase driven in the real app (Playwright) on top of the gate suite:
   tsc (app+spec) · sheriff · eslint · **681 unit** · prod build — all green.
 - **Not yet pushed/merged.** When `feature/cash` meets the concurrent
@@ -332,6 +338,33 @@ survivor. Never auto-picks.
   (`cash.actions`/`cash.reducer`/`types.ts`) — lazy-modules is swapping the
   hydration model (`ApplicationActions` → per-module `load`/`loaded`) and this
   branch still uses `ApplicationActions.loadedSuccessfully`. Cash UI is unaffected.
-- **Remaining polish (not roadmap):** Windows-1252 CSV decode fallback (P4a note),
-  a shadowrun re-skin pass on the new dialogs, and drag-reorder for rules (up/down
-  today).
+- **Remaining polish (not roadmap):** see § Deferred polish.
+
+## Deferred polish
+
+Non-blocking follow-ups on the completed roadmap — none are correctness bugs.
+
+- **Windows-1252 CSV decode.** P4a reads the file with `file.text()` (UTF-8),
+  which covers both example exports. Real Volksbank exports are often
+  Windows-1252 / ISO-8859-1 → umlauts would arrive as mojibake. Add a
+  `TextDecoder('windows-1252')` fallback (detect the replacement char `�` and
+  re-decode, or offer an encoding toggle in the import flow).
+- **DKB imported live only in spec.** The DKB parser is unit-tested against
+  `docs/example2.csv`, but only Volksbank was driven end-to-end in-app. Do a
+  manual DKB import pass when convenient.
+- **Shadowrun re-skin of the new surfaces.** The P1–P5 dialogs/pages
+  (account/transaction/rule/transfer modals, import preview, rules + report
+  pages) need the same contrast-vs-amber, monospace-clipping and German-string
+  audit noted for the grocery pages in `open-tasks.md`. The report chart palette
+  (`#2dd36f`/`#eb445a`/category ramp) is Ionic-default, not `--sr-*` tokens — pull
+  it onto the theme.
+- **Rules drag-reorder.** Rules reorder via up/down controls today; the app wires
+  no `ion-reorder-group` anywhere, so a drag implementation was deferred rather
+  than pioneered blind.
+- **Category input unification.** A manual transaction's category is free text
+  (P2) while a rule assigns from the managed palette (P3). Consider a shared
+  category input (an `ion-select`/datalist backed by `categories`) so manual
+  entries draw from the same list.
+- **Un-reconcile.** Reconciliation is one-way in the UI — the merged manual leg
+  is hidden (recoverable only via data). A "detach" affordance (clear
+  `matchedTxnId`, restore `pending`) would make it reversible.

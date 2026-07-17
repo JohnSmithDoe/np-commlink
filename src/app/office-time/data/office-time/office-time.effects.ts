@@ -7,7 +7,6 @@ import {
   from,
   fromEvent,
   map,
-  mergeMap,
   of,
   switchMap,
   withLatestFrom,
@@ -20,7 +19,6 @@ import { selectHolidays, selectOfficeTimeState } from './office-time.selector';
 import { Dayjs } from 'dayjs';
 import {
   dayjsFromString,
-  rotateBase64,
   serializeDateMap,
   serializeDates,
 } from './office-time.utils';
@@ -37,27 +35,6 @@ export class OfficeTimeEffects {
     return this.#actions$.pipe(
       ofType(OfficeTimeActions.initOfficeTime),
       map(() => OfficeTimeActions.loadHolidays())
-    );
-  });
-
-  rotateBarcode$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(OfficeTimeActions.rotateBarcode),
-      withLatestFrom(this.#store.select(selectOfficeTimeState)),
-      switchMap(([_, state]) => {
-        return from(rotateBase64(state.barcode, 90)).pipe(
-          // When rotation actually produced a new image, commit it.
-          // Otherwise (no barcode set, image load error, draw failure)
-          // emit nothing so we don't churn the saveOn$ effect with an
-          // identical write.
-          mergeMap((rotated) =>
-            rotated && rotated !== state.barcode
-              ? of(OfficeTimeActions.rotateBarcodeSuccess(rotated))
-              : EMPTY
-          ),
-          catchError(() => EMPTY)
-        );
-      })
     );
   });
 
@@ -97,10 +74,7 @@ export class OfficeTimeEffects {
         OfficeTimeActions.addFreeday,
         OfficeTimeActions.addOfficeTime,
         OfficeTimeActions.addOfficeday,
-        OfficeTimeActions.deleteBarcode,
         OfficeTimeActions.resetData,
-        OfficeTimeActions.rotateBarcodeSuccess,
-        OfficeTimeActions.saveBarcode,
         OfficeTimeActions.saveDashboardSettings,
         OfficeTimeActions.saveTargetOfficeDaysPerWeek,
         OfficeTimeActions.setFreedays,
