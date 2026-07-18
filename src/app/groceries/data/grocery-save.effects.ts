@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, tap, withLatestFrom } from 'rxjs';
-import { IAppState } from '../../@shared/types';
 import { DatabaseService } from '../../@shared/util/database.service';
+import { selectGroceryLists } from './grocery-list/grocery-list.selector';
 
 // Persist a grocery slice whenever its domain dispatches a mutation
 // (lazy-modules Phase E: the grocery context owns its own save). Split out of
@@ -30,10 +30,13 @@ export class GrocerySaveEffects {
             /^\[(Products|Shopping|Storage)\]/.test(action.type) &&
             !/\] (load|loaded)$/.test(action.type)
         ),
-        withLatestFrom(this.#store, (action, state: IAppState) => ({
-          action,
-          state,
-        })),
+        withLatestFrom(
+          this.#store.select(selectGroceryLists),
+          (action, state) => ({
+            action,
+            state,
+          })
+        ),
         tap(({ action, state }) => {
           if (action.type.startsWith('[Products]')) {
             void this.#database.save('products', state.products);

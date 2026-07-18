@@ -1,18 +1,40 @@
-<app-item-edit-modal listId="_storage" [listItems]="rxStorageItems()">
+<app-item-edit-modal
+  [item]="seedItem()"
+  [listItems]="listItems()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  closeButtonText="grocery.edit-item.dialog.button.close"
+  (nameChange)="updateName($event)"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
   <app-number-input
     [label]="'grocery.item.min-amount' | translate"
-    [value]="(rxItem())?.minAmount ?? undefined"
+    [value]="draft()?.minAmount ?? undefined"
     (updateValue)="updateMinAmount($event)"
   ></app-number-input>
 
   <app-date-input
     [label]="'grocery.edit.item.dialog.mhd' | translate"
-    [value]="(rxItem())?.bestBefore"
+    [value]="draft()?.bestBefore"
     (updateValue)="updateBestBefore($event)"
   ></app-date-input>
 
   <app-category-input
-    [categories]="(rxItem())?.category"
+    [categories]="draft()?.category"
+    (removeCategory)="removeCategory($event)"
+    (openDialog)="openCategoriesDialog()"
   ></app-category-input>
-  <app-categories-dialog></app-categories-dialog>
+
+  <app-categories-dialog
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="draft()?.category ?? []"
+    (confirmed)="confirmCategories($event)"
+    (cancelled)="cancelCategories()"
+    (dismissed)="cancelCategories()"
+    (addNew)="addCategory($event)"
+  ></app-categories-dialog>
 </app-item-edit-modal>

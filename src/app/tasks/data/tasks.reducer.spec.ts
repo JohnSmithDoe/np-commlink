@@ -1,6 +1,6 @@
 import { TasksActions } from './tasks.actions';
 import { initialState, tasksReducer } from './tasks.reducer';
-import { mockTaskItem, mockTasksState } from '../../@shared/testing/test-data';
+import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 
 describe('tasksReducer', () => {
   it('returns the initial state for an unknown action', () => {

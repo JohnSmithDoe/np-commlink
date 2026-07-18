@@ -1,4 +1,4 @@
-import { ICashTransaction } from '../../@shared/types';
+import { ICashTransaction } from '../model';
 
 /**
  * The two legs of a transfer between own accounts (see docs/cash-plan.md →

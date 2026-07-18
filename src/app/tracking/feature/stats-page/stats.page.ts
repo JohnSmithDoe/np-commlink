@@ -8,6 +8,7 @@ import {
   IonList,
   IonSelect,
   IonSelectOption,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { ellipse, square, triangle } from 'ionicons/icons';
@@ -19,7 +20,7 @@ import {
   selectTrackingDataViewId,
   TrackingActions,
 } from '../../data';
-import { IDataItem, IonViewWillEnter } from '../../../@shared/types';
+import { IDataItem } from '../../model';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 
 @Component({
@@ -40,7 +41,7 @@ import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
     IonItem,
   ],
 })
-export class StatsPage implements IonViewWillEnter {
+export class StatsPage implements ViewWillEnter {
   readonly #store = inject(Store);
 
   readonly data = this.#store.selectSignal(selectTrackingData);

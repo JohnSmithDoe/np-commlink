@@ -4,13 +4,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, switchMap, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { IAppState } from '../../@shared/types';
 import { StorageActions } from './storage.actions';
 import { ShoppingActions } from './shopping.actions';
+import { selectShoppingState } from './shopping.selector';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingEffects {
-  #store = inject(Store<IAppState>);
+  #store = inject(Store);
   #actions$ = inject(Actions);
 
   buyItem$ = createEffect(() => {
@@ -25,12 +25,15 @@ export class ShoppingEffects {
   moveToStorageList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ShoppingActions.moveToStorage),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
-      map(({ action, state }) => {
-        const boughtItems = state.shopping.items.filter(
+      withLatestFrom(
+        this.#store.select(selectShoppingState),
+        (action, shopping) => ({
+          action,
+          shopping,
+        })
+      ),
+      map(({ shopping }) => {
+        const boughtItems = shopping.items.filter(
           (item) => item.state === 'bought'
         );
         return StorageActions.addShoppingList(boughtItems);
@@ -42,12 +45,15 @@ export class ShoppingEffects {
     () => {
       return this.#actions$.pipe(
         ofType(ShoppingActions.shareShoppinglist),
-        withLatestFrom(this.#store, (action, state: IAppState) => ({
-          action,
-          state,
-        })),
-        switchMap(({ action, state }) => {
-          const activeItems = state.shopping.items.filter(
+        withLatestFrom(
+          this.#store.select(selectShoppingState),
+          (action, shopping) => ({
+            action,
+            shopping,
+          })
+        ),
+        switchMap(({ shopping }) => {
+          const activeItems = shopping.items.filter(
             (item) => item.state === 'active'
           );
           const text =

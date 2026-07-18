@@ -1,0 +1,26 @@
+# Git hooks — lefthook (https://lefthook.dev).
+#
+# Installed automatically by the package.json "prepare" script on `pnpm install`.
+# If the hooks ever go missing, re-wire them with:
+#   ./node_modules/.bin/lefthook install
+#
+# pre-commit runs two jobs, in order (lefthook runs jobs sequentially unless
+# `parallel: true`):
+#   1. prettier — format the staged files and re-stage the result (stage_fixed),
+#      so every commit is prettier-clean.
+#   2. eslint   — lint the staged src *.ts / *.html (check only, no --fix); a
+#      lint error aborts the commit. Scoped to src/** to match `pnpm lint` and to
+#      keep the type-aware projectService off root-level config files.
+# Order matters: prettier fixes formatting first, so eslint's prettier/prettier
+# rule sees already-formatted files. Both tools are invoked through `pnpm exec`
+# because lefthook runs commands via `sh -c` with the inherited PATH and does NOT
+# add node_modules/.bin — a bare `prettier`/`eslint` would not resolve.
+pre-commit:
+  jobs:
+    - name: prettier
+      glob: '*.{ts,html,scss,json,js,mjs,cjs}'
+      run: pnpm exec prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+    - name: eslint
+      glob: 'src/**/*.{ts,html}'
+      run: pnpm exec eslint {staged_files}

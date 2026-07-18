@@ -11,10 +11,10 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonDatetime,
+  DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
-import { DatetimeCustomEvent } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import {
   OfficeTimeActions,
@@ -23,7 +23,7 @@ import {
   daysToFreedaysHighlightsInputTransform,
   daysToHolidaysHighlightsInputTransform,
 } from '../../data';
-import { DateTimeHighlight } from '../../../@shared/types';
+import { DateTimeHighlight } from '../../model';
 
 @Component({
   selector: 'app-dash-office-days-edit',

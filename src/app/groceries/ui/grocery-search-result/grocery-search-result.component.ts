@@ -5,13 +5,13 @@ import {
   output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { IBaseItem } from '../../../@shared/types';
 import {
-  IBaseItem,
+  IGrocerySearchResult,
   IProduct,
-  ISearchResult,
   IShoppingItem,
   IStorageItem,
-} from '../../../@shared/types';
+} from '../../model';
 import { CategoriesPipe } from '../../../@shared/util/categories.pipe';
 import { TextItemComponent } from '../../../@shared/ui/item-list-items/text-item/text-item.component';
 import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.component';
@@ -29,7 +29,7 @@ import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.compo
   ],
 })
 export class GrocerySearchResultComponent<T extends IBaseItem> {
-  results = input<ISearchResult<T> | null>();
+  results = input<IGrocerySearchResult<T> | null>();
   selectProduct = output<IProduct>();
   selectShoppingItem = output<IShoppingItem>();
   selectStorageItem = output<IStorageItem>();

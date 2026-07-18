@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { DashboardStats, DateTimeHighlight } from '../../../@shared/types';
+import { DashboardStats, DateTimeHighlight } from '../../model';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 
 dayjs.extend(quarterOfYear);

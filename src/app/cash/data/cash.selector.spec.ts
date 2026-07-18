@@ -1,7 +1,7 @@
 import {
   mockCashAccount,
   mockCashTransaction,
-} from '../../@shared/testing/test-data';
+} from '../testing/cash.test-data';
 import {
   selectAccountBalances,
   selectAccountById,
@@ -149,6 +149,38 @@ describe('cash selectors', () => {
       ];
       const result = selectTransactionsForAccount('a').projector(txns);
       expect(result.map((t) => t.id)).toEqual(['a', 'z']);
+    });
+
+    it('tags a survivor with the id of the manual leg reconciled into it', () => {
+      const txns = [
+        mockCashTransaction({
+          id: 'surv',
+          accountId: 'a',
+          dateISO: '2026-01-01',
+        }),
+        mockCashTransaction({
+          id: 'manual',
+          accountId: 'a',
+          dateISO: '2026-01-01',
+          matchedTxnId: 'surv',
+        }),
+      ];
+      const result = selectTransactionsForAccount('a').projector(txns);
+      // the hidden manual leg is excluded; the survivor carries its id
+      expect(result.map((t) => t.id)).toEqual(['surv']);
+      expect(result[0].reconciledManualId).toBe('manual');
+    });
+
+    it('leaves reconciledManualId undefined for an unreconciled txn', () => {
+      const txns = [
+        mockCashTransaction({
+          id: 't1',
+          accountId: 'a',
+          dateISO: '2026-01-01',
+        }),
+      ];
+      const result = selectTransactionsForAccount('a').projector(txns);
+      expect(result[0].reconciledManualId).toBeUndefined();
     });
   });
 

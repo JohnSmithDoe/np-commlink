@@ -3,11 +3,13 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
+  mockProductsState,
+  mockShoppingState,
   mockStorageItem,
   mockStorageState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { StorageActions } from './storage.actions';
 import { GroceriesActions } from './groceries.actions';
@@ -33,14 +35,11 @@ describe('GrocerySaveEffects', () => {
   };
 
   it('persists the slice named by the action-source prefix', async () => {
-    const initialState = setup(
-      mockAppState({
-        storage: mockStorageState({ items: [mockStorageItem()] }),
-      })
-    );
+    const storage = mockStorageState({ items: [mockStorageItem()] });
+    setup(mockAppState({ storage }));
     actions$ = of(StorageActions.addItem(mockStorageItem()));
     await firstValueFrom(effects.saveOnChange$);
-    expect(database.save).toHaveBeenCalledWith('storage', initialState.storage);
+    expect(database.save).toHaveBeenCalledWith('storage', storage);
   });
 
   it('does NOT persist on the [Groceries] co-hydration lifecycle', async () => {
@@ -55,8 +54,8 @@ describe('GrocerySaveEffects', () => {
     actions$ = of(
       GroceriesActions.load(),
       GroceriesActions.loaded({
-        products: mockAppState().products,
-        shopping: mockAppState().shopping,
+        products: mockProductsState(),
+        shopping: mockShoppingState(),
         storage: mockStorageState(),
       })
     );

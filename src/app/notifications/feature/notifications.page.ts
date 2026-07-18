@@ -9,6 +9,7 @@ import {
   IonLabel,
   IonList,
   IonNote,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
@@ -25,7 +26,7 @@ import {
 } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
-import { INotification, IonViewWillEnter } from '../../@shared/types';
+import { INotification } from '../../@shared/types';
 import { NotificationService } from '../util/notification.service';
 import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
 import {
@@ -56,7 +57,7 @@ marker('notifications.action.pause');
     IonButtons,
   ],
 })
-export class NotificationsPage implements IonViewWillEnter {
+export class NotificationsPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #osNotifications = inject(NotificationService);

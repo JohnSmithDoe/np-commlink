@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, tap, withLatestFrom } from 'rxjs';
-import { IAppState } from '../../@shared/types';
 import { DatabaseService } from '../../@shared/util/database.service';
+import { selectTasksState } from './tasks.selector';
 
 // Persist the tasks slice on any [Tasks] mutation (lazy-modules Phase E: the
 // tasks context owns its own save). Split out of the shell's
@@ -30,9 +30,12 @@ export class TasksSaveEffects {
             /^\[Tasks\]/.test(action.type) &&
             !/\] (load|loaded)$/.test(action.type)
         ),
-        withLatestFrom(this.#store, (_action, state: IAppState) => state),
-        tap((state) => {
-          void this.#database.save('tasks', state.tasks);
+        withLatestFrom(
+          this.#store.select(selectTasksState),
+          (_action, tasks) => tasks
+        ),
+        tap((tasks) => {
+          void this.#database.save('tasks', tasks);
         })
       );
     },

@@ -26,5 +26,6 @@ export {
   selectReportTotals,
   selectSpendByCategory,
 } from './cash.selector';
+export type { TAccountTxn } from './cash.selector';
 
 export { cashLazyProviders } from './provide-cash-lazy';

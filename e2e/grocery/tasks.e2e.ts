@@ -14,6 +14,24 @@ test.describe('tasks list', () => {
     });
   });
 
+  // Drives the refactored task edit dialog (pure-ui modal + local draft).
+  test('edits a task through the edit dialog', async ({ page }) => {
+    await addViaSearch(page, 'Buy stamps');
+    await expect(page.getByText(/Buy stamps/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByText(/Buy stamps/).first().click();
+
+    const nameField = page.getByRole('textbox', { name: 'Name' });
+    await expect(nameField).toBeVisible({ timeout: 10_000 });
+    await nameField.fill('Buy postcards');
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+
+    await expect(page.getByText(/Buy postcards/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
   test('keeps tasks across a full reload (hydration must not clobber storage)', async ({
     page,
   }) => {

@@ -13,6 +13,7 @@ import {
   IonList,
   IonMenu,
   IonMenuToggle,
+  IonRouterLink,
   IonRouterOutlet,
   IonTitle,
   IonToolbar,
@@ -44,6 +45,7 @@ import { selectNotificationsUnread } from './@shared/data/dashboard/dashboard.se
   imports: [
     IonApp,
     IonRouterOutlet,
+    IonRouterLink,
     IonMenu,
     IonHeader,
     IonToolbar,

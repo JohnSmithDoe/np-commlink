@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { ISettingsState } from '../../../@shared/types';
+import { ISettingsState } from '../../model';
 import { SettingsActions } from './settings.actions';
 import { VERSION } from '../../../@shared/util/migrations';
 

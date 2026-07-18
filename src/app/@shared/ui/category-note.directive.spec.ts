@@ -2,7 +2,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IBaseItem } from '../types';
 import { COMMON_TEST_PROVIDERS } from '../testing/test-providers';
-import { mockStorageItem } from '../testing/test-data';
+import { mockBaseItem } from '../testing/test-data';
 import { CategoryNoteDirective } from './category-note.directive';
 
 @Component({
@@ -31,7 +31,7 @@ describe('CategoryNoteDirective', () => {
   });
 
   it('shows the joined categories when the item has categories', () => {
-    fixture.componentInstance.item = mockStorageItem({ category: ['A', 'B'] });
+    fixture.componentInstance.item = mockBaseItem({ category: ['A', 'B'] });
     fixture.detectChanges();
 
     expect(noteEl().style.display).toBe('block');
@@ -39,14 +39,14 @@ describe('CategoryNoteDirective', () => {
   });
 
   it('hides the note when the item has no categories', () => {
-    fixture.componentInstance.item = mockStorageItem();
+    fixture.componentInstance.item = mockBaseItem();
     fixture.detectChanges();
 
     expect(noteEl().style.display).toBe('none');
   });
 
   it('hides the note when the item has an empty category array', () => {
-    fixture.componentInstance.item = mockStorageItem({ category: [] });
+    fixture.componentInstance.item = mockBaseItem({ category: [] });
     fixture.detectChanges();
 
     expect(noteEl().style.display).toBe('none');

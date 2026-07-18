@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { IBarcodeState } from '../../@shared/types';
+import { IBarcodeState } from '../model';
 import { BarcodeActions } from './barcode.actions';
 
 export const initialBarcodeState: IBarcodeState = {};

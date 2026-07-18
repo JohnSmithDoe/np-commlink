@@ -1,10 +1,7 @@
 import { GroceriesActions } from './groceries.actions';
 import { ProductsActions } from './products.actions';
 import { productsReducer, initialState } from './products.reducer';
-import {
-  mockProduct,
-  mockProductsState,
-} from '../../@shared/testing/test-data';
+import { mockProduct, mockProductsState } from '../testing/grocery.test-data';
 
 describe('productsReducer', () => {
   it('returns the initial state for an unknown action', () => {

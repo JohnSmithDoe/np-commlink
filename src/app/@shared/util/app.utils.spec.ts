@@ -1,13 +1,9 @@
 import { AbstractControl } from '@angular/forms';
-import { InputCustomEvent } from '@ionic/angular';
+import { InputCustomEvent } from '@ionic/angular/standalone';
 import { IBaseItem, TIonDragEvent } from '../types';
 import {
   checkItemOptionsOnDrag,
   hasQuantity,
-  isProductItem,
-  isShoppingItem,
-  isStorageItem,
-  isTaskItem,
   matchesCategory,
   matchesCategoryExactly,
   matchesId,
@@ -24,12 +20,7 @@ import {
   uuidv4,
   validateNameInput,
 } from './app.utils';
-import {
-  mockProduct,
-  mockShoppingItem,
-  mockStorageItem,
-  mockTaskItem,
-} from '../testing/test-data';
+import { mockBaseItem } from '../testing/test-data';
 
 const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
   id: 'id-1',
@@ -40,34 +31,10 @@ const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
 
 describe('app.utils', () => {
   describe('type guards', () => {
-    it('isProductItem detects the "unit" property', () => {
-      expect(isProductItem(mockProduct())).toBe(true);
-      expect(isProductItem(mockStorageItem())).toBe(false);
-    });
-
-    it('isStorageItem detects an own "bestBefore" property', () => {
-      expect(isStorageItem(mockStorageItem({ bestBefore: '2024-05-01' }))).toBe(
-        true
-      );
-      // storage item without an explicit bestBefore key is not detected
-      expect(isStorageItem(mockStorageItem())).toBe(false);
-      expect(isStorageItem(undefined)).toBe(false);
-    });
-
-    it('isTaskItem detects an own "prio" property', () => {
-      expect(isTaskItem(mockTaskItem({ prio: 1 }))).toBe(true);
-      expect(isTaskItem(mockTaskItem())).toBe(false);
-    });
-
-    it('isShoppingItem detects the "state" property', () => {
-      expect(isShoppingItem(mockShoppingItem())).toBe(true);
-      expect(isShoppingItem(mockProduct())).toBe(false);
-    });
-
     it('hasQuantity requires both quantity and name', () => {
-      expect(hasQuantity(mockStorageItem({ quantity: 3 }))).toBe(true);
+      expect(hasQuantity({ ...mockBaseItem(), quantity: 3 })).toBe(true);
       expect(hasQuantity({ quantity: 3 })).toBe(false);
-      expect(hasQuantity(mockProduct())).toBe(false);
+      expect(hasQuantity(mockBaseItem())).toBe(false);
       expect(hasQuantity(undefined)).toBe(false);
     });
   });
@@ -213,20 +180,20 @@ describe('app.utils', () => {
 
     it('passes a unique name', () => {
       const validator = validateNameInput(
-        [mockStorageItem({ name: 'Milk' })],
+        [mockBaseItem({ name: 'Milk' })],
         null
       );
       expect(validator(control('Bread'))).toBeNull();
     });
 
     it('flags a duplicate of another item', () => {
-      const existing = mockStorageItem({ id: 'a', name: 'Milk' });
+      const existing = mockBaseItem({ id: 'a', name: 'Milk' });
       const validator = validateNameInput([existing], null);
       expect(validator(control('Milk'))).toEqual({ duplicate: true });
     });
 
     it('allows the item to keep its own name while editing', () => {
-      const editing = mockStorageItem({ id: 'a', name: 'Milk' });
+      const editing = mockBaseItem({ id: 'a', name: 'Milk' });
       const validator = validateNameInput([editing], editing);
       expect(validator(control('Milk'))).toBeNull();
     });

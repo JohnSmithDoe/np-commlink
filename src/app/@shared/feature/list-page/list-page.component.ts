@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   inject,
@@ -57,8 +58,15 @@ export class ListPageComponent {
   // identity lives on the commlink deck tiles). When unset, page-header +
   // item-list fall back to the default shadowrun toolbar styling.
   color = input<TColor>();
+  // Optional ionicon name shown before the page title (the deck brand look).
+  // Tracking sets `timer-outline`; grocery/tasks omit it.
+  icon = input<string>();
   listHeader = input.required<string>();
   pageHeader = input.required<string>();
+  // Category-less lists (tracking) set this false to render a plain list: it
+  // suppresses the quick-add row, the toolbar's display-mode toggle and the
+  // edit-category dialog. Grocery + tasks keep the default (true).
+  hasCategories = input(true, { transform: booleanAttribute });
 
   // Passthrough for the quick-add "create product/catalog item" affordance —
   // a grocery-only concern the page stays blind to. Grocery pages bind it to

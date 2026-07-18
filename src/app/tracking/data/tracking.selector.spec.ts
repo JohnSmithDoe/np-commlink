@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { ITrackingItem, ITrackingState } from '../../@shared/types';
+import { ITrackingItem, ITrackingState } from '../model';
 import {
   selectRunningTrackingItem,
   selectSessionsByDayAndName,

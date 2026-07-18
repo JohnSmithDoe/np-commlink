@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { IBaseItem, ITrackingItem } from '../types';
+import { IBaseItem } from '../types';
 import { uuidv4 } from './app.utils';
 
 export function createBaseItem(
@@ -16,9 +16,4 @@ export function createBaseItem(
       : undefined,
     createdAt: dayjs().format(),
   };
-}
-
-export function createTrackingItem(name: string): ITrackingItem {
-  const base = createBaseItem(name);
-  return { ...base, state: 'stopped' };
 }

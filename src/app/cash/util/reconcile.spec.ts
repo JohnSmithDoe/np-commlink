@@ -1,4 +1,4 @@
-import { mockCashTransaction } from '../../@shared/testing/test-data';
+import { mockCashTransaction } from '../testing/cash.test-data';
 import { findReconciliationCandidates } from './reconcile';
 
 const pending = mockCashTransaction({

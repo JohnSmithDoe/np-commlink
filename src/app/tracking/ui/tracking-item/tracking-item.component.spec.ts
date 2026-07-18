@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { ITrackingItem } from '../../../@shared/types';
+import { ITrackingItem } from '../../model';
 import { TrackingItemComponent } from './tracking-item.component';
 
 const track = (state: ITrackingItem['state']): ITrackingItem => ({

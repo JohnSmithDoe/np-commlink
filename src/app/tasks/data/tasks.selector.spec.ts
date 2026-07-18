@@ -7,16 +7,14 @@ import {
   selectTasksListSearchResult,
   selectTasksState,
 } from './tasks.selector';
-import {
-  mockAppState,
-  mockTaskItem,
-  mockTasksState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 
 describe('tasks.selector', () => {
   it('selects the tasks feature slice', () => {
-    const state = mockAppState();
-    expect(selectTasksState(state)).toBe(state.tasks);
+    const tasks = mockTasksState();
+    const state = mockAppState({ tasks });
+    expect(selectTasksState(state)).toBe(tasks);
   });
 
   describe('selectTasksListSearchResult', () => {
@@ -54,6 +52,22 @@ describe('tasks.selector', () => {
       expect(
         selectTasksListItems.projector(state, undefined)?.map((i) => i.name)
       ).toEqual(['Mop', 'Sweep']);
+    });
+
+    // Relocated from grocery-list.selector.spec (DDD review #1): the task prio
+    // sort belongs in a tasks spec, not a groceries one. Exercises the shared
+    // list engine's structural `prio` comparator through the tasks selector.
+    it('sorts task items by priority through the shared engine', () => {
+      const state = mockTasksState({
+        sort: { sortBy: 'prio', sortDir: 'asc' },
+        items: [
+          mockTaskItem({ id: 'h', name: 'high', prio: 9 }),
+          mockTaskItem({ id: 'l', name: 'low', prio: 1 }),
+        ],
+      });
+      expect(
+        selectTasksListItems.projector(state, undefined)?.map((i) => i.name)
+      ).toEqual(['low', 'high']);
     });
   });
 });

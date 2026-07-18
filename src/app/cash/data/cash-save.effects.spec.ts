@@ -3,7 +3,8 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
-import { mockAppState, mockCashState } from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockCashState } from '../testing/cash.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { CashActions } from './cash.actions';
 import { CashSaveEffects } from './cash-save.effects';
@@ -41,11 +42,12 @@ describe('CashSaveEffects', () => {
   });
 
   it('persists on a real [Cash] mutation', async () => {
-    const initialState = setup(mockAppState({ cash: mockCashState() }));
+    const cash = mockCashState();
+    setup(mockAppState({ cash }));
     actions$ = of(CashActions.addCategory('groceries'));
 
     await firstValueFrom(effects.saveOnChange$);
 
-    expect(database.save).toHaveBeenCalledWith('cash', initialState.cash);
+    expect(database.save).toHaveBeenCalledWith('cash', cash);
   });
 });

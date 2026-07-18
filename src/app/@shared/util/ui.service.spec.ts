@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ToastController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { COMMON_TEST_PROVIDERS } from '../testing/test-providers';
-import { mockStorageItem } from '../testing/test-data';
+import { mockBaseItem } from '../testing/test-data';
 import { UiService } from './ui.service';
 
 describe('UiService', () => {
@@ -91,7 +91,7 @@ describe('UiService', () => {
 
   describe('showUpdateItemToast', () => {
     it('translates with the item name and presents a toast', async () => {
-      await service.showUpdateItemToast(mockStorageItem({ name: 'Milk' }));
+      await service.showUpdateItemToast(mockBaseItem({ name: 'Milk' }));
 
       expect(instantSpy).toHaveBeenCalledWith('toast.update.item', {
         name: 'Milk',

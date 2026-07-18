@@ -6,12 +6,12 @@ import {
   IonLabel,
   IonList,
   ModalController,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { IGameType } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayActions, selectGameTypeList } from '../../data';
@@ -35,7 +35,7 @@ import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item
     TrackplayGameTypeListItemComponent,
   ],
 })
-export class TrackplayGameTypesPage implements IonViewWillEnter {
+export class TrackplayGameTypesPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #modalCtrl = inject(ModalController);
 

@@ -4,15 +4,24 @@
   (addItem)="openNew()"
 >
   <ion-buttons slot="end" toolbar>
-    <ion-button (click)="goToReport()" aria-label="report">
+    <ion-button
+      (click)="goToReport()"
+      [attr.aria-label]="'cash.a11y.report' | translate"
+    >
       <ion-icon slot="icon-only" name="bar-chart-outline" />
     </ion-button>
     @if (canTransfer()) {
-      <ion-button (click)="openTransfer()" aria-label="transfer">
+      <ion-button
+        (click)="openTransfer()"
+        [attr.aria-label]="'cash.a11y.transfer' | translate"
+      >
         <ion-icon slot="icon-only" name="swap-horizontal-outline" />
       </ion-button>
     }
-    <ion-button (click)="goToRules()" aria-label="rules">
+    <ion-button
+      (click)="goToRules()"
+      [attr.aria-label]="'cash.a11y.rules' | translate"
+    >
       <ion-icon slot="icon-only" name="funnel-outline" />
     </ion-button>
   </ion-buttons>

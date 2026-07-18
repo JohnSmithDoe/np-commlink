@@ -3,13 +3,10 @@ import {
   IBaseItem,
   IListState,
   ISearchResult,
-  TAllItemTypes,
   TItemListCategory,
   TItemListSort,
 } from '../../types';
 import {
-  isStorageItem,
-  isTaskItem,
   matchesCategoryExactly,
   matchesSearch,
   matchesSearchExactly,
@@ -20,9 +17,7 @@ import {
 // grocery cross-list search buckets stay in grocery-list.selector.ts, which
 // builds on `filterListBySearchQuery` below.
 
-export const sortItemListFn = <T extends TAllItemTypes>(
-  sort?: TItemListSort
-) => {
+export const sortItemListFn = <T extends IBaseItem>(sort?: TItemListSort) => {
   const MAXPRIO = Number.MAX_SAFE_INTEGER;
   const MINPRIO = Number.MIN_SAFE_INTEGER;
   const MAXDATE = '5000-1-1';
@@ -33,40 +28,37 @@ export const sortItemListFn = <T extends TAllItemTypes>(
         return sort.sortDir === 'asc'
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
-      case 'bestBefore':
-        if (isStorageItem(a) && isStorageItem(b)) {
-          return !a.bestBefore && !b.bestBefore
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? dayjs(a.bestBefore ?? MAXDATE).unix() -
-                dayjs(b.bestBefore ?? MAXDATE).unix()
-              : dayjs(b.bestBefore ?? MINDATE).unix() -
-                dayjs(a.bestBefore ?? MINDATE).unix();
-        } else {
-          return 0;
-        }
-      case 'prio':
-        if (isTaskItem(a) && isTaskItem(b)) {
-          return !a.prio && !b.prio
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? (a.prio ?? MAXPRIO) - (b.prio ?? MAXPRIO)
-              : (b.prio ?? MINPRIO) - (a.prio ?? MINPRIO);
-        } else {
-          return 0;
-        }
-      case 'dueAt':
-        if (isTaskItem(a) && isTaskItem(b)) {
-          return !a.dueAt && !b.dueAt
-            ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
-            : sort.sortDir === 'asc'
-              ? dayjs(a.dueAt ?? MAXDATE).unix() -
-                dayjs(b.dueAt ?? MAXDATE).unix()
-              : dayjs(b.dueAt ?? MINDATE).unix() -
-                dayjs(a.dueAt ?? MINDATE).unix();
-        } else {
-          return 0;
-        }
+      case 'bestBefore': {
+        // structural optional-field reads (was isStorageItem guard) so the
+        // shared engine stays domain-blind after the grocery types moved out.
+        const aBest = (a as { bestBefore?: string }).bestBefore;
+        const bBest = (b as { bestBefore?: string }).bestBefore;
+        return !aBest && !bBest
+          ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+          : sort.sortDir === 'asc'
+            ? dayjs(aBest ?? MAXDATE).unix() - dayjs(bBest ?? MAXDATE).unix()
+            : dayjs(bBest ?? MINDATE).unix() - dayjs(aBest ?? MINDATE).unix();
+      }
+      case 'prio': {
+        // structural read (was isTaskItem guard).
+        const aPrio = (a as { prio?: number }).prio;
+        const bPrio = (b as { prio?: number }).prio;
+        return !aPrio && !bPrio
+          ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+          : sort.sortDir === 'asc'
+            ? (aPrio ?? MAXPRIO) - (bPrio ?? MAXPRIO)
+            : (bPrio ?? MINPRIO) - (aPrio ?? MINPRIO);
+      }
+      case 'dueAt': {
+        // structural read (was isTaskItem guard).
+        const aDue = (a as { dueAt?: string }).dueAt;
+        const bDue = (b as { dueAt?: string }).dueAt;
+        return !aDue && !bDue
+          ? sortItemListFn<T>({ ...sort, sortBy: 'name' })(a, b)
+          : sort.sortDir === 'asc'
+            ? dayjs(aDue ?? MAXDATE).unix() - dayjs(bDue ?? MAXDATE).unix()
+            : dayjs(bDue ?? MINDATE).unix() - dayjs(aDue ?? MINDATE).unix();
+      }
 
       default:
         return 0;
@@ -76,7 +68,7 @@ export const sortItemListFn = <T extends TAllItemTypes>(
 
 export const filterAndSortItemList = <
   T extends IListState<R>,
-  R extends TAllItemTypes,
+  R extends IBaseItem,
 >(
   state: T,
   result?: ISearchResult<R>
@@ -100,7 +92,7 @@ export const sortCategoriesFn = (sort?: TItemListSort) => {
 // this directly.
 export const filterListBySearchQuery = <
   T extends IListState<R>,
-  R extends TAllItemTypes,
+  R extends IBaseItem,
 >(
   listState: T
 ): ISearchResult<R> | undefined => {
@@ -112,9 +104,6 @@ export const filterListBySearchQuery = <
     listItems: listState.items.filter((item) =>
       matchesSearch(item, searchQuery)
     ),
-    products: [],
-    storageItems: [],
-    shoppingItems: [],
   };
   result.exactMatch = result.listItems.find((base) =>
     matchesSearchExactly(base, searchQuery)
@@ -123,7 +112,7 @@ export const filterListBySearchQuery = <
 };
 
 export const listStateFilter = (
-  state?: IListState<TAllItemTypes>
+  state?: IListState<IBaseItem>
 ): { isCategoryModeOrHasFilter: boolean; hasFilter: boolean } => {
   return {
     isCategoryModeOrHasFilter:
@@ -133,7 +122,7 @@ export const listStateFilter = (
 };
 
 export const listCategoriesWithCount = (
-  state?: IListState<TAllItemTypes>
+  state?: IListState<IBaseItem>
 ): { category: TItemListCategory; count: number }[] => {
   if (!state) return [];
   return [...state.categories]

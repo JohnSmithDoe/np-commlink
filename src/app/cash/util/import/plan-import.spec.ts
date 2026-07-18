@@ -1,7 +1,7 @@
 import {
   mockCashRule,
   mockCashTransaction,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/cash.test-data';
 import { IParsedRow } from './bank-parser';
 import { planImport } from './plan-import';
 

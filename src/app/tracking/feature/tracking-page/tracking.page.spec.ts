@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { mockTrackingState } from '../../../@shared/testing/test-data';
+import { mockTrackingState } from '../../testing/tracking.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { TrackingActions } from '../../data';
 import { TrackingPage } from './tracking.page';

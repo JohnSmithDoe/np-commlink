@@ -5,10 +5,8 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../../@shared/util/dashboard/dashboard.actions';
-import {
-  mockAppState,
-  mockOfficeTimeState,
-} from '../../../@shared/testing/test-data';
+import { mockAppState } from '../../../@shared/testing/test-data';
+import { mockOfficeTimeState } from '../../testing/office-time.test-data';
 import { IAppState } from '../../../@shared/types';
 import { OfficeTimeTelemetryEffects } from './office-time-telemetry.effects';
 import { calculateStats } from './office-time.utils';
@@ -31,7 +29,7 @@ describe('OfficeTimeTelemetryEffects', () => {
     vi.useRealTimers();
   });
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         OfficeTimeTelemetryEffects,

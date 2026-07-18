@@ -13,7 +13,7 @@
  */
 export { TasksActions } from './tasks.actions';
 export { TasksListPageFacade } from './tasks-list-page.facade';
-export { selectTasksListItems } from './tasks.selector';
+export { selectTasksListItems, selectTasksCategories } from './tasks.selector';
 // The tasks context's typed view of the shared, domain-blind itemDialogs slice
 export { selectEditTaskItem } from './item-dialogs.selector';
 export { tasksLazyProviders } from './provide-tasks-lazy';

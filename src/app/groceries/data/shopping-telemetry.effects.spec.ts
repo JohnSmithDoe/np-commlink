@@ -4,11 +4,11 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockShoppingItem,
   mockShoppingState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   selectActiveShoppingCount,
@@ -18,7 +18,7 @@ import {
 describe('ShoppingTelemetryEffects', () => {
   let effects: ShoppingTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         ShoppingTelemetryEffects,

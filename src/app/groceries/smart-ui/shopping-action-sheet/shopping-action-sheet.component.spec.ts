@@ -3,7 +3,7 @@ import { MockStore } from '@ngrx/store/testing';
 import {
   mockShoppingItem,
   mockShoppingState,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/grocery.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { ShoppingActions } from '../../data';
 import { ShoppingActionSheetComponent } from './shopping-action-sheet.component';
@@ -14,7 +14,11 @@ describe('ShoppingActionSheetComponent', () => {
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  async function setup(providers = provideTestingProviders()) {
+  // The shopping slice is lazy (it left IAppState in the god-file split), so the
+  // mock store must be seeded with it for `selectShoppingListHasBoughtItems`.
+  async function setup(
+    providers = provideTestingProviders({ shopping: mockShoppingState() })
+  ) {
     await TestBed.configureTestingModule({
       imports: [ShoppingActionSheetComponent],
       providers: [...providers],

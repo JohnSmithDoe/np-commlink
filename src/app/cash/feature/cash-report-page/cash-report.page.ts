@@ -32,20 +32,9 @@ import {
   selectSpendByCategory,
 } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
+import { chartColors } from '../../../@shared/util/chart-colors';
 
 Chart.register(...registerables);
-
-const INCOME = '#2dd36f';
-const SPEND = '#eb445a';
-const CATEGORY_COLORS = [
-  '#f0a020',
-  '#0cd1e8',
-  '#7044ff',
-  '#2dd36f',
-  '#eb445a',
-  '#ffc409',
-  '#92949c',
-];
 
 /**
  * CREDSTICK reporting (P5): total income / spend / net, income-vs-spend per
@@ -79,6 +68,7 @@ export class CashReportPage {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #translate = inject(TranslateService);
+  readonly #colors = chartColors();
 
   readonly totals = this.#store.selectSignal(selectReportTotals);
   readonly #monthly = this.#store.selectSignal(selectMonthlyTotals);
@@ -96,13 +86,13 @@ export class CashReportPage {
         {
           label: this.#translate.instant(marker('cash.report.income')),
           data: months.map((m) => m.incomeCents / 100),
-          backgroundColor: INCOME,
+          backgroundColor: this.#colors.income,
           borderWidth: 0,
         },
         {
           label: this.#translate.instant(marker('cash.report.spend')),
           data: months.map((m) => m.spendCents / 100),
-          backgroundColor: SPEND,
+          backgroundColor: this.#colors.spend,
           borderWidth: 0,
         },
       ],
@@ -120,7 +110,7 @@ export class CashReportPage {
         {
           data: cats.map((c) => c.cents / 100),
           backgroundColor: cats.map(
-            (_, i) => CATEGORY_COLORS[i % CATEGORY_COLORS.length]
+            (_, i) => this.#colors.series[i % this.#colors.series.length]
           ),
           borderWidth: 0,
         },

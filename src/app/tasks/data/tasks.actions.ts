@@ -1,11 +1,10 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  ITaskItem,
-  ITasksState,
   TItemListCategory,
   TItemListMode,
   TUpdateDTO,
 } from '../../@shared/types';
+import { ITaskItem, ITasksState } from '../model';
 
 export const TasksActions = createActionGroup({
   source: 'Tasks',

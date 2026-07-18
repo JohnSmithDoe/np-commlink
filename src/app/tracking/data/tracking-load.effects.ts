@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
-import { ITrackingState } from '../../@shared/types';
+import { ITrackingState } from '../model';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { TrackingActions } from './tracking.actions';
 

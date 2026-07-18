@@ -1,7 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()" aria-label="back">
+      <ion-button
+        (click)="goBack()"
+        [attr.aria-label]="'cash.a11y.back' | translate"
+      >
         <ion-icon slot="icon-only" name="arrow-back-outline" />
       </ion-button>
     </ion-buttons>
@@ -25,7 +28,7 @@
       fill="clear"
       [disabled]="!canAddCategory()"
       (click)="addCategory()"
-      aria-label="add category"
+      [attr.aria-label]="'cash.a11y.add-category' | translate"
     >
       <ion-icon slot="icon-only" name="add-outline" />
     </ion-button>
@@ -68,14 +71,14 @@
               <ion-button
                 [disabled]="first"
                 (click)="moveRule(rule, -1); $event.stopPropagation()"
-                aria-label="move up"
+                [attr.aria-label]="'cash.a11y.move-up' | translate"
               >
                 <ion-icon slot="icon-only" name="arrow-up-outline" />
               </ion-button>
               <ion-button
                 [disabled]="last"
                 (click)="moveRule(rule, 1); $event.stopPropagation()"
-                aria-label="move down"
+                [attr.aria-label]="'cash.a11y.move-down' | translate"
               >
                 <ion-icon slot="icon-only" name="arrow-down-outline" />
               </ion-button>

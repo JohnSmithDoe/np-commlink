@@ -6,12 +6,12 @@ import {
   input,
   output,
 } from '@angular/core';
-import { DatetimeCustomEvent } from '@ionic/angular';
 import {
   IonDatetime,
   IonInput,
   IonItem,
   IonModal,
+  DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 

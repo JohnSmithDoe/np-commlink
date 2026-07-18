@@ -1,0 +1,33 @@
+<ion-modal [isOpen]="isOpen()" (didDismiss)="dismissed.emit()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="cancelled.emit()"
+            >{{ closeButtonText() | translate }}
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button
+            (click)="confirmed.emit()"
+            [disabled]="nameInput.invalid()"
+            >{{ saveButtonText() | translate }}</ion-button
+          >
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <h3 class="ion-padding-start">{{ dialogTitle() | translate }}</h3>
+      <ion-list>
+        <app-item-name-input
+          #nameInput
+          [item]="item()"
+          [listItems]="listItems()"
+          (updateValue)="nameChange.emit($event)"
+        ></app-item-name-input>
+        <ng-content></ng-content>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

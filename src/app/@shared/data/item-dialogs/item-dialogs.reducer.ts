@@ -8,23 +8,24 @@ import {
   TItemListCategory,
   TItemListId,
 } from '../../types';
-import { createProduct, createStorageItem } from '../../util/item.factory';
+import { createBaseItem } from '../../util/app.factory';
 import { matchingTxt } from '../../util/app.utils';
 import { CategoriesActions, ItemDialogsActions } from './item-dialogs.actions';
 
 export const initialItemDialogs: TItemDialogsState = {
   isEditing: false,
-  item: createStorageItem('initial'),
+  item: createBaseItem('initial'),
   listId: '_storage',
   category: {
-    categories: [],
-    selection: [],
-    isSelecting: false,
     isEditing: false,
   },
   addToAdditionalList: undefined,
 };
 
+// The kernel reducer is now just the domain-blind OPEN-command (which item, on
+// which list, with what labels) + the category-RENAME dialog. The per-keystroke
+// item draft + the category-selection working copy left for the feature
+// wrappers / the pure-ui categories-dialog (dialog refactor).
 export const itemDialogsReducer = createReducer(
   initialItemDialogs,
   on(
@@ -39,151 +40,11 @@ export const itemDialogsReducer = createReducer(
       );
     }
   ),
-  on(ItemDialogsActions.updateItem, (state, { data }): TItemDialogsState => {
-    return { ...state, item: { ...state.item, ...data } };
-  }),
-  on(
-    ItemDialogsActions.removeCategory,
-    (state, { category }): TItemDialogsState => {
-      return {
-        ...state,
-        item: {
-          ...state.item,
-          category: state.item.category?.filter((cat) => cat !== category),
-        },
-      };
-    }
-  ),
   on(ItemDialogsActions.hideDialog, (state): TItemDialogsState => {
     return { ...state, isEditing: false };
   }),
-  on(ItemDialogsActions.confirmChanges, (state): TItemDialogsState => {
-    return { ...state, isEditing: false };
-  }),
-  on(ItemDialogsActions.abortChanges, (state): TItemDialogsState => {
-    return { ...state, isEditing: false };
-  }),
 
-  on(
-    CategoriesActions.addCategory,
-    (state, { category }): TItemDialogsState => {
-      if (!!category.length && !state.category.categories.includes(category)) {
-        return {
-          ...state,
-          category: {
-            ...state.category,
-            categories: [category, ...state.category.categories],
-            selection: [category, ...state.category.selection],
-            searchQuery: undefined,
-          },
-        };
-      }
-      return state;
-    }
-  ),
-
-  on(
-    CategoriesActions.removeCategory,
-    (state, { category }): TItemDialogsState => {
-      const categoryIdx = state.category.selection.indexOf(category);
-      if (categoryIdx >= 0) {
-        const selection = [...state.category.selection].splice(categoryIdx, 1);
-        return {
-          ...state,
-          category: {
-            ...state.category,
-            selection,
-          },
-        };
-      }
-      return state;
-    }
-  ),
-
-  on(
-    CategoriesActions.updateSelection,
-    (state, { item, categories }): TItemDialogsState => {
-      const allCategories = [
-        ...new Set([...categories, ...(item?.category ?? [])]),
-      ].filter((cat) => !!cat.length);
-      return {
-        ...state,
-        category: {
-          ...state.category,
-          categories: allCategories,
-          selection: item?.category ?? [],
-          isSelecting: true,
-        },
-      };
-    }
-  ),
-  on(CategoriesActions.showDialog, (state): TItemDialogsState => {
-    return {
-      ...state,
-      category: {
-        ...state.category,
-        isSelecting: true,
-      },
-    };
-  }),
-  on(CategoriesActions.confirmChanges, (state): TItemDialogsState => {
-    return {
-      ...state,
-      category: {
-        ...state.category,
-        isSelecting: false,
-      },
-    };
-  }),
-  on(CategoriesActions.abortChanges, (state): TItemDialogsState => {
-    return {
-      ...state,
-      category: {
-        ...state.category,
-        isSelecting: false,
-      },
-    };
-  }),
-
-  on(
-    CategoriesActions.toggleCategory,
-    (state, { category }): TItemDialogsState => {
-      if (state.category.selection.includes(category)) {
-        const selection = state.category.selection.filter(
-          (item) => item !== category
-        );
-        return {
-          ...state,
-          category: {
-            ...state.category,
-            selection,
-          },
-        };
-      } else {
-        return {
-          ...state,
-          category: {
-            ...state.category,
-            selection: [category, ...state.category.selection],
-          },
-        };
-      }
-    }
-  ),
-
-  on(
-    CategoriesActions.updateSearchQuery,
-    (state, { query }): TItemDialogsState => {
-      return {
-        ...state,
-        category: {
-          ...state.category,
-          searchQuery: query,
-        },
-      };
-    }
-  ),
-
+  // Category rename (opened from the list's categories display mode).
   on(
     CategoriesActions.showEditDialog,
     (state, { category, listId }): TItemDialogsState => {
@@ -210,7 +71,6 @@ export const itemDialogsReducer = createReducer(
       },
     };
   }),
-
   on(
     CategoriesActions.updateCategory,
     (state, { category }): TItemDialogsState => {
@@ -222,21 +82,6 @@ export const itemDialogsReducer = createReducer(
         },
       };
     }
-  ),
-
-  // NEW (merge): barcode scanner → open the product-item edit dialog prefilled
-  // with the scanned EAN as the initial name; keep the raw code on the state.
-  on(
-    ItemDialogsActions.openEditProduct,
-    (state, { scannedEan }): TItemDialogsState => ({
-      ...showEditDialog(
-        state,
-        createProduct(scannedEan),
-        'create',
-        '_products'
-      ),
-      scannedEan,
-    })
   )
 );
 
@@ -266,6 +111,7 @@ const showEditDialog = <R extends IBaseItem>(
     addToAdditionalList: additional,
   };
 };
+
 const showEditCategoryDialog = <R extends IBaseItem>(
   state: IItemDialogState<R>,
   original: TItemListCategory,

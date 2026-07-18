@@ -1,4 +1,4 @@
-import { ITrackingItem } from '../../@shared/types';
+import { ITrackingItem } from '../model';
 import { TrackingActions } from './tracking.actions';
 import { initialState, trackingReducer } from './tracking.reducer';
 

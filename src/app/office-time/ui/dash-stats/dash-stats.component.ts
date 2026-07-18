@@ -5,7 +5,7 @@ import {
   IonCardHeader,
   IonCardTitle,
 } from '@ionic/angular/standalone';
-import { DashboardStats } from '../../../@shared/types';
+import { DashboardStats } from '../../model';
 import { DashPercentageComponent } from '../dash-percentage/dash-percentage.component';
 import { TranslateModule } from '@ngx-translate/core';
 

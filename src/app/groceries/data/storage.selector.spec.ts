@@ -8,23 +8,23 @@ import {
   selectStorageState,
 } from './storage.selector';
 import {
-  mockAppState,
+  mockGroceryLists,
   mockStorageItem,
   mockStorageState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 
 describe('storage.selector', () => {
   it('selects the storage feature slice', () => {
-    const state = mockAppState();
-    expect(selectStorageState(state)).toBe(state.storage);
+    const lists = mockGroceryLists();
+    expect(selectStorageState(lists)).toBe(lists.storage);
   });
 
   describe('selectStorageListSearchResult', () => {
     it('returns undefined without a search query', () => {
       const listState = mockStorageState();
-      const appState = mockAppState({ storage: listState });
+      const lists = mockGroceryLists({ storage: listState });
       expect(
-        selectStorageListSearchResult.projector(listState, appState)
+        selectStorageListSearchResult.projector(listState, lists)
       ).toBeUndefined();
     });
 
@@ -36,13 +36,10 @@ describe('storage.selector', () => {
           mockStorageItem({ id: 'b', name: 'Bread' }),
         ],
       });
-      const appState = mockAppState({ storage: listState });
-      const result = selectStorageListSearchResult.projector(
-        listState,
-        appState
-      );
+      const lists = mockGroceryLists({ storage: listState });
+      const result = selectStorageListSearchResult.projector(listState, lists);
       expect(result?.listItems.map((i) => i.name)).toEqual(['Milk']);
-      expect(result).toEqual(filterBySearchQuery(appState, listState));
+      expect(result).toEqual(filterBySearchQuery(lists, listState));
     });
   });
 

@@ -35,8 +35,9 @@ import {
   createOutline,
   swapHorizontalOutline,
   trashOutline,
+  unlinkOutline,
 } from 'ionicons/icons';
-import { ICashTransaction } from '../../../@shared/types';
+import { ICashTransaction } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import {
   CashActions,
@@ -44,9 +45,11 @@ import {
   selectAccountById,
   selectCashRules,
   selectTransactionsForAccount,
+  TAccountTxn,
 } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { parserForBank } from '../../util/import/bank-parsers';
+import { decodeCsv } from '../../util/import/read-csv';
 import { planImport } from '../../util/import/plan-import';
 import { CashAccountEditModalComponent } from '../../smart-ui/account-edit-modal/account-edit-modal.component';
 import { CashTransactionEditModalComponent } from '../../smart-ui/transaction-edit-modal/transaction-edit-modal.component';
@@ -111,6 +114,7 @@ export class CashAccountPage {
       trashOutline,
       cloudUploadOutline,
       swapHorizontalOutline,
+      unlinkOutline,
     });
   }
 
@@ -120,6 +124,15 @@ export class CashAccountPage {
       componentProps: { transaction: txn },
     });
     await modal.present();
+  }
+
+  /** Reverse a reconciliation from the surviving txn: detach the manual leg it
+   *  absorbed and restore that leg to pending (visible + counted again). */
+  detachReconcile(txn: TAccountTxn): void {
+    if (!txn.reconciledManualId) return;
+    this.#store.dispatch(
+      CashActions.unreconcileTransaction(txn.reconciledManualId)
+    );
   }
 
   formatDate(iso: string): string {
@@ -145,7 +158,7 @@ export class CashAccountPage {
     const parser = parserForBank(this.account()?.bank);
     if (!file || !parser) return;
 
-    const rows = parser.parse(await file.text());
+    const rows = parser.parse(decodeCsv(await file.arrayBuffer()));
     const plan = planImport(
       rows,
       this.id,

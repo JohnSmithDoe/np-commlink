@@ -1,11 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
-import {
-  IProductsState,
-  IShoppingState,
-  IStorageState,
-} from '../../@shared/types';
+import { IProductsState, IShoppingState, IStorageState } from '../model';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { GroceriesActions } from './groceries.actions';
 

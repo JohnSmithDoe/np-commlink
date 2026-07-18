@@ -3,11 +3,8 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import {
-  mockAppState,
-  mockTaskItem,
-  mockTasksState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { QuickAddActions } from '../../@shared/data/quick-add/quick-add.actions';
 import { TasksActions } from './tasks.actions';
 import { TasksListEffects, tasksQuickAddState } from './tasks-list.effects';
@@ -88,13 +85,11 @@ describe('TasksListEffects', () => {
   });
 
   it('updateQuickAdd$ recomputes the quick-add state on search', async () => {
-    const state = mockAppState({
-      tasks: mockTasksState({ searchQuery: 'call' }),
-    });
-    setup(state);
+    const tasks = mockTasksState({ searchQuery: 'call' });
+    setup(mockAppState({ tasks }));
     actions$ = of(TasksActions.updateSearch('call'));
     expect(await firstValueFrom(effects.updateQuickAdd$)).toEqual(
-      QuickAddActions.updateState(tasksQuickAddState(state.tasks))
+      QuickAddActions.updateState(tasksQuickAddState(tasks))
     );
   });
 

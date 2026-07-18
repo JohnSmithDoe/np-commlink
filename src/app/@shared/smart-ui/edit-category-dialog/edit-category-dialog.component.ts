@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { InputCustomEvent } from '@ionic/angular';
 import {
   IonButton,
   IonButtons,
@@ -10,6 +9,7 @@ import {
   IonList,
   IonModal,
   IonToolbar,
+  InputCustomEvent,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';

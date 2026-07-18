@@ -3,10 +3,8 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import {
-  mockAppState,
-  mockNotificationsState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockNotificationsState } from '../testing/notifications.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
 import { NotificationsSaveEffects } from './notifications-save.effects';
@@ -31,15 +29,11 @@ describe('NotificationsSaveEffects', () => {
   };
 
   it('persists the notifications slice on a mutation', async () => {
-    const initialState = setup(
-      mockAppState({ notifications: mockNotificationsState() })
-    );
+    const notifications = mockNotificationsState();
+    setup(mockAppState({ notifications }));
     actions$ = of(NotificationsActions.addNotification({} as never));
     await firstValueFrom(effects.saveNotificationsOnChange$);
-    expect(database.save).toHaveBeenCalledWith(
-      'notifications',
-      initialState.notifications
-    );
+    expect(database.save).toHaveBeenCalledWith('notifications', notifications);
   });
 
   it('does NOT persist on the load lifecycle', () => {

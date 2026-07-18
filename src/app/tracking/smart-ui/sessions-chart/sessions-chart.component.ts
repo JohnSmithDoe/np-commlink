@@ -9,18 +9,9 @@ import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
 import { selectSessionsByDayAndName } from '../../data';
+import { chartColors } from '../../../@shared/util/chart-colors';
 
 Chart.register(...registerables);
-
-const SERIES_COLORS = [
-  '#3880ff',
-  '#2dd36f',
-  '#ffc409',
-  '#eb445a',
-  '#7044ff',
-  '#0cd1e8',
-  '#92949c',
-];
 
 @Component({
   selector: 'app-sessions-chart',
@@ -31,6 +22,7 @@ const SERIES_COLORS = [
 })
 export class SessionsChartComponent {
   readonly #raw = inject(Store).selectSignal(selectSessionsByDayAndName);
+  readonly #series = chartColors().series;
 
   readonly hasData = computed(() =>
     this.#raw().series.some((s) => s.hours.some((h) => h > 0))
@@ -43,7 +35,7 @@ export class SessionsChartComponent {
       datasets: series.map((s, i) => ({
         label: s.name,
         data: s.hours,
-        backgroundColor: SERIES_COLORS[i % SERIES_COLORS.length],
+        backgroundColor: this.#series[i % this.#series.length],
         borderWidth: 0,
         stack: 'sessions',
       })),

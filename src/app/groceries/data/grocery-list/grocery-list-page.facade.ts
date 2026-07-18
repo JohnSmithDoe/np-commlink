@@ -2,14 +2,12 @@ import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   IAppState,
-  IProduct,
-  IShoppingItem,
-  IStorageItem,
   TItemListCategory,
   TItemListId,
   TItemListMode,
   TItemListSortType,
 } from '../../../@shared/types';
+import { IProduct, IShoppingItem, IStorageItem } from '../../model';
 import { selectRouteParams } from '../../../@shared/data/router.selector';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { IListPageFacade } from '../../../@shared/util/list/list-page.facade';
@@ -120,5 +118,12 @@ export class GroceryListPageFacade implements IListPageFacade {
     this.#store.dispatch(
       ItemDialogsActions.showCreateAndAddProductDialog(this.#activeListId())
     );
+  }
+
+  // Barcode scan → open the product edit dialog seeded with the EAN. Dispatches
+  // the grocery-owned engine action (kept off IListPageFacade); wired from the
+  // storage/shopping pages' native scan button.
+  openEditProduct(scannedEan: string): void {
+    this.#store.dispatch(GroceryListActions.openEditProduct(scannedEan));
   }
 }

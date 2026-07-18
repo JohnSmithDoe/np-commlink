@@ -19,8 +19,8 @@ import {
   IonToggle,
   IonToolbar,
   ModalController,
+  ToggleChangeEventDetail,
 } from '@ionic/angular/standalone';
-import { ToggleChangeEventDetail } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';

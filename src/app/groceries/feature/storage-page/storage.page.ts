@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { IonButton, IonIcon, IonNote } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonIcon,
+  IonNote,
+  ViewWillEnter,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
-import {
-  IonViewWillEnter,
-  IStorageItem,
-  TColor,
-  TItemListSortType,
-} from '../../../@shared/types';
+import { TColor, TItemListSortType } from '../../../@shared/types';
+import { IStorageItem } from '../../model';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { GroceryListPageFacade, StorageActions } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
@@ -40,7 +41,7 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
   ],
   providers: [{ provide: LIST_FACADE, useExisting: GroceryListPageFacade }],
 })
-export class StoragePage implements IonViewWillEnter {
+export class StoragePage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #scanner = inject(BarcodeScannerService);
   readonly facade = inject(GroceryListPageFacade);
@@ -54,7 +55,7 @@ export class StoragePage implements IonViewWillEnter {
   async scan() {
     const ean = await this.#scanner.scanEan();
     if (ean) {
-      this.#store.dispatch(ItemDialogsActions.openEditProduct(ean));
+      this.facade.openEditProduct(ean);
     }
   }
 

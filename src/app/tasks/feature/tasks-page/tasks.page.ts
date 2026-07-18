@@ -1,17 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { IonButton, IonNote } from '@ionic/angular/standalone';
+import { IonButton, IonNote, ViewWillEnter } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import {
-  IonViewWillEnter,
-  ITaskItem,
-  TColor,
-  TItemListSortType,
-} from '../../../@shared/types';
+import { TColor, TItemListSortType } from '../../../@shared/types';
+import { ITaskItem } from '../../model';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
@@ -35,7 +31,7 @@ import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-
   ],
   providers: [{ provide: LIST_FACADE, useExisting: TasksListPageFacade }],
 })
-export class TasksPage implements IonViewWillEnter {
+export class TasksPage implements ViewWillEnter {
   readonly #store = inject(Store);
 
   constructor() {

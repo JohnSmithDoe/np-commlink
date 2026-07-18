@@ -1,5 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import { ITaskItem } from '../../@shared/types';
+import { ITaskItem } from '../model';
 import { selectEditItem } from '../../@shared/data/item-dialogs/item-dialogs.selector';
 
 /**

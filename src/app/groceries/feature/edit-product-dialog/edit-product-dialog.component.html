@@ -1,30 +1,66 @@
-<app-item-edit-modal listId="_products" [listItems]="rxProducts()">
+<app-item-edit-modal
+  [item]="seedItem()"
+  [listItems]="listItems()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  closeButtonText="grocery.edit-item.dialog.button.close"
+  (nameChange)="updateName($event)"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
   <ion-item>
     <ion-select
       [label]="'grocery.item.best-before' | translate"
       interface="popover"
-      [value]="(rxItem())?.bestBeforeTimespan"
+      [value]="draft()?.bestBeforeTimespan"
       (ionChange)="setBestBeforeTimespan($event)"
     >
-      <ion-select-option value="forever">{{ 'grocery.timespan.forever' | translate }}</ion-select-option>
-      <ion-select-option value="days">{{ 'grocery.timespan.days' | translate }}</ion-select-option>
-      <ion-select-option value="weeks">{{ 'grocery.timespan.weeks' | translate }}</ion-select-option>
-      <ion-select-option value="months">{{ 'grocery.timespan.months' | translate }}</ion-select-option>
-      <ion-select-option value="years">{{ 'grocery.timespan.years' | translate }}</ion-select-option>
+      <ion-select-option value="forever">{{
+        'grocery.timespan.forever' | translate
+      }}</ion-select-option>
+      <ion-select-option value="days">{{
+        'grocery.timespan.days' | translate
+      }}</ion-select-option>
+      <ion-select-option value="weeks">{{
+        'grocery.timespan.weeks' | translate
+      }}</ion-select-option>
+      <ion-select-option value="months">{{
+        'grocery.timespan.months' | translate
+      }}</ion-select-option>
+      <ion-select-option value="years">{{
+        'grocery.timespan.years' | translate
+      }}</ion-select-option>
     </ion-select>
   </ion-item>
   <app-number-input
-    [disabled]="(rxItem())?.bestBeforeTimespan === 'forever'"
-    [value]="(rxItem())?.bestBeforeTimevalue"
+    [disabled]="draft()?.bestBeforeTimespan === 'forever'"
+    [value]="draft()?.bestBeforeTimevalue"
     (updateValue)="setBestBeforeTimevalue($event)"
   >
     <div slot="label">
       {{ 'grocery.item.best-before' | translate }}
-      <ion-text><small>{{ 'grocery.item.best-before.count' | translate }}</small></ion-text>
+      <ion-text
+        ><small>{{
+          'grocery.item.best-before.count' | translate
+        }}</small></ion-text
+      >
     </div>
   </app-number-input>
   <app-category-input
-    [categories]="(rxItem())?.category"
+    [categories]="draft()?.category"
+    (removeCategory)="removeCategory($event)"
+    (openDialog)="openCategoriesDialog()"
   ></app-category-input>
-  <app-categories-dialog></app-categories-dialog>
+
+  <app-categories-dialog
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="draft()?.category ?? []"
+    (confirmed)="confirmCategories($event)"
+    (cancelled)="cancelCategories()"
+    (dismissed)="cancelCategories()"
+    (addNew)="addCategory($event)"
+  ></app-categories-dialog>
 </app-item-edit-modal>

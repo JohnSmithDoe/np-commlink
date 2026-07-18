@@ -1,16 +1,12 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import {
-  IDataItem,
-  ISearchResult,
-  ITrackingItem,
-  ITrackingState,
-} from '../../@shared/types';
+import { ISearchResult } from '../../@shared/types';
+import { IDataItem, ITrackingItem, ITrackingState } from '../model';
 import dayjs from 'dayjs';
 import { formatSecondsAsClock } from './tracking.utils';
 import {
   filterAndSortItemList,
-  filterBySearchQuery,
-} from '../../@shared/data/item-list/item-list.selector';
+  filterListBySearchQuery,
+} from '../../@shared/util/list/list.selector';
 
 export const selectTrackingState =
   createFeatureSelector<ITrackingState>('tracking');
@@ -64,13 +60,13 @@ export const selectTrackingData = createSelector(
 export const selectTrackingListSearchResult = createSelector(
   selectTrackingState,
   (listState: ITrackingState): ISearchResult<ITrackingItem> | undefined =>
-    filterBySearchQuery(listState)
+    filterListBySearchQuery(listState)
 );
 
-export const selectListItemsTracking = createSelector(
+export const selectTrackingListItems = createSelector(
   selectTrackingState,
   selectTrackingListSearchResult,
-  (state: ITrackingState, result): ITrackingItem[] | undefined =>
+  (state: ITrackingState, result): ITrackingItem[] =>
     filterAndSortItemList(state, result)
 );
 export const selectRunningTrackingItem = createSelector(

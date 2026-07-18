@@ -1,12 +1,34 @@
-<app-item-edit-modal listId="_shopping" [listItems]="(rxState())?.items">
+<app-item-edit-modal
+  [item]="seedItem()"
+  [listItems]="listItems()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  closeButtonText="grocery.edit-item.dialog.button.close"
+  (nameChange)="updateName($event)"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
   <app-number-input
     [label]="'grocery.item.quantity' | translate"
-    [value]="(rxItem())?.quantity ?? 1"
+    [value]="draft()?.quantity ?? 1"
     (updateValue)="updateQuantity($event)"
   ></app-number-input>
 
   <app-category-input
-    [categories]="(rxItem())?.category"
+    [categories]="draft()?.category"
+    (removeCategory)="removeCategory($event)"
+    (openDialog)="openCategoriesDialog()"
   ></app-category-input>
-  <app-categories-dialog></app-categories-dialog>
+
+  <app-categories-dialog
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="draft()?.category ?? []"
+    (confirmed)="confirmCategories($event)"
+    (cancelled)="cancelCategories()"
+    (dismissed)="cancelCategories()"
+    (addNew)="addCategory($event)"
+  ></app-categories-dialog>
 </app-item-edit-modal>

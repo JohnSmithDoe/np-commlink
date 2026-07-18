@@ -5,7 +5,7 @@ import {
   mockCashRule,
   mockCashState,
   mockCashTransaction,
-} from '../../@shared/testing/test-data';
+} from '../testing/cash.test-data';
 
 describe('cashReducer', () => {
   it('returns the initial state for an unknown action', () => {
@@ -127,6 +127,21 @@ describe('cashReducer', () => {
     // the hand-set category carried onto the survivor
     expect(i.category).toBe('restaurant');
     expect(i.categoryManual).toBe(true);
+  });
+
+  it('un-reconciles a reconciled leg back to pending (detach)', () => {
+    const manual = mockCashTransaction({
+      id: 'm1',
+      source: 'manual',
+      status: 'confirmed',
+      matchedTxnId: 'i1',
+    });
+    const imported = mockCashTransaction({ id: 'i1', source: 'imported' });
+    const start = mockCashState({ transactions: [manual, imported] });
+    const state = cashReducer(start, CashActions.unreconcileTransaction('m1'));
+    const m = state.transactions.find((t) => t.id === 'm1')!;
+    expect(m.matchedTxnId).toBeUndefined();
+    expect(m.status).toBe('pending');
   });
 
   it('adds a category once (no duplicates) and removes it', () => {

@@ -21,7 +21,7 @@ import { Share } from '@capacitor/share';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
-import { IDataItem } from '../../@shared/types';
+import { IDataItem } from '../model';
 import { csvRow, formatSecondsAsClock } from './tracking.utils';
 
 const startTimeFormatFor = (viewId: string): string | undefined => {

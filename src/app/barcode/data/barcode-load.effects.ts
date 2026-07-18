@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
-import { IBarcodeState } from '../../@shared/types';
+import { IBarcodeState } from '../model';
 import { BarcodeActions } from './barcode.actions';
 import { DatabaseService } from '../../@shared/util/database.service';
 

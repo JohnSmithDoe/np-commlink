@@ -1,34 +1,59 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { createShoppingItem } from '../../util/grocery.factory';
+import { selectEditShoppingItem, ShoppingActions } from '../../data';
 import { EditShoppingItemDialogComponent } from './edit-shopping-item-dialog.component';
 
 describe('EditShoppingItemDialogComponent', () => {
-  let fixture: ComponentFixture<EditShoppingItemDialogComponent>;
   let component: EditShoppingItemDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
+
+  const seed = createShoppingItem('Coffee', [], 1);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditShoppingItemDialogComponent],
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
-    fixture = TestBed.createComponent(EditShoppingItemDialogComponent);
-    component = fixture.componentInstance;
     store = TestBed.inject(MockStore);
+    store.overrideSelector(selectEditShoppingItem, seed);
+    store.refreshState();
     dispatch = vi.spyOn(store, 'dispatch');
+    component = TestBed.createComponent(
+      EditShoppingItemDialogComponent
+    ).componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('dispatches updateItem with the quantity value', () => {
-    component.updateQuantity(3);
+  it('edits the local draft without dispatching per keystroke', () => {
+    component.updateQuantity(4);
+    component.updateName('Espresso');
+
+    expect(component.draft()?.quantity).toBe(4);
+    expect(component.draft()?.name).toBe('Espresso');
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('saves the draft and hides the dialog on confirm', () => {
+    component.updateQuantity(2);
+    component.confirm();
+
     expect(dispatch).toHaveBeenCalledWith(
-      ItemDialogsActions.updateItem({ quantity: 3 })
+      ShoppingActions.addOrUpdateItem({ ...seed, quantity: 2 })
+    );
+    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
+  });
+
+  it('persists a brand-new category to the shopping slice', () => {
+    component.addCategory('Drinks');
+    expect(dispatch).toHaveBeenCalledWith(
+      ShoppingActions.addCategory('Drinks')
     );
   });
 });

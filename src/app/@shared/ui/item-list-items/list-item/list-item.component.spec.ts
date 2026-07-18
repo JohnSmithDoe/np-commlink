@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../../../types';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
-import { mockShoppingItem } from '../../../testing/test-data';
+import { mockBaseItem } from '../../../testing/test-data';
 import { ListItemComponent } from './list-item.component';
 
 const dragEvent = (amount: number): TIonDragEvent =>
@@ -23,7 +23,7 @@ describe('ListItemComponent', () => {
     ionList = {
       closeSlidingItems: vi.fn().mockResolvedValue(undefined),
     } as unknown as IonList;
-    fixture.componentRef.setInput('item', mockShoppingItem({ name: 'Bread' }));
+    fixture.componentRef.setInput('item', mockBaseItem({ name: 'Bread' }));
     fixture.componentRef.setInput('title', '2 x Bread');
     fixture.componentRef.setInput('ionList', ionList);
   });
@@ -36,7 +36,7 @@ describe('ListItemComponent', () => {
   it('renders the title and category note', () => {
     fixture.componentRef.setInput(
       'item',
-      mockShoppingItem({ category: ['Bakery'] })
+      mockBaseItem({ category: ['Bakery'] })
     );
     fixture.detectChanges();
 

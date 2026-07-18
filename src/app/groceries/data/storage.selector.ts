@@ -1,23 +1,27 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import {
-  IAppState,
-  ISearchResult,
-  IStorageItem,
-  IStorageState,
-} from '../../@shared/types';
+import { IGrocerySearchResult, IStorageItem, IStorageState } from '../model';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
+  selectGroceryLists,
 } from './grocery-list/grocery-list.selector';
 
 export const selectStorageState =
   createFeatureSelector<IStorageState>('storage');
 
+// The storage list's category catalog (dialog refactor: the edit dialog reads
+// the catalog straight from the domain slice instead of the shared
+// itemDialogs.category working-copy).
+export const selectStorageCategories = createSelector(
+  selectStorageState,
+  (state): string[] => state.categories
+);
+
 export const selectStorageListSearchResult = createSelector(
   selectStorageState,
-  (state: IAppState) => state,
-  (listState: IStorageState, state): ISearchResult<IStorageItem> | undefined =>
-    filterBySearchQuery(state, listState)
+  selectGroceryLists,
+  (listState, lists): IGrocerySearchResult<IStorageItem> | undefined =>
+    filterBySearchQuery(lists, listState)
 );
 
 export const selectStorageListItems = createSelector(

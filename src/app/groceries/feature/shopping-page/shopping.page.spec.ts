@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { mockShoppingItem } from '../../../@shared/testing/test-data';
+import { mockShoppingItem } from '../../testing/grocery.test-data';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { ShoppingActions } from '../../data';
 import { ShoppingPage } from './shopping.page';

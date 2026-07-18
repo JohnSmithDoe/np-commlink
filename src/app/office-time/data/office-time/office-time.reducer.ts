@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { IOfficeTimeState } from '../../../@shared/types';
+import { IOfficeTimeState } from '../../model';
 import { OfficeTimeActions } from './office-time.actions';
 import {
   deserializeIsoStringMap,

@@ -4,8 +4,7 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { ActionSheetButton } from '@ionic/angular';
-import { IonActionSheet } from '@ionic/angular/standalone';
+import { IonActionSheet, ActionSheetButton } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { IAppState } from '../../../@shared/types';

@@ -1,7 +1,4 @@
-import {
-  mockCashRule,
-  mockCashTransaction,
-} from '../../@shared/testing/test-data';
+import { mockCashRule, mockCashTransaction } from '../testing/cash.test-data';
 import { categorize, matchesCondition, ruleMatches } from './categorize';
 
 describe('categorize util', () => {

@@ -4,10 +4,8 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
-import {
-  mockAppState,
-  mockNotificationsState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockNotificationsState } from '../testing/notifications.test-data';
 import { IAppState, INotification } from '../../@shared/types';
 import { NotificationsTelemetryEffects } from './notifications-telemetry.effects';
 
@@ -33,7 +31,7 @@ function mockNotification(
 describe('NotificationsTelemetryEffects', () => {
   let effects: NotificationsTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         NotificationsTelemetryEffects,

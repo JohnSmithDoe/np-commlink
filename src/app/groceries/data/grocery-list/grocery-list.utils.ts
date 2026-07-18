@@ -1,17 +1,19 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
-  IAppState,
+  IBaseItem,
   IListState,
   IQuickAddState,
-  IShoppingItem,
-  IStorageItem,
-  IStorageState,
-  TAllItemTypes,
   TColor,
   TItemListCategory,
   TItemListId,
 } from '../../../@shared/types';
-import { createStorageItemFromShopping } from '../../../@shared/util/item.factory';
+import {
+  IGroceryLists,
+  IShoppingItem,
+  IStorageItem,
+  IStorageState,
+} from '../../model';
+import { createStorageItemFromShopping } from '../../util/grocery.factory';
 import {
   matchesItemExactly,
   matchesSearchExactly,
@@ -32,7 +34,7 @@ export * from '../../../@shared/util/list/list.utils';
 
 // hmmm this is a bit much...
 export const updateQuickAddState = (
-  state: IAppState,
+  state: IGroceryLists,
   listId: TItemListId
 ): IQuickAddState => {
   let searchQuery: string | undefined;
@@ -70,15 +72,10 @@ export const updateQuickAddState = (
         matchesSearchExactly(item, searchQuery)
       );
       break;
-    case '_tasks':
-      searchQuery = state.tasks.searchQuery;
-      listName = marker('grocery.list-header.tasks');
-      isCategoryMode = state.tasks.mode === 'categories';
-      categories = state.tasks.categories;
-      exactMatchLocal = !!state.tasks.items.find((item) =>
-        matchesSearchExactly(item, searchQuery)
-      );
-      break;
+    default:
+      // tasks is a sealed sibling with its own quick-add copy; the grocery
+      // engine only ever routes the three grocery lists here.
+      throw new Error(`grocery engine: unexpected listId ${listId}`);
   }
   const doShow = matchingTxtIsNotEmpty(searchQuery);
   const exactMatchCategory =
@@ -91,7 +88,6 @@ export const updateQuickAddState = (
       !isCategoryMode &&
       doShow &&
       listId !== '_products' && // dont show in products
-      listId !== '_tasks' && // dont show in tasks
       !state.products.items.find((item) =>
         matchesSearchExactly(item, searchQuery)
       ),
@@ -149,9 +145,9 @@ export const listIdByPrefix = (type: string): TItemListId => {
 };
 
 export const stateByListId = (
-  state: IAppState,
+  state: IGroceryLists,
   listId: TItemListId
-): IListState<any> => {
+): IListState<IBaseItem> => {
   //prettier-ignore
   switch (listId) {
     case '_storage':
@@ -160,12 +156,16 @@ export const stateByListId = (
       return state.products;
     case '_shopping':
       return state.shopping;
-    case '_tasks':
-      return state.tasks;
+    default:
+      // tasks is a sealed sibling with its own copies; the grocery engine only
+      // ever routes the three grocery lists here.
+      throw new Error(`grocery engine: unexpected listId ${listId}`);
   }
 };
 
-export const searchQueryByListId = (state: IAppState, listId: TItemListId) =>
-  stateByListId(state, listId).searchQuery?.trim();
-export const filterByByListId = (state: IAppState, listId: TItemListId) =>
+export const searchQueryByListId = (
+  state: IGroceryLists,
+  listId: TItemListId
+) => stateByListId(state, listId).searchQuery?.trim();
+export const filterByByListId = (state: IGroceryLists, listId: TItemListId) =>
   stateByListId(state, listId).filterBy?.trim();

@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { IBarcodeState } from '../../@shared/types';
+import { IBarcodeState } from '../model';
 
 // The SIGIL badge is its own bounded context (sheriff-tighten §1): a display-only
 // domain that owns the uploaded badge image. Formerly a field inside

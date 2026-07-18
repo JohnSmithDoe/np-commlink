@@ -1,4 +1,4 @@
-import { ICashRule, ICashTransaction } from '../../../@shared/types';
+import { ICashRule, ICashTransaction } from '../../model';
 import { categorize } from '../categorize';
 import { IParsedRow } from './bank-parser';
 

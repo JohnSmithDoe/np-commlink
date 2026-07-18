@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { ToggleChangeEventDetail } from '@ionic/angular';
-import { ModalController } from '@ionic/angular/standalone';
+import {
+  ModalController,
+  ToggleChangeEventDetail,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import {

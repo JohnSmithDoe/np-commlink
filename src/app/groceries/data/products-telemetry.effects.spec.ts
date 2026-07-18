@@ -4,11 +4,8 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
-import {
-  mockAppState,
-  mockProduct,
-  mockProductsState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockProduct, mockProductsState } from '../testing/grocery.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   ProductsTelemetryEffects,
@@ -18,7 +15,7 @@ import {
 describe('ProductsTelemetryEffects', () => {
   let effects: ProductsTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         ProductsTelemetryEffects,

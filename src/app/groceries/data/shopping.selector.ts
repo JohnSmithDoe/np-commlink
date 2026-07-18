@@ -1,23 +1,25 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { IGrocerySearchResult, IShoppingItem, IShoppingState } from '../model';
 import {
-  IAppState,
-  ISearchResult,
-  IShoppingItem,
-  IShoppingState,
-} from '../../@shared/types';
-import { filterBySearchQuery } from './grocery-list/grocery-list.selector';
+  filterBySearchQuery,
+  selectGroceryLists,
+} from './grocery-list/grocery-list.selector';
 
 export const selectShoppingState =
   createFeatureSelector<IShoppingState>('shopping');
 
+// The shopping list's category catalog (dialog refactor: the edit dialog reads
+// the catalog straight from the domain slice).
+export const selectShoppingCategories = createSelector(
+  selectShoppingState,
+  (state): string[] => state.categories
+);
+
 export const selectShoppingSearchResult = createSelector(
   selectShoppingState,
-  (state: IAppState) => state,
-  (
-    listState: IShoppingState,
-    state
-  ): ISearchResult<IShoppingItem> | undefined =>
-    filterBySearchQuery(state, listState)
+  selectGroceryLists,
+  (listState, lists): IGrocerySearchResult<IShoppingItem> | undefined =>
+    filterBySearchQuery(lists, listState)
 );
 
 export const selectShoppingListHasBoughtItems = createSelector(

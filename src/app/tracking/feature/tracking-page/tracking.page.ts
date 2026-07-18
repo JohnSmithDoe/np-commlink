@@ -4,25 +4,28 @@ import {
   inject,
   isDevMode,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, flask, remove, save, trash } from 'ionicons/icons';
+import { add, flask, remove, save, settingsSharp, trash } from 'ionicons/icons';
+import { ITrackingItem } from '../../model';
+import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
+import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
+import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import {
-  IonViewWillEnter,
-  ITrackingItem,
-  TItemListSortType,
-} from '../../../@shared/types';
-import { ListPageComponent } from '../../smart-ui/list-page/list-page.component';
-import {
-  DialogsActions,
   TrackingActions,
+  TrackingListPageFacade,
   selectTrackingTime,
 } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
-import { IonButton, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonIcon,
+  IonRouterLink,
+  ViewWillEnter,
+} from '@ionic/angular/standalone';
 import dayjs from 'dayjs';
 import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.component';
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';
@@ -38,11 +41,14 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
     DailySessionsComponent,
     IonButton,
     IonIcon,
+    IonRouterLink,
+    RouterLink,
     TrackingItemComponent,
     EditTrackingItemDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: TrackingListPageFacade }],
 })
-export class TrackingPage implements IonViewWillEnter {
+export class TrackingPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
@@ -51,7 +57,7 @@ export class TrackingPage implements IonViewWillEnter {
   readonly isDev = isDevMode();
 
   constructor() {
-    addIcons({ add, flask, remove, save, trash });
+    addIcons({ add, flask, remove, save, settingsSharp, trash });
   }
 
   ionViewWillEnter(): void {
@@ -79,11 +85,7 @@ export class TrackingPage implements IonViewWillEnter {
   }
 
   showEditDialog(item: ITrackingItem) {
-    this.#store.dispatch(DialogsActions.showEditDialog(item));
-  }
-
-  setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(TrackingActions.updateSort(type, 'toggle'));
+    this.#store.dispatch(ItemDialogsActions.showEditDialog(item, '_tracking'));
   }
 
   toggleTracking(item: ITrackingItem) {
@@ -108,6 +110,6 @@ export class TrackingPage implements IonViewWillEnter {
   }
 
   protected generateTaskByTicket() {
-    this.#store.dispatch(DialogsActions.showCreateByTicketDialog());
+    this.#store.dispatch(TrackingActions.showCreateByTicket());
   }
 }

@@ -5,9 +5,9 @@
   [itemTemplate]="storageItem"
   (quickCreateProduct)="facade.showCreateProductDialog()"
 >
-  <ion-button (click)="setSortMode('bestBefore')" toolbarActions
-    >{{ 'grocery.list-toolbar.mhd' | translate }}</ion-button
-  >
+  <ion-button (click)="setSortMode('bestBefore')" toolbarActions>{{
+    'grocery.list-toolbar.mhd' | translate
+  }}</ion-button>
   @if (showScanButton) {
     <ion-button (click)="scan()" toolbarActions>
       <ion-icon slot="icon-only" name="barcode-outline" />

@@ -1,4 +1,4 @@
-import { IStorageItem, ITaskItem } from '../../../@shared/types';
+import { IStorageItem } from '../../model';
 import {
   filterAndSortItemList,
   filterBySearchQuery,
@@ -6,21 +6,20 @@ import {
   sortCategoriesFn,
   sortItemListFn,
 } from './grocery-list.selector';
+import { mockListSettings } from '../../../@shared/testing/test-data';
 import {
-  mockAppState,
+  mockGroceryLists,
   mockProduct,
-  mockListSettings,
   mockProductsState,
   mockStorageItem,
   mockStorageState,
-  mockTaskItem,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/grocery.test-data';
 
 describe('item-list.selector', () => {
   describe('filterBySearchQuery', () => {
     it('returns undefined without a search query', () => {
-      const state = mockAppState();
-      expect(filterBySearchQuery(state, state.storage)).toBeUndefined();
+      const lists = mockGroceryLists();
+      expect(filterBySearchQuery(lists, lists.storage)).toBeUndefined();
     });
 
     it('returns the list items matching the query and flags an exact match', () => {
@@ -32,8 +31,8 @@ describe('item-list.selector', () => {
           mockStorageItem({ id: 'c', name: 'Bread' }),
         ],
       });
-      const state = mockAppState({ storage: listState });
-      const result = filterBySearchQuery(state, listState);
+      const lists = mockGroceryLists({ storage: listState });
+      const result = filterBySearchQuery(lists, listState);
       expect(result?.listItems.map((i) => i.name)).toEqual([
         'Milk',
         'Milkshake',
@@ -47,14 +46,14 @@ describe('item-list.selector', () => {
         searchQuery: 'Sug',
         items: [mockStorageItem({ id: 'a', name: 'Salt' })],
       });
-      const state = mockAppState({
+      const lists = mockGroceryLists({
         storage: listState,
         products: mockProductsState({
           items: [mockProduct({ name: 'Sugar' })],
         }),
         listSettings: mockListSettings({ showProductsInStorage: true }),
       });
-      const result = filterBySearchQuery(state, listState);
+      const result = filterBySearchQuery(lists, listState);
       expect(result?.products?.map((i) => i.name)).toEqual(['Sugar']);
     });
 
@@ -63,14 +62,16 @@ describe('item-list.selector', () => {
         searchQuery: 'Sug',
         items: [mockStorageItem({ id: 'a', name: 'Salt' })],
       });
-      const state = mockAppState({
+      const lists = mockGroceryLists({
         storage: listState,
         products: mockProductsState({
           items: [mockProduct({ name: 'Sugar' })],
         }),
         listSettings: mockListSettings({ showProductsInStorage: false }),
       });
-      expect(filterBySearchQuery(state, listState)?.products).toEqual([]);
+      // Buckets are no longer pre-seeded: when the setting is off the grocery
+      // selector never decorates the base result, so `products` stays undefined.
+      expect(filterBySearchQuery(lists, listState)?.products).toBeUndefined();
     });
   });
 
@@ -113,14 +114,8 @@ describe('item-list.selector', () => {
       expect(noDates[0].name).toBe('A');
     });
 
-    it('sorts task items by priority', () => {
-      const low = mockTaskItem({ id: 'l', name: 'low', prio: 1 });
-      const high = mockTaskItem({ id: 'h', name: 'high', prio: 9 });
-      const sorted = [high, low].sort(
-        sortItemListFn<ITaskItem>({ sortBy: 'prio', sortDir: 'asc' })
-      );
-      expect(sorted).toEqual([low, high]);
-    });
+    // The task prio-sort assertion was relocated to tasks.selector.spec.ts
+    // (DDD review #1) — a groceries test must not depend on a task fixture.
 
     it('returns 0 (stable) for an unknown sort key', () => {
       const a = mockStorageItem({ name: 'A' });

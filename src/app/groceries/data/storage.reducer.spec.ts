@@ -5,7 +5,7 @@ import {
   mockShoppingItem,
   mockStorageItem,
   mockStorageState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 
 describe('storageReducer', () => {
   it('returns the initial state for an unknown action', () => {

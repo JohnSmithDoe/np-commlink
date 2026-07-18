@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { IDataItem } from '../../@shared/types';
+import { IDataItem } from '../model';
 
 const pad = (value: number) => (value < 10 ? `0${value}` : value.toString());
 

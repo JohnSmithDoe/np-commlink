@@ -4,7 +4,7 @@ import { initialState, shoppingReducer } from './shopping.reducer';
 import {
   mockShoppingItem,
   mockShoppingState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 
 describe('shoppingReducer', () => {
   it('returns the initial state for an unknown action', () => {

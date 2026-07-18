@@ -1,26 +1,8 @@
 import { AbstractControl } from '@angular/forms';
-import { InputCustomEvent } from '@ionic/angular';
-import {
-  IBaseItem,
-  IProduct,
-  IShoppingItem,
-  IStorageItem,
-  ITaskItem,
-  TAllItemTypes,
-  TIonDragEvent,
-} from '../types';
+import { InputCustomEvent } from '@ionic/angular/standalone';
+import { IBaseItem, TIonDragEvent } from '../types';
 
 export const uuidv4 = () => crypto.randomUUID();
-
-// --- grocery item type guards (from kitchen-bot) ---
-export const isProductItem = (value: TAllItemTypes): value is IProduct =>
-  Object.prototype.hasOwnProperty.call(value, 'unit');
-export const isStorageItem = (value?: TAllItemTypes): value is IStorageItem =>
-  !!value && Object.prototype.hasOwnProperty.call(value, 'bestBefore');
-export const isTaskItem = (value?: TAllItemTypes): value is ITaskItem =>
-  !!value && Object.prototype.hasOwnProperty.call(value, 'prio');
-export const isShoppingItem = (value?: TAllItemTypes): value is IShoppingItem =>
-  !!value && Object.prototype.hasOwnProperty.call(value, 'state');
 
 export const hasQuantity = (
   value?: unknown

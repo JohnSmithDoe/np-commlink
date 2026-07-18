@@ -1,5 +1,5 @@
 import { IBaseItem } from '../types';
-import { mockStorageItem } from '../testing/test-data';
+import { mockBaseItem } from '../testing/test-data';
 import { CategoriesPipe } from './categories.pipe';
 
 describe('CategoriesPipe', () => {
@@ -30,12 +30,12 @@ describe('CategoriesPipe', () => {
   });
 
   it('returns the joined categories when categories exist', () => {
-    const item = mockStorageItem({ category: ['A', 'B'] });
+    const item = mockBaseItem({ category: ['A', 'B'] });
     expect(pipe.transform(item)).toBe('A, B');
   });
 
   it('prefers the categories over the altText when categories exist', () => {
-    const item = mockStorageItem({ category: ['A', 'B'] });
+    const item = mockBaseItem({ category: ['A', 'B'] });
     expect(pipe.transform(item, 'no categories')).toBe('A, B');
   });
 });

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { DashboardStats } from '../../../@shared/types';
+import { DashboardStats } from '../../model';
 
 @Component({
   selector: 'app-dash-percentage',

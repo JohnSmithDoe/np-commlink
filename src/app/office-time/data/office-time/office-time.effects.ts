@@ -22,7 +22,7 @@ import {
   serializeDateMap,
   serializeDates,
 } from './office-time.utils';
-import { IOfficeTimeStateStorage } from '../../../@shared/types';
+import { IOfficeTimeStateStorage } from '../../model';
 
 @Injectable({ providedIn: 'root' })
 export class OfficeTimeEffects {

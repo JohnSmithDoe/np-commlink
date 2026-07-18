@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { ICashState, ICashTransaction } from '../../@shared/types';
+import { ICashState, ICashTransaction } from '../model';
 
 // Reporting counts real income/expense only: transfers move money between own
 // accounts (not spend/income) and a reconciled-away leg is a duplicate.
@@ -75,20 +75,35 @@ export const selectAccountById = (accountId: string) =>
     accounts.find((a) => a.id === accountId)
   );
 
+/** A display transaction, decorated with the id of the hidden manual leg (if
+ *  any) that was reconciled into it — the account page's "detach" affordance. */
+export type TAccountTxn = ICashTransaction & { reconciledManualId?: string };
+
 /**
  * An account's transactions for display: newest first (`dateISO` desc, `id` as a
  * stable tiebreak), excluding reconciled-away legs (`matchedTxnId` set) so the
- * list agrees with the running balance. Copies before sorting — never mutates.
+ * list agrees with the running balance. Each surviving txn is tagged with
+ * `reconciledManualId` when a hidden manual leg points at it, so the UI can
+ * offer to detach (un-reconcile) it. Copies before sorting — never mutates.
  */
 export const selectTransactionsForAccount = (accountId: string) =>
-  createSelector(selectCashTransactions, (transactions) =>
-    transactions
+  createSelector(selectCashTransactions, (transactions): TAccountTxn[] => {
+    // survivor id -> the hidden manual leg reconciled into it
+    const reconciledInto = new Map<string, string>();
+    for (const t of transactions) {
+      if (t.matchedTxnId) reconciledInto.set(t.matchedTxnId, t.id);
+    }
+    return transactions
       .filter((t) => t.accountId === accountId && !t.matchedTxnId)
+      .map((t): TAccountTxn => ({
+        ...t,
+        reconciledManualId: reconciledInto.get(t.id),
+      }))
       .sort((a, b) => {
         if (a.dateISO !== b.dateISO) return a.dateISO < b.dateISO ? 1 : -1;
         return a.id.localeCompare(b.id);
-      })
-  );
+      });
+  });
 
 // ── Reporting (P5) ─────────────────────────────────────────────
 

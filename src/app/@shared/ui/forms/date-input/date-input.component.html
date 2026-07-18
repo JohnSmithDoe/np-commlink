@@ -1,8 +1,9 @@
 <ion-item>
   <ion-input
+    labelPlacement="stacked"
     [label]="label()"
     [disabled]="disabled()"
-    class="trigger ion-text-end"
+    class="trigger"
     [value]="value() ?? '' | date: undefined : undefined : 'de-DE'"
     type="date_event"
     id="open_cal"

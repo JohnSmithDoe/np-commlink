@@ -3,11 +3,8 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
-import {
-  mockAppState,
-  mockTaskItem,
-  mockTasksState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { TasksActions } from './tasks.actions';
 import { TasksSaveEffects } from './tasks-save.effects';
@@ -45,13 +42,12 @@ describe('TasksSaveEffects', () => {
   });
 
   it('persists on a real [Tasks] mutation', async () => {
-    const initialState = setup(
-      mockAppState({ tasks: mockTasksState({ items: [mockTaskItem()] }) })
-    );
+    const tasks = mockTasksState({ items: [mockTaskItem()] });
+    setup(mockAppState({ tasks }));
     actions$ = of(TasksActions.addItem(mockTaskItem()));
 
     await firstValueFrom(effects.saveOnChange$);
 
-    expect(database.save).toHaveBeenCalledWith('tasks', initialState.tasks);
+    expect(database.save).toHaveBeenCalledWith('tasks', tasks);
   });
 });

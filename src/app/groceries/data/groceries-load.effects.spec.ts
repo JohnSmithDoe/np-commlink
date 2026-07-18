@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockProductsState } from '../../@shared/testing/test-data';
+import { mockProductsState } from '../testing/grocery.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { GroceriesActions } from './groceries.actions';
 import { GroceriesLoadEffects } from './groceries-load.effects';

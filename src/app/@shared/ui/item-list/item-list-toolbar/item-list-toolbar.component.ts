@@ -25,6 +25,9 @@ import { TItemListMode, TItemListSortType } from '../../../types';
 })
 export class ItemListToolbarComponent {
   readonly showReorder = input(false, { transform: booleanAttribute });
+  // The list/categories display-mode toggle is a category-list affordance;
+  // category-less lists (tracking) suppress it via [showDisplayMode]="false".
+  readonly showDisplayMode = input(true, { transform: booleanAttribute });
 
   readonly selectSortMode = output<TItemListSortType>();
   readonly toggleReorder = output<void>();

@@ -1,13 +1,11 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  IProduct,
-  IShoppingItem,
-  IStorageItem,
   TItemListCategory,
   TItemListId,
   TItemListMode,
   TItemListSortType,
 } from '../../../@shared/types';
+import { IProduct, IShoppingItem, IStorageItem } from '../../model';
 // prettier-ignore
 export const GroceryListActions = createActionGroup({
   source: 'GroceryList',
@@ -18,6 +16,10 @@ export const GroceryListActions = createActionGroup({
     'Add Product': (listId:TItemListId, item: IProduct) => ({ item, listId }),
     'Add Storage Item': (listId:TItemListId, item: IStorageItem) => ({ item, listId }),
     'Add Shopping Item': (listId:TItemListId, item: IShoppingItem) => ({ item, listId }),
+    // NEW (merge): the mlkit barcode scanner dispatches this with a scanned
+    // EAN-13 to open the product-item edit dialog seeded with the code. Owned
+    // by the grocery domain (was the shared reducer's Open Edit Product event).
+    'Open Edit Product': (scannedEan: string) => ({ scannedEan }),
     'Configuration Error': emptyProps(),
     // Operations
     'Add Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
-import { IAppState, TItemListId } from '../../../@shared/types';
+import { TItemListId } from '../../../@shared/types';
 import {
   createProduct,
   createProductFrom,
@@ -12,8 +12,10 @@ import {
   createStorageItem,
   createStorageItemFromProduct,
   createStorageItemFromShopping,
-} from '../../../@shared/util/item.factory';
+} from '../../util/grocery.factory';
 import { matchesItemExactly } from '../../../@shared/util/app.utils';
+import { IGroceryLists } from '../../model';
+import { selectGroceryLists } from './grocery-list.selector';
 import { ProductsActions } from '../products.actions';
 import { ShoppingActions } from '../shopping.actions';
 import { StorageActions } from '../storage.actions';
@@ -55,16 +57,19 @@ export const actionsByListId = (listId: TItemListId) => {
  */
 @Injectable({ providedIn: 'root' })
 export class GroceryListEffects {
-  #store = inject(Store<IAppState>);
+  #store = inject(Store);
   #actions$ = inject(Actions);
 
   addItemFromSearch = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GroceryListActions.addItemFromSearch),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) => {
         const isCategoryMode =
           stateByListId(state, action.listId).mode === 'categories';
@@ -78,10 +83,13 @@ export class GroceryListEffects {
   addCategoryFromSearch = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GroceryListActions.addCategoryFromSearch),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) => {
         const category = stateByListId(state, action.listId).searchQuery ?? '';
         return actionsByListId(action.listId).addCategory(category);
@@ -198,10 +206,13 @@ export class GroceryListEffects {
         ShoppingActions.addItemFromSearch,
         ProductsActions.addItemFromSearch
       ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) => {
         switch (action.type) {
           case '[Storage] Add Item From Search':
@@ -224,10 +235,13 @@ export class GroceryListEffects {
         ShoppingActions.addOrUpdateItem,
         ProductsActions.addOrUpdateItem
       ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) => {
         const listId = listIdByPrefix(action.type);
         const localState = stateByListId(state, listId);
@@ -336,10 +350,13 @@ export class GroceryListEffects {
         ShoppingActions.updateItem,
         ProductsActions.updateItem
       ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) => {
         const listId = listIdByPrefix(action.type);
         const searchQuery = searchQueryByListId(state, listId);
@@ -364,10 +381,13 @@ export class GroceryListEffects {
         ProductsActions.updateMode,
         ProductsActions.enterPage
       ),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
+      withLatestFrom(
+        this.#store.select(selectGroceryLists),
+        (action, state) => ({
+          action,
+          state,
+        })
+      ),
       map(({ action, state }) =>
         QuickAddActions.updateState(
           updateQuickAddState(state, listIdByPrefix(action.type))
@@ -377,7 +397,7 @@ export class GroceryListEffects {
   });
 }
 
-export const addStorageItemFromSearch = (state: IAppState) => {
+export const addStorageItemFromSearch = (state: IGroceryLists) => {
   const storageItem = createStorageItem(
     state.storage.searchQuery ?? '',
     state.storage.filterBy
@@ -387,7 +407,7 @@ export const addStorageItemFromSearch = (state: IAppState) => {
     ? StorageActions.addItemFailure(foundStorageItem)
     : StorageActions.addItem(storageItem);
 };
-export const addShoppingItemFromSearch = (state: IAppState) => {
+export const addShoppingItemFromSearch = (state: IGroceryLists) => {
   const shoppingItem = createShoppingItem(
     state.shopping.searchQuery ?? '',
     state.shopping.filterBy
@@ -400,7 +420,7 @@ export const addShoppingItemFromSearch = (state: IAppState) => {
     ? ShoppingActions.addItemFailure(foundShoppingItem)
     : ShoppingActions.addItem(shoppingItem);
 };
-export const addProductFromSearch = (state: IAppState) => {
+export const addProductFromSearch = (state: IGroceryLists) => {
   const item = createProduct(
     state.products.searchQuery ?? '',
     state.products.filterBy

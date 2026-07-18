@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IonButton, IonButtons, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonButtons,
+  IonIcon,
+  ViewWillEnter,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
-import { IonViewWillEnter, IShoppingItem } from '../../../@shared/types';
+import { IShoppingItem } from '../../model';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import {
   GroceryListPageFacade,
@@ -39,7 +44,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
   ],
   providers: [{ provide: LIST_FACADE, useExisting: GroceryListPageFacade }],
 })
-export class ShoppingPage implements IonViewWillEnter {
+export class ShoppingPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #scanner = inject(BarcodeScannerService);
   readonly facade = inject(GroceryListPageFacade);
@@ -57,7 +62,7 @@ export class ShoppingPage implements IonViewWillEnter {
   async scan() {
     const ean = await this.#scanner.scanEan();
     if (ean) {
-      this.#store.dispatch(ItemDialogsActions.openEditProduct(ean));
+      this.facade.openEditProduct(ean);
     }
   }
 

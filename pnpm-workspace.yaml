@@ -1,21 +1,6 @@
-# pnpm blocks dependency lifecycle (postinstall/build) scripts by default as a
-# supply-chain mitigation — arbitrary postinstall is a common npm attack vector.
-#
-# These four native deps belong to the Angular build pipeline, but each ships its
-# native binary as a regular optionalDependency (esbuild's @esbuild/<platform>
-# packages; node-gyp-build prebuilds for the rest), so builds AND tests work
-# WITHOUT running their install scripts. We therefore explicitly keep them off:
-# strongest posture, and this acknowledgement stops pnpm erroring on install
-# (ERR_PNPM_IGNORED_BUILDS).
-#
-# Flip a package to `true` only if you hit a platform with no matching prebuild
-# and it genuinely needs to compile from source.
 allowBuilds:
   '@parcel/watcher': false
   esbuild: false
+  lefthook: false
   lmdb: false
   msgpackr-extract: false
-minimumReleaseAgeExclude:
-  - '@eslint/eslintrc@3.3.6'
-  - '@eslint/js@9.39.5'
-  - eslint@9.39.5

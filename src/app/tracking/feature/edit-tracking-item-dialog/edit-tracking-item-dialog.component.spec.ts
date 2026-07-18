@@ -2,11 +2,12 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ITrackingItem } from '../../../@shared/types';
+import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { createTrackingItem } from '../../util/tracking.factory';
 import {
-  DialogsActions,
-  selectEditItemTracking,
-  selectListItemsTracking,
+  selectEditTrackingItem,
+  selectTrackingListItems,
+  TrackingActions,
 } from '../../data';
 import { EditTrackingItemDialogComponent } from './edit-tracking-item-dialog.component';
 
@@ -14,49 +15,58 @@ describe('EditTrackingItemDialogComponent', () => {
   let store: MockStore;
   let component: EditTrackingItemDialogComponent;
 
+  const seed = createTrackingItem('Task');
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [EditTrackingItemDialogComponent, TranslateModule.forRoot()],
       providers: [provideZonelessChangeDetection(), provideMockStore()],
     });
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectEditItemTracking, undefined);
-    store.overrideSelector(selectListItemsTracking, []);
+    store.overrideSelector(selectEditTrackingItem, seed);
+    store.overrideSelector(selectTrackingListItems, []);
+    store.refreshState();
     component = TestBed.createComponent(
       EditTrackingItemDialogComponent
     ).componentInstance;
   });
 
-  it('starts from the default config when the item has no notifications', () => {
+  it('toggles a notification onto the local draft from the default config', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
 
-    component.updateNotifications(null, 'onStart', true);
+    component.updateNotifications('onStart', true);
 
-    const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof DialogsActions.updateItem
-    >;
-    expect(action.data).toEqual({
-      notifications: { onStart: true, onStop: false, onProcess: false },
+    expect(component.draft()?.notifications).toEqual({
+      onStart: true,
+      onStop: false,
+      onProcess: false,
+    });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('merges a toggle onto the existing notification config', () => {
+    component.updateNotifications('onStop', true);
+    component.updateNotifications('onProcess', true);
+
+    expect(component.draft()?.notifications).toEqual({
+      onStart: false,
+      onStop: true,
+      onProcess: true,
     });
   });
 
-  it('merges the toggle onto the existing notification config', () => {
+  it('saves the draft and hides the dialog on confirm', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
-    const item = {
-      id: '1',
-      name: 'Task',
-      createdAt: '2026-01-01',
-      state: 'stopped',
-      notifications: { onStart: true, onStop: true, onProcess: false },
-    } as ITrackingItem;
 
-    component.updateNotifications(item, 'onProcess', true);
+    component.updateNotifications('onStart', true);
+    component.confirm();
 
-    const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
-      typeof DialogsActions.updateItem
-    >;
-    expect(action.data).toEqual({
-      notifications: { onStart: true, onStop: true, onProcess: true },
-    });
+    expect(dispatch).toHaveBeenCalledWith(
+      TrackingActions.addOrUpdateItem({
+        ...seed,
+        notifications: { onStart: true, onStop: false, onProcess: false },
+      })
+    );
+    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
   });
 });

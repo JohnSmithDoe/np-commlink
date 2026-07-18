@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { ICashTransaction } from '../../@shared/types';
+import { ICashTransaction } from '../model';
 
 /**
  * Reconciliation candidate matching (see docs/cash-plan.md → Reconciliation).

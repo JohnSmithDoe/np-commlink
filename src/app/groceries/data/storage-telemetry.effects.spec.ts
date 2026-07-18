@@ -4,11 +4,11 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockStorageItem,
   mockStorageState,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   selectLowStockCount,
@@ -18,7 +18,7 @@ import {
 describe('StorageTelemetryEffects', () => {
   let effects: StorageTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         StorageTelemetryEffects,

@@ -13,4 +13,22 @@ test.describe('shopping list', () => {
       timeout: 10_000,
     });
   });
+
+  // Drives the refactored shopping edit dialog (pure-ui modal + local draft).
+  test('edits a shopping item through the edit dialog', async ({ page }) => {
+    await addViaSearch(page, 'Coffee');
+    await expect(page.getByText(/Coffee/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByText(/Coffee/).first().click();
+
+    const nameField = page.getByRole('textbox', { name: 'Name' });
+    await expect(nameField).toBeVisible({ timeout: 10_000 });
+    await nameField.fill('Espresso');
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+
+    await expect(page.getByText(/Espresso/).first()).toBeVisible({
+      timeout: 10_000,
+    });
+  });
 });

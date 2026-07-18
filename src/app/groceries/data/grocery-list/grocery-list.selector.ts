@@ -1,18 +1,19 @@
-import { createSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { IBaseItem, IListState } from '../../../@shared/types';
 import {
-  IAppState,
-  IBaseItem,
-  IListState,
-  ISearchResult,
-  IShoppingItem,
-  TAllItemTypes,
-} from '../../../@shared/types';
+  IGroceryLists,
+  IGrocerySearchResult,
+  IProductsState,
+  IShoppingState,
+  IStorageState,
+} from '../../model';
 import {
   matchesCategory,
   matchesNameExactly,
   matchesSearch,
 } from '../../../@shared/util/app.utils';
 import { selectRouteParams } from '../../../@shared/data/router.selector';
+import { selectListSettingsState } from '../../../@shared/data/list-settings/list-settings.selector';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
@@ -30,18 +31,36 @@ export {
   sortItemListFn,
 } from '../../../@shared/util/list/list.selector';
 
+// The grocery slice bundle, recomposed from the per-slice feature selectors +
+// the shared listSettings selector. The grocery slices left `IAppState` in the
+// god-file split, so the cross-list engine reads them here instead of off the
+// root state. Defined via `createFeatureSelector` inline (not imported from the
+// per-list selectors) to avoid a selector import cycle.
+export const selectGroceryLists = createSelector(
+  createFeatureSelector<IStorageState>('storage'),
+  createFeatureSelector<IProductsState>('products'),
+  createFeatureSelector<IShoppingState>('shopping'),
+  selectListSettingsState,
+  (storage, products, shopping, listSettings): IGroceryLists => ({
+    storage,
+    products,
+    shopping,
+    listSettings,
+  })
+);
+
 export const selectListState = createSelector(
   selectRouteParams,
-  (state: IAppState) => state,
-  ({ listId }, state) => {
+  selectGroceryLists,
+  ({ listId }, lists) => {
     if (!listId) return undefined;
-    return stateByListId(state, listId);
+    return stateByListId(lists, listId);
   }
 );
 
-const additionalSearch = <R extends TAllItemTypes, T extends TAllItemTypes>(
+const additionalSearch = <R extends IBaseItem, T extends IBaseItem>(
   items: T[],
-  result: ISearchResult<R>,
+  result: IGrocerySearchResult<R>,
   searchQuery: string,
   others?: IBaseItem[]
 ) => {
@@ -68,13 +87,14 @@ const additionalSearch = <R extends TAllItemTypes, T extends TAllItemTypes>(
 // flag is on.
 export const filterBySearchQuery = <
   T extends IListState<R>,
-  R extends TAllItemTypes,
+  R extends IBaseItem,
 >(
-  state: IAppState,
+  state: IGroceryLists,
   listState: T
-): ISearchResult<R> | undefined => {
-  const result = filterListBySearchQuery<T, R>(listState);
-  if (!result) return undefined;
+): IGrocerySearchResult<R> | undefined => {
+  const base = filterListBySearchQuery<T, R>(listState);
+  if (!base) return undefined;
+  const result: IGrocerySearchResult<R> = { ...base };
   const searchQuery = result.searchTerm;
   //prettier-ignore
   switch (listState.id) {
@@ -112,10 +132,10 @@ export const selectListStateFilter = createSelector(
 
 export const selectListSearchResult = createSelector(
   selectListState,
-  (state: IAppState) => state,
-  (state, appState): ISearchResult<IShoppingItem> | undefined => {
+  selectGroceryLists,
+  (state, lists): IGrocerySearchResult<IBaseItem> | undefined => {
     return !!state && state.mode !== 'categories'
-      ? filterBySearchQuery(appState, state)
+      ? filterBySearchQuery(lists, state)
       : undefined;
   }
 );
@@ -123,6 +143,6 @@ export const selectListSearchResult = createSelector(
 export const selectListItems = createSelector(
   selectListState,
   selectListSearchResult,
-  (state, result): IShoppingItem[] | undefined =>
+  (state, result): IBaseItem[] | undefined =>
     state ? filterAndSortItemList(state, result) : undefined
 );

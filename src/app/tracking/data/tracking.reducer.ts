@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { ITrackingItem, ITrackingState, TTimestamp } from '../../@shared/types';
+import { TTimestamp } from '../../@shared/types';
+import { ITrackingItem, ITrackingState } from '../model';
 import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';
 import {
@@ -7,7 +8,7 @@ import {
   removeListItem,
   updateListItem,
   updateListSort,
-} from '../../@shared/util/item-list/item-list.utils';
+} from '../../@shared/util/list/list.utils';
 import { uuidv4 } from '../../@shared/util/app.utils';
 
 export const initialState: ITrackingState = {

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { TBank } from '../../../@shared/types';
+import { TBank } from '../../model';
 
 /**
  * Per-bank CSV import (see docs/cash-plan.md P4). An account's `bank` selects one

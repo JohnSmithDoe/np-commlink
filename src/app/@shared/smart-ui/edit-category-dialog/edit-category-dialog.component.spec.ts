@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { InputCustomEvent } from '@ionic/angular';
+import { InputCustomEvent } from '@ionic/angular/standalone';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import { CategoriesActions } from '../../data/item-dialogs/item-dialogs.actions';

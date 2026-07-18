@@ -1,13 +1,11 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  IProduct,
-  IShoppingItem,
-  IStorageItem,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
   TUpdateDTO,
 } from '../../@shared/types';
+import { IProduct, IShoppingItem, IStorageItem } from '../model';
 
 export const ProductsActions = createActionGroup({
   source: 'Products',

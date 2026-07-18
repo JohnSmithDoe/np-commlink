@@ -4,14 +4,10 @@ import { Action, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { from, mergeMap, withLatestFrom } from 'rxjs';
-import {
-  IAppState,
-  INotification,
-  INotificationsState,
-  ITrackingItem,
-  ITrackingState,
-} from '../../@shared/types';
+import { INotification, INotificationsState } from '../../@shared/types';
+import { ITrackingItem, ITrackingState } from '../model';
 import { NotificationsStore } from '../../@shared/util/notifications/notifications.store';
+import { selectTrackingState } from './tracking.selector';
 import {
   markNotificationDone,
   removeNotificationById,
@@ -56,17 +52,17 @@ export class TrackingNotificationsEffects {
           TrackingActions.saveAndResetTracking,
           TrackingActions.removeItem
         ),
-        withLatestFrom(this.#store, (action, state: IAppState) => ({
-          action,
-          state,
-        })),
-        mergeMap(({ action, state }) => {
+        withLatestFrom(
+          this.#store.select(selectTrackingState),
+          (action, tracking) => ({ action, tracking })
+        ),
+        mergeMap(({ action, tracking }) => {
           const now = dayjs().format();
           const targetId = this.#targetIdOf(action);
           return from(
             this.#notifications
               .mutate((notif) =>
-                this.#reconcile(notif, state.tracking, targetId, now)
+                this.#reconcile(notif, tracking, targetId, now)
               )
               // A transient storage failure must not kill the effect stream.
               .catch(() => undefined)
@@ -85,13 +81,13 @@ export class TrackingNotificationsEffects {
   applyNotificationCommand$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(TrackingActions.applyNotificationCommand),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
-        action,
-        state,
-      })),
-      mergeMap(({ action, state }) =>
+      withLatestFrom(
+        this.#store.select(selectTrackingState),
+        (action, tracking) => ({ action, tracking })
+      ),
+      mergeMap(({ action, tracking }) =>
         from(
-          this.#applyCommand(action.notificationId, state.tracking).catch(
+          this.#applyCommand(action.notificationId, tracking).catch(
             () => [] as Action[]
           )
         ).pipe(mergeMap((actions) => actions))

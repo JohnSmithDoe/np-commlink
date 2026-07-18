@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
-import { IOfficeTimeStateStorage, ISettingsState } from '../../@shared/types';
+import { IOfficeTimeStateStorage, ISettingsState } from '../model';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { SettingsActions } from './settings/settings.actions';
 import { OfficeTimeActions } from './office-time/office-time.actions';

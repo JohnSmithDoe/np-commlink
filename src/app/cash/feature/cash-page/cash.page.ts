@@ -34,7 +34,7 @@ import {
   trendingUpOutline,
   walletOutline,
 } from 'ionicons/icons';
-import { ICashAccount, TAccountKind } from '../../../@shared/types';
+import { ICashAccount, TAccountKind } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
   CashActions,

@@ -9,34 +9,12 @@ describe('migrate', () => {
     expect(migrations).toEqual([]);
   });
 
-  it('is a no-op when the store is already at the current version', () => {
-    const current = {
-      settings: { showTotalTime: false, version: VERSION },
-    } as unknown as LoadedDatastore;
+  it('is a no-op pass-through while there are no steps', () => {
+    const store = { tracking: null } as unknown as LoadedDatastore;
 
-    const { data, changed } = migrate(current, VERSION);
+    const { data, changed } = migrate(store, VERSION);
 
     expect(changed).toBe(false);
-    expect(data).toBe(current);
-  });
-
-  it('normalizes a drifted version stamp up to the current version', () => {
-    const drifted = {
-      settings: { showTotalTime: false, version: '0' },
-    } as unknown as LoadedDatastore;
-
-    const { data, changed } = migrate(drifted, VERSION);
-
-    expect(changed).toBe(true);
-    expect(data.settings?.version).toBe(VERSION);
-  });
-
-  it('leaves a fresh user (no settings slice) untouched', () => {
-    const fresh = { settings: null } as unknown as LoadedDatastore;
-
-    const { data, changed } = migrate(fresh, VERSION);
-
-    expect(changed).toBe(false);
-    expect(data.settings).toBeNull();
+    expect(data).toBe(store);
   });
 });

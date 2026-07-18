@@ -1,10 +1,7 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
-import {
-  ITrackingItem,
-  TColor,
-  TNotificationAction,
-} from '../../@shared/types';
+import { TColor, TNotificationAction } from '../../@shared/types';
+import { ITrackingItem } from '../model';
 
 marker('notifications.tracking.running.title');
 marker('notifications.tracking.running.body');

@@ -39,7 +39,7 @@ import {
   playOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { ICashRule } from '../../../@shared/types';
+import { ICashRule } from '../../model';
 import {
   CashActions,
   selectCashCategories,

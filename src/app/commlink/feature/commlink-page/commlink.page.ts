@@ -6,7 +6,11 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonIcon,
+  IonRouterLinkWithHref,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import {
@@ -60,7 +64,13 @@ type CommlinkProgram = {
   templateUrl: './commlink.page.html',
   styleUrls: ['./commlink.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonContent, IonIcon, RouterLink, PageHeaderComponent],
+  imports: [
+    IonContent,
+    IonIcon,
+    IonRouterLinkWithHref,
+    RouterLink,
+    PageHeaderComponent,
+  ],
 })
 export class CommlinkPage {
   readonly programs: readonly CommlinkProgram[] = [

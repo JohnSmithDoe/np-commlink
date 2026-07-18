@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonIcon,
+  IonRouterLinkWithHref,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, cafeOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -18,7 +22,13 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   templateUrl: './kitchen.page.html',
   styleUrls: ['./kitchen.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonContent, IonIcon, RouterLink, PageHeaderComponent],
+  imports: [
+    IonContent,
+    IonIcon,
+    IonRouterLinkWithHref,
+    RouterLink,
+    PageHeaderComponent,
+  ],
 })
 export class KitchenPage {
   constructor() {

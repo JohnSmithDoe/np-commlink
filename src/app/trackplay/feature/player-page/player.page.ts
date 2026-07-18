@@ -11,6 +11,7 @@ import {
   IonToolbar,
   ModalController,
   PopoverController,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,7 +22,6 @@ import {
   createOutline,
   optionsOutline,
 } from 'ionicons/icons';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { IGame, TID } from '../../model';
 import {
   TrackplayActions,
@@ -58,7 +58,7 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
     TrackplayGameListItemComponent,
   ],
 })
-export class TrackplayPlayerPage implements IonViewWillEnter {
+export class TrackplayPlayerPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);

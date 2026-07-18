@@ -1,21 +1,33 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()" aria-label="back">
+      <ion-button
+        (click)="goBack()"
+        [attr.aria-label]="'cash.a11y.back' | translate"
+      >
         <ion-icon slot="icon-only" name="arrow-back-outline" />
       </ion-button>
     </ion-buttons>
     <ion-title>{{ account()?.name }}</ion-title>
     <ion-buttons slot="end">
       @if (canImport()) {
-        <ion-button (click)="csv.click()" aria-label="import csv">
+        <ion-button
+          (click)="csv.click()"
+          [attr.aria-label]="'cash.a11y.import-csv' | translate"
+        >
           <ion-icon slot="icon-only" name="cloud-upload-outline" />
         </ion-button>
       }
-      <ion-button (click)="editAccount()" aria-label="edit account">
+      <ion-button
+        (click)="editAccount()"
+        [attr.aria-label]="'cash.a11y.edit-account' | translate"
+      >
         <ion-icon slot="icon-only" name="create-outline" />
       </ion-button>
-      <ion-button (click)="addTransaction()" aria-label="add transaction">
+      <ion-button
+        (click)="addTransaction()"
+        [attr.aria-label]="'cash.a11y.add-transaction' | translate"
+      >
         <ion-icon slot="icon-only" name="add-outline" />
       </ion-button>
     </ion-buttons>
@@ -65,8 +77,20 @@
             </ion-item>
             @if (txn.status === 'pending') {
               <ion-item-options side="start">
-                <ion-item-option (click)="reconcile(txn)">
+                <ion-item-option
+                  (click)="reconcile(txn)"
+                  [attr.aria-label]="'cash.a11y.reconcile' | translate"
+                >
                   <ion-icon slot="icon-only" name="swap-horizontal-outline" />
+                </ion-item-option>
+              </ion-item-options>
+            } @else if (txn.reconciledManualId) {
+              <ion-item-options side="start">
+                <ion-item-option
+                  (click)="detachReconcile(txn)"
+                  [attr.aria-label]="'cash.a11y.detach' | translate"
+                >
+                  <ion-icon slot="icon-only" name="unlink-outline" />
                 </ion-item-option>
               </ion-item-options>
             }

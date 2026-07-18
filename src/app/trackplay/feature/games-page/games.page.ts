@@ -12,14 +12,15 @@ import {
   IonItemDivider,
   IonLabel,
   IonList,
+  IonRouterLink,
   ModalController,
   PopoverController,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline, diceOutline } from 'ionicons/icons';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { IGame, TID } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
@@ -52,13 +53,14 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
     IonIcon,
     IonItemDivider,
     IonLabel,
+    IonRouterLink,
     RouterLink,
     TranslateModule,
     PageHeaderComponent,
     TrackplayGameListItemComponent,
   ],
 })
-export class TrackplayGamesPage implements IonViewWillEnter {
+export class TrackplayGamesPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);

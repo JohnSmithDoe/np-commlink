@@ -44,4 +44,82 @@ test.describe('tracking (lazy)', () => {
       timeout: 30_000,
     });
   });
+
+  /**
+   * Drives the integrated edit dialog: tracking now opens the shared,
+   * domain-blind `itemDialogs` slice (`showEditDialog(item, '_tracking')`) and
+   * renders the shared pure-ui modal via `edit-tracking-item-dialog` — the same
+   * flow grocery/tasks use, with tracking's own `dialogs` fork gone. The wrapper
+   * guards on `listId === '_tracking'`, holds a local draft, and saves via
+   * `TrackingActions.addOrUpdateItem`.
+   */
+  test('edits a tracking item through the shared edit dialog', async ({
+    page,
+  }) => {
+    await page.goto('/#/tracking');
+    await waitForListPage(page);
+
+    await addViaSearch(page, 'Standup');
+    const content = page.locator('#main-content');
+    await expect(content.getByText('Standup').first()).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Open the item's kebab menu → "Bearbeiten" (dispatches the shared
+    // ItemDialogsActions.showEditDialog onto the eager itemDialogs slice).
+    await content
+      .locator('app-tracking-item ion-button[id^="kebab-"]')
+      .first()
+      .click();
+    await page.locator('ion-popover').getByText('Bearbeiten').click();
+
+    // The shared modal opens; rename via its local draft and save.
+    const nameField = page.getByRole('textbox', { name: 'Name' });
+    await expect(nameField).toBeVisible({ timeout: 10_000 });
+    await nameField.fill('Retro');
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+
+    await expect(content.getByText('Retro').first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(content.getByText('Standup')).toHaveCount(0);
+  });
+
+  /**
+   * Guards the tracking-specific chrome the shared, domain-blind
+   * `ListPageComponent` renders through projection (the retire-the-fork
+   * refactor): the reset/save toolbar buttons projected into
+   * `[toolbarActionsEnd]`, the daily-sessions panel in `[searchExtras]`, and the
+   * settings link double-projected through `[headerEnd]` into the page-header
+   * toolbar. It also proves the category UI is suppressed (`[hasCategories]`
+   * false) so tracking renders a plain list — a naive swap would have silently
+   * dropped the first two and wrongly shown the last.
+   */
+  test('renders the projected chrome and suppresses the category UI', async ({
+    page,
+  }) => {
+    await page.goto('/#/tracking');
+    await waitForListPage(page);
+
+    const trackingPage = page.locator('#main-content app-tracking-page');
+
+    // [searchExtras] slot — the daily-sessions panel.
+    await expect(trackingPage.locator('app-daily-sessions')).toBeVisible();
+
+    // [toolbarActionsEnd] slot — reset-all + save-and-reset buttons.
+    await expect(trackingPage.getByText('Verwerfen')).toBeVisible();
+    await expect(trackingPage.getByText('Speichern')).toBeVisible();
+
+    // Category UI suppressed: no quick-add row on the tracking list.
+    await expect(trackingPage.locator('app-item-list-quickadd')).toHaveCount(0);
+
+    // [headerEnd] slot double-projected into the page-header toolbar — the
+    // settings link must keep its routerLink and reach the tracking data view.
+    await trackingPage
+      .locator('ion-button', {
+        has: page.locator('ion-icon[icon="settings-sharp"]'),
+      })
+      .click();
+    await expect(page).toHaveURL(/#\/data\/daily/);
+  });
 });

@@ -4,12 +4,12 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockCashAccount,
   mockCashState,
   mockCashTransaction,
-} from '../../@shared/testing/test-data';
+} from '../testing/cash.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   CashTelemetryEffects,
@@ -19,7 +19,7 @@ import {
 describe('CashTelemetryEffects', () => {
   let effects: CashTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         CashTelemetryEffects,

@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IOfficeTimeState } from '../../../@shared/types';
+import { IOfficeTimeState } from '../../model';
 
 export const selectOfficeTimeState =
   createFeatureSelector<IOfficeTimeState>('officeTime');

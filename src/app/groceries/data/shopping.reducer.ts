@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { IShoppingState } from '../../@shared/types';
+import { IShoppingState } from '../model';
 import {
   addListCategory,
   addListItem,

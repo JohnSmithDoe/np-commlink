@@ -143,17 +143,26 @@ contracts** — the only actions a feature dispatches expecting *someone else* t
 
 ### 4.3 DI contracts: the `LIST_FACADE` token
 
-*How one generic component serves several domains without knowing them.* Three grocery pages and
-the tasks page all render the same list UI. The generic `@shared/feature/list-page` component
-`inject()`s a `LIST_FACADE` token (`@shared/data/list/list-page.facade.ts`); each domain
-**provides** its own implementation at the route:
+*How one generic component serves several domains without knowing them.* Three grocery pages, the
+tasks page and the tracking page all render the same list UI. The generic
+`@shared/feature/list-page` component `inject()`s a `LIST_FACADE` token
+(`@shared/util/list/list-page.facade.ts`); each domain **provides** its own implementation at the
+route:
 
 ```
 list-page (generic, domain-blind)
    └─ inject(LIST_FACADE)
-        ├─ GroceryListPageFacade   (multi-list engine: route-param → active list, cross-list buckets)
-        └─ TasksListPageFacade     (trivial single-list)
+        ├─ GroceryListPageFacade    (multi-list engine: route-param → active list, cross-list buckets)
+        ├─ TasksListPageFacade      (trivial single-list)
+        └─ TrackingListPageFacade   (tracking-flavoured engine; no categories → [hasCategories]="false")
 ```
+
+Tracking is category-less, so its facade returns `[]` for `categories`, its category-mode
+operations are no-ops, and the page passes `[hasCategories]="false"` to suppress the quick-add,
+display-mode toggle and edit-category dialog — the shared component renders a plain list. Its
+tracking-only chrome (the reset/save toolbar buttons, the daily-sessions panel, the settings link
+to `/data/daily`) is content-**projected** into the shared shell's `[toolbarActionsEnd]`,
+`[searchExtras]` and `[headerEnd]` slots.
 
 Why a DI token and not a selector? **NgRx selectors can't read DI**, so a `listId → selector`
 registry can't live inside a pure selector. A facade is a *service* — it can hold
@@ -343,10 +352,15 @@ the app's last cross-domain import.
 standalone context that only reports telemetry.
 
 **The list kit.** `@shared` owns the domain-blind frame: `item-list`, `list-item`, searchbar /
-toolbar / empty-state, `page-header`, the edit-modal shell, form inputs, and the `LIST_FACADE`
-contract. Each domain projects its own row/form body and keeps its item type in-domain (`<T>`).
-Note there are **two** list *engines*: `@shared/data/item-list` (tracking-flavoured, single
-list) and `groceries/data/grocery-list` (multi-list, route-param driven).
+toolbar / empty-state, `page-header`, the edit-modal shell, form inputs, the `LIST_FACADE`
+contract, and the single-list helpers (`@shared/util/list` — `list.utils`/`list.selector`). Each
+domain projects its own row/form body and keeps its item type in-domain (`<T>`). There is exactly
+**one** multi-list *engine* — `groceries/data/grocery-list` (route-param driven). The single-list
+domains (`tracking`, `tasks`) have **no** separate engine: each owns its slice (`state.tracking`/
+`state.tasks`) and builds its list flow on those shared helpers, driving `ListPageComponent`
+through its own `ListPageFacade`. Their edit dialogs ride the eager, domain-blind `itemDialogs`
+open-command slice (§4.2) — tracking's former standalone item-list engine + `dialogs` fork were
+folded onto these shared mechanics (the last merge-duplicate retired).
 
 ---
 

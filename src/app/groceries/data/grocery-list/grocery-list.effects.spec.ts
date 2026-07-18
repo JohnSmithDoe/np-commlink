@@ -10,27 +10,31 @@ import { GroceryListActions } from './grocery-list.actions';
 import { QuickAddActions } from '../../../@shared/data/quick-add/quick-add.actions';
 import { updateQuickAddState } from './grocery-list.utils';
 import { actionsByListId, GroceryListEffects } from './grocery-list.effects';
+import { IGroceryLists } from '../../model';
+import { mockAppState } from '../../../@shared/testing/test-data';
 import {
-  mockAppState,
+  mockGroceryLists,
   mockProduct,
   mockShoppingItem,
   mockStorageItem,
   mockStorageState,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/grocery.test-data';
 
 describe('GroceryListEffects', () => {
   let actions$: Observable<Action>;
   let effects: GroceryListEffects;
 
-  const setup = (initialState = mockAppState()) => {
+  const setup = (grocery: Partial<IGroceryLists> = {}) => {
+    const lists = mockGroceryLists(grocery);
     TestBed.configureTestingModule({
       providers: [
         GroceryListEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState }),
+        provideMockStore({ initialState: mockAppState(lists) }),
       ],
     });
     effects = TestBed.inject(GroceryListEffects);
+    return lists;
   };
 
   describe('actionsByListId', () => {
@@ -83,9 +87,7 @@ describe('GroceryListEffects', () => {
 
   describe('addItemFromSearch', () => {
     it('adds an item in alphabetical mode', async () => {
-      setup(
-        mockAppState({ storage: mockStorageState({ mode: 'alphabetical' }) })
-      );
+      setup({ storage: mockStorageState({ mode: 'alphabetical' }) });
       actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
       expect(await firstValueFrom(effects.addItemFromSearch)).toEqual(
         StorageActions.addItemFromSearch()
@@ -93,9 +95,7 @@ describe('GroceryListEffects', () => {
     });
 
     it('adds a category in categories mode', async () => {
-      setup(
-        mockAppState({ storage: mockStorageState({ mode: 'categories' }) })
-      );
+      setup({ storage: mockStorageState({ mode: 'categories' }) });
       actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
       expect(await firstValueFrom(effects.addItemFromSearch)).toEqual(
         GroceryListActions.addCategoryFromSearch('_storage')
@@ -104,9 +104,7 @@ describe('GroceryListEffects', () => {
   });
 
   it('addCategoryFromSearch uses the list search query', async () => {
-    setup(
-      mockAppState({ storage: mockStorageState({ searchQuery: 'Dairy' }) })
-    );
+    setup({ storage: mockStorageState({ searchQuery: 'Dairy' }) });
     actions$ = of(GroceryListActions.addCategoryFromSearch('_storage'));
     expect(await firstValueFrom(effects.addCategoryFromSearch)).toEqual(
       StorageActions.addCategory('Dairy')
@@ -163,7 +161,7 @@ describe('GroceryListEffects', () => {
   });
 
   it('addItemFromSearch$ builds an item from the list search query', async () => {
-    setup(mockAppState({ storage: mockStorageState({ searchQuery: 'Milk' }) }));
+    setup({ storage: mockStorageState({ searchQuery: 'Milk' }) });
     actions$ = of(StorageActions.addItemFromSearch());
     const emitted = await firstValueFrom(effects.addItemFromSearch$);
     expect(emitted.type).toBe('[Storage] Add Item');
@@ -175,7 +173,7 @@ describe('GroceryListEffects', () => {
   describe('addOrUpdateItem$', () => {
     it('updates an item that already exists in the list', async () => {
       const item = mockStorageItem();
-      setup(mockAppState({ storage: mockStorageState({ items: [item] }) }));
+      setup({ storage: mockStorageState({ items: [item] }) });
       actions$ = of(StorageActions.addOrUpdateItem(item));
       expect(await firstValueFrom(effects.addOrUpdateItem$)).toEqual(
         StorageActions.updateItem(item)
@@ -184,7 +182,7 @@ describe('GroceryListEffects', () => {
 
     it('adds an item when the list is empty', async () => {
       const item = mockStorageItem();
-      setup(mockAppState({ storage: mockStorageState({ items: [] }) }));
+      setup({ storage: mockStorageState({ items: [] }) });
       actions$ = of(StorageActions.addOrUpdateItem(item));
       expect(await firstValueFrom(effects.addOrUpdateItem$)).toEqual(
         StorageActions.addItem(item)
@@ -226,13 +224,12 @@ describe('GroceryListEffects', () => {
   });
 
   it('updateQuickAdd$ recomputes the quick-add state on search', async () => {
-    const state = mockAppState({
+    const lists = setup({
       storage: mockStorageState({ searchQuery: 'milk' }),
     });
-    setup(state);
     actions$ = of(StorageActions.updateSearch('milk'));
     expect(await firstValueFrom(effects.updateQuickAdd$)).toEqual(
-      QuickAddActions.updateState(updateQuickAddState(state, '_storage'))
+      QuickAddActions.updateState(updateQuickAddState(lists, '_storage'))
     );
   });
 });

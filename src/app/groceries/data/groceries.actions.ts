@@ -1,9 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import {
-  IProductsState,
-  IShoppingState,
-  IStorageState,
-} from '../../@shared/types';
+import { IProductsState, IShoppingState, IStorageState } from '../model';
 
 // Grocery bounded-context hydration lifecycle (lazy-modules plan §2/§4). The
 // three grocery aggregates cross-read each other, so they hydrate as ONE

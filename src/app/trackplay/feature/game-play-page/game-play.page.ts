@@ -17,12 +17,12 @@ import {
   IonInput,
   IonTitle,
   IonToolbar,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, play, square } from 'ionicons/icons';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { IRound, TID } from '../../model';
 import {
   TrackplayActions,
@@ -65,7 +65,7 @@ import { ScorePipe } from '../../util/score.pipe';
     ScorePipe,
   ],
 })
-export class TrackplayGamePlayPage implements IonViewWillEnter {
+export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);

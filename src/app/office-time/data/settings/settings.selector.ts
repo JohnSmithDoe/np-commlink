@@ -1,5 +1,5 @@
 import { createFeatureSelector } from '@ngrx/store';
-import { ISettingsState } from '../../../@shared/types';
+import { ISettingsState } from '../../model';
 
 export const selectSettingsState =
   createFeatureSelector<ISettingsState>('settings');

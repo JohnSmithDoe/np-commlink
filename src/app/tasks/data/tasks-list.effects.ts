@@ -3,8 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IAppState, IQuickAddState, ITasksState } from '../../@shared/types';
-import { createTaskItem } from '../../@shared/util/item.factory';
+import { IQuickAddState } from '../../@shared/types';
+import { ITasksState } from '../model';
+import { createTaskItem } from '../util/task.factory';
 import {
   matchesItemExactly,
   matchesSearchExactly,
@@ -13,6 +14,7 @@ import {
 import { updatedSearchQuery } from '../../@shared/util/list/list.utils';
 import { QuickAddActions } from '../../@shared/data/quick-add/quick-add.actions';
 import { TasksActions } from './tasks.actions';
+import { selectTasksState } from './tasks.selector';
 
 marker('grocery.list-header.tasks');
 
@@ -23,19 +25,16 @@ marker('grocery.list-header.tasks');
 // (was the eager shell GroceryListEffects, which no longer knows about tasks).
 @Injectable({ providedIn: 'root' })
 export class TasksListEffects {
-  #store = inject(Store<IAppState>);
+  #store = inject(Store);
   #actions$ = inject(Actions);
 
   addItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(TasksActions.addItemFromSearch),
-      withLatestFrom(this.#store, (_, state: IAppState) => state),
-      map((state) => {
-        const item = createTaskItem(
-          state.tasks.searchQuery ?? '',
-          state.tasks.filterBy
-        );
-        const found = matchesItemExactly(item, state.tasks.items);
+      withLatestFrom(this.#store.select(selectTasksState), (_, tasks) => tasks),
+      map((tasks) => {
+        const item = createTaskItem(tasks.searchQuery ?? '', tasks.filterBy);
+        const found = matchesItemExactly(item, tasks.items);
         return found
           ? TasksActions.addItemFailure(found)
           : TasksActions.addItem(item);
@@ -46,12 +45,12 @@ export class TasksListEffects {
   addOrUpdateItem$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(TasksActions.addOrUpdateItem),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
+      withLatestFrom(this.#store.select(selectTasksState), (action, tasks) => ({
         action,
-        state,
+        tasks,
       })),
-      map(({ action, state }) =>
-        matchesItemExactly(action.item, state.tasks.items)
+      map(({ action, tasks }) =>
+        matchesItemExactly(action.item, tasks.items)
           ? TasksActions.updateItem(action.item)
           : TasksActions.addItem(action.item)
       )
@@ -85,13 +84,13 @@ export class TasksListEffects {
   updateSearchOnItemChange$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(TasksActions.updateItem),
-      withLatestFrom(this.#store, (action, state: IAppState) => ({
+      withLatestFrom(this.#store.select(selectTasksState), (action, tasks) => ({
         action,
-        state,
+        tasks,
       })),
-      map(({ action, state }) =>
+      map(({ action, tasks }) =>
         TasksActions.updateSearch(
-          updatedSearchQuery(action.item, state.tasks.searchQuery)
+          updatedSearchQuery(action.item, tasks.searchQuery)
         )
       )
     );
@@ -105,10 +104,8 @@ export class TasksListEffects {
         TasksActions.updateMode,
         TasksActions.enterPage
       ),
-      withLatestFrom(this.#store, (_, state: IAppState) => state),
-      map((state) =>
-        QuickAddActions.updateState(tasksQuickAddState(state.tasks))
-      )
+      withLatestFrom(this.#store.select(selectTasksState), (_, tasks) => tasks),
+      map((tasks) => QuickAddActions.updateState(tasksQuickAddState(tasks)))
     );
   });
 }

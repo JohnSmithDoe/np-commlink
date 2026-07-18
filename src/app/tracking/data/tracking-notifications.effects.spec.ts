@@ -5,17 +5,13 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { NotificationsStore } from '../../@shared/util/notifications/notifications.store';
+import { mockAppState, TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockTrackingItem,
   mockTrackingState,
-  TEST_TIMESTAMP,
-} from '../../@shared/testing/test-data';
-import {
-  INotification,
-  INotificationsState,
-  IAppState,
-} from '../../@shared/types';
+} from '../testing/tracking.test-data';
+import { INotification, INotificationsState } from '../../@shared/types';
+import { ITrackingState } from '../model';
 import { TrackingActions } from './tracking.actions';
 import { TrackingNotificationsEffects } from './tracking-notifications.effects';
 import { trackingStateNotificationId } from './tracking-notifications.utils';
@@ -57,7 +53,7 @@ describe('TrackingNotificationsEffects', () => {
   const setup = (
     actions$: Observable<Action>,
     opts: {
-      tracking?: IAppState['tracking'];
+      tracking?: ITrackingState;
       notifications?: INotification[];
     } = {}
   ) => {

@@ -33,13 +33,16 @@ build` · `pnpm run e2e` — green.
 
 The SCSS simplification (done — see git log `scss-simplification Phase 1–6`) settled the
 per-domain-tint question app-wide (dropped for uniform amber/teal) and pulled the deck pieces
-into shared mixins. What it deliberately did **not** touch remains open here:
-- Remaining hardcoded German button labels ("Mhd" / "Liste" / "Kategorien").
-- The cash report chart palette (`#2dd36f`/`#eb445a`/category ramp) and `_charts.scss`
-  (`#078507`/`#a82727`) are Ionic-default / off-theme hexes, not `--sr-*` tokens — pull them
-  onto the theme (explicitly out of scope for the SCSS simplification).
-- A grocery-dialog contrast-vs-amber + monospace-clipping pass (long German strings) on the
-  account/transaction/rule/transfer modals, import preview, and rules/report pages.
+into shared mixins. The follow-up re-skin items are now also **done** (git log `re-skin audit`):
+chart palettes tokenised onto the theme (`@shared/util/chart-colors` reads the live tokens for
+the canvas charts; `_charts.scss` uses `--ion-color-success`/`--sr-red-deep`); the last
+hardcoded button labels moved to i18n (`A-Z`, `Share Data`, `Ansicht` — the audit-named
+MHD/Liste/Kategorien were already i18n'd); and the grocery dialog clipping fixed by putting the
+shared form inputs on `labelPlacement="stacked"` (matching cash, which was already stacked).
+
+Still genuinely open: none — the last item (cash's English `aria-label`s) is now done: all 16
+cash toolbar/form `aria-label`s moved to the `cash.a11y.*` i18n group (de + en) and bound via
+`[attr.aria-label] | translate`.
 
 ---
 
@@ -47,18 +50,22 @@ into shared mixins. What it deliberately did **not** touch remains open here:
 
 Non-blocking follow-ups on the completed CREDSTICK roadmap (P0–P5 done). Full detail lives in
 `cash-plan.md § Deferred polish`:
-- **Windows-1252 CSV decode fallback** — P4a reads via `file.text()` (UTF-8), fine for the two
-  example exports; real Volksbank exports are often Windows-1252 → add a `TextDecoder` fallback.
+- ~~**Windows-1252 CSV decode fallback**~~ — **done**: the import reads bytes via
+  `file.arrayBuffer()` and decodes through the pure `cash/util/import/read-csv.ts` `decodeCsv()`
+  (strict UTF-8, then Windows-1252 fallback). Spec'd in `read-csv.spec.ts`.
 - **DKB import driven live** — the DKB parser is unit-tested against `docs/example2.csv`; only
   Volksbank was driven end-to-end in-app. Do a manual DKB pass when convenient.
-- **Full cash mutate→reload persistence e2e** — parity with trackplay/tasks; only
-  `e2e/cash/first-paint.e2e.ts` (load/hydrate wiring) exists today.
+- ~~**Full cash mutate→reload persistence e2e**~~ — **done**: `e2e/cash/persistence.e2e.ts`
+  drives create-account → add-transaction → cold reload and asserts both survive (covers
+  CashSaveEffects), parity with the trackplay/tasks reload guards.
 - **Rules drag-reorder** — rules reorder via up/down controls; a drag (`ion-reorder-group`) was
   deferred (the app wires no reorder-group anywhere).
 - **Category input unification** — a manual txn's category is free text while a rule assigns from
   the managed palette; consider a shared category input backed by `categories`.
-- **Un-reconcile affordance** — reconciliation is one-way in the UI; a "detach" (clear
-  `matchedTxnId`, restore `pending`) would make it reversible.
+- ~~**Un-reconcile affordance**~~ — **done**: a survivor txn that absorbed a manual leg now
+  shows a start-swipe "detach" option (`CashActions.unreconcileTransaction` → clears
+  `matchedTxnId`, restores `pending`). `selectTransactionsForAccount` tags survivors with
+  `reconciledManualId`; reducer + selector spec'd.
 
 ---
 
@@ -96,7 +103,10 @@ locale)`, so the cash side is a one-line change once a locale source exists.
 
 ## Known-flaky / test backlog
 
-- **`e2e/grocery/settings.e2e.ts`** — a pre-existing toggle-read race (flaky under CI mode).
+- ~~**`e2e/grocery/settings.e2e.ts`**~~ — **fixed**: the flake was a check-then-act re-read of
+  `aria-checked` (which flips through transient values via the async `toggleFlag` effect + Ionic's
+  optimistic flip). Now derives the expected post-toggle value from the settled `before` and
+  asserts it with a web-first retrying `toHaveAttribute`. Stable over 15× serial reruns.
 
 ---
 

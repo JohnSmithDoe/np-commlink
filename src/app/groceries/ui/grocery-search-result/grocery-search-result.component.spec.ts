@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ISearchResult, IStorageItem } from '../../../@shared/types';
+import { IGrocerySearchResult, IStorageItem } from '../../model';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import {
   mockProduct,
   mockShoppingItem,
   mockStorageItem,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/grocery.test-data';
 import { GrocerySearchResultComponent } from './grocery-search-result.component';
 
 function mockResults(
-  overrides: Partial<ISearchResult<IStorageItem>> = {}
-): ISearchResult<IStorageItem> {
+  overrides: Partial<IGrocerySearchResult<IStorageItem>> = {}
+): IGrocerySearchResult<IStorageItem> {
   return {
     listItems: [],
     hasSearchTerm: true,

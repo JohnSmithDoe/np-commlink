@@ -3,10 +3,11 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockTrackingItem,
-} from '../../@shared/testing/test-data';
+  mockTrackingState,
+} from '../testing/tracking.test-data';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { TrackingActions } from './tracking.actions';
 import { TrackingSaveEffects } from './tracking-save.effects';
@@ -31,13 +32,11 @@ describe('TrackingSaveEffects', () => {
   };
 
   it('persists the tracking slice on a mutation', async () => {
-    const initialState = setup();
+    const tracking = mockTrackingState();
+    setup(mockAppState({ tracking }));
     actions$ = of(TrackingActions.addItem(mockTrackingItem()));
     await firstValueFrom(effects.saveOnChange$);
-    expect(database.save).toHaveBeenCalledWith(
-      'tracking',
-      initialState.tracking
-    );
+    expect(database.save).toHaveBeenCalledWith('tracking', tracking);
   });
 
   it('does NOT persist on the load lifecycle', () => {

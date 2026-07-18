@@ -1,4 +1,4 @@
-import { IDataItem } from '../../@shared/types';
+import { IDataItem } from '../model';
 import { NpTrackingTimePipe } from './np-tracking-time.pipe';
 
 const dataItem = (trackedTimeInSeconds?: number): IDataItem => ({

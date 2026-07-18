@@ -25,7 +25,7 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { ICashTransaction, TCashTxnStatus } from '../../../@shared/types';
+import { ICashTransaction, TCashTxnStatus } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { CashActions, selectCashTransactions } from '../../data';
 import { centsToInput, eurToCents } from '../../util/money';

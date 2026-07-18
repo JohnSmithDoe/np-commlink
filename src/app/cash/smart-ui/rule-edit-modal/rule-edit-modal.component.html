@@ -71,7 +71,7 @@
       <div class="cash-condition">
         <div class="cash-condition__row">
           <ion-select
-            aria-label="field"
+            [attr.aria-label]="'cash.a11y.field' | translate"
             interface="popover"
             [value]="condition.field"
             (ionChange)="onField($index, $any($event).detail.value)"
@@ -85,7 +85,7 @@
           </ion-select>
 
           <ion-select
-            aria-label="operator"
+            [attr.aria-label]="'cash.a11y.operator' | translate"
             interface="popover"
             [value]="condition.op"
             (ionChange)="onOp($index, $any($event).detail.value)"
@@ -100,7 +100,7 @@
           <ion-button
             fill="clear"
             color="medium"
-            aria-label="remove condition"
+            [attr.aria-label]="'cash.a11y.remove-condition' | translate"
             (click)="removeCondition($index)"
           >
             <ion-icon slot="icon-only" name="close-outline" />
@@ -109,7 +109,7 @@
 
         <ion-item>
           <ion-input
-            aria-label="value"
+            [attr.aria-label]="'cash.a11y.value' | translate"
             [placeholder]="
               (condition.field === 'amount'
                 ? 'cash.label.amount'

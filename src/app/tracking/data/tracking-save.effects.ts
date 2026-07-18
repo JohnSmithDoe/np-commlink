@@ -2,9 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { tap, withLatestFrom } from 'rxjs';
-import { IAppState } from '../../@shared/types';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { TrackingActions } from './tracking.actions';
+import { selectTrackingState } from './tracking.selector';
 
 // Own-data save for the tracking context. Relocated from the eager shell
 // `AppEffects` into the lazy tracking providers (lazy-modules §4): it persists
@@ -34,12 +34,9 @@ export class TrackingSaveEffects {
           TrackingActions.resetAllTracking,
           TrackingActions.removeDataItem
         ),
-        withLatestFrom(this.#store, (action, state: IAppState) => ({
-          action,
-          state,
-        })),
-        tap(({ state }) => {
-          void this.#database.save('tracking', state.tracking);
+        withLatestFrom(this.#store.select(selectTrackingState)),
+        tap(([, tracking]) => {
+          void this.#database.save('tracking', tracking);
         })
       );
     },

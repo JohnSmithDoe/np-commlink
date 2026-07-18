@@ -5,13 +5,13 @@
 >
   <ion-list>
     <ion-item lines="none" class="">
-      <ion-button slot="end" size="default" (click)="shareCSV()"
-        >Share Data</ion-button
-      >
+      <ion-button slot="end" size="default" (click)="shareCSV()">
+        {{ 'data.page.share' | translate }}
+      </ion-button>
       <ion-select
         [value]="viewMode()"
         (ionChange)="selectViewMode($event)"
-        label="Ansicht"
+        [label]="'data.page.view' | translate"
       >
         <ion-select-option value="raw">
           {{ 'data.page.title.raw' | translate }}

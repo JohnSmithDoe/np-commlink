@@ -13,8 +13,9 @@ import {
   IonList,
   IonRange,
   IonToggle,
+  AlertButton,
+  ToggleChangeEventDetail,
 } from '@ionic/angular/standalone';
-import { AlertButton, ToggleChangeEventDetail } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';

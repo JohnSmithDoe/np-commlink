@@ -22,31 +22,18 @@ export const migrations: Migration[] = [];
 
 export const migrate = (
   data: LoadedDatastore,
-  target: string
+  _target: string
 ): { data: LoadedDatastore; changed: boolean } => {
+  // Empty at the fresh baseline, so this is a no-op pass-through. The version
+  // anchor + stamping used to read the `settings` slice, which moved into
+  // office-time/model when each context took ownership of its types (DDD review
+  // #1) and is no longer part of LoadedDatastore. When a real step returns,
+  // re-thread a version source (and its from/to gating) through here.
   let next = data;
   let changed = false;
-  let current = data.settings?.version;
-
   for (const step of migrations) {
-    if (step.from !== current) continue;
     next = step.apply(next);
-    current = step.to;
     changed = true;
   }
-
-  // If a settings-page slice exists but its version drifted (e.g. last step
-  // didn't quite land on target), stamp it. For fresh users (settings-page
-  // is null) we deliberately do nothing — the reducer's initialState
-  // is the single source of truth for defaults, and the first
-  // SettingsActions.updateSettings will persist it.
-  if (next.settings && next.settings.version !== target) {
-    next = {
-      ...next,
-      settings: { ...next.settings, version: target },
-    };
-    changed = true;
-  }
-
   return { data: next, changed };
 };

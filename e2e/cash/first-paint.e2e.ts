@@ -12,10 +12,9 @@ import { expect, test } from '@playwright/test';
  * never paint. Asserting the scaffold renders its hydrated account count proves
  * provideState + CashLoadEffects + the resolver are all wired end to end.
  *
- * NB: cash is a P0 read-only scaffold (no add-transaction UI yet), so this can
- * only exercise the load/hydrate wiring. A full mutate → reload persistence
- * guard (parity with the trackplay/tasks reload e2e, covering CashSaveEffects)
- * is still outstanding now that the ledger UI has landed — see docs/open-tasks.md.
+ * NB: this only exercises the load/hydrate wiring on an empty ledger. The full
+ * mutate → reload persistence guard (create account + transaction, reload, assert
+ * both survive — covering CashSaveEffects) lives in `persistence.e2e.ts`.
  */
 test.describe('cash first paint', () => {
   test('hydrates and paints the CREDSTICK scaffold', async ({ page }) => {

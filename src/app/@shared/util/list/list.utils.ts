@@ -1,7 +1,6 @@
 import {
   IBaseItem,
   IListState,
-  TAllItemTypes,
   TItemListCategory,
   TItemListMode,
   TItemListSort,
@@ -21,10 +20,7 @@ import {
 // grocery engine. (Grocery-specific helpers stay in grocery-list.utils.ts and
 // re-export these for backwards compatibility.)
 
-export const updateCategories = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
+export const updateCategories = <T extends IListState<R>, R extends IBaseItem>(
   state: T
 ): T => {
   return {
@@ -35,7 +31,7 @@ export const updateCategories = <
   };
 };
 
-export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
+export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: R
 ): T => {
@@ -50,10 +46,7 @@ export const addListItem = <T extends IListState<R>, R extends TAllItemTypes>(
   });
 };
 
-export const removeListItem = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
+export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: R
 ): T =>
@@ -62,10 +55,7 @@ export const removeListItem = <
     items: state.items.filter((listItem) => listItem.id !== item.id),
   });
 
-export const removeListItems = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
+export const removeListItems = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   items: R[]
 ): T => {
@@ -76,10 +66,7 @@ export const removeListItems = <
   });
 };
 
-export const updateListItem = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
+export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: TUpdateDTO<R> | undefined
 ): T => {
@@ -123,10 +110,7 @@ export const updateListSort = (
   return result;
 };
 
-export const updateListMode = <
-  T extends IListState<R>,
-  R extends TAllItemTypes,
->(
+export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   mode?: TItemListMode
 ): T => {
@@ -159,7 +143,7 @@ export const addListCategory = <T extends IListState<any>>(
       };
 };
 
-export const removeListCategory = <T extends IListState<TAllItemTypes>>(
+export const removeListCategory = <T extends IListState<IBaseItem>>(
   state: T,
   category?: TItemListCategory
 ): T => {

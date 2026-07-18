@@ -4,7 +4,7 @@ import {
   ICashRule,
   ICashState,
   ICashTransaction,
-} from '../../@shared/types';
+} from '../model';
 
 // Source prefix `[Cash]` is load-bearing: CashSaveEffects.saveCashOnChange$
 // persists the slice whenever any `[Cash]` action fires — EXCEPT the
@@ -49,6 +49,9 @@ export const CashActions = createActionGroup({
       manualId,
       importedId,
     }),
+    // Reverse a reconciliation: detach the manual leg from its survivor and
+    // restore it to `pending` (visible + counted again).
+    'Unreconcile Transaction': (manualId: string) => ({ manualId }),
 
     // Categories (user-managed name list)
     'Add Category': (category: string) => ({ category }),

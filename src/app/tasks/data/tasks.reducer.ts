@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { ITasksState } from '../../@shared/types';
+import { ITasksState } from '../model';
 import {
   addListCategory,
   addListItem,

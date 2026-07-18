@@ -4,12 +4,17 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
+import {
+  IonButton,
+  IonContent,
+  IonIcon,
+  IonRouterLink,
+  ViewWillEnter,
+} from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { DashButtonComponent } from '../../smart-ui/dash-button/dash-button.component';
 import { DashCardSkeletonComponent } from '../../ui/dash-card-skeleton/dash-card-skeleton.component';
 import { DashDateComponent } from '../../ui/dash-date/dash-date.component';
@@ -55,10 +60,11 @@ import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.c
     DashWordclockComponent,
     IonButton,
     IonIcon,
+    IonRouterLink,
     RouterLink,
   ],
 })
-export class OfficeTimePage implements IonViewWillEnter {
+export class OfficeTimePage implements ViewWillEnter {
   readonly #store = inject(Store);
 
   readonly holidays = this.#store.selectSignal(selectHolidays);

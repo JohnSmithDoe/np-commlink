@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { INotificationsState } from '../../types';
-import { DatabaseService } from '../../util/database.service';
+import { DatabaseService } from '../database.service';
 import { DashboardActions } from '../dashboard/dashboard.actions';
 import {
   EMPTY_NOTIFICATIONS_STATE,

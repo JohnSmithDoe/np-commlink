@@ -282,9 +282,11 @@ matches the rest of the app. Precedent for the `Intl` style is
   `categorize` (P3) → a preview modal (rows + new/duplicate counts) → on confirm a
   single `Import Transactions` bulk action (one persist). `plan-import.ts` is pure
   + spec'd.
-- **Encoding caveat (deferred):** both examples are UTF-8/ASCII so `file.text()`
-  suffices; real Volksbank exports are often Windows-1252 — add a
-  `TextDecoder('windows-1252')` fallback when a real one shows mojibake.
+- **Encoding (✅ DONE):** both examples are UTF-8/ASCII, but real Volksbank
+  exports are often Windows-1252. The import now reads bytes via
+  `file.arrayBuffer()` and decodes through the pure `cash/util/import/read-csv.ts`
+  `decodeCsv()` — strict UTF-8 first, Windows-1252 fallback when the bytes aren't
+  valid UTF-8 (a lone high byte like 0xFC 'ü' / 0x80 '€' triggers the fallback).
 
 **P4b — reconciliation ✅ DONE:** a pending manual entry's row has a
 swipe-to-reconcile option → a picker modal lists candidates from the pure
@@ -292,7 +294,10 @@ swipe-to-reconcile option → a picker modal lists candidates from the pure
 already a survivor); confirming dispatches `Reconcile Transaction`, which sets
 `matchedTxnId` + `confirmed` on the manual leg (hidden from balance/list by the
 existing `!matchedTxnId` filters) and carries a hand-set category onto the
-survivor. Never auto-picks.
+survivor. Never auto-picks. **Reversible:** the survivor row (tagged with
+`reconciledManualId` by `selectTransactionsForAccount`) has a start-swipe
+"detach" option → `Unreconcile Transaction`, which clears the manual leg's
+`matchedTxnId` and restores it to `pending` (a carried category stays put).
 
 ### P5 — transfers + reporting ✅ DONE
 
@@ -342,13 +347,14 @@ survivor. Never auto-picks.
 
 ## Deferred polish
 
-Non-blocking follow-ups on the completed roadmap — none are correctness bugs.
+Non-blocking follow-ups on the completed roadmap.
 
-- **Windows-1252 CSV decode.** P4a reads the file with `file.text()` (UTF-8),
-  which covers both example exports. Real Volksbank exports are often
-  Windows-1252 / ISO-8859-1 → umlauts would arrive as mojibake. Add a
-  `TextDecoder('windows-1252')` fallback (detect the replacement char `�` and
-  re-decode, or offer an encoding toggle in the import flow).
+- **Windows-1252 CSV decode ✅ DONE.** The import reads bytes via
+  `file.arrayBuffer()` and decodes through the pure `cash/util/import/read-csv.ts`
+  `decodeCsv()`: a strict `TextDecoder('utf-8', { fatal: true })` first, falling
+  back to `TextDecoder('windows-1252')` when the bytes aren't valid UTF-8 (a lone
+  high byte like 0xFC 'ü' / 0x80 '€' throws and is caught). Covers UTF-8 and
+  legacy CP1252 exports; spec'd in `read-csv.spec.ts`.
 - **DKB imported live only in spec.** The DKB parser is unit-tested against
   `docs/example2.csv`, but only Volksbank was driven end-to-end in-app. Do a
   manual DKB import pass when convenient.

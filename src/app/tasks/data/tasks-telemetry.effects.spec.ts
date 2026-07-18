@@ -4,11 +4,8 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
-import {
-  mockAppState,
-  mockTaskItem,
-  mockTasksState,
-} from '../../@shared/testing/test-data';
+import { mockAppState } from '../../@shared/testing/test-data';
+import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   selectOpenTaskCount,
@@ -18,7 +15,7 @@ import {
 describe('TasksTelemetryEffects', () => {
   let effects: TasksTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         TasksTelemetryEffects,

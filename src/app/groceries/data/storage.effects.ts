@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { createShoppingItemFromStorage } from '../../@shared/util/item.factory';
+import { createShoppingItemFromStorage } from '../util/grocery.factory';
 import { matchesItemExactly } from '../../@shared/util/app.utils';
 import { ShoppingActions } from './shopping.actions';
 import { selectShoppingState } from './shopping.selector';

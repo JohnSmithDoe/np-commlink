@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { ICashState, ICashTransaction } from '../../@shared/types';
+import { ICashState, ICashTransaction } from '../model';
 import { CashActions } from './cash.actions';
 
 export const initialState: ICashState = {
@@ -70,6 +70,14 @@ export const cashReducer = createReducer(
       }),
     };
   }),
+  on(CashActions.unreconcileTransaction, (state, { manualId }): ICashState => ({
+    // Detach only restores the manual leg to pending/visible; any category the
+    // reconcile carried onto the survivor stays (it's now the survivor's own).
+    ...state,
+    transactions: state.transactions.map((t): ICashTransaction =>
+      t.id === manualId ? { ...t, matchedTxnId: undefined, status: 'pending' } : t
+    ),
+  })),
 
   // ── Categories ───────────────────────────────────────────────
   on(CashActions.addCategory, (state, { category }): ICashState => state.categories.includes(category) ? state : ({ ...state, categories: [...state.categories, category] })),

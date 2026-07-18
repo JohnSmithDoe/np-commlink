@@ -1,8 +1,8 @@
 import { InjectionToken, Signal } from '@angular/core';
 import {
+  IBaseItem,
   IListState,
   ISearchResult,
-  TAllItemTypes,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
@@ -22,13 +22,13 @@ import {
  * the concrete grocery facade and are wired only from the grocery pages.
  */
 export interface IListPageFacade {
-  readonly state: Signal<IListState<TAllItemTypes> | undefined>;
+  readonly state: Signal<IListState<IBaseItem> | undefined>;
   readonly filter: Signal<{
     isCategoryModeOrHasFilter: boolean;
     hasFilter: boolean;
   }>;
-  readonly items: Signal<TAllItemTypes[] | undefined>;
-  readonly searchResult: Signal<ISearchResult<TAllItemTypes> | undefined>;
+  readonly items: Signal<IBaseItem[] | undefined>;
+  readonly searchResult: Signal<ISearchResult<IBaseItem> | undefined>;
   readonly categories: Signal<{ category: TItemListCategory; count: number }[]>;
 
   search(term?: string): void;

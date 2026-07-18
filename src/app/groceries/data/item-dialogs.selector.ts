@@ -4,7 +4,7 @@ import {
   IProduct,
   IShoppingItem,
   IStorageItem,
-} from '../../@shared/types';
+} from '../model';
 import {
   selectEditItem,
   selectEditState,

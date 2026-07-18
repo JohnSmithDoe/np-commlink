@@ -3,13 +3,19 @@
   icon="timer-outline"
   pageHeader="{{ 'page-title.tracking' | translate }} "
   listHeader="{{ 'list-header.tracking' | translate }}  "
+  [hasCategories]="false"
   [itemTemplate]="trackingItem"
 >
+  <ion-button headerEnd slot="end" fill="clear" routerLink="/data/daily">
+    <ion-icon slot="icon-only" icon="settings-sharp" color="primary" />
+  </ion-button>
+
   <ng-container listActions>
     <span slot="end" style="margin-right: 1rem">
       {{ total() }}
     </span>
   </ng-container>
+
   <ng-container toolbarActionsEnd>
     <ion-button (click)="resetAll()"
       ><ion-icon [icon]="'trash'" slot="start" />
@@ -29,7 +35,8 @@
       >
     }
   </ng-container>
-  <div afterList class="after-list">
+
+  <div searchExtras class="after-list">
     <app-daily-sessions />
   </div>
 </app-list-page>

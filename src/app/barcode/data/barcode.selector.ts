@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IBarcodeState } from '../../@shared/types';
+import { IBarcodeState } from '../model';
 
 export const selectBarcodeState =
   createFeatureSelector<IBarcodeState>('barcode');

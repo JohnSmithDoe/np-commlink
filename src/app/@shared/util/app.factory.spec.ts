@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createBaseItem, createTrackingItem } from './app.factory';
+import { createBaseItem } from './app.factory';
 
 describe('app.factory', () => {
   describe('createBaseItem', () => {
@@ -20,15 +20,6 @@ describe('app.factory', () => {
 
     it('passes an array category through untouched', () => {
       expect(createBaseItem('Milk', ['A', 'B']).category).toEqual(['A', 'B']);
-    });
-  });
-
-  describe('createTrackingItem', () => {
-    it('starts in the stopped state with a base item', () => {
-      const item = createTrackingItem('Deep work');
-      expect(item.name).toBe('Deep work');
-      expect(item.state).toBe('stopped');
-      expect(item.id).toBeTruthy();
     });
   });
 });

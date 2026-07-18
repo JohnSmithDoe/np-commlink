@@ -5,12 +5,10 @@ import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
   mockAppState,
-  mockCategoriesState,
   mockItemDialogsState,
-  mockStorageItem,
-  mockStorageState,
 } from '../../../@shared/testing/test-data';
 import { StorageActions } from '../storage.actions';
+import { GroceryListActions } from './grocery-list.actions';
 import {
   CategoriesActions,
   ItemDialogsActions,
@@ -21,20 +19,7 @@ describe('GroceryItemDialogsEffects', () => {
   let actions$: Observable<Action>;
   let effects: GroceryItemDialogsEffects;
 
-  const dialogItem = mockStorageItem();
-  const initialState = mockAppState({
-    itemDialogs: mockItemDialogsState({
-      listId: '_storage',
-      item: dialogItem,
-      category: mockCategoriesState({
-        selection: ['Dairy'],
-        searchQuery: ' Dairy ',
-      }),
-    }),
-    storage: mockStorageState({ categories: ['Dairy'] }),
-  });
-
-  const setup = (state = initialState) => {
+  const setup = (state = mockAppState()) => {
     TestBed.configureTestingModule({
       providers: [
         GroceryItemDialogsEffects,
@@ -45,70 +30,47 @@ describe('GroceryItemDialogsEffects', () => {
     effects = TestBed.inject(GroceryItemDialogsEffects);
   };
 
-  it('showCategories$ builds a selection from the active list categories', async () => {
+  it('openEditProduct$ opens the product dialog seeded with the scanned EAN', async () => {
     setup();
-    actions$ = of(CategoriesActions.showDialog());
-    expect(await firstValueFrom(effects.showCategories$)).toEqual(
-      CategoriesActions.updateSelection(dialogItem, ['Dairy'])
-    );
+    actions$ = of(GroceryListActions.openEditProduct('12345'));
+    const action = (await firstValueFrom(
+      effects.openEditProduct$
+    )) as ReturnType<typeof ItemDialogsActions.showEditDialog>;
+    expect(action.type).toBe(ItemDialogsActions.showEditDialog.type);
+    expect(action.listId).toBe('_products');
+    expect(action.item.name).toBe('12345');
   });
 
-  it('confirmCategories$ updates the dialog item with the selection', async () => {
-    setup();
-    actions$ = of(CategoriesActions.confirmChanges());
-    expect(await firstValueFrom(effects.confirmCategories$)).toEqual(
-      ItemDialogsActions.updateItem({ category: ['Dairy'] })
+  it('confirmEditCategoryChanges$ forwards a renamed category to the target list', async () => {
+    setup(
+      mockAppState({
+        itemDialogs: mockItemDialogsState({
+          listId: '_storage',
+          category: { isEditing: true, original: 'Dairy', editItem: 'Fridge' },
+        }),
+      })
     );
-  });
-
-  it('addCategoryFromDialogSearch$ trims the dialog search query', async () => {
-    setup();
-    actions$ = of(CategoriesActions.addCategoryFromDialogSearch());
-    expect(await firstValueFrom(effects.addCategoryFromDialogSearch$)).toEqual(
-      CategoriesActions.addCategory('Dairy')
-    );
-  });
-
-  it('confirmItemChanges$ forwards the edited item to the target list', async () => {
-    setup();
-    actions$ = of(ItemDialogsActions.confirmChanges());
-    expect(await firstValueFrom(effects.confirmItemChanges$)).toEqual(
-      StorageActions.addOrUpdateItem(dialogItem)
+    actions$ = of(CategoriesActions.confirmEditChanges());
+    expect(await firstValueFrom(effects.confirmEditCategoryChanges$)).toEqual(
+      StorageActions.updateCategory('Dairy', 'Fridge')
     );
   });
 
   // Both dialog orchestrators stay registered once both route sets are visited
   // (injectors/effects are not torn down), so the grocery one MUST ignore a
   // tasks dialog — otherwise it routes into actionsByListId('_tasks') → throw.
-  describe('listId guards — ignores a tasks dialog', () => {
-    const tasksDialog = mockAppState({
-      itemDialogs: mockItemDialogsState({
-        listId: '_tasks',
-        category: mockCategoriesState({ selection: ['X'], searchQuery: 'X' }),
-      }),
-    });
-    const noEmit = (source: Observable<Action>) => {
-      const out: Action[] = [];
-      source.subscribe((a) => out.push(a));
-      return out;
-    };
-
-    it('confirmItemChanges$ does not act on a _tasks dialog (no throw)', () => {
-      setup(tasksDialog);
-      actions$ = of(ItemDialogsActions.confirmChanges());
-      expect(noEmit(effects.confirmItemChanges$)).toEqual([]);
-    });
-
-    it('addCategoryToList$ does not act on a _tasks dialog', () => {
-      setup(tasksDialog);
-      actions$ = of(CategoriesActions.addCategory('X'));
-      expect(noEmit(effects.addCategoryToList$)).toEqual([]);
-    });
-
-    it('confirmCategories$ does not act on a _tasks dialog', () => {
-      setup(tasksDialog);
-      actions$ = of(CategoriesActions.confirmChanges());
-      expect(noEmit(effects.confirmCategories$)).toEqual([]);
-    });
+  it('confirmEditCategoryChanges$ ignores a _tasks dialog (no throw)', () => {
+    setup(
+      mockAppState({
+        itemDialogs: mockItemDialogsState({
+          listId: '_tasks',
+          category: { isEditing: true, original: 'X', editItem: 'Y' },
+        }),
+      })
+    );
+    actions$ = of(CategoriesActions.confirmEditChanges());
+    const out: Action[] = [];
+    effects.confirmEditCategoryChanges$.subscribe((a) => out.push(a));
+    expect(out).toEqual([]);
   });
 });

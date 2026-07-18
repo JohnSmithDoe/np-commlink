@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap } from 'rxjs';
-import { ITasksState } from '../../@shared/types';
+import { ITasksState } from '../model';
 import { DatabaseService } from '../../@shared/util/database.service';
 import { TasksActions } from './tasks.actions';
 

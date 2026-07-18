@@ -1,4 +1,4 @@
-import { IStorageItem, IStorageState } from '../../../@shared/types';
+import { IStorageItem, IStorageState } from '../../model';
 import {
   addListCategory,
   addListItem,
@@ -20,12 +20,12 @@ import {
   updateQuickAddState,
 } from './grocery-list.utils';
 import {
-  mockAppState,
+  mockGroceryLists,
   mockShoppingItem,
   mockShoppingState,
   mockStorageItem,
   mockStorageState,
-} from '../../../@shared/testing/test-data';
+} from '../../testing/grocery.test-data';
 
 describe('item-list.utils', () => {
   describe('categoriesFromList', () => {
@@ -272,7 +272,7 @@ describe('item-list.utils', () => {
   });
 
   describe('stateByListId / searchQueryByListId / filterByByListId', () => {
-    const appState = mockAppState({
+    const appState = mockGroceryLists({
       storage: mockStorageState({
         searchQuery: '  milk  ',
         filterBy: '  Dairy ',
@@ -293,7 +293,7 @@ describe('item-list.utils', () => {
 
   describe('updateQuickAddState', () => {
     it('allows adding a local and a global item for a new storage search', () => {
-      const state = mockAppState({
+      const state = mockGroceryLists({
         storage: mockStorageState({
           searchQuery: 'Milk',
           mode: 'alphabetical',
@@ -308,7 +308,7 @@ describe('item-list.utils', () => {
     });
 
     it('disallows adding a local item that already exists exactly', () => {
-      const state = mockAppState({
+      const state = mockGroceryLists({
         storage: mockStorageState({
           searchQuery: 'Milk',
           items: [mockStorageItem({ name: 'Milk' })],
@@ -318,7 +318,7 @@ describe('item-list.utils', () => {
     });
 
     it('offers category creation in categories mode', () => {
-      const state = mockAppState({
+      const state = mockGroceryLists({
         storage: mockStorageState({ searchQuery: 'Dairy', mode: 'categories' }),
       });
       const result = updateQuickAddState(state, '_storage');
@@ -327,7 +327,7 @@ describe('item-list.utils', () => {
     });
 
     it('never offers a global item for the globals or tasks list', () => {
-      const productsState = mockAppState({
+      const productsState = mockGroceryLists({
         products: mockStorageState({ searchQuery: 'Milk' }) as never,
       });
       expect(
@@ -336,7 +336,7 @@ describe('item-list.utils', () => {
     });
 
     it('shows nothing for an empty search', () => {
-      const state = mockAppState({
+      const state = mockGroceryLists({
         storage: mockStorageState({ searchQuery: '   ' }),
       });
       const result = updateQuickAddState(state, '_storage');

@@ -5,8 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { InputCustomEvent } from '@ionic/angular';
-import { IonInput, IonItem } from '@ionic/angular/standalone';
+import { IonInput, IonItem, InputCustomEvent } from '@ionic/angular/standalone';
 import { parseNumberInput } from '../../../util/app.utils';
 
 @Component({

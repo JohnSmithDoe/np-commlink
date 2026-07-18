@@ -37,7 +37,7 @@ import {
   TDescriptionOp,
   TFilterField,
   TFilterOp,
-} from '../../../@shared/types';
+} from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { CashActions, selectCashCategories, selectCashRules } from '../../data';
 

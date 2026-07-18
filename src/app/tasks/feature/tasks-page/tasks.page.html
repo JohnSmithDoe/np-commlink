@@ -5,8 +5,12 @@
   [itemTemplate]="taskItem"
 >
   <ng-container toolbarActions>
-    <ion-button (click)="setSortMode('prio')">{{ 'grocery.list-toolbar.prio' | translate }}</ion-button>
-    <ion-button (click)="setSortMode('dueAt')">{{ 'grocery.list-toolbar.due' | translate }}</ion-button>
+    <ion-button (click)="setSortMode('prio')">{{
+      'grocery.list-toolbar.prio' | translate
+    }}</ion-button>
+    <ion-button (click)="setSortMode('dueAt')">{{
+      'grocery.list-toolbar.due' | translate
+    }}</ion-button>
   </ng-container>
 </app-list-page>
 

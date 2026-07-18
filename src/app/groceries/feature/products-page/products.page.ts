@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { IProduct, IonViewWillEnter } from '../../../@shared/types';
+import { IProduct } from '../../model';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { GroceryListPageFacade, ProductsActions } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
@@ -9,6 +9,7 @@ import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
+import { ViewWillEnter } from '@ionic/angular/standalone';
 
 @Component({
   // selector kept as `app-page-products` for cosmetic continuity (kitchen-bot).
@@ -25,7 +26,7 @@ import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-
   ],
   providers: [{ provide: LIST_FACADE, useExisting: GroceryListPageFacade }],
 })
-export class ProductsPage implements IonViewWillEnter {
+export class ProductsPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly facade = inject(GroceryListPageFacade);
 

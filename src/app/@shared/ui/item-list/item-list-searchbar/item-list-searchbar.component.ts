@@ -4,8 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { SearchbarCustomEvent } from '@ionic/angular';
-import { IonSearchbar } from '@ionic/angular/standalone';
+import { IonSearchbar, SearchbarCustomEvent } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';

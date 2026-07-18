@@ -4,11 +4,11 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { DashboardActions } from '../../@shared/util/dashboard/dashboard.actions';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockTrackingItem,
   mockTrackingState,
-} from '../../@shared/testing/test-data';
+} from '../testing/tracking.test-data';
 import { IAppState } from '../../@shared/types';
 import {
   selectTrackingItemCount,
@@ -18,7 +18,7 @@ import {
 describe('TrackingTelemetryEffects', () => {
   let effects: TrackingTelemetryEffects;
 
-  const setup = (state: Partial<IAppState> = {}) => {
+  const setup = (state: Partial<IAppState> & Record<string, unknown> = {}) => {
     TestBed.configureTestingModule({
       providers: [
         TrackingTelemetryEffects,

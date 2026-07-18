@@ -1,9 +1,6 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
-import {
-  DashboardSettingsType,
-  IOfficeTimeStateStorage,
-} from '../../../@shared/types';
+import { DashboardSettingsType, IOfficeTimeStateStorage } from '../../model';
 
 export const OfficeTimeActions = createActionGroup({
   source: 'Office Time',

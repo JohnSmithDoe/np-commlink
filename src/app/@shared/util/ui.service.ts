@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { ITrackingItem, TColor, TUpdateDTO } from '../types';
+import { IBaseItem, TColor, TUpdateDTO } from '../types';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +38,7 @@ export class UiService {
     return this.showToast(msg);
   }
 
-  showUpdateItemToast(item: TUpdateDTO<ITrackingItem>) {
+  showUpdateItemToast(item: TUpdateDTO<IBaseItem>) {
     const msg = this.translate.instant(marker('toast.update.item'), {
       name: item.name,
     });

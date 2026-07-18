@@ -1,8 +1,4 @@
-import {
-  ICashFilterCondition,
-  ICashRule,
-  ICashTransaction,
-} from '../../@shared/types';
+import { ICashFilterCondition, ICashRule, ICashTransaction } from '../model';
 import { eurToCents } from './money';
 
 /**

@@ -3,12 +3,12 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
+import { mockAppState } from '../../@shared/testing/test-data';
 import {
-  mockAppState,
   mockShoppingItem,
   mockShoppingState,
   mockStorageItem,
-} from '../../@shared/testing/test-data';
+} from '../testing/grocery.test-data';
 import { ShoppingActions } from './shopping.actions';
 import { StorageActions } from './storage.actions';
 import { StorageEffects } from './storage.effects';

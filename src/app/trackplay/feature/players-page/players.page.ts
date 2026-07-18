@@ -12,12 +12,12 @@ import {
   IonList,
   ModalController,
   PopoverController,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline } from 'ionicons/icons';
-import { IonViewWillEnter } from '../../../@shared/types';
 import { IPlayer, IPlayerStats, TID } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
@@ -52,7 +52,7 @@ const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
     TrackplayPlayerListItemComponent,
   ],
 })
-export class TrackplayPlayersPage implements IonViewWillEnter {
+export class TrackplayPlayersPage implements ViewWillEnter {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);

@@ -19,7 +19,10 @@
     "e2e:report": "playwright show-report",
     "lint": "ng lint",
     "serve:prod": "ionic serve --prod",
-    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --sort --format json"
+    "i18n:extract": "ngx-translate-extract --input ./src --output src/assets/i18n/de.json --clean --sort --format json",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@angular/animations": "^21.2.18",
@@ -85,6 +88,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jsdom": "^29.1.1",
+    "lefthook": "^2.1.10",
     "prettier": "^3.2.5",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.63.0",

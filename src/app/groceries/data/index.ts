@@ -23,9 +23,16 @@ export { ProductsActions } from './products.actions';
 export {
   selectShoppingState,
   selectShoppingListHasBoughtItems,
+  selectShoppingCategories,
 } from './shopping.selector';
-export { selectStorageListItems } from './storage.selector';
-export { selectProductListItems } from './products.selector';
+export {
+  selectStorageListItems,
+  selectStorageCategories,
+} from './storage.selector';
+export {
+  selectProductListItems,
+  selectProductsCategories,
+} from './products.selector';
 
 // Grocery's typed views of the shared, domain-blind itemDialogs slice
 export {
