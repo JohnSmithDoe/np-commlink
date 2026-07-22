@@ -88,32 +88,45 @@ export class OfficeTimePage implements ViewWillEnter {
     if (!items || !settings) return [];
     return items.filter((item) => {
       switch (item) {
-        case 'date':
+        case 'date': {
           return settings.showDateCard;
-        case 'button':
+        }
+        case 'button': {
           return true;
-        case 'wordclock':
+        }
+        case 'wordclock': {
           return settings.showWordclockCard;
-        case 'officedays-list':
+        }
+        case 'officedays-list': {
           return settings.showOfficedaysCardList;
-        case 'officedays-edit':
+        }
+        case 'officedays-edit': {
           return settings.showOfficedaysCardEdit;
-        case 'freedays-list':
+        }
+        case 'freedays-list': {
           return settings.showFreedaysCardList;
-        case 'freedays-edit':
+        }
+        case 'freedays-edit': {
           return settings.showFreedaysCardEdit;
-        case 'stats-year':
+        }
+        case 'stats-year': {
           return settings.showStatsYear;
-        case 'stats-quarter':
+        }
+        case 'stats-quarter': {
           return settings.showStatsQuarter;
-        case 'stats-month':
+        }
+        case 'stats-month': {
           return settings.showStatsMonth;
-        case 'stats-week':
+        }
+        case 'stats-week': {
           return settings.showStatsWeek;
-        case 'holidays':
+        }
+        case 'holidays': {
           return settings.showHolidaysCard;
-        default:
+        }
+        default: {
           return false;
+        }
       }
     });
   });

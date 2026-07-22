@@ -53,7 +53,7 @@ describe('dashboardReducer', () => {
         telemetry({ source: 'office-time', metrics: { officedays: 12 } })
       )
     );
-    expect(Object.keys(state.bySource).sort()).toEqual([
+    expect(Object.keys(state.bySource).toSorted()).toEqual([
       'notifications',
       'office-time',
     ]);

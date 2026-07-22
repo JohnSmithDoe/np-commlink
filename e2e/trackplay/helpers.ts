@@ -115,11 +115,9 @@ export async function togglePlayerInSelect(
  */
 export async function slideDelete(row: Locator): Promise<void> {
   const sliding = row.locator('ion-item-sliding');
-  await sliding.evaluate((el: HTMLElement & { open(side: string): Promise<void> }) =>
-    el.open('start')
+  await sliding.evaluate(
+    (el: HTMLElement & { open(side: string): Promise<void> }) =>
+      el.open('start')
   );
-  await row
-    .locator('ion-item-option')
-    .filter({ hasText: 'Löschen' })
-    .click();
+  await row.locator('ion-item-option').filter({ hasText: 'Löschen' }).click();
 }

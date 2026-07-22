@@ -5,7 +5,7 @@ import {
   output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem } from '../../../@shared/types';
+import { IBaseItem, ICategory } from '../../../@shared/types';
 import {
   IGrocerySearchResult,
   IProduct,
@@ -30,6 +30,8 @@ import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.compo
 })
 export class GrocerySearchResultComponent<T extends IBaseItem> {
   results = input<IGrocerySearchResult<T> | null>();
+  // The grocery catalog, so search-result rows resolve category ids → names.
+  catalog = input<readonly ICategory[]>([]);
   selectProduct = output<IProduct>();
   selectShoppingItem = output<IShoppingItem>();
   selectStorageItem = output<IStorageItem>();

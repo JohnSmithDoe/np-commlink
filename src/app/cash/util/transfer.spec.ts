@@ -1,11 +1,11 @@
 import { buildTransferLegs } from './transfer';
 
-describe('buildTransferLegs', () => {
-  const ids = () => {
-    let n = 0;
-    return () => `id-${++n}`;
-  };
+const ids = () => {
+  let n = 0;
+  return () => `id-${++n}`;
+};
 
+describe('buildTransferLegs', () => {
   it('builds a paired outflow + inflow of equal magnitude', () => {
     const [from, to] = buildTransferLegs(
       'giro',

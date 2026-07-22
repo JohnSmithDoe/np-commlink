@@ -12,10 +12,8 @@
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 
-// Action contract
 export { TrackingActions } from './tracking.actions';
 
-// Tracking selectors
 export {
   selectTrackingData,
   selectTrackingDataViewId,

@@ -6,6 +6,7 @@ import {
   mockCashState,
   mockCashTransaction,
 } from '../testing/cash.test-data';
+import { mockCategory } from '../../@shared/testing/test-data';
 
 describe('cashReducer', () => {
   it('returns the initial state for an unknown action', () => {
@@ -69,14 +70,14 @@ describe('cashReducer', () => {
     expect(state.transactions.map((t) => t.id)).toEqual(['t0', 'i1', 'i2']);
   });
 
-  it('sets a transaction category and flags it as manual', () => {
-    const txn = mockCashTransaction({ id: 't1', category: 'groceries' });
+  it('sets a transaction category id and flags it as manual', () => {
+    const txn = mockCashTransaction({ id: 't1', categoryId: 'groceries' });
     const start = mockCashState({ transactions: [txn] });
     const state = cashReducer(
       start,
       CashActions.setTransactionCategory('t1', 'rent', true)
     );
-    expect(state.transactions[0].category).toBe('rent');
+    expect(state.transactions[0].categoryId).toBe('rent');
     expect(state.transactions[0].categoryManual).toBe(true);
   });
 
@@ -111,7 +112,7 @@ describe('cashReducer', () => {
       id: 'm1',
       source: 'manual',
       status: 'pending',
-      category: 'restaurant',
+      categoryId: 'restaurant',
       categoryManual: true,
     });
     const imported = mockCashTransaction({ id: 'i1', source: 'imported' });
@@ -121,12 +122,12 @@ describe('cashReducer', () => {
       CashActions.reconcileTransaction('m1', 'i1')
     );
     const m = state.transactions.find((t) => t.id === 'm1')!;
-    const i = state.transactions.find((t) => t.id === 'i1')!;
+    const index = state.transactions.find((t) => t.id === 'i1')!;
     expect(m.matchedTxnId).toBe('i1');
     expect(m.status).toBe('confirmed');
-    // the hand-set category carried onto the survivor
-    expect(i.category).toBe('restaurant');
-    expect(i.categoryManual).toBe(true);
+    // the hand-set category id carried onto the survivor
+    expect(index.categoryId).toBe('restaurant');
+    expect(index.categoryManual).toBe(true);
   });
 
   it('un-reconciles a reconciled leg back to pending (detach)', () => {
@@ -144,14 +145,79 @@ describe('cashReducer', () => {
     expect(m.status).toBe('pending');
   });
 
-  it('adds a category once (no duplicates) and removes it', () => {
-    const added = cashReducer(initialState, CashActions.addCategory('rent'));
-    const again = cashReducer(added, CashActions.addCategory('rent'));
+  it('adds a pre-minted category once (dedupe by id/name) and removes it by id', () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const added = cashReducer(initialState, CashActions.addCategory(rent));
+    // re-adding the same id is a no-op (same state reference back)
+    const again = cashReducer(added, CashActions.addCategory(rent));
     expect(again).toBe(added);
-    expect(again.categories).toEqual(['rent']);
+    expect(again.categories).toEqual([rent]);
 
     const removed = cashReducer(again, CashActions.removeCategory('rent'));
     expect(removed.categories).toEqual([]);
+  });
+
+  it('removing a category by id clears the id off the transactions that carry it', () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const food = mockCategory({ id: 'food', name: 'Food' });
+    const tagged = mockCashTransaction({
+      id: 't1',
+      categoryId: 'rent',
+      categoryManual: true,
+    });
+    const other = mockCashTransaction({ id: 't2', categoryId: 'food' });
+    const start = mockCashState({
+      categories: [rent, food],
+      transactions: [tagged, other],
+    });
+    const state = cashReducer(start, CashActions.removeCategory('rent'));
+    expect(state.categories).toEqual([food]);
+    const t1 = state.transactions.find((t) => t.id === 't1')!;
+    expect(t1.categoryId).toBeUndefined();
+    expect(t1.categoryManual).toBeUndefined();
+    // an unrelated transaction is untouched
+    expect(state.transactions.find((t) => t.id === 't2')!.categoryId).toBe(
+      'food'
+    );
+  });
+
+  it('renaming a category is O(1) on the catalog — id-referencing txns and rules are untouched', () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const food = mockCategory({ id: 'food', name: 'Food' });
+    const txn = mockCashTransaction({ id: 't1', categoryId: 'rent' });
+    const rule = mockCashRule({ id: 'r1', categoryId: 'rent' });
+    const start = mockCashState({
+      categories: [rent, food],
+      transactions: [txn],
+      rules: [rule],
+    });
+    const state = cashReducer(
+      start,
+      CashActions.updateCategory('rent', 'Housing')
+    );
+    // only the catalog entry's name changes; the id ('rent') is stable
+    expect(state.categories).toEqual([{ id: 'rent', name: 'Housing' }, food]);
+    expect(state.transactions[0].categoryId).toBe('rent');
+    expect(state.rules[0].categoryId).toBe('rent');
+  });
+
+  it('renaming a category onto an existing name merges — remaps txn + rule ids to the survivor', () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const food = mockCategory({ id: 'food', name: 'Food' });
+    const start = mockCashState({
+      categories: [rent, food],
+      transactions: [mockCashTransaction({ id: 't1', categoryId: 'rent' })],
+      rules: [mockCashRule({ id: 'r1', categoryId: 'rent' })],
+    });
+    const state = cashReducer(
+      start,
+      CashActions.updateCategory('rent', 'Food')
+    );
+    // the renamed entry is dropped; only the survivor ('food') remains
+    expect(state.categories).toEqual([food]);
+    // references are remapped from the dropped id onto the survivor id
+    expect(state.transactions[0].categoryId).toBe('food');
+    expect(state.rules[0].categoryId).toBe('food');
   });
 
   it('adds, updates and removes filter rules', () => {
@@ -161,9 +227,9 @@ describe('cashReducer', () => {
 
     const updated = cashReducer(
       added,
-      CashActions.updateRule({ ...rule, category: 'food' })
+      CashActions.updateRule({ ...rule, categoryId: 'food' })
     );
-    expect(updated.rules[0].category).toBe('food');
+    expect(updated.rules[0].categoryId).toBe('food');
 
     const removed = cashReducer(updated, CashActions.removeRule('r1'));
     expect(removed.rules).toHaveLength(0);

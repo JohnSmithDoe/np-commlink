@@ -20,7 +20,10 @@ test.describe('shopping list', () => {
     await expect(page.getByText(/Coffee/).first()).toBeVisible({
       timeout: 10_000,
     });
-    await page.getByText(/Coffee/).first().click();
+    await page
+      .getByText(/Coffee/)
+      .first()
+      .click();
 
     const nameField = page.getByRole('textbox', { name: 'Name' });
     await expect(nameField).toBeVisible({ timeout: 10_000 });

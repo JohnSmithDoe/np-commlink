@@ -13,14 +13,15 @@ import {
   createStorageItemFromProduct,
   createStorageItemFromShopping,
 } from '../../util/grocery.factory';
-import { matchesItemExactly } from '../../../@shared/util/app.utils';
+import { matchesItemExactly, uuidv4 } from '../../../@shared/util/app.utils';
 import { IGroceryLists } from '../../model';
 import { selectGroceryLists } from './grocery-list.selector';
 import { ProductsActions } from '../products.actions';
 import { ShoppingActions } from '../shopping.actions';
 import { StorageActions } from '../storage.actions';
 import { GroceryListActions } from './grocery-list.actions';
-import { QuickAddActions } from '../../../@shared/data/quick-add/quick-add.actions';
+import { GroceryCategoriesActions } from './grocery-categories.actions';
+import { QuickAddActions } from '../quick-add/quick-add.actions';
 import {
   listIdByPrefix,
   searchQueryByListId,
@@ -36,14 +37,18 @@ import {
 // grocery ids), hence the throw.
 export const actionsByListId = (listId: TItemListId) => {
   switch (listId) {
-    case '_storage':
+    case '_storage': {
       return StorageActions;
-    case '_products':
+    }
+    case '_products': {
       return ProductsActions;
-    case '_shopping':
+    }
+    case '_shopping': {
       return ShoppingActions;
-    default:
+    }
+    default: {
       throw new Error(`grocery engine: unexpected listId ${listId}`);
+    }
   }
 };
 
@@ -80,6 +85,8 @@ export class GroceryListEffects {
     );
   });
 
+  // Create a category from the active list's search box → mint one {id,name}
+  // and add it to the shared catalog (all three grocery lists).
   addCategoryFromSearch = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GroceryListActions.addCategoryFromSearch),
@@ -91,27 +98,17 @@ export class GroceryListEffects {
         })
       ),
       map(({ action, state }) => {
-        const category = stateByListId(state, action.listId).searchQuery ?? '';
-        return actionsByListId(action.listId).addCategory(category);
+        const name = stateByListId(state, action.listId).searchQuery ?? '';
+        return GroceryCategoriesActions.add({ id: uuidv4(), name });
       })
     );
   });
 
-  addCategory = createEffect(() => {
+  // Clear the originating list's search box after a create-from-search.
+  clearSearchAfterAddCategory$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(GroceryListActions.addCategory),
-      map(({ listId, category }) =>
-        actionsByListId(listId).addCategory(category)
-      )
-    );
-  });
-
-  removeCategory = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(GroceryListActions.removeCategory),
-      map(({ listId, category }) =>
-        actionsByListId(listId).removeCategory(category)
-      )
+      ofType(GroceryListActions.addCategoryFromSearch),
+      map(({ listId }) => actionsByListId(listId).updateSearch(''))
     );
   });
 
@@ -154,12 +151,15 @@ export class GroceryListEffects {
       ofType(GroceryListActions.addProduct),
       map(({ item, listId }) => {
         switch (listId) {
-          case '_storage':
+          case '_storage': {
             return StorageActions.addProduct(item);
-          case '_shopping':
+          }
+          case '_shopping': {
             return ShoppingActions.addProduct(item);
-          default:
+          }
+          default: {
             return GroceryListActions.configurationError();
+          }
         }
       })
     );
@@ -170,12 +170,15 @@ export class GroceryListEffects {
       ofType(GroceryListActions.addStorageItem),
       map(({ item, listId }) => {
         switch (listId) {
-          case '_products':
+          case '_products': {
             return ProductsActions.addStorageItem(item);
-          case '_shopping':
+          }
+          case '_shopping': {
             return ShoppingActions.addStorageItem(item);
-          default:
+          }
+          default: {
             return GroceryListActions.configurationError();
+          }
         }
       })
     );
@@ -186,12 +189,15 @@ export class GroceryListEffects {
       ofType(GroceryListActions.addShoppingItem),
       map(({ item, listId }) => {
         switch (listId) {
-          case '_storage':
+          case '_storage': {
             return StorageActions.addShoppingItem(item);
-          case '_products':
+          }
+          case '_products': {
             return ProductsActions.addShoppingItem(item);
-          default:
+          }
+          default: {
             return GroceryListActions.configurationError();
+          }
         }
       })
     );
@@ -215,12 +221,15 @@ export class GroceryListEffects {
       ),
       map(({ action, state }) => {
         switch (action.type) {
-          case '[Storage] Add Item From Search':
+          case '[Storage] Add Item From Search': {
             return addStorageItemFromSearch(state);
-          case '[Shopping] Add Item From Search':
+          }
+          case '[Shopping] Add Item From Search': {
             return addShoppingItemFromSearch(state);
-          default:
+          }
+          default: {
             return addProductFromSearch(state);
+          }
         }
       })
     );
@@ -260,14 +269,16 @@ export class GroceryListEffects {
       ofType(StorageActions.addProduct, ShoppingActions.addProduct),
       map(({ item, type }) => {
         switch (type) {
-          case '[Storage] Add Product':
+          case '[Storage] Add Product': {
             return StorageActions.addOrUpdateItem(
               createStorageItemFromProduct(item)
             );
-          default:
+          }
+          default: {
             return ShoppingActions.addOrUpdateItem(
               createShoppingItemFromProduct(item)
             );
+          }
         }
       })
     );
@@ -278,12 +289,14 @@ export class GroceryListEffects {
       ofType(StorageActions.addShoppingItem, ProductsActions.addShoppingItem),
       map(({ item, type }) => {
         switch (type) {
-          case '[Storage] Add Shopping Item':
+          case '[Storage] Add Shopping Item': {
             return StorageActions.addOrUpdateItem(
               createStorageItemFromShopping(item)
             );
-          default:
+          }
+          default: {
             return ProductsActions.addOrUpdateItem(createProductFrom(item));
+          }
         }
       })
     );
@@ -294,12 +307,14 @@ export class GroceryListEffects {
       ofType(ShoppingActions.addStorageItem, ProductsActions.addStorageItem),
       map(({ item, type }) => {
         switch (type) {
-          case '[Shopping] Add Storage Item':
+          case '[Shopping] Add Storage Item': {
             return ShoppingActions.addOrUpdateItem(
               createShoppingItemFromStorage(item)
             );
-          default:
+          }
+          default: {
             return ProductsActions.addOrUpdateItem(createProductFrom(item));
+          }
         }
       })
     );
@@ -318,25 +333,21 @@ export class GroceryListEffects {
     );
   });
 
-  // After a list-mutating action, reset that list's search query.
+  // After a list-mutating action, reset that list's search query. (Category
+  // create-from-search clears via clearSearchAfterAddCategory$; the shared
+  // category ops carry no listId so they can't route here.)
   clearSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(
         StorageActions.addItem,
         StorageActions.updateFilter,
         StorageActions.updateMode,
-        StorageActions.addCategory,
-        StorageActions.removeCategory,
         ProductsActions.addItem,
         ProductsActions.updateFilter,
         ProductsActions.updateMode,
-        ProductsActions.addCategory,
-        ProductsActions.removeCategory,
         ShoppingActions.addItem,
         ShoppingActions.updateFilter,
-        ShoppingActions.updateMode,
-        ShoppingActions.addCategory,
-        ShoppingActions.removeCategory
+        ShoppingActions.updateMode
       ),
       map(({ type }) => actionsByListId(listIdByPrefix(type)).updateSearch(''))
     );

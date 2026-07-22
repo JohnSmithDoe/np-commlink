@@ -11,8 +11,8 @@ describe('money util', () => {
     });
 
     it('treats "." as a thousands separator (de-DE)', () => {
-      expect(eurToCents('1.234,56')).toBe(123456);
-      expect(eurToCents('1.234')).toBe(123400);
+      expect(eurToCents('1.234,56')).toBe(123_456);
+      expect(eurToCents('1.234')).toBe(123_400);
     });
 
     it('honours a leading minus sign', () => {
@@ -35,7 +35,7 @@ describe('money util', () => {
 
     it('rejects empty and junk input', () => {
       expect(eurToCents('')).toBeNull();
-      expect(eurToCents('   ')).toBeNull();
+      expect(eurToCents(' '.repeat(3))).toBeNull();
       expect(eurToCents('abc')).toBeNull();
       expect(eurToCents(',')).toBeNull();
     });
@@ -56,7 +56,7 @@ describe('money util', () => {
   describe('centsToInput', () => {
     it('produces a grouping-free de-DE decimal that round-trips', () => {
       expect(centsToInput(1234)).toBe('12,34');
-      expect(centsToInput(123456)).toBe('1234,56');
+      expect(centsToInput(123_456)).toBe('1234,56');
       expect(eurToCents(centsToInput(-1250))).toBe(-1250);
     });
   });

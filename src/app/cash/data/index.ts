@@ -16,10 +16,12 @@ export {
   selectCashAccounts,
   selectCashTransactions,
   selectCashCategories,
+  selectCashCategoriesWithCount,
   selectCashRules,
   selectAccountBalances,
   selectAccountById,
   selectTransactionsForAccount,
+  selectTransactionsForCategory,
   selectAccountsWithBalances,
   selectNetWorthCents,
   selectMonthlyTotals,
@@ -27,5 +29,7 @@ export {
   selectSpendByCategory,
 } from './cash.selector';
 export type { TAccountTxn } from './cash.selector';
+
+export { CashCategoriesPageFacade } from './cash-categories-page.facade';
 
 export { cashLazyProviders } from './provide-cash-lazy';

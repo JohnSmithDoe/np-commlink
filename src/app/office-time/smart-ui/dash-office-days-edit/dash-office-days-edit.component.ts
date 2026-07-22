@@ -55,16 +55,16 @@ export class DashOfficeDaysEditComponent {
     return [...this.holidays(), ...this.freedays()];
   });
   readonly officedates = computed(
-    () => this.officedays()?.map(dayjsToString) ?? []
+    () => this.officedays()?.map((day) => dayjsToString(day)) ?? []
   );
 
-  updateOfficeDates(ev: DatetimeCustomEvent) {
-    const dateStrings = Array.isArray(ev.detail.value)
-      ? ev.detail.value
-      : [ev.detail.value];
+  updateOfficeDates(event: DatetimeCustomEvent) {
+    const dateStrings = Array.isArray(event.detail.value)
+      ? event.detail.value
+      : [event.detail.value];
     const dates = dateStrings
       .filter((date): date is string => !!date)
-      .map(dayjsFromString)
+      .map((date) => dayjsFromString(date))
       .filter((day): day is Dayjs => day !== null);
     this.#store.dispatch(OfficeTimeActions.setOfficedays(dates));
   }

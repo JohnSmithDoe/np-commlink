@@ -19,8 +19,8 @@ describe('NpTimeWithUnitPipe', () => {
   });
 
   it('renders days once a full day is reached, trimming a trailing .0', () => {
-    expect(pipe.transform(172800)).toBe('2 time.unit.days');
-    expect(pipe.transform(90000)).toBe('1 time.unit.days');
+    expect(pipe.transform(172_800)).toBe('2 time.unit.days');
+    expect(pipe.transform(90_000)).toBe('1 time.unit.days');
   });
 
   it('renders fractional hours below a day', () => {

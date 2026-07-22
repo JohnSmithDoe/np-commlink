@@ -7,7 +7,8 @@ import { ProductsActions } from '../products.actions';
 import { ShoppingActions } from '../shopping.actions';
 import { StorageActions } from '../storage.actions';
 import { GroceryListActions } from './grocery-list.actions';
-import { QuickAddActions } from '../../../@shared/data/quick-add/quick-add.actions';
+import { GroceryCategoriesActions } from './grocery-categories.actions';
+import { QuickAddActions } from '../quick-add/quick-add.actions';
 import { updateQuickAddState } from './grocery-list.utils';
 import { actionsByListId, GroceryListEffects } from './grocery-list.effects';
 import { IGroceryLists } from '../../model';
@@ -49,22 +50,6 @@ describe('GroceryListEffects', () => {
     });
   });
 
-  it('addCategory forwards to the list-specific addCategory', async () => {
-    setup();
-    actions$ = of(GroceryListActions.addCategory('_storage', 'Dairy'));
-    expect(await firstValueFrom(effects.addCategory)).toEqual(
-      StorageActions.addCategory('Dairy')
-    );
-  });
-
-  it('removeCategory forwards to the list-specific removeCategory', async () => {
-    setup();
-    actions$ = of(GroceryListActions.removeCategory('_shopping', 'Dairy'));
-    expect(await firstValueFrom(effects.removeCategory)).toEqual(
-      ShoppingActions.removeCategory('Dairy')
-    );
-  });
-
   it('updateFilter / updateMode / updateSort / updateSearch forward to the list', async () => {
     setup();
     actions$ = of(GroceryListActions.updateFilter('_storage', 'Dairy'));
@@ -103,11 +88,22 @@ describe('GroceryListEffects', () => {
     });
   });
 
-  it('addCategoryFromSearch uses the list search query', async () => {
+  it('addCategoryFromSearch mints a shared-catalog category from the list search query', async () => {
     setup({ storage: mockStorageState({ searchQuery: 'Dairy' }) });
     actions$ = of(GroceryListActions.addCategoryFromSearch('_storage'));
-    expect(await firstValueFrom(effects.addCategoryFromSearch)).toEqual(
-      StorageActions.addCategory('Dairy')
+    // The minted id is a uuid — assert on the type + resolved name only.
+    const emitted = (await firstValueFrom(
+      effects.addCategoryFromSearch
+    )) as ReturnType<typeof GroceryCategoriesActions.add>;
+    expect(emitted.type).toBe(GroceryCategoriesActions.add.type);
+    expect(emitted.category.name).toBe('Dairy');
+  });
+
+  it('addCategoryFromSearch also clears the originating list search', async () => {
+    setup({ storage: mockStorageState({ searchQuery: 'Dairy' }) });
+    actions$ = of(GroceryListActions.addCategoryFromSearch('_storage'));
+    expect(await firstValueFrom(effects.clearSearchAfterAddCategory$)).toEqual(
+      StorageActions.updateSearch('')
     );
   });
 

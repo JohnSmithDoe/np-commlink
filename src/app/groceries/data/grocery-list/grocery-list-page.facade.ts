@@ -1,17 +1,19 @@
 import { computed, inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
   IAppState,
-  TItemListCategory,
+  TCategoryId,
   TItemListId,
   TItemListMode,
   TItemListSortType,
 } from '../../../@shared/types';
 import { IProduct, IShoppingItem, IStorageItem } from '../../model';
-import { selectRouteParams } from '../../../@shared/data/router.selector';
+import { selectRouteParams as selectRouteParameters } from '../../../@shared/data/router.selector';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { IListPageFacade } from '../../../@shared/util/list/list-page.facade';
 import { GroceryListActions } from './grocery-list.actions';
+import { GroceryCategoriesActions } from './grocery-categories.actions';
 import {
   selectListCategories,
   selectListItems,
@@ -19,6 +21,11 @@ import {
   selectListState,
   selectListStateFilter,
 } from './grocery-list.selector';
+
+// Active list id from the `:listId` route param (the multi-list engine keys off
+// it). Module-scoped so the projector isn't re-created per facade instance.
+const selectListIdParam = (state: IAppState): TItemListId | undefined =>
+  selectRouteParameters(state)?.['listId'] as TItemListId | undefined;
 
 /**
  * {@link IListPageFacade} implementation for the grocery multi-list engine. The
@@ -30,9 +37,8 @@ import {
 @Injectable({ providedIn: 'root' })
 export class GroceryListPageFacade implements IListPageFacade {
   readonly #store = inject(Store<IAppState>);
-  readonly #listId = this.#store.selectSignal(
-    (state) => selectRouteParams(state)?.['listId'] as TItemListId | undefined
-  );
+  readonly #router = inject(Router);
+  readonly #listId = this.#store.selectSignal(selectListIdParam);
 
   readonly state = this.#store.selectSignal(selectListState);
   readonly filter = this.#store.selectSignal(selectListStateFilter);
@@ -74,22 +80,24 @@ export class GroceryListPageFacade implements IListPageFacade {
     );
   }
 
-  selectCategory(category: TItemListCategory): void {
+  selectCategory(categoryId: TCategoryId): void {
     this.#store.dispatch(
-      GroceryListActions.updateFilter(this.#activeListId(), category)
+      GroceryListActions.updateFilter(this.#activeListId(), categoryId)
     );
   }
 
-  deleteCategory(category: TItemListCategory): void {
-    this.#store.dispatch(
-      GroceryListActions.removeCategory(this.#activeListId(), category)
-    );
+  deleteCategory(categoryId: TCategoryId): void {
+    this.#store.dispatch(GroceryCategoriesActions.remove(categoryId));
   }
 
   showCreateDialog(): void {
     this.#store.dispatch(
       ItemDialogsActions.showCreateDialogWithSearch(this.#activeListId())
     );
+  }
+
+  manageCategories(): void {
+    void this.#router.navigate(['/categories', this.#activeListId()]);
   }
 
   // ── grocery-only operations (not on IListPageFacade) ──────────────────────

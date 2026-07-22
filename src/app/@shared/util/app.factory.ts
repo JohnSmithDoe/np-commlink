@@ -1,18 +1,18 @@
 import dayjs from 'dayjs';
-import { IBaseItem } from '../types';
+import { IBaseItem, TCategoryId } from '../types';
 import { uuidv4 } from './app.utils';
 
 export function createBaseItem(
   name: string,
-  category?: string | string[]
+  categoryIds?: TCategoryId | TCategoryId[]
 ): IBaseItem {
   return {
     id: uuidv4(),
     name: name.trim(),
-    category: category
-      ? Array.isArray(category)
-        ? category
-        : [category.trim()]
+    categoryIds: categoryIds
+      ? Array.isArray(categoryIds)
+        ? categoryIds
+        : [categoryIds]
       : undefined,
     createdAt: dayjs().format(),
   };

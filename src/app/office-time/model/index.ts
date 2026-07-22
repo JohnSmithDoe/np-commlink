@@ -6,9 +6,11 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 // covers both co-registered slices of the context: `settings` (feature flags)
 // and `officeTime` (tracked days + stats + the office dashboard config).
 
-export interface ISettingsState {
+// Office-time feature flags. The persisted schema `version` that used to live
+// here moved to the app-global Settings slice (@shared `ISettings`) — the app
+// keeps exactly one version anchor now.
+export interface IOfficeTimeSettingsState {
   showTotalTime: boolean;
-  version: string;
 }
 
 export type DashboardStats = {

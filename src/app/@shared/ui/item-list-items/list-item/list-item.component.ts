@@ -21,7 +21,7 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem, TColor, TIonDragEvent } from '../../../types';
+import { IBaseItem, ICategory, TColor, TIonDragEvent } from '../../../types';
 import { checkItemOptionsOnDrag } from '../../../util/app.utils';
 import { CategoryNoteDirective } from '../../category-note.directive';
 
@@ -50,6 +50,8 @@ export class ListItemComponent {
   readonly item = input.required<IBaseItem>();
   readonly title = input.required<string>();
   readonly ionList = input.required<IonList>();
+  // The list's {id,name} catalog, so the category note resolves ids → names.
+  readonly categories = input<readonly ICategory[]>([]);
 
   readonly statusColor = input<TColor>();
   readonly crossedOut = input(false, { transform: booleanAttribute });
@@ -66,27 +68,30 @@ export class ListItemComponent {
   readonly deleteItem = output<void>();
   readonly cartItem = output<void>();
 
-  incrementQuantity(ev: MouseEvent) {
+  incrementQuantity(event: MouseEvent) {
     this.increment.emit();
-    ev.stopPropagation();
+    event.stopPropagation();
   }
 
-  decrementQuantity(ev: MouseEvent) {
+  decrementQuantity(event: MouseEvent) {
     this.decrement.emit();
-    ev.stopPropagation();
+    event.stopPropagation();
   }
 
-  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'end':
+  async handleItemOptionsOnDrag(event: TIonDragEvent) {
+    switch (checkItemOptionsOnDrag(event)) {
+      case 'end': {
         return this.emitDeleteItem();
-      case 'start':
+      }
+      case 'start': {
         if (this.showCartAction()) {
           return this.emitCartItem();
         }
-        return undefined;
-      default:
-        return undefined;
+        return;
+      }
+      default: {
+        return;
+      }
     }
   }
 

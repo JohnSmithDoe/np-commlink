@@ -1,6 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  TItemListCategory,
   TItemListId,
   TItemListMode,
   TItemListSortType,
@@ -21,9 +20,9 @@ export const GroceryListActions = createActionGroup({
     // by the grocery domain (was the shared reducer's Open Edit Product event).
     'Open Edit Product': (scannedEan: string) => ({ scannedEan }),
     'Configuration Error': emptyProps(),
-    // Operations
-    'Add Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),
-    'Remove Category': (listId:TItemListId, category: TItemListCategory) => ({ listId, category }),
+    // Operations. Category CRUD is on the shared GroceryCategoriesActions (one
+    // catalog across the three lists); only "add from the search box" stays here
+    // since it reads the active list's search query.
     'Update Search': (listId:TItemListId, searchQuery?: string) => ({ searchQuery, listId }),
     'Update Filter': (listId:TItemListId, filterBy?: string) => ({ filterBy, listId }),
     'Update Mode': (listId:TItemListId, mode?: TItemListMode) => ({ mode, listId }),

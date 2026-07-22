@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  OnInit,
   output,
 } from '@angular/core';
 import {
@@ -43,6 +42,8 @@ import { NpTimeWithUnitPipe } from '../../../@shared/util/pipes/np-time-with-uni
 marker('tracking.item.state.running');
 marker('tracking.item.state.stopped');
 marker('tracking.item.state.paused');
+marker('tracking.item.action.start');
+marker('tracking.item.action.pause');
 
 @Component({
   selector: 'app-tracking-item',
@@ -66,7 +67,7 @@ marker('tracking.item.state.paused');
     IonList,
   ],
 })
-export class TrackingItemComponent implements OnInit {
+export class TrackingItemComponent {
   readonly item = input.required<ITrackingItem>();
   readonly ionList = input.required<IonList>();
 
@@ -91,16 +92,14 @@ export class TrackingItemComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    if (!this.item()) throw new Error('Item must be set');
-  }
-
-  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'end':
+  async handleItemOptionsOnDrag(event: TIonDragEvent) {
+    switch (checkItemOptionsOnDrag(event)) {
+      case 'end': {
         return this.emitDeleteItem();
-      case 'start':
+      }
+      case 'start': {
         return this.emitEditItem();
+      }
     }
   }
 
@@ -116,20 +115,19 @@ export class TrackingItemComponent implements OnInit {
 
   getColor(item: ITrackingItem): TColor {
     switch (item.state) {
-      case 'running':
+      case 'running': {
         return 'success';
-      case 'stopped':
+      }
+      case 'stopped': {
         return 'medium';
-      case 'paused':
+      }
+      case 'paused': {
         return 'warning';
+      }
     }
   }
   getOppositeColor(item: ITrackingItem): TColor {
-    if (item.state === 'running') {
-      return 'warning';
-    } else {
-      return 'success';
-    }
+    return item.state === 'running' ? 'warning' : 'success';
   }
   async emitResetItem() {
     await this.ionList().closeSlidingItems();

@@ -1,12 +1,12 @@
-import { IOfficeTimeState, ISettingsState } from '../model';
+import { IOfficeTimeSettingsState, IOfficeTimeState } from '../model';
 
 // Deterministic office-time fixtures. Owned by the office-time context (DDD
 // review #1): they live here, not in the shared @shared/testing kit, because
 // that kit is domain:shared and may not reference domain:office-time types.
-export function mockSettingsState(
-  overrides: Partial<ISettingsState> = {}
-): ISettingsState {
-  return { showTotalTime: false, version: '1', ...overrides };
+export function mockOfficeTimeSettingsState(
+  overrides: Partial<IOfficeTimeSettingsState> = {}
+): IOfficeTimeSettingsState {
+  return { showTotalTime: false, ...overrides };
 }
 
 export function mockOfficeTimeState(

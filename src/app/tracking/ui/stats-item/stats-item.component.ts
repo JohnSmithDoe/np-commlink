@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  OnInit,
   output,
 } from '@angular/core';
 import {
@@ -40,21 +39,18 @@ import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
     NpTimeFromDataItemPipe,
   ],
 })
-export class StatsItemComponent implements OnInit {
+export class StatsItemComponent {
   readonly item = input.required<IDataItem>();
   readonly view = input.required<string>();
   readonly ionList = input.required<IonList>();
 
   readonly deleteItem = output<void>();
 
-  ngOnInit() {
-    if (!this.item()) throw new Error('Item must be set');
-  }
-
-  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'end':
+  async handleItemOptionsOnDrag(event: TIonDragEvent) {
+    switch (checkItemOptionsOnDrag(event)) {
+      case 'end': {
         return this.emitDeleteItem();
+      }
     }
   }
 

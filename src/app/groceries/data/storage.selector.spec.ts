@@ -38,7 +38,7 @@ describe('storage.selector', () => {
       });
       const lists = mockGroceryLists({ storage: listState });
       const result = selectStorageListSearchResult.projector(listState, lists);
-      expect(result?.listItems.map((i) => i.name)).toEqual(['Milk']);
+      expect(result?.listItems.map((index) => index.name)).toEqual(['Milk']);
       expect(result).toEqual(filterBySearchQuery(lists, listState));
     });
   });
@@ -53,10 +53,12 @@ describe('storage.selector', () => {
         ],
       });
       expect(selectStorageListItems.projector(state, undefined)).toEqual(
-        filterAndSortItemList(state, undefined)
+        filterAndSortItemList(state)
       );
       expect(
-        selectStorageListItems.projector(state, undefined)?.map((i) => i.name)
+        selectStorageListItems
+          .projector(state, undefined)
+          ?.map((index) => index.name)
       ).toEqual(['Bread', 'Milk']);
     });
   });

@@ -3,8 +3,13 @@
   pageHeader="{{ 'grocery.page-title.shopping' | translate }}"
   listHeader="{{ 'grocery.list-header.shopping' | translate }}"
   [itemTemplate]="shoppingItem"
-  (quickCreateProduct)="facade.showCreateProductDialog()"
 >
+  <app-item-list-quickadd
+    quickAdd
+    (quickAddItem)="facade.addItemFromSearch()"
+    (quickCreateCategory)="facade.addCategoryFromSearch()"
+    (quickCreateProduct)="facade.showCreateProductDialog()"
+  ></app-item-list-quickadd>
   <ion-buttons slot="end" listActions>
     <ion-button [hidden]="!rxState().items.length" (click)="openActionSheet()">
       <ion-icon name="bag-add" slot="icon-only"></ion-icon>
@@ -18,17 +23,24 @@
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
+    [catalog]="facade.state()?.categories ?? []"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"
   ></app-grocery-search-result>
 </app-list-page>
 
-<ng-template #shoppingItem let-item let-ionList="ionList">
+<ng-template
+  #shoppingItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
   <app-list-item
     [item]="item"
     [title]="item.quantity + ' x ' + item.name"
     [ionList]="ionList"
+    [categories]="categories"
     [crossedOut]="item.state === 'bought'"
     [showQuantityActions]="true"
     [showCartAction]="true"

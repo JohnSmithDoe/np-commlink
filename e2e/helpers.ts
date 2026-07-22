@@ -58,6 +58,6 @@ export async function gotoFeature(
   route: (typeof ROUTE)[keyof typeof ROUTE]
 ): Promise<void> {
   await page.goto(`/#/${route}`);
-  await expect(page).toHaveURL(new RegExp(route.replace('/', '\\/')));
+  await expect(page).toHaveURL(new RegExp(route.replace('/', String.raw`\/`)));
   await waitForListPage(page);
 }

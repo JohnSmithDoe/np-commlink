@@ -28,6 +28,7 @@ export class TrackingSaveEffects {
           TrackingActions.addItem,
           TrackingActions.removeItem,
           TrackingActions.updateItem,
+          TrackingActions.updateSort,
           TrackingActions.toggleTrackingItem,
           TrackingActions.resetTracking,
           TrackingActions.saveAndResetTracking,

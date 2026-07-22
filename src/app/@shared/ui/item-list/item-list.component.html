@@ -21,13 +21,13 @@
 </ion-list>
 
 <ng-template #categoryMode>
-  @for (cat of categories(); track cat.category) {
+  @for (cat of categories(); track cat.category.id) {
     <app-category-item
       [category]="cat.category"
       [count]="cat.count"
       [ionList]="ionList"
-      (selectCategory)="selectCategory.emit(cat.category)"
-      (deleteCategory)="deleteCategory.emit(cat.category)"
+      (selectCategory)="selectCategory.emit(cat.category.id)"
+      (deleteCategory)="deleteCategory.emit(cat.category.id)"
     />
   }
 </ng-template>
@@ -37,7 +37,7 @@
     <ng-container
       *ngTemplateOutlet="
         itemTemplate();
-        context: { $implicit: item, ionList: ionList }
+        context: { $implicit: item, ionList: ionList, categories: catalog() }
       "
     />
   }

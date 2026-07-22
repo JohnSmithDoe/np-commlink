@@ -14,11 +14,17 @@
   </ng-container>
 </app-list-page>
 
-<ng-template #taskItem let-item let-ionList="ionList">
+<ng-template
+  #taskItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
   <app-list-item
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
+    [categories]="categories"
     [statusColor]="getItemStatusColor(item)"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"

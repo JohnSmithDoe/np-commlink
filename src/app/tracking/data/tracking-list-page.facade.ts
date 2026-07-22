@@ -11,6 +11,12 @@ import {
   selectTrackingState,
 } from './tracking.selector';
 
+// Tracking has no categories; the shared list contract still wants a signal.
+const noTrackingCategories = (): {
+  category: TItemListCategory;
+  count: number;
+}[] => [];
+
 /**
  * {@link IListPageFacade} implementation for the single tracking list. It reads
  * the tracking slice through the tracking-domain selectors and dispatches only
@@ -34,9 +40,7 @@ export class TrackingListPageFacade implements IListPageFacade {
     selectTrackingListSearchResult
   );
   readonly filter = computed(() => listStateFilter(this.state()));
-  readonly categories = computed<
-    { category: TItemListCategory; count: number }[]
-  >(() => []);
+  readonly categories = computed(noTrackingCategories);
 
   search(term?: string): void {
     this.#store.dispatch(TrackingActions.updateSearch(term));

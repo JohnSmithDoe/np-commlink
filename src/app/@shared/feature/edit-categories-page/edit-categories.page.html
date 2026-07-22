@@ -1,0 +1,104 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button
+        [routerLink]="facade.listHref()"
+        [attr.aria-label]="'grocery.a11y.back' | translate"
+      >
+        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ 'grocery.page-title.categories' | translate }}
+      <span class="subtitle">{{ facade.listTitleKey() | translate }}</span>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-input
+      label="＋"
+      [placeholder]="'grocery.manage-categories.add-placeholder' | translate"
+      [value]="newCategory()"
+      (ionInput)="newCategory.set($any($event.target).value ?? '')"
+      (keyup.enter)="add()"
+    />
+    <ion-button
+      slot="end"
+      fill="clear"
+      [disabled]="!canAdd()"
+      (click)="add()"
+      [attr.aria-label]="'grocery.a11y.add-category' | translate"
+    >
+      <ion-icon slot="icon-only" name="add-outline" />
+    </ion-button>
+  </ion-item>
+
+  @if (facade.categories().length) {
+    <ion-list lines="full">
+      @for (entry of facade.categories(); track entry.category.id) {
+        <ion-item-sliding>
+          <ion-item
+            [button]="editing() !== entry.category.id"
+            [detail]="editing() !== entry.category.id"
+            (click)="drill(entry.category.id)"
+          >
+            @if (editing() === entry.category.id) {
+              <ion-input
+                [value]="renameText()"
+                (ionInput)="renameText.set($any($event.target).value ?? '')"
+                (keyup.enter)="commitEdit()"
+                (click)="$event.stopPropagation()"
+              />
+              <ion-buttons slot="end">
+                <ion-button
+                  (click)="commitEdit(); $event.stopPropagation()"
+                  [attr.aria-label]="'grocery.a11y.confirm-rename' | translate"
+                >
+                  <ion-icon slot="icon-only" name="checkmark-outline" />
+                </ion-button>
+                <ion-button
+                  (click)="cancelEdit(); $event.stopPropagation()"
+                  [attr.aria-label]="'grocery.a11y.cancel-rename' | translate"
+                >
+                  <ion-icon slot="icon-only" name="close-outline" />
+                </ion-button>
+              </ion-buttons>
+            } @else {
+              <ion-label>{{ entry.category.name }}</ion-label>
+              <ion-note
+                slot="end"
+                [attr.aria-label]="
+                  'grocery.manage-categories.count'
+                    | translate: { count: entry.count }
+                "
+              >
+                {{ entry.count }}
+              </ion-note>
+            }
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option
+              (click)="startEdit(entry.category.id, entry.category.name)"
+              [attr.aria-label]="'grocery.a11y.rename-category' | translate"
+            >
+              <ion-icon slot="icon-only" name="create-outline" />
+            </ion-item-option>
+            <ion-item-option
+              color="danger"
+              (click)="remove(entry.category.id)"
+              [attr.aria-label]="'grocery.a11y.delete-category' | translate"
+            >
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="empty-hint">{{
+      'grocery.manage-categories.empty' | translate
+    }}</ion-note>
+  }
+</ion-content>

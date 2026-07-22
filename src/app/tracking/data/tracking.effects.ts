@@ -27,14 +27,18 @@ import { csvRow, formatSecondsAsClock } from './tracking.utils';
 const startTimeFormatFor = (viewId: string): string | undefined => {
   switch (viewId) {
     case 'daily':
-    case 'today':
+    case 'today': {
       return 'DD.MM.YYYY';
-    case 'monthly':
+    }
+    case 'monthly': {
       return 'MM.YYYY';
-    case 'all':
+    }
+    case 'all': {
       return undefined;
-    default:
+    }
+    default: {
       return 'DD.MM.YYYY HH:mm';
+    }
   }
 };
 

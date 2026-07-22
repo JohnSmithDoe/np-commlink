@@ -1,6 +1,7 @@
 import { TasksActions } from './tasks.actions';
 import { initialState, tasksReducer } from './tasks.reducer';
 import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
+import { mockCategory } from '../../@shared/testing/test-data';
 
 describe('tasksReducer', () => {
   it('returns the initial state for an unknown action', () => {
@@ -8,11 +9,12 @@ describe('tasksReducer', () => {
     expect(state).toBe(initialState);
   });
 
-  it('adds an item and derives its categories', () => {
-    const item = mockTaskItem({ name: 'Sweep', category: ['Chores'] });
+  it('adds an item without deriving categories (the catalog is authoritative)', () => {
+    const item = mockTaskItem({ name: 'Sweep', categoryIds: ['chores'] });
     const state = tasksReducer(initialState, TasksActions.addItem(item));
     expect(state.items).toEqual([item]);
-    expect(state.categories).toContain('Chores');
+    // categories are minted explicitly now — adding an item never touches them
+    expect(state.categories).toEqual([]);
   });
 
   it('removes an item by id', () => {
@@ -58,14 +60,22 @@ describe('tasksReducer', () => {
     expect(state.mode).toBe('categories');
   });
 
-  it('adds and removes categories', () => {
-    const added = tasksReducer(
-      initialState,
-      TasksActions.addCategory('Chores')
+  it('adds and removes categories by id (pre-minted {id,name})', () => {
+    const chores = mockCategory({ id: 'c1', name: 'Chores' });
+    const added = tasksReducer(initialState, TasksActions.addCategory(chores));
+    expect(added.categories).toContainEqual(chores);
+    const removed = tasksReducer(added, TasksActions.removeCategory('c1'));
+    expect(removed.categories).not.toContainEqual(chores);
+  });
+
+  it('renames a category in the catalog by id (items reference it by id)', () => {
+    const chores = mockCategory({ id: 'c1', name: 'Chores' });
+    const start = mockTasksState({ categories: [chores] });
+    const state = tasksReducer(
+      start,
+      TasksActions.updateCategory('c1', 'Errands')
     );
-    expect(added.categories).toContain('Chores');
-    const removed = tasksReducer(added, TasksActions.removeCategory('Chores'));
-    expect(removed.categories).not.toContain('Chores');
+    expect(state.categories).toEqual([{ id: 'c1', name: 'Errands' }]);
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {

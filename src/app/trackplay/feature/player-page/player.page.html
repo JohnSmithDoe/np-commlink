@@ -1,17 +1,32 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()" aria-label="back">
-        <ion-icon slot="icon-only" name="arrow-back-outline" />
+      <ion-button
+        (click)="goBack()"
+        [attr.aria-label]="'a11y.back' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          aria-hidden="true"
+        />
       </ion-button>
     </ion-buttons>
     <ion-title>{{ rxPlayer()?.name }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openPlayerEdit()" color="primary" aria-label="edit">
-        <ion-icon slot="icon-only" name="create-outline" />
+      <ion-button
+        (click)="openPlayerEdit()"
+        color="primary"
+        [attr.aria-label]="'a11y.edit' | translate"
+      >
+        <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
       </ion-button>
-      <ion-button (click)="openSettings($event)" color="primary">
-        <ion-icon slot="icon-only" name="options-outline" />
+      <ion-button
+        (click)="openSettings($event)"
+        color="primary"
+        [attr.aria-label]="'trackplay.a11y.settings' | translate"
+      >
+        <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

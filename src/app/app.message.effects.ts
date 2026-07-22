@@ -26,7 +26,7 @@ export class AppMessageEffects {
       return this.#actions$.pipe(
         ofType(TrackingActions.addItem),
         tap(({ item }) => {
-          if (!item.name.length) return;
+          if (item.name.length === 0) return;
           void this.#uiService.showAddItemToast(item.name);
         })
       );

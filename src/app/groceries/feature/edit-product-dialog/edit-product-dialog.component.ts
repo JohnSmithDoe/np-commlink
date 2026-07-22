@@ -6,7 +6,6 @@ import {
   linkedSignal,
   signal,
 } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   IonItem,
   IonSelect,
@@ -18,7 +17,8 @@ import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { TItemListCategory } from '../../../@shared/types';
+import { ICategory, TCategoryId } from '../../../@shared/types';
+import { categoriesByIds } from '../../../@shared/util/category.utils';
 import { IProduct, TBestBeforeTimespan } from '../../model';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/category-input/category-input.component';
@@ -27,6 +27,7 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { selectEditState } from '../../../@shared/data/item-dialogs/item-dialogs.selector';
 import {
+  GroceryCategoriesActions,
   ProductsActions,
   selectEditProduct,
   selectProductListItems,
@@ -46,13 +47,11 @@ import {
   selector: 'app-edit-product-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
     IonItem,
     TranslateModule,
     IonSelect,
     IonSelectOption,
     IonText,
-    ReactiveFormsModule,
     CategoryInputComponent,
     CategoriesDialogComponent,
     NumberInputComponent,
@@ -82,6 +81,11 @@ export class EditProductDialogComponent {
 
   readonly categoriesDialogOpen = signal(false);
 
+  // The draft's category ids resolved to {id,name} objects for the chip row.
+  readonly selectedCategories = computed<ICategory[]>(() =>
+    categoriesByIds(this.draft()?.categoryIds, this.categories())
+  );
+
   constructor() {
     addIcons({ closeCircle });
   }
@@ -94,10 +98,10 @@ export class EditProductDialogComponent {
     this.#patch({ name });
   }
 
-  setBestBeforeTimespan(ev: SelectCustomEvent<TBestBeforeTimespan>) {
+  setBestBeforeTimespan(event: SelectCustomEvent<TBestBeforeTimespan>) {
     this.#patch({
-      bestBeforeTimespan: ev.detail.value,
-      bestBeforeTimevalue: ev.detail.value === 'forever' ? undefined : 1,
+      bestBeforeTimespan: event.detail.value,
+      bestBeforeTimevalue: event.detail.value === 'forever' ? undefined : 1,
     });
   }
 
@@ -105,9 +109,11 @@ export class EditProductDialogComponent {
     this.#patch({ bestBeforeTimevalue: value });
   }
 
-  removeCategory(category: TItemListCategory) {
+  removeCategory(categoryId: TCategoryId) {
     this.#patch({
-      category: (this.draft()?.category ?? []).filter((c) => c !== category),
+      categoryIds: (this.draft()?.categoryIds ?? []).filter(
+        (id) => id !== categoryId
+      ),
     });
   }
 
@@ -115,8 +121,8 @@ export class EditProductDialogComponent {
     this.categoriesDialogOpen.set(true);
   }
 
-  confirmCategories(selection: TItemListCategory[]) {
-    this.#patch({ category: selection });
+  confirmCategories(selection: TCategoryId[]) {
+    this.#patch({ categoryIds: selection });
     this.categoriesDialogOpen.set(false);
   }
 
@@ -124,8 +130,26 @@ export class EditProductDialogComponent {
     this.categoriesDialogOpen.set(false);
   }
 
-  addCategory(category: TItemListCategory) {
-    this.#store.dispatch(ProductsActions.addCategory(category));
+  addCategory(category: ICategory) {
+    this.#store.dispatch(GroceryCategoriesActions.add(category));
+  }
+
+  // Catalog delete (picker swipe): remove it from the shared grocery catalog
+  // (cascades to every item) and from the local draft so this item stays
+  // consistent pre-save.
+  deleteCategory(categoryId: TCategoryId) {
+    this.#store.dispatch(GroceryCategoriesActions.remove(categoryId));
+    this.#patch({
+      categoryIds: (this.draft()?.categoryIds ?? []).filter(
+        (id) => id !== categoryId
+      ),
+    });
+  }
+
+  // Rename is O(1) on the catalog; items reference by id, so the draft is
+  // unchanged.
+  renameCategory({ id, to }: { id: TCategoryId; to: string }) {
+    this.#store.dispatch(GroceryCategoriesActions.rename(id, to));
   }
 
   confirm() {

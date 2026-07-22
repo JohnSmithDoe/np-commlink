@@ -12,7 +12,7 @@ describe('TrackingPage', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
   let navigate: ReturnType<typeof vi.spyOn>;
 
-  const setup = (queryParams: Record<string, string> = {}) => {
+  const setup = (queryParameters: Record<string, string> = {}) => {
     TestBed.configureTestingModule({
       imports: [TrackingPage, TranslateModule.forRoot()],
       providers: [
@@ -20,7 +20,7 @@ describe('TrackingPage', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { queryParamMap: convertToParamMap(queryParams) },
+            snapshot: { queryParamMap: convertToParamMap(queryParameters) },
           },
         },
       ],

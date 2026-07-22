@@ -3,7 +3,6 @@ import {
   selectDoneCollapsed,
   selectDoneNotifications,
   selectNewNotifications,
-  selectNotificationById,
   selectNotificationsBadgeCount,
 } from './notifications.selector';
 
@@ -68,14 +67,5 @@ describe('notifications.selector', () => {
   it('counts only new notifications updated since the last view', () => {
     // n1 (07-05) is after lastViewedAt (07-03); n2 (07-01) is not.
     expect(selectNotificationsBadgeCount.projector(state({ items }))).toBe(1);
-  });
-
-  it('finds a notification by id', () => {
-    expect(selectNotificationById('n2').projector(state({ items }))?.id).toBe(
-      'n2'
-    );
-    expect(
-      selectNotificationById('missing').projector(state({ items }))
-    ).toBeUndefined();
   });
 });

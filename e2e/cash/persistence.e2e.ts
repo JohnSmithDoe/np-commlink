@@ -35,7 +35,6 @@ test.describe('cash persistence', () => {
       timeout: 10_000,
     });
 
-    // --- open it, add a manual expense ---
     await list.getByText('CREDSTICK-01').click();
     const account = page.locator('#main-content app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });

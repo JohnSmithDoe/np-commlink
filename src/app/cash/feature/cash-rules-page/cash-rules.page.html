@@ -9,53 +9,18 @@
       </ion-button>
     </ion-buttons>
     <ion-title>{{ 'cash.page-title.rules' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button
+        (click)="goToCategories()"
+        [attr.aria-label]="'cash.a11y.categories' | translate"
+      >
+        <ion-icon slot="icon-only" name="pricetags-outline" />
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Categories palette -->
-  <ion-list-header>{{ 'cash.section.categories' | translate }}</ion-list-header>
-  <ion-item>
-    <ion-input
-      label="＋"
-      placeholder="{{ 'cash.category.add.placeholder' | translate }}"
-      [value]="newCategory()"
-      (ionInput)="onNewCategory($any($event.target).value ?? '')"
-      (keyup.enter)="addCategory()"
-    />
-    <ion-button
-      slot="end"
-      fill="clear"
-      [disabled]="!canAddCategory()"
-      (click)="addCategory()"
-      [attr.aria-label]="'cash.a11y.add-category' | translate"
-    >
-      <ion-icon slot="icon-only" name="add-outline" />
-    </ion-button>
-  </ion-item>
-
-  @if (categories().length) {
-    <ion-list lines="full">
-      @for (cat of categories(); track cat) {
-        <ion-item-sliding>
-          <ion-item>
-            <ion-label>{{ cat }}</ion-label>
-          </ion-item>
-          <ion-item-options side="end">
-            <ion-item-option color="danger" (click)="removeCategory(cat)">
-              <ion-icon slot="icon-only" name="trash-outline" />
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      }
-    </ion-list>
-  } @else {
-    <ion-note class="cash-hint">{{
-      'cash.categories.empty' | translate
-    }}</ion-note>
-  }
-
-  <!-- Rules -->
   <ion-list-header>{{ 'cash.section.rules' | translate }}</ion-list-header>
   @if (rules().length) {
     <ion-list lines="full">
@@ -84,8 +49,8 @@
               </ion-button>
             </ion-buttons>
             <ion-label>
-              <h2>{{ rule.name || rule.category }}</h2>
-              <p>{{ rule.category }} · {{ summarize(rule) }}</p>
+              <h2>{{ rule.name || categoryName(rule.categoryId) }}</h2>
+              <p>{{ categoryName(rule.categoryId) }} · {{ summarize(rule) }}</p>
             </ion-label>
           </ion-item>
           <ion-item-options side="end">

@@ -1,21 +1,21 @@
 import { createReducer, on } from '@ngrx/store';
-import { ISettingsState } from '../../model';
-import { SettingsActions } from './settings.actions';
-import { VERSION } from '../../../@shared/util/migrations';
+import { IOfficeTimeSettingsState } from '../../model';
+import { OfficeTimeSettingsActions } from './settings.actions';
 
-export const initialSettings: ISettingsState = {
+// The persisted schema `version` moved to the app-global Settings slice, so the
+// office-time settings initial state is just its own flags now.
+export const initialOfficeTimeSettings: IOfficeTimeSettingsState = {
   showTotalTime: false,
-  version: VERSION,
 };
 
-export const settingsReducer = createReducer(
-  initialSettings,
+export const officeTimeSettingsReducer = createReducer(
+  initialOfficeTimeSettings,
   on(
-    SettingsActions.updateSettings,
-    (_state, { settings }): ISettingsState => settings
+    OfficeTimeSettingsActions.updateSettings,
+    (_state, { settings }): IOfficeTimeSettingsState => settings
   ),
   on(
-    SettingsActions.loaded,
-    (_state, { settings }): ISettingsState => settings ?? _state
+    OfficeTimeSettingsActions.loaded,
+    (_state, { settings }): IOfficeTimeSettingsState => settings ?? _state
   )
 );

@@ -1,3 +1,4 @@
+import { TCategoryId } from '../../@shared/types';
 import { ICashFilterCondition, ICashRule, ICashTransaction } from '../model';
 import { eurToCents } from './money';
 
@@ -13,7 +14,6 @@ import { eurToCents } from './money';
 const descriptionText = (txn: ICashTransaction): string =>
   txn.rawDescription ?? txn.description;
 
-/** Does a single condition hold for this transaction? */
 export function matchesCondition(
   txn: ICashTransaction,
   condition: ICashFilterCondition
@@ -22,18 +22,24 @@ export function matchesCondition(
     const target = eurToCents(condition.value);
     if (target === null) return false; // unparseable threshold never matches
     switch (condition.op) {
-      case 'eq':
+      case 'eq': {
         return txn.amountCents === target;
-      case 'lt':
+      }
+      case 'lt': {
         return txn.amountCents < target;
-      case 'lte':
+      }
+      case 'lte': {
         return txn.amountCents <= target;
-      case 'gt':
+      }
+      case 'gt': {
         return txn.amountCents > target;
-      case 'gte':
+      }
+      case 'gte': {
         return txn.amountCents >= target;
-      default:
-        return false; // a string op on `amount` is invalid
+      }
+      default: {
+        return false;
+      } // a string op on `amount` is invalid
     }
   }
 
@@ -44,24 +50,29 @@ export function matchesCondition(
     ? condition.value
     : condition.value.toLowerCase();
   switch (condition.op) {
-    case 'contains':
+    case 'contains': {
       return haystack.includes(needle);
-    case 'startsWith':
+    }
+    case 'startsWith': {
       return haystack.startsWith(needle);
-    case 'endsWith':
+    }
+    case 'endsWith': {
       return haystack.endsWith(needle);
-    case 'equals':
+    }
+    case 'equals': {
       return haystack === needle;
-    case 'regex':
+    }
+    case 'regex': {
+      const flags = caseSensitive ? '' : 'i';
       try {
-        return new RegExp(condition.value, caseSensitive ? '' : 'i').test(
-          source
-        );
+        return new RegExp(condition.value, flags).test(source);
       } catch {
         return false; // an invalid regex never matches (never throws)
       }
-    default:
-      return false; // a numeric op on `description` is invalid
+    }
+    default: {
+      return false;
+    } // a numeric op on `description` is invalid
   }
 }
 
@@ -74,16 +85,16 @@ export function ruleMatches(txn: ICashTransaction, rule: ICashRule): boolean {
 }
 
 /**
- * The category the first matching rule (by ascending `order`) would assign, or
- * `undefined` if none match. Does not mutate `rules`.
+ * The category id the first matching rule (by ascending `order`) would assign,
+ * or `undefined` if none match. Does not mutate `rules`.
  */
 export function categorize(
   txn: ICashTransaction,
   rules: readonly ICashRule[]
-): string | undefined {
-  const ordered = [...rules].sort((a, b) => a.order - b.order);
+): TCategoryId | undefined {
+  const ordered = rules.toSorted((a, b) => a.order - b.order);
   for (const rule of ordered) {
-    if (ruleMatches(txn, rule)) return rule.category;
+    if (ruleMatches(txn, rule)) return rule.categoryId;
   }
   return undefined;
 }

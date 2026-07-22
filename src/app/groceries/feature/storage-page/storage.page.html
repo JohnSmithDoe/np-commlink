@@ -3,8 +3,13 @@
   pageHeader="{{ 'grocery.page-title.storage' | translate }}"
   listHeader="{{ 'grocery.list-header.storage' | translate }}"
   [itemTemplate]="storageItem"
-  (quickCreateProduct)="facade.showCreateProductDialog()"
 >
+  <app-item-list-quickadd
+    quickAdd
+    (quickAddItem)="facade.addItemFromSearch()"
+    (quickCreateCategory)="facade.addCategoryFromSearch()"
+    (quickCreateProduct)="facade.showCreateProductDialog()"
+  ></app-item-list-quickadd>
   <ion-button (click)="setSortMode('bestBefore')" toolbarActions>{{
     'grocery.list-toolbar.mhd' | translate
   }}</ion-button>
@@ -16,17 +21,24 @@
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
+    [catalog]="facade.state()?.categories ?? []"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"
   ></app-grocery-search-result>
 </app-list-page>
 
-<ng-template #storageItem let-item let-ionList="ionList">
+<ng-template
+  #storageItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
   <app-list-item
     [item]="item"
     [title]="item.quantity + ' x ' + item.name"
     [ionList]="ionList"
+    [categories]="categories"
     [statusColor]="getItemStatusColor(item)"
     [showQuantityActions]="true"
     [showCartAction]="true"

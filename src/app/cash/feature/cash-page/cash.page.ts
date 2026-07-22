@@ -29,6 +29,7 @@ import {
   cardOutline,
   cashOutline,
   funnelOutline,
+  pricetagsOutline,
   swapHorizontalOutline,
   trashOutline,
   trendingUpOutline,
@@ -102,6 +103,7 @@ export class CashPage {
       funnelOutline,
       swapHorizontalOutline,
       barChartOutline,
+      pricetagsOutline,
     });
   }
 
@@ -111,6 +113,10 @@ export class CashPage {
 
   goToRules(): void {
     void this.#router.navigate(['/cash/rules']);
+  }
+
+  goToCategories(): void {
+    void this.#router.navigate(['/cash/categories']);
   }
 
   goToReport(): void {

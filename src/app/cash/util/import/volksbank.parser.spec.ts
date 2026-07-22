@@ -10,7 +10,7 @@ describe('volksbankParser', () => {
   it('parses signed German amounts and joins payee + purpose', () => {
     const rows = volksbankParser.parse(CSV);
     expect(rows).toHaveLength(2);
-    expect(rows[0].amountCents).toBe(357000);
+    expect(rows[0].amountCents).toBe(357_000);
     expect(rows[0].dateISO.startsWith('2026-01-06')).toBe(true);
     expect(rows[0].description).toBe('Muster GmbH — Honorar Webentwicklung');
     expect(rows[1].amountCents).toBe(-1499);

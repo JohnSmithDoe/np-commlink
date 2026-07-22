@@ -78,7 +78,7 @@ describe('office-time.utils', () => {
         ['2026-07-01', '2026-07-02', null],
         holidays
       );
-      expect(result.map(dayjsToString)).toEqual(['2026-07-01']);
+      expect(result.map((date) => dayjsToString(date))).toEqual(['2026-07-01']);
     });
   });
 

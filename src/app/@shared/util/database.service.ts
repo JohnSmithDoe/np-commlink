@@ -1,6 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { IDashboardSummary } from '../types';
+import { VERSION } from './migrations';
+
+// Key holding the persisted schema version; a mismatch triggers a one-time wipe.
+const SCHEMA_VERSION_KEY = 'npc-schema-version';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +22,20 @@ export class DatabaseService {
   #ensureStorage(): Promise<void> {
     return (this.#ready ??= this.#storageService
       .create()
-      .then(() => undefined));
+      .then(() => this.#ensureSchemaVersion()));
+  }
+
+  // One-time fresh-baseline reset (category {id,name} epic, migrations §VERSION):
+  // if the persisted schema version differs from VERSION, clear the store and
+  // re-stamp it. Runs INSIDE the init-once guard so every entry point
+  // (bootstrap/load/save/saveSummary) sees the reset before its first read/write,
+  // and it can only fire once per version bump. On a genuine fresh install the
+  // clear is a no-op over an empty store.
+  async #ensureSchemaVersion(): Promise<void> {
+    const stored = await this.#storageService.get(SCHEMA_VERSION_KEY);
+    if (stored === VERSION) return;
+    await this.#storageService.clear();
+    await this.#storageService.set(SCHEMA_VERSION_KEY, VERSION);
   }
 
   /**
@@ -61,6 +78,7 @@ export class DatabaseService {
 
   async #loadSummaries(): Promise<IDashboardSummary[]> {
     const summaries: IDashboardSummary[] = [];
+    // eslint-disable-next-line unicorn/no-array-for-each -- Storage.forEach (@ionic/storage), not Array#forEach
     await this.#storageService.forEach(
       (value: IDashboardSummary, key: string) => {
         if (key.startsWith('npc-summary-')) summaries.push(value);

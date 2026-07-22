@@ -11,6 +11,19 @@ import { provideTestingProviders } from '../../../@shared/testing/test-providers
 import { TrackplayActions } from '../../data';
 import { TrackplayGameEditDialogComponent } from './game-edit-dialog.component';
 
+const editState = () =>
+  mockTrackplayState({
+    games: {
+      g1: mockGame({
+        id: 'g1',
+        name: 'Skat',
+        type: 'default',
+        players: ['p1'],
+      }),
+    },
+    players: { p1: mockPlayer({ id: 'p1', name: 'Alice' }) },
+  });
+
 describe('TrackplayGameEditDialogComponent', () => {
   let component: TrackplayGameEditDialogComponent;
   let dispatch: ReturnType<typeof vi.spyOn>;
@@ -29,19 +42,6 @@ describe('TrackplayGameEditDialogComponent', () => {
       TrackplayGameEditDialogComponent
     ).componentInstance;
   };
-
-  const editState = () =>
-    mockTrackplayState({
-      games: {
-        g1: mockGame({
-          id: 'g1',
-          name: 'Skat',
-          type: 'default',
-          players: ['p1'],
-        }),
-      },
-      players: { p1: mockPlayer({ id: 'p1', name: 'Alice' }) },
-    });
 
   it('dispatches createGame in create mode', () => {
     setup();

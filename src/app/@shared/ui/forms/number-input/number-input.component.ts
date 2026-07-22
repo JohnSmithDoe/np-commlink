@@ -21,7 +21,7 @@ export class NumberInputComponent {
   value = input<string | number | null>();
   updateValue = output<number>();
 
-  updateInputValue(ev: InputCustomEvent) {
-    this.updateValue.emit(parseNumberInput(ev));
+  updateInputValue(event: InputCustomEvent) {
+    this.updateValue.emit(parseNumberInput(event));
   }
 }

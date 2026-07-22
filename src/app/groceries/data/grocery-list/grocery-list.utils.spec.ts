@@ -1,10 +1,10 @@
 import { IStorageItem, IStorageState } from '../../model';
 import {
   addListCategory,
+  addListCategoryObject,
   addListItem,
   addListItemOrIncreaseQuantity,
   addShoppinglistToStorage,
-  categoriesFromList,
   filterByByListId,
   listIdByPrefix,
   removeListCategory,
@@ -12,13 +12,14 @@ import {
   removeListItems,
   searchQueryByListId,
   stateByListId,
-  updateCategories,
   updatedSearchQuery,
+  updateListCategory,
   updateListItem,
   updateListMode,
   updateListSort,
   updateQuickAddState,
 } from './grocery-list.utils';
+import { mockCategory } from '../../../@shared/testing/test-data';
 import {
   mockGroceryLists,
   mockShoppingItem,
@@ -28,40 +29,20 @@ import {
 } from '../../testing/grocery.test-data';
 
 describe('item-list.utils', () => {
-  describe('categoriesFromList', () => {
-    it('collects the unique categories from all items', () => {
-      const items = [
-        mockStorageItem({ id: 'a', category: ['Dairy', 'Fresh'] }),
-        mockStorageItem({ id: 'b', category: ['Dairy'] }),
-        mockStorageItem({ id: 'c' }),
-      ];
-      expect(categoriesFromList(items)).toEqual(['Dairy', 'Fresh']);
-    });
-  });
-
-  describe('updateCategories', () => {
-    it('merges item categories with the existing list categories (deduped)', () => {
-      const state = mockStorageState({
-        items: [mockStorageItem({ category: ['Fresh'] })],
-        categories: ['Dairy'],
-      });
-      expect(updateCategories(state).categories).toEqual(['Fresh', 'Dairy']);
-    });
-  });
-
   describe('addListItem', () => {
-    it('prepends the item and refreshes categories', () => {
+    it('prepends the item without deriving categories', () => {
       const existing = mockStorageItem({ id: 'a', name: 'Milk' });
       const state = mockStorageState({ items: [existing] });
       const added = mockStorageItem({
         id: 'b',
         name: 'Bread',
-        category: ['Bakery'],
+        categoryIds: ['bakery'],
       });
       const result = addListItem(state, added);
       expect(result.items[0]).toBe(added);
       expect(result.items).toHaveLength(2);
-      expect(result.categories).toContain('Bakery');
+      // The catalog is authoritative — adding an item never mints a category.
+      expect(result.categories).toEqual([]);
     });
 
     it('ignores an item with a blank name', () => {
@@ -153,14 +134,18 @@ describe('item-list.utils', () => {
         mockShoppingItem({ name: 'Milk', quantity: 2 }),
         mockShoppingItem({ id: 's2', name: 'Bread', quantity: 3 }),
       ]);
-      expect(result.items.find((i) => i.name === 'Milk')?.quantity).toBe(3);
-      expect(result.items.find((i) => i.name === 'Bread')?.quantity).toBe(3);
+      expect(
+        result.items.find((index) => index.name === 'Milk')?.quantity
+      ).toBe(3);
+      expect(
+        result.items.find((index) => index.name === 'Bread')?.quantity
+      ).toBe(3);
     });
   });
 
   describe('updateListSort', () => {
     it('returns undefined without a sortBy', () => {
-      expect(updateListSort(undefined)).toBeUndefined();
+      expect(updateListSort()).toBeUndefined();
     });
 
     it('honours an explicit direction', () => {
@@ -212,35 +197,104 @@ describe('item-list.utils', () => {
         filterBy: 'Dairy',
       });
       expect(updateListMode(state, 'categories').filterBy).toBeUndefined();
-      expect(updateListMode(state, undefined).mode).toBe('alphabetical');
+      expect(updateListMode(state).mode).toBe('alphabetical');
     });
   });
 
   describe('addListCategory', () => {
-    it('prepends a new category', () => {
-      const state = mockStorageState({ categories: ['Dairy'] });
-      expect(addListCategory(state, 'Bakery').categories).toEqual([
-        'Bakery',
-        'Dairy',
+    it('mints a new {id,name} category and prepends it', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+      });
+      // The minted id is a uuid — assert on the resolved names, not the id.
+      expect(
+        addListCategory(state, 'Bakery').categories.map((c) => c.name)
+      ).toEqual(['Bakery', 'Dairy']);
+    });
+
+    it('ignores an empty or duplicate (case-insensitive) category', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+      });
+      expect(addListCategory(state, '')).toBe(state);
+      expect(addListCategory(state, 'dairy')).toBe(state);
+    });
+  });
+
+  describe('addListCategoryObject', () => {
+    it('prepends a pre-minted {id,name} category', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+      });
+      expect(
+        addListCategoryObject(state, { id: 'bake', name: 'Bakery' }).categories
+      ).toEqual([
+        { id: 'bake', name: 'Bakery' },
+        { id: 'dairy', name: 'Dairy' },
       ]);
     });
 
-    it('ignores an empty or duplicate category', () => {
-      const state = mockStorageState({ categories: ['Dairy'] });
-      expect(addListCategory(state, '')).toBe(state);
-      expect(addListCategory(state, 'Dairy')).toBe(state);
+    it('is a no-op on a duplicate id, a case-insensitive duplicate name, or a blank name', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+      });
+      expect(addListCategoryObject(state, { id: 'dairy', name: 'X' })).toBe(
+        state
+      );
+      expect(addListCategoryObject(state, { id: 'new', name: 'dairy' })).toBe(
+        state
+      );
+      expect(addListCategoryObject(state, { id: 'new', name: '  ' })).toBe(
+        state
+      );
+    });
+  });
+
+  describe('updateListCategory', () => {
+    it('renames in place, keeping the id and leaving items untouched', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+        items: [mockStorageItem({ categoryIds: ['dairy'] })],
+      });
+      const result = updateListCategory(state, 'dairy', 'Fridge');
+      expect(result.categories).toEqual([{ id: 'dairy', name: 'Fridge' }]);
+      expect(result.items[0].categoryIds).toEqual(['dairy']);
+    });
+
+    it('merges onto an existing name: drops the entry and remaps item refs, deduped', () => {
+      const state = mockStorageState({
+        categories: [
+          mockCategory({ id: 'fresh', name: 'Fresh' }),
+          mockCategory({ id: 'dairy', name: 'Dairy' }),
+        ],
+        items: [mockStorageItem({ categoryIds: ['dairy', 'fresh'] })],
+      });
+      const result = updateListCategory(state, 'dairy', 'fresh');
+      expect(result.categories.map((c) => c.id)).toEqual(['fresh']);
+      expect(result.items[0].categoryIds).toEqual(['fresh']);
+    });
+
+    it('is a no-op for a blank new name or an unknown id', () => {
+      const state = mockStorageState({
+        categories: [mockCategory({ id: 'dairy', name: 'Dairy' })],
+      });
+      expect(updateListCategory(state, 'dairy', '  ')).toBe(state);
+      expect(updateListCategory(state, 'nope', 'X')).toBe(state);
     });
   });
 
   describe('removeListCategory', () => {
-    it('removes the category from the list and every item', () => {
+    it('removes the category by id from the catalog and strips it off every item', () => {
       const state = mockStorageState({
-        categories: ['Dairy', 'Fresh'],
-        items: [mockStorageItem({ category: ['Dairy', 'Fresh'] })],
+        categories: [
+          mockCategory({ id: 'dairy', name: 'Dairy' }),
+          mockCategory({ id: 'fresh', name: 'Fresh' }),
+        ],
+        items: [mockStorageItem({ categoryIds: ['dairy', 'fresh'] })],
       });
-      const result = removeListCategory(state, 'Dairy');
-      expect(result.categories).toEqual(['Fresh']);
-      expect(result.items[0].category).toEqual(['Fresh']);
+      const result = removeListCategory(state, 'dairy');
+      expect(result.categories.map((c) => c.name)).toEqual(['Fresh']);
+      expect(result.items[0].categoryIds).toEqual(['fresh']);
     });
   });
 
@@ -248,6 +302,12 @@ describe('item-list.utils', () => {
     it('keeps the query when the item name still contains it', () => {
       expect(updatedSearchQuery(mockStorageItem({ name: 'Milk' }), 'Mil')).toBe(
         'Mil'
+      );
+    });
+
+    it('keeps the query on a case-insensitive match (matching the list filter)', () => {
+      expect(updatedSearchQuery(mockStorageItem({ name: 'Brot' }), 'b')).toBe(
+        'b'
       );
     });
 
@@ -337,7 +397,7 @@ describe('item-list.utils', () => {
 
     it('shows nothing for an empty search', () => {
       const state = mockGroceryLists({
-        storage: mockStorageState({ searchQuery: '   ' }),
+        storage: mockStorageState({ searchQuery: ' '.repeat(3) }),
       });
       const result = updateQuickAddState(state, '_storage');
       expect(result.canAddLocal).toBe(false);

@@ -117,22 +117,22 @@ export class TrackplayGamesPage implements ViewWillEnter {
     await this.#presentGameDialog({ gameId: game.id });
   }
 
-  async openSettings(ev: Event): Promise<void> {
+  async openSettings(event: Event): Promise<void> {
     const popover = await this.#popoverCtrl.create({
       component: TrackplayGameSettingsPopoverComponent,
       componentProps: { mode: 'games' },
-      event: ev,
+      event: event,
     });
     await popover.present();
   }
 
-  async #presentGameDialog(props: {
+  async #presentGameDialog(properties: {
     gameId?: TID;
     presetPlayerIds?: TID[];
   }): Promise<void> {
     const modal = await this.#modalCtrl.create({
       component: TrackplayGameEditDialogComponent,
-      componentProps: props,
+      componentProps: properties,
     });
     await modal.present();
   }

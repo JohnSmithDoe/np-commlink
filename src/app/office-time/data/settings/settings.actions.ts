@@ -1,15 +1,15 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import { BooleanKeys } from '../../../@shared/types';
-import { ISettingsState } from '../../model';
+import { IOfficeTimeSettingsState } from '../../model';
 
-export const SettingsActions = createActionGroup({
-  source: 'Settings',
+export const OfficeTimeSettingsActions = createActionGroup({
+  source: 'OfficeTimeSettings',
   events: {
     // Own-data lazy load lifecycle (lazy-modules plan §2).
     load: emptyProps(),
-    loaded: (settings: ISettingsState | null) => ({ settings }),
+    loaded: (settings: IOfficeTimeSettingsState | null) => ({ settings }),
 
-    'Update Settings': (settings: ISettingsState) => ({ settings }),
-    'Toggle Flag': (flag: BooleanKeys<ISettingsState>) => ({ flag }),
+    'Update Settings': (settings: IOfficeTimeSettingsState) => ({ settings }),
+    'Toggle Flag': (flag: BooleanKeys<IOfficeTimeSettingsState>) => ({ flag }),
   },
 });

@@ -2,7 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { Share } from '@capacitor/share';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map, switchMap, withLatestFrom } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { catchError, EMPTY, map, switchMap, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 import { StorageActions } from './storage.actions';
 import { ShoppingActions } from './shopping.actions';
@@ -12,6 +14,7 @@ import { selectShoppingState } from './shopping.selector';
 export class ShoppingEffects {
   #store = inject(Store);
   #actions$ = inject(Actions);
+  #translate = inject(TranslateService);
 
   buyItem$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -56,17 +59,21 @@ export class ShoppingEffects {
           const activeItems = shopping.items.filter(
             (item) => item.state === 'active'
           );
-          const text =
-            activeItems
-              .map((item) => item.quantity + ' x ' + item.name)
-              .join('\n') ?? 'Nix drin';
+          const text = activeItems
+            .map((item) => item.quantity + ' x ' + item.name)
+            .join('\n');
           return fromPromise(
             Share.share({
-              title: 'Einkaufsliste',
+              title: this.#translate.instant(
+                marker('grocery.shopping.share.title')
+              ),
               text,
-              dialogTitle: 'Share with buddies',
+              dialogTitle: this.#translate.instant(
+                marker('grocery.shopping.share.dialog')
+              ),
             })
-          );
+            // Share.share rejects when the user dismisses the sheet.
+          ).pipe(catchError(() => EMPTY));
         })
       );
     },

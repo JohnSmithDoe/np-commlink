@@ -20,7 +20,10 @@ test.describe('tasks list', () => {
     await expect(page.getByText(/Buy stamps/).first()).toBeVisible({
       timeout: 10_000,
     });
-    await page.getByText(/Buy stamps/).first().click();
+    await page
+      .getByText(/Buy stamps/)
+      .first()
+      .click();
 
     const nameField = page.getByRole('textbox', { name: 'Name' });
     await expect(nameField).toBeVisible({ timeout: 10_000 });

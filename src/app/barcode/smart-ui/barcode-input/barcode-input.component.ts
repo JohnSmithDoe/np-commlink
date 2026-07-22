@@ -18,20 +18,20 @@ export class BarcodeInputComponent {
   readonly #ui = inject(UiService);
   readonly #translate = inject(TranslateService);
 
-  onFileSelected(ev: Event) {
-    const file = (ev.target as HTMLInputElement).files?.[0];
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.addEventListener('load', (e) => {
       const dataUrl = e.target?.result as string;
       this.#store.dispatch(BarcodeActions.saveBarcode(dataUrl));
-    };
-    reader.onerror = () => {
-      const msg = this.#translate.instant(
+    });
+    reader.addEventListener('error', () => {
+      const message = this.#translate.instant(
         marker('officetime.barcode.upload.error')
       );
-      void this.#ui.showToast(msg, 'danger');
-    };
+      void this.#ui.showToast(message, 'danger');
+    });
     reader.readAsDataURL(file);
   }
 }

@@ -10,27 +10,7 @@ export class NotificationService {
 
   async init(): Promise<void> {
     try {
-      const perm = await LocalNotifications.requestPermissions();
-      if (perm.display !== 'granted') return;
-
-      await LocalNotifications.cancel({
-        notifications: [{ id: NotificationService.OFFICE_REMINDER_ID }],
-      });
-
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: NotificationService.OFFICE_REMINDER_ID,
-            title: 'Bürotag heute?',
-            body: 'Vergiss nicht, deine Anwesenheit zu erfassen.',
-            schedule: {
-              at: this.#nextOfficeReminderTime(),
-              every: 'day',
-              allowWhileIdle: true,
-            },
-          },
-        ],
-      });
+      await this.#scheduleOfficeReminder();
     } catch {
       // Plugin not available (unsupported browser, permission API blocked) —
       // fail silently. The app should work without notifications.
@@ -39,22 +19,50 @@ export class NotificationService {
 
   async fireTestNotification(): Promise<void> {
     try {
-      const perm = await LocalNotifications.requestPermissions();
-      if (perm.display !== 'granted') return;
-
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: Math.floor(Math.random() * 1_000_000_000),
-            title: 'Test',
-            body: 'Wenn du das siehst, funktionieren Notifications.',
-            schedule: { at: new Date(Date.now() + 2000) },
-          },
-        ],
-      });
-    } catch (err) {
-      console.error('[notif] error', err);
+      await this.#scheduleTestNotification();
+    } catch (error) {
+      console.error('[notif] error', error);
     }
+  }
+
+  async #scheduleOfficeReminder(): Promise<void> {
+    const perm = await LocalNotifications.requestPermissions();
+    if (perm.display !== 'granted') return;
+
+    await LocalNotifications.cancel({
+      notifications: [{ id: NotificationService.OFFICE_REMINDER_ID }],
+    });
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: NotificationService.OFFICE_REMINDER_ID,
+          title: 'Bürotag heute?',
+          body: 'Vergiss nicht, deine Anwesenheit zu erfassen.',
+          schedule: {
+            at: this.#nextOfficeReminderTime(),
+            every: 'day',
+            allowWhileIdle: true,
+          },
+        },
+      ],
+    });
+  }
+
+  async #scheduleTestNotification(): Promise<void> {
+    const perm = await LocalNotifications.requestPermissions();
+    if (perm.display !== 'granted') return;
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: Math.floor(Math.random() * 1_000_000_000),
+          title: 'Test',
+          body: 'Wenn du das siehst, funktionieren Notifications.',
+          schedule: { at: new Date(Date.now() + 2000) },
+        },
+      ],
+    });
   }
 
   #nextOfficeReminderTime(): Date {

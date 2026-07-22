@@ -13,11 +13,9 @@
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 
-// Action contracts
 export { OfficeTimeActions } from './office-time/office-time.actions';
-export { SettingsActions } from './settings/settings.actions';
+export { OfficeTimeSettingsActions } from './settings/settings.actions';
 
-// Display selectors
 export {
   selectDashboardItems,
   selectDashboardSettings,
@@ -28,7 +26,6 @@ export {
   selectTargetOfficeDaysPerWeek,
 } from './office-time/office-time.selector';
 
-// Stats selectors
 export {
   selectDashboardStatsMonth,
   selectDashboardStatsQuarter,
@@ -37,7 +34,6 @@ export {
   selectTodayIsOfficeDay,
 } from './office-time/office-time.stats.selector';
 
-// Pure date utils
 export {
   dayjsFromString,
   dayjsToday,
@@ -46,5 +42,4 @@ export {
   daysToHolidaysHighlightsInputTransform,
 } from './office-time/office-time.utils';
 
-// Lazy providers (state + effects)
 export { officeTimeLazyProviders } from './provide-office-time-lazy';

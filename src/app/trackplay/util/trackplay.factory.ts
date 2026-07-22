@@ -51,16 +51,16 @@ export function createGameType(name: string, winHigh: boolean): IGameType {
 }
 
 // A blank round: every current participant starts at 0 points.
-export function createRound(idx: number, playerIds: TID[]): IRound {
+export function createRound(index: number, playerIds: TID[]): IRound {
   const values: Record<TID, number> = {};
   for (const pid of playerIds) {
     values[pid] = 0;
   }
   return {
     id: uuidv4(),
-    name: 'round ' + idx,
+    name: 'round ' + index,
     created: Date.now(),
-    idx,
+    idx: index,
     values,
   };
 }

@@ -8,22 +8,35 @@
 // (a `:host` or a pseudo-element). Everywhere else, prefer the `.sr-*` utility
 // classes in _shadowrun.scss (which wrap these mixins and are emitted once).
 //
+// TWO-THEME SPLIT: surfaces + LEDs have a `*-base` mixin (the plain, always-on
+// look — flat panel, solid LED dot) and a `*-cyber` / glow mixin (the decorated
+// layer _shadowrun.scss emits only under `:root[data-theme='cyberpunk']`). The
+// plain "OK Boomer" theme is therefore the un-decorated base by construction.
+//
 // Consumers of the animation states below must ensure `@keyframes sr-pulse`
 // exists (declared once in _shadowrun.scss).
 // ═══════════════════════════════════════════════════════════════════════════
 
-// HUD-framed surface: slate gradient panel + amber hairline + inset bevel.
+// Flat framed surface — plain slate panel + hairline + themed corner radius.
 // `$bg-prop` lets Ionic hosts paint through their `--background` var (e.g.
 // ion-card) while plain elements use the real `background` property.
-@mixin hud-frame($bg-prop: background) {
-  #{$bg-prop}: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
+@mixin panel-base($bg-prop: background) {
+  #{$bg-prop}: var(--sr-panel);
   border: 1px solid var(--sr-line);
-  border-radius: 2px;
+  border-radius: var(--sr-radius);
+}
+
+// Cyberpunk overlay for a framed surface: the slate gradient + inset bevel.
+// Emitted only under [data-theme='cyberpunk']; border + radius come from
+// panel-base (their tokens flip per theme).
+@mixin panel-cyber($bg-prop: background) {
+  #{$bg-prop}: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
 // Amber L-bracket corners (top-left + bottom-right) via ::before/::after.
 // Self-contained: sets position:relative so it works as a standalone class.
+// Cyberpunk-only (the plain theme keeps the corners bare).
 @mixin hud-corners($size: 14px) {
   position: relative;
 
@@ -51,50 +64,48 @@
   }
 }
 
-// Status LED — shared dot shape. Pair with `led-state()` for the lit variants.
+// Status LED — shared dot shape. The lit COLOUR is set by the `.sr-led--*`
+// classes (both themes); `led-glow()` adds the cyberpunk bloom + pulse.
 @mixin led-base {
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #444; // unlit / dim default
+  background: var(--sr-line); // unlit / dim default
   vertical-align: middle;
 }
 
-// Lit LED states. `on` = cyan (live), `standby` = amber (wired, idle),
-// `off` = red (no signal). on/standby pulse; off is steady.
-@mixin led-state($state) {
+// Cyberpunk LED bloom + pulse (colour already set by the .sr-led--* class).
+// `on`/`standby` pulse; `off` is steady. Emitted only under the cyber theme.
+@mixin led-glow($state) {
   @if $state == on {
-    background: var(--sr-cyan);
     box-shadow:
       0 0 6px var(--sr-cyan),
       0 0 12px rgba(var(--sr-cyan-rgb), 0.6);
     animation: sr-pulse 2s ease-in-out infinite;
   } @else if $state == standby {
-    background: var(--sr-amber);
     box-shadow:
       0 0 6px var(--sr-amber),
       0 0 12px rgba(var(--sr-amber-rgb), 0.55);
     animation: sr-pulse 2.6s ease-in-out infinite;
   } @else if $state == off {
-    background: var(--sr-red);
     box-shadow: 0 0 6px rgba(var(--sr-red-rgb), 0.8);
   }
 }
 
-// Lowercase monospace brand row (deck header): icon chip + name.
+// Brand row (deck header): icon chip + name. Case + tracking flip per theme
+// (lowercase/wide in cyber, sentence-case/normal in plain).
 @mixin brand {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--sr-mono);
-  letter-spacing: 0.18em;
-  text-transform: lowercase;
+  font-family: var(--sr-deck-font);
+  letter-spacing: var(--sr-brand-tracking);
+  text-transform: var(--sr-brand-transform);
 }
 @mixin brand-icon {
   font-size: 1.25rem;
   color: var(--sr-amber);
-  filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.6));
 }
 @mixin brand-name {
   font-weight: 700;

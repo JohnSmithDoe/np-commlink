@@ -3,6 +3,7 @@ import {
   IBaseItem,
   IListState,
   ISearchResult,
+  TCategoryId,
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
@@ -36,9 +37,13 @@ export interface IListPageFacade {
   addCategoryFromSearch(): void;
   setDisplayMode(mode: TItemListMode): void;
   setSortMode(type: TItemListSortType): void;
-  selectCategory(category: TItemListCategory): void;
-  deleteCategory(category: TItemListCategory): void;
+  selectCategory(categoryId: TCategoryId): void;
+  deleteCategory(categoryId: TCategoryId): void;
   showCreateDialog(): void;
+  // Navigate to this list's manage-categories page. Optional: category-less
+  // lists (tracking) omit it — the shell only renders the entry button when
+  // `hasCategories` is set, so it is never called for them.
+  manageCategories?(): void;
 }
 
 export const LIST_FACADE = new InjectionToken<IListPageFacade>('LIST_FACADE');

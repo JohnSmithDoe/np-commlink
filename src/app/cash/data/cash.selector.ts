@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import dayjs from 'dayjs';
+import { ICategory, TCategoryId } from '../../@shared/types';
 import { ICashState, ICashTransaction } from '../model';
 
 // Reporting counts real income/expense only: transfers move money between own
@@ -27,11 +28,50 @@ export const selectCashCategories = createSelector(
 );
 
 /**
+ * The category catalog decorated with how many (live) transactions carry each
+ * category, alphabetical by name — the shape the shared manage-categories page
+ * binds to (`ICategoriesPageFacade.categories`). Reconciled-away legs
+ * (`matchedTxnId`) are excluded so the count agrees with what the drill lists.
+ */
+export const selectCashCategoriesWithCount = createSelector(
+  selectCashCategories,
+  selectCashTransactions,
+  (categories, transactions): { category: ICategory; count: number }[] => {
+    const countById = new Map<string, number>();
+    for (const t of transactions) {
+      if (t.matchedTxnId || !t.categoryId) continue;
+      countById.set(t.categoryId, (countById.get(t.categoryId) ?? 0) + 1);
+    }
+    return categories
+      .toSorted((a, b) => a.name.localeCompare(b.name))
+      .map((category) => ({
+        category,
+        count: countById.get(category.id) ?? 0,
+      }));
+  }
+);
+
+/**
+ * A category's transactions for the category→items drill: every live txn
+ * carrying `categoryId`, newest first (`dateISO` desc, `id` tiebreak), excluding
+ * reconciled-away legs. Mirrors {@link selectTransactionsForAccount}, keyed by
+ * category instead of account.
+ */
+export const selectTransactionsForCategory = (categoryId: TCategoryId) =>
+  createSelector(selectCashTransactions, (transactions): ICashTransaction[] =>
+    transactions
+      .filter((t) => t.categoryId === categoryId && !t.matchedTxnId)
+      .toSorted((a, b) => {
+        if (a.dateISO !== b.dateISO) return a.dateISO < b.dateISO ? 1 : -1;
+        return a.id.localeCompare(b.id);
+      })
+  );
+
+/**
  * Running balance per account: `openingBalanceCents + Σ signed amountCents`,
  * keyed by account id. Order-independent (a plain sum). Legs carrying a
  * `matchedTxnId` (a pending manual entry merged into an imported txn) are
  * EXCLUDED so a reconciled spend is not double-counted — see docs/cash-plan.md.
- * Written now, though no txn has `matchedTxnId` until P4.
  */
 export const selectAccountBalances = createSelector(
   selectCashAccounts,
@@ -99,7 +139,7 @@ export const selectTransactionsForAccount = (accountId: string) =>
         ...t,
         reconciledManualId: reconciledInto.get(t.id),
       }))
-      .sort((a, b) => {
+      .toSorted((a, b) => {
         if (a.dateISO !== b.dateISO) return a.dateISO < b.dateISO ? 1 : -1;
         return a.id.localeCompare(b.id);
       });
@@ -140,23 +180,29 @@ export const selectMonthlyTotals = createSelector(
     }
     return [...byMonth.entries()]
       .map(([month, totals]) => ({ month, ...totals }))
-      .sort((a, b) => (a.month < b.month ? -1 : 1));
+      .toSorted((a, b) => (a.month < b.month ? -1 : 1));
   }
 );
 
-/** Spending grouped by category (outflows only), largest first. Uncategorized
- *  spend collects under the empty-string key. */
+/** Spending grouped by category (outflows only), largest first. Groups by
+ *  category id, then resolves the display name against the catalog. Uncategorized
+ *  spend (no id) collects under the empty-name key. */
 export const selectSpendByCategory = createSelector(
   selectCashTransactions,
-  (transactions) => {
-    const byCategory = new Map<string, number>();
+  selectCashCategories,
+  (transactions, categories) => {
+    const byCategory = new Map<string, number>(); // key = categoryId or ''
     for (const t of transactions) {
       if (!isReportable(t) || t.amountCents >= 0) continue; // outflows only
-      const key = t.category ?? '';
+      const key = t.categoryId ?? '';
       byCategory.set(key, (byCategory.get(key) ?? 0) + -t.amountCents);
     }
+    const nameById = new Map(categories.map((c) => [c.id, c.name]));
     return [...byCategory.entries()]
-      .map(([category, cents]) => ({ category, cents }))
-      .sort((a, b) => b.cents - a.cents);
+      .map(([id, cents]) => ({
+        category: id ? (nameById.get(id) ?? '') : '',
+        cents,
+      }))
+      .toSorted((a, b) => b.cents - a.cents);
   }
 );

@@ -49,7 +49,7 @@
     </div>
   </app-number-input>
   <app-category-input
-    [categories]="draft()?.category"
+    [categories]="selectedCategories()"
     (removeCategory)="removeCategory($event)"
     (openDialog)="openCategoriesDialog()"
   ></app-category-input>
@@ -57,10 +57,12 @@
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
     [categories]="categories()"
-    [selection]="draft()?.category ?? []"
+    [selection]="draft()?.categoryIds ?? []"
     (confirmed)="confirmCategories($event)"
     (cancelled)="cancelCategories()"
     (dismissed)="cancelCategories()"
     (addNew)="addCategory($event)"
+    (deleted)="deleteCategory($event)"
+    (renamed)="renameCategory($event)"
   ></app-categories-dialog>
 </app-item-edit-modal>

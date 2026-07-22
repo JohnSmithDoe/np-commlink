@@ -15,6 +15,10 @@ import {
   TSettings,
 } from './wordclock.utils';
 
+// The letter grid split into per-row character arrays — derived once from the
+// module-level GRID, not per component instance.
+const GRID_ROWS = GRID.map((row) => [...row]);
+
 /**
  * Sprachvarianten für den deutschsprachigen Raum
     ZWANZIG NACH ... ZEHN VOR HALB
@@ -37,8 +41,7 @@ import {
 export class WordclockComponent {
   readonly config = input<TSettings>();
 
-  // Static letter grid, split once into rows of single characters.
-  protected readonly rows = GRID.map((row) => row.split(''));
+  protected readonly rows = GRID_ROWS;
 
   // Wall-clock time re-emitted every TICK_MS (rxjs) and lifted into a signal.
   // The subscription is torn down with the component via the injection context,
@@ -60,9 +63,9 @@ export class WordclockComponent {
   isActive(
     row: string[],
     col: string,
-    colIdx: number,
-    rowIdx: number
+    colIndex: number,
+    rowIndex: number
   ): boolean {
-    return isWordActive(this.#activeWords(), row, col, colIdx, rowIdx);
+    return isWordActive(this.#activeWords(), row, col, colIndex, rowIndex);
   }
 }

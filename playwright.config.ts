@@ -17,7 +17,9 @@ export default defineConfig({
   // passes); a genuine failure still fails twice. CI retries more.
   retries: process.env['CI'] ? 2 : 1,
   workers: process.env['CI'] ? 1 : undefined,
-  reporter: process.env['CI'] ? [['github'], ['html', { open: 'never' }]] : 'list',
+  reporter: process.env['CI']
+    ? [['github'], ['html', { open: 'never' }]]
+    : 'list',
 
   // The dev server compiles each lazy route on first request; give assertions
   // headroom over the 5s default so first-compile latency isn't read as failure.

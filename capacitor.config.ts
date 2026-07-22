@@ -21,6 +21,17 @@ const config: CapacitorConfig = {
     SystemBars: {
       style: 'DARK',
     },
+    // Native launch splash held until the app decides the theme. launchAutoHide
+    // is false so the (branded dark) splash covers the entire webview boot —
+    // including the async `settings` read that resolves the theme — and is hidden
+    // by SplashService.reveal() (with the 3s fallback) once <html data-theme> is
+    // applied. Mirrors the web #app-splash overlay so a boomer user sees no
+    // cyberpunk flash on cold start. backgroundColor mirrors --sr-bg (cyberpunk).
+    SplashScreen: {
+      launchAutoHide: false,
+      backgroundColor: '#0f141b',
+      showSpinner: false,
+    },
   },
 };
 

@@ -14,14 +14,44 @@
  */
 import {
   IBaseItem,
-  IItemDialogState,
   IItemList,
-  IListSettings,
   ISearchResult,
+  TColor,
   TItemListCategory,
   TItemListMode,
   TTimestamp,
 } from '../../@shared/types';
+
+// Grocery list feature-flags (kitchen-bot `ISettings`; slice key `listSettings`).
+// These were parked in @shared as a pseudo-shared "list settings" slice, but
+// they're grocery-only: the showQuickAdd* toggles gate the grocery quick-add row
+// and the show*In* flags gate the cross-list search buckets. The persisted schema
+// `version` that used to ride here moved to the app-global @shared Settings slice.
+export interface IListSettings {
+  showQuickAdd: boolean;
+  showQuickAddProduct: boolean;
+  showQuickAddCategory: boolean;
+  showProductsInStorage: boolean;
+  showShoppingInStorage: boolean;
+  showProductsInShopping: boolean;
+  showStorageInShopping: boolean;
+  showStorageInProducts: boolean;
+  showShoppingInProducts: boolean;
+}
+
+// The grocery quick-add row's derived UI state (also formerly a pseudo-shared
+// @shared slice). Only groceries feeds and renders it now — tasks' vestigial
+// copy was removed. The grocery engine recomputes it (updateQuickAddState) on
+// search/mode changes; the quick-add component reads it, ANDed with the
+// showQuickAdd* flags above.
+export type IQuickAddState = Readonly<{
+  listName?: string;
+  color?: TColor;
+  searchQuery?: string;
+  canAddLocal?: boolean;
+  canAddProduct?: boolean;
+  canAddCategory: boolean;
+}>;
 
 export type TItemUnit = 'ml' | 'g' | 'pieces';
 export type TPackagingUnit = 'bottle' | 'package' | 'loose' | 'tin-can';
@@ -74,10 +104,6 @@ export type IShoppingState = Readonly<TShoppingList> & {
   showActionSheet: boolean;
 };
 export type IProductsState = Readonly<TProductsList>;
-
-export type IEditStorageItemState = IItemDialogState<IStorageItem>;
-export type IEditShoppingItemState = IItemDialogState<IShoppingItem>;
-export type IEditProductState = IItemDialogState<IProduct>;
 
 // Grocery cross-list search buckets, split off the shared `ISearchResult` base
 // (which stays domain-blind). Populated by the grocery selector when the

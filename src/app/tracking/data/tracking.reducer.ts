@@ -122,7 +122,7 @@ const generateDummyData = (state: ITrackingState): ITrackingState => {
     const day = dayjs().subtract(dayOffset, 'day');
     const sessionsToday = 2 + Math.floor(Math.random() * 3);
     let hour = 8 + Math.floor(Math.random() * 2);
-    for (let i = 0; i < sessionsToday; i++) {
+    for (let index = 0; index < sessionsToday; index++) {
       const startMinute = Math.floor(Math.random() * 50);
       const start = day.hour(hour).minute(startMinute).second(0);
       const durationMinutes = 15 + Math.floor(Math.random() * 165);
@@ -140,7 +140,7 @@ const generateDummyData = (state: ITrackingState): ITrackingState => {
   }
   return {
     ...state,
-    data: [...state.data, ...generated].sort((a, b) =>
+    data: [...state.data, ...generated].toSorted((a, b) =>
       dayjs(a.startTime).diff(b.startTime)
     ),
   };
@@ -151,10 +151,12 @@ const saveAndReset = (state: ITrackingState): ITrackingState => {
     ...state.data,
     ...state.items
       .filter((item) => !!item.startTime)
-      .map(
-        (item): ITrackingItem => ({ ...item, state: 'stopped', id: uuidv4() }) // save with new id
-      ),
-  ].sort((a, b) => dayjs(a.startTime).diff(b.startTime));
+      .map((item): ITrackingItem => ({
+        ...item,
+        state: 'stopped',
+        id: uuidv4(),
+      })),
+  ].toSorted((a, b) => dayjs(a.startTime).diff(b.startTime));
   return {
     ...resetTracking(state),
     data,
@@ -178,11 +180,9 @@ export const trackingReducer = createReducer(
   on(
     TrackingActions.toggleTrackingItem,
     (state, { item, now }): ITrackingState => {
-      if (item.state !== 'running') {
-        return startTracking(state, item, now);
-      } else {
-        return stopTracking(state, item, now);
-      }
+      return item.state === 'running'
+        ? stopTracking(state, item, now)
+        : startTracking(state, item, now);
     }
   ),
   on(TrackingActions.resetTracking, (state, { item }): ITrackingState => {

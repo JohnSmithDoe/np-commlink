@@ -2,8 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { mockCategory } from '../../../@shared/testing/test-data';
 import { createShoppingItem } from '../../util/grocery.factory';
-import { selectEditShoppingItem, ShoppingActions } from '../../data';
+import {
+  GroceryCategoriesActions,
+  selectEditShoppingItem,
+  ShoppingActions,
+} from '../../data';
 import { EditShoppingItemDialogComponent } from './edit-shopping-item-dialog.component';
 
 describe('EditShoppingItemDialogComponent', () => {
@@ -50,10 +55,11 @@ describe('EditShoppingItemDialogComponent', () => {
     expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
   });
 
-  it('persists a brand-new category to the shopping slice', () => {
-    component.addCategory('Drinks');
+  it('persists a brand-new category to the shared grocery catalog', () => {
+    const category = mockCategory({ id: 'drinks', name: 'Drinks' });
+    component.addCategory(category);
     expect(dispatch).toHaveBeenCalledWith(
-      ShoppingActions.addCategory('Drinks')
+      GroceryCategoriesActions.add(category)
     );
   });
 });

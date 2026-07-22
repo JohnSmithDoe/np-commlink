@@ -10,7 +10,6 @@
   @let now = time();
 
   <div class="cl sr-scanlines">
-    <!-- ── STATUS STRIP ─────────────────────────────────────── -->
     <div class="cl-bar">
       <span class="cl-bar__seg">
         <i class="sr-led sr-led--on"></i> SIN://np-commlink
@@ -23,7 +22,6 @@
       <span class="cl-bar__seg cl-bar__clock">{{ now }}</span>
     </div>
 
-    <!-- ── BANNER ───────────────────────────────────────────── -->
     <header class="cl-hero">
       <p class="cl-hero__kicker">// matrix link established</p>
       <h1 class="cl-hero__title" data-text="COMMLINK ONLINE">
@@ -35,7 +33,6 @@
       </p>
     </header>
 
-    <!-- ── PROGRAM GRID ─────────────────────────────────────── -->
     <div class="cl-grid">
       @for (p of programs; track p.hex) {
         <a
@@ -84,7 +81,6 @@
       }
     </div>
 
-    <!-- ── TELEMETRY ────────────────────────────────────────── -->
     <footer class="cl-tele">
       <span
         >◈ NUYEN <b>¥ {{ nuyen() }}</b></span

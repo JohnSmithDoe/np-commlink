@@ -2,13 +2,13 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   IBaseItem,
   IListState,
-  IQuickAddState,
   TColor,
   TItemListCategory,
   TItemListId,
 } from '../../../@shared/types';
 import {
   IGroceryLists,
+  IQuickAddState,
   IShoppingItem,
   IStorageItem,
   IStorageState,
@@ -21,7 +21,6 @@ import {
 } from '../../../@shared/util/app.utils';
 import {
   addListItem,
-  updateCategories,
   updateListItem,
 } from '../../../@shared/util/list/list.utils';
 
@@ -32,7 +31,6 @@ import {
 // in this file.
 export * from '../../../@shared/util/list/list.utils';
 
-// hmmm this is a bit much...
 export const updateQuickAddState = (
   state: IGroceryLists,
   listId: TItemListId
@@ -45,42 +43,46 @@ export const updateQuickAddState = (
   let isCategoryMode: boolean | undefined;
   let categories: TItemListCategory[] | undefined;
   switch (listId) {
-    case '_storage':
+    case '_storage': {
       searchQuery = state.storage.searchQuery;
       listName = marker('grocery.list-header.storage');
       isCategoryMode = state.storage.mode === 'categories';
       categories = state.storage.categories;
-      exactMatchLocal = !!state.storage.items.find((item) =>
+      exactMatchLocal = state.storage.items.some((item) =>
         matchesSearchExactly(item, searchQuery)
       );
       break;
-    case '_products':
+    }
+    case '_products': {
       searchQuery = state.products.searchQuery;
       listName = marker('grocery.list-header.products');
       isCategoryMode = state.products.mode === 'categories';
       categories = state.products.categories;
-      exactMatchLocal = !!state.products.items.find((item) =>
+      exactMatchLocal = state.products.items.some((item) =>
         matchesSearchExactly(item, searchQuery)
       );
       break;
-    case '_shopping':
+    }
+    case '_shopping': {
       searchQuery = state.shopping.searchQuery;
       listName = marker('grocery.list-header.shopping');
       isCategoryMode = state.shopping.mode === 'categories';
       categories = state.shopping.categories;
-      exactMatchLocal = !!state.shopping.items.find((item) =>
+      exactMatchLocal = state.shopping.items.some((item) =>
         matchesSearchExactly(item, searchQuery)
       );
       break;
-    default:
+    }
+    default: {
       // tasks is a sealed sibling with its own quick-add copy; the grocery
       // engine only ever routes the three grocery lists here.
       throw new Error(`grocery engine: unexpected listId ${listId}`);
+    }
   }
   const doShow = matchingTxtIsNotEmpty(searchQuery);
   const exactMatchCategory =
     !!categories &&
-    categories.find((cat) => matchesSearchExactly(cat, searchQuery));
+    categories.find((cat) => matchesSearchExactly(cat.name, searchQuery));
   return {
     searchQuery,
     canAddLocal: !isCategoryMode && doShow && !exactMatchLocal,
@@ -88,7 +90,7 @@ export const updateQuickAddState = (
       !isCategoryMode &&
       doShow &&
       listId !== '_products' && // dont show in products
-      !state.products.items.find((item) =>
+      !state.products.items.some((item) =>
         matchesSearchExactly(item, searchQuery)
       ),
     canAddCategory: doShow && isCategoryMode && !exactMatchCategory,
@@ -120,14 +122,13 @@ export const addShoppinglistToStorage = (
   items: IShoppingItem[]
 ): IStorageState => {
   let newState: IStorageState = { ...state };
-  for (let i = 0; i < items.length; i++) {
-    const storageItem = createStorageItemFromShopping(
-      items[i],
-      items[i].quantity
-    );
+  for (const item of items) {
+    const storageItem = createStorageItemFromShopping(item, item.quantity);
     newState = addListItemOrIncreaseQuantity(newState, storageItem, false);
   }
-  return updateCategories(newState);
+  // Categories are a shared, authoritative catalog now (kept in lockstep across
+  // the grocery lists) — copied items carry ids valid here, so no re-derive.
+  return newState;
 };
 
 export const listIdByPrefix = (type: string): TItemListId => {
@@ -140,7 +141,7 @@ export const listIdByPrefix = (type: string): TItemListId => {
   } else if (type.startsWith('[Tasks]')) {
     return '_tasks';
   } else {
-    throw Error('should not happen');
+    throw new Error('should not happen');
   }
 };
 
@@ -150,16 +151,20 @@ export const stateByListId = (
 ): IListState<IBaseItem> => {
   //prettier-ignore
   switch (listId) {
-    case '_storage':
+    case '_storage': {
       return state.storage;
-    case '_products':
+    }
+    case '_products': {
       return state.products;
-    case '_shopping':
+    }
+    case '_shopping': {
       return state.shopping;
-    default:
+    }
+    default: {
       // tasks is a sealed sibling with its own copies; the grocery engine only
       // ever routes the three grocery lists here.
       throw new Error(`grocery engine: unexpected listId ${listId}`);
+    }
   }
 };
 

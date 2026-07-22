@@ -26,7 +26,7 @@ export class ItemListSearchbarComponent {
     addIcons({ add, remove, cart, list });
   }
 
-  searchTermChange(ev: SearchbarCustomEvent) {
-    this.queryChange.emit(ev.detail.value ?? undefined);
+  searchTermChange(event: SearchbarCustomEvent) {
+    this.queryChange.emit(event.detail.value ?? undefined);
   }
 }

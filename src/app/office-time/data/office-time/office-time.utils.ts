@@ -198,16 +198,15 @@ export const dayjsToday = () => dayjs().hour(12);
 
 export const deserializeIsoStringMap = (
   isoStringMap?: Record<string, string>
-): Record<string, Dayjs> =>
-  Object.entries(isoStringMap ?? {}).reduce(
-    (acc, [name, isoString]) => {
-      if (typeof isoString !== 'string') return acc;
-      const parsed = dayjsFromString(isoString);
-      if (parsed) acc[name] = parsed;
-      return acc;
-    },
-    {} as Record<string, Dayjs>
-  );
+): Record<string, Dayjs> => {
+  const result: Record<string, Dayjs> = {};
+  for (const [name, isoString] of Object.entries(isoStringMap ?? {})) {
+    if (typeof isoString !== 'string') continue;
+    const parsed = dayjsFromString(isoString);
+    if (parsed) result[name] = parsed;
+  }
+  return result;
+};
 
 export const deserializeIsoStrings = (isoStrings?: string[]): Dayjs[] =>
   (isoStrings ?? [])
@@ -215,13 +214,14 @@ export const deserializeIsoStrings = (isoStrings?: string[]): Dayjs[] =>
     .map((day) => dayjsFromString(day))
     .filter((day): day is Dayjs => day !== null);
 
-export const serializeDateMap = (dateMap?: Record<string, Dayjs>) =>
-  Object.entries(dateMap ?? {}).reduce(
-    (acc, [name, date]) => {
-      acc[name] = dayjsToString(date);
-      return acc;
-    },
-    {} as Record<string, string>
+export const serializeDateMap = (
+  dateMap?: Record<string, Dayjs>
+): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(dateMap ?? {}).map(([name, date]): [string, string] => [
+      name,
+      dayjsToString(date),
+    ])
   );
 
 export const serializeDates = (dates?: Dayjs[]) =>
@@ -234,7 +234,7 @@ export const validateFreedays = (
   const holidayDays = Object.values(holidays ?? {});
   return freedays
     .filter((date): date is string => !!date)
-    .map(dayjsFromString)
+    .map((date) => dayjsFromString(date))
     .filter((day): day is Dayjs => day !== null)
     .filter((day) => !holidayDays.some((holiday) => holiday.isSame(day)));
 };

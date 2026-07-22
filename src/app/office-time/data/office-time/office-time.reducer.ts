@@ -145,7 +145,7 @@ export const officeTimeReducer = createReducer(
       ...stored,
       dashboardSettings: {
         ...initialOfficeTime.dashboardSettings,
-        ...(stored.dashboardSettings ?? {}),
+        ...stored.dashboardSettings,
       },
       dashboardItems: [...storedItems, ...missingItems],
       holidays: deserializeIsoStringMap(stored.holidays),

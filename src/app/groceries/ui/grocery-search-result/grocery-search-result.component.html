@@ -1,4 +1,3 @@
-<!--  product search result-->
 @if (results()?.products?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.product.search' | translate }}"
@@ -9,13 +8,12 @@
   <ng-template #productItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories"
+      [note]="item | appCategories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectProduct.emit(item)"
     ></app-text-item>
   </ng-template>
 }
-<!--  shopping search result-->
 @if (results()?.shoppingItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.shopping.search' | translate }}"
@@ -26,13 +24,12 @@
   <ng-template #shoppingItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories"
+      [note]="item | appCategories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectShoppingItem.emit(item)"
     ></app-text-item>
   </ng-template>
 }
-<!--  storage search result-->
 @if (results()?.storageItems?.length) {
   <app-item-list
     header="{{ 'grocery.list-header.storage.search' | translate }}"
@@ -43,7 +40,7 @@
   <ng-template #storageItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories"
+      [note]="item | appCategories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectStorageItem.emit(item)"
     ></app-text-item>

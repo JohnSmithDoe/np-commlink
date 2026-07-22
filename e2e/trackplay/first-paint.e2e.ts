@@ -46,9 +46,7 @@ test.describe('trackplay first paint', () => {
       'app-trackplay-game-types-page'
     );
 
-    const rows = mainContent(page).locator(
-      'app-trackplay-game-type-list-item'
-    );
+    const rows = mainContent(page).locator('app-trackplay-game-type-list-item');
     const standardRow = rows.filter({ hasText: 'Standard' });
     const rommeeRow = rows.filter({ hasText: 'Rommé' });
 

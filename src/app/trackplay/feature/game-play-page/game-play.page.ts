@@ -74,7 +74,9 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   // parameterized selectors can be built once here.
   readonly id: TID = this.#route.snapshot.paramMap.get('id') ?? '';
 
-  readonly winnerGif = 'assets/trackplay/winner.gif';
+  // Winner celebration is a pure-CSS neon animation (see .tp-victory in the
+  // scss) — no bitmap asset. This drives the confetti sparks via @for.
+  readonly victoryConfetti = Array.from({ length: 14 });
 
   readonly rxGame = this.#store.selectSignal(selectGameById(this.id));
   readonly rxPlayers = this.#store.selectSignal(selectPlayers);
@@ -125,8 +127,8 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   // Commit a cell edit: parse the raw ion-input value (empty / NaN -> 0).
-  onValue(roundId: TID, playerId: TID, ev: Event): void {
-    const raw = (ev.target as unknown as { value: string | number | null })
+  onValue(roundId: TID, playerId: TID, event: Event): void {
+    const raw = (event.target as unknown as { value: string | number | null })
       .value;
     const value = Number.parseInt(String(raw ?? ''), 10) || 0;
     this.#store.dispatch(
@@ -138,8 +140,8 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   // `ion-input` is `scoped`, so the keyup's target is the native <input>
   // itself (no `getInputElement`); blur it directly. Fall back to resolving the
   // native input via the host method when the event is retargeted to the host.
-  blurInput(ev: Event): void {
-    const target = ev.target as HTMLElement & {
+  blurInput(event: Event): void {
+    const target = event.target as HTMLElement & {
       getInputElement?: () => Promise<HTMLInputElement>;
     };
     if (target.getInputElement) {
@@ -150,13 +152,13 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   // Mirror the source region's horizontal scroll onto the other two.
-  onScroll(ev: Event): void {
-    const left = (ev.target as HTMLElement).scrollLeft;
+  onScroll(event: Event): void {
+    const left = (event.target as HTMLElement).scrollLeft;
     const regions = [this.headerRef(), this.bodyRef(), this.footerRef()];
     for (const region of regions) {
-      const el = region?.nativeElement;
-      if (el && el !== ev.target && el.scrollLeft !== left) {
-        el.scrollLeft = left;
+      const element = region?.nativeElement;
+      if (element && element !== event.target && element.scrollLeft !== left) {
+        element.scrollLeft = left;
       }
     }
   }
@@ -170,9 +172,9 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   #scrollBodyToBottom(): void {
-    const el = this.bodyRef()?.nativeElement;
-    if (el) {
-      el.scrollTop = el.scrollHeight - el.clientHeight;
+    const element = this.bodyRef()?.nativeElement;
+    if (element) {
+      element.scrollTop = element.scrollHeight - element.clientHeight;
     }
   }
 }

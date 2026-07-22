@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../../../types';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
-import { mockBaseItem } from '../../../testing/test-data';
+import { mockBaseItem, mockCategory } from '../../../testing/test-data';
 import { ListItemComponent } from './list-item.component';
 
 const dragEvent = (amount: number): TIonDragEvent =>
@@ -36,15 +36,19 @@ describe('ListItemComponent', () => {
   it('renders the title and category note', () => {
     fixture.componentRef.setInput(
       'item',
-      mockBaseItem({ category: ['Bakery'] })
+      mockBaseItem({ categoryIds: ['c-bakery'] })
     );
+    // the list's catalog resolves the item's category id → 'Bakery'
+    fixture.componentRef.setInput('categories', [
+      mockCategory({ id: 'c-bakery', name: 'Bakery' }),
+    ]);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('h2').textContent).toContain(
       '2 x Bread'
     );
     const note = fixture.nativeElement.querySelector('ion-note');
-    expect(note.innerText).toBe('Bakery');
+    expect(note.textContent).toBe('Bakery');
     expect(note.style.display).toBe('block');
   });
 

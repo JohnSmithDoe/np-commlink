@@ -1,7 +1,8 @@
 import {
   IBaseItem,
+  ICategory,
   IListState,
-  TItemListCategory,
+  TCategoryId,
   TItemListMode,
   TItemListSort,
   TItemListSortDir,
@@ -9,9 +10,10 @@ import {
   TUpdateDTO,
 } from '../../types';
 import {
-  matchesCategoryExactly,
-  matchesItemExactlyIdx,
+  matchesItemExactlyIdx as matchesItemExactlyIndex,
+  matchesSearch,
   matchingTxt,
+  uuidv4,
 } from '../../util/app.utils';
 
 // Domain-blind reducer helpers shared by every list domain (tracking, grocery,
@@ -19,51 +21,40 @@ import {
 // concrete list identity — hence they live in the shared kernel, not in the
 // grocery engine. (Grocery-specific helpers stay in grocery-list.utils.ts and
 // re-export these for backwards compatibility.)
-
-export const updateCategories = <T extends IListState<R>, R extends IBaseItem>(
-  state: T
-): T => {
-  return {
-    ...state,
-    categories: [
-      ...new Set(categoriesFromList(state.items).concat(state.categories)),
-    ],
-  };
-};
+//
+// Categories are first-class {id,name} objects owned by the list's `categories`
+// catalog; items reference them by id (`categoryIds`). The catalog is
+// AUTHORITATIVE — it is no longer derived from item names, so adding/updating an
+// item does not touch it (categories are minted explicitly via addListCategory).
 
 export const addListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: R
 ): T => {
-  // do not add an empty item
   const name = item.name.trim();
-  if (!name.length) {
+  if (name.length === 0) {
     return state;
   }
-  return updateCategories({
-    ...state,
-    items: [item, ...state.items],
-  });
+  return { ...state, items: [item, ...state.items] };
 };
 
 export const removeListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: R
-): T =>
-  updateCategories({
-    ...state,
-    items: state.items.filter((listItem) => listItem.id !== item.id),
-  });
+): T => ({
+  ...state,
+  items: state.items.filter((listItem) => listItem.id !== item.id),
+});
 
 export const removeListItems = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   items: R[]
 ): T => {
-  const toRemove = items.map((item) => item.id);
-  return updateCategories({
+  const toRemove = new Set(items.map((item) => item.id));
+  return {
     ...state,
-    items: state.items.filter((listItem) => !toRemove.includes(listItem.id)),
-  });
+    items: state.items.filter((listItem) => !toRemove.has(listItem.id)),
+  };
 };
 
 export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
@@ -72,16 +63,14 @@ export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
 ): T => {
   if (!item) return state;
   const items: TUpdateDTO<R>[] = [...state.items];
-  const itemIdx = matchesItemExactlyIdx(item, state.items);
-  if (itemIdx >= 0) {
-    const original = state.items[itemIdx];
-    const updatedItem = { ...original, ...item };
-    items.splice(itemIdx, 1, updatedItem);
+  const itemIndex = matchesItemExactlyIndex(item, state.items);
+  if (itemIndex >= 0) {
+    const original = state.items[itemIndex];
+    items[itemIndex] = { ...original, ...item };
   } else {
-    console.error(item);
-    // throw new Error('Dont update an item that is not in the list');
+    console.warn('updateListItem: item not in list', item.id);
   }
-  return updateCategories({ ...state, items });
+  return { ...state, items };
 };
 
 export const updateListSort = (
@@ -95,15 +84,18 @@ export const updateListSort = (
     let sortDir: 'asc' | 'desc' = defaultSort;
     switch (newDir) {
       case 'asc':
-      case 'desc':
+      case 'desc': {
         sortDir = newDir;
         break;
-      case 'keep':
+      }
+      case 'keep': {
         sortDir = currentDir ?? defaultSort;
         break;
-      case 'toggle':
+      }
+      case 'toggle': {
         sortDir = currentDir === 'asc' ? 'desc' : 'asc';
         break;
+      }
     }
     result = { sortBy, sortDir };
   }
@@ -116,9 +108,9 @@ export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
 ): T => {
   // reset sort on mode change, otherwise toggle
   const sort: TItemListSort | undefined =
-    state.mode !== mode
-      ? { sortBy: 'name', sortDir: 'asc' }
-      : updateListSort('name', 'toggle', state.sort?.sortDir);
+    state.mode === mode
+      ? updateListSort('name', 'toggle', state.sort?.sortDir)
+      : { sortBy: 'name', sortDir: 'asc' };
   return {
     ...state,
     sort: sort,
@@ -127,78 +119,107 @@ export const updateListMode = <T extends IListState<R>, R extends IBaseItem>(
   };
 };
 
-export const categoriesFromList = (items: IBaseItem[]): TItemListCategory[] => {
-  return [...new Set(items.flatMap((item) => item.category ?? []))];
-};
-
-export const addListCategory = <T extends IListState<any>>(
+// Mint a category into the catalog. Dedupe by lowercased name so the same name
+// can't appear twice. The catalog is authoritative — this is the only way a
+// category comes to exist (it is not re-derived from item names).
+export const addListCategory = <T extends IListState<IBaseItem>>(
   state: T,
-  category?: TItemListCategory
+  name?: string
 ): T => {
-  return !category?.length || state.categories.includes(category)
+  const trimmed = (name ?? '').trim();
+  if (trimmed.length === 0) return state;
+  const exists = state.categories.some(
+    (cat) => matchingTxt(cat.name) === matchingTxt(trimmed)
+  );
+  return exists
     ? state
     : {
         ...state,
-        categories: [category, ...state.categories],
+        categories: [{ id: uuidv4(), name: trimmed }, ...state.categories],
       };
 };
 
+// Insert a PRE-MINTED {id,name} into the catalog (dedupe by id or name). Used
+// where the id must be generated once and shared across several lists — the
+// grocery domain fans one minted category across products/shopping/storage.
+export const addListCategoryObject = <T extends IListState<IBaseItem>>(
+  state: T,
+  category: ICategory
+): T => {
+  const name = category.name.trim();
+  if (name.length === 0) return state;
+  const exists = state.categories.some(
+    (cat) =>
+      cat.id === category.id || matchingTxt(cat.name) === matchingTxt(name)
+  );
+  return exists
+    ? state
+    : { ...state, categories: [{ ...category, name }, ...state.categories] };
+};
+
+// Remove a category by id: drop the catalog entry AND strip the id off every
+// item that referenced it (→ those items become uncategorized).
 export const removeListCategory = <T extends IListState<IBaseItem>>(
   state: T,
-  category?: TItemListCategory
+  categoryId?: TCategoryId
 ): T => {
-  const items = state.items.map((item) => ({
-    ...item,
-    category: item.category?.filter((cat) => cat !== category),
-  }));
+  if (!categoryId) return state;
   return {
     ...state,
-    items,
-    categories: state.categories.filter((cat) => cat !== category),
+    items: state.items.map((item) =>
+      item.categoryIds?.includes(categoryId)
+        ? {
+            ...item,
+            categoryIds: item.categoryIds.filter((id) => id !== categoryId),
+          }
+        : item
+    ),
+    categories: state.categories.filter((cat) => cat.id !== categoryId),
   };
 };
 
+// Rename a category by id — O(1): change the catalog entry's `name`; items
+// reference it by id, so they need no rewrite. Renaming ONTO an existing name
+// MERGES: drop the renamed entry and remap item refs onto the survivor id.
 export const updateListCategory = <
   T extends IListState<R>,
   R extends IBaseItem,
 >(
   state: T,
-  original: TItemListCategory,
-  category: TItemListCategory
+  categoryId: TCategoryId,
+  newName: string
 ): T => {
-  if (!matchingTxt(category).length) return state;
-  // if there was an original one we need to replace the category in the items
-  const originalName = matchingTxt(original);
-  original = original.trim();
-  category = category.trim();
-  let categories: TItemListCategory[];
-  let items: R[];
-  if (!!originalName.length) {
-    items = state.items.map((item) =>
-      item.category && matchesCategoryExactly(item, original)
-        ? {
-            ...item,
-            category: [...item.category].splice(
-              item.category?.indexOf(originalName),
-              1,
-              category
-            ),
-          }
-        : item
-    );
-    categories = [...state.categories].splice(
-      state.categories.indexOf(original),
-      1,
-      category
-    );
-  } else {
-    items = state.items;
-    categories = [...new Set([category, ...state.categories])];
+  const to = newName.trim();
+  const hasTarget = state.categories.some((cat) => cat.id === categoryId);
+  if (to.length === 0 || !hasTarget) return state;
+  const survivor = state.categories.find(
+    (cat) => cat.id !== categoryId && matchingTxt(cat.name) === matchingTxt(to)
+  );
+  if (survivor) {
+    return {
+      ...state,
+      items: state.items.map((item) =>
+        item.categoryIds?.includes(categoryId)
+          ? {
+              ...item,
+              categoryIds: [
+                ...new Set(
+                  item.categoryIds.map((id) =>
+                    id === categoryId ? survivor.id : id
+                  )
+                ),
+              ],
+            }
+          : item
+      ),
+      categories: state.categories.filter((cat) => cat.id !== categoryId),
+    };
   }
   return {
     ...state,
-    items,
-    categories,
+    categories: state.categories.map((cat) =>
+      cat.id === categoryId ? { ...cat, name: to } : cat
+    ),
   };
 };
 
@@ -206,7 +227,7 @@ export const updatedSearchQuery = (
   item: IBaseItem,
   searchQuery: string | undefined
 ) => {
-  if (!!item.name && !item.name.includes(searchQuery ?? '')) {
+  if (!!item.name && !matchesSearch(item, searchQuery ?? '')) {
     searchQuery = undefined;
   }
   return searchQuery;

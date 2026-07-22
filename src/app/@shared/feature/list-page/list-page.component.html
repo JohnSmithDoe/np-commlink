@@ -17,19 +17,24 @@
   >
     <ng-content select="[toolbarActions]"></ng-content>
     <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd></ng-content>
+    @if (hasCategories()) {
+      <ion-button
+        toolbarActionsEnd
+        (click)="manageCategories()"
+        [attr.aria-label]="'grocery.a11y.manage-categories' | translate"
+      >
+        <ion-icon slot="icon-only" name="pricetags-outline" />
+      </ion-button>
+    }
   </app-item-list-toolbar>
 
   <ng-content select="[headerEnd]" toolbar></ng-content>
 </app-page-header>
 
 <ion-content>
-  @if (hasCategories()) {
-    <app-item-list-quickadd
-      (quickCreateCategory)="addCategoryFromSearch()"
-      (quickAddItem)="addItemFromSearch()"
-      (quickCreateProduct)="quickCreateProduct.emit()"
-    ></app-item-list-quickadd>
-  }
+  <!-- Grocery-only quick-add row, projected by the grocery pages; tracking and
+       tasks project nothing here. -->
+  <ng-content select="[quickAdd]"></ng-content>
 
   <app-item-list
     [headerColor]="
@@ -39,13 +44,14 @@
       facade.filter().isCategoryModeOrHasFilter === true
         ? facade.filter().hasFilter === true
           ? ('grocery.list-header.category.filter'
-            | translate: { category: facade.state()?.filterBy })
+            | translate: { category: filterName() })
           : ('grocery.list-header.category' | translate)
         : listHeader()
     "
     [mode]="facade.state()?.mode ?? 'alphabetical'"
     [items]="facade.items()"
     [categories]="facade.categories()"
+    [catalog]="facade.state()?.categories ?? []"
     [itemTemplate]="itemTemplate()"
     (selectCategory)="selectCategory($event)"
     (deleteCategory)="deleteCategory($event)"

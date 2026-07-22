@@ -3,20 +3,20 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, tap, withLatestFrom } from 'rxjs';
 import { DatabaseService } from '../../../@shared/util/database.service';
-import { SettingsActions } from './settings.actions';
-import { selectSettingsState } from './settings.selector';
+import { OfficeTimeSettingsActions } from './settings.actions';
+import { selectOfficeTimeSettingsState } from './settings.selector';
 
 @Injectable({ providedIn: 'root' })
-export class SettingsEffects {
+export class OfficeTimeSettingsEffects {
   #actions$ = inject(Actions);
   #store = inject(Store);
   #database = inject(DatabaseService);
   toggleFlag$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(SettingsActions.toggleFlag),
-      withLatestFrom(this.#store.select(selectSettingsState)),
+      ofType(OfficeTimeSettingsActions.toggleFlag),
+      withLatestFrom(this.#store.select(selectOfficeTimeSettingsState)),
       map(([{ flag }, settings]) =>
-        SettingsActions.updateSettings({
+        OfficeTimeSettingsActions.updateSettings({
           ...settings,
           [flag]: !settings[flag],
         })
@@ -27,9 +27,9 @@ export class SettingsEffects {
   saveSettingsOnChange$ = createEffect(
     () => {
       return this.#actions$.pipe(
-        ofType(SettingsActions.updateSettings),
+        ofType(OfficeTimeSettingsActions.updateSettings),
         tap(({ settings }) => {
-          void this.#database.save('settings', settings);
+          void this.#database.save('officeTimeSettings', settings);
         })
       );
     },

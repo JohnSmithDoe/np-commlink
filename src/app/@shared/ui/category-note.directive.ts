@@ -1,5 +1,6 @@
 import { Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { IBaseItem } from '../types';
+import { IBaseItem, ICategory } from '../types';
+import { categoryNames } from '../util/category.utils';
 
 @Directive({
   selector: '[appCategoryNote]',
@@ -9,16 +10,21 @@ export class CategoryNoteDirective {
   readonly #element = inject(ElementRef<HTMLIonNoteElement>);
 
   readonly appCategoryNote = input<IBaseItem>();
+  // The list's {id,name} catalog, so the item's category ids resolve to names.
+  readonly appCategoryNoteCatalog = input<readonly ICategory[]>([]);
 
   constructor() {
     effect(() => {
-      const val = this.appCategoryNote();
-      const el = this.#element.nativeElement;
-      if (val?.category?.length) {
-        el.style.display = 'block';
-        el.innerText = val.category.join(', ');
+      const names = categoryNames(
+        this.appCategoryNote(),
+        this.appCategoryNoteCatalog()
+      );
+      const element = this.#element.nativeElement;
+      if (names.length > 0) {
+        element.style.display = 'block';
+        element.textContent = names.join(', ');
       } else {
-        el.style.display = 'none';
+        element.style.display = 'none';
       }
     });
   }

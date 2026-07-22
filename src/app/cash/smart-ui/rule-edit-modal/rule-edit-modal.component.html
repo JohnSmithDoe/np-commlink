@@ -33,23 +33,11 @@
       />
     </ion-item>
 
-    <ion-item>
-      <ion-select
-        labelPlacement="stacked"
-        label="{{ 'cash.label.category' | translate }}"
-        [value]="category()"
-        (ionChange)="onCategory($any($event).detail.value)"
-      >
-        @for (cat of categories(); track cat) {
-          <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
-        }
-      </ion-select>
-    </ion-item>
-    @if (!categories().length) {
-      <ion-note color="danger" class="cash-rule-dialog__error">
-        {{ 'cash.rule.no-categories' | translate }}
-      </ion-note>
-    }
+    <app-category-input
+      [categories]="selectedCategories()"
+      (removeCategory)="clearCategory()"
+      (openDialog)="openCategoriesDialog()"
+    ></app-category-input>
   </ion-list>
 
   <ion-segment
@@ -144,4 +132,17 @@
     <ion-icon slot="start" name="add-outline" aria-hidden="true" />
     {{ 'cash.condition.add' | translate }}
   </ion-button>
+
+  <app-categories-dialog
+    [multiple]="false"
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="categoryId() ? [categoryId()] : []"
+    (confirmed)="onPickCategory($event)"
+    (cancelled)="closeCategoriesDialog()"
+    (dismissed)="closeCategoriesDialog()"
+    (addNew)="onAddCategory($event)"
+    (deleted)="onDeleteCategory($event)"
+    (renamed)="onRenameCategory($event)"
+  ></app-categories-dialog>
 </ion-content>

@@ -39,13 +39,17 @@ export class BarcodeScannerService {
 
     document.body.classList.add('scanner-active');
     try {
-      const { barcodes } = await BarcodeScanner.scan({
-        formats: [BarcodeFormat.Ean13],
-      });
-      return barcodes[0]?.rawValue;
+      return await this.#scanFirstEan();
     } finally {
       document.body.classList.remove('scanner-active');
     }
+  }
+
+  async #scanFirstEan(): Promise<string | undefined> {
+    const { barcodes } = await BarcodeScanner.scan({
+      formats: [BarcodeFormat.Ean13],
+    });
+    return barcodes[0]?.rawValue;
   }
 
   async #requestPermissions(): Promise<boolean> {

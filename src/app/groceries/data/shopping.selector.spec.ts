@@ -35,7 +35,7 @@ describe('shopping.selector', () => {
       });
       const lists = mockGroceryLists({ shopping: listState });
       const result = selectShoppingSearchResult.projector(listState, lists);
-      expect(result?.listItems.map((i) => i.name)).toEqual(['Bread']);
+      expect(result?.listItems.map((index) => index.name)).toEqual(['Bread']);
       expect(result).toEqual(filterBySearchQuery(lists, listState));
     });
   });

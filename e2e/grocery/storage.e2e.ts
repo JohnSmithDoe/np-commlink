@@ -62,4 +62,45 @@ test.describe('storage list', () => {
       timeout: 10_000,
     });
   });
+
+  // Drives the shared category picker (the Stage-1 custom selectable list): open
+  // it from the edit dialog, create a new category, confirm (multi mode), save,
+  // then re-open the item to prove the category folded into the draft + persisted.
+  test('assigns a category via the picker', async ({ page }) => {
+    await addViaSearch(page, 'Cheese');
+    await expect(page.getByText('1 x Cheese')).toBeVisible({ timeout: 10_000 });
+    await page.getByText('1 x Cheese').click();
+
+    // open the picker from the category-input row
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.locator('app-category-input ion-item').first().click();
+
+    // The picker's <ion-modal> teleports to the app root, so its Confirm button
+    // ("Auswählen") signals it opened; its searchbar is then the last one on the
+    // page (the list-page searchbar is behind it, same placeholder).
+    await expect(page.getByRole('button', { name: 'Auswählen' })).toBeVisible({
+      timeout: 10_000,
+    });
+    const pickerSearch = page.locator('ion-searchbar input').last();
+    await pickerSearch.fill('Fridge');
+    await page.waitForTimeout(400); // > 250ms searchbar debounce
+
+    // tap the "create" row, then confirm the now-selected category (multi mode)
+    await page.getByText('Fridge erstellen').click();
+    await page.getByRole('button', { name: 'Auswählen' }).click();
+
+    await expect(
+      page.locator('app-category-input').getByText('Fridge')
+    ).toBeVisible({ timeout: 10_000 });
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+
+    // re-open the item → the category persisted onto it
+    await expect(page.getByText('1 x Cheese')).toBeVisible({ timeout: 10_000 });
+    await page.getByText('1 x Cheese').click();
+    await expect(
+      page.locator('app-category-input').getByText('Fridge')
+    ).toBeVisible({ timeout: 10_000 });
+  });
 });

@@ -12,7 +12,7 @@ export const selectLowStockCount = createSelector(
   selectStorageState,
   (state) =>
     state?.items.filter(
-      (item) => item.minAmount != null && item.quantity < item.minAmount
+      (item) => item.minAmount != undefined && item.quantity < item.minAmount
     ).length ?? 0
 );
 

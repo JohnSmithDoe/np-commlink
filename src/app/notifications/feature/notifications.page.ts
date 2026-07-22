@@ -127,14 +127,18 @@ export class NotificationsPage implements ViewWillEnter {
 
   actionLabelKey(n: INotification): string {
     switch (n.action?.type) {
-      case 'tracking.start':
+      case 'tracking.start': {
         return 'notifications.action.start';
-      case 'tracking.stop':
+      }
+      case 'tracking.stop': {
         return 'notifications.action.stop';
-      case 'tracking.pause':
+      }
+      case 'tracking.pause': {
         return 'notifications.action.pause';
-      default:
+      }
+      default: {
         return '';
+      }
     }
   }
 }

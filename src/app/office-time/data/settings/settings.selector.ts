@@ -1,5 +1,5 @@
 import { createFeatureSelector } from '@ngrx/store';
-import { ISettingsState } from '../../model';
+import { IOfficeTimeSettingsState } from '../../model';
 
-export const selectSettingsState =
-  createFeatureSelector<ISettingsState>('settings');
+export const selectOfficeTimeSettingsState =
+  createFeatureSelector<IOfficeTimeSettingsState>('officeTimeSettings');

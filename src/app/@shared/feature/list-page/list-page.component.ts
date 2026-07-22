@@ -2,24 +2,24 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
-  output,
   TemplateRef,
 } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, remove } from 'ionicons/icons';
+import { add, pricetagsOutline, remove } from 'ionicons/icons';
 import {
+  TCategoryId,
   TColor,
-  TItemListCategory,
   TItemListMode,
   TItemListSortType,
 } from '../../types';
+import { categoryName } from '../../util/category.utils';
 import { LIST_FACADE } from '../../util/list/list-page.facade';
 import { ItemListEmptyComponent } from '../../ui/item-list/item-list-empty/item-list-empty.component';
-import { ItemListQuickaddComponent } from '../../smart-ui/item-list-quick-add/item-list-quickadd.component';
 import { ItemListSearchbarComponent } from '../../ui/item-list/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../ui/item-list/item-list-toolbar/item-list-toolbar.component';
 import { ItemListComponent } from '../../ui/item-list/item-list.component';
@@ -27,11 +27,13 @@ import { PageHeaderComponent } from '../../ui/page-header/page-header.component'
 import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog/edit-category-dialog.component';
 
 /**
- * Domain-blind list page shell: page-header + searchbar + toolbar, quick-add,
- * item-list, empty state and category dialog. It knows no list identity — the
- * active list's signals and dispatch live behind the injected {@link LIST_FACADE}
- * a consumer domain provides. Grocery pages project their cross-list search
- * buckets into the `[searchExtras]` slot; tasks omits it.
+ * Domain-blind list page shell: page-header + searchbar + toolbar, item-list,
+ * empty state and category dialog. It knows no list identity — the active list's
+ * signals and dispatch live behind the injected {@link LIST_FACADE} a consumer
+ * domain provides. The quick-add row is a grocery-only concern the shell stays
+ * blind to: grocery pages project their quick-add component into the `[quickAdd]`
+ * slot (and their cross-list search buckets into `[searchExtras]`); tracking and
+ * tasks project neither.
  */
 @Component({
   selector: 'app-list-page',
@@ -39,10 +41,11 @@ import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog
   styleUrls: ['./list-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    IonButton,
+    IonIcon,
     IonContent,
     ItemListComponent,
     ItemListEmptyComponent,
-    ItemListQuickaddComponent,
     ItemListSearchbarComponent,
     ItemListToolbarComponent,
     PageHeaderComponent,
@@ -68,13 +71,19 @@ export class ListPageComponent {
   // edit-category dialog. Grocery + tasks keep the default (true).
   hasCategories = input(true, { transform: booleanAttribute });
 
-  // Passthrough for the quick-add "create product/catalog item" affordance —
-  // a grocery-only concern the page stays blind to. Grocery pages bind it to
-  // their facade's showCreateProductDialog(); tasks never fires it.
-  quickCreateProduct = output<void>();
+  // The active category filter resolved to a display name (filterBy is a
+  // category id now). Empty when no filter is set.
+  readonly filterName = computed(() => {
+    const state = this.facade.state();
+    return categoryName(state?.filterBy, state?.categories ?? []);
+  });
 
   constructor() {
-    addIcons({ add, remove });
+    addIcons({ add, remove, pricetagsOutline });
+  }
+
+  manageCategories() {
+    this.facade.manageCategories?.();
   }
 
   search(searchTerm?: string) {
@@ -97,12 +106,12 @@ export class ListPageComponent {
     this.facade.setSortMode(type);
   }
 
-  selectCategory(category: TItemListCategory) {
-    this.facade.selectCategory(category);
+  selectCategory(categoryId: TCategoryId) {
+    this.facade.selectCategory(categoryId);
   }
 
-  deleteCategory(category: TItemListCategory) {
-    this.facade.deleteCategory(category);
+  deleteCategory(categoryId: TCategoryId) {
+    this.facade.deleteCategory(categoryId);
   }
 
   showCreateDialog() {

@@ -5,6 +5,7 @@ import {
   IonIcon,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -18,6 +19,7 @@ import {
 } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
+import { ItemListQuickaddComponent } from '../../smart-ui/item-list-quick-add/item-list-quickadd.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { BarcodeScannerService } from '../../../@shared/util/barcode-scanner.service';
@@ -36,6 +38,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
     IonButtons,
     IonIcon,
     ListPageComponent,
+    ItemListQuickaddComponent,
     GrocerySearchResultComponent,
     ListItemComponent,
     EditShoppingItemDialogComponent,
@@ -46,6 +49,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
 })
 export class ShoppingPage implements ViewWillEnter {
   readonly #store = inject(Store);
+  readonly #route = inject(ActivatedRoute);
   readonly #scanner = inject(BarcodeScannerService);
   readonly facade = inject(GroceryListPageFacade);
   readonly rxState = this.#store.selectSignal(selectShoppingState);
@@ -57,6 +61,11 @@ export class ShoppingPage implements ViewWillEnter {
 
   ionViewWillEnter(): void {
     this.#store.dispatch(ShoppingActions.enterPage());
+    // Category→items drill: the manage page navigates here with `?filter=<id>`.
+    // Applied after the route resolver's `loaded` (which resets filterBy), so
+    // the filter survives the entry.
+    const filter = this.#route.snapshot.queryParamMap.get('filter');
+    if (filter) this.#store.dispatch(ShoppingActions.updateFilter(filter));
   }
 
   async scan() {

@@ -52,7 +52,7 @@ describe('TrackplayGameTypeListItemComponent', () => {
   });
 
   it('deletes on a start-side drag only when deletion is allowed', () => {
-    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue();
+    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
 
     fixture.componentRef.setInput('canDelete', false);
     component.handleDrag(dragEvent(-200));
@@ -64,7 +64,7 @@ describe('TrackplayGameTypeListItemComponent', () => {
   });
 
   it('edits on an end-side drag regardless of canDelete', () => {
-    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue();
+    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);
 
     fixture.componentRef.setInput('canDelete', false);
     component.handleDrag(dragEvent(200));

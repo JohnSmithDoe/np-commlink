@@ -7,8 +7,8 @@ import {
   mockAppState,
   mockItemDialogsState,
 } from '../../../@shared/testing/test-data';
-import { StorageActions } from '../storage.actions';
 import { GroceryListActions } from './grocery-list.actions';
+import { GroceryCategoriesActions } from './grocery-categories.actions';
 import {
   CategoriesActions,
   ItemDialogsActions,
@@ -41,19 +41,37 @@ describe('GroceryItemDialogsEffects', () => {
     expect(action.item.name).toBe('12345');
   });
 
-  it('confirmEditCategoryChanges$ forwards a renamed category to the target list', async () => {
+  it('confirmEditCategoryChanges$ renames a category by id in the shared catalog', async () => {
     setup(
       mockAppState({
         itemDialogs: mockItemDialogsState({
           listId: '_storage',
-          category: { isEditing: true, original: 'Dairy', editItem: 'Fridge' },
+          category: { isEditing: true, id: 'cat-1', name: 'Fridge' },
         }),
       })
     );
     actions$ = of(CategoriesActions.confirmEditChanges());
     expect(await firstValueFrom(effects.confirmEditCategoryChanges$)).toEqual(
-      StorageActions.updateCategory('Dairy', 'Fridge')
+      GroceryCategoriesActions.rename('cat-1', 'Fridge')
     );
+  });
+
+  it('confirmEditCategoryChanges$ mints a new category when no id is set', async () => {
+    setup(
+      mockAppState({
+        itemDialogs: mockItemDialogsState({
+          listId: '_storage',
+          category: { isEditing: true, name: 'Fruit' },
+        }),
+      })
+    );
+    actions$ = of(CategoriesActions.confirmEditChanges());
+    // The minted id is a uuid — assert on the type + name only.
+    const action = (await firstValueFrom(
+      effects.confirmEditCategoryChanges$
+    )) as ReturnType<typeof GroceryCategoriesActions.add>;
+    expect(action.type).toBe(GroceryCategoriesActions.add.type);
+    expect(action.category.name).toBe('Fruit');
   });
 
   // Both dialog orchestrators stay registered once both route sets are visited
@@ -64,7 +82,7 @@ describe('GroceryItemDialogsEffects', () => {
       mockAppState({
         itemDialogs: mockItemDialogsState({
           listId: '_tasks',
-          category: { isEditing: true, original: 'X', editItem: 'Y' },
+          category: { isEditing: true, id: 'x', name: 'Y' },
         }),
       })
     );

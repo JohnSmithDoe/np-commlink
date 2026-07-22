@@ -8,9 +8,9 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { BooleanKeys, IListSettings } from '../../../@shared/types';
-import { ListSettingsActions } from '../../../@shared/data/list-settings/list-settings.actions';
-import { selectListSettingsState } from '../../../@shared/data/list-settings/list-settings.selector';
+import { BooleanKeys } from '../../../@shared/types';
+import { IListSettings } from '../../model';
+import { ListSettingsActions, selectListSettingsState } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({

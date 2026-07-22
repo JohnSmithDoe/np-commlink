@@ -127,7 +127,7 @@ describe('wordclock.utils', () => {
   });
 
   describe('isWordActive', () => {
-    const row = 'ABESCD'.split(''); // "ES" spans index 2..3
+    const row = [...'ABESCD']; // "ES" spans index 2..3
     const active: ActiveWord[] = [{ word: 'ES', row: -1 }];
 
     it('marks the letters inside the active word span', () => {

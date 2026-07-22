@@ -110,7 +110,8 @@ export class CashReportPage {
         {
           data: cats.map((c) => c.cents / 100),
           backgroundColor: cats.map(
-            (_, i) => this.#colors.series[i % this.#colors.series.length]
+            (_, index) =>
+              this.#colors.series[index % this.#colors.series.length]
           ),
           borderWidth: 0,
         },

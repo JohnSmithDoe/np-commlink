@@ -1,11 +1,13 @@
 import { LoadedDatastore } from '../types';
 
-// Fresh baseline (start-over, 2026-07-14): the current on-disk shapes ARE
-// version 1. All pre-1 data-format migrations (targetPercentage→days,
-// notifications backfill, and the globals→products key renames that lived in
-// database.service.ts) were dropped when the store was reset. The framework
-// below is kept alive so the format can evolve again — see `migrations`.
-export const VERSION: string = '1';
+// Schema version of the persisted docs. Bumped 1→2 for the category `{id,name}`
+// epic: items/txns/rules now reference categories BY ID and the catalog holds
+// objects, which is incompatible with the old name-string docs. Rather than a
+// data migration (per the repo's fresh-baseline convention), DatabaseService
+// clears the store once when the stored version ≠ VERSION and re-stamps it — a
+// one-time reset on first v2 load. The step-based framework below stays for a
+// future format that DOES want an in-place migration.
+export const VERSION: string = '2';
 
 type Migration = {
   from: string;
@@ -13,8 +15,7 @@ type Migration = {
   apply: (data: LoadedDatastore) => LoadedDatastore;
 };
 
-// Intentionally empty at the fresh baseline. To evolve the persisted format:
-// bump VERSION and append a step, e.g.
+// Intentionally empty at the fresh baseline. To evolve the persisted format: bump VERSION and append a step, e.g.
 //   { from: '1', to: '2', apply: (data) => ({ ...data, /* transform */ }) }
 // Each step receives the full datastore at version `from` and returns it at
 // version `to`; steps apply in order until the persisted version matches VERSION.

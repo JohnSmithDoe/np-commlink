@@ -3,10 +3,11 @@ import {
   filterAndSortItemList,
   filterBySearchQuery,
   selectListCategories,
-  sortCategoriesFn,
-  sortItemListFn,
+  sortCategoriesFn as sortCategoriesFunction,
+  sortItemListFn as sortItemListFunction,
 } from './grocery-list.selector';
-import { mockListSettings } from '../../../@shared/testing/test-data';
+import { mockCategory } from '../../../@shared/testing/test-data';
+import { mockListSettings } from '../../testing/grocery.test-data';
 import {
   mockGroceryLists,
   mockProduct,
@@ -33,7 +34,7 @@ describe('item-list.selector', () => {
       });
       const lists = mockGroceryLists({ storage: listState });
       const result = filterBySearchQuery(lists, listState);
-      expect(result?.listItems.map((i) => i.name)).toEqual([
+      expect(result?.listItems.map((index) => index.name)).toEqual([
         'Milk',
         'Milkshake',
       ]);
@@ -54,7 +55,7 @@ describe('item-list.selector', () => {
         listSettings: mockListSettings({ showProductsInStorage: true }),
       });
       const result = filterBySearchQuery(lists, listState);
-      expect(result?.products?.map((i) => i.name)).toEqual(['Sugar']);
+      expect(result?.products?.map((index) => index.name)).toEqual(['Sugar']);
     });
 
     it('omits global items when the setting is disabled', () => {
@@ -80,10 +81,10 @@ describe('item-list.selector', () => {
       const a = mockStorageItem({ name: 'Apple' });
       const b = mockStorageItem({ name: 'Banana' });
       expect(
-        [b, a].sort(sortItemListFn({ sortBy: 'name', sortDir: 'asc' }))
+        [b, a].sort(sortItemListFunction({ sortBy: 'name', sortDir: 'asc' }))
       ).toEqual([a, b]);
       expect(
-        [a, b].sort(sortItemListFn({ sortBy: 'name', sortDir: 'desc' }))
+        [a, b].sort(sortItemListFunction({ sortBy: 'name', sortDir: 'desc' }))
       ).toEqual([b, a]);
     });
 
@@ -99,7 +100,10 @@ describe('item-list.selector', () => {
         bestBefore: '2024-12-01',
       });
       const sorted = [late, early].sort(
-        sortItemListFn<IStorageItem>({ sortBy: 'bestBefore', sortDir: 'asc' })
+        sortItemListFunction<IStorageItem>({
+          sortBy: 'bestBefore',
+          sortDir: 'asc',
+        })
       );
       expect(sorted[0]).toBe(early);
 
@@ -109,7 +113,10 @@ describe('item-list.selector', () => {
         mockStorageItem({ id: '1', name: 'B', bestBefore: undefined }),
         mockStorageItem({ id: '2', name: 'A', bestBefore: undefined }),
       ].sort(
-        sortItemListFn<IStorageItem>({ sortBy: 'bestBefore', sortDir: 'asc' })
+        sortItemListFunction<IStorageItem>({
+          sortBy: 'bestBefore',
+          sortDir: 'asc',
+        })
       );
       expect(noDates[0].name).toBe('A');
     });
@@ -120,25 +127,25 @@ describe('item-list.selector', () => {
     it('returns 0 (stable) for an unknown sort key', () => {
       const a = mockStorageItem({ name: 'A' });
       const b = mockStorageItem({ name: 'B' });
-      expect(sortItemListFn({ sortBy: 'unknown', sortDir: 'asc' })(a, b)).toBe(
-        0
-      );
+      expect(
+        sortItemListFunction({ sortBy: 'unknown', sortDir: 'asc' })(a, b)
+      ).toBe(0);
     });
   });
 
   describe('filterAndSortItemList', () => {
     it('filters by the active category filter and sorts the result', () => {
       const state = mockStorageState({
-        filterBy: 'Dairy',
+        filterBy: 'dairy',
         sort: { sortBy: 'name', sortDir: 'asc' },
         items: [
-          mockStorageItem({ id: 'a', name: 'Milk', category: ['Dairy'] }),
-          mockStorageItem({ id: 'b', name: 'Cheese', category: ['Dairy'] }),
-          mockStorageItem({ id: 'c', name: 'Bread', category: ['Bakery'] }),
+          mockStorageItem({ id: 'a', name: 'Milk', categoryIds: ['dairy'] }),
+          mockStorageItem({ id: 'b', name: 'Cheese', categoryIds: ['dairy'] }),
+          mockStorageItem({ id: 'c', name: 'Bread', categoryIds: ['bakery'] }),
         ],
       });
       const result = filterAndSortItemList(state);
-      expect(result.map((i) => i.name)).toEqual(['Cheese', 'Milk']);
+      expect(result.map((index) => index.name)).toEqual(['Cheese', 'Milk']);
     });
 
     it('uses the search result list items when provided', () => {
@@ -149,33 +156,42 @@ describe('item-list.selector', () => {
         listItems: [mockStorageItem({ id: 'x', name: 'Bread' })],
       } as never;
       expect(
-        filterAndSortItemList(state, searchResult).map((i) => i.name)
+        filterAndSortItemList(state, searchResult).map((index) => index.name)
       ).toEqual(['Bread']);
     });
   });
 
   describe('sortCategoriesFn', () => {
     it('sorts categories ascending by default and descending on request', () => {
-      expect(['B', 'A'].sort(sortCategoriesFn())).toEqual(['A', 'B']);
+      const a = mockCategory({ id: 'a', name: 'A' });
+      const b = mockCategory({ id: 'b', name: 'B' });
+      expect([b, a].sort(sortCategoriesFunction()).map((c) => c.name)).toEqual([
+        'A',
+        'B',
+      ]);
       expect(
-        ['A', 'B'].sort(sortCategoriesFn({ sortBy: 'name', sortDir: 'desc' }))
+        [a, b]
+          .sort(sortCategoriesFunction({ sortBy: 'name', sortDir: 'desc' }))
+          .map((c) => c.name)
       ).toEqual(['B', 'A']);
     });
   });
 
   describe('selectListCategories projector', () => {
-    it('returns sorted categories with their item counts', () => {
+    it('returns sorted {id,name} categories with their item counts', () => {
+      const dairy = mockCategory({ id: 'dairy', name: 'Dairy' });
+      const bakery = mockCategory({ id: 'bakery', name: 'Bakery' });
       const state = mockStorageState({
-        categories: ['Dairy', 'Bakery'],
+        categories: [dairy, bakery],
         items: [
-          mockStorageItem({ id: 'a', category: ['Dairy'] }),
-          mockStorageItem({ id: 'b', category: ['Dairy'] }),
-          mockStorageItem({ id: 'c', category: ['Bakery'] }),
+          mockStorageItem({ id: 'a', categoryIds: ['dairy'] }),
+          mockStorageItem({ id: 'b', categoryIds: ['dairy'] }),
+          mockStorageItem({ id: 'c', categoryIds: ['bakery'] }),
         ],
       });
       expect(selectListCategories.projector(state)).toEqual([
-        { category: 'Bakery', count: 1 },
-        { category: 'Dairy', count: 2 },
+        { category: bakery, count: 1 },
+        { category: dairy, count: 2 },
       ]);
     });
 

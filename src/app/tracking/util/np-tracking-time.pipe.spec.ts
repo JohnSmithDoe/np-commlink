@@ -12,7 +12,7 @@ describe('NpTrackingTimePipe', () => {
 
   it('formats seconds as zero-padded HH:MM:SS', () => {
     expect(pipe.transform(dataItem(3661))).toBe('01:01:01');
-    expect(pipe.transform(dataItem(45296))).toBe('12:34:56');
+    expect(pipe.transform(dataItem(45_296))).toBe('12:34:56');
   });
 
   it('returns 00:00:00 for a missing item or time', () => {

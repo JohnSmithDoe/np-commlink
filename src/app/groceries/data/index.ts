@@ -18,6 +18,10 @@ export { GroceriesActions } from './groceries.actions';
 export { ShoppingActions } from './shopping.actions';
 export { StorageActions } from './storage.actions';
 export { ProductsActions } from './products.actions';
+// One category catalog shared across the three grocery lists.
+export { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
+// Grocery list feature-flags (the list-settings page + boot hydration wiring).
+export { ListSettingsActions } from './list-settings/list-settings.actions';
 
 // Display selectors read by the grocery pages/dialogs
 export {
@@ -41,8 +45,24 @@ export {
   selectEditStorageItem,
 } from './item-dialogs.selector';
 
+// Grocery list feature-flags (read by the list-settings page).
+export { selectListSettingsState } from './list-settings/list-settings.selector';
+
+// Quick-add derived UI state (read by the grocery quick-add smart-ui row).
+export {
+  selectQuickAddState,
+  selectQuickAddCanAddLocal,
+  selectQuickAddCanAddProduct,
+  selectQuickAddCanAddCategory,
+} from './quick-add/quick-add.selector';
+
 // Multi-list page facade
 export { GroceryListPageFacade } from './grocery-list/grocery-list-page.facade';
+// Manage-categories page facade (shared catalog, scoped to the :listId route)
+export { GroceryCategoriesPageFacade } from './grocery-list/grocery-categories-page.facade';
 
 // Lazy providers (state + effects), wired from the route
 export { groceriesLazyProviders } from './provide-groceries-lazy';
+// Minimal lazy providers for the /list-settings route (listSettings slice only —
+// NOT the grocery lists, so the telemetry reporters don't fire with empty state).
+export { listSettingsLazyProviders } from './provide-list-settings-lazy';

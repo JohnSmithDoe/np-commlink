@@ -48,9 +48,9 @@ export class EditCategoryDialogComponent {
     addIcons({ closeCircle });
   }
 
-  updateCategory(ev: InputCustomEvent) {
+  updateCategory(event: InputCustomEvent) {
     this.#store.dispatch(
-      CategoriesActions.updateCategory(ev.detail.value ?? '')
+      CategoriesActions.updateCategory(event.detail.value ?? '')
     );
   }
 

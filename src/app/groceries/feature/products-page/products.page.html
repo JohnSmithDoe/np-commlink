@@ -4,20 +4,33 @@
   listHeader="{{ 'grocery.list-header.products' | translate }}"
   [itemTemplate]="productItem"
 >
+  <app-item-list-quickadd
+    quickAdd
+    (quickAddItem)="facade.addItemFromSearch()"
+    (quickCreateCategory)="facade.addCategoryFromSearch()"
+    (quickCreateProduct)="facade.showCreateProductDialog()"
+  ></app-item-list-quickadd>
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
+    [catalog]="facade.state()?.categories ?? []"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"
   ></app-grocery-search-result>
 </app-list-page>
 
-<ng-template #productItem let-item let-ionList="ionList">
+<ng-template
+  #productItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
   <app-list-item
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
+    [categories]="categories"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
   ></app-list-item>

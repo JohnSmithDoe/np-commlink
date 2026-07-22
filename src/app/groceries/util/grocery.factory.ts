@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { IBaseItem, TTimestamp } from '../../@shared/types';
+import { IBaseItem, TCategoryId, TTimestamp } from '../../@shared/types';
 import { createBaseItem } from '../../@shared/util/app.factory';
 import { IProduct, IShoppingItem, IStorageItem } from '../model';
 
@@ -12,11 +12,11 @@ import { IProduct, IShoppingItem, IStorageItem } from '../model';
 
 export function createStorageItem(
   name: string,
-  category?: string | string[],
+  categoryIds?: TCategoryId | TCategoryId[],
   quantity = 1,
   bestBefore?: TTimestamp
 ): IStorageItem {
-  const base = createBaseItem(name, category);
+  const base = createBaseItem(name, categoryIds);
   return { ...base, quantity, bestBefore };
 }
 
@@ -32,7 +32,7 @@ export function createStorageItemFromProduct(
   }
   return createStorageItem(
     product.name,
-    product.category,
+    product.categoryIds,
     quantity,
     bestBefore
   );
@@ -42,15 +42,15 @@ export function createStorageItemFromShopping(
   shopping: IShoppingItem,
   quantity = 1
 ): IStorageItem {
-  return createStorageItem(shopping.name, shopping.category, quantity);
+  return createStorageItem(shopping.name, shopping.categoryIds, quantity);
 }
 
 export function createShoppingItem(
   name: string,
-  category?: string | string[],
+  categoryIds?: TCategoryId | TCategoryId[],
   quantity = 1
 ): IShoppingItem {
-  const base = createBaseItem(name, category);
+  const base = createBaseItem(name, categoryIds);
   return { ...base, quantity, state: 'active' };
 }
 
@@ -58,21 +58,21 @@ export function createShoppingItemFromProduct(
   product: IProduct,
   quantity = 1
 ): IShoppingItem {
-  return createShoppingItem(product.name, product.category, quantity);
+  return createShoppingItem(product.name, product.categoryIds, quantity);
 }
 
 export function createShoppingItemFromStorage(
   storage: IStorageItem,
   quantity = 1
 ): IShoppingItem {
-  return createShoppingItem(storage.name, storage.category, quantity);
+  return createShoppingItem(storage.name, storage.categoryIds, quantity);
 }
 
 export function createProduct(
   name: string,
-  category?: string | string[]
+  categoryIds?: TCategoryId | TCategoryId[]
 ): IProduct {
-  const base = createBaseItem(name, category);
+  const base = createBaseItem(name, categoryIds);
   return {
     ...base,
     unit: 'pieces',
@@ -83,5 +83,5 @@ export function createProduct(
 }
 
 export function createProductFrom(item: IBaseItem): IProduct {
-  return createProduct(item.name, item.category);
+  return createProduct(item.name, item.categoryIds);
 }

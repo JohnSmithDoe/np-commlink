@@ -47,15 +47,18 @@ const matchesFilter = (name: string, filter: string): boolean =>
   filter === '' || name.toLowerCase().includes(filter.toLowerCase());
 
 const configureGames = (games: IGame[], config: IGameConfig): IGame[] => {
-  const sorted = [...games].sort((a, b) => {
+  const sorted = games.toSorted((a, b) => {
     const [x, y] = config.dir === 'desc' ? [b, a] : [a, b];
     switch (config.sort) {
-      case 'name':
+      case 'name': {
         return x.name.localeCompare(y.name);
-      case 'date':
+      }
+      case 'date': {
         return x.created - y.created;
-      case 'updated':
+      }
+      case 'updated': {
         return x.updated - y.updated;
+      }
     }
     return 0;
   });
@@ -73,15 +76,18 @@ const configurePlayers = (
   players: IPlayer[],
   config: ITrackplayConfig['players']
 ): IPlayer[] => {
-  const sorted = [...players].sort((a, b) => {
+  const sorted = players.toSorted((a, b) => {
     const [x, y] = config.dir === 'desc' ? [b, a] : [a, b];
     switch (config.sort) {
-      case 'name':
+      case 'name': {
         return x.name.localeCompare(y.name);
-      case 'date':
+      }
+      case 'date': {
         return x.created - y.created;
-      case 'last':
+      }
+      case 'last': {
         return (x.lastPlayed ?? 0) - (y.lastPlayed ?? 0);
+      }
     }
     return 0;
   });
@@ -93,7 +99,7 @@ const rankByType = (
   scores: Record<TID, number>,
   winHigh: boolean
 ): TID[] =>
-  [...playerIds].sort((a, b) =>
+  playerIds.toSorted((a, b) =>
     winHigh
       ? (scores[b] ?? 0) - (scores[a] ?? 0)
       : (scores[a] ?? 0) - (scores[b] ?? 0)
@@ -132,7 +138,7 @@ export const selectPlayerList = createSelector(
 export const selectGameTypeList = createSelector(
   selectGameTypes,
   (gameTypes): IGameType[] =>
-    Object.values(gameTypes).sort((a, b) => {
+    Object.values(gameTypes).toSorted((a, b) => {
       if (a.id === DEFAULT_GAME_TYPE_ID) return -1;
       if (b.id === DEFAULT_GAME_TYPE_ID) return 1;
       return a.name.localeCompare(b.name);
@@ -156,7 +162,7 @@ export const selectRoundsByGame = (gameId: TID) =>
     return game.rounds
       .map((rId) => rounds[rId])
       .filter((r): r is IRound => !!r)
-      .sort((a, b) => a.idx - b.idx);
+      .toSorted((a, b) => a.idx - b.idx);
   });
 
 // selectScoresByGame(gameId) -> { playerId: totalPoints } (DERIVED, never stored).
@@ -215,21 +221,25 @@ export const selectPlayerStats = createSelector(
       stats[pid] = { play: 0, win: 0, loss: 0, open: 0 };
     }
     for (const game of Object.values(games)) {
-      game.players.forEach((pid) => {
+      for (const pid of game.players) {
         const s = stats[pid];
-        if (!s) return;
+        if (!s) continue;
         s.play++;
         if (!game.ended) s.open++;
-      });
+      }
       if (!game.ended) continue;
       const scores = computeScores(game, rounds);
       const winHigh = gameTypes[game.type]?.winHigh ?? true;
-      rankByType(game.players, scores, winHigh).forEach((pid, idx) => {
+      for (const [index, pid] of rankByType(
+        game.players,
+        scores,
+        winHigh
+      ).entries()) {
         const s = stats[pid];
-        if (!s) return;
-        if (idx === 0) s.win++;
+        if (!s) continue;
+        if (index === 0) s.win++;
         else s.loss++;
-      });
+      }
     }
     return stats;
   }

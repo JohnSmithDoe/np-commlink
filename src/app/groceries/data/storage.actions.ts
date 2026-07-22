@@ -1,6 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  TItemListCategory,
   TItemListMode,
   TItemListSortType,
   TUpdateDTO,
@@ -28,13 +27,7 @@ export const StorageActions = createActionGroup({
     'Add Item': (item: IStorageItem) => ({ item }),
     'Add Shopping List': (items: IShoppingItem[]) => ({ items }),
     'Add Item Failure': (item: IStorageItem) => ({ item }),
-    'Add Category': (category: TItemListCategory) => ({ category }),
-    'Remove Category': (category: TItemListCategory) => ({ category }),
-    'Update Category': (
-      original: TItemListCategory,
-      newName: TItemListCategory
-    ) => ({ original, newName }),
-
+    // Category ops live on the shared GroceryCategoriesActions.
     'Remove Item': (item: IStorageItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<IStorageItem>) => ({ item }),
     'Update Search': (searchQuery?: string) => ({ searchQuery }),

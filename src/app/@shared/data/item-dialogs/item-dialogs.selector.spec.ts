@@ -8,14 +8,14 @@ describe('item-dialogs.selector', () => {
     expect(selectEditItem.projector(state)).toBe(item);
   });
 
-  it('selectCategoriesState returns the category rename state', () => {
+  it('selectCategoriesState returns the category edit state', () => {
     const state = mockItemDialogsState({
-      category: { isEditing: true, original: 'Dairy', editItem: 'Fridge' },
+      category: { isEditing: true, id: 'cat-1', name: 'Fridge' },
     });
     expect(selectCategoriesState.projector(state)).toEqual({
       isEditing: true,
-      original: 'Dairy',
-      editItem: 'Fridge',
+      id: 'cat-1',
+      name: 'Fridge',
     });
   });
 });

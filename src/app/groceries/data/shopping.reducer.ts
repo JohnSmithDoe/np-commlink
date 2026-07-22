@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { IShoppingState } from '../model';
 import {
-  addListCategory,
+  addListCategoryObject,
   addListItem,
   removeListCategory,
   removeListItem,
@@ -11,6 +11,7 @@ import {
   updateListMode,
   updateListSort,
 } from './grocery-list/grocery-list.utils';
+import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
 import { GroceriesActions } from './groceries.actions';
 import { ShoppingActions } from './shopping.actions';
 
@@ -35,7 +36,6 @@ function updateSearch(
 export const shoppingReducer = createReducer(
   initialState,
   on(ShoppingActions.addItem,(state, { item }) => addListItem(state, item)),
-  // on(ShoppingActions.addItemOrIncreaseQuantity,(state, { item }) => addListItemOrIncreaseQuantity(state, item)),
   on(ShoppingActions.removeItem,(state, { item }) => removeListItem(state, item)),
   on(ShoppingActions.removeItems,(state, { items }) => removeListItems(state, items)),
   on(ShoppingActions.updateItem,(state, { item }) => updateListItem(state, item)),
@@ -45,9 +45,9 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
   on(ShoppingActions.showActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: true})),
   on(ShoppingActions.hideActionSheet, (state):IShoppingState =>  ({...state, showActionSheet: false})),
-  on(ShoppingActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
-  on(ShoppingActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
-  on(ShoppingActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
+  on(GroceryCategoriesActions.add, (state, { category }) => addListCategoryObject(state, category)),
+  on(GroceryCategoriesActions.remove, (state, { id }) => removeListCategory(state, id)),
+  on(GroceryCategoriesActions.rename, (state, { id, name }) => updateListCategory(state, id, name)),
 
   on(GroceriesActions.loaded,(_state, { data }): IShoppingState => {
     return {...(data.shopping ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined, showActionSheet: false};

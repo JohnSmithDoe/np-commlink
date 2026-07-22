@@ -44,7 +44,7 @@ export function mockCashRule(overrides: Partial<ICashRule> = {}): ICashRule {
     order: 0,
     match: 'any',
     conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
-    category: 'groceries',
+    categoryId: 'cash-cat-groceries',
     ...overrides,
   };
 }

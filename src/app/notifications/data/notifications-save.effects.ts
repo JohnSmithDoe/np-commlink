@@ -6,12 +6,8 @@ import { DatabaseService } from '../../@shared/util/database.service';
 import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
 import { selectNotificationsState } from './notifications.selector';
 
-// Own-data save for the notifications context. Relocated from the eager shell
-// `AppEffects` (which is deleted this phase) into its own class. Stays EAGER
-// for now — notifications is still an eager capability sink (tracking writes it
-// off-route); it moves into lazy notifications providers in the §Phase-4
-// notifications-lazy cutover. Matches specific mutation actions (never
-// `load`/`loaded`), so a load can't clobber saved data.
+// Matches specific mutation actions (never `load`/`loaded`), so a load can't
+// clobber saved data.
 @Injectable({ providedIn: 'root' })
 export class NotificationsSaveEffects {
   #actions$ = inject(Actions);

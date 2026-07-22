@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { mockListSettings } from '../../../@shared/testing/test-data';
-import { ListSettingsActions } from '../../../@shared/data/list-settings/list-settings.actions';
+import { mockListSettings } from '../../testing/grocery.test-data';
+import { ListSettingsActions } from '../../data';
 import { ListSettingsPage } from './list-settings.page';
 
 describe('ListSettingsPage', () => {
@@ -14,8 +14,8 @@ describe('ListSettingsPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ListSettingsPage],
-      // Seed the settings slice — `selectSettingsState` is a plain feature
-      // selector (no router dependency), so `detectChanges()` is safe here.
+      // Seed the listSettings slice — `selectListSettingsState` is a plain
+      // feature selector (no router dependency), so `detectChanges()` is safe.
       providers: [
         ...provideTestingProviders({
           listSettings: mockListSettings({ showQuickAdd: true }),

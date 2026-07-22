@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { ICategory } from '../../@shared/types';
 import { IGrocerySearchResult, IProduct, IProductsState } from '../model';
 import {
   filterAndSortItemList,
@@ -13,7 +14,7 @@ export const selectProductsState =
 // the catalog straight from the domain slice).
 export const selectProductsCategories = createSelector(
   selectProductsState,
-  (state): string[] => state.categories
+  (state): ICategory[] => state.categories
 );
 
 export const selectProductsListSearchResult = createSelector(

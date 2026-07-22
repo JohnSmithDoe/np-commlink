@@ -22,17 +22,26 @@
     <ion-reorder slot="start"></ion-reorder>
     <ion-label class="ion-text-wrap" [class.bought]="crossedOut()">
       <h2>{{ title() }}</h2>
-      <ion-note [appCategoryNote]="item()"></ion-note>
+      <ion-note
+        [appCategoryNote]="item()"
+        [appCategoryNoteCatalog]="categories()"
+      ></ion-note>
       <ng-content select="[itemDetails]"></ng-content>
     </ion-label>
 
     @if (showQuantityActions()) {
       <ion-buttons slot="end">
-        <ion-button (click)="incrementQuantity($event)">
-          <ion-icon name="add"></ion-icon>
+        <ion-button
+          (click)="incrementQuantity($event)"
+          [attr.aria-label]="'a11y.increase-quantity' | translate"
+        >
+          <ion-icon name="add" aria-hidden="true"></ion-icon>
         </ion-button>
-        <ion-button (click)="decrementQuantity($event)">
-          <ion-icon name="remove"></ion-icon>
+        <ion-button
+          (click)="decrementQuantity($event)"
+          [attr.aria-label]="'a11y.decrease-quantity' | translate"
+        >
+          <ion-icon name="remove" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-buttons>
     }

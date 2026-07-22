@@ -1,5 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { ICashState, ICashTransaction } from '../model';
+import { matchingTxt } from '../../@shared/util/app.utils';
+import { ICashRule, ICashState, ICashTransaction } from '../model';
 import { CashActions } from './cash.actions';
 
 export const initialState: ICashState = {
@@ -50,9 +51,9 @@ export const cashReducer = createReducer(
   }),
   on(CashActions.importTransactions, (state, { transactions }): ICashState => ({ ...state, transactions: [...state.transactions, ...transactions] })),
   on(CashActions.bookTransfer, (state, { fromLeg, toLeg }): ICashState => ({ ...state, transactions: [...state.transactions, fromLeg, toLeg] })),
-  on(CashActions.setTransactionCategory, (state, { id, category, manual }): ICashState => ({
+  on(CashActions.setTransactionCategory, (state, { id, categoryId, manual }): ICashState => ({
     ...state,
-    transactions: state.transactions.map((t): ICashTransaction => t.id === id ? { ...t, category, categoryManual: manual } : t),
+    transactions: state.transactions.map((t): ICashTransaction => t.id === id ? { ...t, categoryId, categoryManual: manual } : t),
   })),
   on(CashActions.reconcileTransaction, (state, { manualId, importedId }): ICashState => {
     const manual = state.transactions.find((t) => t.id === manualId);
@@ -60,12 +61,12 @@ export const cashReducer = createReducer(
     if (!manual || !imported) return state;
     // Carry a hand-set category from the manual leg onto the survivor so the
     // user's categorization isn't lost when the manual leg is hidden.
-    const carry = manual.categoryManual && manual.category && !imported.categoryManual;
+    const carry = manual.categoryManual && manual.categoryId && !imported.categoryManual;
     return {
       ...state,
       transactions: state.transactions.map((t): ICashTransaction => {
         if (t.id === manualId) return { ...t, matchedTxnId: importedId, status: 'confirmed' };
-        if (t.id === importedId && carry) return { ...t, category: manual.category, categoryManual: true };
+        if (t.id === importedId && carry) return { ...t, categoryId: manual.categoryId, categoryManual: true };
         return t;
       }),
     };
@@ -80,8 +81,53 @@ export const cashReducer = createReducer(
   })),
 
   // ── Categories ───────────────────────────────────────────────
-  on(CashActions.addCategory, (state, { category }): ICashState => state.categories.includes(category) ? state : ({ ...state, categories: [...state.categories, category] })),
-  on(CashActions.removeCategory, (state, { category }): ICashState => ({ ...state, categories: state.categories.filter((c) => c !== category) })),
+  // Insert a PRE-MINTED {id,name} (dedupe by id or lowercased name).
+  on(CashActions.addCategory, (state, { category }): ICashState => {
+    const name = category.name.trim();
+    if (name.length === 0) return state;
+    const exists = state.categories.some(
+      (c) => c.id === category.id || matchingTxt(c.name) === matchingTxt(name)
+    );
+    return exists ? state : { ...state, categories: [...state.categories, { ...category, name }] };
+  }),
+  // Delete by id: drop the catalog entry + clear it off any transaction (→
+  // uncategorized). Rules keep their now-orphan id — re-editing the rule fixes it.
+  on(CashActions.removeCategory, (state, { id }): ICashState => ({
+    ...state,
+    categories: state.categories.filter((c) => c.id !== id),
+    transactions: state.transactions.map((t): ICashTransaction =>
+      t.categoryId === id
+        ? { ...t, categoryId: undefined, categoryManual: undefined }
+        : t
+    ),
+  })),
+  // Rename by id — O(1): txns/rules reference the id, so only the catalog entry's
+  // name changes. Renaming onto an existing name MERGES: drop the renamed entry
+  // and remap txn + rule references onto the survivor id.
+  on(CashActions.updateCategory, (state, { id, name }): ICashState => {
+    const to = name.trim();
+    const hasTarget = state.categories.some((c) => c.id === id);
+    if (!to || !hasTarget) return state;
+    const survivor = state.categories.find(
+      (c) => c.id !== id && matchingTxt(c.name) === matchingTxt(to)
+    );
+    if (survivor) {
+      return {
+        ...state,
+        categories: state.categories.filter((c) => c.id !== id),
+        transactions: state.transactions.map((t): ICashTransaction =>
+          t.categoryId === id ? { ...t, categoryId: survivor.id } : t
+        ),
+        rules: state.rules.map((r): ICashRule =>
+          r.categoryId === id ? { ...r, categoryId: survivor.id } : r
+        ),
+      };
+    }
+    return {
+      ...state,
+      categories: state.categories.map((c) => (c.id === id ? { ...c, name: to } : c)),
+    };
+  }),
 
   // ── Filter rules ─────────────────────────────────────────────
   on(CashActions.addRule, (state, { rule }): ICashState => ({ ...state, rules: [...state.rules, rule] })),

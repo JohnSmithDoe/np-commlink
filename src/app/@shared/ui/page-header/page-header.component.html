@@ -14,8 +14,12 @@
     <ng-content select="[toolbar]" />
     @if (!hideButtons()) {
       <ion-buttons slot="end">
-        <ion-button (click)="addItem.emit()" [disabled]="disabled()">
-          <ion-icon name="add" slot="icon-only" />
+        <ion-button
+          (click)="addItem.emit()"
+          [disabled]="disabled()"
+          [attr.aria-label]="'a11y.add-item' | translate"
+        >
+          <ion-icon name="add" slot="icon-only" aria-hidden="true" />
         </ion-button>
       </ion-buttons>
     }

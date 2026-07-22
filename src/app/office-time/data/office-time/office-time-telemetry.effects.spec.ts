@@ -105,7 +105,7 @@ describe('OfficeTimeTelemetryEffects', () => {
     store.refreshState();
 
     expect(emissions.length).toBeGreaterThanOrEqual(2);
-    const latest = emissions[emissions.length - 1];
+    const latest = emissions.at(-1)!;
     expect(latest.telemetry.metrics['officedays']).toBe(1);
     expect(latest.telemetry.metrics['percentage']).toBe(
       nextExpected.percentage

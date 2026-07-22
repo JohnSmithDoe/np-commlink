@@ -1,20 +1,51 @@
 import {
   IGroceryLists,
+  IListSettings,
   IProduct,
   IProductsState,
+  IQuickAddState,
   IShoppingItem,
   IShoppingState,
   IStorageItem,
   IStorageState,
 } from '../model';
-import {
-  mockListSettings,
-  TEST_TIMESTAMP,
-} from '../../@shared/testing/test-data';
+import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic grocery fixtures (type:testing), moved out of the shared
 // test-data god-file so `@shared/testing` no longer imports a domain type
 // (DDD review #1). Stable ids/timestamps keep equality assertions repeatable.
+
+// Grocery list feature-flags + quick-add UI-state fixtures. They live here (not
+// in the shared kit) because @shared/testing is domain:shared and may not
+// reference the grocery-owned IListSettings / IQuickAddState (settings re-scope).
+export function mockListSettings(
+  overrides: Partial<IListSettings> = {}
+): IListSettings {
+  return {
+    showQuickAdd: false,
+    showQuickAddProduct: false,
+    showQuickAddCategory: false,
+    showProductsInStorage: false,
+    showShoppingInStorage: false,
+    showProductsInShopping: false,
+    showStorageInShopping: false,
+    showStorageInProducts: false,
+    showShoppingInProducts: false,
+    ...overrides,
+  };
+}
+
+export function mockQuickAddState(
+  overrides: Partial<IQuickAddState> = {}
+): IQuickAddState {
+  return {
+    canAddLocal: false,
+    canAddProduct: false,
+    canAddCategory: false,
+    searchQuery: undefined,
+    ...overrides,
+  };
+}
 
 export function mockStorageItem(
   overrides: Partial<IStorageItem> = {}

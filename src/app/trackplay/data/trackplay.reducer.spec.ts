@@ -26,7 +26,7 @@ describe('trackplayReducer', () => {
   it('ignores blank player names', () => {
     const state = trackplayReducer(
       initialState,
-      TrackplayActions.createPlayer('   ')
+      TrackplayActions.createPlayer(' '.repeat(3))
     );
     expect(Object.keys(state.players)).toHaveLength(0);
   });

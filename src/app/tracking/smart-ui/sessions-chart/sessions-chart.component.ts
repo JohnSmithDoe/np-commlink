@@ -32,10 +32,10 @@ export class SessionsChartComponent {
     const { days, series } = this.#raw();
     return {
       labels: days.map((d) => dayjs(d).format('DD.MM.')),
-      datasets: series.map((s, i) => ({
+      datasets: series.map((s, index) => ({
         label: s.name,
         data: s.hours,
-        backgroundColor: this.#series[i % this.#series.length],
+        backgroundColor: this.#series[index % this.#series.length],
         borderWidth: 0,
         stack: 'sessions',
       })),
@@ -51,8 +51,8 @@ export class SessionsChartComponent {
       tooltip: {
         filter: (item) => (item.parsed.y ?? 0) > 0,
         callbacks: {
-          label: (ctx) =>
-            `${ctx.dataset.label}: ${(ctx.parsed.y ?? 0).toFixed(2)}h`,
+          label: (context) =>
+            `${context.dataset.label}: ${(context.parsed.y ?? 0).toFixed(2)}h`,
         },
       },
     },

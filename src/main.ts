@@ -35,17 +35,14 @@ import { routes } from './app/app.routes';
 import { DashboardActions } from './app/@shared/util/dashboard/dashboard.actions';
 // Per-module load actions dispatched at boot for the eager kernel. `tracking`
 // and `notifications` are NOT here — both are lazy and load via their route
-// resolvers (§7). Only the always-on read-model + shared-kernel library state
-// load at boot.
-import { ListSettingsActions } from './app/@shared/data/list-settings/list-settings.actions';
-// Per-module load effects (read own key → emit loaded).
-import { ListSettingsLoadEffects } from './app/@shared/data/list-settings/list-settings-load.effects';
+// resolvers (§7). Only the always-on read-model + shared kernel slices load at
+// boot; listSettings + quickadd moved into the lazy groceries domain.
 import { DashboardEffects } from './app/@shared/data/dashboard/dashboard.effects';
 import { dashboardReducer } from './app/@shared/data/dashboard/dashboard.reducer';
 import { itemDialogsReducer } from './app/@shared/data/item-dialogs/item-dialogs.reducer';
-import { listSettingsReducer } from './app/@shared/data/list-settings/list-settings.reducer';
-import { ListSettingsEffects } from './app/@shared/data/list-settings/list-settings.effects';
-import { quickAddReducer } from './app/@shared/data/quick-add/quick-add.reducer';
+import { SettingsActions } from './app/@shared/data/settings/settings.actions';
+import { settingsReducer } from './app/@shared/data/settings/settings.reducer';
+import { SettingsEffects } from './app/@shared/data/settings/settings.effects';
 
 import { environment } from './environments/environment';
 import { AppTitleStrategy } from './app/app-title.strategy';
@@ -104,9 +101,10 @@ void bootstrapApplication(AppComponent, {
       // moduleHydrationResolver (§7). notifications' off-route writers (tracking)
       // go through the durable NotificationsStore, not this store.
       dashboard: dashboardReducer,
+      // App-global settings — the single persisted schema `version` anchor
+      // (was a per-slice `version` on listSettings + office-time; both dropped).
+      settings: settingsReducer,
       itemDialogs: itemDialogsReducer,
-      listSettings: listSettingsReducer,
-      quickadd: quickAddReducer,
     }),
     provideRouterStore(),
     provideEffects(
@@ -114,8 +112,9 @@ void bootstrapApplication(AppComponent, {
       // Eager persistence sink for the dashboard read-model (plan §3): loads
       // the persisted summaries at boot and mirrors every report to disk.
       DashboardEffects,
-      ListSettingsEffects,
-      ListSettingsLoadEffects
+      // Settings owns theme: load own key at boot, apply <html data-theme>,
+      // reveal the boot splash, and persist theme changes.
+      SettingsEffects
       // Every bounded context registers its effects lazily on its route(s):
       // notifications (load/save/telemetry/debug) in notificationsLazyProviders;
       // tracking (load/save/search/telemetry/reconcile + item-list engine +
@@ -134,7 +133,7 @@ void bootstrapApplication(AppComponent, {
       // badge show cold-launch numbers before any producing module loads, §3).
       // Every bounded context (tracking, notifications, groceries, …) loads via
       // its own route resolver, not here (§7).
-      store.dispatch(ListSettingsActions.load());
+      store.dispatch(SettingsActions.load());
       store.dispatch(DashboardActions.load());
       void inject(NotificationService).init();
     }),

@@ -16,23 +16,23 @@ import {
   mockTrackplayState,
 } from '../testing/trackplay.test-data';
 
-describe('trackplay.selector', () => {
-  const buildState = () => {
-    const players = {
-      p1: mockPlayer({ id: 'p1', name: 'Alice' }),
-      p2: mockPlayer({ id: 'p2', name: 'Bob' }),
-    };
-    const rounds = {
-      r0: mockRound({ id: 'r0', idx: 0, values: { p1: 10, p2: 3 } }),
-      r1: mockRound({ id: 'r1', idx: 1, values: { p1: 5, p2: 20 } }),
-    };
-    const gameTypes = {
-      ...mockTrackplayState().gameTypes,
-      low: mockGameType({ id: 'low', name: 'Low', winHigh: false }),
-    };
-    return { players, rounds, gameTypes };
+const buildState = () => {
+  const players = {
+    p1: mockPlayer({ id: 'p1', name: 'Alice' }),
+    p2: mockPlayer({ id: 'p2', name: 'Bob' }),
   };
+  const rounds = {
+    r0: mockRound({ id: 'r0', idx: 0, values: { p1: 10, p2: 3 } }),
+    r1: mockRound({ id: 'r1', idx: 1, values: { p1: 5, p2: 20 } }),
+  };
+  const gameTypes = {
+    ...mockTrackplayState().gameTypes,
+    low: mockGameType({ id: 'low', name: 'Low', winHigh: false }),
+  };
+  return { players, rounds, gameTypes };
+};
 
+describe('trackplay.selector', () => {
   it('derives per-player scores by summing round values', () => {
     const { players, rounds, gameTypes } = buildState();
     const game = mockGame({

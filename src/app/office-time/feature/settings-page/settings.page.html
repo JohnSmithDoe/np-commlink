@@ -5,6 +5,25 @@
 />
 
 <ion-content>
+  <ion-list>
+    <ion-item lines="none">
+      <ion-label>{{ 'settings.theme.title' | translate }}</ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-segment
+        [value]="theme()"
+        (ionChange)="changeTheme($any($event).detail.value)"
+      >
+        <ion-segment-button value="cyberpunk">
+          <ion-label>{{ 'settings.theme.cyberpunk' | translate }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="boomer">
+          <ion-label>{{ 'settings.theme.boomer' | translate }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-item>
+  </ion-list>
+
   @let settings = dashboardSettings();
   @let targetDays = targetOfficeDaysPerWeek();
   @if (targetDays !== null && settings) {

@@ -3,7 +3,7 @@
 .cash-hint {
   display: block;
   padding: 0.5rem 1rem;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-text-dim);
 }
 

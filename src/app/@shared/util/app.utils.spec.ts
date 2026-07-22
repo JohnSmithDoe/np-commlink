@@ -3,18 +3,15 @@ import { InputCustomEvent } from '@ionic/angular/standalone';
 import { IBaseItem, TIonDragEvent } from '../types';
 import {
   checkItemOptionsOnDrag,
-  hasQuantity,
-  matchesCategory,
-  matchesCategoryExactly,
+  itemHasCategory,
   matchesId,
   matchesItemExactly,
-  matchesItemExactlyIdx,
+  matchesItemExactlyIdx as matchesItemExactlyIndex,
   matchesNameExactly,
   matchesSearch,
   matchesSearchExactly,
   matchesSearchString,
   matchingTxt,
-  matchingTxtIsEmpty,
   matchingTxtIsNotEmpty,
   parseNumberInput,
   uuidv4,
@@ -29,16 +26,16 @@ const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
   ...over,
 });
 
-describe('app.utils', () => {
-  describe('type guards', () => {
-    it('hasQuantity requires both quantity and name', () => {
-      expect(hasQuantity({ ...mockBaseItem(), quantity: 3 })).toBe(true);
-      expect(hasQuantity({ quantity: 3 })).toBe(false);
-      expect(hasQuantity(mockBaseItem())).toBe(false);
-      expect(hasQuantity(undefined)).toBe(false);
-    });
-  });
+const dragEvent = (amount: number): TIonDragEvent =>
+  ({ detail: { amount, ratio: 0 } }) as TIonDragEvent;
 
+const inputEvent = (value: string | null): InputCustomEvent =>
+  ({ detail: { value } }) as InputCustomEvent;
+
+const control = (value: string): AbstractControl =>
+  ({ value }) as AbstractControl;
+
+describe('app.utils', () => {
   describe('uuidv4', () => {
     it('produces a valid, unique v4 uuid', () => {
       const id = uuidv4();
@@ -50,9 +47,6 @@ describe('app.utils', () => {
   });
 
   describe('checkItemOptionsOnDrag', () => {
-    const dragEvent = (amount: number): TIonDragEvent =>
-      ({ detail: { amount, ratio: 0 } }) as TIonDragEvent;
-
     it('returns "end" when dragged past the positive trigger amount', () => {
       expect(checkItemOptionsOnDrag(dragEvent(200))).toBe('end');
     });
@@ -76,11 +70,10 @@ describe('app.utils', () => {
       expect(matchingTxt(baseItem({ name: '  Milk ' }))).toBe('milk');
     });
 
-    it('detects empty / non-empty text', () => {
-      expect(matchingTxtIsEmpty('   ')).toBe(true);
-      expect(matchingTxtIsEmpty(undefined)).toBe(true);
+    it('detects non-empty text', () => {
       expect(matchingTxtIsNotEmpty('x')).toBe(true);
       expect(matchingTxtIsNotEmpty('  ')).toBe(false);
+      expect(matchingTxtIsNotEmpty()).toBe(false);
     });
   });
 
@@ -126,10 +119,10 @@ describe('app.utils', () => {
         baseItem({ id: 'b', name: 'b' }),
       ];
       expect(
-        matchesItemExactlyIdx(baseItem({ id: 'b', name: 'b' }), list)
+        matchesItemExactlyIndex(baseItem({ id: 'b', name: 'b' }), list)
       ).toBe(1);
       expect(
-        matchesItemExactlyIdx(baseItem({ id: 'c', name: 'c' }), list)
+        matchesItemExactlyIndex(baseItem({ id: 'c', name: 'c' }), list)
       ).toBe(-1);
     });
 
@@ -137,28 +130,26 @@ describe('app.utils', () => {
       expect(matchesSearch(baseItem({ name: 'Banana' }), 'ana')).toBe(true);
       expect(matchesSearch('Banana', 'xyz')).toBe(false);
       expect(matchesSearchString('Banana', 'BAN')).toBe(true);
-      expect(matchesSearchString('Banana', undefined)).toBe(true);
+      expect(matchesSearchString('Banana')).toBe(true);
     });
 
     it('matchesSearchExactly requires a full normalized match', () => {
       expect(matchesSearchExactly('Milk', 'milk')).toBe(true);
       expect(matchesSearchExactly('Milk', 'mil')).toBe(false);
-      expect(matchesSearchExactly('', undefined)).toBe(true);
+      expect(matchesSearchExactly('')).toBe(true);
     });
 
-    it('matchesCategory / matchesCategoryExactly inspect the category array', () => {
-      const item = baseItem({ category: ['Fruit', 'Fresh'] });
-      expect(matchesCategory(item, 'fru')).toBe(true);
-      expect(matchesCategoryExactly(item, 'fruit')).toBe(true);
-      expect(matchesCategoryExactly(item, 'fru')).toBe(false);
-      expect(matchesCategory(baseItem(), 'x')).toBe(false);
+    it('itemHasCategory checks the item categoryIds for the given id', () => {
+      const item = baseItem({ categoryIds: ['c-fruit', 'c-fresh'] });
+      expect(itemHasCategory(item, 'c-fruit')).toBe(true);
+      expect(itemHasCategory(item, 'c-fresh')).toBe(true);
+      expect(itemHasCategory(item, 'c-veg')).toBe(false);
+      // an item without categoryIds never matches
+      expect(itemHasCategory(baseItem(), 'c-fruit')).toBe(false);
     });
   });
 
   describe('parseNumberInput', () => {
-    const inputEvent = (value: string | null): InputCustomEvent =>
-      ({ detail: { value } }) as InputCustomEvent;
-
     it('parses a numeric string', () => {
       expect(parseNumberInput(inputEvent('42'))).toBe(42);
     });
@@ -170,12 +161,9 @@ describe('app.utils', () => {
   });
 
   describe('validateNameInput', () => {
-    const control = (value: string): AbstractControl =>
-      ({ value }) as AbstractControl;
-
     it('flags empty names', () => {
       const validator = validateNameInput([], null);
-      expect(validator(control('   '))).toEqual({ empty: true });
+      expect(validator(control(' '.repeat(3)))).toEqual({ empty: true });
     });
 
     it('passes a unique name', () => {

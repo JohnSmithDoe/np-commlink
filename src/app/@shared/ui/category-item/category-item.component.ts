@@ -44,11 +44,11 @@ export class CategoryItemComponent {
   selectCategory = output<void>();
   deleteCategory = output<void>();
 
-  async handleItemOptionsOnDrag(ev: TIonDragEvent) {
-    if (checkItemOptionsOnDrag(ev) === 'end') {
+  async handleItemOptionsOnDrag(event: TIonDragEvent) {
+    if (checkItemOptionsOnDrag(event) === 'end') {
       return this.emitDeleteItem();
     }
-    return undefined;
+    return;
   }
 
   async emitDeleteItem() {

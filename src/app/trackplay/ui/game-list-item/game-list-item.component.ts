@@ -62,14 +62,16 @@ export class TrackplayGameListItemComponent {
 
   // Start side (negative amount) deletes; end side (positive) edits. Mirrors the
   // legacy deleteOnDrag sign math via the shared drag helper.
-  handleDrag(ev: TIonDragEvent): void {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'start':
+  handleDrag(event: TIonDragEvent): void {
+    switch (checkItemOptionsOnDrag(event)) {
+      case 'start': {
         void this.emitDelete();
         break;
-      case 'end':
+      }
+      case 'end': {
         void this.emitEdit();
         break;
+      }
     }
   }
 

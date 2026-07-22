@@ -59,7 +59,7 @@ const deletePlayerCascade = (
     const game = games[gameId];
     if (!game.players.includes(player.id)) continue;
     const remaining = game.players.filter((id) => id !== player.id);
-    if (remaining.length !== 0) {
+    if (remaining.length > 0) {
       // still players left → drop this player's value from every round
       for (const rId of game.rounds) {
         const round = rounds[rId];
@@ -110,6 +110,12 @@ const deleteGameTypeCascade = (
   if (config.games.typeId === type.id) {
     config = { ...config, games: { ...config.games, typeId: '' } };
   }
+  if (config.gamesForPlayer.typeId === type.id) {
+    config = {
+      ...config,
+      gamesForPlayer: { ...config.gamesForPlayer, typeId: '' },
+    };
+  }
   return { ...state, gameTypes, games, config };
 };
 
@@ -124,7 +130,7 @@ const ensureTrailingBlankRound = (
 ): ITrackplayState => {
   const game = state.games[gameId];
   if (!game || game.ended) return state;
-  const lastRoundId = game.rounds[game.rounds.length - 1];
+  const lastRoundId = game.rounds.at(-1);
   const lastRound = lastRoundId ? state.rounds[lastRoundId] : undefined;
   if (game.rounds.length > 0 && roundIsBlank(lastRound)) return state;
 
@@ -157,7 +163,7 @@ const setRoundValue = (
 
   // Entering a non-zero value on the trailing round auto-appends a new blank.
   let gameRounds = game.rounds;
-  const isLast = game.rounds[game.rounds.length - 1] === roundId;
+  const isLast = game.rounds.at(-1) === roundId;
   if (isLast && value !== 0) {
     const blank = createRound(game.rounds.length, game.players);
     rounds[blank.id] = blank;
@@ -200,7 +206,7 @@ export const trackplayReducer = createReducer(
   // ── Players ──────────────────────────────────────────────────────────────
   on(TrackplayActions.createPlayer, (state, { name }): ITrackplayState => {
     const trimmed = name.trim();
-    if (!trimmed.length) return state;
+    if (trimmed.length === 0) return state;
     return upsertPlayer(state, createPlayer(trimmed));
   }),
   on(TrackplayActions.renamePlayer, (state, { playerId, name }): ITrackplayState => {
@@ -245,7 +251,7 @@ export const trackplayReducer = createReducer(
   // ── Game types ───────────────────────────────────────────────────────────
   on(TrackplayActions.createGameType, (state, { name, winHigh }): ITrackplayState => {
     const trimmed = name.trim();
-    if (!trimmed.length) return state;
+    if (trimmed.length === 0) return state;
     const type = createGameType(trimmed, winHigh);
     return { ...state, gameTypes: { ...state.gameTypes, [type.id]: type } };
   }),
@@ -294,7 +300,7 @@ export const trackplayReducer = createReducer(
   // never survives a reload.
   on(TrackplayActions.loaded, (_state, { trackplay }): ITrackplayState => {
     const loaded = trackplay ?? initialState;
-    const gameTypes = Object.keys(loaded.gameTypes ?? {}).length
+    const gameTypes = Object.keys(loaded.gameTypes ?? {}).length > 0
       ? loaded.gameTypes
       : { ...DEFAULT_GAME_TYPES };
     return {

@@ -30,8 +30,8 @@ export function eurToCents(input: string): number | null {
   // remains must be digits with at most one decimal comma.
   const cleaned = trimmed
     .replace(/^[+-]/, '')
-    .replace(/[€\s]/g, '')
-    .replace(/\./g, '');
+    .replaceAll(/[€\s]/g, '')
+    .replaceAll('.', '');
   if (cleaned === '' || cleaned === ',' || !/^\d*,?\d*$/.test(cleaned)) {
     return null;
   }

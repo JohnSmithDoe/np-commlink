@@ -101,11 +101,11 @@ export class TrackplayPlayersPage implements ViewWillEnter {
     await modal.present();
   }
 
-  async openSettings(ev: Event): Promise<void> {
+  async openSettings(event: Event): Promise<void> {
     const popover = await this.#popoverCtrl.create({
       component: TrackplayGameSettingsPopoverComponent,
       componentProps: { mode: 'players' },
-      event: ev,
+      event: event,
     });
     await popover.present();
   }

@@ -58,8 +58,8 @@
                 <h2>{{ txn.description }}</h2>
                 <p>
                   {{ formatDate(txn.dateISO) }}
-                  @if (txn.category) {
-                    · {{ txn.category }}
+                  @if (txn.categoryId) {
+                    · {{ categoryName(txn.categoryId) }}
                   }
                   @if (txn.status === 'pending') {
                     · {{ 'cash.txn.pending' | translate }}

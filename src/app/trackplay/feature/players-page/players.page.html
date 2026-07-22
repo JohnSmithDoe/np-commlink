@@ -3,8 +3,14 @@
   icon="people-outline"
   (addItem)="newPlayer()"
 >
-  <ion-button slot="end" toolbar (click)="openSettings($event)" color="primary">
-    <ion-icon slot="icon-only" name="options-outline" />
+  <ion-button
+    slot="end"
+    toolbar
+    (click)="openSettings($event)"
+    color="primary"
+    [attr.aria-label]="'trackplay.a11y.settings' | translate"
+  >
+    <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
   </ion-button>
 </app-page-header>
 

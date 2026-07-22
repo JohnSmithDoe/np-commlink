@@ -24,6 +24,19 @@ describe('itemDialogsReducer', () => {
       expect(state.addToAdditionalList).toBe('_shopping');
     });
 
+    it('opens in create mode with the create labels when editMode is create', () => {
+      const item = mockBaseItem({ id: 'new', name: 'Milk' });
+      const state = itemDialogsReducer(
+        initialItemDialogs,
+        ItemDialogsActions.showEditDialog(item, '_storage', undefined, 'create')
+      );
+      expect(state.editMode).toBe('create');
+      expect(state.saveButtonText).toBe(
+        'grocery.edit.item.dialog.button.create'
+      );
+      expect(state.dialogTitle).toBe('grocery.edit.item.dialog.title.create');
+    });
+
     it('stops editing on hideDialog', () => {
       const start = mockItemDialogsState({ isEditing: true });
       expect(
@@ -32,16 +45,30 @@ describe('itemDialogsReducer', () => {
     });
   });
 
-  describe('category rename dialog', () => {
-    it('opens the category rename dialog with original and editItem', () => {
+  describe('category edit dialog', () => {
+    it('opens in create mode (no id) seeded with the working name', () => {
       const start = mockItemDialogsState();
       const state = itemDialogsReducer(
         start,
         CategoriesActions.showEditDialog('Dairy', '_storage')
       );
       expect(state.category.isEditing).toBe(true);
-      expect(state.category.original).toBe('Dairy');
-      expect(state.category.editItem).toBe('Dairy');
+      expect(state.category.name).toBe('Dairy');
+      expect(state.category.id).toBeUndefined();
+      expect(state.editMode).toBe('create');
+      expect(state.listId).toBe('_storage');
+    });
+
+    it('opens in rename mode when a category id is passed', () => {
+      const start = mockItemDialogsState();
+      const state = itemDialogsReducer(
+        start,
+        CategoriesActions.showEditDialog('Dairy', '_storage', 'cat-1')
+      );
+      expect(state.category.isEditing).toBe(true);
+      expect(state.category.name).toBe('Dairy');
+      expect(state.category.id).toBe('cat-1');
+      expect(state.editMode).toBe('update');
     });
 
     it('tracks the edited category name', () => {
@@ -50,24 +77,28 @@ describe('itemDialogsReducer', () => {
         start,
         CategoriesActions.updateCategory('Fridge')
       );
-      expect(state.category.editItem).toBe('Fridge');
+      expect(state.category.name).toBe('Fridge');
     });
 
     it('stops category editing on confirmEditChanges and abortEditChanges', () => {
       const start = mockItemDialogsState({
-        category: { isEditing: true, original: 'Dairy', editItem: 'Fridge' },
+        category: { isEditing: true, id: 'cat-1', name: 'Fridge' },
       });
-      expect(
-        itemDialogsReducer(start, CategoriesActions.confirmEditChanges())
-          .category.isEditing
-      ).toBe(false);
+      // confirm keeps the id/name but flips editing off
+      const confirmed = itemDialogsReducer(
+        start,
+        CategoriesActions.confirmEditChanges()
+      ).category;
+      expect(confirmed.isEditing).toBe(false);
+      expect(confirmed.id).toBe('cat-1');
+      // abort resets the working copy entirely
       const aborted = itemDialogsReducer(
         start,
         CategoriesActions.abortEditChanges()
       ).category;
       expect(aborted.isEditing).toBe(false);
-      expect(aborted.editItem).toBeUndefined();
-      expect(aborted.original).toBeUndefined();
+      expect(aborted.name).toBeUndefined();
+      expect(aborted.id).toBeUndefined();
     });
   });
 });

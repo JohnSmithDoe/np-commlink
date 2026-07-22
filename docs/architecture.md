@@ -149,7 +149,7 @@ tasks page and the tracking page all render the same list UI. The generic
 (`@shared/util/list/list-page.facade.ts`); each domain **provides** its own implementation at the
 route:
 
-```
+```text
 list-page (generic, domain-blind)
    └─ inject(LIST_FACADE)
         ├─ GroceryListPageFacade    (multi-list engine: route-param → active list, cross-list buckets)
@@ -170,13 +170,30 @@ registry can't live inside a pure selector. A facade is a *service* — it can h
 problem cleanly. Grocery-only operations (`addProduct`, `showCreateProductDialog`) are
 deliberately *off* the shared contract and live only on the concrete grocery facade.
 
+The **manage-categories page** is the same pattern applied a second time: the domain-blind
+`@shared/feature/edit-categories-page` `inject()`s a sibling `CATEGORIES_FACADE`
+(`@shared/util/list/categories-page.facade.ts`) — the catalog decorated with per-list item
+counts, `add`/`rename`/`remove`, `listTitleKey`/`listHref`, and `drillTo(id)`. `GroceryCategoriesPageFacade`
+(shared catalog, scoped to the `:listId` route param → the fan-out `GroceryCategoriesActions`),
+`TasksCategoriesPageFacade` and `CashCategoriesPageFacade` provide it at the `categories/:listId`
+/ `categories/_tasks` / `cash/categories` routes; the shared component is mounted directly
+(route-level provider binding, no per-domain wrapper). For grocery + tasks the list-page shell
+exposes the entry point via an optional `manageCategories?()` on `IListPageFacade` (rendered only
+when `hasCategories`); cash reaches it from toolbar buttons on the overview + rules pages
+(**replacing the rules page's old inline category palette**). **Category→items drill:** `drillTo`
+navigates to the owning list with `?filter=<categoryId>`, applied in the target page's
+`ionViewWillEnter` — *after* the route resolver's `loaded` resets `filterBy`, so the filter
+survives the entry (the same after-hydration timing as the §4.4 deferred-command deep-link). Cash
+has no `filterBy` list, so its drill target is instead a dedicated read-only transactions view
+(`cash/category/:categoryId`) — the same "one cohesive page per domain" idea, different mechanics.
+
 ### 4.4 Navigation: string-route deep-links
 
 *How a sealed feature triggers an action in another sealed feature.* When the notifications page
 needs to act on a tracking item (a CTA tap), it can't import tracking and — because tracking is
 lazy — tracking's slice may not even be registered. So it navigates:
 
-```
+```text
 notifications.page → router.navigate(['/tracking'], { queryParams: { cmd: n.id } })
 ```
 
@@ -214,20 +231,23 @@ even while you're on `/tracking` and the notifications slice is unregistered. It
 
 Only the things that must always be present:
 
-- **Store slices** (`provideStore`): `router`, `dashboard` (the read-model), and the
-  shared-kernel *library* slices `itemDialogs`, `listSettings`, `quickadd`. **No feature slice is
-  eager.**
+- **Store slices** (`provideStore`): `router`, `dashboard` (the read-model), the app-global
+  `settings` slice (the single persisted schema `version` anchor for the migration framework),
+  `itemDialogs`, and the `theme` kernel slice. **No feature slice is eager** — and note
+  `listSettings` + `quickadd` are *no longer* here: they were grocery-specific all along, so they
+  moved into the lazy **groceries** domain (the settings re-scope). The one genuinely app-wide bit
+  they carried — the `version` — became the global `settings` slice above.
 - **Effects** (`provideEffects`): `AppMessageEffects` (the toast sink), `DashboardEffects` (the
-  read-model's persistence), `ListSettingsEffects` + `ListSettingsLoadEffects`.
-- **Boot dispatches** (`provideAppInitializer`): `ListSettingsActions.load()`,
-  `DashboardActions.load()` (hydrate the persisted deck numbers), and `NotificationService.init()`
+  read-model's persistence), `SettingsEffects` (load + seed the version doc), and the theme effects.
+- **Boot dispatches** (`provideAppInitializer`): `SettingsActions.load()`, `DashboardActions.load()`
+  (hydrate the persisted deck numbers), `ThemeActions.load()`, and `NotificationService.init()`
   (OS-notification permissions/channel).
 
 ### How a lazy context loads
 
 Each feature route carries two things:
 
-```
+```text
 {
   path: 'tracking',
   providers: trackingLazyProviders,          // provideState(...) + provideEffects(...)
@@ -259,9 +279,17 @@ Each feature route carries two things:
 `groceries` registers **all three** slices (products/shopping/storage) on **every** grocery
 route, because the cross-list search buckets read sibling slices — registering only the route's
 own slice would leave siblings `undefined` and crash the selector (this was a real, reverted bug).
-Similarly `office-time` co-registers its two slices `settings` + `officeTime`. (`/barcode` used
-to join that group because the SIGIL image lived in `officeTime`; after sheriff-tighten it owns
-its own single `barcode` slice and registers alone.)
+It also co-registers the grocery-owned `listSettings` + `quickadd` slices (the settings re-scope):
+`listSettings` hydrates via its own `[ListSettings] load/loaded` resolver key on the grocery
+routes, and `quickadd` is ephemeral (the engine recomputes it, never persisted). The
+**`/list-settings`** page is the exception — it needs only `listSettings`, so it registers just
+that via `listSettingsLazyProviders`, **not** the full grocery context; pulling in the grocery
+lists there would also register their telemetry reporters, which `report` on subscription and
+would wrongly flip the deck tiles online with zero counts.
+Similarly `office-time` co-registers its two slices `officeTimeSettings` + `officeTime` (the
+settings slice was renamed from the collision-prone bare `settings` when the app-global `settings`
+slice was introduced). (`/barcode` used to join that group because the SIGIL image lived in
+`officeTime`; after sheriff-tighten it owns its own single `barcode` slice and registers alone.)
 
 ---
 
@@ -272,7 +300,7 @@ app — so both are inverted.
 
 ### The dashboard read-model (CQRS)
 
-```
+```text
   tracking ─┐
 office-time ─┤
      cash ─┼─ DashboardActions.report({source, metrics}) ─▶ dashboard slice (eager) ─▶ commlink deck
@@ -376,7 +404,11 @@ folded onto these shared mechanics (the last merge-duplicate retired).
 - **`load<T>(key)` / `save<K>(key, value)`** are what each lazy context's load/save effect uses
   for its own key — no slice list lives in the service.
 - `itemDialogs` / `quickadd` are ephemeral (never persisted). `migrate()` exists as a framework
-  but is empty (fresh-install only; VERSION `'1'`).
+  but is empty (fresh-install only; VERSION `'1'`). The schema `version` lives in exactly **one**
+  place now — the eager app-global `settings` slice (`npc-settings`), seeded on first boot by
+  `SettingsEffects`. The per-slice `version` fields that `listSettings` and office-time's settings
+  used to each carry were dropped in the settings re-scope, so the migration framework has a single
+  anchor to read.
 
 > **Pattern — ports & adapters.** The persistence port knows nothing about domains; domains know
 > nothing about storage mechanics. The dashboard's persistence is owned *inside* `DashboardEffects`
@@ -386,7 +418,7 @@ folded onto these shared mechanics (the last merge-duplicate retired).
 
 ## 9. Context map (one picture)
 
-```
+```text
                          ┌──────────────────────── @shared (kernel: library + contracts) ────────────────────────┐
                          │  list kit · LIST_FACADE · DashboardActions.report · NotificationsActions · transforms  │
                          │  NotificationsStore (durable port) · DatabaseService (per-key port) · resolver         │

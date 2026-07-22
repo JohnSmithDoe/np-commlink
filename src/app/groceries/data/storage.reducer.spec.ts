@@ -1,6 +1,8 @@
 import { GroceriesActions } from './groceries.actions';
+import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
 import { StorageActions } from './storage.actions';
 import { initialState, storageReducer } from './storage.reducer';
+import { mockCategory } from '../../@shared/testing/test-data';
 import {
   mockShoppingItem,
   mockStorageItem,
@@ -13,15 +15,15 @@ describe('storageReducer', () => {
     expect(state).toBe(initialState);
   });
 
-  it('adds an item and derives its categories', () => {
-    const item = mockStorageItem({ name: 'Milk', category: ['Dairy'] });
+  it('adds an item without deriving categories (the catalog is authoritative)', () => {
+    const item = mockStorageItem({ name: 'Milk', categoryIds: ['dairy'] });
     const state = storageReducer(initialState, StorageActions.addItem(item));
     expect(state.items).toEqual([item]);
-    expect(state.categories).toContain('Dairy');
+    expect(state.categories).toEqual([]);
   });
 
   it('does not add an item with a blank name', () => {
-    const item = mockStorageItem({ name: '   ' });
+    const item = mockStorageItem({ name: ' '.repeat(3) });
     const state = storageReducer(initialState, StorageActions.addItem(item));
     expect(state.items).toHaveLength(0);
   });
@@ -69,23 +71,30 @@ describe('storageReducer', () => {
       mockShoppingItem({ id: 's2', name: 'Bread', quantity: 1 }),
     ];
     const state = storageReducer(start, StorageActions.addShoppingList(bought));
-    const milk = state.items.find((i) => i.name === 'Milk');
-    const bread = state.items.find((i) => i.name === 'Bread');
+    const milk = state.items.find((index) => index.name === 'Milk');
+    const bread = state.items.find((index) => index.name === 'Bread');
     expect(milk?.quantity).toBe(5);
     expect(bread?.quantity).toBe(1);
   });
 
-  it('adds and removes categories', () => {
+  it('adds, renames and removes categories via the shared grocery catalog', () => {
     const added = storageReducer(
       initialState,
-      StorageActions.addCategory('Dairy')
+      GroceryCategoriesActions.add(mockCategory({ id: 'dairy', name: 'Dairy' }))
     );
-    expect(added.categories).toContain('Dairy');
-    const removed = storageReducer(
+    expect(added.categories.map((c) => c.name)).toContain('Dairy');
+    const renamed = storageReducer(
       added,
-      StorageActions.removeCategory('Dairy')
+      GroceryCategoriesActions.rename('dairy', 'Fridge')
     );
-    expect(removed.categories).not.toContain('Dairy');
+    expect(renamed.categories.find((c) => c.id === 'dairy')?.name).toBe(
+      'Fridge'
+    );
+    const removed = storageReducer(
+      renamed,
+      GroceryCategoriesActions.remove('dairy')
+    );
+    expect(removed.categories.map((c) => c.name)).not.toContain('Fridge');
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {

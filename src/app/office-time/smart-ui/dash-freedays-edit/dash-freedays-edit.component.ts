@@ -54,10 +54,10 @@ export class DashFreedaysEditComponent {
     { transform: daysToHolidaysHighlightsInputTransform }
   );
 
-  updateFreeDatesFromCalender(ev: DatetimeCustomEvent) {
-    const dates = Array.isArray(ev.detail.value)
-      ? ev.detail.value
-      : [ev.detail.value];
+  updateFreeDatesFromCalender(event: DatetimeCustomEvent) {
+    const dates = Array.isArray(event.detail.value)
+      ? event.detail.value
+      : [event.detail.value];
 
     this.#store.dispatch(OfficeTimeActions.setFreedays(dates));
   }

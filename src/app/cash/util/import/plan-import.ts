@@ -9,13 +9,19 @@ export interface IImportPlan {
   duplicates: number;
 }
 
-/** Natural key for idempotent re-import — see docs/cash-plan.md P4. */
+/**
+ * Natural key for idempotent re-import — see docs/cash-plan.md P4. The date is
+ * keyed on its `YYYY-MM-DD` prefix only: `dateISO` is a local-midnight ISO whose
+ * offset (`+01:00`/`+02:00`) shifts with the device timezone, so keying on the
+ * full string would defeat dedup after a DST/timezone change.
+ */
 const naturalKey = (
   accountId: string,
   dateISO: string,
   amountCents: number,
   rawDescription: string
-): string => `${accountId}|${dateISO}|${amountCents}|${rawDescription}`;
+): string =>
+  `${accountId}|${dateISO.slice(0, 10)}|${amountCents}|${rawDescription}`;
 
 /**
  * Turn parsed rows into transactions to import: assign ids, drop rows already
@@ -69,8 +75,8 @@ export function planImport(
       status: 'confirmed',
       importBatchId,
     };
-    const category = categorize(txn, rules);
-    toImport.push(category === undefined ? txn : { ...txn, category });
+    const categoryId = categorize(txn, rules);
+    toImport.push(categoryId === undefined ? txn : { ...txn, categoryId });
   }
   return { toImport, duplicates };
 }

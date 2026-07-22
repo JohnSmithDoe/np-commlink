@@ -17,7 +17,7 @@ export class NpTimeWithUnitPipe implements PipeTransform {
   transform(timeInSeconds?: number): string {
     if (!timeInSeconds) return '';
 
-    let days = (timeInSeconds / 86400).toFixed(1);
+    let days = (timeInSeconds / 86_400).toFixed(1);
     let hours = (timeInSeconds / 3600).toFixed(1);
     let minutes = (timeInSeconds / 60).toFixed(1);
     const seconds = timeInSeconds % 60;

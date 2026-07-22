@@ -2,7 +2,7 @@
   <ion-item button (click)="selectCategory.emit()" lines="full">
     <ion-reorder slot="start"></ion-reorder>
     <ion-label class="ion-text-wrap">
-      <h2>{{ category() }} ({{ count() }})</h2>
+      <h2>{{ category().name }} ({{ count() }})</h2>
     </ion-label>
   </ion-item>
 </ng-template>

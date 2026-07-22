@@ -7,8 +7,8 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
   const img = new Image();
   img.crossOrigin = 'anonymous';
   await new Promise((res, rej) => {
-    img.onload = res;
-    img.onerror = rej;
+    img.addEventListener('load', res);
+    img.addEventListener('error', rej);
     img.src = dataUrl.startsWith('data:')
       ? dataUrl
       : `data:image/*;base64,${dataUrl}`;
@@ -28,13 +28,11 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
   const canvas = document.createElement('canvas');
   canvas.width = cw;
   canvas.height = ch;
-  const ctx = canvas.getContext('2d');
+  const context = canvas.getContext('2d');
 
-  // move to center, rotate, draw centered
-  ctx?.translate(cw / 2, ch / 2);
-  ctx?.rotate(radians);
-  ctx?.drawImage(img, -w / 2, -h / 2);
+  context?.translate(cw / 2, ch / 2);
+  context?.rotate(radians);
+  context?.drawImage(img, -w / 2, -h / 2);
 
-  // export (match your source mime if needed)
   return canvas.toDataURL('image/*');
 };

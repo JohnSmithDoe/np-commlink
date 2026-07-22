@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { ICategory } from '../../@shared/types';
 import { IGrocerySearchResult, IShoppingItem, IShoppingState } from '../model';
 import {
   filterBySearchQuery,
@@ -12,7 +13,7 @@ export const selectShoppingState =
 // the catalog straight from the domain slice).
 export const selectShoppingCategories = createSelector(
   selectShoppingState,
-  (state): string[] => state.categories
+  (state): ICategory[] => state.categories
 );
 
 export const selectShoppingSearchResult = createSelector(
@@ -25,5 +26,5 @@ export const selectShoppingSearchResult = createSelector(
 export const selectShoppingListHasBoughtItems = createSelector(
   selectShoppingState,
   (state: IShoppingState): boolean =>
-    !!state.items.find((item) => item.state === 'bought')
+    state.items.some((item) => item.state === 'bought')
 );

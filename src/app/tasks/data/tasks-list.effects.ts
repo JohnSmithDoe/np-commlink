@@ -3,16 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IQuickAddState } from '../../@shared/types';
-import { ITasksState } from '../model';
 import { createTaskItem } from '../util/task.factory';
-import {
-  matchesItemExactly,
-  matchesSearchExactly,
-  matchingTxtIsNotEmpty,
-} from '../../@shared/util/app.utils';
+import { matchesItemExactly } from '../../@shared/util/app.utils';
 import { updatedSearchQuery } from '../../@shared/util/list/list.utils';
-import { QuickAddActions } from '../../@shared/data/quick-add/quick-add.actions';
 import { TasksActions } from './tasks.actions';
 import { selectTasksState } from './tasks.selector';
 
@@ -96,38 +89,10 @@ export class TasksListEffects {
     );
   });
 
-  // Recompute the quick-add button state whenever the search/mode changes.
-  updateQuickAdd$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(
-        TasksActions.updateSearch,
-        TasksActions.updateMode,
-        TasksActions.enterPage
-      ),
-      withLatestFrom(this.#store.select(selectTasksState), (_, tasks) => tasks),
-      map((tasks) => QuickAddActions.updateState(tasksQuickAddState(tasks)))
-    );
-  });
+  // NB: tasks has NO quick-add. The grocery quick-add row + slice were moved
+  // into the groceries domain (settings re-scope); tasks' vestigial copy of it
+  // (an `updateQuickAdd$` effect + a `tasksQuickAddState` helper) was removed —
+  // its only affordance ("add the typed search as a task") was already covered
+  // by the searchbar's enter key and the empty-state, and it was gated by a
+  // grocery feature flag (`showQuickAdd`) that has nothing to do with tasks.
 }
-
-// Tasks-local quick-add computation (the `_tasks` branch of the grocery engine's
-// updateQuickAddState, minus the product concept — tasks never adds products).
-export const tasksQuickAddState = (state: ITasksState): IQuickAddState => {
-  const searchQuery = state.searchQuery;
-  const isCategoryMode = state.mode === 'categories';
-  const doShow = matchingTxtIsNotEmpty(searchQuery);
-  const exactMatchLocal = !!state.items.find((item) =>
-    matchesSearchExactly(item, searchQuery)
-  );
-  const exactMatchCategory = !!state.categories.find((cat) =>
-    matchesSearchExactly(cat, searchQuery)
-  );
-  return {
-    searchQuery,
-    canAddLocal: !isCategoryMode && doShow && !exactMatchLocal,
-    canAddProduct: false,
-    canAddCategory: doShow && isCategoryMode && !exactMatchCategory,
-    listName: marker('grocery.list-header.tasks'),
-    color: 'primary',
-  };
-};

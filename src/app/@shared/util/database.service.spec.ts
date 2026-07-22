@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Storage } from '@ionic/storage-angular';
 import { COMMON_TEST_PROVIDERS } from '../testing/test-providers';
 import { DatabaseService } from './database.service';
+import { VERSION } from './migrations';
 
 describe('DatabaseService', () => {
   let service: DatabaseService;
@@ -9,14 +10,23 @@ describe('DatabaseService', () => {
     create: ReturnType<typeof vi.fn>;
     get: ReturnType<typeof vi.fn>;
     set: ReturnType<typeof vi.fn>;
+    clear: ReturnType<typeof vi.fn>;
     forEach: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
     mockStorage = {
       create: vi.fn().mockResolvedValue(undefined),
-      get: vi.fn().mockResolvedValue(null),
+      // Default: the persisted schema version already matches, so the one-time
+      // fresh-baseline wipe does NOT fire (each test that needs the wipe sets
+      // the schema key to a stale value explicitly).
+      get: vi
+        .fn()
+        .mockImplementation(async (key: string) =>
+          key === 'npc-schema-version' ? VERSION : null
+        ),
       set: vi.fn().mockResolvedValue(undefined),
+      clear: vi.fn().mockResolvedValue(undefined),
       forEach: vi.fn().mockResolvedValue(undefined),
     };
     TestBed.configureTestingModule({
@@ -62,14 +72,14 @@ describe('DatabaseService', () => {
   describe('bootstrap', () => {
     it('initializes storage and returns only the npc-summary-* docs', async () => {
       mockStorage.forEach.mockImplementation(
-        async (cb: (v: unknown, k: string, i: number) => void) => {
-          cb(
+        async (callback: (v: unknown, k: string, index: number) => void) => {
+          callback(
             { source: 'notifications', metrics: { unread: 2 } },
             'npc-summary-notifications',
             0
           );
-          cb({ items: [] }, 'npc-tracking', 1);
-          cb(
+          callback({ items: [] }, 'npc-tracking', 1);
+          callback(
             { source: 'office-time', metrics: { officedays: 12 } },
             'npc-summary-office-time',
             2
@@ -107,6 +117,29 @@ describe('DatabaseService', () => {
       await service.load('cash');
 
       expect(mockStorage.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('schema version (fresh-baseline wipe)', () => {
+    it('wipes the store once and stamps VERSION when the persisted version is stale', async () => {
+      mockStorage.get.mockImplementation(async (key: string) =>
+        key === 'npc-schema-version' ? '1' : null
+      );
+
+      await service.bootstrap();
+
+      expect(mockStorage.clear).toHaveBeenCalledTimes(1);
+      expect(mockStorage.set).toHaveBeenCalledWith(
+        'npc-schema-version',
+        VERSION
+      );
+    });
+
+    it('does not wipe when the persisted version already matches', async () => {
+      // The default mock returns VERSION for the schema key.
+      await service.bootstrap();
+
+      expect(mockStorage.clear).not.toHaveBeenCalled();
     });
   });
 });

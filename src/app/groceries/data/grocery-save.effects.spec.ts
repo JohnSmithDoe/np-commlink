@@ -13,6 +13,7 @@ import {
 import { DatabaseService } from '../../@shared/util/database.service';
 import { StorageActions } from './storage.actions';
 import { GroceriesActions } from './groceries.actions';
+import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
 import { GrocerySaveEffects } from './grocery-save.effects';
 
 describe('GrocerySaveEffects', () => {
@@ -39,6 +40,18 @@ describe('GrocerySaveEffects', () => {
     setup(mockAppState({ storage }));
     actions$ = of(StorageActions.addItem(mockStorageItem()));
     await firstValueFrom(effects.saveOnChange$);
+    expect(database.save).toHaveBeenCalledWith('storage', storage);
+  });
+
+  it('persists all three slices on a shared-catalog mutation', async () => {
+    const products = mockProductsState();
+    const shopping = mockShoppingState();
+    const storage = mockStorageState();
+    setup(mockAppState({ products, shopping, storage }));
+    actions$ = of(GroceryCategoriesActions.add({ id: 'c1', name: 'Frozen' }));
+    await firstValueFrom(effects.saveOnChange$);
+    expect(database.save).toHaveBeenCalledWith('products', products);
+    expect(database.save).toHaveBeenCalledWith('shopping', shopping);
     expect(database.save).toHaveBeenCalledWith('storage', storage);
   });
 

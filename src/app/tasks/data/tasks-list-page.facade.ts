@@ -1,10 +1,12 @@
 import { computed, inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
-  TItemListCategory,
+  TCategoryId,
   TItemListMode,
   TItemListSortType,
 } from '../../@shared/types';
+import { uuidv4 } from '../../@shared/util/app.utils';
 import { ItemDialogsActions } from '../../@shared/data/item-dialogs/item-dialogs.actions';
 import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
 import {
@@ -32,6 +34,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class TasksListPageFacade implements IListPageFacade {
   readonly #store = inject(Store);
+  readonly #router = inject(Router);
 
   readonly state = this.#store.selectSignal(selectTasksState);
   readonly items = this.#store.selectSignal(selectTasksListItems);
@@ -55,7 +58,10 @@ export class TasksListPageFacade implements IListPageFacade {
 
   addCategoryFromSearch(): void {
     this.#store.dispatch(
-      TasksActions.addCategory(this.state()?.searchQuery ?? '')
+      TasksActions.addCategory({
+        id: uuidv4(),
+        name: this.state()?.searchQuery ?? '',
+      })
     );
   }
 
@@ -67,17 +73,21 @@ export class TasksListPageFacade implements IListPageFacade {
     this.#store.dispatch(TasksActions.updateSort(type, 'toggle'));
   }
 
-  selectCategory(category: TItemListCategory): void {
-    this.#store.dispatch(TasksActions.updateFilter(category));
+  selectCategory(categoryId: TCategoryId): void {
+    this.#store.dispatch(TasksActions.updateFilter(categoryId));
   }
 
-  deleteCategory(category: TItemListCategory): void {
-    this.#store.dispatch(TasksActions.removeCategory(category));
+  deleteCategory(categoryId: TCategoryId): void {
+    this.#store.dispatch(TasksActions.removeCategory(categoryId));
   }
 
   showCreateDialog(): void {
     this.#store.dispatch(
       ItemDialogsActions.showCreateDialogWithSearch('_tasks')
     );
+  }
+
+  manageCategories(): void {
+    void this.#router.navigate(['/categories/_tasks']);
   }
 }

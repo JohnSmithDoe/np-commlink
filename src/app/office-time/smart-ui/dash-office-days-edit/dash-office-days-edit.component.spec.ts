@@ -31,7 +31,7 @@ describe('DashOfficeDaysEditComponent', () => {
       typeof OfficeTimeActions.setOfficedays
     >;
     expect(action.type).toBe(OfficeTimeActions.setOfficedays.type);
-    expect(action.officedays.map(dayjsToString)).toEqual([
+    expect(action.officedays.map((day) => dayjsToString(day))).toEqual([
       '2026-07-01',
       '2026-07-02',
     ]);
@@ -45,7 +45,9 @@ describe('DashOfficeDaysEditComponent', () => {
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
       typeof OfficeTimeActions.setOfficedays
     >;
-    expect(action.officedays.map(dayjsToString)).toEqual(['2026-07-01']);
+    expect(action.officedays.map((day) => dayjsToString(day))).toEqual([
+      '2026-07-01',
+    ]);
   });
 
   it('exposes the selected office days as date strings', () => {

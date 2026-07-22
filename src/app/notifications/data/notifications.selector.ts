@@ -11,13 +11,13 @@ const byUpdatedAtDesc = (a: INotification, b: INotification): number =>
 export const selectNewNotifications = createSelector(
   selectNotificationsState,
   (state): INotification[] =>
-    state.items.filter((n) => n.status === 'new').sort(byUpdatedAtDesc)
+    state.items.filter((n) => n.status === 'new').toSorted(byUpdatedAtDesc)
 );
 
 export const selectDoneNotifications = createSelector(
   selectNotificationsState,
   (state): INotification[] =>
-    state.items.filter((n) => n.status === 'done').sort(byUpdatedAtDesc)
+    state.items.filter((n) => n.status === 'done').toSorted(byUpdatedAtDesc)
 );
 
 export const selectDoneCollapsed = createSelector(
@@ -32,8 +32,3 @@ export const selectNotificationsBadgeCount = createSelector(
   selectNotificationsState,
   unreadCount
 );
-
-export const selectNotificationById = (id: string) =>
-  createSelector(selectNotificationsState, (state): INotification | undefined =>
-    state.items.find((n) => n.id === id)
-  );

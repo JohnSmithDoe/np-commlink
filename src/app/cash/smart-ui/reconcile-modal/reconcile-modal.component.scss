@@ -3,12 +3,12 @@
 .cash-reconcile__hint {
   display: block;
   padding: 0 0.25rem 0.75rem;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-text-dim);
 }
 
 .cash-txn__amount {
-  font-family: var(--sr-mono);
+  font-family: var(--sr-deck-font);
 
   &--out {
     color: var(--ion-color-danger);
@@ -22,6 +22,6 @@
 .cash-empty {
   padding-top: 10vh;
   text-align: center;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-text-dim);
 }

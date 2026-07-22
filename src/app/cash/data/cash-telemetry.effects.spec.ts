@@ -33,7 +33,7 @@ describe('CashTelemetryEffects', () => {
   it('reports the net balance in whole euros to the dashboard read-model', async () => {
     setup({
       cash: mockCashState({
-        accounts: [mockCashAccount({ openingBalanceCents: 10000 })],
+        accounts: [mockCashAccount({ openingBalanceCents: 10_000 })],
         transactions: [mockCashTransaction({ amountCents: -2500 })],
       }),
     });
@@ -67,7 +67,7 @@ describe('CashTelemetryEffects', () => {
       expect(
         selectCashBalanceEuros.projector(
           mockCashState({
-            accounts: [mockCashAccount({ openingBalanceCents: 12399 })],
+            accounts: [mockCashAccount({ openingBalanceCents: 12_399 })],
           })
         )
       ).toBe(124);
@@ -75,10 +75,30 @@ describe('CashTelemetryEffects', () => {
       expect(
         selectCashBalanceEuros.projector(
           mockCashState({
-            accounts: [mockCashAccount({ openingBalanceCents: 12340 })],
+            accounts: [mockCashAccount({ openingBalanceCents: 12_340 })],
           })
         )
       ).toBe(123);
+    });
+
+    it('excludes reconciled-away legs (matchedTxnId) so a cleared spend is not double-counted', () => {
+      // Manual -50 leg reconciled into the imported -50 leg: only one should
+      // count, matching selectAccountBalances / the ledger views (200-50=150).
+      expect(
+        selectCashBalanceEuros.projector(
+          mockCashState({
+            accounts: [mockCashAccount({ openingBalanceCents: 20_000 })],
+            transactions: [
+              mockCashTransaction({ id: 't1', amountCents: -5000 }),
+              mockCashTransaction({
+                id: 't2',
+                amountCents: -5000,
+                matchedTxnId: 't1',
+              }),
+            ],
+          })
+        )
+      ).toBe(150);
     });
 
     it('reports a negative balance for an overdrawn ledger', () => {

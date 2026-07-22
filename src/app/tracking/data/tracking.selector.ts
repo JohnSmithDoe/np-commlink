@@ -12,14 +12,20 @@ export const selectTrackingState =
   createFeatureSelector<ITrackingState>('tracking');
 
 const getKey = (trackingItem: ITrackingItem, listId: string) => {
-  if (listId === 'daily' || listId === 'today') {
-    return dayjs(trackingItem.startTime).format('YYYYMMDD');
-  } else if (listId === 'monthly') {
-    return dayjs(trackingItem.startTime).format('YYYYMM');
-  } else if (listId === 'all') {
-    return '';
-  } else {
-    return dayjs(trackingItem.startTime).format('YYYYMMDDHHmm');
+  switch (listId) {
+    case 'daily':
+    case 'today': {
+      return dayjs(trackingItem.startTime).format('YYYYMMDD');
+    }
+    case 'monthly': {
+      return dayjs(trackingItem.startTime).format('YYYYMM');
+    }
+    case 'all': {
+      return '';
+    }
+    default: {
+      return dayjs(trackingItem.startTime).format('YYYYMMDDHHmm');
+    }
   }
 };
 const groupBy = (data: ITrackingItem[], listId: string) => {
@@ -28,7 +34,7 @@ const groupBy = (data: ITrackingItem[], listId: string) => {
       ? data.filter((item) => dayjs(item.startTime).isSame(dayjs(), 'day'))
       : data;
   const map: Record<string, IDataItem> = {};
-  items.forEach((trackingItem) => {
+  for (const trackingItem of items) {
     let key = getKey(trackingItem, listId);
     key += trackingItem.name;
     const current = map[key]?.trackedTimeInSeconds ?? 0;
@@ -36,7 +42,7 @@ const groupBy = (data: ITrackingItem[], listId: string) => {
       ...trackingItem,
       trackedTimeInSeconds: current + (trackingItem.trackedTimeInSeconds ?? 0),
     };
-  });
+  }
 
   return Object.values(map);
 };
@@ -100,8 +106,8 @@ export const selectSessionsByDayAndName = createSelector(
     const windowStart = today.subtract(CHART_WINDOW_DAYS - 1, 'day');
 
     const days: string[] = [];
-    for (let i = 0; i < CHART_WINDOW_DAYS; i++) {
-      days.push(windowStart.add(i, 'day').format('YYYY-MM-DD'));
+    for (let index = 0; index < CHART_WINDOW_DAYS; index++) {
+      days.push(windowStart.add(index, 'day').format('YYYY-MM-DD'));
     }
 
     const inWindow = sessions.filter((s) => {
@@ -121,7 +127,7 @@ export const selectSessionsByDayAndName = createSelector(
       );
     }
     const topNames = [...totalsByName.entries()]
-      .sort((a, b) => b[1] - a[1])
+      .toSorted((a, b) => b[1] - a[1])
       .slice(0, CHART_TOP_N)
       .map(([name]) => name);
     const topSet = new Set(topNames);
@@ -129,19 +135,25 @@ export const selectSessionsByDayAndName = createSelector(
 
     const seriesMap = new Map<string, number[]>();
     for (const name of topNames) {
-      seriesMap.set(name, new Array(CHART_WINDOW_DAYS).fill(0));
+      seriesMap.set(
+        name,
+        Array.from({ length: CHART_WINDOW_DAYS }, () => 0)
+      );
     }
     if (hasOther) {
-      seriesMap.set(OTHER_LABEL, new Array(CHART_WINDOW_DAYS).fill(0));
+      seriesMap.set(
+        OTHER_LABEL,
+        Array.from({ length: CHART_WINDOW_DAYS }, () => 0)
+      );
     }
 
     for (const s of inWindow) {
-      const dayIdx = dayjs(s.startTime).diff(windowStart, 'day');
-      if (dayIdx < 0 || dayIdx >= CHART_WINDOW_DAYS) continue;
+      const dayIndex = dayjs(s.startTime).diff(windowStart, 'day');
+      if (dayIndex < 0 || dayIndex >= CHART_WINDOW_DAYS) continue;
       const bucket = topSet.has(s.name) ? s.name : OTHER_LABEL;
-      const arr = seriesMap.get(bucket);
-      if (!arr) continue;
-      arr[dayIdx] += (s.trackedTimeInSeconds ?? 0) / 3600;
+      const array = seriesMap.get(bucket);
+      if (!array) continue;
+      array[dayIndex] += (s.trackedTimeInSeconds ?? 0) / 3600;
     }
 
     return {
@@ -158,7 +170,7 @@ export const selectTrackingTime = createSelector(
   selectTrackingState,
   (state: ITrackingState) => {
     const timeInSeconds = state.items.reduce(
-      (cur, prev) => cur + (prev.trackedTimeInSeconds ?? 0),
+      (current, previous) => current + (previous.trackedTimeInSeconds ?? 0),
       0
     );
     return formatSecondsAsClock(timeInSeconds);

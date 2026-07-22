@@ -23,10 +23,10 @@ export const upsertNotification = (
   items: INotification[],
   next: INotification
 ): INotification[] => {
-  const idx = items.findIndex((n) => n.id === next.id);
-  if (idx < 0) return [next, ...items];
+  const index = items.findIndex((n) => n.id === next.id);
+  if (index === -1) return [next, ...items];
   const out = [...items];
-  out[idx] = next;
+  out[index] = next;
   return out;
 };
 

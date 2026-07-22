@@ -34,5 +34,5 @@ export function findReconciliationCandidates(
         !survivors.has(t.id) &&
         daysApart(t) <= WINDOW_MS
     )
-    .sort((a, b) => daysApart(a) - daysApart(b)); // closest date first
+    .toSorted((a, b) => daysApart(a) - daysApart(b)); // closest date first
 }

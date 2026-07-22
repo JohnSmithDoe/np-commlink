@@ -12,6 +12,8 @@ import {
   IonLabel,
   IonList,
   IonRange,
+  IonSegment,
+  IonSegmentButton,
   IonToggle,
   AlertButton,
   ToggleChangeEventDetail,
@@ -19,6 +21,9 @@ import {
 import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { SettingsActions } from '../../../@shared/data/settings/settings.actions';
+import { selectTheme } from '../../../@shared/data/settings/settings.selector';
+import { TTheme } from '../../../@shared/types';
 import {
   OfficeTimeActions,
   selectDashboardSettings,
@@ -37,6 +42,8 @@ import {
     IonList,
     IonItem,
     IonRange,
+    IonSegment,
+    IonSegmentButton,
     IonToggle,
     IonLabel,
     IonButton,
@@ -75,7 +82,15 @@ export class SettingsPage {
     selectTargetOfficeDaysPerWeek
   );
 
+  // App-wide UI theme (global `settings` slice). Changing it re-skins the whole
+  // app live (SettingsEffects.applyTheme$ sets <html data-theme>).
+  readonly theme = this.#store.selectSignal(selectTheme);
+
   readonly pinFormatter = (value: number) => `${value}`;
+
+  changeTheme(value: TTheme) {
+    this.#store.dispatch(SettingsActions.setTheme(value));
+  }
 
   changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {
     this.#store.dispatch(

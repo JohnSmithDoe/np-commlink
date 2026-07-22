@@ -65,7 +65,7 @@ export class TrackingNotificationsEffects {
                 this.#reconcile(notif, tracking, targetId, now)
               )
               // A transient storage failure must not kill the effect stream.
-              .catch(() => undefined)
+              .catch(() => {})
           );
         })
       );
@@ -105,7 +105,7 @@ export class TrackingNotificationsEffects {
     );
     if (!notification?.action) return [];
     const item = trackingState.items.find(
-      (i) => i.id === notification.action!.trackingItemId
+      (index) => index.id === notification.action!.trackingItemId
     );
     if (!item) {
       // The tracking item is gone: no toggle to fire and reconcile won't run,
@@ -139,7 +139,7 @@ export class TrackingNotificationsEffects {
     now: string
   ): INotificationsState {
     const liveItemsById = new Map(
-      trackingState.items.map((i) => [i.id, i] as const)
+      trackingState.items.map((index) => [index.id, index] as const)
     );
     const existingById = new Map(
       notifState.items.map((n) => [n.id, n] as const)
@@ -188,12 +188,15 @@ export class TrackingNotificationsEffects {
 
   #previousKind(existing: INotification): TrackingNotificationKind {
     switch (existing.action?.type) {
-      case 'tracking.pause':
+      case 'tracking.pause': {
         return 'running';
-      case 'tracking.start':
+      }
+      case 'tracking.start': {
         return 'paused';
-      default:
+      }
+      default: {
         return 'stopped';
+      }
     }
   }
 

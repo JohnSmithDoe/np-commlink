@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IBaseItem, IListState } from '../../../@shared/types';
+import { IBaseItem, ICategory, IListState } from '../../../@shared/types';
 import {
   IGroceryLists,
   IGrocerySearchResult,
@@ -8,12 +8,12 @@ import {
   IStorageState,
 } from '../../model';
 import {
-  matchesCategory,
   matchesNameExactly,
   matchesSearch,
 } from '../../../@shared/util/app.utils';
-import { selectRouteParams } from '../../../@shared/data/router.selector';
-import { selectListSettingsState } from '../../../@shared/data/list-settings/list-settings.selector';
+import { categoryNames } from '../../../@shared/util/category.utils';
+import { selectRouteParams as selectRouteParameters } from '../../../@shared/data/router.selector';
+import { selectListSettingsState } from '../list-settings/list-settings.selector';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
@@ -50,10 +50,10 @@ export const selectGroceryLists = createSelector(
 );
 
 export const selectListState = createSelector(
-  selectRouteParams,
+  selectRouteParameters,
   selectGroceryLists,
   ({ listId }, lists) => {
-    if (!listId) return undefined;
+    if (!listId) return;
     return stateByListId(lists, listId);
   }
 );
@@ -62,22 +62,24 @@ const additionalSearch = <R extends IBaseItem, T extends IBaseItem>(
   items: T[],
   result: IGrocerySearchResult<R>,
   searchQuery: string,
+  catalog: readonly ICategory[],
   others?: IBaseItem[]
 ) => {
   others = others || [];
   const additionalItemsByName = items.filter(
     (item) =>
-      !others?.find((litem) => matchesNameExactly(item, litem)) &&
-      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+      !others?.some((litem) => matchesNameExactly(item, litem)) &&
+      !result.listItems.some((litem) => matchesNameExactly(item, litem)) &&
       matchesSearch(item, searchQuery)
   );
-  // then by category
   const additionalItemsByCat = items.filter(
     (item) =>
-      !others?.find((litem) => matchesNameExactly(item, litem)) &&
-      !result.listItems.find((litem) => matchesNameExactly(item, litem)) &&
+      !others?.some((litem) => matchesNameExactly(item, litem)) &&
+      !result.listItems.some((litem) => matchesNameExactly(item, litem)) &&
       !additionalItemsByName.includes(item) &&
-      matchesCategory(item, searchQuery)
+      categoryNames(item, catalog).some((name) =>
+        matchesSearch(name, searchQuery)
+      )
   );
   return [...additionalItemsByName, ...additionalItemsByCat];
 };
@@ -98,24 +100,27 @@ export const filterBySearchQuery = <
   const searchQuery = result.searchTerm;
   //prettier-ignore
   switch (listState.id) {
-    case '_storage':
+    case '_storage': {
       if (state.listSettings.showProductsInStorage)
-        result.products = additionalSearch(state.products.items, result, searchQuery);
+        result.products = additionalSearch(state.products.items, result, searchQuery, state.products.categories);
       if (state.listSettings.showShoppingInStorage)
-        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.products);
+        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, state.shopping.categories, result.products);
       break;
-    case '_products':
+    }
+    case '_products': {
       if (state.listSettings.showStorageInProducts)
-        result.storageItems = additionalSearch(state.storage.items, result, searchQuery);
+        result.storageItems = additionalSearch(state.storage.items, result, searchQuery, state.storage.categories);
       if (state.listSettings.showShoppingInProducts)
-        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, result.storageItems);
+        result.shoppingItems = additionalSearch(state.shopping.items, result, searchQuery, state.shopping.categories, result.storageItems);
       break;
-    case '_shopping':
+    }
+    case '_shopping': {
       if (state.listSettings.showProductsInShopping)
-        result.products = additionalSearch(state.products.items, result, searchQuery);
+        result.products = additionalSearch(state.products.items, result, searchQuery, state.products.categories);
       if (state.listSettings.showStorageInShopping)
-        result.storageItems = additionalSearch(state.storage.items, result, searchQuery, result.products);
+        result.storageItems = additionalSearch(state.storage.items, result, searchQuery, state.storage.categories, result.products);
       break;
+    }
   }
   return result;
 };

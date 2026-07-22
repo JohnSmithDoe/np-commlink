@@ -38,7 +38,7 @@ describe('products.selector', () => {
       });
       const lists = mockGroceryLists({ products: listState });
       const result = selectProductsListSearchResult.projector(listState, lists);
-      expect(result?.listItems.map((i) => i.name)).toEqual(['Sugar']);
+      expect(result?.listItems.map((index) => index.name)).toEqual(['Sugar']);
       expect(result).toEqual(filterBySearchQuery(lists, listState));
     });
   });
@@ -53,10 +53,12 @@ describe('products.selector', () => {
         ],
       });
       expect(selectProductListItems.projector(state, undefined)).toEqual(
-        filterAndSortItemList(state, undefined)
+        filterAndSortItemList(state)
       );
       expect(
-        selectProductListItems.projector(state, undefined)?.map((i) => i.name)
+        selectProductListItems
+          .projector(state, undefined)
+          ?.map((index) => index.name)
       ).toEqual(['Salt', 'Sugar']);
     });
   });

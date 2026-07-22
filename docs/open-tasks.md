@@ -60,8 +60,11 @@ Non-blocking follow-ups on the completed CREDSTICK roadmap (P0–P5 done). Full 
   CashSaveEffects), parity with the trackplay/tasks reload guards.
 - **Rules drag-reorder** — rules reorder via up/down controls; a drag (`ion-reorder-group`) was
   deferred (the app wires no reorder-group anywhere).
-- **Category input unification** — a manual txn's category is free text while a rule assigns from
-  the managed palette; consider a shared category input backed by `categories`.
+- ~~**Category input unification**~~ — **done**: one shared custom selectable-list picker
+  (`@shared/ui/categories-dialog`, `multiple` flag → checkbox-style multi vs single-select, per-row
+  swipe rename/delete) now drives grocery items (multi) **and** the cash transaction + rule dialogs
+  (single); cash gained `updateCategory` (rename cascade) + `removeCategory` cascade. The
+  `{id,name}`-by-id model was deliberately deferred (see the plan) — this stays on the name model.
 - ~~**Un-reconcile affordance**~~ — **done**: a survivor txn that absorbed a manual leg now
   shows a start-swipe "detach" option (`CashActions.unreconcileTransaction` → clears
   `matchedTxnId`, restores `pending`). `selectTransactionsForAccount` tags survivors with
@@ -98,6 +101,11 @@ locale)`, so the cash side is a one-line change once a locale source exists.
 - **Two off-contract facade methods** (`addCategory`/`showEditDialog`) remain on the concrete
   grocery/tasks facades (deliberately off the shared `LIST_FACADE` contract — grocery/tasks-only
   ops). Minor.
+- **`OfficeTimeSettings.showTotalTime` looks dead** — after the settings re-scope the office-time
+  settings slice (`officeTimeSettings`) holds only `showTotalTime`, and nothing reads it (the
+  settings page edits `dashboardSettings`/`targetOfficeDaysPerWeek` off the `officeTime` slice; no
+  selector/template references `showTotalTime`). Either wire it to a real toggle or delete the flag
+  (and, if empty, the whole slice). Left as-is for now — out of scope of the re-scope.
 
 ---
 

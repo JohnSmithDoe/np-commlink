@@ -137,18 +137,18 @@ describe('categorize util', () => {
   describe('categorize — first matching rule by order wins', () => {
     const txn = mockCashTransaction({ description: 'REWE SAGT DANKE' });
 
-    it('returns the winning rule’s category regardless of array order', () => {
+    it('returns the winning rule’s category id regardless of array order', () => {
       const rules = [
         mockCashRule({
           id: 'r2',
           order: 1,
-          category: 'shopping',
+          categoryId: 'shopping',
           conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
         }),
         mockCashRule({
           id: 'r1',
           order: 0,
-          category: 'groceries',
+          categoryId: 'groceries',
           conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
         }),
       ];

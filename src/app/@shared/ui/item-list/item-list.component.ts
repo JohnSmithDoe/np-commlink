@@ -8,7 +8,6 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import {
   IonLabel,
   IonList,
@@ -18,12 +17,21 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
-import { IBaseItem, TColor, TItemListCategory } from '../../types';
+import {
+  IBaseItem,
+  ICategory,
+  TCategoryId,
+  TColor,
+  TItemListCategory,
+} from '../../types';
 import { CategoryItemComponent } from '../category-item/category-item.component';
 
 export type ItemListTemplateContext = {
   $implicit: IBaseItem;
   ionList: IonList | undefined;
+  // The list's {id,name} catalog, so a projected row can resolve its item's
+  // category ids → names (e.g. `<app-list-item [categories]="categories">`).
+  categories: readonly ICategory[];
 };
 
 @Component({
@@ -37,7 +45,6 @@ export type ItemListTemplateContext = {
     IonLabel,
     IonListHeader,
     NgTemplateOutlet,
-    FormsModule,
     TranslateModule,
     CategoryItemComponent,
   ],
@@ -58,10 +65,13 @@ export class ItemListComponent {
     category: TItemListCategory;
     count: number;
   }> | null>();
+  // The raw {id,name} catalog, threaded into each row's template context so a
+  // projected `<app-list-item>` can resolve its item's category ids → names.
+  readonly catalog = input<readonly ICategory[]>([]);
   readonly mode = input<'alphabetical' | 'categories'>('alphabetical');
 
-  readonly selectCategory = output<TItemListCategory>();
-  readonly deleteCategory = output<TItemListCategory>();
+  readonly selectCategory = output<TCategoryId>();
+  readonly deleteCategory = output<TCategoryId>();
 
   constructor() {
     addIcons({ add, remove, cart, list });

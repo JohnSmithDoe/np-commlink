@@ -83,7 +83,7 @@ export class TrackplayGameEditDialogComponent implements OnInit {
   // Full roster (unaffected by the players-list filter) sorted by name, so any
   // player can always be (de)selected here.
   readonly rxPlayers = computed(() =>
-    Object.values(this.#playersMap()).sort((a, b) =>
+    Object.values(this.#playersMap()).toSorted((a, b) =>
       a.name.localeCompare(b.name)
     )
   );
@@ -190,6 +190,6 @@ export class TrackplayGameEditDialogComponent implements OnInit {
   }
 
   #sameIds(a: TID[], b: TID[]): boolean {
-    return a.length === b.length && a.every((id, i) => id === b[i]);
+    return a.length === b.length && a.every((id, index) => id === b[index]);
   }
 }

@@ -1,8 +1,8 @@
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
-import { settingsReducer } from './settings/settings.reducer';
-import { SettingsEffects } from './settings/settings.effects';
+import { officeTimeSettingsReducer } from './settings/settings.reducer';
+import { OfficeTimeSettingsEffects } from './settings/settings.effects';
 import { officeTimeReducer } from './office-time/office-time.reducer';
 import { OfficeTimeEffects } from './office-time/office-time.effects';
 import { OfficeTimeTelemetryEffects } from './office-time/office-time-telemetry.effects';
@@ -33,11 +33,11 @@ import { OfficeTimeLoadEffects } from './office-time-load.effects';
  * slice; the cold-launch stats come from the persisted summary.
  */
 export const officeTimeLazyProviders: Array<Provider | EnvironmentProviders> = [
-  provideState('settings', settingsReducer),
+  provideState('officeTimeSettings', officeTimeSettingsReducer),
   provideState('officeTime', officeTimeReducer),
   provideEffects(
     OfficeTimeLoadEffects,
-    SettingsEffects,
+    OfficeTimeSettingsEffects,
     OfficeTimeEffects,
     OfficeTimeTelemetryEffects
   ),

@@ -18,7 +18,7 @@ describe('trackingReducer', () => {
       initialState,
       TrackingActions.addItem(track({ id: 'a', name: 'A' }))
     );
-    expect(added.items.map((i) => i.id)).toEqual(['a']);
+    expect(added.items.map((index) => index.id)).toEqual(['a']);
 
     const updated = trackingReducer(
       added,
@@ -56,8 +56,8 @@ describe('trackingReducer', () => {
         TrackingActions.toggleTrackingItem(track({ id: 'a' }), now)
       );
 
-      const a = next.items.find((i) => i.id === 'a')!;
-      const b = next.items.find((i) => i.id === 'b')!;
+      const a = next.items.find((index) => index.id === 'a')!;
+      const b = next.items.find((index) => index.id === 'b')!;
       expect(a.state).toBe('running');
       expect(a.startTime).toBe(now);
       expect(a.trackedTimeInSeconds).toBe(0);
@@ -120,14 +120,16 @@ describe('trackingReducer', () => {
       TrackingActions.resetTracking(track({ id: 'a' }))
     );
     expect(
-      one.items.find((i) => i.id === 'a')!.trackedTimeInSeconds
+      one.items.find((index) => index.id === 'a')!.trackedTimeInSeconds
     ).toBeUndefined();
-    expect(one.items.find((i) => i.id === 'b')!.trackedTimeInSeconds).toBe(5);
+    expect(
+      one.items.find((index) => index.id === 'b')!.trackedTimeInSeconds
+    ).toBe(5);
 
     const all = trackingReducer(state, TrackingActions.resetAllTracking());
-    expect(all.items.every((i) => i.state === 'stopped' && !i.startTime)).toBe(
-      true
-    );
+    expect(
+      all.items.every((index) => index.state === 'stopped' && !index.startTime)
+    ).toBe(true);
   });
 
   it('archives started items into data and resets the list on saveAndReset', () => {
@@ -146,9 +148,9 @@ describe('trackingReducer', () => {
     expect(next.data).toHaveLength(1);
     expect(next.data[0].name).toBe('Started');
     expect(next.data[0].id).not.toBe('a'); // archived with a fresh id
-    expect(next.items.every((i) => !i.startTime && i.state === 'stopped')).toBe(
-      true
-    );
+    expect(
+      next.items.every((index) => !index.startTime && index.state === 'stopped')
+    ).toBe(true);
   });
 
   it('changes the data view and removes archived data items', () => {
@@ -166,7 +168,7 @@ describe('trackingReducer', () => {
       withData,
       TrackingActions.removeDataItem({ id: 'd1', name: 'Task' })
     );
-    expect(removed.data.map((i) => i.id)).toEqual(['d2']);
+    expect(removed.data.map((index) => index.id)).toEqual(['d2']);
   });
 
   it('sets the sort descriptor', () => {
@@ -188,7 +190,7 @@ describe('trackingReducer', () => {
         searchQuery: 'stale',
       } as never)
     );
-    expect(next.items.map((i) => i.id)).toEqual(['a']);
+    expect(next.items.map((index) => index.id)).toEqual(['a']);
     expect(next.dataViewId).toBe('today');
     expect(next.searchQuery).toBeUndefined();
   });

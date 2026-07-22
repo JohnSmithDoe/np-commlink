@@ -1,5 +1,8 @@
 <!doctype html>
-<html lang="en">
+<!-- data-theme defaults to the cyberpunk deck so the shell paints correctly
+     before Angular boots; theme.service overrides it once `settings` hydrates
+     (a boomer user's brief flash is covered by the boot splash — see §4). -->
+<html lang="en" data-theme="cyberpunk">
   <head>
     <meta charset="utf-8" />
     <title>CommLink</title>
@@ -23,10 +26,68 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- Boot splash (web/PWA/desktop). Painted before Angular loads and removed
+         by SplashService.reveal() once `settings` hydrates + <html data-theme> is
+         applied underneath — so a boomer user never sees the cyberpunk shell
+         flash on reload. On native the @capacitor/splash-screen launch screen
+         covers boot instead (launchAutoHide:false); reveal() hides both. A
+         branded dark loading screen (the deck identity), it fades to whichever
+         theme resolved. -->
+    <style>
+      #app-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #0f141b;
+        color: #de8b27;
+        font-family:
+          'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+        transition: opacity 300ms ease;
+      }
+      #app-splash.app-splash--hidden {
+        opacity: 0;
+      }
+      #app-splash .app-splash__mark {
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+      }
+      #app-splash .app-splash__dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #32aea6;
+        animation: app-splash-pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes app-splash-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #app-splash .app-splash__dot {
+          animation: none;
+        }
+      }
+    </style>
   </head>
 
   <body class="dark">
     <app-root></app-root>
+    <div id="app-splash" aria-hidden="true">
+      <div class="app-splash__mark">np-commlink</div>
+      <div class="app-splash__dot"></div>
+    </div>
     <noscript
       >Please enable JavaScript to continue using this application.</noscript
     >

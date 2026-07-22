@@ -32,7 +32,7 @@ describe('tasks.selector', () => {
         ],
       });
       const result = selectTasksListSearchResult.projector(listState);
-      expect(result?.listItems.map((i) => i.name)).toEqual(['Sweep']);
+      expect(result?.listItems.map((index) => index.name)).toEqual(['Sweep']);
       expect(result).toEqual(filterListBySearchQuery(listState));
     });
   });
@@ -47,10 +47,12 @@ describe('tasks.selector', () => {
         ],
       });
       expect(selectTasksListItems.projector(state, undefined)).toEqual(
-        filterAndSortItemList(state, undefined)
+        filterAndSortItemList(state)
       );
       expect(
-        selectTasksListItems.projector(state, undefined)?.map((i) => i.name)
+        selectTasksListItems
+          .projector(state, undefined)
+          ?.map((index) => index.name)
       ).toEqual(['Mop', 'Sweep']);
     });
 
@@ -66,7 +68,9 @@ describe('tasks.selector', () => {
         ],
       });
       expect(
-        selectTasksListItems.projector(state, undefined)?.map((i) => i.name)
+        selectTasksListItems
+          .projector(state, undefined)
+          ?.map((index) => index.name)
       ).toEqual(['low', 'high']);
     });
   });

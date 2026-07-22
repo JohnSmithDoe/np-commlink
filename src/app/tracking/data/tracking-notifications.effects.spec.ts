@@ -18,6 +18,9 @@ import { trackingStateNotificationId } from './tracking-notifications.utils';
 
 const OLD = '2020-01-01T00:00:00.000Z';
 
+const emissions = <T>(source: Observable<T>): Promise<T[]> =>
+  firstValueFrom(source.pipe(toArray()));
+
 function mockNotification(
   overrides: Partial<INotification> = {}
 ): INotification {
@@ -52,12 +55,12 @@ describe('TrackingNotificationsEffects', () => {
 
   const setup = (
     actions$: Observable<Action>,
-    opts: {
+    options: {
       tracking?: ITrackingState;
       notifications?: INotification[];
     } = {}
   ) => {
-    stored = notifState(opts.notifications ?? []);
+    stored = notifState(options.notifications ?? []);
     store = {
       read: vi.fn(async () => stored),
       mutate: vi.fn(
@@ -72,7 +75,7 @@ describe('TrackingNotificationsEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({
           initialState: mockAppState({
-            tracking: opts.tracking ?? mockTrackingState({ items: [] }),
+            tracking: options.tracking ?? mockTrackingState({ items: [] }),
           }),
         }),
         { provide: NotificationsStore, useValue: store },
@@ -84,9 +87,6 @@ describe('TrackingNotificationsEffects', () => {
     });
     effects = TestBed.inject(TrackingNotificationsEffects);
   };
-
-  const emissions = <T>(source: Observable<T>): Promise<T[]> =>
-    firstValueFrom(source.pipe(toArray()));
 
   it('is created', () => {
     setup(of());

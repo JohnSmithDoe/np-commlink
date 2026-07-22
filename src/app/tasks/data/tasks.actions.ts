@@ -1,6 +1,7 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
-  TItemListCategory,
+  ICategory,
+  TCategoryId,
   TItemListMode,
   TUpdateDTO,
 } from '../../@shared/types';
@@ -20,16 +21,13 @@ export const TasksActions = createActionGroup({
     'Add Or Update Item': (item: ITaskItem) => ({ item }),
     'Add Item From Search': emptyProps(),
 
-    // Operations
-
     'Add Item': (item: ITaskItem) => ({ item }),
     'Add Item Failure': (item: ITaskItem) => ({ item }),
-    'Add Category': (category: TItemListCategory) => ({ category }),
-    'Remove Category': (category: TItemListCategory) => ({ category }),
-    'Update Category': (
-      original: TItemListCategory,
-      newName: TItemListCategory
-    ) => ({ original, newName }),
+    // Categories are {id,name} objects: Add carries a pre-minted one (the picker
+    // mints the id the item will reference); Remove/Rename key by id.
+    'Add Category': (category: ICategory) => ({ category }),
+    'Remove Category': (id: TCategoryId) => ({ id }),
+    'Update Category': (id: TCategoryId, name: string) => ({ id, name }),
 
     'Remove Item': (item: ITaskItem) => ({ item }),
     'Update Item': (item: TUpdateDTO<ITaskItem>) => ({ item }),

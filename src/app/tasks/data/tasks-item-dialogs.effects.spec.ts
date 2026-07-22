@@ -30,19 +30,37 @@ describe('TasksItemDialogsEffects', () => {
     effects = TestBed.inject(TasksItemDialogsEffects);
   };
 
-  it('confirmEditCategoryChanges$ forwards a renamed category to TasksActions', async () => {
+  it('confirmEditCategoryChanges$ forwards a renamed category (id present) to TasksActions', async () => {
     setup(
       mockAppState({
         itemDialogs: mockItemDialogsState({
           listId: '_tasks',
-          category: { isEditing: true, original: 'Home', editItem: 'Errands' },
+          category: { isEditing: true, id: 'cat-home', name: 'Errands' },
         }),
       })
     );
     actions$ = of(CategoriesActions.confirmEditChanges());
     expect(await firstValueFrom(effects.confirmEditCategoryChanges$)).toEqual(
-      TasksActions.updateCategory('Home', 'Errands')
+      TasksActions.updateCategory('cat-home', 'Errands')
     );
+  });
+
+  it('confirmEditCategoryChanges$ mints a new category (no id) into the tasks catalog', async () => {
+    setup(
+      mockAppState({
+        itemDialogs: mockItemDialogsState({
+          listId: '_tasks',
+          category: { isEditing: true, name: 'Errands' },
+        }),
+      })
+    );
+    actions$ = of(CategoriesActions.confirmEditChanges());
+    const action = (await firstValueFrom(
+      effects.confirmEditCategoryChanges$
+    )) as ReturnType<typeof TasksActions.addCategory>;
+    expect(action.type).toBe(TasksActions.addCategory.type);
+    expect(action.category.name).toBe('Errands');
+    expect(action.category.id).toBeTruthy(); // freshly minted uuid
   });
 
   // Both orchestrators stay registered once both route sets are visited, so
@@ -52,7 +70,7 @@ describe('TasksItemDialogsEffects', () => {
       mockAppState({
         itemDialogs: mockItemDialogsState({
           listId: '_storage',
-          category: { isEditing: true, original: 'X', editItem: 'Y' },
+          category: { isEditing: true, id: 'x', name: 'Y' },
         }),
       })
     );

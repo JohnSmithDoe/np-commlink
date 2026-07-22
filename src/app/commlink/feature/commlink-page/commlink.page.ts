@@ -192,7 +192,6 @@ export class CommlinkPage {
     .length;
   readonly total = this.programs.length;
 
-  // ── live telemetry (signals, zoneless-safe) ──────────────────
   // Read ONLY the shared dashboard read-model (CQRS): each supplier pushes its
   // telemetry via DashboardActions.report; commlink imports no other domain.
   readonly #telemetry = this.#store.selectSignal(selectDashboardState);
@@ -206,7 +205,7 @@ export class CommlinkPage {
     if (!program.source || !program.metric) return null;
     const value =
       this.#telemetry().bySource[program.source]?.metrics[program.metric];
-    return value == null ? null : Number(value);
+    return value == undefined ? null : Number(value);
   }
 
   readonly #comms = this.#store.selectSignal(selectTelemetry('notifications'));

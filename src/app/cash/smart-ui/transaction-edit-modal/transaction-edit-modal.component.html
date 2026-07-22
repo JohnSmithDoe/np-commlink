@@ -69,15 +69,11 @@
       />
     </ion-item>
 
-    <ion-item>
-      <ion-input
-        labelPlacement="stacked"
-        label="{{ 'cash.label.category' | translate }}"
-        [clearInput]="true"
-        [value]="category()"
-        (ionInput)="onCategory($any($event.target).value ?? '')"
-      />
-    </ion-item>
+    <app-category-input
+      [categories]="selectedCategories()"
+      (removeCategory)="clearCategory()"
+      (openDialog)="openCategoriesDialog()"
+    ></app-category-input>
 
     <ion-item>
       <ion-toggle
@@ -88,4 +84,17 @@
       </ion-toggle>
     </ion-item>
   </ion-list>
+
+  <app-categories-dialog
+    [multiple]="false"
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="categoryId() ? [categoryId()] : []"
+    (confirmed)="onPickCategory($event)"
+    (cancelled)="closeCategoriesDialog()"
+    (dismissed)="closeCategoriesDialog()"
+    (addNew)="onAddCategory($event)"
+    (deleted)="onDeleteCategory($event)"
+    (renamed)="onRenameCategory($event)"
+  ></app-categories-dialog>
 </ion-content>

@@ -15,15 +15,15 @@
 }
 
 .cash-report__label {
-  font-family: var(--sr-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-family: var(--sr-deck-font);
+  text-transform: var(--sr-label-transform);
+  letter-spacing: var(--sr-label-tracking);
   font-size: 0.7rem;
   color: var(--sr-text-dim);
 }
 
 .cash-report__value {
-  font-family: var(--sr-mono);
+  font-family: var(--sr-deck-font);
   font-size: 1.1rem;
   color: var(--sr-amber);
 
@@ -37,9 +37,9 @@
 }
 
 .cash-report__heading {
-  font-family: var(--sr-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-family: var(--sr-deck-font);
+  text-transform: var(--sr-label-transform);
+  letter-spacing: var(--sr-label-tracking);
   font-size: 0.8rem;
   color: var(--sr-text-dim);
   margin: 1.25rem 0 0.5rem;
@@ -51,12 +51,12 @@
 }
 
 .cash-report__cat-amount {
-  font-family: var(--sr-mono);
+  font-family: var(--sr-deck-font);
 }
 
 .cash-empty {
   padding-top: 14vh;
   text-align: center;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-text-dim);
 }

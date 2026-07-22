@@ -14,13 +14,13 @@
   position: relative;
   min-height: 100%;
   padding: 1.25rem clamp(1rem, 4vw, 2.5rem) 2rem;
-  font-family: var(--sr-mono);
+  font-family: var(--sr-deck-font);
   color: rgba(var(--sr-amber-rgb), 0.9);
 }
 
-// Faint alignment-grid overlay. Scanlines come from the shared .sr-scanlines
-// ::after (z-index 2); the grid rides ::before below the content (z-index 3).
-.cl::before {
+// Faint alignment-grid overlay — cyberpunk only. Scanlines come from the shared
+// .sr-scanlines ::after (z-index 2); the grid rides ::before below content.
+:host-context([data-theme='cyberpunk']) .cl::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -48,7 +48,6 @@
   animation: cl-blink 1.1s steps(1) infinite;
 }
 
-/* ── status strip ───────────────────────────────────────────── */
 .cl-bar {
   display: flex;
   flex-wrap: wrap;
@@ -56,11 +55,11 @@
   gap: 0.4rem 1.25rem;
   padding: 0.5rem 0.85rem;
   border: 1px solid var(--sr-line);
-  border-radius: 3px;
+  border-radius: var(--sr-radius);
   background: rgba(0, 0, 0, 0.3);
   font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: rgba(var(--sr-amber-rgb), 0.8);
 
   b {
@@ -77,7 +76,6 @@
   font-weight: 700;
 }
 
-/* ── hero banner ────────────────────────────────────────────── */
 .cl-hero {
   margin: 1.75rem 0 1.25rem;
   text-align: center;
@@ -86,8 +84,8 @@
   margin: 0 0 0.6rem;
   color: var(--sr-cyan);
   font-size: 0.78rem;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   opacity: 0.85;
 }
 .cl-hero__title {
@@ -96,15 +94,15 @@
   margin: 0;
   font-size: clamp(1.8rem, 6vw, 3.4rem);
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-amber);
   text-shadow: var(--sr-glow-lg);
 }
 .cl-hero__meta {
   margin: 0.85rem 0 0;
   font-size: 0.74rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: rgba(var(--sr-amber-rgb), 0.85);
 
   b {
@@ -112,7 +110,6 @@
   }
 }
 
-/* ── program grid ───────────────────────────────────────────── */
 .cl-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -184,7 +181,7 @@
 }
 .cl-node__hex {
   font-size: 0.68rem;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--sr-label-tracking);
   color: rgba(var(--sr-amber-rgb), 0.85);
 }
 .cl-node__flags {
@@ -218,19 +215,19 @@
 .cl-node__name {
   font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: var(--sr-text);
 }
 .cl-node__desc {
   font-size: 0.72rem;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--sr-label-tracking);
   color: rgba(var(--sr-amber-rgb), 0.85);
 }
 .cl-node__foot {
   margin-top: auto;
   font-size: 0.72rem;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--sr-label-tracking);
   color: var(--sr-cyan);
 }
 
@@ -260,7 +257,6 @@
   color: var(--sr-amber);
 }
 
-/* ── telemetry footer ───────────────────────────────────────── */
 .cl-tele {
   display: flex;
   flex-wrap: wrap;
@@ -269,8 +265,8 @@
   padding: 0.6rem 0.85rem 0;
   border-top: 1px solid var(--sr-line);
   font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: rgba(var(--sr-amber-rgb), 0.85);
 
   b {
@@ -278,23 +274,33 @@
   }
 }
 
-/* ── glitch + motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference) {
-  .cl-hero__title::before,
-  .cl-hero__title::after {
+  :host-context([data-theme='cyberpunk']) .cl-hero__title::before,
+  :host-context([data-theme='cyberpunk']) .cl-hero__title::after {
     content: attr(data-text);
     position: absolute;
     inset: 0;
     opacity: 0;
     mix-blend-mode: screen;
   }
-  .cl-hero__title::before {
+  :host-context([data-theme='cyberpunk']) .cl-hero__title::before {
     color: var(--sr-cyan);
     animation: cl-glitch 4.2s infinite steps(1);
   }
-  .cl-hero__title::after {
+  :host-context([data-theme='cyberpunk']) .cl-hero__title::after {
     color: var(--sr-red);
     animation: cl-glitch 3.1s infinite steps(1) reverse;
+  }
+}
+
+// Restore the deck's signature hero tracking under cyberpunk (the base uses the
+// tighter --sr-label-tracking so the plain hero reads as a normal heading).
+:host-context([data-theme='cyberpunk']) {
+  .cl-hero__kicker {
+    letter-spacing: 0.35em;
+  }
+  .cl-hero__title {
+    letter-spacing: 0.22em;
   }
 }
 

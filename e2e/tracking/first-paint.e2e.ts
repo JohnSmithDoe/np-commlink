@@ -4,7 +4,7 @@ import { addViaSearch, waitForListPage } from '../helpers';
 /**
  * Wiring guard for the now-LAZY tracking context (lazy-modules §7).
  *
- * `/tracking` (and `/data/:listId`) register the `tracking` + `dialogs` slices
+ * `/tracking` (and `/data/:listId`) register the `tracking` slice
  * via `trackingLazyProviders` and block activation on
  * `moduleHydrationResolver(TrackingActions.load, .loaded)`. If the load effect
  * were dropped from those providers, or the resolver mis-wired, the route would

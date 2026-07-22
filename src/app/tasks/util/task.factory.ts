@@ -1,3 +1,4 @@
+import { TCategoryId } from '../../@shared/types';
 import { createBaseItem } from '../../@shared/util/app.factory';
 import { ITaskItem } from '../model';
 
@@ -8,9 +9,9 @@ import { ITaskItem } from '../model';
  */
 export function createTaskItem(
   name: string,
-  category?: string | string[],
+  categoryIds?: TCategoryId | TCategoryId[],
   prio?: number
 ): ITaskItem {
-  const base = createBaseItem(name, category);
+  const base = createBaseItem(name, categoryIds);
   return { ...base, prio };
 }

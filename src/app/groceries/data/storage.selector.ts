@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { ICategory } from '../../@shared/types';
 import { IGrocerySearchResult, IStorageItem, IStorageState } from '../model';
 import {
   filterAndSortItemList,
@@ -14,7 +15,7 @@ export const selectStorageState =
 // itemDialogs.category working-copy).
 export const selectStorageCategories = createSelector(
   selectStorageState,
-  (state): string[] => state.categories
+  (state): ICategory[] => state.categories
 );
 
 export const selectStorageListSearchResult = createSelector(

@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { IProductsState } from '../model';
 import {
-  addListCategory,
+  addListCategoryObject,
   addListItem,
   removeListCategory,
   removeListItem,
@@ -10,6 +10,7 @@ import {
   updateListMode,
   updateListSort,
 } from './grocery-list/grocery-list.utils';
+import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
 import { GroceriesActions } from './groceries.actions';
 import { ProductsActions } from './products.actions';
 
@@ -40,9 +41,9 @@ export const productsReducer = createReducer(
   on(ProductsActions.updateFilter,(state, { filterBy }): IProductsState => ({ ...state, filterBy, mode: 'alphabetical', })),
   on(ProductsActions.updateMode, (state, { mode }) => updateListMode(state, mode)),
   on(ProductsActions.updateSort, (state, { sortBy, sortDir }) => ({ ...state, sort: updateListSort(sortBy, sortDir, state.sort?.sortDir),})),
-  on(ProductsActions.addCategory, (state, { category }) =>  addListCategory(state, category)),
-  on(ProductsActions.removeCategory, (state, { category }) => removeListCategory(state, category)),
-  on(ProductsActions.updateCategory, (state, { original, newName }) => updateListCategory(state, original, newName)),
+  on(GroceryCategoriesActions.add, (state, { category }) => addListCategoryObject(state, category)),
+  on(GroceryCategoriesActions.remove, (state, { id }) => removeListCategory(state, id)),
+  on(GroceryCategoriesActions.rename, (state, { id, name }) => updateListCategory(state, id, name)),
 
   on(GroceriesActions.loaded,(_state, { data }): IProductsState => {
     return {...(data.products ?? _state), searchQuery:undefined,mode:'alphabetical',filterBy: undefined};

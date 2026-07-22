@@ -2,15 +2,18 @@ import {
   mockCashAccount,
   mockCashTransaction,
 } from '../testing/cash.test-data';
+import { mockCategory } from '../../@shared/testing/test-data';
 import {
   selectAccountBalances,
   selectAccountById,
   selectAccountsWithBalances,
+  selectCashCategoriesWithCount,
   selectMonthlyTotals,
   selectNetWorthCents,
   selectReportTotals,
   selectSpendByCategory,
   selectTransactionsForAccount,
+  selectTransactionsForCategory,
 } from './cash.selector';
 
 describe('cash selectors', () => {
@@ -22,13 +25,13 @@ describe('cash selectors', () => {
     });
 
     it('adds signed transaction amounts to the opening balance', () => {
-      const account = mockCashAccount({ id: 'a', openingBalanceCents: 10000 });
+      const account = mockCashAccount({ id: 'a', openingBalanceCents: 10_000 });
       const txns = [
         mockCashTransaction({ id: 't1', accountId: 'a', amountCents: -1999 }),
         mockCashTransaction({ id: 't2', accountId: 'a', amountCents: 500 }),
       ];
       const balances = selectAccountBalances.projector([account], txns);
-      expect(balances['a']).toBe(10000 - 1999 + 500);
+      expect(balances['a']).toBe(10_000 - 1999 + 500);
     });
 
     it('excludes reconciled-away legs (those with a matchedTxnId)', () => {
@@ -63,7 +66,10 @@ describe('cash selectors', () => {
 
   describe('selectNetWorthCents', () => {
     it('sums balances, netting a negative credit-card balance', () => {
-      const worth = selectNetWorthCents.projector({ giro: 10000, card: -3500 });
+      const worth = selectNetWorthCents.projector({
+        giro: 10_000,
+        card: -3500,
+      });
       expect(worth).toBe(6500);
     });
 
@@ -188,13 +194,13 @@ describe('cash selectors', () => {
     const txns = [
       mockCashTransaction({
         id: 'in',
-        amountCents: 250000,
+        amountCents: 250_000,
         dateISO: '2026-01-05',
       }),
       mockCashTransaction({
         id: 'out',
         amountCents: -4299,
-        category: 'food',
+        categoryId: 'cat-food',
         dateISO: '2026-01-06',
       }),
       mockCashTransaction({
@@ -218,26 +224,90 @@ describe('cash selectors', () => {
 
     it('selectReportTotals sums real income and spend only', () => {
       const t = selectReportTotals.projector(txns);
-      expect(t.incomeCents).toBe(250000);
+      expect(t.incomeCents).toBe(250_000);
       expect(t.spendCents).toBe(4299 + 1000);
-      expect(t.netCents).toBe(250000 - 5299);
+      expect(t.netCents).toBe(250_000 - 5299);
     });
 
     it('selectMonthlyTotals buckets by month, oldest first', () => {
       const months = selectMonthlyTotals.projector(txns);
       expect(months.map((m) => m.month)).toEqual(['2026-01', '2026-02']);
       expect(months[0]).toMatchObject({
-        incomeCents: 250000,
+        incomeCents: 250_000,
         spendCents: 4299,
       });
     });
 
-    it('selectSpendByCategory groups outflows, uncategorized under ""', () => {
-      const cats = selectSpendByCategory.projector(txns);
+    it('selectSpendByCategory groups outflows, resolving the id→name via the catalog, uncategorized under ""', () => {
+      const categories = [mockCategory({ id: 'cat-food', name: 'Food' })];
+      const cats = selectSpendByCategory.projector(txns, categories);
       expect(cats).toEqual([
-        { category: 'food', cents: 4299 },
+        { category: 'Food', cents: 4299 },
         { category: '', cents: 1000 },
       ]);
+    });
+  });
+
+  describe('selectCashCategoriesWithCount', () => {
+    it('counts live transactions per category, alphabetical, 0 for unused', () => {
+      const categories = [
+        mockCategory({ id: 'c-food', name: 'Food' }),
+        mockCategory({ id: 'c-bar', name: 'Bar' }),
+        mockCategory({ id: 'c-unused', name: 'Unused' }),
+      ];
+      const txns = [
+        mockCashTransaction({ id: 't1', categoryId: 'c-food' }),
+        mockCashTransaction({ id: 't2', categoryId: 'c-food' }),
+        mockCashTransaction({ id: 't3', categoryId: 'c-bar' }),
+        // reconciled-away leg must not be counted
+        mockCashTransaction({
+          id: 't4',
+          categoryId: 'c-bar',
+          matchedTxnId: 't3',
+        }),
+        mockCashTransaction({ id: 't5' }), // uncategorized — ignored
+      ];
+      const result = selectCashCategoriesWithCount.projector(categories, txns);
+      expect(result).toEqual([
+        { category: categories[1], count: 1 }, // Bar (alphabetical first)
+        { category: categories[0], count: 2 }, // Food
+        { category: categories[2], count: 0 }, // Unused
+      ]);
+    });
+  });
+
+  describe('selectTransactionsForCategory', () => {
+    it("returns a category's live txns newest first, excluding reconciled-away legs", () => {
+      const txns = [
+        mockCashTransaction({
+          id: 't1',
+          categoryId: 'c1',
+          dateISO: '2026-01-01',
+        }),
+        mockCashTransaction({
+          id: 't3',
+          categoryId: 'c1',
+          dateISO: '2026-03-01',
+        }),
+        mockCashTransaction({
+          id: 't2',
+          categoryId: 'c1',
+          dateISO: '2026-02-01',
+        }),
+        mockCashTransaction({
+          id: 'x',
+          categoryId: 'c2',
+          dateISO: '2026-04-01',
+        }),
+        mockCashTransaction({
+          id: 'away',
+          categoryId: 'c1',
+          dateISO: '2026-05-01',
+          matchedTxnId: 't1',
+        }),
+      ];
+      const result = selectTransactionsForCategory('c1').projector(txns);
+      expect(result.map((t) => t.id)).toEqual(['t3', 't2', 't1']);
     });
   });
 });

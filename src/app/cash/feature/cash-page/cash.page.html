@@ -24,6 +24,12 @@
     >
       <ion-icon slot="icon-only" name="funnel-outline" />
     </ion-button>
+    <ion-button
+      (click)="goToCategories()"
+      [attr.aria-label]="'cash.a11y.categories' | translate"
+    >
+      <ion-icon slot="icon-only" name="pricetags-outline" />
+    </ion-button>
   </ion-buttons>
 </app-page-header>
 

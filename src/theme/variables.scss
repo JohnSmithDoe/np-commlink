@@ -3,26 +3,100 @@
 
 /** Ionic CSS Variables **/
 :root {
-  // Shadowrun terminal base — the raw slate palette lives in _shadowrun.scss
-  // (--sr-*); here we only *consume* it into Ionic's chrome variables so a
-  // second theme reskins Ionic + the deck from one token group.
+  // Ionic chrome CONSUMES the raw --sr-* palette (defined in _shadowrun.scss) so
+  // a theme override reskins Ionic + the deck from one token group. These aliases
+  // are theme-invariant; the values they point at flip per theme.
   --ion-background-color: var(--sr-bg);
-  --ion-background-color-rgb: 15, 20, 27; // rgb mirror of --sr-bg
-
   --ion-text-color: var(--sr-text);
-  --ion-text-color-rgb: 223, 228, 234; // rgb mirror of --sr-text
 
-  // Monospace everywhere for the cyberdeck feel (see --sr-mono).
-  --ion-font-family:
-    'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
-    monospace;
+  // Font flips mono (cyberpunk) ↔ sans (OK Boomer) via --sr-deck-font.
+  --ion-font-family: var(--sr-deck-font);
 
   // Slate chrome: color-less toolbars and list items read like deck panels.
   --ion-toolbar-background: var(--sr-toolbar);
-  --ion-toolbar-color: var(--ion-color-primary);
   --ion-item-background: var(--sr-panel);
   --ion-item-color: var(--sr-text);
 
+  // success is green in BOTH themes (reads fine on dark slate + light paper).
+  --ion-color-success: #2d7c3e;
+  --ion-color-success-rgb: 45, 124, 62;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #286d37;
+  --ion-color-success-tint: #428951;
+
+  // ═══ OK Boomer — the BASE (plain, light, serious) palette ═══════════════════
+  --ion-background-color-rgb: 244, 246, 248; // rgb mirror of --sr-bg (plain)
+  --ion-text-color-rgb: 31, 39, 51; // rgb mirror of --sr-text (plain)
+
+  // Dark toolbar title on the light chrome (the cyber theme overrides to amber).
+  --ion-toolbar-color: var(--sr-text);
+
+  /** primary — calm corporate blue **/
+  --ion-color-primary: #2f5bd0;
+  --ion-color-primary-rgb: 47, 91, 208;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2950b7;
+  --ion-color-primary-tint: #446bd5;
+
+  /** secondary — muted slate teal **/
+  --ion-color-secondary: #4b6b7a;
+  --ion-color-secondary-rgb: 75, 107, 122;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #425e6b;
+  --ion-color-secondary-tint: #5d7a87;
+
+  // Light grayscale steps (bg #fff → text #000): borders, placeholders, disabled.
+  --ion-color-step-50: #f2f2f2;
+  --ion-color-step-100: #e6e6e6;
+  --ion-color-step-150: #d9d9d9;
+  --ion-color-step-200: #cccccc;
+  --ion-color-step-250: #bfbfbf;
+  --ion-color-step-300: #b3b3b3;
+  --ion-color-step-350: #a6a6a6;
+  --ion-color-step-400: #999999;
+  --ion-color-step-450: #8c8c8c;
+  --ion-color-step-500: #808080;
+  --ion-color-step-550: #737373;
+  --ion-color-step-600: #666666;
+  --ion-color-step-650: #595959;
+  --ion-color-step-700: #4d4d4d;
+  --ion-color-step-750: #404040;
+  --ion-color-step-800: #333333;
+  --ion-color-step-850: #262626;
+  --ion-color-step-900: #1a1a1a;
+  --ion-color-step-950: #0d0d0d;
+}
+
+// ═══ Cyberpunk — the Shadowrun deck (default selection) ══════════════════════
+// Reproduces the original amber/teal-on-slate palette. Applied whenever
+// <html data-theme='cyberpunk'> (theme.service sets this by default).
+:root[data-theme='cyberpunk'] {
+  --ion-background-color-rgb: 15, 20, 27; // rgb mirror of --sr-bg (cyber)
+  --ion-text-color-rgb: 223, 228, 234; // rgb mirror of --sr-text (cyber)
+
+  // Amber toolbar title on the slate chrome.
+  --ion-toolbar-color: var(--ion-color-primary);
+
+  /** primary — amber neon **/
+  --ion-color-primary: #de8b27;
+  --ion-color-primary-rgb: 222, 139, 39;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #c37a22;
+  --ion-color-primary-tint: #e1973d;
+
+  /** secondary — teal neon (the deck's cyan accent; --sr-cyan aliases this) **/
+  --ion-color-secondary: #32aea6;
+  --ion-color-secondary-rgb: 50, 174, 166;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #2c9992;
+  --ion-color-secondary-tint: #47b6af;
+
+  // Dark grayscale steps (near-bg → light) for the slate theme.
   --ion-color-step-50: #353535;
   --ion-color-step-100: #3f3f3f;
   --ion-color-step-150: #494949;
@@ -42,28 +116,4 @@
   --ion-color-step-850: #d2d2d2;
   --ion-color-step-900: #dcdcdc;
   --ion-color-step-950: #e6e6e6;
-
-  /** primary **/
-  --ion-color-primary: #de8b27;
-  --ion-color-primary-rgb: 222, 139, 39;
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #c37a22;
-  --ion-color-primary-tint: #e1973d;
-  /** success **/
-  --ion-color-success: #2d7c3e;
-  --ion-color-success-rgb: 45, 124, 62;
-  --ion-color-success-contrast: #ffffff;
-  --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #286d37;
-  --ion-color-success-tint: #428951;
-
-  /** secondary — teal neon (the deck's cyan accent; --sr-cyan aliases this) so
-      `color="secondary"` elements fit the deck instead of Ionic's default blue. **/
-  --ion-color-secondary: #32aea6;
-  --ion-color-secondary-rgb: 50, 174, 166;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #2c9992;
-  --ion-color-secondary-tint: #47b6af;
 }

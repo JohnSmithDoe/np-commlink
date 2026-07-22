@@ -3,8 +3,19 @@
   [label]="'page-title.office-time' | translate"
   hideButtons="true"
 >
-  <ion-button slot="end" toolbar fill="clear" routerLink="/settings">
-    <ion-icon slot="icon-only" icon="settings-sharp" color="primary"></ion-icon>
+  <ion-button
+    slot="end"
+    toolbar
+    fill="clear"
+    routerLink="/settings"
+    [attr.aria-label]="'officetime.a11y.settings' | translate"
+  >
+    <ion-icon
+      slot="icon-only"
+      icon="settings-sharp"
+      color="primary"
+      aria-hidden="true"
+    ></ion-icon>
   </ion-button>
 </app-page-header>
 

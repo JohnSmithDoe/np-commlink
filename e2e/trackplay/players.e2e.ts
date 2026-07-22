@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { createPlayer, gotoTrackplay, mainContent, slideDelete } from './helpers';
+import {
+  createPlayer,
+  gotoTrackplay,
+  mainContent,
+  slideDelete,
+} from './helpers';
 
-/**
- * Player CRUD through the players page: create two players via the dialog, and
- * delete a player via the swipe option — asserting the undo toast appears and
- * that tapping "Rückgängig" restores the player.
- */
 test.describe('trackplay players', () => {
   test('creates two players via the dialog', async ({ page }) => {
     await gotoTrackplay(
@@ -40,7 +40,6 @@ test.describe('trackplay players', () => {
 
     await slideDelete(row);
 
-    // Row gone, undo toast raised.
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })
     ).toHaveCount(0);
@@ -48,7 +47,6 @@ test.describe('trackplay players', () => {
     await expect(toast).toBeVisible();
     await expect(toast).toContainText('Charlie');
 
-    // Undo restores the player.
     await toast.getByRole('button', { name: 'Rückgängig' }).click();
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })

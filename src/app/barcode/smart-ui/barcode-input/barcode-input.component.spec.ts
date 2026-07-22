@@ -11,12 +11,12 @@ import { BarcodeInputComponent } from './barcode-input.component';
 // stub isn't enough — provide the real, no-loader TranslateModule.forRoot()
 // (matches kitchen-bot's shared test setup). The file-read/dispatch flow under
 // test depends on neither.
+const fileEvent = (files: File[]): Event =>
+  ({ target: { files } }) as unknown as Event;
+
 describe('BarcodeInputComponent', () => {
   let store: MockStore;
   let component: BarcodeInputComponent;
-
-  const fileEvent = (files: File[]): Event =>
-    ({ target: { files } }) as unknown as Event;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

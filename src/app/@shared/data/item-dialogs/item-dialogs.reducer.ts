@@ -3,13 +3,12 @@ import { createReducer, on } from '@ngrx/store';
 import {
   IBaseItem,
   IItemDialogState,
+  TCategoryId,
   TItemDialogsState,
   TEditItemMode,
-  TItemListCategory,
   TItemListId,
 } from '../../types';
 import { createBaseItem } from '../../util/app.factory';
-import { matchingTxt } from '../../util/app.utils';
 import { CategoriesActions, ItemDialogsActions } from './item-dialogs.actions';
 
 export const initialItemDialogs: TItemDialogsState = {
@@ -30,25 +29,19 @@ export const itemDialogsReducer = createReducer(
   initialItemDialogs,
   on(
     ItemDialogsActions.showEditDialog,
-    (state, { item, listId, additional }): TItemDialogsState => {
-      return showEditDialog(
-        state,
-        { ...item },
-        item ? 'update' : 'create',
-        listId,
-        additional
-      );
+    (state, { item, listId, additional, editMode }): TItemDialogsState => {
+      return showEditDialog(state, { ...item }, editMode, listId, additional);
     }
   ),
   on(ItemDialogsActions.hideDialog, (state): TItemDialogsState => {
     return { ...state, isEditing: false };
   }),
 
-  // Category rename (opened from the list's categories display mode).
+  // Category name dialog (opened from the list's categories display mode).
   on(
     CategoriesActions.showEditDialog,
-    (state, { category, listId }): TItemDialogsState => {
-      return showEditCategoryDialog(state, category, listId);
+    (state, { name, listId, id }): TItemDialogsState => {
+      return showEditCategoryDialog(state, name, listId, id);
     }
   ),
   on(CategoriesActions.confirmEditChanges, (state): TItemDialogsState => {
@@ -64,25 +57,21 @@ export const itemDialogsReducer = createReducer(
     return {
       ...state,
       category: {
-        ...state.category,
-        editItem: undefined,
-        original: undefined,
+        id: undefined,
+        name: undefined,
         isEditing: false,
       },
     };
   }),
-  on(
-    CategoriesActions.updateCategory,
-    (state, { category }): TItemDialogsState => {
-      return {
-        ...state,
-        category: {
-          ...state.category,
-          editItem: category,
-        },
-      };
-    }
-  )
+  on(CategoriesActions.updateCategory, (state, { name }): TItemDialogsState => {
+    return {
+      ...state,
+      category: {
+        ...state.category,
+        name,
+      },
+    };
+  })
 );
 
 const showEditDialog = <R extends IBaseItem>(
@@ -92,13 +81,15 @@ const showEditDialog = <R extends IBaseItem>(
   listId: TItemListId,
   additional?: TItemListId
 ): IItemDialogState<R> => {
-  const saveButtonText = item
-    ? marker('grocery.edit.item.dialog.button.update')
-    : marker('grocery.edit.item.dialog.button.create');
+  const saveButtonText =
+    editMode === 'update'
+      ? marker('grocery.edit.item.dialog.button.update')
+      : marker('grocery.edit.item.dialog.button.create');
 
-  const dialogTitle = item
-    ? marker('grocery.edit.item.dialog.title.update')
-    : marker('grocery.edit.item.dialog.title.create');
+  const dialogTitle =
+    editMode === 'update'
+      ? marker('grocery.edit.item.dialog.title.update')
+      : marker('grocery.edit.item.dialog.title.create');
 
   return {
     ...state,
@@ -114,12 +105,12 @@ const showEditDialog = <R extends IBaseItem>(
 
 const showEditCategoryDialog = <R extends IBaseItem>(
   state: IItemDialogState<R>,
-  original: TItemListCategory,
-  listId: TItemListId
+  name: string,
+  listId: TItemListId,
+  id?: TCategoryId
 ): IItemDialogState<R> => {
-  const editMode: TEditItemMode = !!matchingTxt(original).length
-    ? 'update'
-    : 'create';
+  // An existing id = rename; no id = create a new category from the seed name.
+  const editMode: TEditItemMode = id ? 'update' : 'create';
   const saveButtonText =
     editMode === 'update'
       ? marker('grocery.edit.item.dialog.button.update')
@@ -137,9 +128,8 @@ const showEditCategoryDialog = <R extends IBaseItem>(
     dialogTitle,
     listId,
     category: {
-      ...state.category,
-      original,
-      editItem: original,
+      id,
+      name,
       isEditing: true,
     },
   };

@@ -69,8 +69,13 @@
   </ion-label>
 
   <ion-buttons slot="end" class="item-buttons">
-    <ion-button [id]="'kebab-' + item().id" fill="clear" color="medium">
-      <ion-icon slot="icon-only" name="ellipsis-vertical" />
+    <ion-button
+      [id]="'kebab-' + item().id"
+      fill="clear"
+      color="medium"
+      [attr.aria-label]="'tracking.a11y.more-actions' | translate"
+    >
+      <ion-icon slot="icon-only" name="ellipsis-vertical" aria-hidden="true" />
     </ion-button>
   </ion-buttons>
   <ion-reorder slot="end" />
@@ -83,7 +88,13 @@
     <ng-template>
       <ion-list lines="none">
         <ion-item button (click)="selectItem.emit()">
-          <ion-icon slot="start" [name]="getIcon(item())" />
+          <ion-icon slot="start" [name]="getIcon(item())" aria-hidden="true" />
+          <ion-label>{{
+            (item().state === 'running'
+              ? 'tracking.item.action.pause'
+              : 'tracking.item.action.start'
+            ) | translate
+          }}</ion-label>
         </ion-item>
         <ion-item button (click)="emitEditItem()">
           <ion-icon slot="start" name="create-outline" />

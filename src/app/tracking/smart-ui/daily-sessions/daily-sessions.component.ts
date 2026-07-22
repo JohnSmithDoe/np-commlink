@@ -54,7 +54,7 @@ export class DailySessionsComponent {
     const day = this.selectedDate();
     return this.#allSessions()
       .filter((s) => dayjs(s.startTime).isSame(day, 'day'))
-      .sort((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime)));
+      .toSorted((a, b) => dayjs(a.startTime).diff(dayjs(b.startTime)));
   });
 
   readonly totals = computed(() => {

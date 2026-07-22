@@ -267,8 +267,8 @@ matches the rest of the app. Precedent for the `Intl` style is
 - **Parser registry** `cash/util/import/`:
   - `IBankParser { bank; label; parse(text): IParsedRow[] }`, where
     `IParsedRow = { dateISO, amountCents, description, rawDescription }`.
-  - `volksbank.parser.ts` — cols `Buchungstag`[0] · payee `Auftraggeber/Beguenstigter`[2] · `Verwendungszweck`[3] · `Betrag`[6].
-  - `dkb.parser.ts` — cols `Buchungsdatum`[0] · `Status`[2] (keep only `Gebucht`) · payer `Zahlungspflichtige*r`[3] / payee `Zahlungsempfänger*in`[4] (counterparty = whichever is set) · `Verwendungszweck`[5] · `Betrag (€)`[9, last]; trim the space-padded IBAN col.
+  - `volksbank.parser.ts` — cols `Buchungstag`\[0] · payee `Auftraggeber/Beguenstigter`\[2] · `Verwendungszweck`\[3] · `Betrag`\[6].
+  - `dkb.parser.ts` — cols `Buchungsdatum`\[0] · `Status`\[2] (keep only `Gebucht`) · payer `Zahlungspflichtige*r`\[3] / payee `Zahlungsempfänger*in`\[4] (counterparty = whichever is set) · `Verwendungszweck`\[5] · `Betrag (€)`\[9, last]; trim the space-padded IBAN col.
   - Shared helpers: header-row detection (tolerant of a preamble), `;`-split,
     `DD.MM.YYYY`→ISO, and **`eurToCents` reused** for the amount. `description` =
     `[counterparty, purpose].join(' — ')`; `rawDescription` = the text rules match.
@@ -367,10 +367,14 @@ Non-blocking follow-ups on the completed roadmap.
 - **Rules drag-reorder.** Rules reorder via up/down controls today; the app wires
   no `ion-reorder-group` anywhere, so a drag implementation was deferred rather
   than pioneered blind.
-- **Category input unification.** A manual transaction's category is free text
-  (P2) while a rule assigns from the managed palette (P3). Consider a shared
-  category input (an `ion-select`/datalist backed by `categories`) so manual
-  entries draw from the same list.
+- **Category input unification ✅ DONE.** The transaction dialog + the rule
+  dialog now use the shared `@shared/ui/categories-dialog` picker in
+  single-select mode (backed by `categories`) instead of a free-text input / bare
+  `ion-select`, matching grocery's multi-select. Cash gained `Update Category`
+  (rename cascades to the catalog + transactions + rules) and a `Remove Category`
+  cascade (clears it off transactions → uncategorized; rules keep their orphan
+  label). Kept on the name-string model — the `{id,name}`-by-id migration is a
+  separate deferred epic.
 - **Un-reconcile.** Reconciliation is one-way in the UI — the merged manual leg
   is hidden (recoverable only via data). A "detach" affordance (clear
   `matchedTxnId`, restore `pending`) would make it reversible.

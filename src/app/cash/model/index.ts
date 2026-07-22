@@ -1,4 +1,4 @@
-import { TTimestamp } from '../../@shared/types';
+import { ICategory, TCategoryId, TTimestamp } from '../../@shared/types';
 
 // The `cash` bounded context owns its model (DDD review #1 — the god
 // `@shared/types` file is being split so each context holds its own types).
@@ -38,7 +38,8 @@ export interface ICashTransaction {
   description: string;
   // Original bank text (kept verbatim from import for rule matching + audit).
   rawDescription?: string;
-  category?: string;
+  // Category reference by id into ICashState.categories ({id,name} objects).
+  categoryId?: TCategoryId;
   // Manual overrides win: rule re-runs skip transactions flagged here.
   categoryManual?: boolean;
   source: TCashTxnSource;
@@ -78,12 +79,14 @@ export interface ICashRule {
   name?: string;
   match: 'all' | 'any';
   conditions: ICashFilterCondition[];
-  category: string;
+  // The category id this rule assigns (references ICashState.categories).
+  categoryId: TCategoryId;
 }
 
 export interface ICashState {
   accounts: ICashAccount[];
   transactions: ICashTransaction[];
   rules: ICashRule[];
-  categories: string[];
+  // First-class {id,name} catalog; txns/rules reference entries by id.
+  categories: ICategory[];
 }

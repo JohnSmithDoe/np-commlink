@@ -96,28 +96,34 @@ export function computeFace(
     corners.botLeft = mindetail >= 4;
     min = (Math.floor(min / 5) * 5) % 60;
   } else {
-    min = (Math.round(min / 5) * 5) % 60;
+    const rounded = Math.round(min / 5) * 5;
+    if (rounded === 60) hour++;
+    min = rounded % 60;
   }
 
   add(W_ES);
   add(W_IST);
   switch (min) {
-    case 0:
+    case 0: {
       add(W_UHR);
       break;
-    case 5:
+    }
+    case 5: {
       add(W_FUENF, W_FUENF_FIRST);
       add(W_NACH);
       break;
-    case 10:
+    }
+    case 10: {
       add(W_ZEHN, W_ZEHN_FIRST);
       add(W_NACH);
       break;
-    case 15:
+    }
+    case 15: {
       add(W_VIERTEL);
       add(W_NACH);
       break;
-    case 20:
+    }
+    case 20: {
       // ZWANZIG NACH ... ZEHN VOR HALB
       if (config?.deZwanzigNach) {
         add(W_ZWANZIG);
@@ -129,23 +135,27 @@ export function computeFace(
         hour++;
       }
       break;
-    case 25:
+    }
+    case 25: {
       add(W_FUENF, W_FUENF_FIRST);
       add(W_VOR);
       add(W_HALB);
       hour++;
       break;
-    case 30:
+    }
+    case 30: {
       add(W_HALB);
       hour++;
       break;
-    case 35:
+    }
+    case 35: {
       add(W_FUENF, W_FUENF_FIRST);
       add(W_NACH);
       add(W_HALB);
       hour++;
       break;
-    case 40:
+    }
+    case 40: {
       // ZWANZIG VOR ... ZEHN NACH HALB
       if (config?.deZwanzigVor) {
         add(W_ZWANZIG);
@@ -157,7 +167,8 @@ export function computeFace(
       }
       hour++;
       break;
-    case 45:
+    }
+    case 45: {
       // DREIVIERTEL ... VIERTEL VOR
       if (config?.deDreiviertel) {
         add(W_DREI, W_DREI_FIRST);
@@ -168,56 +179,71 @@ export function computeFace(
       }
       hour++;
       break;
-    case 50:
+    }
+    case 50: {
       add(W_ZEHN, W_ZEHN_FIRST);
       add(W_VOR);
       hour++;
       break;
-    case 55:
+    }
+    case 55: {
       add(W_FUENF, W_FUENF_FIRST);
       add(W_VOR);
       hour++;
       break;
+    }
     default:
   }
   if (hour >= 12) hour -= 12;
   switch (hour) {
-    case 0:
+    case 0: {
       add(W_ZWOELF);
       break;
-    case 1:
+    }
+    case 1: {
       add(min === 0 ? W_EIN : W_EINS);
       break;
-    case 2:
+    }
+    case 2: {
       add(W_ZWEI);
       break;
-    case 3:
+    }
+    case 3: {
       add(W_DREI, W_DREI_SND);
       break;
-    case 4:
+    }
+    case 4: {
       add(W_VIER, W_VIER_ROW);
       break;
-    case 5:
+    }
+    case 5: {
       add(W_FUENF, W_FUENF_SECOND);
       break;
-    case 6:
+    }
+    case 6: {
       add(W_SECHS);
       break;
-    case 7:
+    }
+    case 7: {
       add(W_SIEBEN);
       break;
-    case 8:
+    }
+    case 8: {
       add(W_ACHT);
       break;
-    case 9:
+    }
+    case 9: {
       add(W_NEUN);
       break;
-    case 10:
+    }
+    case 10: {
       add(W_ZEHN, W_ZEHN_SECOND);
       break;
-    case 11:
+    }
+    case 11: {
       add(W_ELF);
       break;
+    }
     default:
   }
   return { corners, activeWords };
@@ -233,20 +259,20 @@ export function isWordActive(
   activeWords: ActiveWord[],
   row: string[],
   col: string,
-  colIdx: number,
-  rowIdx: number
+  colIndex: number,
+  rowIndex: number
 ): boolean {
   const all = row.join('');
   return activeWords.some((itm) => {
-    const charIdxOfWord = itm.word.indexOf(col);
-    const wordIdxOfRow = all.indexOf(itm.word);
-    const wordEndIdxOfRow = wordIdxOfRow + itm.word.length - 1;
+    const charIndexOfWord = itm.word.indexOf(col);
+    const wordIndexOfRow = all.indexOf(itm.word);
+    const wordEndIndexOfRow = wordIndexOfRow + itm.word.length - 1;
     return (
-      wordIdxOfRow >= 0 &&
-      charIdxOfWord >= 0 &&
-      colIdx >= wordIdxOfRow &&
-      colIdx <= wordEndIdxOfRow &&
-      (itm.row < 0 || itm.row === rowIdx)
+      wordIndexOfRow >= 0 &&
+      charIndexOfWord !== -1 &&
+      colIndex >= wordIndexOfRow &&
+      colIndex <= wordEndIndexOfRow &&
+      (itm.row < 0 || itm.row === rowIndex)
     );
   });
 }

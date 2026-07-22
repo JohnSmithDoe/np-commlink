@@ -8,24 +8,27 @@
     toolbar
     routerLink="/trackplay/players"
     color="primary"
+    [attr.aria-label]="'trackplay.a11y.players' | translate"
   >
-    <ion-icon slot="icon-only" name="people-outline" />
+    <ion-icon slot="icon-only" name="people-outline" aria-hidden="true" />
   </ion-button>
   <ion-button
     slot="end"
     toolbar
     routerLink="/trackplay/game-types"
     color="primary"
+    [attr.aria-label]="'trackplay.a11y.game-types' | translate"
   >
-    <ion-icon slot="icon-only" name="dice-outline" />
+    <ion-icon slot="icon-only" name="dice-outline" aria-hidden="true" />
   </ion-button>
   <ion-button
     slot="end"
     toolbar
     (click)="openSettings($event)"
     [color]="settingsActive() ? 'warning' : 'primary'"
+    [attr.aria-label]="'trackplay.a11y.settings' | translate"
   >
-    <ion-icon slot="icon-only" name="options-outline" />
+    <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
   </ion-button>
 </app-page-header>
 

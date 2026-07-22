@@ -17,7 +17,7 @@ describe('grocery.guards', () => {
     );
     // storage item without an explicit bestBefore key is not detected
     expect(isStorageItem(mockStorageItem())).toBe(false);
-    expect(isStorageItem(undefined)).toBe(false);
+    expect(isStorageItem()).toBe(false);
   });
 
   it('isShoppingItem detects the "state" property', () => {

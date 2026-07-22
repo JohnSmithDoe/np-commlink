@@ -54,14 +54,16 @@ export class TrackplayGameTypeListItemComponent {
     addIcons({ dice, trash, create });
   }
 
-  handleDrag(ev: TIonDragEvent): void {
-    switch (checkItemOptionsOnDrag(ev)) {
-      case 'start':
+  handleDrag(event: TIonDragEvent): void {
+    switch (checkItemOptionsOnDrag(event)) {
+      case 'start': {
         if (this.canDelete()) void this.emitDelete();
         break;
-      case 'end':
+      }
+      case 'end': {
         void this.emitEdit();
         break;
+      }
     }
   }
 

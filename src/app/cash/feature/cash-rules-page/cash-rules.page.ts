@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   inject,
-  signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -13,7 +12,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonInput,
   IonItem,
   IonItemOption,
   IonItemOptions,
@@ -30,6 +28,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TCategoryId } from '../../../@shared/types';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -37,6 +36,7 @@ import {
   arrowDownOutline,
   arrowUpOutline,
   playOutline,
+  pricetagsOutline,
   trashOutline,
 } from 'ionicons/icons';
 import { ICashRule } from '../../model';
@@ -76,7 +76,6 @@ import { CashRuleEditModalComponent } from '../../smart-ui/rule-edit-modal/rule-
     IonItemOption,
     IonLabel,
     IonIcon,
-    IonInput,
     IonNote,
     TranslateModule,
   ],
@@ -93,15 +92,18 @@ export class CashRulesPage {
   readonly #rules = this.#store.selectSignal(selectCashRules);
   readonly #transactions = this.#store.selectSignal(selectCashTransactions);
 
-  readonly rules = computed(() =>
-    [...this.#rules()].sort((a, b) => a.order - b.order)
+  // id → name lookup so rule rows can render their assigned category's name.
+  readonly #categoryNameById = computed(
+    () => new Map(this.categories().map((c) => [c.id, c.name]))
   );
 
-  readonly newCategory = signal('');
-  readonly canAddCategory = computed(() => {
-    const name = this.newCategory().trim();
-    return name.length > 0 && !this.categories().includes(name);
-  });
+  readonly rules = computed(() =>
+    this.#rules().toSorted((a, b) => a.order - b.order)
+  );
+
+  categoryName(id: TCategoryId): string {
+    return this.#categoryNameById().get(id) ?? '';
+  }
 
   constructor() {
     addIcons({
@@ -111,6 +113,7 @@ export class CashRulesPage {
       arrowUpOutline,
       arrowDownOutline,
       playOutline,
+      pricetagsOutline,
     });
   }
 
@@ -118,34 +121,26 @@ export class CashRulesPage {
     void this.#router.navigate(['/cash']);
   }
 
-  onNewCategory(value: string): void {
-    this.newCategory.set(value);
-  }
-
-  addCategory(): void {
-    if (!this.canAddCategory()) return;
-    this.#store.dispatch(CashActions.addCategory(this.newCategory().trim()));
-    this.newCategory.set('');
-  }
-
-  removeCategory(category: string): void {
-    this.#store.dispatch(CashActions.removeCategory(category));
+  goToCategories(): void {
+    void this.#router.navigate(['/cash/categories']);
   }
 
   summarize(rule: ICashRule): string {
     const n = rule.conditions.length;
     const key =
-      rule.match === 'all' ? 'cash.rule.summary-all' : 'cash.rule.summary-any';
+      rule.match === 'all'
+        ? marker('cash.rule.summary-all')
+        : marker('cash.rule.summary-any');
     return this.#translate.instant(key, { count: n });
   }
 
   moveRule(rule: ICashRule, direction: -1 | 1): void {
     const sorted = this.rules();
-    const i = sorted.findIndex((r) => r.id === rule.id);
-    const j = i + direction;
-    if (j < 0 || j >= sorted.length) return;
+    const index = sorted.findIndex((r) => r.id === rule.id);
+    const index_ = index + direction;
+    if (index_ < 0 || index_ >= sorted.length) return;
     const ids = sorted.map((r) => r.id);
-    [ids[i], ids[j]] = [ids[j], ids[i]];
+    [ids[index], ids[index_]] = [ids[index_], ids[index]];
     this.#store.dispatch(CashActions.reorderRules(ids));
   }
 
@@ -168,7 +163,7 @@ export class CashRulesPage {
     const alert = await this.#alertCtrl.create({
       header: this.#translate.instant(marker('cash.rule.delete.header')),
       message: this.#translate.instant(marker('cash.rule.delete.message'), {
-        name: rule.name || rule.category,
+        name: rule.name || this.categoryName(rule.categoryId),
       }),
       buttons: [
         {
@@ -190,10 +185,10 @@ export class CashRulesPage {
     let changed = 0;
     for (const txn of this.#transactions()) {
       if (txn.categoryManual) continue; // manual override is shielded
-      const category = categorize(txn, rules);
-      if (category !== txn.category) {
+      const categoryId = categorize(txn, rules);
+      if (categoryId !== txn.categoryId) {
         this.#store.dispatch(
-          CashActions.setTransactionCategory(txn.id, category, false)
+          CashActions.setTransactionCategory(txn.id, categoryId, false)
         );
         changed++;
       }

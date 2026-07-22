@@ -75,8 +75,8 @@ export class TrackplayPlayerEditDialogComponent implements OnInit {
     this.name.set(value);
   }
 
-  onEnter(ev: Event): void {
-    (ev.target as HTMLElement).blur();
+  onEnter(event: Event): void {
+    (event.target as HTMLElement).blur();
     this.confirm();
   }
 

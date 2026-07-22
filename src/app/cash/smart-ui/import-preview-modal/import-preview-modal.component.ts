@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -15,8 +20,9 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
+import { TCategoryId } from '../../../@shared/types';
 import { ICashTransaction } from '../../model';
-import { CashActions } from '../../data';
+import { CashActions, selectCashCategories } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 /**
@@ -48,6 +54,10 @@ import { MoneyEurPipe } from '../../util/money.pipe';
 export class CashImportPreviewModalComponent {
   readonly #store = inject(Store);
   readonly #modalCtrl = inject(ModalController);
+  readonly #categories = this.#store.selectSignal(selectCashCategories);
+  readonly #categoryNameById = computed(
+    () => new Map(this.#categories().map((c) => [c.id, c.name]))
+  );
 
   /** Imperative componentProps. */
   transactions: ICashTransaction[] = [];
@@ -57,8 +67,13 @@ export class CashImportPreviewModalComponent {
     return dayjs(iso).format('DD.MM.YYYY');
   }
 
+  /** Resolve an auto-assigned category id to its display name. */
+  categoryName(id: TCategoryId | undefined): string {
+    return id ? (this.#categoryNameById().get(id) ?? '') : '';
+  }
+
   confirm(): void {
-    if (this.transactions.length) {
+    if (this.transactions.length > 0) {
       this.#store.dispatch(CashActions.importTransactions(this.transactions));
     }
     void this.#modalCtrl.dismiss();

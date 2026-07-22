@@ -4,6 +4,7 @@ import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
 import { filter, map, withLatestFrom } from 'rxjs';
 import { IBaseItem } from '../../@shared/types';
+import { uuidv4 } from '../../@shared/util/app.utils';
 import { createTaskItem } from '../util/task.factory';
 import {
   CategoriesActions,
@@ -32,12 +33,12 @@ export class TasksItemDialogsEffects {
       ofType(CategoriesActions.confirmEditChanges),
       concatLatestFrom(() => this.#store.select(selectEditState)),
       filter(([, state]) => state.listId === '_tasks'),
-      map(([, state]) =>
-        TasksActions.updateCategory(
-          state.category.original ?? '',
-          state.category.editItem ?? ''
-        )
-      )
+      map(([, state]) => {
+        const { id, name } = state.category;
+        return id
+          ? TasksActions.updateCategory(id, name ?? '')
+          : TasksActions.addCategory({ id: uuidv4(), name: name ?? '' });
+      })
     );
   });
 
@@ -55,7 +56,12 @@ export class TasksItemDialogsEffects {
           return CategoriesActions.showEditDialog(name, '_tasks');
         }
         const item: IBaseItem = createTaskItem(name, tasks.filterBy);
-        return ItemDialogsActions.showEditDialog(item, '_tasks');
+        return ItemDialogsActions.showEditDialog(
+          item,
+          '_tasks',
+          undefined,
+          'create'
+        );
       })
     );
   });

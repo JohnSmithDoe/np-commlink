@@ -1,9 +1,15 @@
 import { IBaseItem } from '../types';
-import { mockBaseItem } from '../testing/test-data';
+import { mockBaseItem, mockCategory } from '../testing/test-data';
 import { CategoriesPipe } from './categories.pipe';
 
 describe('CategoriesPipe', () => {
   let pipe: CategoriesPipe;
+
+  // The list's authoritative {id,name} catalog the pipe resolves ids against.
+  const catalog = [
+    mockCategory({ id: 'c-a', name: 'A' }),
+    mockCategory({ id: 'c-b', name: 'B' }),
+  ];
 
   beforeEach(() => {
     // Pure pipe: no TestBed / DI required.
@@ -14,7 +20,7 @@ describe('CategoriesPipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('returns "" when the item has no category and no altText', () => {
+  it('returns "" when the item has no categoryIds and no altText', () => {
     expect(pipe.transform({} as IBaseItem)).toBe('');
   });
 
@@ -22,20 +28,27 @@ describe('CategoriesPipe', () => {
     expect(pipe.transform(undefined)).toBe('');
   });
 
-  it('returns the altText when provided and the item has no category', () => {
-    expect(pipe.transform({} as IBaseItem, 'no categories')).toBe(
+  it('returns the altText when provided and the item has no categories', () => {
+    expect(pipe.transform({} as IBaseItem, catalog, 'no categories')).toBe(
       'no categories'
     );
-    expect(pipe.transform(undefined, 'no categories')).toBe('no categories');
+    expect(pipe.transform(undefined, catalog, 'no categories')).toBe(
+      'no categories'
+    );
   });
 
-  it('returns the joined categories when categories exist', () => {
-    const item = mockBaseItem({ category: ['A', 'B'] });
-    expect(pipe.transform(item)).toBe('A, B');
+  it('resolves the item categoryIds to their joined catalog names', () => {
+    const item = mockBaseItem({ categoryIds: ['c-a', 'c-b'] });
+    expect(pipe.transform(item, catalog)).toBe('A, B');
   });
 
-  it('prefers the categories over the altText when categories exist', () => {
-    const item = mockBaseItem({ category: ['A', 'B'] });
-    expect(pipe.transform(item, 'no categories')).toBe('A, B');
+  it('prefers the resolved categories over the altText when they exist', () => {
+    const item = mockBaseItem({ categoryIds: ['c-a', 'c-b'] });
+    expect(pipe.transform(item, catalog, 'no categories')).toBe('A, B');
+  });
+
+  it('drops category ids missing from the catalog', () => {
+    const item = mockBaseItem({ categoryIds: ['c-a', 'c-missing'] });
+    expect(pipe.transform(item, catalog, 'no categories')).toBe('A');
   });
 });

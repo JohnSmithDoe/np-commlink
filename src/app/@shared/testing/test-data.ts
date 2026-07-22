@@ -3,9 +3,9 @@ import {
   IAppState,
   IBaseItem,
   ICategoriesState,
+  ICategory,
   IDashboardState,
-  IListSettings,
-  IQuickAddState,
+  ISettings,
   TItemDialogsState,
 } from '../types';
 
@@ -14,21 +14,6 @@ import {
 // evaluates `createBaseItem('initial')` -> `dayjs()` at module load, which
 // pulls a non-deterministic timestamp into the fixtures. Inlining keeps the
 // fixtures deterministic and side-effect free.
-
-const LIST_SETTINGS_VERSION = '1';
-
-const initialListSettings: IListSettings = {
-  showQuickAdd: false,
-  showQuickAddProduct: false,
-  showQuickAddCategory: false,
-  showProductsInShopping: false,
-  showProductsInStorage: false,
-  showShoppingInProducts: false,
-  showShoppingInStorage: false,
-  showStorageInProducts: false,
-  showStorageInShopping: false,
-  version: LIST_SETTINGS_VERSION,
-};
 
 /**
  * Deterministic test-data factories.
@@ -43,6 +28,10 @@ export function mockDashboardState(
   overrides: Partial<IDashboardState> = {}
 ): IDashboardState {
   return { bySource: {}, ...overrides };
+}
+
+export function mockSettings(overrides: Partial<ISettings> = {}): ISettings {
+  return { version: '1', theme: 'cyberpunk', ...overrides };
 }
 
 function mockRouterState(): RouterReducerState {
@@ -77,12 +66,6 @@ export function mockBaseItem(overrides: Partial<IBaseItem> = {}): IBaseItem {
   };
 }
 
-export function mockListSettings(
-  overrides: Partial<IListSettings> = {}
-): IListSettings {
-  return { ...initialListSettings, ...overrides };
-}
-
 export function mockCategoriesState(
   overrides: Partial<ICategoriesState> = {}
 ): ICategoriesState {
@@ -90,6 +73,11 @@ export function mockCategoriesState(
     isEditing: false,
     ...overrides,
   };
+}
+
+// A first-class {id,name} category for specs. Default id/name are stable.
+export function mockCategory(overrides: Partial<ICategory> = {}): ICategory {
+  return { id: 'cat-1', name: 'Category', ...overrides };
 }
 
 export function mockItemDialogsState(
@@ -105,18 +93,6 @@ export function mockItemDialogsState(
   };
 }
 
-export function mockQuickAddState(
-  overrides: Partial<IQuickAddState> = {}
-): IQuickAddState {
-  return {
-    canAddLocal: false,
-    canAddProduct: false,
-    canAddCategory: false,
-    searchQuery: undefined,
-    ...overrides,
-  };
-}
-
 /** A complete, overridable {@link IAppState} for use with `provideMockStore`. */
 export function mockAppState(
   overrides: Partial<IAppState> & Record<string, unknown> = {}
@@ -124,9 +100,8 @@ export function mockAppState(
   return {
     router: mockRouterState(),
     dashboard: mockDashboardState(),
-    listSettings: mockListSettings(),
+    settings: mockSettings(),
     itemDialogs: mockItemDialogsState(),
-    quickadd: mockQuickAddState(),
     ...overrides,
   };
 }

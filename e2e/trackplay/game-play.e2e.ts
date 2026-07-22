@@ -32,7 +32,11 @@ function dataRows(grid: Locator): Locator {
 
 /** The numeric input of a scoring cell at (round row `r`, player column `c`). */
 function cellInput(grid: Locator, r: number, c: number): Locator {
-  return dataRows(grid).nth(r).locator('.tp-cell--edit').nth(c).locator('input');
+  return dataRows(grid)
+    .nth(r)
+    .locator('.tp-cell--edit')
+    .nth(c)
+    .locator('input');
 }
 
 /** Type a score into a cell and commit it (Enter blurs → ionBlur → dispatch). */
@@ -109,9 +113,8 @@ test.describe('trackplay full game', () => {
     await expect(winnerLine).toContainText('hat gewonnen');
     // No unfilled i18n placeholder should leak into the winner line.
     await expect(winnerLine).not.toContainText('{{');
-    await expect(
-      grid.locator('img[src="assets/trackplay/winner.gif"]')
-    ).toBeVisible();
+    // Pure-CSS victory HUD (replaced the old winner.gif).
+    await expect(grid.locator('.tp-victory')).toBeVisible();
 
     // ── Reopen (Weiter) returns to the editable grid ─────────────────────
     await grid.getByRole('button', { name: 'Weiter' }).click();

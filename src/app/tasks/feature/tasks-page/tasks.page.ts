@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IonButton, IonNote, ViewWillEnter } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
@@ -33,6 +34,7 @@ import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-
 })
 export class TasksPage implements ViewWillEnter {
   readonly #store = inject(Store);
+  readonly #route = inject(ActivatedRoute);
 
   constructor() {
     addIcons({ add, remove });
@@ -40,6 +42,9 @@ export class TasksPage implements ViewWillEnter {
 
   ionViewWillEnter(): void {
     this.#store.dispatch(TasksActions.enterPage());
+    // Category→items drill (see shopping.page for the timing rationale).
+    const filter = this.#route.snapshot.queryParamMap.get('filter');
+    if (filter) this.#store.dispatch(TasksActions.updateFilter(filter));
   }
 
   removeItem(item: ITaskItem) {

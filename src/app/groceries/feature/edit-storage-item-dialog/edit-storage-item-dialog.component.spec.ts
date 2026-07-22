@@ -2,8 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { mockCategory } from '../../../@shared/testing/test-data';
 import { createStorageItem } from '../../util/grocery.factory';
-import { selectEditStorageItem, StorageActions } from '../../data';
+import {
+  GroceryCategoriesActions,
+  selectEditStorageItem,
+  StorageActions,
+} from '../../data';
 import { EditStorageItemDialogComponent } from './edit-storage-item-dialog.component';
 
 describe('EditStorageItemDialogComponent', () => {
@@ -51,14 +56,17 @@ describe('EditStorageItemDialogComponent', () => {
     expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
   });
 
-  it('persists a brand-new category to the storage slice', () => {
-    component.addCategory('Dairy');
-    expect(dispatch).toHaveBeenCalledWith(StorageActions.addCategory('Dairy'));
+  it('persists a brand-new category to the shared grocery catalog', () => {
+    const category = mockCategory({ id: 'dairy', name: 'Dairy' });
+    component.addCategory(category);
+    expect(dispatch).toHaveBeenCalledWith(
+      GroceryCategoriesActions.add(category)
+    );
   });
 
-  it('folds the confirmed category selection into the draft', () => {
-    component.confirmCategories(['Dairy', 'Fridge']);
-    expect(component.draft()?.category).toEqual(['Dairy', 'Fridge']);
+  it('folds the confirmed category-id selection into the draft', () => {
+    component.confirmCategories(['dairy', 'fridge']);
+    expect(component.draft()?.categoryIds).toEqual(['dairy', 'fridge']);
     expect(component.categoriesDialogOpen()).toBe(false);
   });
 });

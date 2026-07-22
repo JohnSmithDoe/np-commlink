@@ -5,7 +5,7 @@ describe('tracking.utils', () => {
     it('formats seconds as zero-padded HH:MM:SS', () => {
       expect(formatSecondsAsClock(0)).toBe('00:00:00');
       expect(formatSecondsAsClock(3661)).toBe('01:01:01');
-      expect(formatSecondsAsClock(45296)).toBe('12:34:56');
+      expect(formatSecondsAsClock(45_296)).toBe('12:34:56');
     });
 
     it('clamps negative and fractional input', () => {

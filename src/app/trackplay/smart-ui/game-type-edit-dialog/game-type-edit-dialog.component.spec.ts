@@ -54,7 +54,7 @@ describe('TrackplayGameTypeEditDialogComponent', () => {
   it('does not dispatch for a blank name', () => {
     setup();
 
-    component.onName('   ');
+    component.onName(' '.repeat(3));
     component.confirm();
 
     expect(dispatch).not.toHaveBeenCalled();

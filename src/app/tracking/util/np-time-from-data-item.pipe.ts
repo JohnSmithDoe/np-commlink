@@ -14,12 +14,15 @@ export class NpTimeFromDataItemPipe implements PipeTransform {
     if (!time.isValid()) return '';
     switch (viewId) {
       case 'daily':
-      case 'today':
+      case 'today': {
         return time.format('DD.MM.YYYY');
-      case 'monthly':
+      }
+      case 'monthly': {
         return time.format('MM.YYYY');
-      default:
+      }
+      default: {
         return time.format('DD.MM.YYYY HH:mm');
+      }
     }
   }
 }

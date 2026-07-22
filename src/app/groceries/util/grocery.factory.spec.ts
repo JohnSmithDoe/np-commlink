@@ -21,10 +21,10 @@ describe('grocery.factory', () => {
     });
 
     it('accepts a quantity and best-before date', () => {
-      const item = createStorageItem('Milk', 'Dairy', 3, '2024-05-01');
+      const item = createStorageItem('Milk', 'dairy', 3, '2024-05-01');
       expect(item.quantity).toBe(3);
       expect(item.bestBefore).toBe('2024-05-01');
-      expect(item.category).toEqual(['Dairy']);
+      expect(item.categoryIds).toEqual(['dairy']);
     });
   });
 
@@ -47,14 +47,14 @@ describe('grocery.factory', () => {
   });
 
   describe('createStorageItemFromShopping', () => {
-    it('copies name/category and applies the quantity', () => {
+    it('copies name/category ids and applies the quantity', () => {
       const shopping = mockShoppingItem({
         name: 'Bread',
-        category: ['Bakery'],
+        categoryIds: ['bakery'],
       });
       const item = createStorageItemFromShopping(shopping, 4);
       expect(item.name).toBe('Bread');
-      expect(item.category).toEqual(['Bakery']);
+      expect(item.categoryIds).toEqual(['bakery']);
       expect(item.quantity).toBe(4);
     });
   });
@@ -79,20 +79,20 @@ describe('grocery.factory', () => {
 
   describe('createProduct', () => {
     it('creates a loose, piece-based, forever item', () => {
-      const item = createProduct('Sugar', 'Baking');
+      const item = createProduct('Sugar', 'baking');
       expect(item.unit).toBe('pieces');
       expect(item.packaging).toBe('loose');
       expect(item.bestBeforeTimespan).toBe('forever');
       expect(item.bestBeforeTimevalue).toBe(1);
-      expect(item.category).toEqual(['Baking']);
+      expect(item.categoryIds).toEqual(['baking']);
     });
 
-    it('createProductFrom reuses name and category of the source', () => {
+    it('createProductFrom reuses name and category ids of the source', () => {
       const item = createProductFrom(
-        mockStorageItem({ name: 'Milk', category: ['Dairy'] })
+        mockStorageItem({ name: 'Milk', categoryIds: ['dairy'] })
       );
       expect(item.name).toBe('Milk');
-      expect(item.category).toEqual(['Dairy']);
+      expect(item.categoryIds).toEqual(['dairy']);
       expect(item.unit).toBe('pieces');
     });
   });

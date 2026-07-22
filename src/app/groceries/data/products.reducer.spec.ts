@@ -1,6 +1,8 @@
 import { GroceriesActions } from './groceries.actions';
+import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
 import { ProductsActions } from './products.actions';
 import { productsReducer, initialState } from './products.reducer';
+import { mockCategory } from '../../@shared/testing/test-data';
 import { mockProduct, mockProductsState } from '../testing/grocery.test-data';
 
 describe('productsReducer', () => {
@@ -9,11 +11,11 @@ describe('productsReducer', () => {
     expect(state).toBe(initialState);
   });
 
-  it('adds an item and derives its categories', () => {
-    const item = mockProduct({ name: 'Sugar', category: ['Baking'] });
+  it('adds an item without deriving categories (the catalog is authoritative)', () => {
+    const item = mockProduct({ name: 'Sugar', categoryIds: ['baking'] });
     const state = productsReducer(initialState, ProductsActions.addItem(item));
     expect(state.items).toEqual([item]);
-    expect(state.categories).toContain('Baking');
+    expect(state.categories).toEqual([]);
   });
 
   it('removes an item by id', () => {
@@ -65,17 +67,26 @@ describe('productsReducer', () => {
     expect(state.mode).toBe('categories');
   });
 
-  it('adds and removes categories', () => {
+  it('adds, renames and removes categories via the shared grocery catalog', () => {
     const added = productsReducer(
       initialState,
-      ProductsActions.addCategory('Baking')
+      GroceryCategoriesActions.add(
+        mockCategory({ id: 'baking', name: 'Baking' })
+      )
     );
-    expect(added.categories).toContain('Baking');
-    const removed = productsReducer(
+    expect(added.categories.map((c) => c.name)).toContain('Baking');
+    const renamed = productsReducer(
       added,
-      ProductsActions.removeCategory('Baking')
+      GroceryCategoriesActions.rename('baking', 'Pantry')
     );
-    expect(removed.categories).not.toContain('Baking');
+    expect(renamed.categories.find((c) => c.id === 'baking')?.name).toBe(
+      'Pantry'
+    );
+    const removed = productsReducer(
+      renamed,
+      GroceryCategoriesActions.remove('baking')
+    );
+    expect(removed.categories.map((c) => c.name)).not.toContain('Pantry');
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {

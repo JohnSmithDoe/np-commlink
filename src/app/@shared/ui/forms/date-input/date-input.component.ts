@@ -35,9 +35,9 @@ export class DateInputComponent {
   value = input<string | null>();
   updateValue = output<string | undefined>();
 
-  updateInputValue(ev: DatetimeCustomEvent) {
+  updateInputValue(event: DatetimeCustomEvent) {
     const value =
-      typeof ev.detail.value === 'string' ? ev.detail.value : undefined;
+      typeof event.detail.value === 'string' ? event.detail.value : undefined;
     this.updateValue.emit(value);
   }
 }

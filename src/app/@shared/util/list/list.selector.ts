@@ -7,7 +7,7 @@ import {
   TItemListSort,
 } from '../../types';
 import {
-  matchesCategoryExactly,
+  itemHasCategory,
   matchesSearch,
   matchesSearchExactly,
 } from '../../util/app.utils';
@@ -24,10 +24,11 @@ export const sortItemListFn = <T extends IBaseItem>(sort?: TItemListSort) => {
   const MINDATE = '1970-1-1';
   return (a: T, b: T): number => {
     switch (sort?.sortBy) {
-      case 'name':
+      case 'name': {
         return sort.sortDir === 'asc'
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
+      }
       case 'bestBefore': {
         // structural optional-field reads (was isStorageItem guard) so the
         // shared engine stays domain-blind after the grocery types moved out.
@@ -60,8 +61,9 @@ export const sortItemListFn = <T extends IBaseItem>(sort?: TItemListSort) => {
             : dayjs(bDue ?? MINDATE).unix() - dayjs(aDue ?? MINDATE).unix();
       }
 
-      default:
+      default: {
         return 0;
+      }
     }
   };
 };
@@ -75,14 +77,16 @@ export const filterAndSortItemList = <
 ): R[] => {
   return (result?.listItems ?? [...state.items])
     .filter(
-      (item) => !state.filterBy || item.category?.includes(state.filterBy)
+      (item) => !state.filterBy || item.categoryIds?.includes(state.filterBy)
     )
     .sort(sortItemListFn<R>(state.sort));
 };
 
 export const sortCategoriesFn = (sort?: TItemListSort) => {
   return (a: TItemListCategory, b: TItemListCategory) => {
-    return sort?.sortDir === 'desc' ? b.localeCompare(a) : a.localeCompare(b);
+    return sort?.sortDir === 'desc'
+      ? b.name.localeCompare(a.name)
+      : a.name.localeCompare(b.name);
   };
 };
 
@@ -97,10 +101,10 @@ export const filterListBySearchQuery = <
   listState: T
 ): ISearchResult<R> | undefined => {
   const searchQuery = listState.searchQuery?.trim();
-  if (!searchQuery || !searchQuery.length) return;
+  if (!searchQuery || searchQuery.length === 0) return;
   const result: ISearchResult<R> = {
     searchTerm: searchQuery,
-    hasSearchTerm: !!searchQuery.length,
+    hasSearchTerm: searchQuery.length > 0,
     listItems: listState.items.filter((item) =>
       matchesSearch(item, searchQuery)
     ),
@@ -127,11 +131,11 @@ export const listCategoriesWithCount = (
   if (!state) return [];
   return [...state.categories]
     .sort(sortCategoriesFn(state.sort))
-    .filter((cat) => matchesSearch(cat, state.searchQuery ?? ''))
-    .map((catgory) => ({
-      category: catgory,
-      count: state.items.reduce((count: number, cur: IBaseItem) => {
-        return matchesCategoryExactly(cur, catgory) ? count + 1 : count;
-      }, 0),
+    .filter((cat) => matchesSearch(cat.name, state.searchQuery ?? ''))
+    .map((category) => ({
+      category,
+      count: state.items.filter((current) =>
+        itemHasCategory(current, category.id)
+      ).length,
     }));
 };

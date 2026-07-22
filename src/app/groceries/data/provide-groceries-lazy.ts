@@ -14,6 +14,10 @@ import { GroceriesLoadEffects } from './groceries-load.effects';
 import { GrocerySaveEffects } from './grocery-save.effects';
 import { GroceryListEffects } from './grocery-list/grocery-list.effects';
 import { GroceryItemDialogsEffects } from './grocery-list/grocery-item-dialogs.effects';
+import { listSettingsReducer } from './list-settings/list-settings.reducer';
+import { ListSettingsEffects } from './list-settings/list-settings.effects';
+import { ListSettingsLoadEffects } from './list-settings/list-settings-load.effects';
+import { quickAddReducer } from './quick-add/quick-add.reducer';
 
 /**
  * Lazy state + effects for the whole grocery bounded context, registered as ONE
@@ -47,10 +51,20 @@ export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
   provideState('products', productsReducer),
   provideState('shopping', shoppingReducer),
   provideState('storage', storageReducer),
+  // Grocery-owned since the settings re-scope (were eager kernel slices in
+  // @shared): the feature-flags the grocery selectors read (cross-list buckets +
+  // quick-add gating) and the derived quick-add UI state. `listSettings`
+  // hydrates via its own resolver key on the grocery routes; `quickadd` is
+  // ephemeral (recomputed by the engine on enterPage/search — never persisted).
+  provideState('listSettings', listSettingsReducer),
+  provideState('quickadd', quickAddReducer),
   provideEffects(
     // Own-data load: reads the three grocery keys on route entry and emits one
     // atomic GroceriesActions.loaded (hydration driven by moduleHydrationResolver).
     GroceriesLoadEffects,
+    // listSettings own-data load + toggle/save (the /list-settings page edits it).
+    ListSettingsLoadEffects,
+    ListSettingsEffects,
     // Own-data save: persists the P/S/S slice named by the action-source prefix
     // (moved off the eager shell — lazy-modules Phase E).
     GrocerySaveEffects,

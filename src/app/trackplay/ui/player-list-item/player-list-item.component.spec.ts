@@ -56,8 +56,8 @@ describe('TrackplayPlayerListItemComponent', () => {
   });
 
   it('routes a start-side drag to delete and an end-side drag to edit', () => {
-    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue();
-    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue();
+    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
+    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);
 
     component.handleDrag(dragEvent(-200));
     expect(del).toHaveBeenCalledTimes(1);
@@ -68,8 +68,8 @@ describe('TrackplayPlayerListItemComponent', () => {
   });
 
   it('ignores a below-threshold drag', () => {
-    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue();
-    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue();
+    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
+    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);
 
     component.handleDrag(dragEvent(10));
 

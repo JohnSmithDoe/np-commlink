@@ -21,19 +21,22 @@ const notif = (overrides: Partial<INotification> = {}): INotification => ({
 
 describe('NotificationsStore', () => {
   let service: NotificationsStore;
-  let db: { load: ReturnType<typeof vi.fn>; save: ReturnType<typeof vi.fn> };
+  let database: {
+    load: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
   let dispatch: ReturnType<typeof vi.spyOn>;
 
   const setup = (loaded: INotificationsState | null = null) => {
-    db = {
+    database = {
       load: vi.fn(async () => loaded),
-      save: vi.fn(async () => undefined),
+      save: vi.fn(async () => {}),
     };
     TestBed.configureTestingModule({
       providers: [
         NotificationsStore,
         provideMockStore(),
-        { provide: DatabaseService, useValue: db },
+        { provide: DatabaseService, useValue: database },
       ],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
@@ -64,7 +67,7 @@ describe('NotificationsStore', () => {
 
     await service.mutate((s) => ({ ...s, items: [notif()] }));
 
-    expect(db.save).toHaveBeenCalledWith(
+    expect(database.save).toHaveBeenCalledWith(
       'notifications',
       expect.objectContaining({
         items: [expect.objectContaining({ id: 'n1' })],

@@ -4,18 +4,20 @@
       <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button (click)="cancelled.emit()"
-            >{{ 'grocery.categories.dialog.cancel' | translate }}
+            >{{ 'category-picker.cancel' | translate }}
           </ion-button>
         </ion-buttons>
-        <ion-buttons slot="end">
-          <ion-button (click)="confirmed.emit(selected())"
-            >{{ 'grocery.categories.dialog.confirm' | translate }}
-          </ion-button>
-        </ion-buttons>
+        @if (multiple()) {
+          <ion-buttons slot="end">
+            <ion-button (click)="confirmMultiple()"
+              >{{ 'category-picker.confirm' | translate }}
+            </ion-button>
+          </ion-buttons>
+        }
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar
-          placeholder="{{ 'grocery.searchbar.placeholder' | translate }}"
+          placeholder="{{ 'category-picker.search' | translate }}"
           [value]="searchQuery()"
           (ionInput)="searchbarInput($event)"
           (keyup.enter)="addNewCategory()"
@@ -25,7 +27,12 @@
     </ion-header>
 
     <ion-content>
-      <ion-list id="modal-list" [inset]="true">
+      <ion-list
+        #list
+        [inset]="true"
+        role="listbox"
+        [attr.aria-multiselectable]="multiple()"
+      >
         @if (searchQuery().length && !searchContained()) {
           <ion-item
             button
@@ -33,37 +40,71 @@
             [detail]="true"
             color="primary"
           >
-            <ion-label
-              >{{
-                'categories-dialog.notfound.create'
-                  | translate: { name: searchQuery() }
+            <ion-label>
+              {{
+                'category-picker.create' | translate: { name: searchQuery() }
               }}
             </ion-label>
-            <ion-note slot="end" class="product-item-helper" color="dark">
-              {{
-                'categories-dialog.notfound.create.helper'
-                  | translate: { name: searchQuery() }
-              }}
+            <ion-note slot="end" color="dark">
+              {{ 'category-picker.create-helper' | translate }}
             </ion-note>
           </ion-item>
         }
-        @for (item of filteredCategories(); track item) {
-          <ion-item>
-            <ion-checkbox
-              [value]="item"
-              [checked]="isChecked(item)"
-              (ionChange)="selectionChange($event)"
-              >{{ item }}
-            </ion-checkbox>
-          </ion-item>
+        @for (cat of filteredCategories(); track cat.id) {
+          <ion-item-sliding>
+            @if (editing() === cat.id) {
+              <ion-item>
+                <ion-input
+                  [value]="renameText()"
+                  (ionInput)="renameText.set($any($event.target).value ?? '')"
+                  (keyup.enter)="commitEdit()"
+                  (keyup.escape)="cancelEdit()"
+                  (ionBlur)="commitEdit()"
+                  placeholder="{{
+                    'category-picker.rename-placeholder' | translate
+                  }}"
+                ></ion-input>
+              </ion-item>
+            } @else {
+              <ion-item
+                button
+                role="option"
+                [attr.aria-selected]="isChecked(cat)"
+                (click)="rowClick(cat)"
+              >
+                <ion-icon
+                  slot="start"
+                  name="checkmark-outline"
+                  aria-hidden="true"
+                  [style.visibility]="isChecked(cat) ? 'visible' : 'hidden'"
+                ></ion-icon>
+                <ion-label class="ion-text-wrap">{{ cat.name }}</ion-label>
+              </ion-item>
+            }
+            <ion-item-options side="end">
+              <ion-item-option
+                (click)="startEdit(cat)"
+                [attr.aria-label]="'category-picker.edit' | translate"
+              >
+                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+              </ion-item-option>
+              <ion-item-option
+                color="danger"
+                (click)="deleteCategory(cat)"
+                [attr.aria-label]="'category-picker.delete' | translate"
+              >
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         } @empty {
           @if (!searchQuery().length) {
-            <ion-item>
-              <ion-label>
-                {{ 'grocery.categories-dialog.empty' | translate }}<br />
-                <ion-note>
-                  {{ 'grocery.categories-dialog.empty.helper' | translate }}
-                </ion-note>
+            <ion-item lines="none">
+              <ion-label class="ion-text-wrap">
+                {{ 'category-picker.empty' | translate }}<br />
+                <ion-note>{{
+                  'category-picker.empty-helper' | translate
+                }}</ion-note>
               </ion-label>
             </ion-item>
           }

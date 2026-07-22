@@ -28,7 +28,12 @@ export class TrackingItemDialogsEffects {
       withLatestFrom(this.#store.select(selectTrackingState)),
       map(([, tracking]) => {
         const item = createTrackingItem(tracking.searchQuery ?? '');
-        return ItemDialogsActions.showEditDialog(item, '_tracking');
+        return ItemDialogsActions.showEditDialog(
+          item,
+          '_tracking',
+          undefined,
+          'create'
+        );
       })
     );
   });
@@ -39,7 +44,9 @@ export class TrackingItemDialogsEffects {
       map(() =>
         ItemDialogsActions.showEditDialog(
           createTrackingItem('new ticket'),
-          '_tracking'
+          '_tracking',
+          undefined,
+          'create'
         )
       )
     );

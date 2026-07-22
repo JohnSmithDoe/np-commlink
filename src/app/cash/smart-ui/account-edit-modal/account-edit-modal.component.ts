@@ -23,6 +23,7 @@ import {
 } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { ICashAccount, TAccountKind, TBank } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
@@ -36,6 +37,15 @@ const ACCOUNT_KINDS: readonly TAccountKind[] = [
   'savings',
   'cash',
 ];
+
+// Rendered dynamically ('cash.account.kind.' + k, 'cash.bank.' + b | translate),
+// so the extractor can't see them — register each concrete key explicitly.
+marker('cash.account.kind.giro');
+marker('cash.account.kind.creditcard');
+marker('cash.account.kind.savings');
+marker('cash.account.kind.cash');
+marker('cash.bank.volksbank');
+marker('cash.bank.dkb');
 
 /**
  * Create/edit a cash account, presented via `ModalController`. `accountId` is an

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
+import { mockCategory } from '../../../@shared/testing/test-data';
 import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
 import { createTaskItem } from '../../util/task.factory';
 import { selectEditTaskItem, TasksActions } from '../../data';
@@ -53,7 +54,8 @@ describe('EditTaskItemDialogComponent', () => {
   });
 
   it('persists a brand-new category to the tasks slice', () => {
-    component.addCategory('Errands');
-    expect(dispatch).toHaveBeenCalledWith(TasksActions.addCategory('Errands'));
+    const errands = mockCategory({ id: 'errands', name: 'Errands' });
+    component.addCategory(errands);
+    expect(dispatch).toHaveBeenCalledWith(TasksActions.addCategory(errands));
   });
 });

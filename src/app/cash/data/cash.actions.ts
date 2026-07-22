@@ -1,4 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
+import { ICategory, TCategoryId } from '../../@shared/types';
 import {
   ICashAccount,
   ICashRule,
@@ -20,12 +21,10 @@ export const CashActions = createActionGroup({
     // Effects only
     'Enter Page': emptyProps(),
 
-    // Accounts
     'Add Account': (account: ICashAccount) => ({ account }),
     'Update Account': (account: ICashAccount) => ({ account }),
     'Remove Account': (id: string) => ({ id }),
 
-    // Transactions
     'Add Transaction': (transaction: ICashTransaction) => ({ transaction }),
     'Update Transaction': (transaction: ICashTransaction) => ({ transaction }),
     'Remove Transaction': (id: string) => ({ id }),
@@ -40,9 +39,9 @@ export const CashActions = createActionGroup({
     }),
     'Set Transaction Category': (
       id: string,
-      category: string | undefined,
+      categoryId: TCategoryId | undefined,
       manual: boolean
-    ) => ({ id, category, manual }),
+    ) => ({ id, categoryId, manual }),
     // Merge a pending manual entry into the imported txn it turned out to be:
     // the manual leg points at the survivor and is hidden from balance/spend.
     'Reconcile Transaction': (manualId: string, importedId: string) => ({
@@ -53,9 +52,13 @@ export const CashActions = createActionGroup({
     // restore it to `pending` (visible + counted again).
     'Unreconcile Transaction': (manualId: string) => ({ manualId }),
 
-    // Categories (user-managed name list)
-    'Add Category': (category: string) => ({ category }),
-    'Remove Category': (category: string) => ({ category }),
+    // Categories ({id,name} catalog). Add carries a pre-minted category (the
+    // picker mints the id the txn/rule will reference); Remove/Rename key by id.
+    'Add Category': (category: ICategory) => ({ category }),
+    'Remove Category': (id: TCategoryId) => ({ id }),
+    // Rename is O(1) on the catalog; on a name collision it merges (remaps txn +
+    // rule references from the old id onto the survivor).
+    'Update Category': (id: TCategoryId, name: string) => ({ id, name }),
 
     // Email-style filter rules (ordered; first match wins)
     'Add Rule': (rule: ICashRule) => ({ rule }),

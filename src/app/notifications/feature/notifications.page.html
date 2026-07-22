@@ -79,9 +79,14 @@
           <ion-button
             fill="clear"
             color="medium"
+            [attr.aria-label]="'notifications.a11y.clear-done' | translate"
             (click)="clearDone(); $event.stopPropagation()"
           >
-            <ion-icon slot="icon-only" name="trash-outline" />
+            <ion-icon
+              slot="icon-only"
+              name="trash-outline"
+              aria-hidden="true"
+            />
           </ion-button>
         }
         <ion-icon
@@ -113,8 +118,17 @@
             <p>{{ n.body }}</p>
           </ion-label>
           <ion-buttons slot="end">
-            <ion-button fill="clear" color="medium" (click)="remove(n, $event)">
-              <ion-icon slot="icon-only" name="trash-outline" />
+            <ion-button
+              fill="clear"
+              color="medium"
+              [attr.aria-label]="'notifications.a11y.remove' | translate"
+              (click)="remove(n, $event)"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="trash-outline"
+                aria-hidden="true"
+              />
             </ion-button>
           </ion-buttons>
         </ion-item>

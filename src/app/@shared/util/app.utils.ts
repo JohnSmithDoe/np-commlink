@@ -1,24 +1,16 @@
 import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { IBaseItem, TIonDragEvent } from '../types';
+import { IBaseItem, TCategoryId, TIonDragEvent } from '../types';
 
 export const uuidv4 = () => crypto.randomUUID();
 
-export const hasQuantity = (
-  value?: unknown
-): value is { quantity: number; name: string } =>
-  !!value &&
-  Object.prototype.hasOwnProperty.call(value, 'quantity') &&
-  Object.prototype.hasOwnProperty.call(value, 'name');
-
-// handle the dragging from the list items
 export const checkItemOptionsOnDrag = (
-  ev: TIonDragEvent,
+  event: TIonDragEvent,
   triggerAmount = 160
 ) =>
-  ev.detail.amount > triggerAmount
+  event.detail.amount > triggerAmount
     ? 'end'
-    : ev.detail.amount < -triggerAmount
+    : event.detail.amount < -triggerAmount
       ? 'start'
       : false;
 
@@ -26,19 +18,16 @@ export const matchingTxt = (item: IBaseItem | string) =>
   (typeof item === 'string' ? item : item.name).trim().toLowerCase();
 
 export const matchingTxtIsNotEmpty = (item?: IBaseItem | string) =>
-  !!matchingTxt(item ?? '').length;
-
-export const matchingTxtIsEmpty = (item?: IBaseItem | string) =>
-  !matchingTxt(item ?? '').length;
+  matchingTxt(item ?? '').length > 0;
 
 export const matchesSearchString = (value: string, searchQuery?: string) =>
   matchingTxt(value).includes(matchingTxt(searchQuery ?? ''));
 
-export const matchesCategory = (item: IBaseItem, searchQuery: string) =>
-  !!item.category?.find((cat) => matchesSearchString(cat, searchQuery));
-
-export const matchesCategoryExactly = (item: IBaseItem, searchQuery: string) =>
-  !!item.category?.find((cat) => matchesSearchExactly(cat, searchQuery));
+// Categories are referenced by id now — an item "has" a category iff its
+// `categoryIds` list contains that id. Name-based matching (search over category
+// names) resolves ids→names against the list's catalog at the call site.
+export const itemHasCategory = (item: IBaseItem, categoryId: TCategoryId) =>
+  !!item.categoryIds?.includes(categoryId);
 
 export const matchesNameExactly = (item: IBaseItem, other: IBaseItem) =>
   matchingTxt(item) === matchingTxt(other);
@@ -47,14 +36,13 @@ export const matchesId = (item: IBaseItem, other: IBaseItem) =>
   item.id === other.id;
 
 export function matchesItemExactly<T extends IBaseItem>(item: T, others: T[]) {
-  // by id first if not found try by name
   const byId = others.find((other) => matchesId(item, other));
   return byId || others.find((other) => matchesNameExactly(item, other));
 }
 
 export const matchesItemExactlyIdx = (item: IBaseItem, others: IBaseItem[]) => {
   const found = matchesItemExactly(item, others);
-  return others.findIndex((other) => other === found);
+  return found ? others.indexOf(found) : -1;
 };
 
 export const matchesSearch = (item: IBaseItem | string, searchQuery: string) =>
@@ -65,8 +53,8 @@ export const matchesSearchExactly = (
   searchQuery?: string
 ) => matchingTxt(item) === matchingTxt(searchQuery ?? '');
 
-export function parseNumberInput(ev: InputCustomEvent) {
-  const value = ev.detail.value?.length ? ev.detail.value : '0';
+export function parseNumberInput(event: InputCustomEvent) {
+  const value = event.detail.value?.length ? event.detail.value : '0';
   return Number.parseInt(value, 10);
 }
 

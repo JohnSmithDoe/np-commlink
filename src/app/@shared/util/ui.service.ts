@@ -29,31 +29,33 @@ export class UiService {
   }
 
   showSavedToast() {
-    const msg = this.translate.instant(marker('toast.tracking.saved'));
-    return this.showToast(msg);
+    const message = this.translate.instant(marker('toast.tracking.saved'));
+    return this.showToast(message);
   }
 
   showAddItemToast(name: string) {
-    const msg = this.translate.instant(marker('toast.add.item'), { name });
-    return this.showToast(msg);
+    const message = this.translate.instant(marker('toast.add.item'), { name });
+    return this.showToast(message);
   }
 
   showUpdateItemToast(item: TUpdateDTO<IBaseItem>) {
-    const msg = this.translate.instant(marker('toast.update.item'), {
+    const message = this.translate.instant(marker('toast.update.item'), {
       name: item.name,
     });
-    return this.showToast(msg);
+    return this.showToast(message);
   }
 
   showRemoveItemToast(name: string) {
-    const msg = this.translate.instant(marker('toast.remove.item'), { name });
-    return this.showToast(msg, 'warning');
+    const message = this.translate.instant(marker('toast.remove.item'), {
+      name,
+    });
+    return this.showToast(message, 'warning');
   }
 
   showItemContainedToast(name: string) {
-    const msg = this.translate.instant(marker('toast.add.item.failure'), {
+    const message = this.translate.instant(marker('toast.add.item.failure'), {
       name,
     });
-    return this.showToast(msg, 'medium');
+    return this.showToast(message, 'medium');
   }
 }

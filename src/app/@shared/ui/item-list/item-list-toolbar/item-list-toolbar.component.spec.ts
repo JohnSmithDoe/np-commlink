@@ -59,9 +59,9 @@ describe('ItemListToolbarComponent', () => {
     const emitted: string[] = [];
     component.selectSortMode.subscribe((v) => emitted.push(v));
 
-    const buttons: HTMLElement[] = Array.from(
-      fixture.nativeElement.querySelectorAll('ion-button')
-    );
+    const buttons: HTMLElement[] = [
+      ...fixture.nativeElement.querySelectorAll('ion-button'),
+    ];
     // The label is now i18n'd; TranslateModule.forRoot() has no loader in tests,
     // so the pipe renders the key ('grocery.list-toolbar.sort-az').
     const azButton = buttons.find((b) => b.textContent?.includes('sort-az'));

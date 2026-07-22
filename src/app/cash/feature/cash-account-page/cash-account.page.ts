@@ -37,12 +37,14 @@ import {
   trashOutline,
   unlinkOutline,
 } from 'ionicons/icons';
+import { TCategoryId } from '../../../@shared/types';
 import { ICashTransaction } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import {
   CashActions,
   selectAccountBalances,
   selectAccountById,
+  selectCashCategories,
   selectCashRules,
   selectTransactionsForAccount,
   TAccountTxn,
@@ -102,7 +104,15 @@ export class CashAccountPage {
   );
   readonly #balances = this.#store.selectSignal(selectAccountBalances);
   readonly #rules = this.#store.selectSignal(selectCashRules);
+  readonly #categories = this.#store.selectSignal(selectCashCategories);
+  readonly #categoryNameById = computed(
+    () => new Map(this.#categories().map((c) => [c.id, c.name]))
+  );
   readonly balanceCents = computed(() => this.#balances()[this.id] ?? 0);
+
+  categoryName(id: TCategoryId | undefined): string {
+    return id ? (this.#categoryNameById().get(id) ?? '') : '';
+  }
   // A CSV import is only available when the account's bank has a parser.
   readonly canImport = computed(() => !!parserForBank(this.account()?.bank));
 
@@ -151,8 +161,8 @@ export class CashAccountPage {
     await modal.present();
   }
 
-  async importCsv(ev: Event): Promise<void> {
-    const input = ev.target as HTMLInputElement;
+  async importCsv(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     input.value = ''; // let the same file be re-picked later
     const parser = parserForBank(this.account()?.bank);

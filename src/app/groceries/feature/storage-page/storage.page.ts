@@ -6,6 +6,7 @@ import {
   IonNote,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -16,6 +17,7 @@ import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dial
 import { GroceryListPageFacade, StorageActions } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
+import { ItemListQuickaddComponent } from '../../smart-ui/item-list-quick-add/item-list-quickadd.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
 import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
 import { BarcodeScannerService } from '../../../@shared/util/barcode-scanner.service';
@@ -34,6 +36,7 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
     IonIcon,
     IonNote,
     ListPageComponent,
+    ItemListQuickaddComponent,
     GrocerySearchResultComponent,
     ListItemComponent,
     EditStorageItemDialogComponent,
@@ -43,6 +46,7 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
 })
 export class StoragePage implements ViewWillEnter {
   readonly #store = inject(Store);
+  readonly #route = inject(ActivatedRoute);
   readonly #scanner = inject(BarcodeScannerService);
   readonly facade = inject(GroceryListPageFacade);
 
@@ -61,6 +65,9 @@ export class StoragePage implements ViewWillEnter {
 
   ionViewWillEnter(): void {
     this.#store.dispatch(StorageActions.enterPage());
+    // Category→items drill (see shopping.page for the timing rationale).
+    const filter = this.#route.snapshot.queryParamMap.get('filter');
+    if (filter) this.#store.dispatch(StorageActions.updateFilter(filter));
   }
 
   removeItem(item: IStorageItem) {

@@ -51,7 +51,7 @@ export class TrackplayPlayerSelectComponent {
   readonly orderedPlayers = computed<IPlayer[]>(() => {
     const selected = this.selectedIds();
     const selectedSet = new Set(selected);
-    return [...this.players()].sort((a, b) => {
+    return this.players().toSorted((a, b) => {
       const aSel = selectedSet.has(a.id);
       const bSel = selectedSet.has(b.id);
       if (aSel && bSel) {
@@ -67,8 +67,8 @@ export class TrackplayPlayerSelectComponent {
     return !!this.#checked()[id];
   }
 
-  onToggle(id: TID, ev: CheckboxCustomEvent): void {
-    this.#checked.update((map) => ({ ...map, [id]: ev.detail.checked }));
+  onToggle(id: TID, event: CheckboxCustomEvent): void {
+    this.#checked.update((map) => ({ ...map, [id]: event.detail.checked }));
     this.emitSelection();
   }
 
