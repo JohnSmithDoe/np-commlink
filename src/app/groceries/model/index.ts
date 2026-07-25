@@ -3,14 +3,10 @@
  *
  * The grocery-owned types, split out of the `@shared/types` god-file
  * (DDD review #1). Shared-kernel types they build on (IBaseItem, IItemList,
- * ISearchResult, IItemDialogState, TItemListCategory, TItemListMode,
+ * ISearchResult, TItemListCategory, TItemListMode,
  * TTimestamp) are imported from `@shared/types`; everything grocery-specific
  * lives here and is imported by the groceries domain via `../model` /
  * `../../model` / `../../../model`.
- *
- * Renames vs kitchen-bot (to avoid colliding with timetracker's own types)
- * were already applied when the types lived in `@shared/types`:
- *   KB `IEditItemState` -> `IItemDialogState` (the shared-kernel dialog state).
  */
 import {
   IBaseItem,
@@ -20,7 +16,7 @@ import {
   TItemListCategory,
   TItemListMode,
   TTimestamp,
-} from '../../@shared/types';
+} from '../../@shared/model/types';
 
 // Grocery list feature-flags (kitchen-bot `ISettings`; slice key `listSettings`).
 // These were parked in @shared as a pseudo-shared "list settings" slice, but
@@ -116,11 +112,10 @@ export interface IGrocerySearchResult<
   shoppingItems?: IShoppingItem[];
 }
 
-// The grocery slice bundle. The grocery slices (products/shopping/storage) left
-// `IAppState` in the god-file split, so the cross-list engine helpers take this
-// recomposed view — built from per-slice feature selectors + the shared
-// listSettings selector inside the grocery selectors / effects — instead of
-// reading `state.storage/products/shopping` off the root state.
+// The grocery slice bundle. With no root-state type to read
+// `state.storage/products/shopping` off, the cross-list engine helpers take this
+// recomposed view — built from the per-slice feature selectors + the shared
+// listSettings selector inside the grocery selectors / effects.
 export type IGroceryLists = {
   storage: IStorageState;
   products: IProductsState;

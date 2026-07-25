@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { ICategory, TCategoryId } from '../../@shared/types';
+import { ICategory, TCategoryId } from '../../@shared/model/types';
 import {
   ICashAccount,
   ICashRule,

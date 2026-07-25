@@ -8,13 +8,12 @@ import {
   ModalController,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 import { IGameType } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TrackplayActions, selectGameTypeList } from '../../data';
+import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayGameTypeEditDialogComponent } from '../../smart-ui/game-type-edit-dialog/game-type-edit-dialog.component';
 import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item/game-type-list-item.component';
@@ -36,10 +35,10 @@ import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item
   ],
 })
 export class TrackplayGameTypesPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackplayFacade);
   readonly #modalCtrl = inject(ModalController);
 
-  readonly rxTypes = this.#store.selectSignal(selectGameTypeList);
+  readonly rxTypes = this.#facade.gameTypeList;
   readonly defaultTypeId = DEFAULT_GAME_TYPE_ID;
 
   constructor() {
@@ -47,7 +46,7 @@ export class TrackplayGameTypesPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(TrackplayActions.enterGameTypesPage());
+    this.#facade.enterGameTypesPage();
   }
 
   openCreate(): void {
@@ -59,7 +58,7 @@ export class TrackplayGameTypesPage implements ViewWillEnter {
   }
 
   deleteType(type: IGameType): void {
-    this.#store.dispatch(TrackplayActions.deleteGameType(type));
+    this.#facade.deleteGameType(type);
   }
 
   async #openDialog(gameTypeId?: string): Promise<void> {

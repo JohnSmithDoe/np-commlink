@@ -1,4 +1,4 @@
-import { INotificationsState } from '../../@shared/types';
+import { INotificationsState } from '../../@shared/model/types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic notifications fixtures. Owned by the notifications context (DDD

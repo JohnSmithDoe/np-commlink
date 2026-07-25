@@ -7,7 +7,7 @@ import {
   TItemListCategory,
   TItemListMode,
   TItemListSortType,
-} from '../../types';
+} from '../../model/types';
 
 /**
  * Domain-blind contract the generic `ListPageComponent` binds against. Each
@@ -44,6 +44,10 @@ export interface IListPageFacade {
   // lists (tracking) omit it — the shell only renders the entry button when
   // `hasCategories` is set, so it is never called for them.
   manageCategories?(): void;
+  // Persist a category the shell's name dialog just confirmed. Optional for the
+  // same reason as `manageCategories`: the dialog only renders when
+  // `hasCategories` is set.
+  saveCategory?(name: string): void;
 }
 
 export const LIST_FACADE = new InjectionToken<IListPageFacade>('LIST_FACADE');

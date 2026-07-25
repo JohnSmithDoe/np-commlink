@@ -22,20 +22,13 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { ICategory, TCategoryId } from '../../../@shared/types';
+import { ICategory, TCategoryId } from '../../../@shared/model/types';
 import { ICashTransaction, TCashTxnStatus } from '../../model';
-import { matchingTxt, uuidv4 } from '../../../@shared/util/app.utils';
-import { categoriesByIds } from '../../../@shared/util/category.utils';
-import { CategoryInputComponent } from '../../../@shared/ui/category-input/category-input.component';
-import { CategoriesDialogComponent } from '../../../@shared/ui/categories-dialog/categories-dialog.component';
-import {
-  CashActions,
-  selectCashCategories,
-  selectCashTransactions,
-} from '../../data';
+import { uuidv4 } from '../../../@shared/util/app.utils';
+import { CashCategoryPickerComponent } from '../../ui/cash-category-picker/cash-category-picker.component';
+import { CashFacade } from '../../data';
 import { centsToInput, eurToCents } from '../../util/money';
 
 type TDirection = 'expense' | 'income';
@@ -67,16 +60,14 @@ type TDirection = 'expense' | 'income';
     IonSegmentButton,
     IonToggle,
     TranslateModule,
-    CategoryInputComponent,
-    CategoriesDialogComponent,
+    CashCategoryPickerComponent,
   ],
 })
 export class CashTransactionEditModalComponent implements OnInit {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #transactions = this.#store.selectSignal(selectCashTransactions);
-  readonly categories = this.#store.selectSignal(selectCashCategories);
-  readonly categoriesDialogOpen = signal(false);
+  readonly #transactions = this.#facade.transactions;
+  readonly categories = this.#facade.categories;
 
   /** Create mode: the account the new txn belongs to. */
   accountId!: string;
@@ -88,14 +79,8 @@ export class CashTransactionEditModalComponent implements OnInit {
   readonly direction = signal<TDirection>('expense');
   readonly date = signal(dayjs().format('YYYY-MM-DD'));
   readonly pending = signal(false);
-  // The selected category id ('' = none) + its resolved {id,name} for the chip.
+  // The selected category id ('' = none).
   readonly categoryId = signal<TCategoryId>('');
-  readonly selectedCategories = computed<ICategory[]>(() =>
-    categoriesByIds(
-      this.categoryId() ? [this.categoryId()] : [],
-      this.categories()
-    )
-  );
 
   readonly isEdit = computed(() => !!this.transactionId);
   readonly #magnitudeCents = computed(() => eurToCents(this.amount()));
@@ -135,42 +120,17 @@ export class CashTransactionEditModalComponent implements OnInit {
     this.date.set(value);
   }
 
-  // Single-select category via the shared picker (a txn has one category).
-  openCategoriesDialog(): void {
-    this.categoriesDialogOpen.set(true);
-  }
-
-  closeCategoriesDialog(): void {
-    this.categoriesDialogOpen.set(false);
-  }
-
-  onPickCategory(selection: TCategoryId[]): void {
-    this.categoryId.set(selection[0] ?? '');
-    this.categoriesDialogOpen.set(false);
-  }
-
-  clearCategory(): void {
-    this.categoryId.set('');
-  }
-
+  // Category CRUD forwarded to the facade; the picker owns selection state.
   onAddCategory(category: ICategory): void {
-    this.#store.dispatch(CashActions.addCategory(category));
+    this.#facade.addCategory(category);
   }
 
   onDeleteCategory(id: TCategoryId): void {
-    this.#store.dispatch(CashActions.removeCategory(id));
-    if (this.categoryId() === id) this.categoryId.set('');
+    this.#facade.removeCategory(id);
   }
 
   onRenameCategory({ id, to }: { id: TCategoryId; to: string }): void {
-    // A rename onto an existing name merges in the reducer (the id is dropped
-    // and its txns remapped to the survivor); follow the survivor so save()
-    // doesn't re-assert the now-orphan id from the local draft.
-    const survivor = this.categories().find(
-      (c) => c.id !== id && matchingTxt(c.name) === matchingTxt(to)
-    );
-    this.#store.dispatch(CashActions.updateCategory(id, to));
-    if (survivor && this.categoryId() === id) this.categoryId.set(survivor.id);
+    this.#facade.updateCategory(id, to);
   }
 
   onPending(value: boolean): void {
@@ -194,9 +154,7 @@ export class CashTransactionEditModalComponent implements OnInit {
     };
     const existing = this.#existing();
     if (existing) {
-      this.#store.dispatch(
-        CashActions.updateTransaction({ ...existing, ...patch })
-      );
+      this.#facade.updateTransaction({ ...existing, ...patch });
     } else {
       const transaction: ICashTransaction = {
         id: uuidv4(),
@@ -204,7 +162,7 @@ export class CashTransactionEditModalComponent implements OnInit {
         source: 'manual',
         ...patch,
       };
-      this.#store.dispatch(CashActions.addTransaction(transaction));
+      this.#facade.addTransaction(transaction);
     }
     void this.#modalCtrl.dismiss();
   }

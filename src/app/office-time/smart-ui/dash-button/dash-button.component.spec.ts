@@ -11,6 +11,10 @@ describe('DashButtonComponent', () => {
 
   const create = (todayIsOfficeDay: boolean): DashButtonComponent => {
     store.overrideSelector(selectTodayIsOfficeDay, todayIsOfficeDay);
+    // The facade is a root singleton, so its `todayIsOfficeDay` signal is
+    // created once — push the overridden value through the state stream so the
+    // existing computed recomputes (overrideSelector alone doesn't emit).
+    store.refreshState();
     return TestBed.createComponent(DashButtonComponent).componentInstance;
   };
 

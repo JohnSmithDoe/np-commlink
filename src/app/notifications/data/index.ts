@@ -15,4 +15,8 @@ export {
   selectDoneNotifications,
   selectNewNotifications,
 } from './notifications.selector';
-export { notificationsLazyProviders } from './provide-notifications-lazy';
+export { NotificationsFacade } from './notifications.facade';
+export {
+  notificationsLazyProviders,
+  notificationsHydrationResolver,
+} from './provide-notifications-lazy';

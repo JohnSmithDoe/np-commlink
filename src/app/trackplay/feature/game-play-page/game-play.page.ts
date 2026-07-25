@@ -19,20 +19,11 @@ import {
   IonToolbar,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, play, square } from 'ionicons/icons';
 import { IRound, TID } from '../../model';
-import {
-  TrackplayActions,
-  selectGameById,
-  selectPlayers,
-  selectResultByGame,
-  selectRoundsByGame,
-  selectScoresByGame,
-  selectWinnerByGame,
-} from '../../data';
+import { TrackplayFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
 
 /**
@@ -66,7 +57,7 @@ import { ScorePipe } from '../../util/score.pipe';
   ],
 })
 export class TrackplayGamePlayPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
 
@@ -78,16 +69,16 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   // scss) — no bitmap asset. This drives the confetti sparks via @for.
   readonly victoryConfetti = Array.from({ length: 14 });
 
-  readonly rxGame = this.#store.selectSignal(selectGameById(this.id));
-  readonly rxPlayers = this.#store.selectSignal(selectPlayers);
-  readonly rxRounds = this.#store.selectSignal(selectRoundsByGame(this.id));
-  readonly rxScores = this.#store.selectSignal(selectScoresByGame(this.id));
-  readonly rxResult = this.#store.selectSignal(selectResultByGame(this.id));
-  readonly rxWinner = this.#store.selectSignal(selectWinnerByGame(this.id));
+  readonly game = this.#facade.gameById(this.id);
+  readonly players = this.#facade.players;
+  readonly rounds = this.#facade.roundsByGame(this.id);
+  readonly scores = this.#facade.scoresByGame(this.id);
+  readonly result = this.#facade.resultByGame(this.id);
+  readonly winner = this.#facade.winnerByGame(this.id);
 
   // Column order is the game's own player order; names resolved via the map.
-  readonly playerIds = computed<TID[]>(() => this.rxGame()?.players ?? []);
-  readonly ended = computed<boolean>(() => !!this.rxGame()?.ended);
+  readonly playerIds = computed<TID[]>(() => this.game()?.players ?? []);
+  readonly ended = computed<boolean>(() => !!this.game()?.ended);
 
   // The three horizontally-synced scroll regions.
   readonly headerRef = viewChild<ElementRef<HTMLElement>>('headerRow');
@@ -102,7 +93,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
     // Keep the freshly-appended trailing blank round in view. Runs whenever the
     // round count grows (a value landed on the last row) and the game is live.
     effect(() => {
-      const count = this.rxRounds().length;
+      const count = this.rounds().length;
       const grew = count > this.#prevRoundCount;
       this.#prevRoundCount = count;
       if (grew && !this.ended()) {
@@ -112,11 +103,11 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(TrackplayActions.enterGamePage(this.id));
+    this.#facade.enterGamePage(this.id);
   }
 
   playerName(pid: TID): string {
-    return this.rxPlayers()[pid]?.name ?? '';
+    return this.players()[pid]?.name ?? '';
   }
 
   // A round's cell value for a player — 0 when absent (e.g. a player added to
@@ -131,9 +122,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
     const raw = (event.target as unknown as { value: string | number | null })
       .value;
     const value = Number.parseInt(String(raw ?? ''), 10) || 0;
-    this.#store.dispatch(
-      TrackplayActions.setRoundValue(this.id, roundId, playerId, value)
-    );
+    this.#facade.setRoundValue(this.id, roundId, playerId, value);
   }
 
   // Enter commits the cell by blurring its native input (fires ionBlur).
@@ -164,7 +153,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   toggleEnded(): void {
-    this.#store.dispatch(TrackplayActions.toggleGameEnded(this.id));
+    this.#facade.toggleGameEnded(this.id);
   }
 
   goBack(): void {

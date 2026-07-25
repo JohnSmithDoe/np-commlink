@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { IBaseItem, TIonDragEvent } from '../types';
+import { IBaseItem, TIonDragEvent } from '../model/types';
 import {
   checkItemOptionsOnDrag,
   itemHasCategory,

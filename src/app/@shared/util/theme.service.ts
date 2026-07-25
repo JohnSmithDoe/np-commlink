@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { TTheme } from '../types';
+import { TTheme } from '../model/types';
 
 // The <meta name="theme-color"> value per theme (browser/PWA chrome + Android
 // status-bar tint). Cyberpunk mirrors --sr-bg; boomer mirrors the plain --sr-bg.

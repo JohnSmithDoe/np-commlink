@@ -30,6 +30,7 @@ export {
 } from './cash.selector';
 export type { TAccountTxn } from './cash.selector';
 
+export { CashFacade } from './cash.facade';
 export { CashCategoriesPageFacade } from './cash-categories-page.facade';
 
-export { cashLazyProviders } from './provide-cash-lazy';
+export { cashLazyProviders, cashHydrationResolver } from './provide-cash-lazy';

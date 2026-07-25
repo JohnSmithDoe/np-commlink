@@ -10,8 +10,7 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { IAppState } from '../types';
-import { mockAppState } from './test-data';
+import { mockAppState, TMockState } from './test-data';
 
 type TestProvider = Provider | EnvironmentProviders;
 
@@ -32,17 +31,16 @@ export const BASE_TEST_PROVIDERS: TestProvider[] = [
 
 /**
  * Build the provider array for a component/service spec. Includes a
- * {@link provideMockStore} seeded with a full default {@link IAppState} so
- * `store.selectSignal(featureSelector)` returns sensible values out of the
- * box. Pass a partial state to seed specific slices; use
- * `store.overrideSelector(...)` / `store.setState(...)` inside the spec for
+ * {@link provideMockStore} seeded with the default kernel state (see
+ * {@link mockAppState}) so `store.selectSignal(featureSelector)` returns
+ * sensible values out of the box. Pass a partial state to seed specific slices;
+ * use `store.overrideSelector(...)` / `store.setState(...)` inside the spec for
  * anything more specific (e.g. router-derived selectors).
  */
 export function provideTestingProviders(
-  // Known kernel slices stay type-checked; lazy-feature slices no longer in
-  // IAppState (e.g. `trackplay`, split into its own model — DDD review #1) are
-  // allowed as extra MockStore initial state.
-  initialState: Partial<IAppState> & Record<string, unknown> = {}
+  // Lazy domain slices ride the Record half of TMockState — a domain type can't
+  // be named from the domain-blind kernel.
+  initialState: TMockState = {}
 ): TestProvider[] {
   return [
     ...BASE_TEST_PROVIDERS,

@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { IBaseItem, TCategoryId, TIonDragEvent } from '../types';
+import { IBaseItem, TCategoryId, TIonDragEvent } from '../model/types';
 
 export const uuidv4 = () => crypto.randomUUID();
 

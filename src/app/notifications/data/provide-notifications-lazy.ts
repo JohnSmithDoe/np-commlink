@@ -1,11 +1,13 @@
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
+import { moduleHydrationResolver } from '../../@shared/data/module-hydration.resolver';
+import { NotificationsActions } from '../../@shared/data/notification/notifications.actions';
 import { notificationsReducer } from './notifications.reducer';
-import { NotificationsLoadEffects } from './notifications-load.effects';
-import { NotificationsSaveEffects } from './notifications-save.effects';
-import { NotificationsTelemetryEffects } from './notifications-telemetry.effects';
-import { NotificationsDebugEffects } from './notifications-debug.effects';
+import { NotificationsLoadEffects } from './effects/notifications-load.effects';
+import { NotificationsSaveEffects } from './effects/notifications-save.effects';
+import { NotificationsTelemetryEffects } from './effects/notifications-telemetry.effects';
+import { NotificationsDebugEffects } from './effects/notifications-debug.effects';
 
 /**
  * Lazy state + effects for `notifications`, registered on the `/notifications`
@@ -30,3 +32,9 @@ export const notificationsLazyProviders: Array<
     NotificationsDebugEffects
   ),
 ];
+
+/** Route hydration for the notifications slice (dispatched by the route resolver). */
+export const notificationsHydrationResolver = moduleHydrationResolver(
+  NotificationsActions.load,
+  NotificationsActions.loaded
+);

@@ -1,4 +1,4 @@
-import { INotification, INotificationsState } from '../../@shared/types';
+import { INotification, INotificationsState } from '../../@shared/model/types';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,

@@ -18,7 +18,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, person, trash } from 'ionicons/icons';
-import { TIonDragEvent } from '../../../@shared/types';
+import { TIonDragEvent } from '../../../@shared/model/types';
 import { IPlayer, IPlayerStats } from '../../model';
 import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
 

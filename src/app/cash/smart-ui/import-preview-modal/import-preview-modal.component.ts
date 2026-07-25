@@ -18,11 +18,10 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { TCategoryId } from '../../../@shared/types';
+import { TCategoryId } from '../../../@shared/model/types';
 import { ICashTransaction } from '../../model';
-import { CashActions, selectCashCategories } from '../../data';
+import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 /**
@@ -52,9 +51,9 @@ import { MoneyEurPipe } from '../../util/money.pipe';
   ],
 })
 export class CashImportPreviewModalComponent {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #categories = this.#store.selectSignal(selectCashCategories);
+  readonly #categories = this.#facade.categories;
   readonly #categoryNameById = computed(
     () => new Map(this.#categories().map((c) => [c.id, c.name]))
   );
@@ -74,7 +73,7 @@ export class CashImportPreviewModalComponent {
 
   confirm(): void {
     if (this.transactions.length > 0) {
-      this.#store.dispatch(CashActions.importTransactions(this.transactions));
+      this.#facade.importTransactions(this.transactions);
     }
     void this.#modalCtrl.dismiss();
   }

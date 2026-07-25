@@ -6,11 +6,10 @@ import {
   IonListHeader,
   IonToggle,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { BooleanKeys } from '../../../@shared/types';
+import { BooleanKeys } from '../../../@shared/model/types';
 import { IListSettings } from '../../model';
-import { ListSettingsActions, selectListSettingsState } from '../../data';
+import { ListSettingsFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({
@@ -29,10 +28,10 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   ],
 })
 export class ListSettingsPage {
-  readonly #store = inject(Store);
-  readonly settings = this.#store.selectSignal(selectListSettingsState);
+  readonly #facade = inject(ListSettingsFacade);
+  readonly settings = this.#facade.settings;
 
   toggleFlag(flag: BooleanKeys<IListSettings>) {
-    this.#store.dispatch(ListSettingsActions.toggleFlag(flag));
+    this.#facade.toggleFlag(flag);
   }
 }

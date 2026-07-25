@@ -18,10 +18,9 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { ICashTransaction } from '../../model';
-import { CashActions, selectCashTransactions } from '../../data';
+import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { findReconciliationCandidates } from '../../util/reconcile';
 
@@ -52,9 +51,9 @@ import { findReconciliationCandidates } from '../../util/reconcile';
   ],
 })
 export class CashReconcileModalComponent {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #transactions = this.#store.selectSignal(selectCashTransactions);
+  readonly #transactions = this.#facade.transactions;
 
   /** The pending manual entry to reconcile (imperative componentProp). */
   transaction!: ICashTransaction;
@@ -68,9 +67,7 @@ export class CashReconcileModalComponent {
   }
 
   reconcileWith(imported: ICashTransaction): void {
-    this.#store.dispatch(
-      CashActions.reconcileTransaction(this.transaction.id, imported.id)
-    );
+    this.#facade.reconcileTransaction(this.transaction.id, imported.id);
     void this.#modalCtrl.dismiss();
   }
 

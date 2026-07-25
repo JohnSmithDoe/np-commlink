@@ -13,7 +13,6 @@ import {
   PopoverController,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
@@ -23,13 +22,7 @@ import {
   optionsOutline,
 } from 'ionicons/icons';
 import { IGame, TID } from '../../model';
-import {
-  TrackplayActions,
-  selectGamesForPlayer,
-  selectGameTypes,
-  selectPlayerById,
-  selectStatsForPlayer,
-} from '../../data';
+import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
 import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
 import { TrackplayPlayerEditDialogComponent } from '../../smart-ui/player-edit-dialog/player-edit-dialog.component';
@@ -59,7 +52,7 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
   ],
 })
 export class TrackplayPlayerPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #modalCtrl = inject(ModalController);
@@ -68,17 +61,17 @@ export class TrackplayPlayerPage implements ViewWillEnter {
   // The route id is fixed for the lifetime of this page instance.
   readonly id: TID = this.#route.snapshot.paramMap.get('id') ?? '';
 
-  readonly rxPlayer = this.#store.selectSignal(selectPlayerById(this.id));
-  readonly rxGames = this.#store.selectSignal(selectGamesForPlayer(this.id));
-  readonly rxStats = this.#store.selectSignal(selectStatsForPlayer(this.id));
-  readonly rxGameTypes = this.#store.selectSignal(selectGameTypes);
+  readonly rxPlayer = this.#facade.playerById(this.id);
+  readonly rxGames = this.#facade.gamesForPlayer(this.id);
+  readonly rxStats = this.#facade.statsForPlayer(this.id);
+  readonly rxGameTypes = this.#facade.gameTypes;
 
   constructor() {
     addIcons({ addOutline, arrowBackOutline, createOutline, optionsOutline });
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(TrackplayActions.enterPlayerPage(this.id));
+    this.#facade.enterPlayerPage(this.id);
   }
 
   typeName(game: IGame): string {
@@ -94,7 +87,7 @@ export class TrackplayPlayerPage implements ViewWillEnter {
   }
 
   deleteGame(game: IGame): void {
-    this.#store.dispatch(TrackplayActions.deleteGame(game));
+    this.#facade.deleteGame(game);
   }
 
   async openPlayerEdit(): Promise<void> {

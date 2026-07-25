@@ -15,9 +15,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
-import { Store } from '@ngrx/store';
 import {
-  OfficeTimeActions,
+  OfficeTimeFacade,
   dayjsFromString,
   dayjsToString,
   daysToFreedaysHighlightsInputTransform,
@@ -40,7 +39,7 @@ import { DateTimeHighlight } from '../../model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashOfficeDaysEditComponent {
-  readonly #store = inject(Store);
+  readonly #facade = inject(OfficeTimeFacade);
   readonly title = input<string | undefined>();
   readonly officedays = input<Array<Dayjs> | undefined | null>();
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
@@ -66,6 +65,6 @@ export class DashOfficeDaysEditComponent {
       .filter((date): date is string => !!date)
       .map((date) => dayjsFromString(date))
       .filter((day): day is Dayjs => day !== null);
-    this.#store.dispatch(OfficeTimeActions.setOfficedays(dates));
+    this.#facade.setOfficedays(dates);
   }
 }

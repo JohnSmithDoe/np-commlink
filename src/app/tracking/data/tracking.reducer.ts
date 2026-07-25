@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { TTimestamp } from '../../@shared/types';
+import { TTimestamp } from '../../@shared/model/types';
 import { ITrackingItem, ITrackingState } from '../model';
 import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';

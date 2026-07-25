@@ -14,14 +14,9 @@ import {
   IonSelectOption,
   IonToggle,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { IGameConfig, ITrackplayConfig } from '../../model';
-import {
-  TrackplayActions,
-  selectGameTypeList,
-  selectTrackplayConfig,
-} from '../../data';
+import { TrackplayFacade } from '../../data';
 
 type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
 
@@ -49,9 +44,9 @@ type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
   ],
 })
 export class TrackplayGameSettingsPopoverComponent {
-  readonly #store = inject(Store);
-  readonly #config = this.#store.selectSignal(selectTrackplayConfig);
-  readonly rxGameTypes = this.#store.selectSignal(selectGameTypeList);
+  readonly #facade = inject(TrackplayFacade);
+  readonly #config = this.#facade.config;
+  readonly rxGameTypes = this.#facade.gameTypeList;
 
   /** Set imperatively via `componentProps`. */
   mode: TSettingsMode = 'games';
@@ -68,9 +63,9 @@ export class TrackplayGameSettingsPopoverComponent {
 
   #dispatch(config: Partial<IGameConfig>): void {
     if (this.mode === 'gamesForPlayer') {
-      this.#store.dispatch(TrackplayActions.updateGamesForPlayerConfig(config));
+      this.#facade.updateGamesForPlayerConfig(config);
     } else {
-      this.#store.dispatch(TrackplayActions.updateGamesConfig(config));
+      this.#facade.updateGamesConfig(config);
     }
   }
 
@@ -95,16 +90,14 @@ export class TrackplayGameSettingsPopoverComponent {
   }
 
   setPlayersFilter(value: string): void {
-    this.#store.dispatch(
-      TrackplayActions.updatePlayersConfig({ filter: value })
-    );
+    this.#facade.updatePlayersConfig({ filter: value });
   }
 
   setPlayersDir(value: 'asc' | 'desc'): void {
-    this.#store.dispatch(TrackplayActions.updatePlayersConfig({ dir: value }));
+    this.#facade.updatePlayersConfig({ dir: value });
   }
 
   setPlayersSort(value: 'name' | 'date' | 'last'): void {
-    this.#store.dispatch(TrackplayActions.updatePlayersConfig({ sort: value }));
+    this.#facade.updatePlayersConfig({ sort: value });
   }
 }

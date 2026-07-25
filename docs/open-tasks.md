@@ -89,8 +89,9 @@ locale)`, so the cash side is a one-line change once a locale source exists.
 - **German label truncation** — `list-settings` "Kategorie-Schnellhinzufügen anzeigen" ellipsizes
   at 430 px. No CSS fix (ion-toggle's label is shadow DOM, exposes only `track`/`handle` as
   parts) — the only option is shortening the German, a wording call.
-- **`item-dialogs` `_storage` default** — the initial-`listId` default keys off persisted state;
-  there's no domain-neutral valid `TItemListId`. Negligible.
+- ~~**`item-dialogs` `_storage` default**~~ — **gone**: the `itemDialogs` slice was retired, so
+  there is no initial `listId` to default (the open-command is a nullable signal on
+  `ItemDialogHost`; "closed" is `null`, not a sentinel list).
 - **`loadChildren` code-split** of the grocery/tasks (and now every lazy) state — negligible
   bundle gain: the bundle is framework-dominated (~1 MB vendor); lazy state buys boot-hydration +
   memory, not KB. Deliberately not chased.
@@ -101,11 +102,6 @@ locale)`, so the cash side is a one-line change once a locale source exists.
 - **Two off-contract facade methods** (`addCategory`/`showEditDialog`) remain on the concrete
   grocery/tasks facades (deliberately off the shared `LIST_FACADE` contract — grocery/tasks-only
   ops). Minor.
-- **`OfficeTimeSettings.showTotalTime` looks dead** — after the settings re-scope the office-time
-  settings slice (`officeTimeSettings`) holds only `showTotalTime`, and nothing reads it (the
-  settings page edits `dashboardSettings`/`targetOfficeDaysPerWeek` off the `officeTime` slice; no
-  selector/template references `showTotalTime`). Either wire it to a real toggle or delete the flag
-  (and, if empty, the whole slice). Left as-is for now — out of scope of the re-scope.
 
 ---
 
@@ -115,6 +111,18 @@ locale)`, so the cash side is a one-line change once a locale source exists.
   `aria-checked` (which flips through transient values via the async `toggleFlag` effect + Ionic's
   optimistic flip). Now derives the expected post-toggle value from the settled `before` and
   asserts it with a web-first retrying `toHaveAttribute`. Stable over 15× serial reruns.
+- ~~**item-dialogs effects specs (`{grocery,tasks,tracking}-item-dialogs.effects.spec.ts`)**~~ —
+  **fixed**: the `@angular/build:unit-test` runner forces **`isolate: false`**, so the module-level
+  `selectEditState`/`selectTasksState`/`selectTrackingState` are shared across spec files; a read
+  fed through `provideMockStore({initialState})` could intermittently see a sibling file's state.
+  The item-dialogs effects were uniquely exposed because their `listId` guard *passes* on the
+  reducer's initial `_storage` dialog, emitting a spurious `add({name:''})`. Now each such read is
+  pinned with `store.overrideSelector(...)` + `store.refreshState()`, released in
+  `afterEach(() => store.resetSelectors())` (else the override itself leaks into other files).
+  Stable over 24× reruns (was ~15–30% flaky). **Since obsolete**: all three specs are deleted with
+  their effects — the class of flake is structurally gone, because the open-command no longer has a
+  reducer to carry a sentinel initial state, and the specs seed `ItemDialogHost` (a per-TestBed
+  instance) instead of overriding a module-level selector.
 
 ---
 

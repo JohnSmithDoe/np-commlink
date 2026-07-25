@@ -14,9 +14,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
-import { Store } from '@ngrx/store';
 import {
-  OfficeTimeActions,
+  OfficeTimeFacade,
   dayjsToString,
   daysToHolidaysHighlightsInputTransform,
 } from '../../data';
@@ -38,7 +37,7 @@ import { DateTimeHighlight } from '../../model';
 })
 export class DashFreedaysEditComponent {
   readonly today = dayjsToString(dayjs());
-  readonly #store = inject(Store);
+  readonly #facade = inject(OfficeTimeFacade);
 
   readonly title = input<string | undefined>();
   readonly freedays = input<Array<string>, Array<Dayjs> | undefined | null>(
@@ -59,6 +58,6 @@ export class DashFreedaysEditComponent {
       ? event.detail.value
       : [event.detail.value];
 
-    this.#store.dispatch(OfficeTimeActions.setFreedays(dates));
+    this.#facade.setFreedays(dates);
   }
 }

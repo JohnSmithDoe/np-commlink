@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ICategory } from '../../@shared/types';
+import { ICategory } from '../../@shared/model/types';
 import { IGrocerySearchResult, IStorageItem, IStorageState } from '../model';
 import {
   filterAndSortItemList,
@@ -12,7 +12,7 @@ export const selectStorageState =
 
 // The storage list's category catalog (dialog refactor: the edit dialog reads
 // the catalog straight from the domain slice instead of the shared
-// itemDialogs.category working-copy).
+// category working-copy).
 export const selectStorageCategories = createSelector(
   selectStorageState,
   (state): ICategory[] => state.categories

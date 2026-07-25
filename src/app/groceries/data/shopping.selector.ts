@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ICategory } from '../../@shared/types';
+import { ICategory } from '../../@shared/model/types';
 import { IGrocerySearchResult, IShoppingItem, IShoppingState } from '../model';
 import {
   filterBySearchQuery,

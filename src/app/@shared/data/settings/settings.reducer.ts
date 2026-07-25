@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { ISettings } from '../../types';
-import { VERSION } from '../../util/migrations';
+import { ISettings } from '../../model/types';
+import { VERSION } from '../../util/db/migrations';
 import { SettingsActions } from './settings.actions';
 
 // The single source of the persisted schema version (was duplicated as a

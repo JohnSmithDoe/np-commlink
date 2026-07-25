@@ -6,7 +6,7 @@ import {
   IonCardTitle,
 } from '@ionic/angular/standalone';
 import { WordclockComponent } from '../../../@shared/ui/wordclock/wordclock.component';
-import { TSettings } from '../../../@shared/ui/wordclock/wordclock.utils';
+import { TSettings } from '../../../@shared/util/wordclock/wordclock.utils';
 
 @Component({
   selector: 'app-dash-wordclock',

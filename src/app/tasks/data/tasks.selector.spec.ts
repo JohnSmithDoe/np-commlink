@@ -73,5 +73,44 @@ describe('tasks.selector', () => {
           ?.map((index) => index.name)
       ).toEqual(['low', 'high']);
     });
+
+    it('sorts task items by due date, falling back to name when both are unset', () => {
+      const dated = mockTasksState({
+        sort: { sortBy: 'dueAt', sortDir: 'asc' },
+        items: [
+          mockTaskItem({ id: 'l', name: 'Aaa', dueAt: '2024-12-01' }),
+          mockTaskItem({ id: 'e', name: 'Zzz', dueAt: '2024-01-01' }),
+        ],
+      });
+      expect(
+        selectTasksListItems.projector(dated, undefined)?.map((task) => task.id)
+      ).toEqual(['e', 'l']);
+
+      const undated = mockTasksState({
+        sort: { sortBy: 'dueAt', sortDir: 'asc' },
+        items: [
+          mockTaskItem({ id: '1', name: 'B' }),
+          mockTaskItem({ id: '2', name: 'A' }),
+        ],
+      });
+      expect(
+        selectTasksListItems
+          .projector(undated, undefined)
+          ?.map((task) => task.name)
+      ).toEqual(['A', 'B']);
+    });
+
+    it('sorts task items by due date descending, latest first', () => {
+      const state = mockTasksState({
+        sort: { sortBy: 'dueAt', sortDir: 'desc' },
+        items: [
+          mockTaskItem({ id: 'e', name: 'early', dueAt: '2024-01-01' }),
+          mockTaskItem({ id: 'l', name: 'late', dueAt: '2024-12-01' }),
+        ],
+      });
+      expect(
+        selectTasksListItems.projector(state, undefined)?.map((task) => task.id)
+      ).toEqual(['l', 'e']);
+    });
   });
 });

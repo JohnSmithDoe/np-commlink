@@ -5,7 +5,7 @@ import {
   ISearchResult,
   TItemListCategory,
   TItemListSort,
-} from '../../types';
+} from '../../model/types';
 import {
   itemHasCategory,
   matchesSearch,

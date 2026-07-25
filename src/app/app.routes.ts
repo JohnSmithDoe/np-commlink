@@ -1,83 +1,57 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { moduleHydrationResolver } from './@shared/data/module-hydration.resolver';
-import { CATEGORIES_FACADE } from './@shared/util/list/categories-page.facade';
+import { CATEGORIES_FACADE } from './@shared/util/categories/categories-page.facade';
 import {
-  GroceriesActions,
-  GroceryCategoriesPageFacade,
-  ListSettingsActions,
   groceriesLazyProviders,
+  groceriesHydrationResolver,
+  GroceryCategoriesPageFacade,
   listSettingsLazyProviders,
+  listSettingsHydrationResolver,
 } from './groceries/data';
 import {
-  TasksActions,
   TasksCategoriesPageFacade,
   tasksLazyProviders,
+  tasksHydrationResolver,
 } from './tasks/data';
 import {
-  CashActions,
   CashCategoriesPageFacade,
   cashLazyProviders,
+  cashHydrationResolver,
 } from './cash/data';
-import { TrackplayActions, trackplayLazyProviders } from './trackplay/data';
 import {
-  OfficeTimeSettingsActions,
-  OfficeTimeActions,
+  trackplayLazyProviders,
+  trackplayHydrationResolver,
+} from './trackplay/data';
+import {
   officeTimeLazyProviders,
+  officeTimeHydrationResolver,
 } from './office-time/data';
-import { TrackingActions, trackingLazyProviders } from './tracking/data';
-import { NotificationsActions } from './@shared/util/notifications/notifications.actions';
-import { notificationsLazyProviders } from './notifications/data';
-import { BarcodeActions, barcodeLazyProviders } from './barcode/data';
+import {
+  trackingLazyProviders,
+  trackingHydrationResolver,
+} from './tracking/data';
+import {
+  notificationsLazyProviders,
+  notificationsHydrationResolver,
+} from './notifications/data';
+import { barcodeLazyProviders, barcodeHydrationResolver } from './barcode/data';
 
-// Shared across the five `/trackplay/*` routes: they form one section over a
-// single lazy slice, so each carries the same providers + hydration resolver
-// (lazy-modules Phase D). One resolve object reference is safe — route config
-// is read-only.
-const trackplayResolve = {
-  hydrated: moduleHydrationResolver(
-    TrackplayActions.load,
-    TrackplayActions.loaded
-  ),
-};
+// Each bounded context owns its route hydration resolver (built from its own
+// load/loaded lifecycle) inside its `provide-*-lazy.ts`, so app.routes never
+// touches the action groups — it just references the exported resolvers. One
+// resolve-object reference is reused across a context's sibling routes (route
+// config is read-only).
+const trackplayResolve = { hydrated: trackplayHydrationResolver };
 
-// Shared across the two routes that read `state.tracking` — `/tracking` (the
-// tracker) and `/data/:listId` (the stats page). Both carry the tracking lazy
-// providers + this resolver so tracking hydrates on entry (lazy-modules §7).
-const trackingResolve = {
-  hydrated: moduleHydrationResolver(
-    TrackingActions.load,
-    TrackingActions.loaded
-  ),
-};
+const trackingResolve = { hydrated: trackingHydrationResolver };
 
-// Shared across the two routes that touch the office-time context
-// (`/settings`, `/office-time`). The context owns two slices, so two resolve
-// keys hydrate them independently (lazy-modules Phase D).
-const officeTimeResolve = {
-  officeTimeSettings: moduleHydrationResolver(
-    OfficeTimeSettingsActions.load,
-    OfficeTimeSettingsActions.loaded
-  ),
-  officeTime: moduleHydrationResolver(
-    OfficeTimeActions.load,
-    OfficeTimeActions.loaded
-  ),
-};
+const officeTimeResolve = { hydrated: officeTimeHydrationResolver };
 
-// Shared across the three grocery routes (`shopping`/`storage`/`products`). The
-// context co-hydrates its three lists via one `[Groceries] load/loaded` (see
-// provide-groceries-lazy), plus the grocery `listSettings` slice on its own key
-// (the pages read the cross-list + quick-add flags off it).
+// The grocery context co-hydrates its three lists via one `[Groceries]
+// load/loaded`, plus the `listSettings` slice on its own key.
 const groceriesResolve = {
-  hydrated: moduleHydrationResolver(
-    GroceriesActions.load,
-    GroceriesActions.loaded
-  ),
-  listSettings: moduleHydrationResolver(
-    ListSettingsActions.load,
-    ListSettingsActions.loaded
-  ),
+  hydrated: groceriesHydrationResolver,
+  listSettings: listSettingsHydrationResolver,
 };
 
 export const routes: Routes = [
@@ -135,12 +109,7 @@ export const routes: Routes = [
     // The SIGIL badge is its own sealed lazy context now (sheriff-tighten §1) —
     // no longer a field inside office-time, so no cross-domain bridge.
     providers: barcodeLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(
-        BarcodeActions.load,
-        BarcodeActions.loaded
-      ),
-    },
+    resolve: { hydrated: barcodeHydrationResolver },
     loadComponent: () =>
       import('./barcode/feature/barcode.page').then((m) => m.BarcodePage),
   },
@@ -150,12 +119,7 @@ export const routes: Routes = [
     // notifications is lazy too (§7): its own list registers + hydrates here.
     // Off-route writers (tracking) go through the durable NotificationsStore.
     providers: notificationsLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(
-        NotificationsActions.load,
-        NotificationsActions.loaded
-      ),
-    },
+    resolve: { hydrated: notificationsHydrationResolver },
     loadComponent: () =>
       import('./notifications/feature/notifications.page').then(
         (m) => m.NotificationsPage
@@ -196,9 +160,7 @@ export const routes: Routes = [
     path: 'tasks/:listId',
     data: { title: marker('grocery.page-title.tasks') },
     providers: tasksLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(TasksActions.load, TasksActions.loaded),
-    },
+    resolve: { hydrated: tasksHydrationResolver },
     loadComponent: () =>
       import('./tasks/feature/tasks-page/tasks.page').then((m) => m.TasksPage),
   },
@@ -219,12 +181,7 @@ export const routes: Routes = [
     // registers just that (NOT the full grocery context — see
     // listSettingsLazyProviders) and hydrates it on entry.
     providers: listSettingsLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(
-        ListSettingsActions.load,
-        ListSettingsActions.loaded
-      ),
-    },
+    resolve: { hydrated: listSettingsHydrationResolver },
     loadComponent: () =>
       import('./groceries/feature/list-settings-page/list-settings.page').then(
         (m) => m.ListSettingsPage
@@ -241,9 +198,7 @@ export const routes: Routes = [
       ...tasksLazyProviders,
       { provide: CATEGORIES_FACADE, useExisting: TasksCategoriesPageFacade },
     ],
-    resolve: {
-      hydrated: moduleHydrationResolver(TasksActions.load, TasksActions.loaded),
-    },
+    resolve: { hydrated: tasksHydrationResolver },
     loadComponent: () =>
       import('./@shared/feature/edit-categories-page/edit-categories.page').then(
         (m) => m.EditCategoriesPage
@@ -270,9 +225,7 @@ export const routes: Routes = [
     path: 'cash',
     data: { title: marker('cash.page-title.cash') },
     providers: cashLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./cash/feature/cash-page/cash.page').then((m) => m.CashPage),
   },
@@ -281,9 +234,7 @@ export const routes: Routes = [
     path: 'cash/rules',
     data: { title: marker('cash.page-title.rules') },
     providers: cashLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./cash/feature/cash-rules-page/cash-rules.page').then(
         (m) => m.CashRulesPage
@@ -293,9 +244,7 @@ export const routes: Routes = [
     path: 'cash/report',
     data: { title: marker('cash.page-title.report') },
     providers: cashLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./cash/feature/cash-report-page/cash-report.page').then(
         (m) => m.CashReportPage
@@ -310,9 +259,7 @@ export const routes: Routes = [
       ...cashLazyProviders,
       { provide: CATEGORIES_FACADE, useExisting: CashCategoriesPageFacade },
     ],
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./@shared/feature/edit-categories-page/edit-categories.page').then(
         (m) => m.EditCategoriesPage
@@ -324,9 +271,7 @@ export const routes: Routes = [
     path: 'cash/category/:categoryId',
     data: { title: marker('grocery.page-title.categories') },
     providers: cashLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./cash/feature/cash-category-page/cash-category.page').then(
         (m) => m.CashCategoryPage
@@ -336,9 +281,7 @@ export const routes: Routes = [
     path: 'cash/:accountId',
     data: { title: marker('cash.page-title.cash') },
     providers: cashLazyProviders,
-    resolve: {
-      hydrated: moduleHydrationResolver(CashActions.load, CashActions.loaded),
-    },
+    resolve: { hydrated: cashHydrationResolver },
     loadComponent: () =>
       import('./cash/feature/cash-account-page/cash-account.page').then(
         (m) => m.CashAccountPage

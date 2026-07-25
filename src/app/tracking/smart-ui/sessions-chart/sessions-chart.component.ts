@@ -4,12 +4,11 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
-import { selectSessionsByDayAndName } from '../../data';
-import { chartColors } from '../../../@shared/util/chart-colors';
+import { TrackingListPageFacade } from '../../data';
+import { chartColors } from '../../../@shared/util/charts/chart-colors';
 
 Chart.register(...registerables);
 
@@ -21,7 +20,7 @@ Chart.register(...registerables);
   imports: [BaseChartDirective],
 })
 export class SessionsChartComponent {
-  readonly #raw = inject(Store).selectSignal(selectSessionsByDayAndName);
+  readonly #raw = inject(TrackingListPageFacade).sessionsByDayAndName;
   readonly #series = chartColors().series;
 
   readonly hasData = computed(() =>

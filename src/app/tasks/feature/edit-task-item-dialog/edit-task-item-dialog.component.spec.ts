@@ -2,15 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockCategory } from '../../../@shared/testing/test-data';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { createTaskItem } from '../../util/task.factory';
-import { selectEditTaskItem, TasksActions } from '../../data';
+import { TasksActions } from '../../data';
 import { EditTaskItemDialogComponent } from './edit-task-item-dialog.component';
 
 describe('EditTaskItemDialogComponent', () => {
   let component: EditTaskItemDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
+  let host: ItemDialogHost;
 
   const seed = createTaskItem('Buy stamps', [], 1);
 
@@ -20,8 +21,8 @@ describe('EditTaskItemDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectEditTaskItem, seed);
-    store.refreshState();
+    host = TestBed.inject(ItemDialogHost);
+    host.open({ item: seed, listId: '_tasks', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(
       EditTaskItemDialogComponent
@@ -50,7 +51,7 @@ describe('EditTaskItemDialogComponent', () => {
     expect(dispatch).toHaveBeenCalledWith(
       TasksActions.addOrUpdateItem({ ...seed, prio: 5 })
     );
-    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
+    expect(host.request()).toBeNull();
   });
 
   it('persists a brand-new category to the tasks slice', () => {

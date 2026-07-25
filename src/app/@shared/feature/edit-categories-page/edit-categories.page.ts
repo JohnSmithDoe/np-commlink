@@ -34,9 +34,9 @@ import {
   createOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { TCategoryId } from '../../types';
+import { TCategoryId } from '../../model/types';
 import { matchesSearchExactly } from '../../util/app.utils';
-import { CATEGORIES_FACADE } from '../../util/list/categories-page.facade';
+import { CATEGORIES_FACADE } from '../../util/categories/categories-page.facade';
 
 /**
  * Domain-blind manage-categories page: the catalog of a single list rendered as

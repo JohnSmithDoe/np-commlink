@@ -7,7 +7,7 @@
  * tracking-specific lives here and is imported by the tracking domain via
  * `../model` / `../../model`.
  */
-import { IBaseItem, IListState, TTimestamp } from '../../@shared/types';
+import { IBaseItem, IListState, TTimestamp } from '../../@shared/model/types';
 
 export type ITrackingItemNotificationsConfig = {
   onStart: boolean;

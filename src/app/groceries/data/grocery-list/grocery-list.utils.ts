@@ -5,7 +5,7 @@ import {
   TColor,
   TItemListCategory,
   TItemListId,
-} from '../../../@shared/types';
+} from '../../../@shared/model/types';
 import {
   IGroceryLists,
   IQuickAddState,

@@ -23,6 +23,12 @@ export { GroceryCategoriesActions } from './grocery-list/grocery-categories.acti
 // Grocery list feature-flags (the list-settings page + boot hydration wiring).
 export { ListSettingsActions } from './list-settings/list-settings.actions';
 
+// Page facades (LIST_FACADE / CATEGORIES_FACADE implementations) — the store's
+// consumption surface, provided at the grocery routes.
+export { GroceryListPageFacade } from './grocery-list-page.facade';
+export { GroceryCategoriesPageFacade } from './grocery-categories-page.facade';
+export { ListSettingsFacade } from './list-settings/list-settings.facade';
+
 // Display selectors read by the grocery pages/dialogs
 export {
   selectShoppingState,
@@ -38,13 +44,6 @@ export {
   selectProductsCategories,
 } from './products.selector';
 
-// Grocery's typed views of the shared, domain-blind itemDialogs slice
-export {
-  selectEditProduct,
-  selectEditShoppingItem,
-  selectEditStorageItem,
-} from './item-dialogs.selector';
-
 // Grocery list feature-flags (read by the list-settings page).
 export { selectListSettingsState } from './list-settings/list-settings.selector';
 
@@ -56,13 +55,14 @@ export {
   selectQuickAddCanAddCategory,
 } from './quick-add/quick-add.selector';
 
-// Multi-list page facade
-export { GroceryListPageFacade } from './grocery-list/grocery-list-page.facade';
-// Manage-categories page facade (shared catalog, scoped to the :listId route)
-export { GroceryCategoriesPageFacade } from './grocery-list/grocery-categories-page.facade';
-
 // Lazy providers (state + effects), wired from the route
-export { groceriesLazyProviders } from './provide-groceries-lazy';
+export {
+  groceriesLazyProviders,
+  groceriesHydrationResolver,
+} from './provide-groceries-lazy';
 // Minimal lazy providers for the /list-settings route (listSettings slice only —
 // NOT the grocery lists, so the telemetry reporters don't fire with empty state).
-export { listSettingsLazyProviders } from './provide-list-settings-lazy';
+export {
+  listSettingsLazyProviders,
+  listSettingsHydrationResolver,
+} from './provide-list-settings-lazy';

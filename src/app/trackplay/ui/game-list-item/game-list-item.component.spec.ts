@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/types';
+import { TIonDragEvent } from '../../../@shared/model/types';
 import { mockGame } from '../../testing/trackplay.test-data';
 import { TrackplayGameListItemComponent } from './game-list-item.component';
 

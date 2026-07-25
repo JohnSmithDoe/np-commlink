@@ -1,23 +1,24 @@
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
+import { moduleHydrationResolver } from '../../@shared/data/module-hydration.resolver';
+import { GroceriesActions } from './groceries.actions';
 import { productsReducer } from './products.reducer';
-import { ProductsEffects } from './products.effects';
 import { shoppingReducer } from './shopping.reducer';
-import { ShoppingEffects } from './shopping.effects';
 import { storageReducer } from './storage.reducer';
-import { StorageEffects } from './storage.effects';
-import { ShoppingTelemetryEffects } from './shopping-telemetry.effects';
-import { StorageTelemetryEffects } from './storage-telemetry.effects';
-import { ProductsTelemetryEffects } from './products-telemetry.effects';
-import { GroceriesLoadEffects } from './groceries-load.effects';
-import { GrocerySaveEffects } from './grocery-save.effects';
-import { GroceryListEffects } from './grocery-list/grocery-list.effects';
-import { GroceryItemDialogsEffects } from './grocery-list/grocery-item-dialogs.effects';
 import { listSettingsReducer } from './list-settings/list-settings.reducer';
-import { ListSettingsEffects } from './list-settings/list-settings.effects';
-import { ListSettingsLoadEffects } from './list-settings/list-settings-load.effects';
 import { quickAddReducer } from './quick-add/quick-add.reducer';
+import { ProductsEffects } from './effects/products.effects';
+import { ShoppingEffects } from './effects/shopping.effects';
+import { StorageEffects } from './effects/storage.effects';
+import { ShoppingTelemetryEffects } from './effects/shopping-telemetry.effects';
+import { StorageTelemetryEffects } from './effects/storage-telemetry.effects';
+import { ProductsTelemetryEffects } from './effects/products-telemetry.effects';
+import { GroceriesLoadEffects } from './effects/groceries-load.effects';
+import { GrocerySaveEffects } from './effects/grocery-save.effects';
+import { GroceryListEffects } from './effects/grocery-list.effects';
+import { ListSettingsEffects } from './effects/list-settings.effects';
+import { ListSettingsLoadEffects } from './effects/list-settings-load.effects';
 
 /**
  * Lazy state + effects for the whole grocery bounded context, registered as ONE
@@ -36,16 +37,16 @@ import { quickAddReducer } from './quick-add/quick-add.reducer';
  * dispatches `[Groceries] load`; GroceriesLoadEffects reads only the three
  * grocery keys and emits one atomic `loaded` so all three hydrate together.
  *
- * The multi-list ENGINE now rides here too: `GroceryListEffects` (routes the
- * generic GroceryListActions to the concrete P/S/S groups + the cross-list
- * copy rules) and `GroceryItemDialogsEffects` (the edit/category-dialog
- * orchestration + product flow). They were eager shell orchestrators spanning
- * all four lists; they are now scoped to the three grocery lists and folded
- * into this domain (tasks got its own switch-free copy — TasksListEffects /
- * TasksItemDialogsEffects — in tasksLazyProviders). Splitting into per-domain
- * classes is what lets them go lazy: one shared class in both the grocery and
- * tasks route injectors would double-dispatch across a grocery↔tasks
- * transition. The grocery SAVE is own-data and rides here too (GrocerySaveEffects).
+ * The multi-list ENGINE now rides here too: `GroceryListEffects` routes the
+ * generic GroceryListActions to the concrete P/S/S groups + the cross-list copy
+ * rules. It was an eager shell orchestrator spanning all four lists; it is now
+ * scoped to the three grocery lists and folded into this domain (tasks got its
+ * own switch-free copy — TasksListEffects — in tasksLazyProviders). Splitting
+ * into per-domain classes is what lets them go lazy: one shared class in both
+ * the grocery and tasks route injectors would double-dispatch across a
+ * grocery↔tasks transition. The grocery SAVE is own-data and rides here too
+ * (GrocerySaveEffects). The dialogs need no effect at all any more — their
+ * open-command is the root `ItemDialogHost` signal service.
  */
 export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
   provideState('products', productsReducer),
@@ -71,10 +72,9 @@ export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
     ProductsEffects,
     ShoppingEffects,
     StorageEffects,
-    // The multi-list engine + dialog orchestration (grocery-scoped), folded off
-    // the eager shell (lazy-modules §2b).
+    // The multi-list engine (grocery-scoped), folded off the eager shell
+    // (lazy-modules §2b).
     GroceryListEffects,
-    GroceryItemDialogsEffects,
     // Dashboard reporters ride with their slices: registered here (not eagerly)
     // so their store.select never reads an unregistered sibling. On route entry
     // each fires its first `report`, flipping the tile standby→online; the
@@ -84,3 +84,13 @@ export const groceriesLazyProviders: Array<Provider | EnvironmentProviders> = [
     StorageTelemetryEffects
   ),
 ];
+
+/**
+ * Route hydration for the grocery context — one atomic `[Groceries] load/loaded`
+ * co-hydrates all three lists. (The grocery `listSettings` slice hydrates on its
+ * own key via `listSettingsHydrationResolver` — see provide-list-settings-lazy.)
+ */
+export const groceriesHydrationResolver = moduleHydrationResolver(
+  GroceriesActions.load,
+  GroceriesActions.loaded
+);

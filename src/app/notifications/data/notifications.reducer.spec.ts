@@ -1,5 +1,5 @@
-import { INotification } from '../../@shared/types';
-import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
+import { INotification } from '../../@shared/model/types';
+import { NotificationsActions } from '../../@shared/data/notification/notifications.actions';
 import {
   initialNotificationsState,
   notificationsReducer,

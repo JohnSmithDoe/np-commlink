@@ -21,7 +21,6 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import {
@@ -37,11 +36,8 @@ import {
 } from 'ionicons/icons';
 import { ICashAccount, TAccountKind } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import {
-  CashActions,
-  selectAccountsWithBalances,
-  selectNetWorthCents,
-} from '../../data';
+import { CashFacade } from '../../data';
+import { deleteConfirmAlert } from '../../util/delete-alert';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { CashAccountEditModalComponent } from '../../smart-ui/account-edit-modal/account-edit-modal.component';
 import { CashTransferModalComponent } from '../../smart-ui/transfer-modal/transfer-modal.component';
@@ -82,14 +78,14 @@ const KIND_ICON: Record<TAccountKind, string> = {
   ],
 })
 export class CashPage {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
   readonly #translate = inject(TranslateService);
 
-  readonly accounts = this.#store.selectSignal(selectAccountsWithBalances);
-  readonly netWorthCents = this.#store.selectSignal(selectNetWorthCents);
+  readonly accounts = this.#facade.accountsWithBalances;
+  readonly netWorthCents = this.#facade.netWorthCents;
   // A transfer needs a source and a target.
   readonly canTransfer = computed(() => this.accounts().length >= 2);
 
@@ -142,24 +138,14 @@ export class CashPage {
   }
 
   async confirmDelete(account: ICashAccount): Promise<void> {
-    const alert = await this.#alertCtrl.create({
-      header: this.#translate.instant(marker('cash.account.delete.header')),
-      message: this.#translate.instant(marker('cash.account.delete.message'), {
-        name: account.name,
-      }),
-      buttons: [
-        {
-          text: this.#translate.instant(marker('cash.action.cancel')),
-          role: 'cancel',
-        },
-        {
-          text: this.#translate.instant(marker('cash.action.delete')),
-          role: 'destructive',
-          handler: () =>
-            this.#store.dispatch(CashActions.removeAccount(account.id)),
-        },
-      ],
-    });
+    const alert = await this.#alertCtrl.create(
+      deleteConfirmAlert(this.#translate, {
+        headerKey: marker('cash.account.delete.header'),
+        messageKey: marker('cash.account.delete.message'),
+        messageParams: { name: account.name },
+        onConfirm: () => this.#facade.removeAccount(account.id),
+      })
+    );
     await alert.present();
   }
 }

@@ -58,7 +58,7 @@ a channel instead — that constraint is the point.
 | Context | Role | Eager/Lazy | Talks to others via |
 |---|---|---|---|
 | `@shared` | shared kernel (library + published contracts) | eager (it's a library, not a bounded context) | — (it is the medium) |
-| `commlink` | the home deck / super-app shell page | lazy page | reads the dashboard read-model only |
+| `commlink` | the home deck / super-app shell page + the dashboard read-model it owns | lazy page, **eager slice** | reads its own read-model, which suppliers feed via `DashboardActions.report` |
 | `tracking` | time tracking (single-list engine) | **lazy** | writes notifications (durable port); reports telemetry; receives deep-link CTAs |
 | `office-time` | office-presence dashboard, wordclock | **lazy** | reports telemetry |
 | `notifications` | in-app + OS notification inbox | **lazy** | reports telemetry; deep-links to `/tracking` |
@@ -102,25 +102,99 @@ import, but only where Sheriff allows it.
   `feature`. So the `edit-*-item-dialog` wrappers (which compose `category-input` +
   `item-edit-modal`) live in `<domain>/feature/`, and `categories-dialog` is rendered by those
   wrappers rather than nested inside `category-input` (sheriff-tighten §2). `type:testing` may
-  reach any layer but only `*.spec.ts` may import it.
+  reach any layer but only `*.spec.ts` may import it. **`@shared` has no `smart-ui` layer at all**
+  — its last inhabitant, the store-bound category dialog, became a dumb `ui` component owned by
+  `ListPageComponent` when the `itemDialogs` slice was retired (§4.1b).
 - **`data` is a facade barrel.** Each `<domain>/data/` carries an `index.ts` (Sheriff barrel):
   outside code imports the folder (`…/data`) and gets only the public facade — the action group,
   published selectors, the `*LazyProviders`, and (where present) the domain's `ListPageFacade` —
   while the reducer, effects, and internal selectors stay hidden (a deep import into `data` is an
   encapsulation violation). Every other layer stays barrel-less; `enableBarrelLess: true`, so this
   is a per-folder public API, not a global mode. It buys information-hiding + clean imports.
-- **`@shared` is layered so cross-layer edges point *down*.** `@shared/data` holds only genuine
-  NgRx **state** (the eager `dashboard` slice, the kernel slices, `item-list`/`router` selectors).
-  The list engine's **pure logic** (`list.utils`, `list.selector`, `item-list.utils`,
-  `notifications.transforms`) and its **contracts/port** (`DashboardActions`, `NotificationsActions`,
-  `item-list` actions, the `LIST_FACADE` token + `IListPageFacade`, the `NotificationsStore` write
-  port) live in `@shared/util`. So a domain's `data` imports `@shared/util`/`model`, never
-  `@shared/data` — every `domain data → @shared` edge is **downward**. The horizontal `sameTag` on
-  `type:data` therefore remains only for **intra-slice wiring** (a slice's own
-  `selector → reducer → actions`), not for reaching into shared state.
+  **`@shared/data` is the deliberate exception — it stays barrel-less.** The barrel pattern seals a
+  *lazy context* behind its `*LazyProviders`, so the raw reducer/effects never escape. The kernel has
+  no such seam: it is eager and root-wired — `main.ts` imports `settingsReducer`
+  + `SettingsEffects` directly to compose `provideStore`. A
+  barrel here would either re-export those (leaking exactly what a barrel hides) or force a bespoke
+  eager-provider bundle purely to feed the root — ceremony for a slice every boot path already
+  depends on. Sub-folder barrels (`settings/`, `item-dialogs/`, …) aren't an option either: the Sheriff
+  `modules` glob is one level (`<domain>/<type>`), so a deeper `index.ts` isn't a recognised module.
+  So the kernel keeps self-documenting deep imports (`@shared/data/item-dialogs/…`) by design.
+  (`commlink/data` *is* a barrel — it's a domain module like any other, eager registration
+  notwithstanding.)
+- **`@shared` is layered so cross-layer edges point *down*.** `@shared/data` holds genuine
+  NgRx **state** (the kernel `settings` slice, `item-list`/`router` selectors), the
+  `ItemDialogHost` signal service (§4.1b), the
+  published `DashboardActions`/`NotificationsActions` contracts + the `NotificationsStore` durable
+  port, and the generic per-context load/save **effect builders** (`@shared/data/effects`, consumed
+  by every domain's `data` as a `data → data` edge). The list engine's **pure logic**
+  (`list.utils`, `list.selector`, `item-list.utils`, `notifications.transforms`) and the
+  `LIST_FACADE` token + `IListPageFacade` live in `@shared/util`. So a domain's `data` imports
+  `@shared/util`/`model` and — for the two published contracts only — `@shared/data`; every
+  `domain → @shared` edge is downward on the domain axis. The horizontal `sameTag` on
+  `type:data` covers **intra-slice wiring** (a slice's own `selector → reducer → actions`) and the
+  contract edge, not reaching into shared *state*.
 
 Verify with `pnpm exec sheriff verify`. **If a feature needs something from another feature and
 Sheriff blocks the import, that's the design telling you to use a runtime channel below.**
+
+### 4.1a Domain facades — NgRx is a data-layer detail
+
+*No `@ngrx` import lives outside the data layer.* Every dispatch and every read goes through a
+**domain facade** — an `@Injectable({ providedIn: 'root' })` service in `<domain>/data/` that is the
+**only** place `Store` is injected for that domain's consumers. It exposes state as signals
+(`readonly x = store.selectSignal(sel)`; route-parameterised reads as factory methods returning a
+signal) and commands as methods (`foo() { store.dispatch(...) }`). Components inject the facade and
+import zero `@ngrx`. Facades: `TrackingListPageFacade`, `TasksListPageFacade`, `GroceryListPageFacade`
+(+ the small `ListSettingsFacade`), `CashFacade`, `TrackplayFacade`, `OfficeTimeFacade`,
+`NotificationsFacade`, `DashboardFacade` (in `commlink/data`, the read-model's owner), and the
+kernel `SettingsFacade` in `@shared/data`. The three `*ListPageFacade`s do double duty — they implement
+`IListPageFacade` (provided as `LIST_FACADE`, §4.3) *and* carry their domain's page/dialog commands.
+The shared edit-dialog base (`BaseEditItemDialog`) reads the open-command off `ItemDialogHost` and
+delegates `save`/category ops to `void` hooks each subclass wires to its own facade — so neither the
+base nor the wrappers touch `Store`.
+
+### 4.1b Edit dialogs — a signal host, not a store slice
+
+**No dialog state lives in NgRx.** The draft is a component-local `linkedSignal` in the wrapper
+(`patch()` updaters, no per-keystroke dispatch), and the *open-command* — which item, on which
+list, in which mode — is a single nullable signal on the root `ItemDialogHost`
+(`@shared/data/item-dialogs/item-dialog-host.ts`, ~15 lines, no `@ngrx` import).
+
+It used to be the eager `itemDialogs` slice. The store was the wrong primitive: the command is
+transient, never persisted, and had no readers outside the dialog tree — while costing
+
+- a duplicated `listId` guard in **every** lazy orchestrator effect, because route injectors and
+  effects are never torn down, so each one saw every sibling domain's dialog actions (see §5's
+  "lazy ≠ unloaded");
+- a two-hop round-trip per open (action → effect reads domain state → action → reducer) whose only
+  real output was a title and a button label;
+- one selector + facade signal per domain, existing purely to cast the domain-blind `IBaseItem`
+  back to that domain's item type.
+
+Every open path already started in a facade method, and every facade already holds its list state
+as a signal — so the seed item is now built **synchronously at the call site** and the three
+orchestrator effect files are gone, guards and all. `open()` copies the item, which is what makes
+the `linkedSignal` draft reseed when the same row is reopened after an aborted edit.
+
+The category-name dialog followed: a dumb `ui` component with a local draft, owned by
+`ListPageComponent` (which also owns the "in categories mode the add button names a category"
+branch, previously duplicated in two guarded effects) and persisting through one optional
+`IListPageFacade.saveCategory(name)`.
+
+> **Pattern — pick the primitive by lifetime, not by habit.** A global store earns its keep for
+> state that is shared, persisted, or replayed. For transient UI state it charges rent instead:
+> indirection, a broadcast bus that every listener must filter, and reducers deriving what a
+> `computed` derives for free. `signal` + `computed` was the whole requirement here; neither
+> `@ngrx/component-store` nor a `signalStore` would have added anything.
+
+> **Pattern — Facade + architectural fitness function.** The rule is enforced, not just documented:
+> an eslint `no-restricted-imports` block bans `@ngrx/*` across `src/app/**`, re-enabled only in the
+> sanctioned homes — `**/data/**` (incl. `@shared/data/effects/**`, the generic per-context load/save
+> effect builders), the test kit, and `main.ts` (the composition root). `@shared/model/types.ts` used
+> to be a fourth, for the `router-store` type on the old root-state interface; deleting that
+> interface (§5) made the model layer NgRx-free and let the allowlist shrink. Crossing the boundary fails the build. This is the same idea as a trust boundary in infra: don't rely on
+> discipline to keep the store inside `data/` — make the boundary *fail closed*.
 
 ### 4.2 Runtime message bus: NgRx actions + two published contracts
 
@@ -130,9 +204,15 @@ without a code dependency. Two action groups in `@shared` are elevated to **publ
 contracts** — the only actions a feature dispatches expecting *someone else* to handle:
 
 - **`DashboardActions.report({ source, metrics })`** (`@shared/data/dashboard`) — the telemetry
-  contract. Any program pushes its own summary numbers here; it does not know or care who reads
-  them. (§6)
-- **`NotificationsActions`** (`@shared/data/notifications`) — the notification-write contract
+  contract, and the *only* dashboard event in `@shared`. Any program pushes its own summary
+  numbers here; it does not know or care who reads them. The read-model that consumes them —
+  including its private `DashboardReadModelActions.load`/`hydrate` lifecycle, its state types, and
+  its `summary-<source>` keyspace — lives in `commlink/data`+`commlink/model`. Sharing the whole
+  slice would have put a `bySource['notifications'].metrics['unread']` selector in the
+  domain-blind kernel; `hydrate` in particular *cannot* be shared, since it carries a commlink
+  type. Both groups use the source string `'Dashboard'`, so devtools still reads as one timeline.
+  (§6)
+- **`NotificationsActions`** (`@shared/data/notification`) — the notification-write contract
   (add / upsert / markDone / remove / …). A producer dispatches these; the notifications reducer
   applies them *when it's loaded*. (When it isn't, see the durable port in §4.5.)
 
@@ -231,9 +311,10 @@ even while you're on `/tracking` and the notifications slice is unregistered. It
 
 Only the things that must always be present:
 
-- **Store slices** (`provideStore`): `router`, `dashboard` (the read-model), the app-global
-  `settings` slice (the single persisted schema `version` anchor for the migration framework),
-  `itemDialogs`, and the `theme` kernel slice. **No feature slice is eager** — and note
+- **Store slices** (`provideStore`): `router`, `dashboard` (the read-model — reducer imported from
+  `commlink/data`, which owns it; eager registration, domain ownership), the app-global
+  `settings` slice (the single persisted schema `version` anchor for the migration framework)
+  and the `theme` kernel slice. **No feature slice is eager** — and note
   `listSettings` + `quickadd` are *no longer* here: they were grocery-specific all along, so they
   moved into the lazy **groceries** domain (the settings re-scope). The one genuinely app-wide bit
   they carried — the `version` — became the global `settings` slice above.
@@ -242,6 +323,27 @@ Only the things that must always be present:
 - **Boot dispatches** (`provideAppInitializer`): `SettingsActions.load()`, `DashboardActions.load()`
   (hydrate the persisted deck numbers), `ThemeActions.load()`, and `NotificationService.init()`
   (OS-notification permissions/channel).
+
+### There is no root-state type
+
+`IAppState` is gone. Nothing anywhere names the shape of the whole store: every slice is read
+through its own `createFeatureSelector<ISliceState>('key')` (NgRx's root-state selector overload is
+itself deprecated), and every facade injects the bare `inject(Store)`. Where a feature needs several
+slices at once it recomposes them locally — `selectGroceryLists` builds `IGroceryLists` from three
+feature selectors rather than reading `state.storage/products/shopping`.
+
+This is not squeamishness, it's forced: a *complete* root-state type is impossible here. `dashboard`
+is eager but commlink-owned, and Sheriff's `'domain:*': [sameTag, 'domain:@shared']` bars
+`@shared/model` from naming a domain type; every bounded context is lazy, so its key doesn't exist at
+boot; and `main.ts` — the one place that *could* name the full map — may not import `type:model` at
+all (`root: ['type:shell', 'type:data', 'type:util']`). A partial type pretending to be the root is
+worse than none, so the only survivor is the test kit's `TMockKernelState`
+(`@shared/testing/test-data`), which is honestly scoped to what the mock store seeds by default.
+
+> **Pattern — no global schema.** The same reason services don't share one database schema: a type
+> that enumerates everyone's state re-couples the modules you just sealed. Ownership follows the
+> slice. And when a boundary makes a "complete" global type *impossible*, that's the design telling
+> you the type shouldn't exist — not that it needs an exception.
 
 ### How a lazy context loads
 
@@ -286,10 +388,12 @@ routes, and `quickadd` is ephemeral (the engine recomputes it, never persisted).
 that via `listSettingsLazyProviders`, **not** the full grocery context; pulling in the grocery
 lists there would also register their telemetry reporters, which `report` on subscription and
 would wrongly flip the deck tiles online with zero counts.
-Similarly `office-time` co-registers its two slices `officeTimeSettings` + `officeTime` (the
-settings slice was renamed from the collision-prone bare `settings` when the app-global `settings`
-slice was introduced). (`/barcode` used to join that group because the SIGIL image lived in
-`officeTime`; after sheriff-tighten it owns its own single `barcode` slice and registers alone.)
+`office-time` is a single `officeTime` slice. (It briefly carried a second `officeTimeSettings`
+feature-flag slice — renamed from the collision-prone bare `settings` when the app-global
+`settings` slice was introduced — but the settings re-scope stripped it down to one dead
+`showTotalTime` flag nothing read, so the whole slice was removed as dead code.) (`/barcode` used
+to join that group because the SIGIL image lived in `officeTime`; after sheriff-tighten it owns its
+own single `barcode` slice and registers alone.)
 
 ---
 
@@ -308,10 +412,24 @@ office-time ─┤
       ... ─┘                                                        └▶ npc-summary-<source> (disk)
 ```
 
+- **Where the code lives — the port/read-model split.** Only the *write* side is shared:
+  `DashboardActions.report` + `IDashboardTelemetry` + `createTelemetryEffect` in `@shared/data`.
+  The *read* side — reducer, selectors, `DashboardFacade`, the load/hydrate/persist effects, the
+  `IDashboardState`/`IDashboardSummary` types (`commlink/model`), the `summary-` keyspace, and the
+  `mockDashboardState` fixture (`commlink/testing`) — lives in **`commlink`**, because the deck and
+  the shell badge are its only two readers. Its ownership is exactly why no root-state type could
+  ever be complete (§5); specs seed it through `mockAppState`'s `& Record<string, unknown>` hatch. That
+  is what keeps `@shared` domain-blind: the badge selector hardcodes `'notifications'` + `'unread'`,
+  which is a `commlink` concern, not a kernel one. Sheriff still seals the suppliers (`domain:*` may
+  only reach `sameTag` + `domain:@shared`), so no producer can see `commlink` — they dispatch the
+  shared action and never learn who consumes it.
 - **Why eager.** The dashboard is a **capability sink**: its writers live *outside its own
   route* (every program reports while you're inside that program), so it can't be scoped to any
   one producer's lifecycle. (Same reason a metrics collector is a central always-on service, not
-  a per-workload sidecar.)
+  a per-workload sidecar.) So although it sits in a `<domain>/data` folder, `main.ts` registers it
+  in the root store — there is no `provide-commlink-lazy.ts`. *Where code lives* (ownership) and
+  *when it registers* (lifecycle) are independent axes; only the shell and `main.ts` reach in, and
+  both are domain-blind by tag.
 - **Why persisted.** Once producers are lazy, none of them reports until you visit it — so cold
   launch would show an empty deck. `DashboardEffects` reads the small `npc-summary-*` docs at
   boot (`status: 'standby'`); a live `report` flips a tile to `status: 'online'`. Status is
@@ -386,8 +504,8 @@ domain projects its own row/form body and keeps its item type in-domain (`<T>`).
 **one** multi-list *engine* — `groceries/data/grocery-list` (route-param driven). The single-list
 domains (`tracking`, `tasks`) have **no** separate engine: each owns its slice (`state.tracking`/
 `state.tasks`) and builds its list flow on those shared helpers, driving `ListPageComponent`
-through its own `ListPageFacade`. Their edit dialogs ride the eager, domain-blind `itemDialogs`
-open-command slice (§4.2) — tracking's former standalone item-list engine + `dialogs` fork were
+through its own `ListPageFacade`. Their edit dialogs ride the domain-blind `ItemDialogHost`
+open-command (§4.1b) — tracking's former standalone item-list engine + `dialogs` fork were
 folded onto these shared mechanics (the last merge-duplicate retired).
 
 ---
@@ -402,8 +520,11 @@ folded onto these shared mechanics (the last merge-duplicate retired).
   loads just the summary docs, behind an **init-once guard** (`#ensureStorage`, memoized
   `create()`) so racing callers initialize LocalForage exactly once.
 - **`load<T>(key)` / `save<K>(key, value)`** are what each lazy context's load/save effect uses
-  for its own key — no slice list lives in the service.
-- `itemDialogs` / `quickadd` are ephemeral (never persisted). `migrate()` exists as a framework
+  for its own key — no slice list lives in the service. **`loadPrefixed<T>(prefix)`** is the
+  counterpart for a caller owning a whole key *family* (only commlink's `summary-<source>` docs
+  today). All four await the init-once guard.
+- `quickadd` is ephemeral (never persisted); the dialogs hold no store state at all (§4.1b).
+  `migrate()` exists as a framework
   but is empty (fresh-install only; VERSION `'1'`). The schema `version` lives in exactly **one**
   place now — the eager app-global `settings` slice (`npc-settings`), seeded on first boot by
   `SettingsEffects`. The per-slice `version` fields that `listSettings` and office-time's settings
@@ -412,7 +533,11 @@ folded onto these shared mechanics (the last merge-duplicate retired).
 
 > **Pattern — ports & adapters.** The persistence port knows nothing about domains; domains know
 > nothing about storage mechanics. The dashboard's persistence is owned *inside* `DashboardEffects`
-> so producers stay ignorant that their telemetry is even saved — they just `report`.
+> (in `commlink/data`) so producers stay ignorant that their telemetry is even saved — they just
+> `report`. The port is now genuinely domain-blind: `bootstrap()` only initializes, and the
+> dashboard-shaped `saveSummary()` was replaced by the generic `loadPrefixed<T>(prefix)` + the
+> existing `save()`. **A domain owns its own keyspace** (`commlink/model` exports
+> `SUMMARY_KEY_PREFIX`/`summaryKey`); the port just stores bytes under a string.
 
 ---
 
@@ -452,8 +577,9 @@ Kept so their absence doesn't read as an oversight (the "why" is in the git hist
   turning tracking toasts into UI messages.
 - **The last two "eager sinks" are gone.** Interim designs kept `tracking` + `notifications`
   eager (a background timer bridged them); `feature/fully-lazy` deleted the timer and made both
-  lazy (§5). The only eager things now are the kernel: `router` + the `dashboard` read-model +
-  the shared-kernel library slices + the toast/read-model effects. No feature slice is eager.
+  lazy (§5). The only eager things now are the kernel: `router` + the shared-kernel library slices
+  + the toast/read-model effects, plus the `dashboard` read-model (eager, but owned by
+  `commlink/data` rather than `@shared` — §6). No *supplier* feature slice is eager.
 - **The last cross-domain bridge is gone.** `feature/tighten-sheriff` moved the SIGIL badge into
   its own `barcode` slice (removing `barcode→office-time`) and made `smart-ui` a strict leaf
   (§4.1). `sheriff verify` is now green with zero explicit bridges.
@@ -466,7 +592,8 @@ Kept so their absence doesn't read as an oversight (the "why" is in the git hist
 |---|---|
 | Bounded context / shared kernel | Sheriff domains; `@shared` as library |
 | Dependency Inversion (cross-cutting capability) | dashboard + notifications invert onto `@shared` contracts |
-| CQRS read-model | eager `dashboard` slice, fed by `report`, read by the deck |
+| CQRS read-model | eager `dashboard` slice in `commlink/data`, fed by the shared `report`, read by the deck |
+| Shared port ≠ shared read-model | only `DashboardActions.report` is in `@shared`; the slice it feeds belongs to its reader |
 | Published Language / Open Host Service | `DashboardActions.report`, `NotificationsActions` |
 | Ports & Adapters | `DatabaseService` (per-key), `NotificationsStore` (durable write port), `NotificationService` (OS adapter) |
 | Deferred command | notification CTA → `/tracking?cmd=` deep-link |

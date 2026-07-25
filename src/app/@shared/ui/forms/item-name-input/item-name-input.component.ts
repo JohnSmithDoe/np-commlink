@@ -12,7 +12,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonInput, IonItem } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
-import { IBaseItem, TMarker } from '../../../types';
+import { IBaseItem, TMarker } from '../../../model/types';
 import {
   matchesSearchExactly,
   validateNameInput,

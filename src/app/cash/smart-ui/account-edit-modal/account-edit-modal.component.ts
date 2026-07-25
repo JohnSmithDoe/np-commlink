@@ -21,13 +21,12 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { ICashAccount, TAccountKind, TBank } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions, selectCashAccounts } from '../../data';
+import { CashFacade } from '../../data';
 import { centsToInput, eurToCents } from '../../util/money';
 import { BANK_OPTIONS } from '../../util/import/bank-parsers';
 
@@ -76,9 +75,9 @@ marker('cash.bank.dkb');
   ],
 })
 export class CashAccountEditModalComponent implements OnInit {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #accounts = this.#store.selectSignal(selectCashAccounts);
+  readonly #accounts = this.#facade.accounts;
 
   /** Set imperatively via `componentProps`; undefined = create mode. */
   accountId?: string;
@@ -146,16 +145,14 @@ export class CashAccountEditModalComponent implements OnInit {
     const bank = this.bank() || undefined;
 
     if (existing) {
-      this.#store.dispatch(
-        CashActions.updateAccount({
-          ...existing,
-          name: this.name().trim(),
-          kind: this.kind(),
-          bank,
-          openingBalanceCents,
-          openingDateISO,
-        })
-      );
+      this.#facade.updateAccount({
+        ...existing,
+        name: this.name().trim(),
+        kind: this.kind(),
+        bank,
+        openingBalanceCents,
+        openingDateISO,
+      });
     } else {
       const account: ICashAccount = {
         id: uuidv4(),
@@ -166,7 +163,7 @@ export class CashAccountEditModalComponent implements OnInit {
         openingDateISO,
         createdAt: dayjs().format(),
       };
-      this.#store.dispatch(CashActions.addAccount(account));
+      this.#facade.addAccount(account);
     }
     void this.#modalCtrl.dismiss();
   }

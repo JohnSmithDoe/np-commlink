@@ -1,0 +1,5 @@
+:host {
+  // Transparent wrapper: the chip must sit as a direct child of the form list
+  // and the dialog is an overlay, so the host must not introduce its own box.
+  display: contents;
+}

@@ -32,14 +32,18 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AppComponent } from './app/app.component';
 
 import { routes } from './app/app.routes';
-import { DashboardActions } from './app/@shared/util/dashboard/dashboard.actions';
 // Per-module load actions dispatched at boot for the eager kernel. `tracking`
 // and `notifications` are NOT here — both are lazy and load via their route
 // resolvers (§7). Only the always-on read-model + shared kernel slices load at
 // boot; listSettings + quickadd moved into the lazy groceries domain.
-import { DashboardEffects } from './app/@shared/data/dashboard/dashboard.effects';
-import { dashboardReducer } from './app/@shared/data/dashboard/dashboard.reducer';
-import { itemDialogsReducer } from './app/@shared/data/item-dialogs/item-dialogs.reducer';
+// The dashboard READ-MODEL is owned by `commlink` (its only readers are the
+// deck + the shell badge); only the telemetry contract the suppliers dispatch
+// stays in @shared. Eager despite living in a domain folder — see commlink/data.
+import {
+  DashboardEffects,
+  dashboardReducer,
+  DashboardReadModelActions,
+} from './app/commlink/data';
 import { SettingsActions } from './app/@shared/data/settings/settings.actions';
 import { settingsReducer } from './app/@shared/data/settings/settings.reducer';
 import { SettingsEffects } from './app/@shared/data/settings/settings.effects';
@@ -50,7 +54,6 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/de';
 import { provideServiceWorker } from '@angular/service-worker';
 import { NotificationService } from './app/notifications/util/notification.service';
-import { AppMessageEffects } from './app/app.message.effects';
 
 // Set dayjs locale before bootstrap so any module-level dayjs() call
 // (e.g. in reducers' initialState builders) sees the right locale.
@@ -104,11 +107,9 @@ void bootstrapApplication(AppComponent, {
       // App-global settings — the single persisted schema `version` anchor
       // (was a per-slice `version` on listSettings + office-time; both dropped).
       settings: settingsReducer,
-      itemDialogs: itemDialogsReducer,
     }),
     provideRouterStore(),
     provideEffects(
-      AppMessageEffects,
       // Eager persistence sink for the dashboard read-model (plan §3): loads
       // the persisted summaries at boot and mirrors every report to disk.
       DashboardEffects,
@@ -134,7 +135,7 @@ void bootstrapApplication(AppComponent, {
       // Every bounded context (tracking, notifications, groceries, …) loads via
       // its own route resolver, not here (§7).
       store.dispatch(SettingsActions.load());
-      store.dispatch(DashboardActions.load());
+      store.dispatch(DashboardReadModelActions.load());
       void inject(NotificationService).init();
     }),
     provideServiceWorker('ngsw-worker.js', {

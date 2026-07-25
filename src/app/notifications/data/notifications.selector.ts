@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { INotification, INotificationsState } from '../../@shared/types';
+import { INotification, INotificationsState } from '../../@shared/model/types';
 import { unreadCount } from '../../@shared/util/notifications/notifications.transforms';
 
 export const selectNotificationsState =

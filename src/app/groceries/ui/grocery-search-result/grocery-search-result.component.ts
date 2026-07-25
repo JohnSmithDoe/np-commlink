@@ -5,16 +5,16 @@ import {
   output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem, ICategory } from '../../../@shared/types';
+import { IBaseItem, ICategory } from '../../../@shared/model/types';
 import {
   IGrocerySearchResult,
   IProduct,
   IShoppingItem,
   IStorageItem,
 } from '../../model';
-import { CategoriesPipe } from '../../../@shared/util/categories.pipe';
-import { TextItemComponent } from '../../../@shared/ui/item-list-items/text-item/text-item.component';
-import { ItemListComponent } from '../../../@shared/ui/item-list/item-list.component';
+import { CategoriesPipe } from '../../../@shared/util/categories/categories.pipe';
+import { TextItemComponent } from '../../../@shared/ui/base-item/item-list/item-list-items/text-item/text-item.component';
+import { ItemListComponent } from '../../../@shared/ui/base-item/item-list/item-list.component';
 
 @Component({
   selector: 'app-grocery-search-result',

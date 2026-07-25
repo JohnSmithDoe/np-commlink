@@ -1,5 +1,5 @@
 import { createActionGroup } from '@ngrx/store';
-import { ICategory, TCategoryId } from '../../../@shared/types';
+import { ICategory, TCategoryId } from '../../../@shared/model/types';
 
 // Grocery categories are ONE catalog shared across the three grocery lists
 // (products / shopping / storage), so cross-list copy (createXFromY,

@@ -8,7 +8,7 @@ import {
   TItemListSortDir,
   TItemListSortType,
   TUpdateDTO,
-} from '../../types';
+} from '../../model/types';
 import {
   matchesItemExactlyIdx as matchesItemExactlyIndex,
   matchesSearch,

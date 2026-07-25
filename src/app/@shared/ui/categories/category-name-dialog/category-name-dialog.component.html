@@ -1,0 +1,34 @@
+<ion-modal [isOpen]="isOpen()" (didDismiss)="cancelled.emit()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="cancelled.emit()"
+            >{{ 'edit.item.dialog.button.close' | translate }}
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button (click)="confirm()">{{
+            'edit.item.dialog.button.create' | translate
+          }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <h3 class="ion-padding-start">
+        {{ 'edit.category.dialog.title.create' | translate }}
+      </h3>
+      <ion-list>
+        <ion-item lines="none">
+          <ion-input
+            label="{{ 'edit.item.dialog.name' | translate }}"
+            placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
+            [value]="draft()"
+            (ionInput)="updateName($event)"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

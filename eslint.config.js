@@ -81,6 +81,45 @@ module.exports = defineConfig(
       'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
     },
   },
+  // ── NgRx is a data-layer implementation detail ──────────────────────────
+  // Fitness function for the facade architecture: `@ngrx/*` may only be
+  // imported from the data layer (every `<domain>/data/**` + `@shared/data/**`).
+  // Presentation (feature/smart-ui/ui) and the shell dispatch/read through a
+  // domain facade instead, so the store never leaks past `data/`. The block
+  // below re-enables the imports in the sanctioned homes (last-match-wins).
+  {
+    files: ['src/app/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@ngrx/*', '@ngrx/*/**'],
+              message:
+                'NgRx is data-layer only — dispatch/read through a domain facade, not Store directly.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Sanctioned NgRx homes: the data layer (every `<domain>/data/**` +
+    // `@shared/data/**`, which holds the per-context load/save effect builders),
+    // the composition root, and the test kit. `@shared/model` was here for the
+    // router type on the old root-state interface; that type is gone, so the
+    // model layer stays NgRx-free.
+    files: [
+      'src/main.ts',
+      'src/app/**/data/**/*.ts',
+      'src/app/@shared/testing/**/*.ts',
+      'src/app/**/*.spec.ts',
+    ],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
   {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended],

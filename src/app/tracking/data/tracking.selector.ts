@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ISearchResult } from '../../@shared/types';
+import { ISearchResult } from '../../@shared/model/types';
 import { IDataItem, ITrackingItem, ITrackingState } from '../model';
 import dayjs from 'dayjs';
 import { formatSecondsAsClock } from './tracking.utils';

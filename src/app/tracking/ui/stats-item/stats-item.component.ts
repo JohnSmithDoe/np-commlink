@@ -15,7 +15,7 @@ import {
   IonNote,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/types';
+import { TIonDragEvent } from '../../../@shared/model/types';
 import { IDataItem } from '../../model';
 import { NpTrackingTimePipe } from '../../util/np-tracking-time.pipe';
 import { NpTimeFromDataItemPipe } from '../../util/np-time-from-data-item.pipe';

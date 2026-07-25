@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IAppState } from '../../../@shared/types';
+import { TMockState } from '../../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
-  mockQuickAddState,
   mockListSettings,
+  mockQuickAddState,
 } from '../../testing/grocery.test-data';
 import { ItemListQuickaddComponent } from './item-list-quickadd.component';
 
-async function setup(state: Partial<IAppState> & Record<string, unknown>) {
+async function setup(state: TMockState) {
   await TestBed.configureTestingModule({
     imports: [ItemListQuickaddComponent],
     providers: provideTestingProviders(state),

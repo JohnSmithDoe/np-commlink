@@ -1,9 +1,11 @@
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
+import { moduleHydrationResolver } from '../../@shared/data/module-hydration.resolver';
+import { ListSettingsActions } from './list-settings/list-settings.actions';
 import { listSettingsReducer } from './list-settings/list-settings.reducer';
-import { ListSettingsEffects } from './list-settings/list-settings.effects';
-import { ListSettingsLoadEffects } from './list-settings/list-settings-load.effects';
+import { ListSettingsEffects } from './effects/list-settings.effects';
+import { ListSettingsLoadEffects } from './effects/list-settings-load.effects';
 
 /**
  * Minimal lazy providers for the `/list-settings` page: the grocery
@@ -27,3 +29,12 @@ export const listSettingsLazyProviders: Array<Provider | EnvironmentProviders> =
     provideState('listSettings', listSettingsReducer),
     provideEffects(ListSettingsEffects, ListSettingsLoadEffects),
   ];
+
+/**
+ * Route hydration for the grocery `listSettings` slice — used both on the
+ * `/list-settings` route and (co-hydrated) on the three grocery routes.
+ */
+export const listSettingsHydrationResolver = moduleHydrationResolver(
+  ListSettingsActions.load,
+  ListSettingsActions.loaded
+);

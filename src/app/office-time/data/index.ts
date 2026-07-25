@@ -14,7 +14,7 @@
  */
 
 export { OfficeTimeActions } from './office-time/office-time.actions';
-export { OfficeTimeSettingsActions } from './settings/settings.actions';
+export { OfficeTimeFacade } from './office-time.facade';
 
 export {
   selectDashboardItems,
@@ -42,4 +42,7 @@ export {
   daysToHolidaysHighlightsInputTransform,
 } from './office-time/office-time.utils';
 
-export { officeTimeLazyProviders } from './provide-office-time-lazy';
+export {
+  officeTimeLazyProviders,
+  officeTimeHydrationResolver,
+} from './provide-office-time-lazy';

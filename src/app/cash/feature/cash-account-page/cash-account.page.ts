@@ -24,7 +24,6 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
@@ -37,18 +36,11 @@ import {
   trashOutline,
   unlinkOutline,
 } from 'ionicons/icons';
-import { TCategoryId } from '../../../@shared/types';
+import { TCategoryId } from '../../../@shared/model/types';
 import { ICashTransaction } from '../../model';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import {
-  CashActions,
-  selectAccountBalances,
-  selectAccountById,
-  selectCashCategories,
-  selectCashRules,
-  selectTransactionsForAccount,
-  TAccountTxn,
-} from '../../data';
+import { CashFacade, TAccountTxn } from '../../data';
+import { deleteConfirmAlert } from '../../util/delete-alert';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { parserForBank } from '../../util/import/bank-parsers';
 import { decodeCsv } from '../../util/import/read-csv';
@@ -89,7 +81,7 @@ import { CashReconcileModalComponent } from '../../smart-ui/reconcile-modal/reco
   ],
 })
 export class CashAccountPage {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #modalCtrl = inject(ModalController);
@@ -98,13 +90,11 @@ export class CashAccountPage {
 
   readonly id = this.#route.snapshot.paramMap.get('accountId') ?? '';
 
-  readonly account = this.#store.selectSignal(selectAccountById(this.id));
-  readonly transactions = this.#store.selectSignal(
-    selectTransactionsForAccount(this.id)
-  );
-  readonly #balances = this.#store.selectSignal(selectAccountBalances);
-  readonly #rules = this.#store.selectSignal(selectCashRules);
-  readonly #categories = this.#store.selectSignal(selectCashCategories);
+  readonly account = this.#facade.accountById(this.id);
+  readonly transactions = this.#facade.transactionsForAccount(this.id);
+  readonly #balances = this.#facade.accountBalances;
+  readonly #rules = this.#facade.rules;
+  readonly #categories = this.#facade.categories;
   readonly #categoryNameById = computed(
     () => new Map(this.#categories().map((c) => [c.id, c.name]))
   );
@@ -140,9 +130,7 @@ export class CashAccountPage {
    *  absorbed and restore that leg to pending (visible + counted again). */
   detachReconcile(txn: TAccountTxn): void {
     if (!txn.reconciledManualId) return;
-    this.#store.dispatch(
-      CashActions.unreconcileTransaction(txn.reconciledManualId)
-    );
+    this.#facade.unreconcileTransaction(txn.reconciledManualId);
   }
 
   formatDate(iso: string): string {
@@ -204,24 +192,14 @@ export class CashAccountPage {
   }
 
   async confirmDelete(txn: ICashTransaction): Promise<void> {
-    const alert = await this.#alertCtrl.create({
-      header: this.#translate.instant(marker('cash.txn.delete.header')),
-      message: this.#translate.instant(marker('cash.txn.delete.message'), {
-        description: txn.description,
-      }),
-      buttons: [
-        {
-          text: this.#translate.instant(marker('cash.action.cancel')),
-          role: 'cancel',
-        },
-        {
-          text: this.#translate.instant(marker('cash.action.delete')),
-          role: 'destructive',
-          handler: () =>
-            this.#store.dispatch(CashActions.removeTransaction(txn.id)),
-        },
-      ],
-    });
+    const alert = await this.#alertCtrl.create(
+      deleteConfirmAlert(this.#translate, {
+        headerKey: marker('cash.txn.delete.header'),
+        messageKey: marker('cash.txn.delete.message'),
+        messageParams: { description: txn.description },
+        onConfirm: () => this.#facade.removeTransaction(txn.id),
+      })
+    );
     await alert.present();
   }
 }

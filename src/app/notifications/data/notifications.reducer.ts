@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { INotificationsState } from '../../@shared/types';
-import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
+import { INotificationsState } from '../../@shared/model/types';
+import { NotificationsActions } from '../../@shared/data/notification/notifications.actions';
 import {
   clearDoneNotifications,
   EMPTY_NOTIFICATIONS_STATE,

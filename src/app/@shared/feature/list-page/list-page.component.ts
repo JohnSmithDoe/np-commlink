@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   input,
+  signal,
   TemplateRef,
 } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -16,15 +17,15 @@ import {
   TColor,
   TItemListMode,
   TItemListSortType,
-} from '../../types';
-import { categoryName } from '../../util/category.utils';
+} from '../../model/types';
+import { categoryName } from '../../util/categories/category.utils';
 import { LIST_FACADE } from '../../util/list/list-page.facade';
-import { ItemListEmptyComponent } from '../../ui/item-list/item-list-empty/item-list-empty.component';
-import { ItemListSearchbarComponent } from '../../ui/item-list/item-list-searchbar/item-list-searchbar.component';
-import { ItemListToolbarComponent } from '../../ui/item-list/item-list-toolbar/item-list-toolbar.component';
-import { ItemListComponent } from '../../ui/item-list/item-list.component';
+import { ItemListEmptyComponent } from '../../ui/base-item/item-list/item-list-empty/item-list-empty.component';
+import { ItemListSearchbarComponent } from '../../ui/base-item/item-list/item-list-searchbar/item-list-searchbar.component';
+import { ItemListToolbarComponent } from '../../ui/base-item/item-list/item-list-toolbar/item-list-toolbar.component';
+import { ItemListComponent } from '../../ui/base-item/item-list/item-list.component';
 import { PageHeaderComponent } from '../../ui/page-header/page-header.component';
-import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog/edit-category-dialog.component';
+import { CategoryNameDialogComponent } from '../../ui/categories/category-name-dialog/category-name-dialog.component';
 
 /**
  * Domain-blind list page shell: page-header + searchbar + toolbar, item-list,
@@ -49,12 +50,17 @@ import { EditCategoryDialogComponent } from '../../smart-ui/edit-category-dialog
     ItemListSearchbarComponent,
     ItemListToolbarComponent,
     PageHeaderComponent,
-    EditCategoryDialogComponent,
+    CategoryNameDialogComponent,
     TranslateModule,
   ],
 })
 export class ListPageComponent {
   readonly facade = inject(LIST_FACADE);
+
+  // The name-a-new-category dialog: the seed name while open, null when closed.
+  // Local, because it is this shell's own affordance — it used to be a shared
+  // NgRx slice plus one guarded bridge effect per domain.
+  readonly categoryDialog = signal<string | null>(null);
 
   itemTemplate = input.required<TemplateRef<any>>();
   // Optional: grocery pages omit this for uniform amber chrome (per-domain
@@ -114,7 +120,20 @@ export class ListPageComponent {
     this.facade.deleteCategory(categoryId);
   }
 
+  // In categories display mode the "add" affordance creates a CATEGORY instead of
+  // an item — a pure UI decision of this shell, so it branches here rather than in
+  // each domain's facade (where it used to be duplicated).
   showCreateDialog() {
-    this.facade.showCreateDialog();
+    const state = this.facade.state();
+    if (state?.mode === 'categories') {
+      this.categoryDialog.set(state.searchQuery ?? '');
+    } else {
+      this.facade.showCreateDialog();
+    }
+  }
+
+  saveCategory(name: string) {
+    this.categoryDialog.set(null);
+    this.facade.saveCategory?.(name);
   }
 }

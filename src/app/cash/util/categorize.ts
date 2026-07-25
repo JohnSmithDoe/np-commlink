@@ -1,4 +1,4 @@
-import { TCategoryId } from '../../@shared/types';
+import { TCategoryId } from '../../@shared/model/types';
 import { ICashFilterCondition, ICashRule, ICashTransaction } from '../model';
 import { eurToCents } from './money';
 

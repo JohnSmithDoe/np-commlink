@@ -25,12 +25,11 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import { addOutline, closeOutline } from 'ionicons/icons';
-import { ICategory, TCategoryId } from '../../../@shared/types';
+import { ICategory, TCategoryId } from '../../../@shared/model/types';
 import {
   ICashFilterCondition,
   ICashRule,
@@ -39,11 +38,9 @@ import {
   TFilterField,
   TFilterOp,
 } from '../../model';
-import { matchingTxt, uuidv4 } from '../../../@shared/util/app.utils';
-import { categoriesByIds } from '../../../@shared/util/category.utils';
-import { CategoryInputComponent } from '../../../@shared/ui/category-input/category-input.component';
-import { CategoriesDialogComponent } from '../../../@shared/ui/categories-dialog/categories-dialog.component';
-import { CashActions, selectCashCategories, selectCashRules } from '../../data';
+import { uuidv4 } from '../../../@shared/util/app.utils';
+import { CashCategoryPickerComponent } from '../../ui/cash-category-picker/cash-category-picker.component';
+import { CashFacade } from '../../data';
 
 const DESCRIPTION_OPS: readonly TDescriptionOp[] = [
   'contains',
@@ -102,30 +99,22 @@ const newCondition = (): ICashFilterCondition => ({
     IonSegmentButton,
     IonToggle,
     TranslateModule,
-    CategoryInputComponent,
-    CategoriesDialogComponent,
+    CashCategoryPickerComponent,
   ],
 })
 export class CashRuleEditModalComponent implements OnInit {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #rules = this.#store.selectSignal(selectCashRules);
-  readonly categories = this.#store.selectSignal(selectCashCategories);
-  readonly categoriesDialogOpen = signal(false);
+  readonly #rules = this.#facade.rules;
+  readonly categories = this.#facade.categories;
 
   /** undefined = create mode. */
   ruleId?: string;
 
   readonly name = signal('');
   readonly match = signal<'all' | 'any'>('all');
-  // The category id this rule assigns ('' = none) + its resolved {id,name}.
+  // The category id this rule assigns ('' = none).
   readonly categoryId = signal<TCategoryId>('');
-  readonly selectedCategories = computed<ICategory[]>(() =>
-    categoriesByIds(
-      this.categoryId() ? [this.categoryId()] : [],
-      this.categories()
-    )
-  );
   readonly conditions = signal<ICashFilterCondition[]>([newCondition()]);
 
   readonly isEdit = computed(() => !!this.ruleId);
@@ -161,42 +150,17 @@ export class CashRuleEditModalComponent implements OnInit {
     this.match.set(value);
   }
 
-  // Single-select category via the shared picker (a rule assigns one category).
-  openCategoriesDialog(): void {
-    this.categoriesDialogOpen.set(true);
-  }
-
-  closeCategoriesDialog(): void {
-    this.categoriesDialogOpen.set(false);
-  }
-
-  onPickCategory(selection: TCategoryId[]): void {
-    this.categoryId.set(selection[0] ?? '');
-    this.categoriesDialogOpen.set(false);
-  }
-
-  clearCategory(): void {
-    this.categoryId.set('');
-  }
-
+  // Category CRUD forwarded to the facade; the picker owns selection state.
   onAddCategory(category: ICategory): void {
-    this.#store.dispatch(CashActions.addCategory(category));
+    this.#facade.addCategory(category);
   }
 
   onDeleteCategory(id: TCategoryId): void {
-    this.#store.dispatch(CashActions.removeCategory(id));
-    if (this.categoryId() === id) this.categoryId.set('');
+    this.#facade.removeCategory(id);
   }
 
   onRenameCategory({ id, to }: { id: TCategoryId; to: string }): void {
-    // A rename onto an existing name merges in the reducer (the id is dropped
-    // and rules remapped to the survivor); follow the survivor so save() doesn't
-    // re-assert the now-orphan id from the local draft.
-    const survivor = this.categories().find(
-      (c) => c.id !== id && matchingTxt(c.name) === matchingTxt(to)
-    );
-    this.#store.dispatch(CashActions.updateCategory(id, to));
-    if (survivor && this.categoryId() === id) this.categoryId.set(survivor.id);
+    this.#facade.updateCategory(id, to);
   }
 
   addCondition(): void {
@@ -239,15 +203,13 @@ export class CashRuleEditModalComponent implements OnInit {
     }));
     const existing = this.#existing();
     if (existing) {
-      this.#store.dispatch(
-        CashActions.updateRule({
-          ...existing,
-          name,
-          match,
-          categoryId,
-          conditions,
-        })
-      );
+      this.#facade.updateRule({
+        ...existing,
+        name,
+        match,
+        categoryId,
+        conditions,
+      });
     } else {
       const rule: ICashRule = {
         id: uuidv4(),
@@ -257,7 +219,7 @@ export class CashRuleEditModalComponent implements OnInit {
         categoryId,
         conditions,
       };
-      this.#store.dispatch(CashActions.addRule(rule));
+      this.#facade.addRule(rule);
     }
     void this.#modalCtrl.dismiss();
   }

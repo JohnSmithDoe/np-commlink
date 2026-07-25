@@ -5,15 +5,9 @@ import {
   inject,
 } from '@angular/core';
 import { IonActionSheet, ActionSheetButton } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IAppState } from '../../../@shared/types';
-import {
-  ShoppingActions,
-  selectShoppingListHasBoughtItems,
-  selectShoppingState,
-} from '../../data';
+import { GroceryListPageFacade } from '../../data';
 
 @Component({
   selector: 'app-shopping-action-sheet',
@@ -23,12 +17,10 @@ import {
   imports: [IonActionSheet, TranslateModule],
 })
 export class ShoppingActionSheetComponent {
-  readonly #store = inject(Store<IAppState>);
+  readonly #facade = inject(GroceryListPageFacade);
   readonly translate = inject(TranslateService);
-  readonly rxState = this.#store.selectSignal(selectShoppingState);
-  readonly #hasBoughtItems = this.#store.selectSignal(
-    selectShoppingListHasBoughtItems
-  );
+  readonly rxState = this.#facade.shoppingState;
+  readonly #hasBoughtItems = this.#facade.shoppingHasBoughtItems;
 
   readonly actionSheetButtons = computed<ActionSheetButton[]>(() => {
     const moveToStorage: ActionSheetButton = {
@@ -60,10 +52,10 @@ export class ShoppingActionSheetComponent {
     event: CustomEvent<{ data?: { action: string }; role?: string }>
   ) {
     if (event.detail.data?.action === 'share') {
-      this.#store.dispatch(ShoppingActions.shareShoppinglist());
+      this.#facade.shareShoppingList();
     } else if (event.detail.data?.action === 'move') {
-      this.#store.dispatch(ShoppingActions.moveToStorage());
+      this.#facade.moveShoppingToStorage();
     }
-    this.#store.dispatch(ShoppingActions.hideActionSheet());
+    this.#facade.hideShoppingActionSheet();
   }
 }

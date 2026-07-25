@@ -13,7 +13,7 @@ import {
   isWordActive,
   TICK_MS,
   TSettings,
-} from './wordclock.utils';
+} from '../../util/wordclock/wordclock.utils';
 
 // The letter grid split into per-row character arrays — derived once from the
 // module-level GRID, not per component instance.
@@ -40,7 +40,6 @@ const GRID_ROWS = GRID.map((row) => [...row]);
 })
 export class WordclockComponent {
   readonly config = input<TSettings>();
-
   protected readonly rows = GRID_ROWS;
 
   // Wall-clock time re-emitted every TICK_MS (rxjs) and lifted into a signal.

@@ -5,19 +5,13 @@ import {
   isDevMode,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, flask, remove, save, settingsSharp, trash } from 'ionicons/icons';
 import { ITrackingItem } from '../../model';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import {
-  TrackingActions,
-  TrackingListPageFacade,
-  selectTrackingTime,
-} from '../../data';
+import { TrackingListPageFacade } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
 import {
@@ -26,7 +20,6 @@ import {
   IonRouterLink,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import dayjs from 'dayjs';
 import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.component';
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';
 
@@ -49,11 +42,11 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
   providers: [{ provide: LIST_FACADE, useExisting: TrackingListPageFacade }],
 })
 export class TrackingPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackingListPageFacade);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
 
-  readonly total = this.#store.selectSignal(selectTrackingTime);
+  readonly total = this.#facade.total;
   readonly isDev = isDevMode();
 
   constructor() {
@@ -61,7 +54,7 @@ export class TrackingPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(TrackingActions.enterPage());
+    this.#facade.enterPage();
     this.#applyNotificationCommand();
   }
 
@@ -72,7 +65,7 @@ export class TrackingPage implements ViewWillEnter {
   #applyNotificationCommand(): void {
     const cmd = this.#route.snapshot.queryParamMap.get('cmd');
     if (!cmd) return;
-    this.#store.dispatch(TrackingActions.applyNotificationCommand(cmd));
+    this.#facade.applyNotificationCommand(cmd);
     void this.#router.navigate([], {
       relativeTo: this.#route,
       queryParams: {},
@@ -81,35 +74,33 @@ export class TrackingPage implements ViewWillEnter {
   }
 
   removeItem(item: ITrackingItem) {
-    this.#store.dispatch(TrackingActions.removeItem(item));
+    this.#facade.removeItem(item);
   }
 
   showEditDialog(item: ITrackingItem) {
-    this.#store.dispatch(ItemDialogsActions.showEditDialog(item, '_tracking'));
+    this.#facade.showEditDialog(item);
   }
 
   toggleTracking(item: ITrackingItem) {
-    this.#store.dispatch(
-      TrackingActions.toggleTrackingItem(item, dayjs().format())
-    );
+    this.#facade.toggleTracking(item);
   }
 
   resetAll() {
-    this.#store.dispatch(TrackingActions.resetAllTracking());
+    this.#facade.resetAll();
   }
   resetItem(item: ITrackingItem) {
-    this.#store.dispatch(TrackingActions.resetTracking(item));
+    this.#facade.resetItem(item);
   }
 
   saveAndResetAll() {
-    this.#store.dispatch(TrackingActions.saveAndResetTracking());
+    this.#facade.saveAndReset();
   }
 
   generateDummyData() {
-    this.#store.dispatch(TrackingActions.generateDummyData());
+    this.#facade.generateDummyData();
   }
 
   protected generateTaskByTicket() {
-    this.#store.dispatch(TrackingActions.showCreateByTicket());
+    this.#facade.createByTicket();
   }
 }

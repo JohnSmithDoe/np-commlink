@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { ISettings, TTheme } from '../../types';
+import { ISettings, TTheme } from '../../model/types';
 
 // The app-global settings contract (eager kernel). Currently just the persisted
 // schema `version` anchor for the migration framework (@shared/util/migrations):

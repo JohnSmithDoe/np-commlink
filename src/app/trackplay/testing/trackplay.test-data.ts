@@ -1,11 +1,8 @@
+import { IGame, IGameType, IPlayer, IRound, ITrackplayState } from '../model';
 import {
-  IGame,
-  IGameType,
-  IPlayer,
-  IRound,
-  ITrackplayState,
-  TID,
-} from '../model';
+  DEFAULT_GAME_TYPES,
+  initialTrackplayConfig,
+} from '../util/trackplay.factory';
 
 // Deterministic trackplay fixtures. Owned by the trackplay context (DDD review
 // #1): they live here, not in the shared @shared/testing kit, because the shared
@@ -50,37 +47,18 @@ export function mockRound(overrides: Partial<IRound> = {}): IRound {
   };
 }
 
-const defaultTrackplayGameTypes: Record<TID, IGameType> = {
-  default: { id: 'default', name: 'Standard', winHigh: true },
-  rommee: { id: 'rommee', name: 'Rommé', winHigh: false },
-  skat: { id: 'skat', name: 'Skat', winHigh: true },
-};
-
 export function mockTrackplayState(
   overrides: Partial<ITrackplayState> = {}
 ): ITrackplayState {
+  // Reuse the production seed constants so the fixtures can't drift from them;
+  // deep-clone so a test mutating the fixture can't leak into another (the
+  // runner is isolate:false — module-level state is shared across spec files).
   return {
     players: {},
     games: {},
-    gameTypes: { ...defaultTrackplayGameTypes },
+    gameTypes: structuredClone(DEFAULT_GAME_TYPES),
     rounds: {},
-    config: {
-      games: {
-        dir: 'desc',
-        filter: '',
-        sort: 'updated',
-        typeId: '',
-        showEndedGames: true,
-      },
-      gamesForPlayer: {
-        dir: 'desc',
-        filter: '',
-        sort: 'updated',
-        typeId: '',
-        showEndedGames: false,
-      },
-      players: { dir: 'asc', filter: '', sort: 'name' },
-    },
+    config: structuredClone(initialTrackplayConfig),
     lastDeleted: null,
     ...overrides,
   };

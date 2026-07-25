@@ -23,17 +23,11 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle, playCircle } from 'ionicons/icons';
 import { TID } from '../../model';
-import {
-  TrackplayActions,
-  selectGames,
-  selectGameTypeList,
-  selectPlayers,
-} from '../../data';
+import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-select.component';
 
@@ -73,13 +67,13 @@ import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-se
   ],
 })
 export class TrackplayGameEditDialogComponent implements OnInit {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackplayFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #router = inject(Router);
 
-  readonly #games = this.#store.selectSignal(selectGames);
-  readonly #playersMap = this.#store.selectSignal(selectPlayers);
-  readonly rxGameTypes = this.#store.selectSignal(selectGameTypeList);
+  readonly #games = this.#facade.games;
+  readonly #playersMap = this.#facade.players;
+  readonly rxGameTypes = this.#facade.gameTypeList;
   // Full roster (unaffected by the players-list filter) sorted by name, so any
   // player can always be (de)selected here.
   readonly rxPlayers = computed(() =>
@@ -163,28 +157,24 @@ export class TrackplayGameEditDialogComponent implements OnInit {
 
     if (existing) {
       if (name && name !== existing.name) {
-        this.#store.dispatch(TrackplayActions.renameGame(existing.id, name));
+        this.#facade.renameGame(existing.id, name);
       }
       if (typeId !== existing.type) {
-        this.#store.dispatch(
-          TrackplayActions.changeGameType(existing.id, typeId)
-        );
+        this.#facade.changeGameType(existing.id, typeId);
       }
       if (!this.#sameIds(players, existing.players)) {
-        this.#store.dispatch(
-          TrackplayActions.setGamePlayers(existing.id, players)
-        );
+        this.#facade.setGamePlayers(existing.id, players);
       }
       return existing.id;
     }
 
     if (!name) return null;
     const before = new Set(Object.keys(this.#games()));
-    this.#store.dispatch(TrackplayActions.createGame(name, players));
+    this.#facade.createGame(name, players);
     const newId =
       Object.keys(this.#games()).find((id) => !before.has(id)) ?? null;
     if (newId && typeId !== DEFAULT_GAME_TYPE_ID) {
-      this.#store.dispatch(TrackplayActions.changeGameType(newId, typeId));
+      this.#facade.changeGameType(newId, typeId);
     }
     return newId;
   }

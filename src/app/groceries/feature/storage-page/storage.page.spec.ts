@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockStorageItem } from '../../testing/grocery.test-data';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { StorageActions } from '../../data';
 import { StoragePage } from './storage.page';
 
@@ -39,12 +39,14 @@ describe('StoragePage', () => {
     expect(dispatch).toHaveBeenCalledWith(StorageActions.removeItem(item));
   });
 
-  it('dispatches showEditDialog scoped to the storage list', () => {
+  it('opens the edit dialog scoped to the storage list', () => {
     const item = mockStorageItem();
     component.showEditDialog(item);
-    expect(dispatch).toHaveBeenCalledWith(
-      ItemDialogsActions.showEditDialog(item, '_storage')
-    );
+    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+      item,
+      listId: '_storage',
+      editMode: 'update',
+    });
   });
 
   it('dispatches a toggling updateSort for the given sort type', () => {

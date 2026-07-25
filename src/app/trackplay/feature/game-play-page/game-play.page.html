@@ -12,7 +12,7 @@
         />
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ rxGame()?.name }}</ion-title>
+    <ion-title>{{ game()?.name }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="toggleEnded()" color="primary">
         <ion-icon
@@ -30,7 +30,7 @@
 </ion-header>
 
 <ion-content>
-  @if (rxGame(); as game) {
+  @if (game(); as game) {
     @if (!ended()) {
       <!-- ── ACTIVE: the scoring spreadsheet ─────────────────────────── -->
       <div class="tp-grid sr-scanlines">
@@ -48,7 +48,7 @@
 
         <!-- body: one row per round, editable numeric cells -->
         <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
-          @for (round of rxRounds(); track round.id) {
+          @for (round of rounds(); track round.id) {
             <div class="tp-row tp-row--data">
               <div class="tp-cell tp-cell--round">{{ round.idx }}</div>
               @for (pid of playerIds(); track pid) {
@@ -75,7 +75,7 @@
           <div class="tp-cell tp-cell--foot tp-cell--round">&sum;</div>
           @for (pid of playerIds(); track pid) {
             <div class="tp-cell tp-cell--foot">
-              {{ rxScores()[pid] | score }}
+              {{ scores()[pid] | score }}
             </div>
           }
         </div>
@@ -85,7 +85,7 @@
       <div class="tp-result ion-padding">
         <p class="sr-hud">{{ 'trackplay.game.ended' | translate }}</p>
 
-        @if (rxWinner(); as winner) {
+        @if (winner(); as winner) {
           <p class="tp-result__winner">
             <span>
               <strong class="sr-glow">{{
@@ -93,7 +93,7 @@
               }}</strong>
             </span>
             <span class="tp-result__score">
-              {{ rxScores()[winner.id] | score }}
+              {{ scores()[winner.id] | score }}
               {{ 'trackplay.game.points-label' | translate }}
             </span>
           </p>
@@ -120,12 +120,12 @@
           </div>
         }
 
-        @for (player of rxResult(); track player.id; let i = $index) {
+        @for (player of result(); track player.id; let i = $index) {
           @if (i !== 0) {
             <p class="tp-result__row">
               <span>{{ i + 1 }}. {{ player.name }}</span>
               <span class="tp-result__score">
-                {{ rxScores()[player.id] | score }}
+                {{ scores()[player.id] | score }}
                 {{ 'trackplay.game.points-label' | translate }}
               </span>
             </p>

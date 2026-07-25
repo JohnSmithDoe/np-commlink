@@ -126,8 +126,8 @@ export function mockProductsState(
 }
 
 // The grocery slice bundle the cross-list engine helpers (stateByListId,
-// updateQuickAddState, filterBySearchQuery, …) now take instead of IAppState
-// (the grocery slices left IAppState in the god-file split).
+// updateQuickAddState, filterBySearchQuery, …) take — there is no root state to
+// read the three lists off.
 export function mockGroceryLists(
   overrides: Partial<IGroceryLists> = {}
 ): IGroceryLists {

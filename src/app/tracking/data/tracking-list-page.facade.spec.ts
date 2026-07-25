@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemDialogsActions } from '../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../@shared/data/item-dialogs/item-dialog-host';
 import { TrackingActions } from './tracking.actions';
 import {
   selectTrackingListItems,
@@ -53,9 +53,18 @@ describe('TrackingListPageFacade', () => {
     facade.addItemFromSearch();
     facade.showCreateDialog();
     expect(dispatch).toHaveBeenCalledWith(TrackingActions.addItemFromSearch());
-    expect(dispatch).toHaveBeenCalledWith(
-      ItemDialogsActions.showCreateDialogWithSearch('_tracking')
-    );
+    const request = TestBed.inject(ItemDialogHost).request();
+    expect(request?.listId).toBe('_tracking');
+    expect(request?.editMode).toBe('create');
+  });
+
+  // createByTicket used to round-trip through TrackingActions.showCreateByTicket
+  // and an effect purely to build a seed item; it opens the host directly now.
+  it('opens a create dialog seeded with a fresh ticket', () => {
+    facade.createByTicket();
+    const request = TestBed.inject(ItemDialogHost).request();
+    expect(request?.editMode).toBe('create');
+    expect(request?.item.name).toBe('new ticket');
   });
 
   it('has no categories and its category ops are inert', () => {

@@ -1,9 +1,9 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TCategoryId } from '../../@shared/types';
+import { TCategoryId } from '../../@shared/model/types';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { ICategoriesPageFacade } from '../../@shared/util/list/categories-page.facade';
+import { ICategoriesPageFacade } from '../../@shared/util/categories/categories-page.facade';
 import { CashActions } from './cash.actions';
 import { selectCashCategoriesWithCount } from './cash.selector';
 

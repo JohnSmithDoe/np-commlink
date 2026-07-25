@@ -1,10 +1,12 @@
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
+import { moduleHydrationResolver } from '../../@shared/data/module-hydration.resolver';
+import { CashActions } from './cash.actions';
 import { cashReducer } from './cash.reducer';
-import { CashLoadEffects } from './cash-load.effects';
-import { CashSaveEffects } from './cash-save.effects';
-import { CashTelemetryEffects } from './cash-telemetry.effects';
+import { CashLoadEffects } from './effects/cash-load.effects';
+import { CashSaveEffects } from './effects/cash-save.effects';
+import { CashTelemetryEffects } from './effects/cash-telemetry.effects';
 
 /**
  * Lazy state + effects for the `cash` bounded context, registered on the
@@ -22,3 +24,9 @@ export const cashLazyProviders: Array<Provider | EnvironmentProviders> = [
   provideState('cash', cashReducer),
   provideEffects(CashLoadEffects, CashSaveEffects, CashTelemetryEffects),
 ];
+
+/** Route hydration for the cash slice (dispatched by the route resolver). */
+export const cashHydrationResolver = moduleHydrationResolver(
+  CashActions.load,
+  CashActions.loaded
+);

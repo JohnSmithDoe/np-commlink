@@ -1,4 +1,4 @@
-import { TCategoryId } from '../../@shared/types';
+import { TCategoryId } from '../../@shared/model/types';
 import { createBaseItem } from '../../@shared/util/app.factory';
 import { ITaskItem } from '../model';
 

@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ICategory, ISearchResult } from '../../@shared/types';
+import { ICategory, ISearchResult } from '../../@shared/model/types';
 import { ITaskItem, ITasksState } from '../model';
 import {
   filterAndSortItemList,

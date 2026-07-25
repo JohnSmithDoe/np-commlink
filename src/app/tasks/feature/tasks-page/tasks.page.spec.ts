@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockTaskItem } from '../../testing/tasks.test-data';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { TasksActions } from '../../data';
 import { TasksPage } from './tasks.page';
 
@@ -39,12 +39,14 @@ describe('TasksPage', () => {
     expect(dispatch).toHaveBeenCalledWith(TasksActions.removeItem(item));
   });
 
-  it('dispatches showEditDialog scoped to the tasks list', () => {
+  it('opens the edit dialog scoped to the tasks list', () => {
     const item = mockTaskItem();
     component.showEditDialog(item);
-    expect(dispatch).toHaveBeenCalledWith(
-      ItemDialogsActions.showEditDialog(item, '_tasks')
-    );
+    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+      item,
+      listId: '_tasks',
+      editMode: 'update',
+    });
   });
 
   it('dispatches a toggling updateSort for the given sort type', () => {

@@ -13,6 +13,7 @@
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 export { TrackplayActions } from './trackplay.actions';
+export { TrackplayFacade } from './trackplay.facade';
 export {
   selectPlayers,
   selectGames,
@@ -31,4 +32,7 @@ export {
   selectPlayerStats,
   selectStatsForPlayer,
 } from './trackplay.selector';
-export { trackplayLazyProviders } from './provide-trackplay-lazy';
+export {
+  trackplayLazyProviders,
+  trackplayHydrationResolver,
+} from './provide-trackplay-lazy';

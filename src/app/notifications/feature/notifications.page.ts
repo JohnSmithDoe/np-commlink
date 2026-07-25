@@ -11,7 +11,6 @@ import {
   IonNote,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
@@ -26,14 +25,9 @@ import {
 } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
-import { INotification } from '../../@shared/types';
+import { INotification } from '../../@shared/model/types';
 import { NotificationService } from '../util/notification.service';
-import { NotificationsActions } from '../../@shared/util/notifications/notifications.actions';
-import {
-  selectDoneCollapsed,
-  selectDoneNotifications,
-  selectNewNotifications,
-} from '../data';
+import { NotificationsFacade } from '../data';
 
 marker('notifications.action.start');
 marker('notifications.action.stop');
@@ -58,18 +52,16 @@ marker('notifications.action.pause');
   ],
 })
 export class NotificationsPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(NotificationsFacade);
   readonly #router = inject(Router);
   readonly #osNotifications = inject(NotificationService);
 
-  readonly newNotifications = this.#store.selectSignal(selectNewNotifications);
-  readonly doneNotifications = this.#store.selectSignal(
-    selectDoneNotifications
-  );
-  readonly doneCollapsed = this.#store.selectSignal(selectDoneCollapsed);
+  readonly newNotifications = this.#facade.newNotifications;
+  readonly doneNotifications = this.#facade.doneNotifications;
+  readonly doneCollapsed = this.#facade.doneCollapsed;
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(NotificationsActions.markPageViewed());
+    this.#facade.markPageViewed();
   }
 
   constructor() {
@@ -101,20 +93,20 @@ export class NotificationsPage implements ViewWillEnter {
 
   markDone(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(NotificationsActions.markDone(n.id));
+    this.#facade.markDone(n.id);
   }
 
   remove(n: INotification, event: Event) {
     event.stopPropagation();
-    this.#store.dispatch(NotificationsActions.removeNotification(n.id));
+    this.#facade.removeNotification(n.id);
   }
 
   toggleDoneSection() {
-    this.#store.dispatch(NotificationsActions.toggleDoneSection());
+    this.#facade.toggleDoneSection();
   }
 
   clearDone() {
-    this.#store.dispatch(NotificationsActions.clearDone());
+    this.#facade.clearDone();
   }
 
   fireTestOsNotification() {
@@ -122,7 +114,7 @@ export class NotificationsPage implements ViewWillEnter {
   }
 
   addDebugNotification() {
-    this.#store.dispatch(NotificationsActions.addDebugNotification());
+    this.#facade.addDebugNotification();
   }
 
   actionLabelKey(n: INotification): string {

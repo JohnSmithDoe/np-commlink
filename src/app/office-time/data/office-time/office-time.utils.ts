@@ -15,39 +15,36 @@ export interface StatsInputs {
 
 const WORKDAYS_PER_WEEK = 5;
 
+// Every period stat counts the days in the current `type` window that match a
+// predicate — factor the window setup out so each stat is just its predicate.
+const countPeriodDays = (
+  type: TimePeriod,
+  predicate: (day: Dayjs) => boolean
+) => {
+  const start = dayjs().startOf(type);
+  const end = start.endOf(type);
+  return daysBetween(start, end, predicate);
+};
+
 export const getWorkdays = (
   type: TimePeriod,
   holidays: Dayjs[],
   freedays: Dayjs[]
-) => {
-  const start = dayjs().startOf(type);
-  const end = start.endOf(type);
-  return daysBetween(
-    start,
-    end,
-    (current) => !isHolidayOrFreeday(current, holidays, freedays)
-  );
-};
+) =>
+  countPeriodDays(type, (day) => !isHolidayOrFreeday(day, holidays, freedays));
 
-export const getOfficedays = (type: TimePeriod, officedays: Dayjs[]) => {
-  const start = dayjs().startOf(type);
-  const end = start.endOf(type);
-  return daysBetween(start, end, (current) => isOfficeDay(current, officedays));
-};
-export const getFreedays = (type: TimePeriod, freedays: Dayjs[]) => {
-  const start = dayjs().startOf(type);
-  const end = start.endOf(type);
-  return daysBetween(start, end, (current) => isFreeday(current, freedays));
-};
+export const getOfficedays = (type: TimePeriod, officedays: Dayjs[]) =>
+  countPeriodDays(type, (day) => isOfficeDay(day, officedays));
+
+export const getFreedays = (type: TimePeriod, freedays: Dayjs[]) =>
+  countPeriodDays(type, (day) => isFreeday(day, freedays));
 
 export const getHolidays = (
   type: TimePeriod,
   holidays: Record<string, Dayjs>
 ) => {
   const holidayDays = Object.values(holidays);
-  const start = dayjs().startOf(type);
-  const end = start.endOf(type);
-  return daysBetween(start, end, (current) => isHoliday(current, holidayDays));
+  return countPeriodDays(type, (day) => isHoliday(day, holidayDays));
 };
 
 export const getHolidaysNotOnWeekend = (
@@ -55,12 +52,9 @@ export const getHolidaysNotOnWeekend = (
   holidays: Record<string, Dayjs>
 ) => {
   const holidayDays = Object.values(holidays);
-  const start = dayjs().startOf(type);
-  const end = start.endOf(type);
-  return daysBetween(
-    start,
-    end,
-    (current) => !isWeekend(current) && isHoliday(current, holidayDays)
+  return countPeriodDays(
+    type,
+    (day) => !isWeekend(day) && isHoliday(day, holidayDays)
   );
 };
 

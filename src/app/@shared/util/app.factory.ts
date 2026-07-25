@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { IBaseItem, TCategoryId } from '../types';
+import { IBaseItem, TCategoryId } from '../model/types';
 import { uuidv4 } from './app.utils';
 
 export function createBaseItem(

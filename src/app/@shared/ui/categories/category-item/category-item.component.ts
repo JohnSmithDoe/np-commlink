@@ -1,0 +1,58 @@
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+} from '@angular/core';
+import {
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
+  IonLabel,
+  IonList,
+  IonReorder,
+} from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+import { TColor, TIonDragEvent, TItemListCategory } from '../../../model/types';
+import { checkItemOptionsOnDrag } from '../../../util/app.utils';
+
+@Component({
+  selector: 'app-category-item',
+  templateUrl: './category-item.component.html',
+  styleUrls: ['./category-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    IonItem,
+    IonLabel,
+    IonReorder,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    NgTemplateOutlet,
+    TranslateModule,
+  ],
+})
+export class CategoryItemComponent {
+  category = input.required<TItemListCategory>();
+  count = input.required<number>();
+  ionList = input.required<IonList>();
+
+  color = input<TColor>();
+
+  selectCategory = output<void>();
+  deleteCategory = output<void>();
+
+  async handleItemOptionsOnDrag(event: TIonDragEvent) {
+    if (checkItemOptionsOnDrag(event) === 'end') {
+      return this.emitDeleteItem();
+    }
+    return;
+  }
+
+  async emitDeleteItem() {
+    await this.ionList().closeSlidingItems();
+    this.deleteCategory.emit();
+  }
+}

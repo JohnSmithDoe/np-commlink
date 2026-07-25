@@ -1,5 +1,10 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IBaseItem, ICategory, IListState } from '../../../@shared/types';
+import {
+  IBaseItem,
+  ICategory,
+  IListState,
+  TItemListId,
+} from '../../../@shared/model/types';
 import {
   IGroceryLists,
   IGrocerySearchResult,
@@ -11,8 +16,8 @@ import {
   matchesNameExactly,
   matchesSearch,
 } from '../../../@shared/util/app.utils';
-import { categoryNames } from '../../../@shared/util/category.utils';
-import { selectRouteParams as selectRouteParameters } from '../../../@shared/data/router.selector';
+import { categoryNames } from '../../../@shared/util/categories/category.utils';
+import { selectRouteParams as selectRouteParameters } from '../../../@shared/data/router/router.selector';
 import { selectListSettingsState } from '../list-settings/list-settings.selector';
 import {
   filterAndSortItemList,
@@ -31,10 +36,18 @@ export {
   sortItemListFn,
 } from '../../../@shared/util/list/list.selector';
 
+// Lives here rather than on the domain-blind router selector because groceries
+// is the only multi-list domain — tracking/tasks name their own id.
+export const selectListIdParam = createSelector(
+  selectRouteParameters,
+  (parameters): TItemListId | undefined =>
+    parameters?.['listId'] as TItemListId | undefined
+);
+
 // The grocery slice bundle, recomposed from the per-slice feature selectors +
-// the shared listSettings selector. The grocery slices left `IAppState` in the
-// god-file split, so the cross-list engine reads them here instead of off the
-// root state. Defined via `createFeatureSelector` inline (not imported from the
+// the shared listSettings selector. There is no root-state type: the cross-list
+// engine reads each slice through its own feature selector and composes them
+// here. Defined via `createFeatureSelector` inline (not imported from the
 // per-list selectors) to avoid a selector import cycle.
 export const selectGroceryLists = createSelector(
   createFeatureSelector<IStorageState>('storage'),
@@ -50,9 +63,9 @@ export const selectGroceryLists = createSelector(
 );
 
 export const selectListState = createSelector(
-  selectRouteParameters,
+  selectListIdParam,
   selectGroceryLists,
-  ({ listId }, lists) => {
+  (listId, lists) => {
     if (!listId) return;
     return stateByListId(lists, listId);
   }

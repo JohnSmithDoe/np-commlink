@@ -24,8 +24,8 @@ separate commit.
   `categories-dialog`, `edit-category-dialog`) become pure `ui`. (A global **agenda** will later
   own the genuinely cross-cutting case — not built now.)
 - **Tracking fork deleted.** `tracking/smart-ui/item-edit-modal` goes; tracking reuses the shared
-  pure-`ui` modal. `tracking/data/dialogs` stays (it is already tracking's own domain-local
-  dialog state and has no categories).
+  pure-`ui` modal. (`tracking/data/dialogs` was kept at planning time, but Stage 5 folded tracking
+  onto the shared open-command instead and the fork is gone.)
 - **Open trigger:** inline `<ion-modal [isOpen]>` (Ionic-recommended), driven by a minimal
   per-domain open-command (`isOpen` + seed item + listId), `didDismiss` → hide.
 
@@ -110,6 +110,7 @@ separate commit.
     display-mode via `@shared/feature/list-page`) + its `CategoriesActions` subset + the
     `confirmEditCategoryChanges$` bridge. This flow was never on the item-selection path, so it
     stays on the shared slice — a candidate for a future localise pass if desired.
+    → **Done in the follow-up below.**
 
 ## Refactor complete
 
@@ -128,3 +129,39 @@ cleanup — the tracking **list-page** merge duplicate — has since been retire
 - The `products` "create & add to another list" flow (`addToAdditionalList`) — preserve when the
   draft moves local.
 - The barcode scanner path (`facade.openEditProduct(ean)` → product dialog) still opens correctly.
+
+---
+
+## Follow-up — the store leaves the dialogs entirely (2026-07-25)
+
+The refactor above localised the *draft*; this pass removed the last two store couplings, so **no
+dialog state lives in NgRx at all**. Rationale, trade-offs and the general lesson are in
+`architecture.md` §4.1b; the mechanics:
+
+1. **The open-command became a signal.** `ItemDialogHost`
+   (`@shared/data/item-dialogs/item-dialog-host.ts`) holds one nullable request object. Since every
+   open path already started in a facade method, and every facade already exposes its list state as
+   a signal, the seed item is built synchronously at the call site — which deleted
+   `tracking-item-dialogs.effects.ts` outright, the `ItemDialogsActions` group,
+   `GroceryListActions.openEditProduct`, `TrackingActions.showCreateByTicket`, and **every** `listId`
+   guard. `seedItem` also stopped being abstract, taking the three `item-dialogs.selector.ts` files
+   and five facade signals (which existed only to cast `IBaseItem` back to a domain type) with it.
+2. **The category-name dialog became dumb `ui`.** `@shared/ui/categories/category-name-dialog` with
+   a local `linkedSignal` draft, owned by `ListPageComponent`, persisting via one optional
+   `IListPageFacade.saveCategory(name)`. That removed the app's last per-keystroke store write and
+   both `confirmEditCategoryChanges$` bridges — deleting `grocery-item-dialogs.effects.ts` and
+   `tasks-item-dialogs.effects.ts` too. The rename-by-id path went with it: it was unreachable
+   (production only ever opened the dialog without an id).
+3. **The slice is gone**, `IAppState` is `{ router, settings }`, eager slices went 4 → 3, and
+   `@shared/smart-ui/` no longer exists.
+4. **i18n de-forked.** The kernel derived its labels in the reducer from `grocery.`-prefixed keys,
+   so tracking had forked its own close-button key. All of them collapsed onto the neutral
+   `edit.item.dialog.*` / `edit.category.dialog.*` namespace (4 keys net removed: two duplicates,
+   one dead, one fork).
+
+Also folded `EditProductDialogComponent` onto `BaseGroceryEditItemDialog` (165 → 68 lines) — it had
+hand-reimplemented the base for two field setters and one `confirm()` branch.
+
+**New guard rails:** `base-edit-item-dialog.spec.ts` tests the base once instead of re-testing it in
+five wrappers, and pins the invariant that makes the draft correct — `open()` copies the item, so
+reopening the same row after an aborted edit reseeds rather than resurrecting the abandoned draft.

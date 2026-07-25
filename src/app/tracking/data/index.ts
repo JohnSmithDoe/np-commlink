@@ -24,11 +24,11 @@ export {
 } from './tracking.selector';
 export type { DailySeries } from './tracking.selector';
 
-// The tracking context's typed view of the shared, domain-blind itemDialogs slice
-export { selectEditTrackingItem } from './item-dialogs.selector';
-
 // List-page facade — what drives the shared, domain-blind ListPageComponent
 export { TrackingListPageFacade } from './tracking-list-page.facade';
 
 // Lazy providers (state + effects, registered per-route)
-export { trackingLazyProviders } from './provide-tracking-lazy';
+export {
+  trackingLazyProviders,
+  trackingHydrationResolver,
+} from './provide-tracking-lazy';

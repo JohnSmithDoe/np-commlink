@@ -18,7 +18,6 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
@@ -36,7 +35,7 @@ import {
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
-import { selectNotificationsUnread } from './@shared/data/dashboard/dashboard.selector';
+import { DashboardFacade } from './commlink/data';
 
 @Component({
   selector: 'app-root',
@@ -62,12 +61,10 @@ import { selectNotificationsUnread } from './@shared/data/dashboard/dashboard.se
   ],
 })
 export class AppComponent {
-  readonly #store = inject(Store);
+  readonly #dashboard = inject(DashboardFacade);
   // Reads the eager dashboard read-model, not the notifications slice — the
   // shell must not depend on a lazy domain slice (lazy-modules §7).
-  readonly notificationsBadge = this.#store.selectSignal(
-    selectNotificationsUnread
-  );
+  readonly notificationsBadge = this.#dashboard.notificationsUnread;
 
   constructor() {
     registerLocaleData(de);

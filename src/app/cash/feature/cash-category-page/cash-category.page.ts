@@ -19,15 +19,10 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
-import {
-  selectCashAccounts,
-  selectCashCategories,
-  selectTransactionsForCategory,
-} from '../../data';
+import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 /**
@@ -58,16 +53,14 @@ import { MoneyEurPipe } from '../../util/money.pipe';
   ],
 })
 export class CashCategoryPage {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
 
   readonly #id = this.#route.snapshot.paramMap.get('categoryId') ?? '';
-  readonly transactions = this.#store.selectSignal(
-    selectTransactionsForCategory(this.#id)
-  );
-  readonly #categories = this.#store.selectSignal(selectCashCategories);
-  readonly #accounts = this.#store.selectSignal(selectCashAccounts);
+  readonly transactions = this.#facade.transactionsForCategory(this.#id);
+  readonly #categories = this.#facade.categories;
+  readonly #accounts = this.#facade.accounts;
   readonly #accountNameById = computed(
     () => new Map(this.#accounts().map((a) => [a.id, a.name]))
   );

@@ -1,4 +1,4 @@
-import { IBaseItem } from '../../@shared/types';
+import { IBaseItem } from '../../@shared/model/types';
 import { IProduct, IShoppingItem, IStorageItem } from '../model';
 
 // Grocery item type guards (moved out of `@shared/util/app.utils` in the DDD

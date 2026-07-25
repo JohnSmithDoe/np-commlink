@@ -1,0 +1,22 @@
+<ion-toolbar>
+  <ion-buttons slot="start">
+    <ion-button (click)="toggleReorder.emit()" class="ion-page-hidden">
+      <ion-icon slot="icon-only" name="list" />
+    </ion-button>
+    <ion-button (click)="selectSortMode.emit('name')">
+      {{ 'item-list.toolbar.sort-az' | translate }}
+    </ion-button>
+    <ng-content />
+  </ion-buttons>
+  <ion-buttons slot="end">
+    @if (showDisplayMode()) {
+      <ion-button (click)="selectDisplayMode.emit('alphabetical')">
+        {{ 'item-list.toolbar.list' | translate }}
+      </ion-button>
+      <ion-button (click)="selectDisplayMode.emit('categories')">
+        {{ 'item-list.toolbar.categories' | translate }}
+      </ion-button>
+    }
+    <ng-content select="[toolbarActionsEnd]" />
+  </ion-buttons>
+</ion-toolbar>

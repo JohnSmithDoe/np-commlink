@@ -14,7 +14,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TColor } from '../../types';
+import { TColor } from '../../model/types';
 import { addIcons } from 'ionicons';
 import {
   add,

@@ -19,7 +19,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TColor, TIonDragEvent } from '../../../@shared/types';
+import { TColor, TIonDragEvent } from '../../../@shared/model/types';
 import { ITrackingItem } from '../../model';
 import { NpTimeFromSecondsPipe } from '../../../@shared/util/pipes/np-time-from-seconds.pipe';
 import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';

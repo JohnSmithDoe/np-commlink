@@ -14,7 +14,7 @@
       }}
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button strong="true" [disabled]="!canSave()" (click)="save()">
+      <ion-button [strong]="true" [disabled]="!canSave()" (click)="save()">
         {{ 'cash.action.save' | translate }}
       </ion-button>
     </ion-buttons>

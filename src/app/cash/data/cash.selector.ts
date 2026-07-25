@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { ICategory, TCategoryId } from '../../@shared/types';
+import { ICategory, TCategoryId } from '../../@shared/model/types';
 import { ICashState, ICashTransaction } from '../model';
 
 // Reporting counts real income/expense only: transfers move money between own

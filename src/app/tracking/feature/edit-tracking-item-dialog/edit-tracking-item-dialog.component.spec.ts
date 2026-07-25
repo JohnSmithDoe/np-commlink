@@ -2,18 +2,15 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { createTrackingItem } from '../../util/tracking.factory';
-import {
-  selectEditTrackingItem,
-  selectTrackingListItems,
-  TrackingActions,
-} from '../../data';
+import { selectTrackingListItems, TrackingActions } from '../../data';
 import { EditTrackingItemDialogComponent } from './edit-tracking-item-dialog.component';
 
 describe('EditTrackingItemDialogComponent', () => {
   let store: MockStore;
   let component: EditTrackingItemDialogComponent;
+  let host: ItemDialogHost;
 
   const seed = createTrackingItem('Task');
 
@@ -23,9 +20,10 @@ describe('EditTrackingItemDialogComponent', () => {
       providers: [provideZonelessChangeDetection(), provideMockStore()],
     });
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectEditTrackingItem, seed);
     store.overrideSelector(selectTrackingListItems, []);
     store.refreshState();
+    host = TestBed.inject(ItemDialogHost);
+    host.open({ item: seed, listId: '_tracking', editMode: 'update' });
     component = TestBed.createComponent(
       EditTrackingItemDialogComponent
     ).componentInstance;
@@ -67,6 +65,6 @@ describe('EditTrackingItemDialogComponent', () => {
         notifications: { onStart: true, onStop: false, onProcess: false },
       })
     );
-    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
+    expect(host.request()).toBeNull();
   });
 });

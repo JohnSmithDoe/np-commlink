@@ -11,7 +11,6 @@ import {
   IonIcon,
   IonRouterLinkWithHref,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import {
   barcodeOutline,
@@ -30,10 +29,7 @@ import {
 import dayjs from 'dayjs';
 import { interval, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import {
-  selectDashboardState,
-  selectTelemetry,
-} from '../../../@shared/data/dashboard/dashboard.selector';
+import { DashboardFacade } from '../../data';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 type ProgramStatus = 'online' | 'standby' | 'offline';
@@ -186,7 +182,7 @@ export class CommlinkPage {
     },
   ];
 
-  readonly #store = inject(Store);
+  readonly #dashboard = inject(DashboardFacade);
 
   readonly onlineCount = this.programs.filter((p) => p.status === 'online')
     .length;
@@ -194,7 +190,7 @@ export class CommlinkPage {
 
   // Read ONLY the shared dashboard read-model (CQRS): each supplier pushes its
   // telemetry via DashboardActions.report; commlink imports no other domain.
-  readonly #telemetry = this.#store.selectSignal(selectDashboardState);
+  readonly #telemetry = this.#dashboard.dashboardState;
 
   /**
    * Live badge value for a program's configured metric from the read-model, or
@@ -208,12 +204,12 @@ export class CommlinkPage {
     return value == undefined ? null : Number(value);
   }
 
-  readonly #comms = this.#store.selectSignal(selectTelemetry('notifications'));
+  readonly #comms = this.#dashboard.telemetry('notifications');
   /** Unread signals → drives the NOISE status-strip readout. */
   readonly noise = computed(() =>
     Number(this.#comms()?.metrics['unread'] ?? 0)
   );
-  readonly #office = this.#store.selectSignal(selectTelemetry('office-time'));
+  readonly #office = this.#dashboard.telemetry('office-time');
   /** Nuyen "banked" == office days logged this year. */
   readonly nuyen = computed(() =>
     Number(this.#office()?.metrics['officedays'] ?? 0)

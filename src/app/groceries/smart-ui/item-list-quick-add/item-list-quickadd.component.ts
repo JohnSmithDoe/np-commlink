@@ -4,17 +4,11 @@ import {
   inject,
   output,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
-import {
-  selectQuickAddCanAddCategory,
-  selectQuickAddCanAddProduct,
-  selectQuickAddCanAddLocal,
-  selectQuickAddState,
-} from '../../data';
-import { TextItemComponent } from '../../../@shared/ui/item-list-items/text-item/text-item.component';
+import { GroceryListPageFacade } from '../../data';
+import { TextItemComponent } from '../../../@shared/ui/base-item/item-list/item-list-items/text-item/text-item.component';
 
 @Component({
   selector: 'app-item-list-quickadd',
@@ -24,11 +18,11 @@ import { TextItemComponent } from '../../../@shared/ui/item-list-items/text-item
   imports: [TextItemComponent, TranslateModule],
 })
 export class ItemListQuickaddComponent {
-  readonly #store = inject(Store);
-  rxState = this.#store.selectSignal(selectQuickAddState);
-  rxShowLocal = this.#store.selectSignal(selectQuickAddCanAddLocal);
-  rxShowProduct = this.#store.selectSignal(selectQuickAddCanAddProduct);
-  rxShowCategoy = this.#store.selectSignal(selectQuickAddCanAddCategory);
+  readonly #facade = inject(GroceryListPageFacade);
+  rxState = this.#facade.quickAddState;
+  rxShowLocal = this.#facade.quickAddCanAddLocal;
+  rxShowProduct = this.#facade.quickAddCanAddProduct;
+  rxShowCategoy = this.#facade.quickAddCanAddCategory;
 
   quickAddItem = output<void>();
   quickCreateProduct = output<void>();

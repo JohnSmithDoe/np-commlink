@@ -1,4 +1,4 @@
-import { ICategory, TCategoryId, TTimestamp } from '../../@shared/types';
+import { ICategory, TCategoryId, TTimestamp } from '../../@shared/model/types';
 
 // The `cash` bounded context owns its model (DDD review #1 — the god
 // `@shared/types` file is being split so each context holds its own types).

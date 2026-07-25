@@ -11,28 +11,23 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonItem,
   IonLabel,
   IonList,
-  IonItem,
   IonNote,
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
-import {
-  selectMonthlyTotals,
-  selectReportTotals,
-  selectSpendByCategory,
-} from '../../data';
+import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
-import { chartColors } from '../../../@shared/util/chart-colors';
+import { chartColors } from '../../../@shared/util/charts/chart-colors';
 
 Chart.register(...registerables);
 
@@ -65,14 +60,14 @@ Chart.register(...registerables);
   ],
 })
 export class CashReportPage {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #router = inject(Router);
   readonly #translate = inject(TranslateService);
   readonly #colors = chartColors();
 
-  readonly totals = this.#store.selectSignal(selectReportTotals);
-  readonly #monthly = this.#store.selectSignal(selectMonthlyTotals);
-  readonly spendByCategory = this.#store.selectSignal(selectSpendByCategory);
+  readonly totals = this.#facade.reportTotals;
+  readonly #monthly = this.#facade.monthlyTotals;
+  readonly spendByCategory = this.#facade.spendByCategory;
 
   readonly hasData = computed(
     () => this.#monthly().length > 0 || this.spendByCategory().length > 0

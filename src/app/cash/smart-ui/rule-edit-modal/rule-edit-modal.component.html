@@ -33,11 +33,14 @@
       />
     </ion-item>
 
-    <app-category-input
-      [categories]="selectedCategories()"
-      (removeCategory)="clearCategory()"
-      (openDialog)="openCategoriesDialog()"
-    ></app-category-input>
+    <app-cash-category-picker
+      [categories]="categories()"
+      [categoryId]="categoryId()"
+      (categoryIdChange)="categoryId.set($event)"
+      (addNew)="onAddCategory($event)"
+      (deleted)="onDeleteCategory($event)"
+      (renamed)="onRenameCategory($event)"
+    ></app-cash-category-picker>
   </ion-list>
 
   <ion-segment
@@ -132,17 +135,4 @@
     <ion-icon slot="start" name="add-outline" aria-hidden="true" />
     {{ 'cash.condition.add' | translate }}
   </ion-button>
-
-  <app-categories-dialog
-    [multiple]="false"
-    [isOpen]="categoriesDialogOpen()"
-    [categories]="categories()"
-    [selection]="categoryId() ? [categoryId()] : []"
-    (confirmed)="onPickCategory($event)"
-    (cancelled)="closeCategoriesDialog()"
-    (dismissed)="closeCategoriesDialog()"
-    (addNew)="onAddCategory($event)"
-    (deleted)="onDeleteCategory($event)"
-    (renamed)="onRenameCategory($event)"
-  ></app-categories-dialog>
 </ion-content>

@@ -9,14 +9,14 @@
     [query]="facade.state()?.searchQuery"
     (queryChange)="search($event)"
     (hitEnter)="addItemFromSearch()"
-  ></app-item-list-searchbar>
+  />
   <app-item-list-toolbar
     [showDisplayMode]="hasCategories()"
     (selectDisplayMode)="setDisplayMode($event)"
     (selectSortMode)="setSortMode($event)"
   >
-    <ng-content select="[toolbarActions]"></ng-content>
-    <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd></ng-content>
+    <ng-content select="[toolbarActions]" />
+    <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd />
     @if (hasCategories()) {
       <ion-button
         toolbarActionsEnd
@@ -65,7 +65,7 @@
       [searchTerm]="facade.state()?.searchQuery"
       (emptyList)="showCreateDialog()"
       (emptySearch)="addCategoryFromSearch()"
-    ></app-item-list-empty>
+    />
   } @else {
     <app-item-list-empty
       [isEmptyList]="!facade.items()?.length"
@@ -73,12 +73,17 @@
       [searchTerm]="facade.searchResult()?.searchTerm"
       (emptyList)="showCreateDialog()"
       (emptySearch)="addItemFromSearch()"
-    ></app-item-list-empty>
+    />
   }
 
   <ng-content select="[searchExtras]"></ng-content>
 </ion-content>
 
 @if (hasCategories()) {
-  <app-edit-category-dialog />
+  <app-category-name-dialog
+    [isOpen]="categoryDialog() !== null"
+    [name]="categoryDialog() ?? ''"
+    (confirmed)="saveCategory($event)"
+    (cancelled)="categoryDialog.set(null)"
+  />
 }

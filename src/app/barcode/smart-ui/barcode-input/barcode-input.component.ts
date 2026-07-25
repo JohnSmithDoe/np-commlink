@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
-import { BarcodeActions } from '../../data';
+import { BarcodeFacade } from '../../data';
 import { IonButton } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { UiService } from '../../../@shared/util/ui.service';
+import { ToastService } from '../../../@shared/util/toast.service';
 
 @Component({
   selector: 'app-barcode-input',
@@ -14,8 +13,8 @@ import { UiService } from '../../../@shared/util/ui.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BarcodeInputComponent {
-  readonly #store = inject(Store);
-  readonly #ui = inject(UiService);
+  readonly #facade = inject(BarcodeFacade);
+  readonly #ui = inject(ToastService);
   readonly #translate = inject(TranslateService);
 
   onFileSelected(event: Event) {
@@ -24,7 +23,7 @@ export class BarcodeInputComponent {
     const reader = new FileReader();
     reader.addEventListener('load', (e) => {
       const dataUrl = e.target?.result as string;
-      this.#store.dispatch(BarcodeActions.saveBarcode(dataUrl));
+      this.#facade.saveBarcode(dataUrl);
     });
     reader.addEventListener('error', () => {
       const message = this.#translate.instant(

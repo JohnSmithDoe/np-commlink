@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { BarcodeActions } from '../../data';
-import { UiService } from '../../../@shared/util/ui.service';
+import { ToastService } from '../../../@shared/util/toast.service';
 import { BarcodeInputComponent } from './barcode-input.component';
 
 // UiService pulls in Ionic's ToastController, so we stub it. The template's
@@ -25,7 +25,7 @@ describe('BarcodeInputComponent', () => {
         provideZonelessChangeDetection(),
         provideMockStore(),
         {
-          provide: UiService,
+          provide: ToastService,
           useValue: { showToast: () => Promise.resolve() },
         },
       ],

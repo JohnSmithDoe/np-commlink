@@ -4,7 +4,7 @@ import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import {
   CATEGORIES_FACADE,
   ICategoriesPageFacade,
-} from '../../util/list/categories-page.facade';
+} from '../../util/categories/categories-page.facade';
 import { EditCategoriesPage } from './edit-categories.page';
 
 type Entry = { category: { id: string; name: string }; count: number };

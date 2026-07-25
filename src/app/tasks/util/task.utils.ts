@@ -1,4 +1,4 @@
-import { IBaseItem } from '../../@shared/types';
+import { IBaseItem } from '../../@shared/model/types';
 import { ITaskItem } from '../model';
 
 /**

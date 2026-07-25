@@ -16,7 +16,7 @@ import {
   TItemListCategory,
   TItemListMode,
   TTimestamp,
-} from '../../@shared/types';
+} from '../../@shared/model/types';
 
 export interface ITaskItem extends IBaseItem {
   dueAt?: TTimestamp;

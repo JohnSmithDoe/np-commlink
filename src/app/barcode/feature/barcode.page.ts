@@ -5,11 +5,10 @@ import {
   IonItem,
   IonList,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../@shared/ui/page-header/page-header.component';
 import { BarcodeInputComponent } from '../smart-ui/barcode-input/barcode-input.component';
-import { BarcodeActions, selectBarcodeDataUrl } from '../data';
+import { BarcodeFacade } from '../data';
 
 @Component({
   selector: 'app-page-barcode',
@@ -27,14 +26,14 @@ import { BarcodeActions, selectBarcodeDataUrl } from '../data';
   ],
 })
 export class BarcodePage {
-  readonly #store = inject(Store);
-  readonly barcode = this.#store.selectSignal(selectBarcodeDataUrl);
+  readonly #facade = inject(BarcodeFacade);
+  readonly barcode = this.#facade.barcode;
 
   rotateBarcode() {
-    this.#store.dispatch(BarcodeActions.rotateBarcode());
+    this.#facade.rotateBarcode();
   }
 
   deleteBarcode() {
-    this.#store.dispatch(BarcodeActions.deleteBarcode());
+    this.#facade.deleteBarcode();
   }
 }

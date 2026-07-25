@@ -17,19 +17,12 @@ import {
   PopoverController,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline, diceOutline } from 'ionicons/icons';
 import { IGame, TID } from '../../model';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import {
-  TrackplayActions,
-  selectGameList,
-  selectGames,
-  selectGameTypes,
-  selectTrackplayConfig,
-} from '../../data';
+import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
 import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
 import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';
@@ -61,15 +54,15 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
   ],
 })
 export class TrackplayGamesPage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #popoverCtrl = inject(PopoverController);
 
-  readonly rxGames = this.#store.selectSignal(selectGameList);
-  readonly rxGameTypes = this.#store.selectSignal(selectGameTypes);
-  readonly #gamesMap = this.#store.selectSignal(selectGames);
-  readonly #config = this.#store.selectSignal(selectTrackplayConfig);
+  readonly rxGames = this.#facade.gameList;
+  readonly rxGameTypes = this.#facade.gameTypes;
+  readonly #gamesMap = this.#facade.games;
+  readonly #config = this.#facade.config;
 
   // The (already ended-sunk) list, split for the two section dividers.
   readonly runningGames = computed(() =>
@@ -94,7 +87,7 @@ export class TrackplayGamesPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(TrackplayActions.enterGamesPage());
+    this.#facade.enterGamesPage();
   }
 
   typeName(game: IGame): string {
@@ -106,7 +99,7 @@ export class TrackplayGamesPage implements ViewWillEnter {
   }
 
   deleteGame(game: IGame): void {
-    this.#store.dispatch(TrackplayActions.deleteGame(game));
+    this.#facade.deleteGame(game);
   }
 
   async newGame(): Promise<void> {

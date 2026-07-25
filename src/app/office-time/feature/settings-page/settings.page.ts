@@ -5,6 +5,7 @@ import {
   inject,
 } from '@angular/core';
 import {
+  AlertButton,
   IonAlert,
   IonButton,
   IonContent,
@@ -15,20 +16,13 @@ import {
   IonSegment,
   IonSegmentButton,
   IonToggle,
-  AlertButton,
   ToggleChangeEventDetail,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { SettingsActions } from '../../../@shared/data/settings/settings.actions';
-import { selectTheme } from '../../../@shared/data/settings/settings.selector';
-import { TTheme } from '../../../@shared/types';
-import {
-  OfficeTimeActions,
-  selectDashboardSettings,
-  selectTargetOfficeDaysPerWeek,
-} from '../../data';
+import { SettingsFacade } from '../../../@shared/data/settings/settings.facade';
+import { TTheme } from '../../../@shared/model/types';
+import { OfficeTimeFacade } from '../../data';
 
 @Component({
   selector: 'app-page-settings',
@@ -51,7 +45,8 @@ import {
   ],
 })
 export class SettingsPage {
-  readonly #store = inject(Store);
+  readonly #facade = inject(OfficeTimeFacade);
+  readonly #settings = inject(SettingsFacade);
   readonly #translate = inject(TranslateService);
 
   readonly alertButtons: AlertButton[] = [
@@ -68,9 +63,7 @@ export class SettingsPage {
     },
   ];
 
-  readonly #dashboardSettings = this.#store.selectSignal(
-    selectDashboardSettings
-  );
+  readonly #dashboardSettings = this.#facade.dashboardSettings;
   readonly dashboardSettings = computed(() => {
     const settings = this.#dashboardSettings();
     return settings
@@ -78,36 +71,30 @@ export class SettingsPage {
       : undefined;
   });
 
-  readonly targetOfficeDaysPerWeek = this.#store.selectSignal(
-    selectTargetOfficeDaysPerWeek
-  );
+  readonly targetOfficeDaysPerWeek = this.#facade.targetOfficeDaysPerWeek;
 
   // App-wide UI theme (global `settings` slice). Changing it re-skins the whole
   // app live (SettingsEffects.applyTheme$ sets <html data-theme>).
-  readonly theme = this.#store.selectSignal(selectTheme);
+  readonly theme = this.#settings.theme;
 
   readonly pinFormatter = (value: number) => `${value}`;
 
   changeTheme(value: TTheme) {
-    this.#store.dispatch(SettingsActions.setTheme(value));
+    this.#settings.setTheme(value);
   }
 
   changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {
-    this.#store.dispatch(
-      OfficeTimeActions.saveDashboardSettings(
-        $event.detail.value,
-        $event.detail.checked
-      )
+    this.#facade.saveDashboardSettings(
+      $event.detail.value,
+      $event.detail.checked
     );
   }
 
   changeTargetOfficeDaysPerWeek($event: CustomEvent<{ value: number }>) {
-    this.#store.dispatch(
-      OfficeTimeActions.saveTargetOfficeDaysPerWeek($event.detail.value)
-    );
+    this.#facade.saveTargetOfficeDaysPerWeek($event.detail.value);
   }
 
   resetData() {
-    this.#store.dispatch(OfficeTimeActions.resetData());
+    this.#facade.resetData();
   }
 }

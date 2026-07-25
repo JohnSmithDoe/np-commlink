@@ -1,9 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TCategoryId } from '../../@shared/types';
+import { TCategoryId } from '../../@shared/model/types';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { ICategoriesPageFacade } from '../../@shared/util/list/categories-page.facade';
+import { ICategoriesPageFacade } from '../../@shared/util/categories/categories-page.facade';
 import { listCategoriesWithCount } from '../../@shared/util/list/list.selector';
 import { TasksActions } from './tasks.actions';
 import { selectTasksState } from './tasks.selector';

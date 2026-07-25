@@ -1,20 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { createStorageItem } from '../../util/grocery.factory';
-import {
-  GroceryCategoriesActions,
-  selectEditStorageItem,
-  StorageActions,
-} from '../../data';
+import { GroceryCategoriesActions, StorageActions } from '../../data';
 import { EditStorageItemDialogComponent } from './edit-storage-item-dialog.component';
 
 describe('EditStorageItemDialogComponent', () => {
   let component: EditStorageItemDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
+  let host: ItemDialogHost;
 
   // A stable seed the store hands the dialog as the item under edit.
   const seed = createStorageItem('Milk', [], 2);
@@ -25,8 +22,8 @@ describe('EditStorageItemDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectEditStorageItem, seed);
-    store.refreshState();
+    host = TestBed.inject(ItemDialogHost);
+    host.open({ item: seed, listId: '_storage', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(
       EditStorageItemDialogComponent
@@ -53,7 +50,7 @@ describe('EditStorageItemDialogComponent', () => {
     expect(dispatch).toHaveBeenCalledWith(
       StorageActions.addOrUpdateItem({ ...seed, minAmount: 9 })
     );
-    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
+    expect(host.request()).toBeNull();
   });
 
   it('persists a brand-new category to the shared grocery catalog', () => {

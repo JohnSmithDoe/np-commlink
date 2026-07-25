@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { BooleanKeys } from '../../../@shared/types';
+import { BooleanKeys } from '../../../@shared/model/types';
 import { IListSettings } from '../../model';
 
 export const ListSettingsActions = createActionGroup({

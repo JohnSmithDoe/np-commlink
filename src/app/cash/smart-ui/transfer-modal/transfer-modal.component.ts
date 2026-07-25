@@ -20,12 +20,11 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { CashActions, selectCashAccounts } from '../../data';
+import { CashFacade } from '../../data';
 import { eurToCents } from '../../util/money';
 import { buildTransferLegs } from '../../util/transfer';
 
@@ -56,11 +55,11 @@ import { buildTransferLegs } from '../../util/transfer';
   ],
 })
 export class CashTransferModalComponent {
-  readonly #store = inject(Store);
+  readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #translate = inject(TranslateService);
 
-  readonly accounts = this.#store.selectSignal(selectCashAccounts);
+  readonly accounts = this.#facade.accounts;
 
   readonly fromId = signal('');
   readonly toId = signal('');
@@ -120,7 +119,7 @@ export class CashTransferModalComponent {
       description,
       uuidv4
     );
-    this.#store.dispatch(CashActions.bookTransfer(fromLeg, toLeg));
+    this.#facade.bookTransfer(fromLeg, toLeg);
     void this.#modalCtrl.dismiss();
   }
 

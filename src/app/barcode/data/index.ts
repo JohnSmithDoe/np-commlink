@@ -12,4 +12,8 @@
  */
 export { BarcodeActions } from './barcode.actions';
 export { selectBarcodeDataUrl } from './barcode.selector';
-export { barcodeLazyProviders } from './provide-barcode-lazy';
+export { BarcodeFacade } from './barcode.facade';
+export {
+  barcodeLazyProviders,
+  barcodeHydrationResolver,
+} from './provide-barcode-lazy';

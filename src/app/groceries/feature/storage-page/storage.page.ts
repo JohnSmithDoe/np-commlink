@@ -7,20 +7,18 @@ import {
   ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
-import { TColor, TItemListSortType } from '../../../@shared/types';
+import { TColor, TItemListSortType } from '../../../@shared/model/types';
 import { IStorageItem } from '../../model';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { GroceryListPageFacade, StorageActions } from '../../data';
+import { GroceryListPageFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { ItemListQuickaddComponent } from '../../smart-ui/item-list-quick-add/item-list-quickadd.component';
 import { GrocerySearchResultComponent } from '../../ui/grocery-search-result/grocery-search-result.component';
-import { ListItemComponent } from '../../../@shared/ui/item-list-items/list-item/list-item.component';
-import { BarcodeScannerService } from '../../../@shared/util/barcode-scanner.service';
+import { ListItemComponent } from '../../../@shared/ui/base-item/item-list/item-list-items/list-item/list-item.component';
+import { BarcodeScannerService } from '../../../@shared/util/barcode/barcode-scanner.service';
 import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
 import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit-storage-item-dialog.component';
 
@@ -45,7 +43,6 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
   providers: [{ provide: LIST_FACADE, useExisting: GroceryListPageFacade }],
 })
 export class StoragePage implements ViewWillEnter {
-  readonly #store = inject(Store);
   readonly #route = inject(ActivatedRoute);
   readonly #scanner = inject(BarcodeScannerService);
   readonly facade = inject(GroceryListPageFacade);
@@ -64,35 +61,30 @@ export class StoragePage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(StorageActions.enterPage());
+    this.facade.enterStorage();
     // Category→items drill (see shopping.page for the timing rationale).
     const filter = this.#route.snapshot.queryParamMap.get('filter');
-    if (filter) this.#store.dispatch(StorageActions.updateFilter(filter));
+    if (filter) this.facade.filterStorage(filter);
   }
 
   removeItem(item: IStorageItem) {
-    this.#store.dispatch(StorageActions.removeItem(item));
+    this.facade.removeStorageItem(item);
   }
 
   showEditDialog(item: IStorageItem) {
-    this.#store.dispatch(ItemDialogsActions.showEditDialog(item, '_storage'));
+    this.facade.showEditStorageItem(item);
   }
 
   setSortMode(type: TItemListSortType) {
-    this.#store.dispatch(StorageActions.updateSort(type, 'toggle'));
+    this.facade.setStorageSort(type);
   }
 
   changeQuantity(item: IStorageItem, diff: number) {
-    this.#store.dispatch(
-      StorageActions.updateItem({
-        ...item,
-        quantity: Math.max(0, item.quantity + diff),
-      })
-    );
+    this.facade.changeStorageQuantity(item, diff);
   }
 
   copyToShoppingList(item: IStorageItem) {
-    this.#store.dispatch(StorageActions.copyToShoppinglist(item));
+    this.facade.copyStorageToShopping(item);
   }
 
   getItemStatusColor(item: IStorageItem): TColor {

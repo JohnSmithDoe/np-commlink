@@ -1,4 +1,4 @@
-import { INotification, INotificationsState } from '../../types';
+import { INotification, INotificationsState } from '../../model/types';
 
 /**
  * Pure notification-list transforms, shared by the notifications reducer (the

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockProduct } from '../../testing/grocery.test-data';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { ProductsActions } from '../../data';
 import { ProductsPage } from './products.page';
 
@@ -39,11 +39,13 @@ describe('ProductsPage', () => {
     expect(dispatch).toHaveBeenCalledWith(ProductsActions.removeItem(item));
   });
 
-  it('dispatches showEditDialog scoped to the globals list', () => {
+  it('opens the edit dialog scoped to the globals list', () => {
     const item = mockProduct();
     component.showEditDialog(item);
-    expect(dispatch).toHaveBeenCalledWith(
-      ItemDialogsActions.showEditDialog(item, '_products')
-    );
+    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+      item,
+      listId: '_products',
+      editMode: 'update',
+    });
   });
 });

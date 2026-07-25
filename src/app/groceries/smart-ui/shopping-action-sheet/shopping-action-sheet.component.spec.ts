@@ -14,8 +14,8 @@ describe('ShoppingActionSheetComponent', () => {
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  // The shopping slice is lazy (it left IAppState in the god-file split), so the
-  // mock store must be seeded with it for `selectShoppingListHasBoughtItems`.
+  // The shopping slice is lazy, so the mock store must be seeded with it for
+  // `selectShoppingListHasBoughtItems`.
   async function setup(
     providers = provideTestingProviders({ shopping: mockShoppingState() })
   ) {

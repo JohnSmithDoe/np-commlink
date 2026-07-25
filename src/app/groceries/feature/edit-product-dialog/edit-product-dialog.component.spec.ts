@@ -2,16 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { SelectCustomEvent } from '@ionic/angular/standalone';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { ItemDialogsActions } from '../../../@shared/data/item-dialogs/item-dialogs.actions';
-import { selectEditState } from '../../../@shared/data/item-dialogs/item-dialogs.selector';
+import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
 import { createProduct } from '../../util/grocery.factory';
-import { ProductsActions, selectEditProduct, StorageActions } from '../../data';
+import { ProductsActions, StorageActions } from '../../data';
 import { EditProductDialogComponent } from './edit-product-dialog.component';
 
 describe('EditProductDialogComponent', () => {
   let component: EditProductDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
+  let host: ItemDialogHost;
 
   const seed = createProduct('Butter', []);
 
@@ -21,8 +21,8 @@ describe('EditProductDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    store.overrideSelector(selectEditProduct, seed);
-    store.refreshState();
+    host = TestBed.inject(ItemDialogHost);
+    host.open({ item: seed, listId: '_products', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(
       EditProductDialogComponent
@@ -59,18 +59,16 @@ describe('EditProductDialogComponent', () => {
     expect(dispatch).toHaveBeenCalledWith(
       ProductsActions.addOrUpdateItem({ ...seed, bestBeforeTimevalue: 7 })
     );
-    expect(dispatch).toHaveBeenCalledWith(ItemDialogsActions.hideDialog());
+    expect(host.request()).toBeNull();
   });
 
   it('also pushes the product onto the sibling list when addToAdditionalList is set', () => {
-    store.overrideSelector(selectEditState, {
-      isEditing: true,
-      listId: '_products',
-      addToAdditionalList: '_storage',
+    host.open({
       item: seed,
-      category: { isEditing: false },
+      listId: '_products',
+      editMode: 'create',
+      addToAdditionalList: '_storage',
     });
-    store.refreshState();
 
     component.confirm();
 

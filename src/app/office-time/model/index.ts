@@ -2,16 +2,9 @@ import { Dayjs } from 'dayjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 
 // The `office-time` bounded context owns its model (DDD review #1 — the god
-// `@shared/types` file is being split so each context holds its own types). This
-// covers both co-registered slices of the context: `settings` (feature flags)
-// and `officeTime` (tracked days + stats + the office dashboard config).
-
-// Office-time feature flags. The persisted schema `version` that used to live
-// here moved to the app-global Settings slice (@shared `ISettings`) — the app
-// keeps exactly one version anchor now.
-export interface IOfficeTimeSettingsState {
-  showTotalTime: boolean;
-}
+// `@shared/types` file is being split so each context holds its own types). It
+// is a single slice — `officeTime` (tracked days + stats + the office dashboard
+// config).
 
 export type DashboardStats = {
   workdays: number;

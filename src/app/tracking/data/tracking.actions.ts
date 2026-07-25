@@ -1,5 +1,9 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { TItemListSortType, TTimestamp, TUpdateDTO } from '../../@shared/types';
+import {
+  TItemListSortType,
+  TTimestamp,
+  TUpdateDTO,
+} from '../../@shared/model/types';
 import { IDataItem, ITrackingItem, ITrackingState } from '../model';
 
 export const TrackingActions = createActionGroup({
@@ -40,8 +44,6 @@ export const TrackingActions = createActionGroup({
     'End Tracking': emptyProps(),
     'Generate Dummy Data': emptyProps(),
     // Dev-only "add ticket" affordance: opens the shared edit dialog seeded with
-    // a fresh tracking item (handled by TrackingItemDialogsEffects).
-    'Show Create By Ticket': emptyProps(),
 
     'Share Data': emptyProps(),
     'Remove Data Item': (item: IDataItem) => ({ item }),

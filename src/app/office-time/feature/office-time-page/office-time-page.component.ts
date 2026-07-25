@@ -11,7 +11,6 @@ import {
   IonRouterLink,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -24,19 +23,7 @@ import { DashHolidaysComponent } from '../../ui/dash-holidays/dash-holidays.comp
 import { DashOfficeDaysEditComponent } from '../../smart-ui/dash-office-days-edit/dash-office-days-edit.component';
 import { add, remove, settingsSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
-import {
-  OfficeTimeActions,
-  selectDashboardItems,
-  selectDashboardSettings,
-  selectFreedays,
-  selectHolidayDays,
-  selectHolidays,
-  selectOfficedays,
-  selectDashboardStatsMonth,
-  selectDashboardStatsQuarter,
-  selectDashboardStatsWeek,
-  selectDashboardStatsYear,
-} from '../../data';
+import { OfficeTimeFacade } from '../../data';
 import { DashStatsComponent } from '../../ui/dash-stats/dash-stats.component';
 import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.component';
 
@@ -65,23 +52,21 @@ import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.c
   ],
 })
 export class OfficeTimePage implements ViewWillEnter {
-  readonly #store = inject(Store);
+  readonly #facade = inject(OfficeTimeFacade);
 
-  readonly holidays = this.#store.selectSignal(selectHolidays);
+  readonly holidays = this.#facade.holidays;
 
-  readonly holidates = this.#store.selectSignal(selectHolidayDays);
-  readonly officedays = this.#store.selectSignal(selectOfficedays);
-  readonly freedays = this.#store.selectSignal(selectFreedays);
-  readonly statsWeek = this.#store.selectSignal(selectDashboardStatsWeek);
+  readonly holidates = this.#facade.holidayDays;
+  readonly officedays = this.#facade.officedays;
+  readonly freedays = this.#facade.freedays;
+  readonly statsWeek = this.#facade.statsWeek;
 
-  readonly statsMonth = this.#store.selectSignal(selectDashboardStatsMonth);
-  readonly statsQuarter = this.#store.selectSignal(selectDashboardStatsQuarter);
-  readonly statsYear = this.#store.selectSignal(selectDashboardStatsYear);
-  readonly dashboardSettings = this.#store.selectSignal(
-    selectDashboardSettings
-  );
+  readonly statsMonth = this.#facade.statsMonth;
+  readonly statsQuarter = this.#facade.statsQuarter;
+  readonly statsYear = this.#facade.statsYear;
+  readonly dashboardSettings = this.#facade.dashboardSettings;
 
-  readonly dashboardItems = this.#store.selectSignal(selectDashboardItems);
+  readonly dashboardItems = this.#facade.dashboardItems;
   readonly visibleDashboardItems = computed(() => {
     const items = this.dashboardItems();
     const settings = this.dashboardSettings();
@@ -136,6 +121,6 @@ export class OfficeTimePage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#store.dispatch(OfficeTimeActions.initOfficeTime());
+    this.#facade.initOfficeTime();
   }
 }

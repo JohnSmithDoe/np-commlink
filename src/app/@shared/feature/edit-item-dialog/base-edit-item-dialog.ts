@@ -1,43 +1,80 @@
 import { computed, inject, linkedSignal, Signal, signal } from '@angular/core';
-import { Action, Store } from '@ngrx/store';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { IBaseItem, ICategory, TCategoryId, TItemListId } from '../../types';
-import { categoriesByIds } from '../../util/category.utils';
-import { ItemDialogsActions } from '../../data/item-dialogs/item-dialogs.actions';
-import { selectEditState } from '../../data/item-dialogs/item-dialogs.selector';
+import {
+  IBaseItem,
+  ICategory,
+  TCategoryId,
+  TEditItemMode,
+  TItemListId,
+  TMarker,
+} from '../../model/types';
+import { categoriesByIds } from '../../util/categories/category.utils';
+import {
+  ItemDialogHost,
+  TItemDialogRequest,
+} from '../../data/item-dialogs/item-dialog-host';
+
+// Both labels are pure functions of the edit mode. They used to be derived in the
+// itemDialogs reducer, i.e. a store round-trip for two strings.
+const DIALOG_TITLE: Readonly<Record<TEditItemMode, TMarker>> = {
+  update: marker('edit.item.dialog.title.update'),
+  create: marker('edit.item.dialog.title.create'),
+};
+const SAVE_BUTTON: Readonly<Record<TEditItemMode, TMarker>> = {
+  update: marker('edit.item.dialog.button.update'),
+  create: marker('edit.item.dialog.button.create'),
+};
 
 /**
  * Abstract base for the per-domain edit-dialog wrappers (type:feature, lives in
  * @shared/feature so the sealed domains may extend it via
  * `featureMayUseSharedFeature`). Owns the plumbing every wrapper repeated: read
- * the domain-blind `itemDialogs` open-command, keep the edit draft LOCAL (no
- * per-keystroke dispatch), and save via the domain's own action on confirm.
+ * the domain-blind open-command off {@link ItemDialogHost}, keep the edit draft
+ * LOCAL (no per-keystroke dispatch), and save via the domain's own facade
+ * command on confirm.
  *
- * The three per-domain differences are abstract members the subclass supplies:
- * the `listId` it guards on, the typed `seedItem`/`listItems` selectors, and the
- * `save` action factory. Domain-specific field updaters (quantity, prio, …) stay
- * in the subclass — different fields, nothing to share. Angular does not inherit
- * `@Component` metadata, so each wrapper still declares its own imports/template.
+ * The per-domain differences are abstract members the subclass supplies from its
+ * DOMAIN facade: the `listId` it answers to, the typed `listItems` signal (for
+ * the duplicate-name validator) and the `save` command. This keeps NgRx sealed
+ * in the data layer — neither the base nor the subclass injects `Store`.
+ * Domain-specific field updaters (quantity, prio, …) stay in the subclass —
+ * different fields, nothing to share. Angular does not inherit `@Component`
+ * metadata, so each wrapper still declares its own imports/template.
  */
 export abstract class BaseEditItemDialog<T extends IBaseItem> {
-  protected readonly store = inject(Store);
-
-  readonly #open = this.store.selectSignal(selectEditState);
+  protected readonly host = inject(ItemDialogHost);
 
   protected abstract readonly listId: TItemListId;
-  abstract readonly seedItem: Signal<T | undefined>;
   abstract readonly listItems: Signal<T[] | null | undefined>;
-  protected abstract save(item: T): Action;
+  protected abstract save(item: T): void;
 
-  readonly isOpen = computed(
-    () => this.#open().isEditing === true && this.#open().listId === this.listId
+  // One host serves every mounted wrapper, so the command's listId is what picks
+  // the target; a request for a sibling list reads as "closed" here.
+  readonly #request = computed<TItemDialogRequest<T> | null>(() => {
+    const request = this.host.request();
+    return request?.listId === this.listId
+      ? (request as TItemDialogRequest<T>)
+      : null;
+  });
+  readonly #editMode = computed<TEditItemMode>(
+    () => this.#request()?.editMode ?? 'update'
   );
-  readonly saveButtonText = computed(() => this.#open().saveButtonText ?? '');
-  readonly dialogTitle = computed(() => this.#open().dialogTitle ?? '');
 
-  // Local draft, reseeded whenever a new edit opens (the open-command produces a
-  // fresh item ref, so the linkedSignal recomputes).
+  readonly isOpen = computed(() => this.#request() !== null);
+  readonly seedItem = computed(() => this.#request()?.item);
+  readonly saveButtonText = computed(() => SAVE_BUTTON[this.#editMode()]);
+  readonly dialogTitle = computed(() => DIALOG_TITLE[this.#editMode()]);
+
+  // The sibling list a "create & add to another list" command targets. Only the
+  // product wrapper acts on it, but it rides the shared command.
+  protected readonly addToAdditionalList = computed(
+    () => this.#request()?.addToAdditionalList
+  );
+
+  // Local draft, reseeded whenever a new edit opens (the host copies the item, so
+  // every open produces a fresh ref and the linkedSignal recomputes).
   readonly draft = linkedSignal<T | undefined>(() => {
     const item = this.seedItem();
     return item ? { ...item } : undefined;
@@ -58,13 +95,13 @@ export abstract class BaseEditItemDialog<T extends IBaseItem> {
   confirm() {
     const draft = this.draft();
     if (draft) {
-      this.store.dispatch(this.save(draft));
+      this.save(draft);
     }
-    this.store.dispatch(ItemDialogsActions.hideDialog());
+    this.host.close();
   }
 
   close() {
-    this.store.dispatch(ItemDialogsActions.hideDialog());
+    this.host.close();
   }
 }
 
@@ -88,9 +125,11 @@ export abstract class BaseCategoryEditItemDialog<
     categoriesByIds(this.draft()?.categoryIds, this.categories())
   );
 
-  protected abstract addCategoryAction(category: ICategory): Action;
-  protected abstract removeCategoryAction(categoryId: TCategoryId): Action;
-  protected abstract renameCategoryAction(id: TCategoryId, to: string): Action;
+  // Domain catalog commands the subclass wires to its own facade. Kept `void`
+  // (not action factories) so no NgRx leaks into the wrapper.
+  protected abstract addCategoryCmd(category: ICategory): void;
+  protected abstract removeCategoryCmd(categoryId: TCategoryId): void;
+  protected abstract renameCategoryCmd(id: TCategoryId, to: string): void;
 
   removeCategory(categoryId: TCategoryId) {
     this.#dropFromDraft(categoryId);
@@ -110,21 +149,21 @@ export abstract class BaseCategoryEditItemDialog<
   }
 
   addCategory(category: ICategory) {
-    this.store.dispatch(this.addCategoryAction(category));
+    this.addCategoryCmd(category);
   }
 
   // Catalog delete (picker swipe): remove it from the domain catalog (cascades
   // to every item) and from the local draft so this item stays consistent
   // pre-save.
   deleteCategory(categoryId: TCategoryId) {
-    this.store.dispatch(this.removeCategoryAction(categoryId));
+    this.removeCategoryCmd(categoryId);
     this.#dropFromDraft(categoryId);
   }
 
   // Rename is O(1) on the catalog; items reference by id, so the draft is
   // unchanged.
   renameCategory({ id, to }: { id: TCategoryId; to: string }) {
-    this.store.dispatch(this.renameCategoryAction(id, to));
+    this.renameCategoryCmd(id, to);
   }
 
   #dropFromDraft(categoryId: TCategoryId) {

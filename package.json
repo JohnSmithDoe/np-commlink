@@ -10,6 +10,7 @@
     "start": "ng serve",
     "build": "ng build --base-href ./ --configuration production",
     "build:android": "ionic capacitor build android",
+    "verify": "pnpm sheriff verify",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch",
     "test:watch": "ng test",

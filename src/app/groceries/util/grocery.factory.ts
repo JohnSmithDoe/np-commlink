@@ -1,5 +1,10 @@
 import dayjs from 'dayjs';
-import { IBaseItem, TCategoryId, TTimestamp } from '../../@shared/types';
+import {
+  IBaseItem,
+  TCategoryId,
+  TItemListId,
+  TTimestamp,
+} from '../../@shared/model/types';
 import { createBaseItem } from '../../@shared/util/app.factory';
 import { IProduct, IShoppingItem, IStorageItem } from '../model';
 
@@ -84,4 +89,30 @@ export function createProduct(
 
 export function createProductFrom(item: IBaseItem): IProduct {
   return createProduct(item.name, item.categoryIds);
+}
+
+/**
+ * The one place the three grocery lists' item types are resolved from a listId —
+ * used by the facade's "create from the search term" command, which is
+ * route-keyed and so cannot know the concrete list at compile time.
+ */
+export function createGroceryItem(
+  listId: TItemListId,
+  name: string,
+  categoryId: TCategoryId | undefined
+): IBaseItem {
+  switch (listId) {
+    case '_storage': {
+      return createStorageItem(name, categoryId);
+    }
+    case '_products': {
+      return createProduct(name, categoryId);
+    }
+    case '_shopping': {
+      return createShoppingItem(name, categoryId);
+    }
+    default: {
+      throw new Error(`grocery dialogs: unexpected listId ${listId}`);
+    }
+  }
 }

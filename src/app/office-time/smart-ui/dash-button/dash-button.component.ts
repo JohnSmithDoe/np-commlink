@@ -13,14 +13,9 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import { beer, business } from 'ionicons/icons';
-import {
-  OfficeTimeActions,
-  selectTodayIsOfficeDay,
-  dayjsToday,
-} from '../../data';
+import { OfficeTimeFacade } from '../../data';
 
 @Component({
   selector: 'app-dash-button',
@@ -38,8 +33,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashButtonComponent {
-  readonly #store = inject(Store);
-  readonly todayIsOfficeDay = this.#store.selectSignal(selectTodayIsOfficeDay);
+  readonly #facade = inject(OfficeTimeFacade);
+  readonly todayIsOfficeDay = this.#facade.todayIsOfficeDay;
 
   readonly title = input<string | undefined>();
 
@@ -48,6 +43,6 @@ export class DashButtonComponent {
   }
 
   addOfficeDay() {
-    this.#store.dispatch(OfficeTimeActions.addOfficeTime(dayjsToday()));
+    this.#facade.addOfficeToday();
   }
 }

@@ -1,0 +1,18 @@
+<app-category-input
+  [categories]="selectedCategories()"
+  (removeCategory)="clear()"
+  (openDialog)="open()"
+></app-category-input>
+
+<app-categories-dialog
+  [multiple]="false"
+  [isOpen]="dialogOpen()"
+  [categories]="categories()"
+  [selection]="categoryId() ? [categoryId()] : []"
+  (confirmed)="pick($event)"
+  (cancelled)="close()"
+  (dismissed)="close()"
+  (addNew)="onAdd($event)"
+  (deleted)="onDelete($event)"
+  (renamed)="onRename($event)"
+></app-categories-dialog>

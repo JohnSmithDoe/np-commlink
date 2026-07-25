@@ -15,6 +15,7 @@ export { TasksActions } from './tasks.actions';
 export { TasksListPageFacade } from './tasks-list-page.facade';
 export { TasksCategoriesPageFacade } from './tasks-categories-page.facade';
 export { selectTasksListItems, selectTasksCategories } from './tasks.selector';
-// The tasks context's typed view of the shared, domain-blind itemDialogs slice
-export { selectEditTaskItem } from './item-dialogs.selector';
-export { tasksLazyProviders } from './provide-tasks-lazy';
+export {
+  tasksLazyProviders,
+  tasksHydrationResolver,
+} from './provide-tasks-lazy';

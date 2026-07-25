@@ -6,6 +6,7 @@ import {
   mockPlayer,
   mockRound,
   mockTrackplayState,
+  TEST_EPOCH,
 } from '../testing/trackplay.test-data';
 
 describe('trackplayReducer', () => {
@@ -54,8 +55,61 @@ describe('trackplayReducer', () => {
     expect(state.rounds['r0'].values['p1']).toBe(20);
     expect(state.games['g'].rounds).toHaveLength(2);
     expect(state.games['g'].updated).toBeGreaterThan(0);
-    // participants' lastPlayed bumped
-    expect(state.players).toEqual({});
+  });
+
+  it('does not append a blank round when the trailing round gets a zero', () => {
+    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 0, p2: 0 } });
+    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
+    const start = mockTrackplayState({
+      games: { g: game },
+      rounds: { r0: round },
+    });
+    const state = trackplayReducer(
+      start,
+      TrackplayActions.setRoundValue('g', 'r0', 'p1', 0)
+    );
+    expect(state.games['g'].rounds).toEqual(['r0']);
+  });
+
+  it('stamps lastPlayed on the scored game participants only', () => {
+    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 0, p2: 0 } });
+    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
+    const start = mockTrackplayState({
+      players: {
+        p1: mockPlayer({ id: 'p1', lastPlayed: undefined }),
+        p2: mockPlayer({ id: 'p2', lastPlayed: undefined }),
+        outsider: mockPlayer({ id: 'outsider', lastPlayed: undefined }),
+      },
+      games: { g: game },
+      rounds: { r0: round },
+    });
+    const state = trackplayReducer(
+      start,
+      TrackplayActions.setRoundValue('g', 'r0', 'p1', 20)
+    );
+    expect(state.players['p1'].lastPlayed).toBeGreaterThan(TEST_EPOCH);
+    expect(state.players['p2'].lastPlayed).toBeGreaterThan(TEST_EPOCH);
+    expect(state.players['outsider'].lastPlayed).toBeUndefined();
+    expect(state.players['p1'].lastPlayed).toBe(state.games['g'].updated);
+  });
+
+  it('ignores a round value for an unknown game or round', () => {
+    const start = mockTrackplayState({
+      games: { g: mockGame({ id: 'g', rounds: ['r0'] }) },
+      rounds: { r0: mockRound({ id: 'r0' }) },
+    });
+    expect(
+      trackplayReducer(
+        start,
+        TrackplayActions.setRoundValue('nope', 'r0', 'p1', 1)
+      )
+    ).toBe(start);
+    expect(
+      trackplayReducer(
+        start,
+        TrackplayActions.setRoundValue('g', 'nope', 'p1', 1)
+      )
+    ).toBe(start);
   });
 
   it('cascades a player delete and supports single-level undo', () => {
