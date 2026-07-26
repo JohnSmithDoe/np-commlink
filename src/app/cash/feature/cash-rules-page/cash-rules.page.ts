@@ -23,11 +23,9 @@ import {
   IonTitle,
   IonToolbar,
   ModalController,
-  ToastController,
 } from '@ionic/angular/standalone';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TCategoryId } from '../../../@shared/model/types';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -38,11 +36,15 @@ import {
   pricetagsOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { ICashRule } from '../../model';
+import { ICashRule } from '../../model/rule.types';
 import { CashFacade } from '../../data';
-import { deleteConfirmAlert } from '../../util/delete-alert';
-import { categorize } from '../../util/categorize';
-import { CashRuleEditModalComponent } from '../../smart-ui/rule-edit-modal/rule-edit-modal.component';
+import { deleteConfirmAlert } from '../../util/delete-alert.utils';
+import { recategorizations } from '../../util/categorize.utils';
+import { CashRuleEditModalComponent } from '../rule-edit-modal/rule-edit-modal.component';
+import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
+import { presentModal } from '../../../@shared/util/present-modal';
+
+import { TCategoryId } from '../../../@shared/model/category.types';
 
 /**
  * Categories + categorization rules. The category palette (add/remove) feeds the
@@ -80,7 +82,6 @@ export class CashRulesPage {
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
-  readonly #toastCtrl = inject(ToastController);
   readonly #translate = inject(TranslateService);
 
   readonly categories = this.#facade.categories;
@@ -88,8 +89,8 @@ export class CashRulesPage {
   readonly #transactions = this.#facade.transactions;
 
   // id → name lookup so rule rows can render their assigned category's name.
-  readonly #categoryNameById = computed(
-    () => new Map(this.categories().map((c) => [c.id, c.name]))
+  readonly #categoryName = computed(() =>
+    categoryNameLookup(this.categories())
   );
 
   readonly rules = computed(() =>
@@ -97,7 +98,7 @@ export class CashRulesPage {
   );
 
   categoryName(id: TCategoryId): string {
-    return this.#categoryNameById().get(id) ?? '';
+    return this.#categoryName()(id);
   }
 
   constructor() {
@@ -120,38 +121,32 @@ export class CashRulesPage {
     void this.#router.navigate(['/cash/categories']);
   }
 
-  summarize(rule: ICashRule): string {
-    const n = rule.conditions.length;
+  conditionSummaryLabel(rule: ICashRule): string {
     const key =
       rule.match === 'all'
         ? marker('cash.rule.summary-all')
         : marker('cash.rule.summary-any');
-    return this.#translate.instant(key, { count: n });
+    return this.#translate.instant(key, { count: rule.conditions.length });
   }
 
   moveRule(rule: ICashRule, direction: -1 | 1): void {
     const sorted = this.rules();
-    const index = sorted.findIndex((r) => r.id === rule.id);
-    const index_ = index + direction;
-    if (index_ < 0 || index_ >= sorted.length) return;
-    const ids = sorted.map((r) => r.id);
-    [ids[index], ids[index_]] = [ids[index_], ids[index]];
+    const index = sorted.findIndex((candidate) => candidate.id === rule.id);
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= sorted.length) return;
+    const ids = sorted.map((candidate) => candidate.id);
+    [ids[index], ids[targetIndex]] = [ids[targetIndex], ids[index]];
     this.#facade.reorderRules(ids);
   }
 
   async openNewRule(): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: CashRuleEditModalComponent,
-    });
-    await modal.present();
+    await presentModal(this.#modalCtrl, CashRuleEditModalComponent);
   }
 
   async openEditRule(rule: ICashRule): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: CashRuleEditModalComponent,
-      componentProps: { ruleId: rule.id },
+    await presentModal(this.#modalCtrl, CashRuleEditModalComponent, {
+      ruleId: rule.id,
     });
-    await modal.present();
   }
 
   async confirmDeleteRule(rule: ICashRule): Promise<void> {
@@ -168,24 +163,15 @@ export class CashRulesPage {
     await alert.present();
   }
 
-  async applyRules(): Promise<void> {
-    const rules = this.#rules();
-    let changed = 0;
-    for (const txn of this.#transactions()) {
-      if (txn.categoryManual) continue; // manual override is shielded
-      const categoryId = categorize(txn, rules);
-      if (categoryId !== txn.categoryId) {
-        this.#facade.setTransactionCategory(txn.id, categoryId, false);
-        changed++;
-      }
+  applyRules(): void {
+    const changes = recategorizations(this.#transactions(), this.#rules());
+    for (const change of changes) {
+      this.#facade.setTransactionCategory(
+        change.transactionId,
+        change.categoryId,
+        false
+      );
     }
-    const toast = await this.#toastCtrl.create({
-      message: this.#translate.instant(marker('cash.rules.apply-result'), {
-        count: changed,
-      }),
-      duration: 2000,
-      color: 'medium',
-    });
-    await toast.present();
+    this.#facade.reportRulesApplied(changes.length);
   }
 }

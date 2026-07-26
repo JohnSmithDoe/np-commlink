@@ -12,17 +12,17 @@ import {
   IonList,
   ModalController,
   PopoverController,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { optionsOutline } from 'ionicons/icons';
-import { IPlayer, IPlayerStats, TID } from '../../model';
+import { optionsOutline, peopleOutline } from 'ionicons/icons';
+import { IPlayer, IPlayerStats, TID } from '../../model/trackplay.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { TrackplayPlayerListItemComponent } from '../../ui/player-list-item/player-list-item.component';
-import { TrackplayPlayerEditDialogComponent } from '../../smart-ui/player-edit-dialog/player-edit-dialog.component';
-import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';
+import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
+import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
+import { presentModal } from '../../../@shared/util/present-modal';
 
 const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
 
@@ -33,7 +33,7 @@ const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
  * stats are derived per player and passed down to the dumb row.
  */
 @Component({
-  selector: 'app-trackplay-players-page',
+  selector: 'app-page-trackplay-players',
   templateUrl: './players.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -46,7 +46,7 @@ const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
     TrackplayPlayerListItemComponent,
   ],
 })
-export class TrackplayPlayersPage implements ViewWillEnter {
+export class TrackplayPlayersPage {
   readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
@@ -61,11 +61,7 @@ export class TrackplayPlayersPage implements ViewWillEnter {
   readonly total = computed(() => Object.keys(this.#allPlayers()).length);
 
   constructor() {
-    addIcons({ optionsOutline });
-  }
-
-  ionViewWillEnter(): void {
-    this.#facade.enterPlayersPage();
+    addIcons({ optionsOutline, peopleOutline });
   }
 
   statsFor(player: IPlayer): IPlayerStats {
@@ -81,23 +77,18 @@ export class TrackplayPlayersPage implements ViewWillEnter {
   }
 
   async newPlayer(): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayPlayerEditDialogComponent,
-    });
-    await modal.present();
+    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent);
   }
 
   async openPlayerEdit(player: IPlayer): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayPlayerEditDialogComponent,
-      componentProps: { playerId: player.id },
+    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent, {
+      playerId: player.id,
     });
-    await modal.present();
   }
 
   async openSettings(event: Event): Promise<void> {
     const popover = await this.#popoverCtrl.create({
-      component: TrackplayGameSettingsPopoverComponent,
+      component: TrackplayListSettingsPopoverComponent,
       componentProps: { mode: 'players' },
       event: event,
     });

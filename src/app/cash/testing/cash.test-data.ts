@@ -1,9 +1,7 @@
-import {
-  ICashAccount,
-  ICashRule,
-  ICashState,
-  ICashTransaction,
-} from '../model';
+import { ICashAccount } from '../model/account.types';
+import { ICashState } from '../model/cash.types';
+import { ICashRule } from '../model/rule.types';
+import { ICashTransaction } from '../model/transaction.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic cash fixtures. Owned by the cash context (DDD review #1): they

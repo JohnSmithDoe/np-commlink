@@ -7,32 +7,27 @@ import {
   from,
   fromEvent,
   map,
-  of,
   switchMap,
   withLatestFrom,
 } from 'rxjs';
 import { DatabaseService } from '../../../@shared/util/db/database.service';
-import { OfficeTimeActions } from '../office-time/office-time.actions';
-import { HttpClient } from '@angular/common/http';
+import { OfficeTimeActions } from '../actions/office-time.actions';
 import { Store } from '@ngrx/store';
 import {
   selectHolidays,
   selectOfficeTimeState,
-} from '../office-time/office-time.selector';
-import { Dayjs } from 'dayjs';
-import {
-  dayjsFromString,
-  serializeDateMap,
-  serializeDates,
-} from '../office-time/office-time.utils';
-import { IOfficeTimeStateStorage } from '../../model';
+} from '../selectors/office-time.selector';
+import { serializeDateMap, serializeDates } from '../../util/office-time.utils';
+import { berlinHolidaysFor } from '../../util/holidays.utils';
+import { IOfficeTimeStateStorage } from '../../model/office-time.types';
+import { wrapVersioned } from '../../../@shared/util/db/versioned';
+import { APP_VERSION } from '../../../@shared/model/app.consts';
 
 @Injectable({ providedIn: 'root' })
 export class OfficeTimeEffects {
-  #actions$ = inject(Actions);
-  #store = inject(Store);
-  #http = inject(HttpClient);
-  #database = inject(DatabaseService);
+  readonly #actions$ = inject(Actions);
+  readonly #store = inject(Store);
+  readonly #database = inject(DatabaseService);
 
   initOfficeTime$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -44,10 +39,9 @@ export class OfficeTimeEffects {
   loadHolidays$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(OfficeTimeActions.loadHolidays),
-      switchMap(() =>
-        this.#loadHolidays().pipe(
-          map(OfficeTimeActions.loadHolidaysSuccess),
-          catchError(() => of(OfficeTimeActions.loadHolidaysFailure()))
+      map(() =>
+        OfficeTimeActions.loadHolidaysSuccess(
+          berlinHolidaysFor(new Date().getFullYear())
         )
       )
     );
@@ -98,7 +92,9 @@ export class OfficeTimeEffects {
           officedays: serializeDates(state.officedays),
           freedays: serializeDates(state.freedays),
         };
-        return from(this.#database.save('officeTime', toSave)).pipe(
+        return from(
+          this.#database.save('officeTime', wrapVersioned(APP_VERSION, toSave))
+        ).pipe(
           map(() => OfficeTimeActions.saveOfficeTimeSuccess()),
           // localforage can reject (storage quota, IndexedDB blocked).
           // Swallow so the effect stays alive for the next save attempt.
@@ -107,22 +103,4 @@ export class OfficeTimeEffects {
       })
     );
   });
-
-  #loadHolidays = () => {
-    const currentYear = new Date().getFullYear();
-    return this.#http
-      .get<Record<string, { datum: string }>>(
-        `assets/holidays/${currentYear}-BE.json`
-      )
-      .pipe(map((holidays) => this.#parseHolidays(holidays)));
-  };
-
-  #parseHolidays = (holidays?: Record<string, { datum: string }>) => {
-    const _holidays: Record<string, Dayjs> = {};
-    for (const key in holidays) {
-      const parsed = dayjsFromString(holidays[key].datum);
-      if (parsed) _holidays[key] = parsed;
-    }
-    return _holidays;
-  };
 }

@@ -24,16 +24,6 @@ describe('TrackplayGameTypesPage', () => {
     ).componentInstance;
   };
 
-  it('dispatches enterGameTypesPage on ionViewWillEnter', () => {
-    setup();
-
-    component.ionViewWillEnter();
-
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.enterGameTypesPage()
-    );
-  });
-
   it('dispatches deleteGameType with the type', () => {
     const type = mockGameType({ id: 'skat', name: 'Skat' });
     setup();

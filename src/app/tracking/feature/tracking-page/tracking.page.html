@@ -10,7 +10,7 @@
     headerEnd
     slot="end"
     fill="clear"
-    routerLink="/data/daily"
+    routerLink="/data"
     [attr.aria-label]="'tracking.a11y.daily-view' | translate"
   >
     <ion-icon
@@ -37,7 +37,7 @@
       {{ 'tracking.action.save-and-reset' | translate }}</ion-button
     >
     @if (isDev) {
-      <ion-button color="warning" (click)="generateDummyData()"
+      <ion-button color="warning" (click)="seedDemoSessions()"
         ><ion-icon [icon]="'flask'" slot="start" />
         {{ 'tracking.action.generate-dummy-data' | translate }}</ion-button
       >

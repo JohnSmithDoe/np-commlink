@@ -1,20 +1,21 @@
+import { ShareService } from '../../../@shared/util/share.service';
 import { inject, Injectable } from '@angular/core';
-import { Share } from '@capacitor/share';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { catchError, EMPTY, map, switchMap, withLatestFrom } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
-import { StorageActions } from '../storage.actions';
-import { ShoppingActions } from '../shopping.actions';
-import { selectShoppingState } from '../shopping.selector';
+import { StorageActions } from '../actions/storage.actions';
+import { ShoppingActions } from '../actions/shopping.actions';
+import { selectShoppingState } from '../selectors/shopping.selector';
 
 @Injectable({ providedIn: 'root' })
 export class ShoppingEffects {
-  #store = inject(Store);
-  #actions$ = inject(Actions);
-  #translate = inject(TranslateService);
+  readonly #store = inject(Store);
+  readonly #actions$ = inject(Actions);
+  readonly #translate = inject(TranslateService);
+  readonly #share = inject(ShareService);
 
   buyItem$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -63,7 +64,7 @@ export class ShoppingEffects {
             .map((item) => item.quantity + ' x ' + item.name)
             .join('\n');
           return fromPromise(
-            Share.share({
+            this.#share.share({
               title: this.#translate.instant(
                 marker('grocery.shopping.share.title')
               ),

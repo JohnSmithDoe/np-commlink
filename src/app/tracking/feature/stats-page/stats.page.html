@@ -36,8 +36,8 @@
 <ion-content>
   <app-sessions-chart />
   <ion-list #ionList>
-    @for (item of data(); track item.id) {
-      <app-data-item
+    @for (item of sessionsByView(); track item.id) {
+      <app-stats-item
         [item]="item"
         [view]="viewMode()"
         [ionList]="ionList"

@@ -1,0 +1,4 @@
+# Get the holidays for the upcoming years for here
+# copy the result as YEAR-BE.json to the assets folder
+GET https://feiertage-api.de/api/?jahr=2025&nur_land=BE
+

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { createStorageItem } from '../../util/grocery.factory';
 import { GroceryCategoriesActions, StorageActions } from '../../data';
@@ -11,7 +11,7 @@ describe('EditStorageItemDialogComponent', () => {
   let component: EditStorageItemDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
-  let host: ItemDialogHost;
+  let host: ItemDialogService;
 
   // A stable seed the store hands the dialog as the item under edit.
   const seed = createStorageItem('Milk', [], 2);
@@ -22,7 +22,7 @@ describe('EditStorageItemDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    host = TestBed.inject(ItemDialogHost);
+    host = TestBed.inject(ItemDialogService);
     host.open({ item: seed, listId: '_storage', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(

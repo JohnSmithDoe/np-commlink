@@ -1,4 +1,4 @@
-import { IOfficeTimeState } from '../model';
+import { IOfficeTimeState } from '../model/office-time.types';
 
 // Deterministic office-time fixtures. Owned by the office-time context (DDD
 // review #1): they live here, not in the shared @shared/testing kit, because

@@ -1,0 +1,90 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
+import {
+  AlertButton,
+  IonAlert,
+  IonButton,
+  IonContent,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonRange,
+  IonToggle,
+  ToggleChangeEventDetail,
+} from '@ionic/angular/standalone';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { OfficeTimeFacade } from '../../data';
+import { addIcons } from 'ionicons';
+import { settingsOutline } from 'ionicons/icons';
+
+@Component({
+  selector: 'app-page-office-time-settings',
+  templateUrl: 'office-time-settings.page.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    PageHeaderComponent,
+    TranslateModule,
+    IonContent,
+    IonList,
+    IonItem,
+    IonRange,
+    IonToggle,
+    IonLabel,
+    IonButton,
+    IonAlert,
+  ],
+})
+export class OfficeTimeSettingsPage {
+  constructor() {
+    addIcons({ settingsOutline });
+  }
+
+  readonly #facade = inject(OfficeTimeFacade);
+  readonly #translate = inject(TranslateService);
+
+  readonly alertButtons: AlertButton[] = [
+    {
+      text: this.#translate.instant('officetime.settings.reset.cancel'),
+      role: 'cancel',
+      cssClass: 'alert-button-success',
+    },
+    {
+      text: this.#translate.instant('officetime.settings.reset.confirm'),
+      role: 'confirm',
+      cssClass: 'alert-button-danger',
+      handler: () => this.resetData(),
+    },
+  ];
+
+  readonly #dashboardSettings = this.#facade.dashboardSettings;
+  readonly dashboardSettings = computed(() => {
+    const settings = this.#dashboardSettings();
+    return settings
+      ? Object.entries(settings).map(([key, value]) => ({ key, value }))
+      : undefined;
+  });
+
+  readonly targetOfficeDaysPerWeek = this.#facade.targetOfficeDaysPerWeek;
+
+  readonly pinFormatter = (value: number) => `${value}`;
+
+  changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {
+    this.#facade.saveDashboardSettings(
+      $event.detail.value,
+      $event.detail.checked
+    );
+  }
+
+  changeTargetOfficeDaysPerWeek($event: CustomEvent<{ value: number }>) {
+    this.#facade.saveTargetOfficeDaysPerWeek($event.detail.value);
+  }
+
+  resetData() {
+    this.#facade.resetData();
+  }
+}

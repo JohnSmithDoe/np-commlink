@@ -1,13 +1,12 @@
 import { InjectionToken, Signal } from '@angular/core';
+import { IBaseItem } from '../../model/base-item.types';
+import { ICategory, TCategoryId } from '../../model/category.types';
 import {
-  IBaseItem,
   IListState,
   ISearchResult,
-  TCategoryId,
-  TItemListCategory,
   TItemListMode,
   TItemListSortType,
-} from '../../model/types';
+} from '../../model/item-list.types';
 
 /**
  * Domain-blind contract the generic `ListPageComponent` binds against. Each
@@ -24,13 +23,13 @@ import {
  */
 export interface IListPageFacade {
   readonly state: Signal<IListState<IBaseItem> | undefined>;
-  readonly filter: Signal<{
+  readonly filterState: Signal<{
     isCategoryModeOrHasFilter: boolean;
     hasFilter: boolean;
   }>;
   readonly items: Signal<IBaseItem[] | undefined>;
   readonly searchResult: Signal<ISearchResult<IBaseItem> | undefined>;
-  readonly categories: Signal<{ category: TItemListCategory; count: number }[]>;
+  readonly categories: Signal<{ category: ICategory; count: number }[]>;
 
   search(term?: string): void;
   addItemFromSearch(): void;

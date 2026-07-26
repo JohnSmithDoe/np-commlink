@@ -10,7 +10,7 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { mockAppState, TMockState } from './test-data';
+import { mockKernelState, TMockState } from './test-data';
 
 type TestProvider = Provider | EnvironmentProviders;
 
@@ -32,7 +32,7 @@ export const BASE_TEST_PROVIDERS: TestProvider[] = [
 /**
  * Build the provider array for a component/service spec. Includes a
  * {@link provideMockStore} seeded with the default kernel state (see
- * {@link mockAppState}) so `store.selectSignal(featureSelector)` returns
+ * {@link mockKernelState}) so `store.selectSignal(featureSelector)` returns
  * sensible values out of the box. Pass a partial state to seed specific slices;
  * use `store.overrideSelector(...)` / `store.setState(...)` inside the spec for
  * anything more specific (e.g. router-derived selectors).
@@ -44,7 +44,7 @@ export function provideTestingProviders(
 ): TestProvider[] {
   return [
     ...BASE_TEST_PROVIDERS,
-    provideMockStore({ initialState: mockAppState(initialState) }),
+    provideMockStore({ initialState: mockKernelState(initialState) }),
   ];
 }
 

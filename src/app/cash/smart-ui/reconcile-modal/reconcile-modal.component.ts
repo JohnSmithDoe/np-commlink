@@ -19,10 +19,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { ICashTransaction } from '../../model';
+import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
-import { findReconciliationCandidates } from '../../util/reconcile';
+import { findReconciliationCandidates } from '../../util/reconcile.utils';
 
 /**
  * Pick the imported transaction a `pending` manual entry should merge into (via

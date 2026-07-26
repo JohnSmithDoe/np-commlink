@@ -1,5 +1,7 @@
 import { RouterReducerState } from '@ngrx/router-store';
-import { IBaseItem, ICategory, ISettings } from '../model/types';
+import { IBaseItem } from '../model/base-item.types';
+import { ICategory } from '../model/category.types';
+import { ISettingsState } from '../model/settings.types';
 
 // NOTE: initial states are defined inline (rather than imported from the
 // reducers) on purpose: a reducer module can evaluate a factory like
@@ -21,8 +23,10 @@ export const TEST_TIMESTAMP = '2024-01-01T12:00:00.000Z';
 // every fromTag, so this file could not name a domain type even though
 // `type:testing` may reach any layer.
 
-export function mockSettings(overrides: Partial<ISettings> = {}): ISettings {
-  return { version: '1', theme: 'cyberpunk', ...overrides };
+export function mockSettings(
+  overrides: Partial<ISettingsState> = {}
+): ISettingsState {
+  return { theme: 'cyberpunk', ...overrides };
 }
 
 function mockRouterState(): RouterReducerState {
@@ -68,17 +72,17 @@ export function mockBaseItem(overrides: Partial<IBaseItem> = {}): IBaseItem {
  * excess-property checking so a spec can seed any slice.
  *
  * A `type` alias, not an `interface`: aliases get an implicit index signature,
- * so a domain's own bundle type (`mockGroceryLists()`) stays assignable.
+ * so a domain's own bundle type (`mockGroceriesState()`) stays assignable.
  */
 export type TMockKernelState = {
   router: RouterReducerState;
-  settings: ISettings;
+  settings: ISettingsState;
 };
 
 export type TMockState = Partial<TMockKernelState> & Record<string, unknown>;
 
 /** A complete, overridable kernel state for use with `provideMockStore`. */
-export function mockAppState(overrides: TMockState = {}): TMockKernelState {
+export function mockKernelState(overrides: TMockState = {}): TMockKernelState {
   return {
     router: mockRouterState(),
     settings: mockSettings(),

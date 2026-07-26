@@ -1,4 +1,4 @@
-import { ITaskItem, ITasksState } from '../model';
+import { ITaskItem, ITasksState } from '../model/task.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic task fixtures (type:testing), moved out of the shared

@@ -23,14 +23,6 @@ describe('TrackplayPlayersPage', () => {
     component = TestBed.createComponent(TrackplayPlayersPage).componentInstance;
   };
 
-  it('dispatches enterPlayersPage on ionViewWillEnter', () => {
-    setup();
-
-    component.ionViewWillEnter();
-
-    expect(dispatch).toHaveBeenCalledWith(TrackplayActions.enterPlayersPage());
-  });
-
   it('dispatches deletePlayer with the player', () => {
     const player = mockPlayer({ id: 'p1' });
     setup();

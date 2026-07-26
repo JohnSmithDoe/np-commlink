@@ -8,7 +8,7 @@ import { gotoTrackplay, headerTitle, mainContent } from './helpers';
  */
 test.describe('trackplay first paint', () => {
   test('paints the games (Spiele) home page', async ({ page }) => {
-    await gotoTrackplay(page, 'trackplay', 'app-trackplay-games-page');
+    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
     await expect(headerTitle(page)).toHaveText('Spiele');
   });
 
@@ -16,7 +16,7 @@ test.describe('trackplay first paint', () => {
     await gotoTrackplay(
       page,
       'trackplay/players',
-      'app-trackplay-players-page'
+      'app-page-trackplay-players'
     );
     await expect(headerTitle(page)).toHaveText('Spieler');
   });
@@ -27,7 +27,7 @@ test.describe('trackplay first paint', () => {
     await gotoTrackplay(
       page,
       'trackplay/game-types',
-      'app-trackplay-game-types-page'
+      'app-page-trackplay-game-types'
     );
     await expect(headerTitle(page)).toHaveText('Spielarten');
 
@@ -43,7 +43,7 @@ test.describe('trackplay first paint', () => {
     await gotoTrackplay(
       page,
       'trackplay/game-types',
-      'app-trackplay-game-types-page'
+      'app-page-trackplay-game-types'
     );
 
     const rows = mainContent(page).locator('app-trackplay-game-type-list-item');

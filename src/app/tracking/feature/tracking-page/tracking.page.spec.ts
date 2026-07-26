@@ -32,21 +32,18 @@ describe('TrackingPage', () => {
     component = TestBed.createComponent(TrackingPage).componentInstance;
   };
 
-  it('dispatches enterPage on ionViewWillEnter', () => {
-    setup();
+  const dispatchedTypes = (): string[] =>
+    (dispatch.mock.calls as Array<[{ type: string }]>).map(
+      (call) => call[0].type
+    );
 
-    component.ionViewWillEnter();
-
-    expect(dispatch).toHaveBeenCalledWith(TrackingActions.enterPage());
-  });
-
-  it('applies a ?cmd deep-link: dispatches the command then strips the param', () => {
-    setup({ cmd: 'n1' });
+  it('applies a ?cmd deep-link: dispatches the command then strips the params', () => {
+    setup({ cmd: 'tracking.pause', target: 't1' });
 
     component.ionViewWillEnter();
 
     expect(dispatch).toHaveBeenCalledWith(
-      TrackingActions.applyNotificationCommand('n1')
+      TrackingActions.applyNotificationCommand('tracking.pause', 't1')
     );
     // Refresh/re-enter safety: the param MUST be cleared (replaceUrl) so a
     // reload or a second ionViewWillEnter cannot re-fire the toggle and flip
@@ -62,11 +59,21 @@ describe('TrackingPage', () => {
 
     component.ionViewWillEnter();
 
-    const dispatchedTypes = (
-      dispatch.mock.calls as Array<[{ type: string }]>
-    ).map((c) => c[0].type);
-    expect(dispatchedTypes).not.toContain(
-      TrackingActions.applyNotificationCommand('x').type
+    expect(dispatchedTypes()).not.toContain(
+      TrackingActions.applyNotificationCommand('x', 'y').type
+    );
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  // Half a link is no link: the command alone cannot be resolved without the item
+  // it targets, and firing it would toggle whatever the guard let through.
+  it('no-ops the deep-link when ?target is absent', () => {
+    setup({ cmd: 'tracking.pause' });
+
+    component.ionViewWillEnter();
+
+    expect(dispatchedTypes()).not.toContain(
+      TrackingActions.applyNotificationCommand('x', 'y').type
     );
     expect(navigate).not.toHaveBeenCalled();
   });

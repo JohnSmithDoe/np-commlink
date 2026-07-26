@@ -1,5 +1,11 @@
 import { expect, Page, test } from '@playwright/test';
-import { addViaSearch, gotoFeature, ROUTE, waitForListPage } from '../helpers';
+import {
+  addViaSearch,
+  gotoFeature,
+  ROUTE,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
 
 /**
  * Acceptance test for the persisted dashboard read-model (lazy-modules plan
@@ -23,7 +29,7 @@ test.describe('commlink cold launch', () => {
     await gotoFeature(page, ROUTE.shopping);
     await addViaSearch(page, 'Milk');
     await addViaSearch(page, 'Bread');
-    await page.waitForTimeout(600); // let the fire-and-forget disk write flush
+    await waitForPersisted(page, 'summary-shopping');
 
     // 2. Cold launch: full reload landing on the deck. The read-model starts
     //    empty and must hydrate from disk; shopping is NOT loaded here.
@@ -43,7 +49,7 @@ test.describe('commlink cold launch', () => {
     await gotoFeature(page, ROUTE.shopping);
     await addViaSearch(page, 'Milk');
     await addViaSearch(page, 'Bread');
-    await page.waitForTimeout(600);
+    await waitForPersisted(page, 'summary-shopping');
 
     await page.goto('/#/commlink');
     await page.reload();

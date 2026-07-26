@@ -34,13 +34,14 @@ import {
   trendingUpOutline,
   walletOutline,
 } from 'ionicons/icons';
-import { ICashAccount, TAccountKind } from '../../model';
+import { ICashAccount, TAccountKind } from '../../model/account.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { CashFacade } from '../../data';
-import { deleteConfirmAlert } from '../../util/delete-alert';
+import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/money.pipe';
-import { CashAccountEditModalComponent } from '../../smart-ui/account-edit-modal/account-edit-modal.component';
-import { CashTransferModalComponent } from '../../smart-ui/transfer-modal/transfer-modal.component';
+import { CashAccountEditModalComponent } from '../account-edit-modal/account-edit-modal.component';
+import { CashTransferModalComponent } from '../transfer-modal/transfer-modal.component';
+import { presentModal } from '../../../@shared/util/present-modal';
 
 const KIND_ICON: Record<TAccountKind, string> = {
   giro: 'wallet-outline',
@@ -120,17 +121,11 @@ export class CashPage {
   }
 
   async openTransfer(): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: CashTransferModalComponent,
-    });
-    await modal.present();
+    await presentModal(this.#modalCtrl, CashTransferModalComponent);
   }
 
   async openNew(): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: CashAccountEditModalComponent,
-    });
-    await modal.present();
+    await presentModal(this.#modalCtrl, CashAccountEditModalComponent);
   }
 
   goToAccount(account: ICashAccount): void {

@@ -1,9 +1,9 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { IBaseItem } from '../../model/types';
-import { ItemDialogHost } from '../../data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../util/item-dialog.service';
 import { mockBaseItem } from '../../testing/test-data';
 import { BaseEditItemDialog } from './base-edit-item-dialog';
+import { IBaseItem } from '../../model/base-item.types';
 
 // A minimal concrete wrapper, so the base's behaviour is asserted ONCE here
 // instead of being re-tested in all five domain wrappers.
@@ -18,14 +18,14 @@ class TestDialog extends BaseEditItemDialog<IBaseItem> {
 }
 
 describe('BaseEditItemDialog', () => {
-  let host: ItemDialogHost;
+  let host: ItemDialogService;
   let dialog: TestDialog;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
     });
-    host = TestBed.inject(ItemDialogHost);
+    host = TestBed.inject(ItemDialogService);
     dialog = TestBed.runInInjectionContext(() => new TestDialog());
   });
 

@@ -3,13 +3,13 @@
     <ion-buttons slot="start">
       <ion-button
         [routerLink]="facade.listHref()"
-        [attr.aria-label]="'grocery.a11y.back' | translate"
+        [attr.aria-label]="'a11y.back' | translate"
       >
         <ion-icon slot="icon-only" name="arrow-back-outline" />
       </ion-button>
     </ion-buttons>
     <ion-title>
-      {{ 'grocery.page-title.categories' | translate }}
+      {{ 'page-title.categories' | translate }}
       <span class="subtitle">{{ facade.listTitleKey() | translate }}</span>
     </ion-title>
   </ion-toolbar>
@@ -19,7 +19,7 @@
   <ion-item>
     <ion-input
       label="＋"
-      [placeholder]="'grocery.manage-categories.add-placeholder' | translate"
+      [placeholder]="'categories.add-placeholder' | translate"
       [value]="newCategory()"
       (ionInput)="newCategory.set($any($event.target).value ?? '')"
       (keyup.enter)="add()"
@@ -29,7 +29,7 @@
       fill="clear"
       [disabled]="!canAdd()"
       (click)="add()"
-      [attr.aria-label]="'grocery.a11y.add-category' | translate"
+      [attr.aria-label]="'categories.a11y.add' | translate"
     >
       <ion-icon slot="icon-only" name="add-outline" />
     </ion-button>
@@ -54,13 +54,17 @@
               <ion-buttons slot="end">
                 <ion-button
                   (click)="commitEdit(); $event.stopPropagation()"
-                  [attr.aria-label]="'grocery.a11y.confirm-rename' | translate"
+                  [attr.aria-label]="
+                    'categories.a11y.confirm-rename' | translate
+                  "
                 >
                   <ion-icon slot="icon-only" name="checkmark-outline" />
                 </ion-button>
                 <ion-button
                   (click)="cancelEdit(); $event.stopPropagation()"
-                  [attr.aria-label]="'grocery.a11y.cancel-rename' | translate"
+                  [attr.aria-label]="
+                    'categories.a11y.cancel-rename' | translate
+                  "
                 >
                   <ion-icon slot="icon-only" name="close-outline" />
                 </ion-button>
@@ -70,8 +74,7 @@
               <ion-note
                 slot="end"
                 [attr.aria-label]="
-                  'grocery.manage-categories.count'
-                    | translate: { count: entry.count }
+                  'categories.count' | translate: { count: entry.count }
                 "
               >
                 {{ entry.count }}
@@ -81,14 +84,14 @@
           <ion-item-options side="end">
             <ion-item-option
               (click)="startEdit(entry.category.id, entry.category.name)"
-              [attr.aria-label]="'grocery.a11y.rename-category' | translate"
+              [attr.aria-label]="'categories.a11y.rename' | translate"
             >
               <ion-icon slot="icon-only" name="create-outline" />
             </ion-item-option>
             <ion-item-option
               color="danger"
               (click)="remove(entry.category.id)"
-              [attr.aria-label]="'grocery.a11y.delete-category' | translate"
+              [attr.aria-label]="'categories.a11y.delete' | translate"
             >
               <ion-icon slot="icon-only" name="trash-outline" />
             </ion-item-option>
@@ -97,8 +100,6 @@
       }
     </ion-list>
   } @else {
-    <ion-note class="empty-hint">{{
-      'grocery.manage-categories.empty' | translate
-    }}</ion-note>
+    <ion-note class="empty-hint">{{ 'categories.empty' | translate }}</ion-note>
   }
 </ion-content>

@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
-import { DashboardSettingsType } from '../model';
-import { OfficeTimeActions } from './office-time/office-time.actions';
+import { DashboardSettingsType } from '../model/office-time.types';
+import { OfficeTimeActions } from './actions/office-time.actions';
 import {
   selectDashboardItems,
   selectDashboardSettings,
@@ -11,15 +11,14 @@ import {
   selectHolidays,
   selectOfficedays,
   selectTargetOfficeDaysPerWeek,
-} from './office-time/office-time.selector';
+} from './selectors/office-time.selector';
 import {
   selectDashboardStatsMonth,
   selectDashboardStatsQuarter,
   selectDashboardStatsWeek,
   selectDashboardStatsYear,
-  selectTodayIsOfficeDay,
-} from './office-time/office-time.stats.selector';
-import { dayjsToday } from './office-time/office-time.utils';
+} from './selectors/office-time-stats.selector';
+import { dayjsToday, isOfficeDay } from '../util/office-time.utils';
 
 /**
  * The `office-time` (Soft-clock dashboard) domain facade — the single NgRx
@@ -43,16 +42,39 @@ export class OfficeTimeFacade {
   readonly targetOfficeDaysPerWeek = this.#store.selectSignal(
     selectTargetOfficeDaysPerWeek
   );
-  readonly todayIsOfficeDay = this.#store.selectSignal(selectTodayIsOfficeDay);
+  // "Is today already logged" is not a pure function of the slice — it also
+  // depends on the clock, which a memoized selector reading `dayjs()` in its
+  // projector can never notice: `officedays` keeps its reference across
+  // midnight, so the projector never re-runs and the dash button stays
+  // disabled on the new day. Keeping `today` as an explicit, refreshable
+  // input is what makes the answer expire.
+  readonly #today = signal(dayjsToday());
+  readonly todayIsOfficeDay = computed(() =>
+    isOfficeDay(this.#today(), this.officedays())
+  );
 
   readonly statsWeek = this.#store.selectSignal(selectDashboardStatsWeek);
   readonly statsMonth = this.#store.selectSignal(selectDashboardStatsMonth);
   readonly statsQuarter = this.#store.selectSignal(selectDashboardStatsQuarter);
   readonly statsYear = this.#store.selectSignal(selectDashboardStatsYear);
 
+  constructor() {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') this.#refreshToday();
+    });
+  }
+
   // ── Commands ─────────────────────────────────────────────────────────────
+  // Page entry and returning to the foreground are the two moments the day can
+  // have rolled over without anything in the slice changing.
   initOfficeTime(): void {
+    this.#refreshToday();
     this.#store.dispatch(OfficeTimeActions.initOfficeTime());
+  }
+
+  #refreshToday(): void {
+    const today = dayjsToday();
+    if (!today.isSame(this.#today(), 'day')) this.#today.set(today);
   }
 
   // Mark today as an office day (the dash button); the "today" timestamp is a

@@ -1,11 +1,12 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TCategoryId } from '../../@shared/model/types';
 import { uuidv4 } from '../../@shared/util/app.utils';
 import { ICategoriesPageFacade } from '../../@shared/util/categories/categories-page.facade';
-import { CashActions } from './cash.actions';
-import { selectCashCategoriesWithCount } from './cash.selector';
+import { CashActions } from './actions/cash.actions';
+import { selectCashCategoriesWithCount } from './selectors/cash.selector';
+
+import { TCategoryId } from '../../@shared/model/category.types';
 
 /**
  * {@link ICategoriesPageFacade} for the single cash catalog. Reuses the shared
@@ -20,7 +21,7 @@ export class CashCategoriesPageFacade implements ICategoriesPageFacade {
   readonly #router = inject(Router);
 
   readonly categories = this.#store.selectSignal(selectCashCategoriesWithCount);
-  readonly listTitleKey = signal('cash.page-title.cash');
+  readonly listTitleKey = signal('page-title.cash');
   readonly listHref = signal('/cash');
 
   add(name: string): void {

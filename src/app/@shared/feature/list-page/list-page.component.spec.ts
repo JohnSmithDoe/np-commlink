@@ -1,9 +1,10 @@
 import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
-import { IBaseItem, IListState } from '../../model/types';
 import { IListPageFacade, LIST_FACADE } from '../../util/list/list-page.facade';
 import { ListPageComponent } from './list-page.component';
+import { IBaseItem } from '../../model/base-item.types';
+import { IListState } from '../../model/item-list.types';
 
 const mockListState = (
   overrides: Partial<IListState<IBaseItem>> = {}
@@ -22,7 +23,7 @@ const fakeFacade = (
 ): IListPageFacade & { opened: number; savedCategories: string[] } => {
   const facade = {
     state,
-    filter: signal({ isCategoryModeOrHasFilter: false, hasFilter: false }),
+    filterState: signal({ isCategoryModeOrHasFilter: false, hasFilter: false }),
     items: signal(undefined),
     searchResult: signal(undefined),
     categories: signal([]),

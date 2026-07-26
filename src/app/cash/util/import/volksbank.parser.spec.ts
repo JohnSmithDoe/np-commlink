@@ -8,7 +8,7 @@ const CSV = [
 
 describe('volksbankParser', () => {
   it('parses signed German amounts and joins payee + purpose', () => {
-    const rows = volksbankParser.parse(CSV);
+    const { rows } = volksbankParser.parse(CSV);
     expect(rows).toHaveLength(2);
     expect(rows[0].amountCents).toBe(357_000);
     expect(rows[0].dateISO.startsWith('2026-01-06')).toBe(true);
@@ -17,11 +17,13 @@ describe('volksbankParser', () => {
   });
 
   it('tolerates a preamble above the header row', () => {
-    const rows = volksbankParser.parse('Konto 123\nZeitraum Januar\n' + CSV);
+    const { rows } = volksbankParser.parse(
+      'Konto 123\nZeitraum Januar\n' + CSV
+    );
     expect(rows).toHaveLength(2);
   });
 
   it('returns nothing when the header is absent', () => {
-    expect(volksbankParser.parse('nothing;useful\n1;2')).toEqual([]);
+    expect(volksbankParser.parse('nothing;useful\n1;2').rows).toEqual([]);
   });
 });

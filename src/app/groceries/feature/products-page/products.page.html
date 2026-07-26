@@ -1,15 +1,15 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'grocery.page-title.products' | translate }}"
+  pageHeader="{{ 'page-title.groceries-products' | translate }}"
   listHeader="{{ 'grocery.list-header.products' | translate }}"
   [itemTemplate]="productItem"
 >
-  <app-item-list-quickadd
+  <app-item-list-quick-add
     quickAdd
     (quickAddItem)="facade.addItemFromSearch()"
     (quickCreateCategory)="facade.addCategoryFromSearch()"
     (quickCreateProduct)="facade.showCreateProductDialog()"
-  ></app-item-list-quickadd>
+  ></app-item-list-quick-add>
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"

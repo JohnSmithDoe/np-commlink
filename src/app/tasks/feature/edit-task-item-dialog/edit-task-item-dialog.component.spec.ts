@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockCategory } from '../../../@shared/testing/test-data';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { createTaskItem } from '../../util/task.factory';
 import { TasksActions } from '../../data';
 import { EditTaskItemDialogComponent } from './edit-task-item-dialog.component';
@@ -11,7 +11,7 @@ describe('EditTaskItemDialogComponent', () => {
   let component: EditTaskItemDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
-  let host: ItemDialogHost;
+  let host: ItemDialogService;
 
   const seed = createTaskItem('Buy stamps', [], 1);
 
@@ -21,7 +21,7 @@ describe('EditTaskItemDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    host = TestBed.inject(ItemDialogHost);
+    host = TestBed.inject(ItemDialogService);
     host.open({ item: seed, listId: '_tasks', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(

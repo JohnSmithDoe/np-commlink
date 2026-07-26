@@ -11,9 +11,9 @@ import {
   IonToolbar,
   ModalController,
   PopoverController,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -21,12 +21,14 @@ import {
   createOutline,
   optionsOutline,
 } from 'ionicons/icons';
-import { IGame, TID } from '../../model';
+import { IGame, TID } from '../../model/trackplay.types';
+import { gameTypeName } from '../../util/game-type.utils';
 import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
-import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
-import { TrackplayPlayerEditDialogComponent } from '../../smart-ui/player-edit-dialog/player-edit-dialog.component';
-import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';
+import { TrackplayGameEditModalComponent } from '../game-edit-modal/game-edit-modal.component';
+import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
+import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
+import { presentModal } from '../../../@shared/util/present-modal';
 
 /**
  * Single-player detail: derived win/loss/open + total-play stats, a rename
@@ -35,7 +37,7 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
  * config). Back button returns to the players list.
  */
 @Component({
-  selector: 'app-trackplay-player-page',
+  selector: 'app-page-trackplay-player',
   templateUrl: './player.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -51,12 +53,16 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
     TrackplayGameListItemComponent,
   ],
 })
-export class TrackplayPlayerPage implements ViewWillEnter {
+export class TrackplayPlayerPage {
   readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #modalCtrl = inject(ModalController);
   readonly #popoverCtrl = inject(PopoverController);
+  readonly #translate = inject(TranslateService);
+  readonly #unknownTypeLabel = this.#translate.instant(
+    marker('trackplay.label.unknown-type')
+  );
 
   // The route id is fixed for the lifetime of this page instance.
   readonly id: TID = this.#route.snapshot.paramMap.get('id') ?? '';
@@ -70,12 +76,8 @@ export class TrackplayPlayerPage implements ViewWillEnter {
     addIcons({ addOutline, arrowBackOutline, createOutline, optionsOutline });
   }
 
-  ionViewWillEnter(): void {
-    this.#facade.enterPlayerPage(this.id);
-  }
-
   typeName(game: IGame): string {
-    return this.rxGameTypes()[game.type]?.name ?? 'Unbekannt';
+    return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
   }
 
   goBack(): void {
@@ -91,11 +93,9 @@ export class TrackplayPlayerPage implements ViewWillEnter {
   }
 
   async openPlayerEdit(): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayPlayerEditDialogComponent,
-      componentProps: { playerId: this.id },
+    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent, {
+      playerId: this.id,
     });
-    await modal.present();
   }
 
   async newGame(): Promise<void> {
@@ -108,7 +108,7 @@ export class TrackplayPlayerPage implements ViewWillEnter {
 
   async openSettings(event: Event): Promise<void> {
     const popover = await this.#popoverCtrl.create({
-      component: TrackplayGameSettingsPopoverComponent,
+      component: TrackplayListSettingsPopoverComponent,
       componentProps: { mode: 'gamesForPlayer' },
       event: event,
     });
@@ -119,10 +119,10 @@ export class TrackplayPlayerPage implements ViewWillEnter {
     gameId?: TID;
     presetPlayerIds?: TID[];
   }): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayGameEditDialogComponent,
-      componentProps: properties,
-    });
-    await modal.present();
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayGameEditModalComponent,
+      properties
+    );
   }
 }

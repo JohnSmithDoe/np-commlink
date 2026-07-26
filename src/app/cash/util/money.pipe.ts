@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { formatEur } from './money';
+import { formatEur } from '../../@shared/util/money.utils';
 
 /**
  * Displays signed integer cents as a localized EUR string (`1234` → `"12,34 €"`).

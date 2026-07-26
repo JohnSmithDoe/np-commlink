@@ -1,12 +1,17 @@
+<!-- The row itself carries the primary action: `ion-item[button]` renders a real
+     button, so Enter/Space reach it — a click bound to the inner label would be
+     mouse-only. Trailing controls and the inline popover stop propagation so
+     their own actions don't also toggle the item. -->
 <ion-item
   [button]="true"
   lines="full"
   [class]="'tracking-page-item-' + item().state"
+  (click)="selectItem.emit()"
 >
   <div class="status-bar">
     <ion-text [color]="getColor(item())"></ion-text>
   </div>
-  <ion-label class="ion-text-wrap" (click)="selectItem.emit()">
+  <ion-label class="ion-text-wrap">
     @let trackingItem = item();
     @if (trackingItem) {
       <h2 class="tracking-item-title">
@@ -16,13 +21,7 @@
             trackingItem.state
           }}"
         >
-          @if (trackingItem.state === 'paused') {
-            paused
-          } @else if (trackingItem.state === 'running') {
-            running
-          } @else {
-            done
-          }
+          {{ 'tracking.item.state.' + trackingItem.state | translate }}
         </span>
       </h2>
 
@@ -32,7 +31,7 @@
             trackingItem.state
           }}"
         >
-          {{ trackingItem.trackedTimeInSeconds | npTimeWithUnit }}
+          {{ trackingItem.trackedTimeInSeconds | timeWithUnit }}
         </div>
       }
 
@@ -41,7 +40,7 @@
           trackingItem.state === 'stopped' &&
           (trackingItem.trackedTimeInSeconds ?? 0) > 0
         ) {
-          <div>{{ item().trackedTimeInSeconds | npTimeWithUnit }}</div>
+          <div>{{ item().trackedTimeInSeconds | timeWithUnit }}</div>
         }
         @if (trackingItem.startTime) {
           {{
@@ -61,14 +60,18 @@
           {{
             'tracking.item.breaktime'
               | translate
-                : { time: trackingItem.breakInSeconds | npTimeFromSeconds }
+                : { time: trackingItem.breakInSeconds | minutesFromSeconds }
           }}
         }
       </ion-note>
     }
   </ion-label>
 
-  <ion-buttons slot="end" class="item-buttons">
+  <ion-buttons
+    slot="end"
+    class="item-buttons"
+    (click)="$event.stopPropagation()"
+  >
     <ion-button
       [id]="'kebab-' + item().id"
       fill="clear"
@@ -78,12 +81,12 @@
       <ion-icon slot="icon-only" name="ellipsis-vertical" aria-hidden="true" />
     </ion-button>
   </ion-buttons>
-  <ion-reorder slot="end" />
 
   <ion-popover
     [trigger]="'kebab-' + item().id"
     triggerAction="click"
     [dismissOnSelect]="true"
+    (click)="$event.stopPropagation()"
   >
     <ng-template>
       <ion-list lines="none">

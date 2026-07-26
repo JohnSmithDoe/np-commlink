@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { mockProduct } from '../../testing/grocery.test-data';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { mockProduct } from '../../testing/groceries.test-data';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { ProductsActions } from '../../data';
 import { ProductsPage } from './products.page';
 
@@ -42,7 +42,7 @@ describe('ProductsPage', () => {
   it('opens the edit dialog scoped to the globals list', () => {
     const item = mockProduct();
     component.showEditDialog(item);
-    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+    expect(TestBed.inject(ItemDialogService).request()).toEqual({
       item,
       listId: '_products',
       editMode: 'update',

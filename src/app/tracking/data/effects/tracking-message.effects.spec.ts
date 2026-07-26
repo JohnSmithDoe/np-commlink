@@ -2,83 +2,95 @@ import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockAppState } from '../../../@shared/testing/test-data';
+import { firstValueFrom, Observable, of, toArray } from 'rxjs';
+import { mockKernelState } from '../../../@shared/testing/test-data';
 import { mockTrackingItem } from '../../testing/tracking.test-data';
-import { ToastService } from '../../../@shared/util/toast.service';
-import { TrackingActions } from '../tracking.actions';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
+import { TrackingActions } from '../actions/tracking.actions';
 import { TrackingMessageEffects } from './tracking-message.effects';
 
 describe('TrackingMessageEffects', () => {
   let actions$: Observable<Action>;
   let effects: TrackingMessageEffects;
-  let ui: Record<string, ReturnType<typeof vi.fn>>;
 
   const setup = () => {
-    ui = {
-      showSavedToast: vi.fn().mockResolvedValue(undefined),
-      showAddItemToast: vi.fn().mockResolvedValue(undefined),
-      showItemContainedToast: vi.fn().mockResolvedValue(undefined),
-      showUpdateItemToast: vi.fn().mockResolvedValue(undefined),
-      showRemoveItemToast: vi.fn().mockResolvedValue(undefined),
-    };
     TestBed.configureTestingModule({
       providers: [
         TrackingMessageEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: mockAppState() }),
-        { provide: ToastService, useValue: ui },
+        provideMockStore({ initialState: mockKernelState() }),
       ],
     });
     effects = TestBed.inject(TrackingMessageEffects);
   };
 
-  it('savedSuccess$ shows the saved toast', async () => {
+  it('savedSuccess$ raises the saved toast', async () => {
     setup();
     actions$ = of(TrackingActions.saveAndResetTracking());
-    await firstValueFrom(effects.savedSuccess$);
-    expect(ui['showSavedToast']).toHaveBeenCalledTimes(1);
+    expect(await firstValueFrom(effects.savedSuccess$)).toEqual(
+      NotificationsActions.toast({ key: 'toast.saved' })
+    );
   });
 
-  it('addItemSuccess$ shows the add-item toast for a named item', async () => {
+  it('addItemSuccess$ raises the add-item toast for a named item', async () => {
     setup();
     actions$ = of(
       TrackingActions.addItem(mockTrackingItem({ name: 'Ticket' }))
     );
-    await firstValueFrom(effects.addItemSuccess$);
-    expect(ui['showAddItemToast']).toHaveBeenCalledWith('Ticket');
+    expect(await firstValueFrom(effects.addItemSuccess$)).toEqual(
+      NotificationsActions.toast({
+        key: 'toast.add.item',
+        params: { name: 'Ticket' },
+      })
+    );
   });
 
   it('addItemSuccess$ ignores an item with a blank name', async () => {
     setup();
     actions$ = of(TrackingActions.addItem(mockTrackingItem({ name: '' })));
-    await firstValueFrom(effects.addItemSuccess$);
-    expect(ui['showAddItemToast']).not.toHaveBeenCalled();
+    expect(
+      await firstValueFrom(effects.addItemSuccess$.pipe(toArray()))
+    ).toEqual([]);
   });
 
-  it('addItemFailure$ shows the item-contained toast', async () => {
+  it('addItemFailure$ raises the item-contained toast', async () => {
     setup();
     actions$ = of(
       TrackingActions.addItemFailure(mockTrackingItem({ name: 'Ticket' }))
     );
-    await firstValueFrom(effects.addItemFailure$);
-    expect(ui['showItemContainedToast']).toHaveBeenCalledWith('Ticket');
+    expect(await firstValueFrom(effects.addItemFailure$)).toEqual(
+      NotificationsActions.toast({
+        key: 'toast.add.item.failure',
+        params: { name: 'Ticket' },
+        color: 'medium',
+      })
+    );
   });
 
-  it('updateItemSuccess$ shows the update-item toast', async () => {
+  it('updateItemSuccess$ raises the update-item toast', async () => {
     setup();
-    const item = mockTrackingItem({ name: 'Ticket' });
-    actions$ = of(TrackingActions.updateItem(item));
-    await firstValueFrom(effects.updateItemSuccess$);
-    expect(ui['showUpdateItemToast']).toHaveBeenCalledWith(item);
+    actions$ = of(
+      TrackingActions.updateItem(mockTrackingItem({ name: 'Ticket' }))
+    );
+    expect(await firstValueFrom(effects.updateItemSuccess$)).toEqual(
+      NotificationsActions.toast({
+        key: 'toast.update.item',
+        params: { name: 'Ticket' },
+      })
+    );
   });
 
-  it('removeItemSuccess$ shows the remove-item toast', async () => {
+  it('removeItemSuccess$ raises the remove-item toast', async () => {
     setup();
     actions$ = of(
       TrackingActions.removeItem(mockTrackingItem({ name: 'Ticket' }))
     );
-    await firstValueFrom(effects.removeItemSuccess$);
-    expect(ui['showRemoveItemToast']).toHaveBeenCalledWith('Ticket');
+    expect(await firstValueFrom(effects.removeItemSuccess$)).toEqual(
+      NotificationsActions.toast({
+        key: 'toast.remove.item',
+        params: { name: 'Ticket' },
+        color: 'warning',
+      })
+    );
   });
 });

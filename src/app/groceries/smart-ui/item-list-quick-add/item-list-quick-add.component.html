@@ -1,0 +1,44 @@
+@if (rxShowLocal()) {
+  <app-text-item
+    [color]="rxState().color"
+    helper="{{
+      'grocery.item-list.quickadd.add'
+        | translate
+          : {
+              value: rxState().searchQuery,
+              list: (rxState().listName ?? '' | translate),
+            }
+    }}"
+    [label]="rxState().searchQuery"
+    (selectItem)="quickAddItem.emit()"
+  ></app-text-item>
+}
+@if (rxShowProduct() === true) {
+  <app-text-item
+    helper="{{
+      'grocery.item-list.quickadd.add.product'
+        | translate
+          : {
+              value: rxState().searchQuery,
+              list: rxState().listName,
+            }
+    }}"
+    [label]="rxState().searchQuery"
+    (selectItem)="quickCreateProduct.emit()"
+  ></app-text-item>
+}
+@if (rxShowCategoy() === true) {
+  <app-text-item
+    color="primary"
+    helper="{{
+      'grocery.item-list.quickadd.add.category'
+        | translate
+          : {
+              value: rxState().searchQuery,
+              list: rxState().listName,
+            }
+    }}"
+    [label]="rxState().searchQuery"
+    (selectItem)="quickCreateCategory.emit()"
+  ></app-text-item>
+}

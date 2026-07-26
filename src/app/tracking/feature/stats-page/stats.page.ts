@@ -8,20 +8,18 @@ import {
   IonList,
   IonSelect,
   IonSelectOption,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { ellipse, square, triangle } from 'ionicons/icons';
+import { documentsOutline, ellipse, square, triangle } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { SessionsChartComponent } from '../../smart-ui/sessions-chart/sessions-chart.component';
 import { TrackingListPageFacade } from '../../data';
-import { IDataItem } from '../../model';
+import { IDataItem } from '../../model/tracking.types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 
 @Component({
-  selector: 'app-stats-page',
+  selector: 'app-page-stats',
   templateUrl: 'stats.page.html',
-  styleUrls: ['stats.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslateModule,
@@ -36,18 +34,14 @@ import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
     IonItem,
   ],
 })
-export class StatsPage implements ViewWillEnter {
+export class StatsPage {
   readonly #facade = inject(TrackingListPageFacade);
 
-  readonly data = this.#facade.data;
+  readonly sessionsByView = this.#facade.sessionsByView;
   readonly viewMode = this.#facade.viewMode;
 
   constructor() {
-    addIcons({ triangle, ellipse, square });
-  }
-
-  ionViewWillEnter(): void {
-    this.#facade.enterPage();
+    addIcons({ triangle, ellipse, square, documentsOutline });
   }
 
   shareCSV() {

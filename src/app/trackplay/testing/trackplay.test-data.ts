@@ -1,4 +1,10 @@
-import { IGame, IGameType, IPlayer, IRound, ITrackplayState } from '../model';
+import {
+  IGame,
+  IGameType,
+  IPlayer,
+  IRound,
+  ITrackplayState,
+} from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPES,
   initialTrackplayConfig,

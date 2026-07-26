@@ -15,8 +15,9 @@ import {
   IonReorder,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TColor, TIonDragEvent, TItemListCategory } from '../../../model/types';
-import { checkItemOptionsOnDrag } from '../../../util/app.utils';
+import { TColor, TIonDragEvent } from '../../../model/app.types';
+import { ICategory } from '../../../model/category.types';
+import { revealedSideFromDrag } from '../../../util/app.utils';
 
 @Component({
   selector: 'app-category-item',
@@ -35,7 +36,7 @@ import { checkItemOptionsOnDrag } from '../../../util/app.utils';
   ],
 })
 export class CategoryItemComponent {
-  category = input.required<TItemListCategory>();
+  category = input.required<ICategory>();
   count = input.required<number>();
   ionList = input.required<IonList>();
 
@@ -44,8 +45,8 @@ export class CategoryItemComponent {
   selectCategory = output<void>();
   deleteCategory = output<void>();
 
-  async handleItemOptionsOnDrag(event: TIonDragEvent) {
-    if (checkItemOptionsOnDrag(event) === 'end') {
+  async deleteOnSwipe(event: TIonDragEvent) {
+    if (revealedSideFromDrag(event) === 'end') {
       return this.emitDeleteItem();
     }
     return;

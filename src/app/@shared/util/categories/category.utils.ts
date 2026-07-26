@@ -1,4 +1,5 @@
-import { IBaseItem, ICategory, TCategoryId } from '../../model/types';
+import { IBaseItem } from '../../model/base-item.types';
+import { ICategory, TCategoryId } from '../../model/category.types';
 
 // Display resolution for the id-referenced category model: items/txns carry
 // category IDs, the owning list holds the {id,name} catalog, so rendering a
@@ -9,6 +10,15 @@ export const categoryName = (
   id: TCategoryId | undefined,
   catalog: readonly ICategory[]
 ): string => (id ? (catalog.find((cat) => cat.id === id)?.name ?? '') : '');
+
+// Same resolution, indexed once up front — for tables that resolve a name per
+// row, where `categoryName`'s catalog scan would be quadratic.
+export const categoryNameLookup = (
+  catalog: readonly ICategory[]
+): ((id: TCategoryId | undefined) => string) => {
+  const nameById = new Map(catalog.map((cat) => [cat.id, cat.name]));
+  return (id) => (id ? (nameById.get(id) ?? '') : '');
+};
 
 export const categoryNames = (
   item: IBaseItem | undefined,

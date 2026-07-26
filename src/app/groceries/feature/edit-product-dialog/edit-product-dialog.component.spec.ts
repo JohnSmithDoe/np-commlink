@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { SelectCustomEvent } from '@ionic/angular/standalone';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { createProduct } from '../../util/grocery.factory';
 import { ProductsActions, StorageActions } from '../../data';
 import { EditProductDialogComponent } from './edit-product-dialog.component';
@@ -11,7 +11,7 @@ describe('EditProductDialogComponent', () => {
   let component: EditProductDialogComponent;
   let store: MockStore;
   let dispatch: ReturnType<typeof vi.spyOn>;
-  let host: ItemDialogHost;
+  let host: ItemDialogService;
 
   const seed = createProduct('Butter', []);
 
@@ -21,7 +21,7 @@ describe('EditProductDialogComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     store = TestBed.inject(MockStore);
-    host = TestBed.inject(ItemDialogHost);
+    host = TestBed.inject(ItemDialogService);
     host.open({ item: seed, listId: '_products', editMode: 'update' });
     dispatch = vi.spyOn(store, 'dispatch');
     component = TestBed.createComponent(

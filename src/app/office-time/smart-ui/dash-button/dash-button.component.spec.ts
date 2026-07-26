@@ -3,14 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
-import { OfficeTimeActions, selectTodayIsOfficeDay } from '../../data';
+import { OfficeTimeActions, selectOfficedays } from '../../data';
 import { DashButtonComponent } from './dash-button.component';
 
 describe('DashButtonComponent', () => {
   let store: MockStore;
 
   const create = (todayIsOfficeDay: boolean): DashButtonComponent => {
-    store.overrideSelector(selectTodayIsOfficeDay, todayIsOfficeDay);
+    store.overrideSelector(selectOfficedays, todayIsOfficeDay ? [dayjs()] : []);
     // The facade is a root singleton, so its `todayIsOfficeDay` signal is
     // created once — push the overridden value through the state stream so the
     // existing computed recomputes (overrideSelector alone doesn't emit).
@@ -25,6 +25,8 @@ describe('DashButtonComponent', () => {
     });
     store = TestBed.inject(MockStore);
   });
+
+  afterEach(() => store.resetSelectors());
 
   it('exposes whether today is already an office day', () => {
     expect(create(true).todayIsOfficeDay()).toBe(true);

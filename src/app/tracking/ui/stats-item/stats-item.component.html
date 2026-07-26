@@ -5,22 +5,26 @@
       <ion-note>
         {{
           'tracking.item.start'
-            | translate: { time: item() | npTimeFromDataItem: view() }
+            | translate: { time: item() | timeFromDataItem: view() }
         }}
       </ion-note>
     </ion-label>
     <ion-label slot="end">
-      {{ item() | npTrackingTime }}
+      {{ item() | trackingTime }}
     </ion-label>
   </ion-item>
 </ng-template>
 
-<ion-item-sliding (ionDrag)="handleItemOptionsOnDrag($event)">
+<ion-item-sliding (ionDrag)="deleteOnSwipe($event)">
   <ng-container *ngTemplateOutlet="itemTemplate" />
 
   @if (view() === 'raw') {
     <ion-item-options side="end">
-      <ion-item-option color="danger" expandable (click)="emitDeleteItem()">
+      <ion-item-option
+        color="danger"
+        [expandable]="true"
+        (click)="emitDeleteItem()"
+      >
         {{ 'tracking.item.action.delete' | translate }}
       </ion-item-option>
     </ion-item-options>

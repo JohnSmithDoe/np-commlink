@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { DashboardStats } from '../../model';
+import { DashboardStats } from '../../model/office-time.types';
 
 @Component({
   selector: 'app-dash-percentage',

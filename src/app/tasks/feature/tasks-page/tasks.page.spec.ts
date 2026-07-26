@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockTaskItem } from '../../testing/tasks.test-data';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { TasksActions } from '../../data';
 import { TasksPage } from './tasks.page';
 
@@ -28,11 +28,6 @@ describe('TasksPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('dispatches enterPage on ionViewWillEnter', () => {
-    component.ionViewWillEnter();
-    expect(dispatch).toHaveBeenCalledWith(TasksActions.enterPage());
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockTaskItem();
     component.removeItem(item);
@@ -42,7 +37,7 @@ describe('TasksPage', () => {
   it('opens the edit dialog scoped to the tasks list', () => {
     const item = mockTaskItem();
     component.showEditDialog(item);
-    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+    expect(TestBed.inject(ItemDialogService).request()).toEqual({
       item,
       listId: '_tasks',
       editMode: 'update',

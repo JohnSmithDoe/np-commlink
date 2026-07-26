@@ -1,23 +1,27 @@
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
-  ICategory,
-  TCategoryId,
-  TItemListId,
-  TItemListMode,
-  TItemListSortType,
-} from '../../@shared/model/types';
-import { IProduct, IShoppingItem, IStorageItem } from '../model';
+  IProduct,
+  IShoppingItem,
+  IStorageItem,
+  TGroceryListId,
+} from '../model/grocery-list.types';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { ItemDialogHost } from '../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../@shared/util/item-dialog.service';
 import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
-import { createGroceryItem, createProduct } from '../util/grocery.factory';
-import { GroceryListActions } from './grocery-list/grocery-list.actions';
-import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
-import { ShoppingActions } from './shopping.actions';
-import { StorageActions } from './storage.actions';
-import { ProductsActions } from './products.actions';
+import {
+  createGroceryItem,
+  createProduct,
+  withQuantityChangedBy,
+} from '../util/grocery.factory';
+import { GroceryListActions } from './actions/grocery-list.actions';
+import { GroceryCategoriesActions } from './actions/grocery-categories.actions';
+import { ShoppingActions } from './actions/shopping.actions';
+import { StorageActions } from './actions/storage.actions';
+import { ProductsActions } from './actions/products.actions';
 import {
   selectListCategories,
   selectListIdParam,
@@ -25,26 +29,31 @@ import {
   selectListSearchResult,
   selectListState,
   selectListStateFilter,
-} from './grocery-list/grocery-list.selector';
+} from './selectors/grocery-list.selector';
 import {
   selectShoppingCategories,
   selectShoppingListHasBoughtItems,
   selectShoppingState,
-} from './shopping.selector';
+} from './selectors/shopping.selector';
 import {
   selectStorageCategories,
   selectStorageListItems,
-} from './storage.selector';
+} from './selectors/storage.selector';
 import {
   selectProductListItems,
   selectProductsCategories,
-} from './products.selector';
+} from './selectors/products.selector';
 import {
   selectQuickAddCanAddCategory,
   selectQuickAddCanAddLocal,
   selectQuickAddCanAddProduct,
   selectQuickAddState,
-} from './quick-add/quick-add.selector';
+} from './selectors/quick-add.selector';
+import { ICategory, TCategoryId } from '../../@shared/model/category.types';
+import {
+  TItemListMode,
+  TItemListSortType,
+} from '../../@shared/model/item-list.types';
 
 /**
  * {@link IListPageFacade} implementation for the grocery multi-list engine. The
@@ -57,11 +66,11 @@ import {
 export class GroceryListPageFacade implements IListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
-  readonly #dialogs = inject(ItemDialogHost);
+  readonly #dialogs = inject(ItemDialogService);
   readonly #listId = this.#store.selectSignal(selectListIdParam);
 
   readonly state = this.#store.selectSignal(selectListState);
-  readonly filter = this.#store.selectSignal(selectListStateFilter);
+  readonly filterState = this.#store.selectSignal(selectListStateFilter);
   readonly items = this.#store.selectSignal(selectListItems);
   readonly searchResult = this.#store.selectSignal(selectListSearchResult);
   readonly categories = this.#store.selectSignal(selectListCategories);
@@ -85,7 +94,7 @@ export class GroceryListPageFacade implements IListPageFacade {
 
   // Edit-dialog reads (the shopping/storage/product edit-dialog wrappers): the
   // per-list category catalog and the list items. The open item itself comes off
-  // the ItemDialogHost command, which the shared base reads directly.
+  // the ItemDialogService command, which the shared base reads directly.
   readonly shoppingCategories = this.#store.selectSignal(
     selectShoppingCategories
   );
@@ -101,8 +110,8 @@ export class GroceryListPageFacade implements IListPageFacade {
     () => this.shoppingState()?.items ?? null
   );
 
-  readonly #activeListId = computed<TItemListId>(
-    () => this.state()?.id ?? this.#listId() ?? '_shopping'
+  readonly #activeListId = computed<TGroceryListId>(
+    () => this.#listId() ?? '_shopping'
   );
 
   search(term?: string): void {
@@ -166,7 +175,7 @@ export class GroceryListPageFacade implements IListPageFacade {
   }
 
   manageCategories(): void {
-    void this.#router.navigate(['/categories', this.#activeListId()]);
+    void this.#router.navigate(['/groceries/categories', this.#activeListId()]);
   }
 
   // ── grocery-only operations (not on IListPageFacade) ──────────────────────
@@ -203,9 +212,18 @@ export class GroceryListPageFacade implements IListPageFacade {
     });
   }
 
-  // Barcode scan → open the product edit dialog seeded with the EAN as the name;
-  // wired from the storage/shopping pages' native scan button.
-  openEditProduct(scannedEan: string): void {
+  // Barcode scan → CREATE a product seeded with the EAN as its name; wired from
+  // the storage/shopping pages' native scan button.
+  reportScanFailure(): void {
+    this.#store.dispatch(
+      NotificationsActions.toast({
+        key: marker('grocery.scan.error'),
+        color: 'danger',
+      })
+    );
+  }
+
+  showCreateProductFromScan(scannedEan: string): void {
     this.#dialogs.open({
       item: createProduct(scannedEan),
       listId: '_products',
@@ -218,7 +236,7 @@ export class GroceryListPageFacade implements IListPageFacade {
     this.#store.dispatch(ShoppingActions.enterPage());
   }
 
-  filterShopping(categoryId: string): void {
+  filterShoppingByCategory(categoryId: string): void {
     this.#store.dispatch(ShoppingActions.updateFilter(categoryId));
   }
 
@@ -232,10 +250,7 @@ export class GroceryListPageFacade implements IListPageFacade {
 
   changeShoppingQuantity(item: IShoppingItem, diff: number): void {
     this.#store.dispatch(
-      ShoppingActions.updateItem({
-        ...item,
-        quantity: Math.max(0, item.quantity + diff),
-      })
+      ShoppingActions.updateItem(withQuantityChangedBy(item, diff))
     );
   }
 
@@ -264,7 +279,7 @@ export class GroceryListPageFacade implements IListPageFacade {
     this.#store.dispatch(StorageActions.enterPage());
   }
 
-  filterStorage(categoryId: string): void {
+  filterStorageByCategory(categoryId: string): void {
     this.#store.dispatch(StorageActions.updateFilter(categoryId));
   }
 
@@ -282,10 +297,7 @@ export class GroceryListPageFacade implements IListPageFacade {
 
   changeStorageQuantity(item: IStorageItem, diff: number): void {
     this.#store.dispatch(
-      StorageActions.updateItem({
-        ...item,
-        quantity: Math.max(0, item.quantity + diff),
-      })
+      StorageActions.updateItem(withQuantityChangedBy(item, diff))
     );
   }
 
@@ -298,7 +310,7 @@ export class GroceryListPageFacade implements IListPageFacade {
     this.#store.dispatch(ProductsActions.enterPage());
   }
 
-  filterProducts(categoryId: string): void {
+  filterProductsByCategory(categoryId: string): void {
     this.#store.dispatch(ProductsActions.updateFilter(categoryId));
   }
 

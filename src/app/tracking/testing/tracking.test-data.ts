@@ -1,4 +1,4 @@
-import { ITrackingItem, ITrackingState } from '../model';
+import { ITrackingItem, ITrackingState } from '../model/tracking.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic tracking fixtures (type:testing), moved out of the shared
@@ -25,8 +25,8 @@ export function mockTrackingState(
     items: [],
     categories: [],
     mode: 'alphabetical',
-    data: [],
-    dataViewId: '',
+    sessions: [],
+    sessionsViewId: '',
     ...overrides,
   };
 }

@@ -1,7 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { IGame, IGameConfig, IGameType, IPlayer, TID } from '../model';
-import { TrackplayActions } from './trackplay.actions';
+import {
+  IGame,
+  IGameConfig,
+  IGameType,
+  IPlayer,
+  TID,
+} from '../model/trackplay.types';
+import { TrackplayActions } from './actions/trackplay.actions';
 import {
   selectGameById,
   selectGameList,
@@ -19,7 +25,7 @@ import {
   selectStatsForPlayer,
   selectTrackplayConfig,
   selectWinnerByGame,
-} from './trackplay.selector';
+} from './selectors/trackplay.selector';
 
 /**
  * The `trackplay` (TRACKPLAY) domain facade — the single NgRx surface for every
@@ -69,18 +75,6 @@ export class TrackplayFacade {
   }
 
   // ── Page entry ───────────────────────────────────────────────────────────
-  enterGamesPage(): void {
-    this.#store.dispatch(TrackplayActions.enterGamesPage());
-  }
-  enterPlayersPage(): void {
-    this.#store.dispatch(TrackplayActions.enterPlayersPage());
-  }
-  enterPlayerPage(playerId: TID): void {
-    this.#store.dispatch(TrackplayActions.enterPlayerPage(playerId));
-  }
-  enterGameTypesPage(): void {
-    this.#store.dispatch(TrackplayActions.enterGameTypesPage());
-  }
   enterGamePage(gameId: TID): void {
     this.#store.dispatch(TrackplayActions.enterGamePage(gameId));
   }

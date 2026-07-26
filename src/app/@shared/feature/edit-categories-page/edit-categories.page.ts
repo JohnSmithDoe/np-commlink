@@ -34,9 +34,10 @@ import {
   createOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { TCategoryId } from '../../model/types';
 import { matchesSearchExactly } from '../../util/app.utils';
 import { CATEGORIES_FACADE } from '../../util/categories/categories-page.facade';
+
+import { TCategoryId } from '../../model/category.types';
 
 /**
  * Domain-blind manage-categories page: the catalog of a single list rendered as
@@ -48,7 +49,7 @@ import { CATEGORIES_FACADE } from '../../util/categories/categories-page.facade'
  * domain's lazy providers + the facade binding come from the route.
  */
 @Component({
-  selector: 'app-edit-categories-page',
+  selector: 'app-page-edit-categories',
   templateUrl: './edit-categories.page.html',
   styleUrls: ['./edit-categories.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,215 +3,123 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { from, mergeMap, withLatestFrom } from 'rxjs';
+import { map, withLatestFrom } from 'rxjs';
+import { ITrackingItem, ITrackingState } from '../../model/tracking.types';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
+import { selectTrackingState } from '../selectors/tracking.selector';
+import { TrackingActions } from '../actions/tracking.actions';
 import {
-  INotification,
-  INotificationsState,
-} from '../../../@shared/model/types';
-import { ITrackingItem, ITrackingState } from '../../model';
-import { NotificationsStore } from '../../../@shared/data/notification/notifications.store';
-import { selectTrackingState } from '../tracking.selector';
-import {
-  markNotificationDone,
-  removeNotificationById,
-  upsertNotification,
-} from '../../../@shared/util/notifications/notifications.transforms';
-import { TrackingActions } from '../tracking.actions';
-import {
-  isTrackingStateNotificationId,
   kindForState,
+  needsStateNotification,
   runningDurationMinutes,
+  stateHintForCta,
   TRACKING_NOTIFICATION_PRESETS,
-  trackingItemIdFromNotificationId,
+  TRACKING_NOTIFICATIONS_OWNER,
   TrackingNotificationKind,
   trackingStateNotificationId,
-} from '../tracking-notifications.utils';
+} from '../../util/tracking-notifications.utils';
+import { TProjectedNotification } from '../../../@shared/model/notifications.types';
 
-// Tracking owns its one-directional coupling to notifications. Notifications is
-// LAZY (§7), so its reducer may be unregistered while these effects run (they
-// fire on the /tracking route). So tracking does NOT dispatch NotificationsActions
-// — it writes the DURABLE `npc-notifications` doc through NotificationsStore,
-// reusing the notifications reducer's pure transforms so the off-route (here)
-// and on-route (reducer) paths are identical. Each durable write reports the new
-// unread count to the eager dashboard read-model, keeping the badge live. It
-// reads its OWN slice (state.tracking, present on /tracking) but reads
-// notifications from disk (via the store), never state.notifications.
+// Tracking owns its one-directional coupling to notifications: it PROJECTS its
+// item states into the inbox. It never imports the notifications domain — it
+// dispatches the published contract (@shared/data/actions), which the eager
+// inbox reducer receives and its own save effect persists. Tracking therefore
+// knows nothing about how notifications are stored, and — since `project` hands
+// over the whole set it owns rather than a delta — nothing about what is in the
+// inbox either: it cannot read it, and does not need to. Rows whose item is gone
+// (or whose tracking was reset) simply fall out of the projection, and the
+// ordering of rows that did not change is the inbox's business.
 @Injectable({ providedIn: 'root' })
 export class TrackingNotificationsEffects {
-  #actions$ = inject(Actions);
-  #store = inject(Store);
-  #translate = inject(TranslateService);
-  #notifications = inject(NotificationsStore);
+  readonly #actions$ = inject(Actions);
+  readonly #store = inject(Store);
+  readonly #translate = inject(TranslateService);
 
-  // Any tracking-side mutation rebuilds the tracking-state notifications in the
-  // durable doc (dispatch:false — the write is a side effect, not an action).
-  reconcileState$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        ofType(
-          TrackingActions.toggleTrackingItem,
-          TrackingActions.resetTracking,
-          TrackingActions.resetAllTracking,
-          TrackingActions.saveAndResetTracking,
-          TrackingActions.removeItem
-        ),
-        withLatestFrom(
-          this.#store.select(selectTrackingState),
-          (action, tracking) => ({ action, tracking })
-        ),
-        mergeMap(({ action, tracking }) => {
-          const now = dayjs().format();
-          const targetId = this.#targetIdOf(action);
-          return from(
-            this.#notifications
-              .mutate((notif) =>
-                this.#reconcile(notif, tracking, targetId, now)
-              )
-              // A transient storage failure must not kill the effect stream.
-              .catch(() => {})
-          );
-        })
-      );
-    },
-    { dispatch: false }
-  );
-
-  // A tracking notification's CTA (tapped on the eager /notifications page)
-  // deep-links to /tracking?cmd=<id>; the tracking page dispatches this. We read
-  // the durable notification, then toggle the tracking item — the toggle
-  // triggers reconcileState$, which durably updates the notification to the
-  // item's new state. A gone item's stale notification is dismissed durably.
-  applyNotificationCommand$ = createEffect(() => {
+  // Any tracking-side mutation re-projects the tracking-state notifications.
+  reconcileState$ = createEffect(() => {
     return this.#actions$.pipe(
-      ofType(TrackingActions.applyNotificationCommand),
-      withLatestFrom(
-        this.#store.select(selectTrackingState),
-        (action, tracking) => ({ action, tracking })
+      ofType(
+        TrackingActions.toggleTrackingItem,
+        TrackingActions.resetTracking,
+        TrackingActions.resetAllTracking,
+        TrackingActions.saveAndResetTracking,
+        TrackingActions.removeItem,
+        TrackingActions.updateItem
       ),
-      mergeMap(({ action, tracking }) =>
-        from(
-          this.#applyCommand(action.notificationId, tracking).catch(
-            () => [] as Action[]
-          )
-        ).pipe(mergeMap((actions) => actions))
+      withLatestFrom(this.#store.select(selectTrackingState)),
+      map(([action, tracking]) =>
+        this.#projection(tracking, this.#targetIdOf(action))
       )
     );
   });
 
-  async #applyCommand(
-    notificationId: string,
+  // A tracking notification's CTA (tapped on /notifications) deep-links to
+  // /tracking?cmd=<command>&target=<itemId> — the inbox hands over the command it
+  // already holds, so tracking resolves it against its own items instead of
+  // looking the notification up. Toggling the item is enough: the toggle re-runs
+  // reconcileState$, which updates the row to the item's new state.
+  applyNotificationCommand$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(TrackingActions.applyNotificationCommand),
+      withLatestFrom(this.#store.select(selectTrackingState)),
+      map(([{ command, targetId }, tracking]) =>
+        this.#commandFor(command, targetId, tracking)
+      )
+    );
+  });
+
+  #commandFor(
+    command: string,
+    targetId: string,
     trackingState: ITrackingState
-  ): Promise<Action[]> {
-    const notifications = await this.#notifications.read();
-    const notification = notifications.items.find(
-      (n) => n.id === notificationId
-    );
-    if (!notification?.action) return [];
+  ): Action {
     const item = trackingState.items.find(
-      (index) => index.id === notification.action!.trackingItemId
+      (candidate) => candidate.id === targetId
     );
-    if (!item) {
-      // The tracking item is gone: no toggle to fire and reconcile won't run,
-      // so dismiss the stale notification durably.
-      await this.#notifications.mutate((s) => ({
-        ...s,
-        items: markNotificationDone(s.items, notification.id, dayjs().format()),
-      }));
-      return [];
-    }
-    // toggleTrackingItem looks at item.state: 'running' → stop, else start. The
-    // CTA tells us which side the user wants, so flip the hint to force the
-    // matching reducer branch.
-    const hintState: ITrackingItem['state'] =
-      notification.action.type === 'tracking.start' ? 'stopped' : 'running';
-    return [
-      TrackingActions.toggleTrackingItem(
-        { ...item, state: hintState },
-        dayjs().format()
-      ),
-    ];
+    // The item is gone: there is nothing to toggle and no toggle means no
+    // reconcile, so re-project directly — the stale row is not in the projection
+    // and retires with it.
+    if (!item) return this.#projection(trackingState, undefined);
+    return TrackingActions.toggleTrackingItem(
+      { ...item, state: stateHintForCta(command) },
+      dayjs().format()
+    );
   }
 
-  // Pure (given #translate): rebuild the tracking-state notifications inside the
-  // passed notifications state. Non-tracking notifications (debug etc.) are left
-  // untouched; orphans (item gone) are removed; touched items are upserted.
-  #reconcile(
-    notifState: INotificationsState,
+  // The complete set of rows tracking claims, derived from its items alone.
+  #projection(
     trackingState: ITrackingState,
-    targetId: string | undefined,
-    now: string
-  ): INotificationsState {
-    const liveItemsById = new Map(
-      trackingState.items.map((index) => [index.id, index] as const)
+    targetId: string | undefined
+  ): Action {
+    const now = dayjs().format();
+    return NotificationsActions.project(
+      TRACKING_NOTIFICATIONS_OWNER,
+      trackingState.items
+        .filter((item) => needsStateNotification(item))
+        .map((item) => this.#notificationFor(item, item.id === targetId, now))
     );
-    const existingById = new Map(
-      notifState.items.map((n) => [n.id, n] as const)
-    );
-    const itemIdsWithNotification = new Set<string>();
-    let items = notifState.items;
-
-    for (const n of notifState.items) {
-      if (!isTrackingStateNotificationId(n.id)) continue;
-      const itemId = trackingItemIdFromNotificationId(n.id);
-      if (liveItemsById.has(itemId)) {
-        itemIdsWithNotification.add(itemId);
-      } else {
-        items = removeNotificationById(items, n.id);
-      }
-    }
-
-    for (const item of trackingState.items) {
-      const touched = !!item.startTime || itemIdsWithNotification.has(item.id);
-      if (!touched) continue;
-      // Bump updatedAt when the item is the action target OR its kind actually
-      // changed as a cascade side-effect; otherwise keep the old updatedAt so
-      // cascade items don't drift to the top on every unrelated toggle.
-      const existing = existingById.get(trackingStateNotificationId(item.id));
-      const newKind = kindForState(item.state);
-      const isTarget = item.id === targetId;
-      const stateChanged =
-        !!existing && this.#previousKind(existing) !== newKind;
-      const updatedAt =
-        isTarget || stateChanged ? now : (existing?.updatedAt ?? now);
-      items = upsertNotification(
-        items,
-        this.#buildNotification(item, newKind, updatedAt, now)
-      );
-    }
-
-    return { ...notifState, items };
   }
 
-  #targetIdOf(action: {
-    type: string;
-    item?: { id: string };
-  }): string | undefined {
-    return action.item?.id;
-  }
-
-  #previousKind(existing: INotification): TrackingNotificationKind {
-    switch (existing.action?.type) {
-      case 'tracking.pause': {
-        return 'running';
-      }
-      case 'tracking.start': {
-        return 'paused';
-      }
-      default: {
-        return 'stopped';
-      }
-    }
-  }
-
-  #buildNotification(
+  #notificationFor(
     item: ITrackingItem,
-    kind: TrackingNotificationKind,
-    updatedAt: string,
+    isTarget: boolean,
     now: string
-  ): INotification {
+  ): TProjectedNotification {
+    const kind = kindForState(item.state);
+    return {
+      ...this.#content(item, kind),
+      id: trackingStateNotificationId(item.id),
+      variant: kind,
+      // Only the item the user just acted on is surfaced; every other row keeps
+      // the position it had unless its kind changed, so a cascade does not drag
+      // unrelated rows to the top of the inbox.
+      updatedAt: isTarget ? now : undefined,
+    };
+  }
+
+  #content(item: ITrackingItem, kind: TrackingNotificationKind) {
     const preset = TRACKING_NOTIFICATION_PRESETS[kind];
     return {
-      id: trackingStateNotificationId(item.id),
       name: this.#translate.instant(preset.titleKey, { name: item.name }),
       body: this.#translate.instant(preset.bodyKey, {
         name: item.name,
@@ -219,13 +127,16 @@ export class TrackingNotificationsEffects {
       }),
       icon: preset.icon,
       color: preset.color,
-      status: 'new',
-      createdAt: now,
-      updatedAt,
-      trackingItemId: item.id,
       action: preset.action
-        ? { type: preset.action, trackingItemId: item.id }
+        ? { type: preset.action, targetId: item.id }
         : undefined,
     };
+  }
+
+  #targetIdOf(action: {
+    type: string;
+    item?: { id: string };
+  }): string | undefined {
+    return action.item?.id;
   }
 }

@@ -1,18 +1,22 @@
 import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { IBaseItem, TCategoryId, TIonDragEvent } from '../model/types';
+import { TIonDragEvent } from '../model/app.types';
+import { IBaseItem } from '../model/base-item.types';
+import { TCategoryId } from '../model/category.types';
 
 export const uuidv4 = () => crypto.randomUUID();
 
-export const checkItemOptionsOnDrag = (
+// Which side of a sliding item the drag pulled far enough to reveal, or
+// undefined if it fell short of the trigger distance.
+export const revealedSideFromDrag = (
   event: TIonDragEvent,
   triggerAmount = 160
-) =>
+): 'start' | 'end' | undefined =>
   event.detail.amount > triggerAmount
     ? 'end'
     : event.detail.amount < -triggerAmount
       ? 'start'
-      : false;
+      : undefined;
 
 export const matchingTxt = (item: IBaseItem | string) =>
   (typeof item === 'string' ? item : item.name).trim().toLowerCase();

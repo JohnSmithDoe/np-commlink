@@ -18,7 +18,6 @@ import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-date-input',
   templateUrl: './date-input.component.html',
-  styleUrls: ['./date-input.component.scss'],
   imports: [
     DatePipe,
     IonDatetime,

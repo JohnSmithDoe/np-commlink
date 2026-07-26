@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForPersisted } from '../helpers';
 
 /**
  * Mutate → reload persistence guard for the LAZY cash context (the parity guard
@@ -52,7 +53,7 @@ test.describe('cash persistence', () => {
     await expect(account.getByText('Soykaf refill')).toBeVisible({
       timeout: 10_000,
     });
-    await page.waitForTimeout(400); // let the fire-and-forget disk write flush
+    await waitForPersisted(page, 'cash', 'Soykaf refill');
 
     // --- cold reload → fresh boot → re-enter the lazy account route ---
     await page.reload();

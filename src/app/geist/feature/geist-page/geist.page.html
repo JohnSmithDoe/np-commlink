@@ -1,0 +1,199 @@
+<app-page-header hideButtons="true">
+  <div toolbar class="sr-brand">
+    <ion-icon
+      name="sparkles-outline"
+      class="sr-brand__icon"
+      aria-hidden="true"
+    />
+    <span class="sr-brand__name">geist</span>
+  </div>
+</app-page-header>
+
+<ion-content>
+  @let state = link();
+
+  <div class="gs sr-scanlines">
+    <div class="gs-bar">
+      <span class="gs-bar__seg">
+        <i
+          class="sr-led"
+          [class.sr-led--on]="state === 'jacked-in'"
+          [class.sr-led--standby]="state === 'dormant' || state === 'priming'"
+          [class.sr-led--off]="state === 'unsupported' || state === 'flatlined'"
+        ></i>
+        LINK
+        <b>{{ linkLabel() | translate }}</b>
+      </span>
+      <span class="gs-bar__seg"> NODE <b>LOCAL</b> </span>
+      <span class="gs-bar__seg"> TRACE <b>NONE</b> </span>
+      @if (state === 'jacked-in') {
+        <span class="gs-bar__seg gs-bar__seg--ctx">
+          CTX <b>{{ contextPercent() }}%</b>
+        </span>
+      }
+    </div>
+
+    @switch (state) {
+      @case ('unsupported') {
+        <div class="gs-panel sr-panel sr-corners">
+          <ion-icon name="sparkles-outline" class="gs-panel__icon" />
+          <h1 class="gs-panel__title">NO RESONANCE</h1>
+          <p class="gs-panel__lead">
+            {{ 'geist.unsupported.body' | translate }}
+          </p>
+          <p class="gs-panel__fine">
+            {{ 'geist.unsupported.requirements' | translate }}
+          </p>
+          <a class="gs-back" routerLink="/commlink"
+            >&lt; {{ 'geist.action.back-to-deck' | translate }}</a
+          >
+        </div>
+      }
+
+      @case ('flatlined') {
+        <div class="gs-panel sr-panel sr-corners">
+          <ion-icon name="sparkles-outline" class="gs-panel__icon" />
+          <h1 class="gs-panel__title">FLATLINE</h1>
+          <p class="gs-panel__lead">{{ 'geist.flatlined.body' | translate }}</p>
+          <button class="gs-btn" type="button" (click)="prime()">
+            <ion-icon name="cloud-download-outline" />
+            {{ 'geist.action.retry' | translate }}
+          </button>
+        </div>
+      }
+
+      @case ('dormant') {
+        <div class="gs-panel sr-panel sr-corners">
+          <ion-icon name="cloud-download-outline" class="gs-panel__icon" />
+          <h1 class="gs-panel__title">COLD START</h1>
+          <p class="gs-panel__lead">{{ 'geist.dormant.body' | translate }}</p>
+          <button class="gs-btn" type="button" (click)="prime()">
+            <ion-icon name="cloud-download-outline" />
+            {{ 'geist.action.prime' | translate }}
+          </button>
+        </div>
+      }
+
+      @case ('priming') {
+        <div class="gs-panel sr-panel sr-corners">
+          <ion-icon name="cloud-download-outline" class="gs-panel__icon" />
+          <h1 class="gs-panel__title">LOADING WETWARE</h1>
+          <p class="gs-panel__lead">
+            {{ 'geist.priming.body' | translate: { percent: primedPercent() } }}
+          </p>
+          <div class="gs-meter">
+            <span
+              class="gs-meter__fill"
+              [style.width.%]="primedPercent()"
+            ></span>
+          </div>
+        </div>
+      }
+
+      @case ('probing') {
+        <div class="gs-panel sr-panel sr-corners">
+          <p class="gs-panel__lead">
+            // probing local node<span class="gs-dots"></span>
+          </p>
+        </div>
+      }
+
+      @default {
+        <div class="gs-personas">
+          @for (p of personas; track p.id) {
+            <button
+              class="gs-persona"
+              type="button"
+              [class.gs-persona--active]="p.id === persona().id"
+              [attr.aria-pressed]="p.id === persona().id"
+              [disabled]="isStreaming()"
+              (click)="selectPersona(p)"
+            >
+              <span class="gs-persona__name">{{ p.codename }}</span>
+              <span class="gs-persona__tag">{{
+                p.taglineKey | translate
+              }}</span>
+            </button>
+          }
+        </div>
+
+        <div
+          class="gs-console sr-panel sr-corners"
+          role="log"
+          aria-live="polite"
+        >
+          @if (turns().length === 0) {
+            <p class="gs-console__idle">
+              // {{ 'geist.idle' | translate }}<span class="gs-dots"></span>
+            </p>
+          }
+
+          @for (turn of turns(); track turn.id) {
+            <div class="gs-turn">
+              <p class="gs-turn__query">&gt; {{ turn.query }}</p>
+              <!-- <pre> because the model's newlines are meaningful (ARCHIVAR
+                   answers in dash-prefixed lines) and it is the one element
+                   whose whitespace the formatter will not reflow. -->
+              <pre
+                class="gs-turn__answer">{{ turn.answer }}@if (turn.streaming) {<span class="gs-cursor" aria-hidden="true">▊</span>}</pre>
+              @if (turn.note) {
+                <p class="gs-turn__note">// {{ turn.note | translate }}</p>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="gs-input">
+          <ion-textarea
+            class="gs-input__field"
+            fill="outline"
+            autoGrow="true"
+            rows="1"
+            [value]="query()"
+            [placeholder]="'geist.placeholder' | translate"
+            (ionInput)="typeQuery($event)"
+          />
+          <div class="gs-input__actions">
+            @if (isStreaming()) {
+              <button
+                class="gs-btn gs-btn--stop"
+                type="button"
+                (click)="abort()"
+              >
+                <ion-icon name="stop-circle-outline" />
+                {{ 'geist.action.abort' | translate }}
+              </button>
+            } @else {
+              <button
+                class="gs-btn"
+                type="button"
+                [disabled]="!canSend()"
+                (click)="send()"
+              >
+                <ion-icon name="send-outline" />
+                {{ 'geist.action.send' | translate }}
+              </button>
+            }
+            <button
+              class="gs-btn gs-btn--ghost"
+              type="button"
+              [disabled]="turns().length === 0"
+              (click)="purge()"
+            >
+              <ion-icon name="trash-outline" />
+              {{ 'geist.action.purge' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <footer class="gs-tele">
+          <span>◈ MODEL <b>GEMINI NANO</b></span>
+          <span>◈ EGRESS <b>NONE</b></span>
+          <span
+            >◈ REGISTER <b>{{ persona().codename }}</b></span
+          >
+        </footer>
+      }
+    }
+  </div>
+</ion-content>

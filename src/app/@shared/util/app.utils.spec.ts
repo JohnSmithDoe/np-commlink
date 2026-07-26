@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { IBaseItem, TIonDragEvent } from '../model/types';
+import { TIonDragEvent } from '../model/app.types';
+import { IBaseItem } from '../model/base-item.types';
 import {
-  checkItemOptionsOnDrag,
   itemHasCategory,
   matchesId,
   matchesItemExactly,
@@ -14,6 +14,7 @@ import {
   matchingTxt,
   matchingTxtIsNotEmpty,
   parseNumberInput,
+  revealedSideFromDrag,
   uuidv4,
   validateNameInput,
 } from './app.utils';
@@ -46,21 +47,21 @@ describe('app.utils', () => {
     });
   });
 
-  describe('checkItemOptionsOnDrag', () => {
+  describe('revealedSideFromDrag', () => {
     it('returns "end" when dragged past the positive trigger amount', () => {
-      expect(checkItemOptionsOnDrag(dragEvent(200))).toBe('end');
+      expect(revealedSideFromDrag(dragEvent(200))).toBe('end');
     });
 
     it('returns "start" when dragged past the negative trigger amount', () => {
-      expect(checkItemOptionsOnDrag(dragEvent(-200))).toBe('start');
+      expect(revealedSideFromDrag(dragEvent(-200))).toBe('start');
     });
 
     it('returns false within the trigger threshold', () => {
-      expect(checkItemOptionsOnDrag(dragEvent(50))).toBe(false);
+      expect(revealedSideFromDrag(dragEvent(50))).toBeUndefined();
     });
 
     it('respects a custom trigger amount', () => {
-      expect(checkItemOptionsOnDrag(dragEvent(50), 40)).toBe('end');
+      expect(revealedSideFromDrag(dragEvent(50), 40)).toBe('end');
     });
   });
 

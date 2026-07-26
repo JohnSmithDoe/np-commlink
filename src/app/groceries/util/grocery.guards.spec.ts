@@ -3,7 +3,7 @@ import {
   mockProduct,
   mockShoppingItem,
   mockStorageItem,
-} from '../testing/grocery.test-data';
+} from '../testing/groceries.test-data';
 
 describe('grocery.guards', () => {
   it('isProductItem detects the "unit" property', () => {

@@ -4,10 +4,16 @@ import {
   IonSelect,
   IonSelectOption,
   IonText,
+  IonToggle,
   SelectCustomEvent,
+  ToggleCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IProduct, TBestBeforeTimespan } from '../../model';
+import {
+  IProduct,
+  TBestBeforeTimespan,
+  TGroceryListId,
+} from '../../model/grocery-list.types';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
@@ -30,6 +36,7 @@ import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
     IonSelect,
     IonSelectOption,
     IonText,
+    IonToggle,
     CategoryInputComponent,
     CategoriesDialogComponent,
     NumberInputComponent,
@@ -39,7 +46,7 @@ import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
   styleUrl: './edit-product-dialog.component.scss',
 })
 export class EditProductDialogComponent extends BaseGroceryEditItemDialog<IProduct> {
-  protected readonly listId = '_products' as const;
+  protected readonly listId: TGroceryListId = '_products';
   readonly categories = this.facade.productsCategories;
   readonly listItems = this.facade.productListItems;
 
@@ -64,5 +71,11 @@ export class EditProductDialogComponent extends BaseGroceryEditItemDialog<IProdu
 
   setBestBeforeTimevalue(value: number) {
     this.patch({ bestBeforeTimevalue: value });
+  }
+
+  // Pantry staple: excluded from the recipe matcher's missing count, because
+  // salt and oil are never tracked in storage the way milk is.
+  setAlwaysOnHand(event: ToggleCustomEvent) {
+    this.patch({ alwaysOnHand: event.detail.checked });
   }
 }

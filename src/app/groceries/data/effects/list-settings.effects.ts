@@ -2,16 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
-import { map, tap } from 'rxjs';
-import { DatabaseService } from '../../../@shared/util/db/database.service';
-import { ListSettingsActions } from '../list-settings/list-settings.actions';
-import { selectListSettingsState } from '../list-settings/list-settings.selector';
+import { map } from 'rxjs';
+import { ListSettingsActions } from '../actions/list-settings.actions';
+import { selectListSettingsState } from '../selectors/list-settings.selector';
 
 @Injectable({ providedIn: 'root' })
 export class ListSettingsEffects {
-  #actions$ = inject(Actions);
-  #store = inject(Store);
-  #database = inject(DatabaseService);
+  readonly #actions$ = inject(Actions);
+  readonly #store = inject(Store);
   toggleFlag$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(ListSettingsActions.toggleFlag),
@@ -24,16 +22,4 @@ export class ListSettingsEffects {
       )
     );
   });
-
-  saveSettingsOnChange$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        ofType(ListSettingsActions.updateSettings),
-        tap(({ settings }) => {
-          void this.#database.save('listSettings', settings);
-        })
-      );
-    },
-    { dispatch: false }
-  );
 }

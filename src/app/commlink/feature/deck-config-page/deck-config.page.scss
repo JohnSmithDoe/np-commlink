@@ -1,0 +1,5 @@
+// A row switched off by its module still shows the state the user chose for
+// it, so it is dimmed rather than removed or silently unchecked.
+.deck-config__muted {
+  opacity: 0.5;
+}

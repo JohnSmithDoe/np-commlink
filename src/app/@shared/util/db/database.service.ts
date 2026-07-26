@@ -1,9 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { VERSION } from './migrations';
-
-// Key holding the persisted schema version; a mismatch triggers a one-time wipe.
-const SCHEMA_VERSION_KEY = 'npc-schema-version';
 
 @Injectable({
   providedIn: 'root',
@@ -16,42 +12,26 @@ export class DatabaseService {
   // backend, but Storage.create() builds a fresh LocalForage instance on every
   // call. Memoize it so the backend is initialized exactly once regardless of
   // which caller wins the race. (Idempotent-initialization pattern.)
-  #ready?: Promise<void>;
-  #ensureStorage(): Promise<void> {
-    return (this.#ready ??= this.#storageService
-      .create()
-      .then(() => this.#ensureSchemaVersion()));
-  }
-
-  // One-time fresh-baseline reset (category {id,name} epic, migrations §VERSION):
-  // if the persisted schema version differs from VERSION, clear the store and
-  // re-stamp it. Runs INSIDE the init-once guard so every entry point
-  // (bootstrap/load/loadPrefixed/save) sees the reset before its first
-  // read/write, and it can only fire once per version bump. On a genuine fresh
-  // install the clear is a no-op over an empty store.
-  async #ensureSchemaVersion(): Promise<void> {
-    const stored = await this.#storageService.get(SCHEMA_VERSION_KEY);
-    if (stored === VERSION) return;
-    await this.#storageService.clear();
-    await this.#storageService.set(SCHEMA_VERSION_KEY, VERSION);
+  #ready?: Promise<unknown>;
+  async #ensureStorage(): Promise<void> {
+    await (this.#ready ??= this.#storageService.create());
   }
 
   /**
-   * Initialize the storage backend (and run the one-time schema-version reset)
-   * without reading anything. The boot path calls this before its first read so
-   * the cost is paid once, up front, rather than on whichever lazy module races
-   * in first. Idempotent — every other entry point awaits the same guard.
+   * Initialize the storage backend without reading anything. The boot path
+   * calls this before its first read so the cost is paid once, up front, rather
+   * than on whichever lazy module races in first. Idempotent — every other
+   * entry point awaits the same guard.
    *
-   * Migrations no longer run here — the framework is kept but empty (VERSION
-   * '1', §6); when steps return they run on raw keys here, before any lazy
-   * module loads.
+   * Schema evolution is per-domain now (migrate-on-read, via the load effects +
+   * @shared/util/db/versioned) — there is no global boot migration or wipe.
    */
   async bootstrap(): Promise<void> {
     await this.#ensureStorage();
   }
 
   /**
-   * Per-key read for a module's own lazy load effect (lazy-modules plan §5).
+   * Per-key read for a module's own lazy load effect.
    * Awaits the init-once storage guard so a caller firing before boot init
    * (e.g. a module load dispatched at registration) never hits an uncreated
    * backend. Returns null when the key is absent → the reducer's `loaded`
@@ -73,15 +53,19 @@ export class DatabaseService {
    */
   async loadPrefixed<T>(prefix: string): Promise<T[]> {
     await this.#ensureStorage();
-    const docs: T[] = [];
-    // eslint-disable-next-line unicorn/no-array-for-each -- Storage.forEach (@ionic/storage), not Array#forEach
-    await this.#storageService.forEach((value: T, key: string) => {
-      if (key.startsWith('npc-' + prefix)) docs.push(value);
-    });
-    return docs;
+    // Select the keys first, then read only those. `Storage.forEach` would walk
+    // every entry in the database and deserialize each value to decide — which
+    // on the eager boot path means inflating `npc-groceries`, `npc-cash` and
+    // `npc-trackplay` in full just to find a handful of small summary docs.
+    const keys = await this.#storageService.keys();
+    const matching = keys.filter((key) => key.startsWith('npc-' + prefix));
+    const docs: (T | null)[] = await Promise.all(
+      matching.map((key) => this.#storageService.get(key))
+    );
+    return docs.filter((doc): doc is T => doc !== null);
   }
 
-  // Per-key persistence port. Keyed by a plain string (not `keyof IDatastore`)
+  // Per-key persistence port. Keyed by a plain string (not a slice registry)
   // so the kernel doesn't have to enumerate every context's slice type — each
   // bounded context owns its own key + shape and calls save<TItsOwnSlice>(...).
   //

@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { addViaSearch, waitForListPage } from '../helpers';
+import { addViaSearch, waitForListPage, waitForPersisted } from '../helpers';
 
 /**
  * Wiring guard for the now-LAZY tracking context (lazy-modules §7).
  *
- * `/tracking` (and `/data/:listId`) register the `tracking` slice
- * via `trackingLazyProviders` and block activation on
+ * `/tracking` (and `/data`) register the `tracking` slice
+ * via `trackingProviders` and block activation on
  * `moduleHydrationResolver(TrackingActions.load, .loaded)`. If the load effect
  * were dropped from those providers, or the resolver mis-wired, the route would
  * never activate and the page would never paint.
@@ -21,7 +21,7 @@ test.describe('tracking (lazy)', () => {
     await page.goto('/#/tracking');
     await waitForListPage(page);
 
-    await expect(page.locator('#main-content app-tracking-page')).toBeVisible({
+    await expect(page.locator('#main-content app-page-tracking')).toBeVisible({
       timeout: 30_000,
     });
   });
@@ -35,7 +35,7 @@ test.describe('tracking (lazy)', () => {
     await expect(content.getByText('Standup').first()).toBeVisible({
       timeout: 10_000,
     });
-    await page.waitForTimeout(300); // let the fire-and-forget disk write flush
+    await waitForPersisted(page, 'tracking', 'Standup');
 
     await page.reload();
     await waitForListPage(page);
@@ -101,7 +101,7 @@ test.describe('tracking (lazy)', () => {
     await page.goto('/#/tracking');
     await waitForListPage(page);
 
-    const trackingPage = page.locator('#main-content app-tracking-page');
+    const trackingPage = page.locator('#main-content app-page-tracking');
 
     // [searchExtras] slot — the daily-sessions panel.
     await expect(trackingPage.locator('app-daily-sessions')).toBeVisible();
@@ -111,7 +111,9 @@ test.describe('tracking (lazy)', () => {
     await expect(trackingPage.getByText('Speichern')).toBeVisible();
 
     // Category UI suppressed: no quick-add row on the tracking list.
-    await expect(trackingPage.locator('app-item-list-quickadd')).toHaveCount(0);
+    await expect(trackingPage.locator('app-item-list-quick-add')).toHaveCount(
+      0
+    );
 
     // [headerEnd] slot double-projected into the page-header toolbar — the
     // settings link must keep its routerLink and reach the tracking data view.
@@ -120,6 +122,6 @@ test.describe('tracking (lazy)', () => {
         has: page.locator('ion-icon[icon="settings-sharp"]'),
       })
       .click();
-    await expect(page).toHaveURL(/#\/data\/daily/);
+    await expect(page).toHaveURL(/#\/data$/);
   });
 });

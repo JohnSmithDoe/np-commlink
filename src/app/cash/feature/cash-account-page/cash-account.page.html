@@ -39,6 +39,7 @@
   type="file"
   accept=".csv,text/csv"
   hidden
+  id="csv-input"
   (change)="importCsv($event)"
 />
 
@@ -53,7 +54,11 @@
       <ion-list lines="full">
         @for (txn of transactions(); track txn.id) {
           <ion-item-sliding>
-            <ion-item button detail="false" (click)="editTransaction(txn)">
+            <ion-item
+              [button]="true"
+              [detail]="false"
+              (click)="editTransaction(txn)"
+            >
               <ion-label>
                 <h2>{{ txn.description }}</h2>
                 <p>
@@ -95,7 +100,11 @@
               </ion-item-options>
             }
             <ion-item-options side="end">
-              <ion-item-option color="danger" (click)="confirmDelete(txn)">
+              <ion-item-option
+                color="danger"
+                (click)="confirmDelete(txn)"
+                [attr.aria-label]="'cash.a11y.delete-transaction' | translate"
+              >
                 <ion-icon slot="icon-only" name="trash-outline" />
               </ion-item-option>
             </ion-item-options>

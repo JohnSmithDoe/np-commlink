@@ -1,12 +1,16 @@
-import { ICashRule, ICashTransaction } from '../../model';
-import { categorize } from '../categorize';
-import { IParsedRow } from './bank-parser';
+import { ICashRule } from '../../model/rule.types';
+import { ICashTransaction } from '../../model/transaction.types';
+import { categorize } from '../categorize.utils';
+import { IParsedRow, IParseResult } from './bank-parser';
 
 export interface IImportPlan {
   /** Fresh transactions to add (auto-categorized, unique). */
   toImport: ICashTransaction[];
   /** How many rows were skipped as already-imported duplicates. */
   duplicates: number;
+  /** How many rows the parser could not read at all — carried through so the
+   * preview can say so instead of reporting a short import as a complete one. */
+  rejected: number;
 }
 
 /**
@@ -23,6 +27,50 @@ const naturalKey = (
 ): string =>
   `${accountId}|${dateISO.slice(0, 10)}|${amountCents}|${rawDescription}`;
 
+const importedNaturalKeys = (
+  existing: readonly ICashTransaction[]
+): Set<string> =>
+  new Set(
+    existing
+      .filter((txn) => txn.source === 'imported')
+      .map((txn) =>
+        naturalKey(
+          txn.accountId,
+          txn.dateISO,
+          txn.amountCents,
+          txn.rawDescription ?? ''
+        )
+      )
+  );
+
+const rowNaturalKey = (accountId: string, row: IParsedRow): string =>
+  naturalKey(accountId, row.dateISO, row.amountCents, row.rawDescription);
+
+const transactionFromRow = (
+  row: IParsedRow,
+  accountId: string,
+  importBatchId: string,
+  id: string
+): ICashTransaction => ({
+  id,
+  accountId,
+  dateISO: row.dateISO,
+  amountCents: row.amountCents,
+  description: row.description,
+  rawDescription: row.rawDescription,
+  source: 'imported',
+  status: 'confirmed',
+  importBatchId,
+});
+
+const autoCategorized = (
+  txn: ICashTransaction,
+  rules: readonly ICashRule[]
+): ICashTransaction => {
+  const categoryId = categorize(txn, rules);
+  return categoryId === undefined ? txn : { ...txn, categoryId };
+};
+
 /**
  * Turn parsed rows into transactions to import: assign ids, drop rows already
  * imported (natural-key dedup against existing imported txns AND within the
@@ -30,53 +78,30 @@ const naturalKey = (
  * deterministic under test.
  */
 export function planImport(
-  rows: readonly IParsedRow[],
+  parsed: IParseResult,
   accountId: string,
   rules: readonly ICashRule[],
   existing: readonly ICashTransaction[],
   importBatchId: string,
   makeId: () => string
 ): IImportPlan {
-  const seen = new Set(
-    existing
-      .filter((t) => t.source === 'imported')
-      .map((t) =>
-        naturalKey(
-          t.accountId,
-          t.dateISO,
-          t.amountCents,
-          t.rawDescription ?? ''
-        )
-      )
-  );
-
+  const alreadyImportedKeys = importedNaturalKeys(existing);
+  const rows = parsed.rows;
   const toImport: ICashTransaction[] = [];
   let duplicates = 0;
   for (const row of rows) {
-    const key = naturalKey(
-      accountId,
-      row.dateISO,
-      row.amountCents,
-      row.rawDescription
-    );
-    if (seen.has(key)) {
+    const key = rowNaturalKey(accountId, row);
+    if (alreadyImportedKeys.has(key)) {
       duplicates++;
       continue;
     }
-    seen.add(key); // also dedup within this batch
-    const txn: ICashTransaction = {
-      id: makeId(),
-      accountId,
-      dateISO: row.dateISO,
-      amountCents: row.amountCents,
-      description: row.description,
-      rawDescription: row.rawDescription,
-      source: 'imported',
-      status: 'confirmed',
-      importBatchId,
-    };
-    const categoryId = categorize(txn, rules);
-    toImport.push(categoryId === undefined ? txn : { ...txn, categoryId });
+    alreadyImportedKeys.add(key); // also dedups within this batch
+    toImport.push(
+      autoCategorized(
+        transactionFromRow(row, accountId, importBatchId, makeId()),
+        rules
+      )
+    );
   }
-  return { toImport, duplicates };
+  return { toImport, duplicates, rejected: parsed.rejected };
 }

@@ -1,6 +1,4 @@
-// Canvas-based rotation of a base64/data-URL image. Relocated from
-// office-time.utils when the SIGIL badge got its own bounded context
-// (sheriff-tighten §1) so barcode no longer bridges into office-time.
+// Canvas-based rotation of a base64/data-URL image. Relocated from office-time.utils when the SIGIL badge got its own bounded context, so barcode no longer bridges into office-time.
 // Self-contained: uses only Image/canvas — no domain dependencies.
 export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
   if (!dataUrl) return;
@@ -29,10 +27,11 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
   canvas.width = cw;
   canvas.height = ch;
   const context = canvas.getContext('2d');
+  if (!context) return;
 
-  context?.translate(cw / 2, ch / 2);
-  context?.rotate(radians);
-  context?.drawImage(img, -w / 2, -h / 2);
+  context.translate(cw / 2, ch / 2);
+  context.rotate(radians);
+  context.drawImage(img, -w / 2, -h / 2);
 
   return canvas.toDataURL('image/*');
 };

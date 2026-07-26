@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { waitForPersisted } from '../helpers';
 import {
   createPlayer,
   gotoTrackplay,
@@ -11,7 +12,7 @@ test.describe('trackplay players', () => {
     await gotoTrackplay(
       page,
       'trackplay/players',
-      'app-trackplay-players-page'
+      'app-page-trackplay-players'
     );
 
     await createPlayer(page, 'Alice');
@@ -29,7 +30,7 @@ test.describe('trackplay players', () => {
     await gotoTrackplay(
       page,
       'trackplay/players',
-      'app-trackplay-players-page'
+      'app-page-trackplay-players'
     );
 
     await createPlayer(page, 'Charlie');
@@ -66,14 +67,14 @@ test.describe('trackplay players', () => {
     await gotoTrackplay(
       page,
       'trackplay/players',
-      'app-trackplay-players-page'
+      'app-page-trackplay-players'
     );
     await createPlayer(page, 'Dunkelzahn');
-    await page.waitForTimeout(300); // let the fire-and-forget disk write flush
+    await waitForPersisted(page, 'trackplay', 'Dunkelzahn');
 
     await page.reload();
     await expect(
-      mainContent(page).locator('app-trackplay-players-page')
+      mainContent(page).locator('app-page-trackplay-players')
     ).toBeVisible({ timeout: 30_000 });
 
     await expect(

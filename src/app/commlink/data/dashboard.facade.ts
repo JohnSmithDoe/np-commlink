@@ -4,7 +4,7 @@ import {
   selectDashboardState,
   selectNotificationsUnread,
   selectTelemetry,
-} from './dashboard.selector';
+} from './selectors/dashboard.selector';
 
 /**
  * Read facade over the eager `dashboard` read-model (the CQRS query side).
@@ -12,7 +12,7 @@ import {
  * read-model through this service instead of injecting `Store` directly, so the
  * NgRx surface stays sealed inside the data layer. The shell reads the unread
  * count from here rather than the lazy `notifications` slice, so it never
- * depends on a lazy domain (§7).
+ * depends on a lazy domain.
  */
 @Injectable({ providedIn: 'root' })
 export class DashboardFacade {

@@ -6,18 +6,18 @@ import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { TColor, TItemListSortType } from '../../../@shared/model/types';
-import { ITaskItem } from '../../model';
+import { TColor } from '../../../@shared/model/app.types';
+import { TItemListSortType } from '../../../@shared/model/item-list.types';
+import { ITaskItem } from '../../model/task.types';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
-import { ListItemComponent } from '../../../@shared/ui/base-item/item-list/item-list-items/list-item/list-item.component';
+import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { TasksListPageFacade } from '../../data';
 import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-item-dialog.component';
 
 @Component({
-  selector: 'app-page-task',
+  selector: 'app-page-tasks',
   templateUrl: 'tasks.page.html',
-  styleUrls: ['tasks.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslateModule,
@@ -39,7 +39,6 @@ export class TasksPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    this.#facade.enterPage();
     // Category→items drill (see shopping.page for the timing rationale).
     const filter = this.#route.snapshot.queryParamMap.get('filter');
     if (filter) this.#facade.selectCategory(filter);

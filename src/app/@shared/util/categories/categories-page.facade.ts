@@ -1,5 +1,5 @@
 import { InjectionToken, Signal } from '@angular/core';
-import { TCategoryId, TItemListCategory } from '../../model/types';
+import { ICategory, TCategoryId } from '../../model/category.types';
 
 /**
  * Domain-blind contract the generic {@link EditCategoriesPage} binds against —
@@ -20,7 +20,7 @@ export interface ICategoriesPageFacade {
   /** Router path of the owning list — the back target and the drill base. */
   readonly listHref: Signal<string>;
   /** The authoritative catalog decorated with per-list item counts. */
-  readonly categories: Signal<{ category: TItemListCategory; count: number }[]>;
+  readonly categories: Signal<{ category: ICategory; count: number }[]>;
 
   add(name: string): void;
   rename(id: TCategoryId, name: string): void;

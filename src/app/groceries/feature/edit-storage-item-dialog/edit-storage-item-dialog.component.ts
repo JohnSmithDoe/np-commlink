@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
-import { IStorageItem } from '../../model';
+import { IStorageItem, TGroceryListId } from '../../model/grocery-list.types';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
@@ -28,7 +28,7 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
 export class EditStorageItemDialogComponent extends BaseGroceryEditItemDialog<IStorageItem> {
-  protected readonly listId = '_storage' as const;
+  protected readonly listId: TGroceryListId = '_storage';
   readonly categories = this.facade.storageCategories;
   readonly listItems = this.facade.storageListItems;
 

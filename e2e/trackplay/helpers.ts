@@ -68,9 +68,9 @@ export function headerTitle(page: Page): Locator {
  * is the active route.
  */
 export async function createPlayer(page: Page, name: string): Promise<void> {
-  const players = pageRoot(page, 'app-trackplay-players-page');
+  const players = pageRoot(page, 'app-page-trackplay-players');
   await addButton(players).click();
-  const dialog = page.locator('app-trackplay-player-edit-dialog');
+  const dialog = page.locator('app-trackplay-player-edit-modal');
   await expect(dialog).toBeVisible({ timeout: 15_000 });
   const input = dialog.locator('ion-input input').first();
   await input.click();

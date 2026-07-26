@@ -31,12 +31,12 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkOutline, createOutline, trashOutline } from 'ionicons/icons';
-import { ICategory, TCategoryId } from '../../../model/types';
 import {
   matchesSearchExactly,
   matchesSearchString,
   uuidv4,
 } from '../../../util/app.utils';
+import { ICategory, TCategoryId } from '../../../model/category.types';
 
 /**
  * Pure presentational (type:ui) category picker — one custom selectable list

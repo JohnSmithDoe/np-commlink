@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
-import { mockShoppingItem } from '../../testing/grocery.test-data';
-import { ItemDialogHost } from '../../../@shared/data/item-dialogs/item-dialog-host';
+import { mockShoppingItem } from '../../testing/groceries.test-data';
+import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { ShoppingActions } from '../../data';
 import { ShoppingPage } from './shopping.page';
 
@@ -42,7 +42,7 @@ describe('ShoppingPage', () => {
   it('opens the edit dialog scoped to the shopping list', () => {
     const item = mockShoppingItem();
     component.showEditDialog(item);
-    expect(TestBed.inject(ItemDialogHost).request()).toEqual({
+    expect(TestBed.inject(ItemDialogService).request()).toEqual({
       item,
       listId: '_shopping',
       editMode: 'update',

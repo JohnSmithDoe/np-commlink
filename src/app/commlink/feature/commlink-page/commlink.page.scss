@@ -204,6 +204,17 @@
   text-align: center;
   box-shadow: 0 0 8px rgba(var(--sr-red-rgb), 0.6);
 }
+// A money amount isn't an alert tally — relax the tight round pill into a
+// readable strip and drop the alert-red styling for a neutral accent one.
+.cl-node__badge--currency {
+  min-width: auto;
+  padding: 0.05rem 0.5rem;
+  border-radius: var(--sr-radius);
+  background: rgba(var(--sr-cyan-rgb), 0.15);
+  color: var(--sr-cyan);
+  box-shadow: none;
+  white-space: nowrap;
+}
 .cl-node__icon {
   margin: 0.15rem 0;
   font-size: 2.4rem;

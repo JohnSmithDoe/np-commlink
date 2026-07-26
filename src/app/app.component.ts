@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import {
   IonApp,
   IonBadge,
+  IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -23,7 +25,6 @@ import { addIcons } from 'ionicons';
 import {
   barcodeOutline,
   businessOutline,
-  cafeOutline,
   cartOutline,
   checkboxOutline,
   diceOutline,
@@ -32,10 +33,14 @@ import {
   notificationsOutline,
   optionsOutline,
   pricetagsOutline,
+  restaurantOutline,
+  settingsOutline,
+  sparklesOutline,
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
-import { DashboardFacade } from './commlink/data';
+import { DashboardFacade, DeckFacade } from './commlink/data';
+import { IDeckProgram } from './commlink/model/deck.types';
 
 @Component({
   selector: 'app-root',
@@ -49,6 +54,8 @@ import { DashboardFacade } from './commlink/data';
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonButton,
+    IonButtons,
     IonContent,
     IonList,
     IonItem,
@@ -62,15 +69,33 @@ import { DashboardFacade } from './commlink/data';
 })
 export class AppComponent {
   readonly #dashboard = inject(DashboardFacade);
+  readonly #deck = inject(DeckFacade);
+
+  /**
+   * The menu is one of two renderings of the user's deck configuration (the
+   * grid is the other), so the shell holds no list of its own.
+   */
+  readonly menuEntries = this.#deck.menuEntries;
+
   // Reads the eager dashboard read-model, not the notifications slice — the
-  // shell must not depend on a lazy domain slice (lazy-modules §7).
-  readonly notificationsBadge = this.#dashboard.notificationsUnread;
+  // shell must not depend on a lazy domain slice.
+  readonly #notificationsUnread = this.#dashboard.notificationsUnread;
+
+  /**
+   * Only the inbox row badges. Its count is always-on shell chrome the
+   * read-model already carries; every other row's metric is a deck-tile
+   * concern, and a menu of thirteen counters reads as noise.
+   */
+  menuBadge(entry: IDeckProgram): number {
+    return entry.source === 'notifications' ? this.#notificationsUnread() : 0;
+  }
 
   constructor() {
     registerLocaleData(de);
     addIcons({
       hardwareChipOutline,
-      cafeOutline,
+      sparklesOutline,
+      restaurantOutline,
       timerOutline,
       businessOutline,
       notificationsOutline,
@@ -82,6 +107,7 @@ export class AppComponent {
       optionsOutline,
       walletOutline,
       diceOutline,
+      settingsOutline,
     });
   }
 }

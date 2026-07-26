@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/model/types';
+import { TIonDragEvent } from '../../../@shared/model/app.types';
 import { mockGameType } from '../../testing/trackplay.test-data';
 import { TrackplayGameTypeListItemComponent } from './game-type-list-item.component';
 
@@ -55,11 +55,11 @@ describe('TrackplayGameTypeListItemComponent', () => {
     const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
 
     fixture.componentRef.setInput('canDelete', false);
-    component.handleDrag(dragEvent(-200));
+    component.deleteOrEditOnSwipe(dragEvent(-200));
     expect(del).not.toHaveBeenCalled();
 
     fixture.componentRef.setInput('canDelete', true);
-    component.handleDrag(dragEvent(-200));
+    component.deleteOrEditOnSwipe(dragEvent(-200));
     expect(del).toHaveBeenCalledTimes(1);
   });
 
@@ -67,7 +67,7 @@ describe('TrackplayGameTypeListItemComponent', () => {
     const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);
 
     fixture.componentRef.setInput('canDelete', false);
-    component.handleDrag(dragEvent(200));
+    component.deleteOrEditOnSwipe(dragEvent(200));
 
     expect(edit).toHaveBeenCalledTimes(1);
   });

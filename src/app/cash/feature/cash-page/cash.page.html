@@ -1,5 +1,5 @@
 <app-page-header
-  label="cash.page-title.cash"
+  label="page-title.cash"
   icon="wallet-outline"
   (addItem)="openNew()"
 >
@@ -43,7 +43,11 @@
     <ion-list lines="full">
       @for (account of accounts(); track account.id) {
         <ion-item-sliding>
-          <ion-item button detail="true" (click)="goToAccount(account)">
+          <ion-item
+            [button]="true"
+            [detail]="true"
+            (click)="goToAccount(account)"
+          >
             <ion-icon
               slot="start"
               [name]="iconFor(account.kind)"
@@ -58,7 +62,11 @@
             </ion-note>
           </ion-item>
           <ion-item-options side="end">
-            <ion-item-option color="danger" (click)="confirmDelete(account)">
+            <ion-item-option
+              color="danger"
+              (click)="confirmDelete(account)"
+              [attr.aria-label]="'cash.a11y.delete-account' | translate"
+            >
               <ion-icon slot="icon-only" name="trash-outline" />
             </ion-item-option>
           </ion-item-options>

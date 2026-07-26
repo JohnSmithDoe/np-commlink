@@ -16,7 +16,11 @@
   @if (transactions().length) {
     <ion-list lines="full">
       @for (txn of transactions(); track txn.id) {
-        <ion-item button detail="true" (click)="openAccount(txn.accountId)">
+        <ion-item
+          [button]="true"
+          [detail]="true"
+          (click)="openAccount(txn.accountId)"
+        >
           <ion-label>
             <h2>{{ txn.description }}</h2>
             <p>

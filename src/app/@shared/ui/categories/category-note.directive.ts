@@ -1,6 +1,7 @@
 import { Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { IBaseItem, ICategory } from '../../model/types';
 import { categoryNames } from '../../util/categories/category.utils';
+import { IBaseItem } from '../../model/base-item.types';
+import { ICategory } from '../../model/category.types';
 
 @Directive({
   selector: '[appCategoryNote]',

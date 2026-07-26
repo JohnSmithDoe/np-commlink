@@ -14,17 +14,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TColor } from '../../model/types';
+import { TColor } from '../../model/app.types';
 import { addIcons } from 'ionicons';
-import {
-  add,
-  barcodeOutline,
-  businessOutline,
-  documentsOutline,
-  notificationsOutline,
-  settingsOutline,
-  timerOutline,
-} from 'ionicons/icons';
+import { add } from 'ionicons/icons';
 
 @Component({
   selector: 'app-page-header',
@@ -52,14 +44,9 @@ export class PageHeaderComponent {
   readonly addItem = output<void>();
 
   constructor() {
-    addIcons({
-      add,
-      businessOutline,
-      settingsOutline,
-      documentsOutline,
-      barcodeOutline,
-      notificationsOutline,
-      timerOutline,
-    });
+    // Only the icon this template renders itself. The `[icon]` input is a
+    // string from the page, and each page registers the icon it passes — a
+    // domain-blind header must not carry a roster of domain icons.
+    addIcons({ add });
   }
 }

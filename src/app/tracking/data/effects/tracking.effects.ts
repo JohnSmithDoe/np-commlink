@@ -1,3 +1,4 @@
+import { ShareService } from '../../../@shared/util/share.service';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -11,18 +12,17 @@ import {
   timer,
   withLatestFrom,
 } from 'rxjs';
-import { TrackingActions } from '../tracking.actions';
+import { TrackingActions } from '../actions/tracking.actions';
 import {
   selectRunningTrackingItem,
   selectTrackingData,
   selectTrackingDataViewId,
-} from '../tracking.selector';
-import { Share } from '@capacitor/share';
+} from '../selectors/tracking.selector';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
-import { IDataItem } from '../../model';
-import { csvRow, formatSecondsAsClock } from '../tracking.utils';
+import { IDataItem } from '../../model/tracking.types';
+import { csvRow, formatSecondsAsClock } from '../../util/tracking.utils';
 
 const startTimeFormatFor = (viewId: string): string | undefined => {
   switch (viewId) {
@@ -49,9 +49,10 @@ const formatStartTime = (item: IDataItem, viewId: string): string => {
 
 @Injectable({ providedIn: 'root' })
 export class TrackingEffects {
-  #actions$ = inject(Actions);
-  #store = inject(Store);
-  #translate = inject(TranslateService);
+  readonly #actions$ = inject(Actions);
+  readonly #store = inject(Store);
+  readonly #translate = inject(TranslateService);
+  readonly #share = inject(ShareService);
 
   trackTime$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -78,7 +79,7 @@ export class TrackingEffects {
         switchMap(([, data, viewId]) => {
           const csv = this.#buildCsv(data, viewId);
           return from(
-            Share.share({
+            this.#share.share({
               title: this.#translate.instant(marker('share.csv.title')),
               text: csv,
               dialogTitle: this.#translate.instant(marker('share.csv.dialog')),

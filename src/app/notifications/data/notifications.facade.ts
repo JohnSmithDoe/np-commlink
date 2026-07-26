@@ -1,18 +1,18 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { NotificationsActions } from '../../@shared/data/notification/notifications.actions';
+import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
+import { NotificationsInboxActions } from './actions/notifications.actions';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,
   selectNewNotifications,
-} from './notifications.selector';
+} from './selectors/notifications.selector';
 
 /**
- * The `notifications` domain facade — the single NgRx surface for the
- * notifications page. Reads the display selectors from the notifications slice
- * and dispatches the shared, domain-blind `NotificationsActions` (the same
- * durable contract tracking writes through off-route, §7). Injects `Store` so
- * the page never does.
+ * The `notifications` domain facade — the single NgRx surface for the inbox
+ * page. It dispatches the published write contract for the two ops it shares
+ * with producers (`dismiss`/`remove`) and its own group for the view state, so
+ * the page sees neither. Injects `Store` so the page never does.
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationsFacade {
@@ -25,26 +25,26 @@ export class NotificationsFacade {
   readonly doneCollapsed = this.#store.selectSignal(selectDoneCollapsed);
 
   markPageViewed(): void {
-    this.#store.dispatch(NotificationsActions.markPageViewed());
+    this.#store.dispatch(NotificationsInboxActions.markPageViewed());
   }
 
-  markDone(id: string): void {
-    this.#store.dispatch(NotificationsActions.markDone(id));
+  dismiss(id: string): void {
+    this.#store.dispatch(NotificationsActions.dismiss(id));
   }
 
-  removeNotification(id: string): void {
-    this.#store.dispatch(NotificationsActions.removeNotification(id));
+  remove(id: string): void {
+    this.#store.dispatch(NotificationsActions.remove(id));
   }
 
   toggleDoneSection(): void {
-    this.#store.dispatch(NotificationsActions.toggleDoneSection());
+    this.#store.dispatch(NotificationsInboxActions.toggleDoneSection());
   }
 
   clearDone(): void {
-    this.#store.dispatch(NotificationsActions.clearDone());
+    this.#store.dispatch(NotificationsInboxActions.clearDone());
   }
 
   addDebugNotification(): void {
-    this.#store.dispatch(NotificationsActions.addDebugNotification());
+    this.#store.dispatch(NotificationsInboxActions.addDebugNotification());
   }
 }

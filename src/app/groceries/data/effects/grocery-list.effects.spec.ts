@@ -3,35 +3,37 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { ProductsActions } from '../products.actions';
-import { ShoppingActions } from '../shopping.actions';
-import { StorageActions } from '../storage.actions';
-import { GroceryListActions } from '../grocery-list/grocery-list.actions';
-import { GroceryCategoriesActions } from '../grocery-list/grocery-categories.actions';
-import { QuickAddActions } from '../quick-add/quick-add.actions';
-import { updateQuickAddState } from '../grocery-list/grocery-list.utils';
+import { ProductsActions } from '../actions/products.actions';
+import { ShoppingActions } from '../actions/shopping.actions';
+import { StorageActions } from '../actions/storage.actions';
+import { GroceryListActions } from '../actions/grocery-list.actions';
+import { GroceryCategoriesActions } from '../actions/grocery-categories.actions';
+import { QuickAddActions } from '../actions/quick-add.actions';
+import { updateQuickAddState } from '../../util/grocery-list.utils';
 import { actionsByListId, GroceryListEffects } from './grocery-list.effects';
-import { IGroceryLists } from '../../model';
-import { mockAppState } from '../../../@shared/testing/test-data';
+import { IGroceriesState } from '../../model/groceries.types';
+import { mockKernelState } from '../../../@shared/testing/test-data';
 import {
-  mockGroceryLists,
+  mockGroceriesState,
   mockProduct,
   mockShoppingItem,
   mockStorageItem,
   mockStorageState,
-} from '../../testing/grocery.test-data';
+} from '../../testing/groceries.test-data';
 
 describe('GroceryListEffects', () => {
   let actions$: Observable<Action>;
   let effects: GroceryListEffects;
 
-  const setup = (grocery: Partial<IGroceryLists> = {}) => {
-    const lists = mockGroceryLists(grocery);
+  const setup = (grocery: Partial<IGroceriesState> = {}) => {
+    const lists = mockGroceriesState(grocery);
     TestBed.configureTestingModule({
       providers: [
         GroceryListEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState: mockAppState(lists) }),
+        provideMockStore({
+          initialState: mockKernelState({ groceries: lists }),
+        }),
       ],
     });
     effects = TestBed.inject(GroceryListEffects);
@@ -44,24 +46,20 @@ describe('GroceryListEffects', () => {
       expect(actionsByListId('_shopping')).toBe(ShoppingActions);
       expect(actionsByListId('_products')).toBe(ProductsActions);
     });
-
-    it('throws on a non-grocery list id (tasks is a sealed sibling)', () => {
-      expect(() => actionsByListId('_tasks')).toThrow();
-    });
   });
 
   it('updateFilter / updateMode / updateSort / updateSearch forward to the list', async () => {
     setup();
     actions$ = of(GroceryListActions.updateFilter('_storage', 'Dairy'));
-    expect(await firstValueFrom(effects.updateFilter)).toEqual(
+    expect(await firstValueFrom(effects.updateFilter$)).toEqual(
       StorageActions.updateFilter('Dairy')
     );
     actions$ = of(GroceryListActions.updateMode('_storage', 'categories'));
-    expect(await firstValueFrom(effects.updateMode)).toEqual(
+    expect(await firstValueFrom(effects.updateMode$)).toEqual(
       StorageActions.updateMode('categories')
     );
     actions$ = of(GroceryListActions.updateSort('_storage', 'name', 'toggle'));
-    expect(await firstValueFrom(effects.updateSort)).toEqual(
+    expect(await firstValueFrom(effects.updateSort$)).toEqual(
       StorageActions.updateSort('name', 'toggle')
     );
     actions$ = of(GroceryListActions.updateSearch('_storage', 'milk'));
@@ -74,7 +72,7 @@ describe('GroceryListEffects', () => {
     it('adds an item in alphabetical mode', async () => {
       setup({ storage: mockStorageState({ mode: 'alphabetical' }) });
       actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
-      expect(await firstValueFrom(effects.addItemFromSearch)).toEqual(
+      expect(await firstValueFrom(effects.routeAddItemFromSearch$)).toEqual(
         StorageActions.addItemFromSearch()
       );
     });
@@ -82,7 +80,7 @@ describe('GroceryListEffects', () => {
     it('adds a category in categories mode', async () => {
       setup({ storage: mockStorageState({ mode: 'categories' }) });
       actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
-      expect(await firstValueFrom(effects.addItemFromSearch)).toEqual(
+      expect(await firstValueFrom(effects.routeAddItemFromSearch$)).toEqual(
         GroceryListActions.addCategoryFromSearch('_storage')
       );
     });
@@ -93,7 +91,7 @@ describe('GroceryListEffects', () => {
     actions$ = of(GroceryListActions.addCategoryFromSearch('_storage'));
     // The minted id is a uuid — assert on the type + resolved name only.
     const emitted = (await firstValueFrom(
-      effects.addCategoryFromSearch
+      effects.addCategoryFromSearch$
     )) as ReturnType<typeof GroceryCategoriesActions.add>;
     expect(emitted.type).toBe(GroceryCategoriesActions.add.type);
     expect(emitted.category.name).toBe('Dairy');
@@ -121,9 +119,9 @@ describe('GroceryListEffects', () => {
       );
     });
 
-    it('emits a configuration error for an unsupported list', async () => {
+    it('emits a configuration error when the target is the products list itself', async () => {
       setup();
-      actions$ = of(GroceryListActions.addProduct('_tasks', mockProduct()));
+      actions$ = of(GroceryListActions.addProduct('_products', mockProduct()));
       expect(await firstValueFrom(effects.addProduct$)).toEqual(
         GroceryListActions.configurationError()
       );
@@ -159,8 +157,8 @@ describe('GroceryListEffects', () => {
   it('addItemFromSearch$ builds an item from the list search query', async () => {
     setup({ storage: mockStorageState({ searchQuery: 'Milk' }) });
     actions$ = of(StorageActions.addItemFromSearch());
-    const emitted = await firstValueFrom(effects.addItemFromSearch$);
-    expect(emitted.type).toBe('[Storage] Add Item');
+    const emitted = await firstValueFrom(effects.buildItemFromSearch$);
+    expect(emitted.type).toBe('[Storage] addItem');
     expect(
       (emitted as ReturnType<typeof StorageActions.addItem>).item.name
     ).toBe('Milk');
@@ -190,7 +188,7 @@ describe('GroceryListEffects', () => {
     setup();
     actions$ = of(StorageActions.addProduct(mockProduct()));
     const emitted = await firstValueFrom(effects.addItemFromProduct$);
-    expect(emitted.type).toBe('[Storage] Add Or Update Item');
+    expect(emitted.type).toBe('[Storage] addOrUpdateItem');
   });
 
   describe('clearFilter$', () => {

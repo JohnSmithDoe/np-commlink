@@ -2,7 +2,7 @@ import {
   mockCashRule,
   mockCashTransaction,
 } from '../../testing/cash.test-data';
-import { IParsedRow } from './bank-parser';
+import { IParsedRow, IParseResult } from './bank-parser';
 import { planImport } from './plan-import';
 
 const row = (over: Partial<IParsedRow> = {}): IParsedRow => ({
@@ -13,6 +13,11 @@ const row = (over: Partial<IParsedRow> = {}): IParsedRow => ({
   ...over,
 });
 
+const parsed = (rows: IParsedRow[], rejected = 0): IParseResult => ({
+  rows,
+  rejected,
+});
+
 // deterministic id factory
 const ids = () => {
   let n = 0;
@@ -21,7 +26,7 @@ const ids = () => {
 
 describe('planImport', () => {
   it('builds imported transactions with ids, batch id and confirmed status', () => {
-    const plan = planImport([row()], 'acc', [], [], 'batch-1', ids());
+    const plan = planImport(parsed([row()]), 'acc', [], [], 'batch-1', ids());
     expect(plan.duplicates).toBe(0);
     expect(plan.toImport).toHaveLength(1);
     expect(plan.toImport[0]).toMatchObject({
@@ -42,7 +47,14 @@ describe('planImport', () => {
       rawDescription: 'REWE',
       source: 'imported',
     });
-    const plan = planImport([row()], 'acc', [], [existing], 'batch-2', ids());
+    const plan = planImport(
+      parsed([row()]),
+      'acc',
+      [],
+      [existing],
+      'batch-2',
+      ids()
+    );
     expect(plan.toImport).toHaveLength(0);
     expect(plan.duplicates).toBe(1);
   });
@@ -58,7 +70,7 @@ describe('planImport', () => {
       source: 'imported',
     });
     const plan = planImport(
-      [row({ dateISO: '2026-01-06T00:00:00+02:00' })],
+      parsed([row({ dateISO: '2026-01-06T00:00:00+02:00' })]),
       'acc',
       [],
       [existing],
@@ -70,7 +82,14 @@ describe('planImport', () => {
   });
 
   it('dedups identical rows within a single batch', () => {
-    const plan = planImport([row(), row()], 'acc', [], [], 'batch-3', ids());
+    const plan = planImport(
+      parsed([row(), row()]),
+      'acc',
+      [],
+      [],
+      'batch-3',
+      ids()
+    );
     expect(plan.toImport).toHaveLength(1);
     expect(plan.duplicates).toBe(1);
   });
@@ -81,7 +100,14 @@ describe('planImport', () => {
       match: 'any',
       conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
     });
-    const plan = planImport([row()], 'acc', [rule], [], 'batch-4', ids());
+    const plan = planImport(
+      parsed([row()]),
+      'acc',
+      [rule],
+      [],
+      'batch-4',
+      ids()
+    );
     expect(plan.toImport[0].categoryId).toBe('groceries');
     expect(plan.toImport[0].categoryManual).toBeUndefined();
   });

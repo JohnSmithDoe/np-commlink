@@ -7,8 +7,16 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, flask, remove, save, settingsSharp, trash } from 'ionicons/icons';
-import { ITrackingItem } from '../../model';
+import {
+  add,
+  flask,
+  remove,
+  save,
+  settingsSharp,
+  timerOutline,
+  trash,
+} from 'ionicons/icons';
+import { ITrackingItem } from '../../model/tracking.types';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { TrackingListPageFacade } from '../../data';
@@ -24,7 +32,7 @@ import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.comp
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';
 
 @Component({
-  selector: 'app-tracking-page',
+  selector: 'app-page-tracking',
   templateUrl: 'tracking.page.html',
   styleUrls: ['tracking.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,22 +58,23 @@ export class TrackingPage implements ViewWillEnter {
   readonly isDev = isDevMode();
 
   constructor() {
-    addIcons({ add, flask, remove, save, settingsSharp, trash });
+    addIcons({ add, flask, remove, save, settingsSharp, trash, timerOutline });
   }
 
   ionViewWillEnter(): void {
-    this.#facade.enterPage();
     this.#applyNotificationCommand();
   }
 
-  // A notification CTA on /notifications deep-links here with ?cmd=<id>. The
-  // route resolver has already hydrated tracking, so we dispatch the command
-  // and immediately strip the param (replaceUrl) so a reload/re-enter can't
-  // re-fire the toggle.
+  // A notification CTA on /notifications deep-links here with
+  // ?cmd=<command>&target=<itemId>. The route resolver has already hydrated
+  // tracking, so we dispatch the command and immediately strip the params
+  // (replaceUrl) so a reload/re-enter can't re-fire the toggle.
   #applyNotificationCommand(): void {
-    const cmd = this.#route.snapshot.queryParamMap.get('cmd');
-    if (!cmd) return;
-    this.#facade.applyNotificationCommand(cmd);
+    const params = this.#route.snapshot.queryParamMap;
+    const cmd = params.get('cmd');
+    const target = params.get('target');
+    if (!cmd || !target) return;
+    this.#facade.applyNotificationCommand(cmd, target);
     void this.#router.navigate([], {
       relativeTo: this.#route,
       queryParams: {},
@@ -96,8 +105,8 @@ export class TrackingPage implements ViewWillEnter {
     this.#facade.saveAndReset();
   }
 
-  generateDummyData() {
-    this.#facade.generateDummyData();
+  seedDemoSessions() {
+    this.#facade.seedDemoSessions();
   }
 
   protected generateTaskByTicket() {

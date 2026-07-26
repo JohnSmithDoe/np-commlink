@@ -19,10 +19,10 @@ import {
   OfficeTimeFacade,
   dayjsFromString,
   dayjsToString,
-  daysToFreedaysHighlightsInputTransform,
-  daysToHolidaysHighlightsInputTransform,
+  freedayHighlights,
+  holidayHighlights,
 } from '../../data';
-import { DateTimeHighlight } from '../../model';
+import { DateTimeHighlight } from '../../model/office-time.types';
 
 @Component({
   selector: 'app-dash-office-days-edit',
@@ -44,11 +44,11 @@ export class DashOfficeDaysEditComponent {
   readonly officedays = input<Array<Dayjs> | undefined | null>();
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
     [],
-    { transform: daysToHolidaysHighlightsInputTransform }
+    { transform: holidayHighlights }
   );
   readonly freedays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
     [],
-    { transform: daysToFreedaysHighlightsInputTransform }
+    { transform: freedayHighlights }
   );
   readonly holidaysAndFreedays = computed(() => {
     return [...this.holidays(), ...this.freedays()];

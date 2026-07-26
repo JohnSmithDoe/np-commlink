@@ -1,12 +1,16 @@
 import dayjs from 'dayjs';
-import {
-  IBaseItem,
-  TCategoryId,
-  TItemListId,
-  TTimestamp,
-} from '../../@shared/model/types';
+import { TTimestamp } from '../../@shared/model/app.types';
+import { IBaseItem } from '../../@shared/model/base-item.types';
+import { TCategoryId } from '../../@shared/model/category.types';
 import { createBaseItem } from '../../@shared/util/app.factory';
-import { IProduct, IShoppingItem, IStorageItem } from '../model';
+import { uuidv4 } from '../../@shared/util/app.utils';
+import {
+  IProduct,
+  IShoppingItem,
+  IStorageItem,
+  TGroceryListId,
+} from '../model/grocery-list.types';
+import { IRecipe, IRecipeIngredient } from '../model/recipe.types';
 
 /**
  * Production factories for the grocery item types. Grocery-owned (moved out of
@@ -91,13 +95,51 @@ export function createProductFrom(item: IBaseItem): IProduct {
   return createProduct(item.name, item.categoryIds);
 }
 
+const DEFAULT_SERVINGS = 2;
+const DEFAULT_PREP_MINUTES = 30;
+
+export function createRecipe(name: string): IRecipe {
+  return {
+    ...createBaseItem(name),
+    ingredients: [],
+    steps: '',
+    servings: DEFAULT_SERVINGS,
+    prepMinutes: DEFAULT_PREP_MINUTES,
+  };
+}
+
+/**
+ * A fresh ingredient line for `product`. The line's unit is seeded from the
+ * product's own unit (milk → ml) — the cook can still override it, because the
+ * cooking unit belongs to the line.
+ */
+export function createRecipeIngredient(product: IProduct): IRecipeIngredient {
+  return {
+    id: uuidv4(),
+    productId: product.id,
+    amount: 1,
+    unit: product.unit,
+  };
+}
+
+/**
+ * Step a quantity by `diff`, floored at zero — the stepper buttons must not be
+ * able to drive a list item negative.
+ */
+export function withQuantityChangedBy<T extends { quantity: number }>(
+  item: T,
+  diff: number
+): T {
+  return { ...item, quantity: Math.max(0, item.quantity + diff) };
+}
+
 /**
  * The one place the three grocery lists' item types are resolved from a listId —
  * used by the facade's "create from the search term" command, which is
  * route-keyed and so cannot know the concrete list at compile time.
  */
 export function createGroceryItem(
-  listId: TItemListId,
+  listId: TGroceryListId,
   name: string,
   categoryId: TCategoryId | undefined
 ): IBaseItem {
@@ -110,9 +152,6 @@ export function createGroceryItem(
     }
     case '_shopping': {
       return createShoppingItem(name, categoryId);
-    }
-    default: {
-      throw new Error(`grocery dialogs: unexpected listId ${listId}`);
     }
   }
 }

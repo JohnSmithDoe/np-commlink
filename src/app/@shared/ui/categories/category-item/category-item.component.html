@@ -7,11 +7,15 @@
   </ion-item>
 </ng-template>
 
-<ion-item-sliding (ionDrag)="handleItemOptionsOnDrag($event)">
+<ion-item-sliding (ionDrag)="deleteOnSwipe($event)">
   <ng-container *ngTemplateOutlet="itemTemplate"></ng-container>
 
   <ion-item-options side="end">
-    <ion-item-option color="danger" expandable (click)="emitDeleteItem()">
+    <ion-item-option
+      color="danger"
+      [expandable]="true"
+      (click)="emitDeleteItem()"
+    >
       {{ 'item-list.action.delete' | translate }}
     </ion-item-option>
   </ion-item-options>

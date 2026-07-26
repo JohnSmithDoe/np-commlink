@@ -6,21 +6,21 @@ import {
   IonLabel,
   IonList,
   ModalController,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { IGameType } from '../../model';
+import { IGameType } from '../../model/trackplay.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
-import { TrackplayGameTypeEditDialogComponent } from '../../smart-ui/game-type-edit-dialog/game-type-edit-dialog.component';
+import { TrackplayGameTypeEditModalComponent } from '../game-type-edit-modal/game-type-edit-modal.component';
 import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item/game-type-list-item.component';
+import { presentModal } from '../../../@shared/util/present-modal';
 
 /** Game types (Spielarten) manager: list + create/edit dialog. */
 @Component({
-  selector: 'app-trackplay-game-types-page',
+  selector: 'app-page-trackplay-game-types',
   templateUrl: './game-types.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -34,7 +34,7 @@ import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item
     TrackplayGameTypeListItemComponent,
   ],
 })
-export class TrackplayGameTypesPage implements ViewWillEnter {
+export class TrackplayGameTypesPage {
   readonly #facade = inject(TrackplayFacade);
   readonly #modalCtrl = inject(ModalController);
 
@@ -43,10 +43,6 @@ export class TrackplayGameTypesPage implements ViewWillEnter {
 
   constructor() {
     addIcons({ add });
-  }
-
-  ionViewWillEnter(): void {
-    this.#facade.enterGameTypesPage();
   }
 
   openCreate(): void {
@@ -62,10 +58,8 @@ export class TrackplayGameTypesPage implements ViewWillEnter {
   }
 
   async #openDialog(gameTypeId?: string): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayGameTypeEditDialogComponent,
-      componentProps: { gameTypeId },
+    await presentModal(this.#modalCtrl, TrackplayGameTypeEditModalComponent, {
+      gameTypeId,
     });
-    await modal.present();
   }
 }

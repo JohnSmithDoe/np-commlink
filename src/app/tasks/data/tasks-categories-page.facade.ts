@@ -1,12 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TCategoryId } from '../../@shared/model/types';
 import { uuidv4 } from '../../@shared/util/app.utils';
 import { ICategoriesPageFacade } from '../../@shared/util/categories/categories-page.facade';
 import { listCategoriesWithCount } from '../../@shared/util/list/list.selector';
-import { TasksActions } from './tasks.actions';
-import { selectTasksState } from './tasks.selector';
+import { TasksActions } from './actions/tasks.actions';
+import { selectTasksState } from './selectors/tasks.selector';
+
+import { TCategoryId } from '../../@shared/model/category.types';
 
 /**
  * {@link ICategoriesPageFacade} for the single `_tasks` list. Reads the tasks
@@ -21,7 +22,7 @@ export class TasksCategoriesPageFacade implements ICategoriesPageFacade {
   readonly #state = this.#store.selectSignal(selectTasksState);
 
   readonly categories = computed(() => listCategoriesWithCount(this.#state()));
-  readonly listTitleKey = signal('grocery.page-title.tasks');
+  readonly listTitleKey = signal('page-title.tasks');
   readonly listHref = signal('/tasks/_tasks');
 
   add(name: string): void {

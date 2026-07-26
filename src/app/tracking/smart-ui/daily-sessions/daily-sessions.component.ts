@@ -21,7 +21,7 @@ import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { TrackingListPageFacade } from '../../data';
-import { NpTrackingTimePipe } from '../../util/np-tracking-time.pipe';
+import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 
 @Component({
   selector: 'app-daily-sessions',
@@ -38,7 +38,7 @@ import { NpTrackingTimePipe } from '../../util/np-tracking-time.pipe';
     IonList,
     IonListHeader,
     IonNote,
-    NpTrackingTimePipe,
+    TrackingTimePipe,
     TranslateModule,
   ],
 })

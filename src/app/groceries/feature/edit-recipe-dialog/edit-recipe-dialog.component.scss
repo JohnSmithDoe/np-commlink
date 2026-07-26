@@ -1,0 +1,19 @@
+// Ingredient rows pack a name, an amount, a unit and a delete into one item, so
+// they wrap on narrow screens instead of squeezing the controls.
+.recipe-ingredient {
+  --inner-padding-end: 0;
+  flex-wrap: wrap;
+}
+
+.recipe-section {
+  font-family: var(--sr-deck-font);
+  font-size: 0.78rem;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-amber);
+}
+
+.recipe-empty {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}

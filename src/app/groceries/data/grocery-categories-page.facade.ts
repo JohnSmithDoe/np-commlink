@@ -1,28 +1,30 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TCategoryId } from '../../@shared/model/types';
+import { TGroceryListId } from '../model/grocery-list.types';
 import { uuidv4 } from '../../@shared/util/app.utils';
 import { ICategoriesPageFacade } from '../../@shared/util/categories/categories-page.facade';
-import { GroceryCategoriesActions } from './grocery-list/grocery-categories.actions';
+import { GroceryCategoriesActions } from './actions/grocery-categories.actions';
 import {
   selectListCategories,
   selectListIdParam,
-} from './grocery-list/grocery-list.selector';
+} from './selectors/grocery-list.selector';
+
+import { TCategoryId } from '../../@shared/model/category.types';
 
 // The three grocery lists share ONE catalog, but each manage-categories view is
 // scoped to a list: the counts + drill target are that list's. Both are keyed
 // off the `:listId` route param (like the multi-list page facade), so a single
 // root instance serves the shopping/storage/products manage routes.
-const LIST_HREF: Record<string, string> = {
-  _shopping: '/shopping/_shopping',
-  _storage: '/storage/_storage',
-  _products: '/products/_products',
+const LIST_HREF: Record<TGroceryListId, string> = {
+  _shopping: '/groceries/shopping/_shopping',
+  _storage: '/groceries/storage/_storage',
+  _products: '/groceries/products/_products',
 };
-const LIST_TITLE_KEY: Record<string, string> = {
-  _shopping: 'grocery.page-title.shopping',
-  _storage: 'grocery.page-title.storage',
-  _products: 'grocery.page-title.products',
+const LIST_TITLE_KEY: Record<TGroceryListId, string> = {
+  _shopping: 'page-title.groceries-shopping',
+  _storage: 'page-title.groceries-storage',
+  _products: 'page-title.groceries-products',
 };
 
 /**
@@ -37,17 +39,13 @@ export class GroceryCategoriesPageFacade implements ICategoriesPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #listId = this.#store.selectSignal(selectListIdParam);
-  readonly #activeListId = computed<string>(
+  readonly #activeListId = computed<TGroceryListId>(
     () => this.#listId() ?? '_shopping'
   );
 
   readonly categories = this.#store.selectSignal(selectListCategories);
-  readonly listTitleKey = computed(
-    () => LIST_TITLE_KEY[this.#activeListId()] ?? 'grocery.page-title.shopping'
-  );
-  readonly listHref = computed(
-    () => LIST_HREF[this.#activeListId()] ?? '/shopping/_shopping'
-  );
+  readonly listTitleKey = computed(() => LIST_TITLE_KEY[this.#activeListId()]);
+  readonly listHref = computed(() => LIST_HREF[this.#activeListId()]);
 
   add(name: string): void {
     this.#store.dispatch(GroceryCategoriesActions.add({ id: uuidv4(), name }));

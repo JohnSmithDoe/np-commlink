@@ -9,38 +9,4 @@
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
->
-  @let notifications = draft()?.notifications;
-  <ion-item>
-    <ion-toggle
-      [checked]="notifications?.onStart ?? false"
-      (ionChange)="updateNotifications('onStart', $any($event).detail.checked)"
-    >
-      <ion-label>{{
-        'edit.item.dialog.notifications.onStart' | translate
-      }}</ion-label>
-    </ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-toggle
-      [checked]="notifications?.onStop ?? false"
-      (ionChange)="updateNotifications('onStop', $any($event).detail.checked)"
-    >
-      <ion-label>{{
-        'edit.item.dialog.notifications.onStop' | translate
-      }}</ion-label>
-    </ion-toggle>
-  </ion-item>
-  <ion-item>
-    <ion-toggle
-      [checked]="notifications?.onProcess ?? false"
-      (ionChange)="
-        updateNotifications('onProcess', $any($event).detail.checked)
-      "
-    >
-      <ion-label>{{
-        'edit.item.dialog.notifications.onProcess' | translate
-      }}</ion-label>
-    </ion-toggle>
-  </ion-item>
-</app-item-edit-modal>
+></app-item-edit-modal>

@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { mockListSettings } from '../../testing/grocery.test-data';
+import {
+  mockGroceriesState,
+  mockListSettings,
+} from '../../testing/groceries.test-data';
 import { ListSettingsActions } from '../../data';
 import { ListSettingsPage } from './list-settings.page';
 
@@ -14,11 +17,13 @@ describe('ListSettingsPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ListSettingsPage],
-      // Seed the listSettings slice — `selectListSettingsState` is a plain
-      // feature selector (no router dependency), so `detectChanges()` is safe.
+      // Seed the grocery slice the flags live in — `selectListSettingsState`
+      // reads it without touching the router, so `detectChanges()` is safe.
       providers: [
         ...provideTestingProviders({
-          listSettings: mockListSettings({ showQuickAdd: true }),
+          groceries: mockGroceriesState({
+            listSettings: mockListSettings({ showQuickAdd: true }),
+          }),
         }),
       ],
     }).compileComponents();

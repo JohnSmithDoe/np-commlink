@@ -14,15 +14,13 @@ import {
   IonList,
   IonNote,
   IonPopover,
-  IonReorder,
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TColor, TIonDragEvent } from '../../../@shared/model/types';
-import { ITrackingItem } from '../../model';
-import { NpTimeFromSecondsPipe } from '../../../@shared/util/pipes/np-time-from-seconds.pipe';
-import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
+import { TColor } from '../../../@shared/model/app.types';
+import { ITrackingItem } from '../../model/tracking.types';
+import { MinutesFromSecondsPipe } from '../../util/minutes-from-seconds.pipe';
 import { addIcons } from 'ionicons';
 import {
   closeOutline,
@@ -37,7 +35,7 @@ import {
   stopSharp,
   trashOutline,
 } from 'ionicons/icons';
-import { NpTimeWithUnitPipe } from '../../../@shared/util/pipes/np-time-with-unit.pipe';
+import { TimeWithUnitPipe } from '../../util/time-with-unit.pipe';
 
 marker('tracking.item.state.running');
 marker('tracking.item.state.stopped');
@@ -53,17 +51,16 @@ marker('tracking.item.action.pause');
   imports: [
     IonItem,
     IonLabel,
-    IonReorder,
     TranslateModule,
     IonNote,
     IonText,
     DatePipe,
-    NpTimeFromSecondsPipe,
+    MinutesFromSecondsPipe,
     IonButtons,
     IonButton,
     IonIcon,
     IonPopover,
-    NpTimeWithUnitPipe,
+    TimeWithUnitPipe,
     IonList,
   ],
 })
@@ -90,17 +87,6 @@ export class TrackingItemComponent {
       ellipsisVertical,
       refreshOutline,
     });
-  }
-
-  async handleItemOptionsOnDrag(event: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(event)) {
-      case 'end': {
-        return this.emitDeleteItem();
-      }
-      case 'start': {
-        return this.emitEditItem();
-      }
-    }
   }
 
   async emitDeleteItem() {

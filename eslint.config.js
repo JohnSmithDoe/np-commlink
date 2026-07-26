@@ -10,6 +10,14 @@ const unicorn = require('eslint-plugin-unicorn').default;
 const json = require('@eslint/json').default;
 const markdown = require('@eslint/markdown').default;
 
+// A quoted domain-prefixed key is a `Literal` in TypeScript and a
+// `LiteralPrimitive` in an Angular template — same leak, two ASTs.
+const DOMAIN_KEY_NODES = ':matches(Literal, LiteralPrimitive)';
+const DOMAIN_KEY_PATTERN =
+  '/^(grocery|tracking|tasks|cash|trackplay|officetime|geist)\\./';
+const DOMAIN_KEY_MESSAGE =
+  'Domain vocabulary in @shared. Use a neutral i18n namespace (categories.*, item-list.*, list-header.*, toast.*, a11y.*), or have the domain supply the key through the facade that mounts this surface.';
+
 module.exports = defineConfig(
   globalIgnores([
     'www/**',
@@ -24,12 +32,6 @@ module.exports = defineConfig(
   sheriff.configs.all,
   {
     files: ['**/*.ts'],
-    // angular-eslint / @ngrx flat configs are typed against
-    // @typescript-eslint/utils, whose LanguageOptions differ structurally from
-    // @eslint/core's — a runtime-harmless type mismatch that only surfaces
-    // under defineConfig's stricter `extends` typing (typescript-eslint#10899,
-    // explicitly documented as safe to ignore). Remove once upstream aligns.
-    // @ts-expect-error -- see note above
     extends: [...angular.configs.tsRecommended, ...ngrx.configs.all],
     processor: angular.processInlineTemplates,
     languageOptions: {
@@ -43,9 +45,6 @@ module.exports = defineConfig(
       },
     },
     rules: {
-      // Stylistic ngrx rule the project has never followed; reducers use
-      // inferred return types. Kept off to match the existing codebase.
-      '@ngrx/on-function-explicit-return-type': 'off',
       '@angular-eslint/component-class-suffix': [
         'error',
         { suffixes: ['Page', 'Dialog', 'Component'] },
@@ -81,12 +80,16 @@ module.exports = defineConfig(
       'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
     },
   },
+  {
+    // The e2e helpers probe IndexedDB directly, whose request objects are driven
+    // by `onsuccess`/`onerror` handler properties. The rule flags only the error
+    // half, so obeying it would leave one request half listener, half handler.
+    files: ['e2e/**/*.ts'],
+    rules: {
+      'unicorn/prefer-add-event-listener': 'off',
+    },
+  },
   // ── NgRx is a data-layer implementation detail ──────────────────────────
-  // Fitness function for the facade architecture: `@ngrx/*` may only be
-  // imported from the data layer (every `<domain>/data/**` + `@shared/data/**`).
-  // Presentation (feature/smart-ui/ui) and the shell dispatch/read through a
-  // domain facade instead, so the store never leaks past `data/`. The block
-  // below re-enables the imports in the sanctioned homes (last-match-wins).
   {
     files: ['src/app/**/*.ts'],
     rules: {
@@ -105,13 +108,9 @@ module.exports = defineConfig(
     },
   },
   {
-    // Sanctioned NgRx homes: the data layer (every `<domain>/data/**` +
-    // `@shared/data/**`, which holds the per-context load/save effect builders),
-    // the composition root, and the test kit. `@shared/model` was here for the
-    // router type on the old root-state interface; that type is gone, so the
-    // model layer stays NgRx-free.
+    // Sanctioned NgRx homes
     files: [
-      'src/main.ts',
+      'src/app/app.providers.ts',
       'src/app/**/data/**/*.ts',
       'src/app/@shared/testing/**/*.ts',
       'src/app/**/*.spec.ts',
@@ -120,10 +119,38 @@ module.exports = defineConfig(
       'no-restricted-imports': 'off',
     },
   },
+  // ── No domain vocabulary in the domain-blind kernel ─────────────────────
+  // Sheriff is structurally blind to this class: it checks import edges, and a
+  // leak like `'grocery.a11y.back' | translate` inside a page that tasks and cash
+  // also mount is a *string*, not an edge. It stays functionally harmless (the
+  // key resolves) right up until a second domain reads the first one's wording,
+  // which is the boundary the DDD re-domaining existed to draw.
+  //
+  // Anything genuinely shared belongs in a neutral namespace (`categories.*`,
+  // `item-list.*`, `list-header.*`, `toast.*`, `a11y.*`); anything genuinely
+  // domain-specific must arrive from the domain, through the facade that mounted
+  // the shared surface (`listTitleKey`, `listHeader`).
   {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended],
     rules: {},
+  },
+  {
+    // Two selectors because the two languages parse to different ASTs: a quoted
+    // key is a `Literal` in TypeScript and a `LiteralPrimitive` in an Angular
+    // template. Most of this class lived in templates, so scoping to `.ts` alone
+    // would have been a gate that never fired.
+    files: ['src/app/@shared/**/*.ts', 'src/app/@shared/**/*.html'],
+    ignores: ['src/app/@shared/**/*.spec.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: `${DOMAIN_KEY_NODES}[value=${DOMAIN_KEY_PATTERN}]`,
+          message: DOMAIN_KEY_MESSAGE,
+        },
+      ],
+    },
   },
   // Plain JS (root config files). unicorn's native language is JS, so the
   // recommended set applies here as-is — only `prefer-module` is off because

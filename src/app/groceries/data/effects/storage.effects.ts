@@ -5,14 +5,14 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { createShoppingItemFromStorage } from '../../util/grocery.factory';
 import { matchesItemExactly } from '../../../@shared/util/app.utils';
-import { ShoppingActions } from '../shopping.actions';
-import { selectShoppingState } from '../shopping.selector';
-import { StorageActions } from '../storage.actions';
+import { ShoppingActions } from '../actions/shopping.actions';
+import { selectShoppingState } from '../selectors/shopping.selector';
+import { StorageActions } from '../actions/storage.actions';
 
 @Injectable({ providedIn: 'root' })
 export class StorageEffects {
-  #actions$ = inject(Actions);
-  #store = inject(Store);
+  readonly #actions$ = inject(Actions);
+  readonly #store = inject(Store);
 
   copyFromShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(

@@ -3,21 +3,22 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockAppState } from '../../../@shared/testing/test-data';
+import { mockKernelState } from '../../../@shared/testing/test-data';
 import {
+  mockGroceriesState,
   mockShoppingItem,
   mockShoppingState,
   mockStorageItem,
-} from '../../testing/grocery.test-data';
-import { ShoppingActions } from '../shopping.actions';
-import { StorageActions } from '../storage.actions';
+} from '../../testing/groceries.test-data';
+import { ShoppingActions } from '../actions/shopping.actions';
+import { StorageActions } from '../actions/storage.actions';
 import { StorageEffects } from './storage.effects';
 
 describe('StorageEffects', () => {
   let actions$: Observable<Action>;
   let effects: StorageEffects;
 
-  const setup = (initialState = mockAppState()) => {
+  const setup = (initialState = mockKernelState()) => {
     TestBed.configureTestingModule({
       providers: [
         StorageEffects,
@@ -41,8 +42,10 @@ describe('StorageEffects', () => {
     it('increases the quantity when a matching shopping item already exists', async () => {
       const existing = mockShoppingItem({ name: 'Milk' });
       setup(
-        mockAppState({
-          shopping: mockShoppingState({ items: [existing] }),
+        mockKernelState({
+          groceries: mockGroceriesState({
+            shopping: mockShoppingState({ items: [existing] }),
+          }),
         })
       );
       actions$ = of(
@@ -57,12 +60,18 @@ describe('StorageEffects', () => {
     });
 
     it('adds a new shopping item when none matches', async () => {
-      setup(mockAppState({ shopping: mockShoppingState({ items: [] }) }));
+      setup(
+        mockKernelState({
+          groceries: mockGroceriesState({
+            shopping: mockShoppingState({ items: [] }),
+          }),
+        })
+      );
       actions$ = of(
         StorageActions.copyToShoppinglist(mockStorageItem({ name: 'Milk' }))
       );
       const emitted = await firstValueFrom(effects.copyToShoppingList$);
-      expect(emitted.type).toBe('[Shopping] Add Or Update Item');
+      expect(emitted.type).toBe('[Shopping] addOrUpdateItem');
       expect(
         (emitted as ReturnType<typeof ShoppingActions.addOrUpdateItem>).item
           .name

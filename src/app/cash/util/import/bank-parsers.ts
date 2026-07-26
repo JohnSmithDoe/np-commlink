@@ -1,4 +1,4 @@
-import { TBank } from '../../model';
+import { TBank } from '../../model/account.types';
 import { IBankParser } from './bank-parser';
 import { dkbParser } from './dkb.parser';
 import { volksbankParser } from './volksbank.parser';

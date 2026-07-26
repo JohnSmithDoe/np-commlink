@@ -1,8 +1,12 @@
 import { inject, Injectable, Signal } from '@angular/core';
-import { ICategory, TCategoryId } from '../../@shared/model/types';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { ICategory, TCategoryId } from '../../@shared/model/category.types';
 import { Store } from '@ngrx/store';
-import { ICashAccount, ICashRule, ICashTransaction } from '../model';
-import { CashActions } from './cash.actions';
+import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
+import { ICashAccount } from '../model/account.types';
+import { ICashRule } from '../model/rule.types';
+import { ICashTransaction } from '../model/transaction.types';
+import { CashActions } from './actions/cash.actions';
 import {
   selectAccountBalances,
   selectAccountById,
@@ -18,7 +22,7 @@ import {
   selectTransactionsForAccount,
   selectTransactionsForCategory,
   TAccountTxn,
-} from './cash.selector';
+} from './selectors/cash.selector';
 
 /**
  * The `cash` (CREDSTICK) domain facade — the single NgRx surface for every cash
@@ -140,5 +144,15 @@ export class CashFacade {
 
   reorderRules(ids: string[]): void {
     this.#store.dispatch(CashActions.reorderRules(ids));
+  }
+
+  reportRulesApplied(count: number): void {
+    this.#store.dispatch(
+      NotificationsActions.toast({
+        key: marker('cash.rules.apply-result'),
+        params: { count },
+        color: 'medium',
+      })
+    );
   }
 }

@@ -1,20 +1,18 @@
 import {
-  IBaseItem,
-  ICategory,
-  IListState,
-  TCategoryId,
-  TItemListMode,
-  TItemListSort,
-  TItemListSortDir,
-  TItemListSortType,
-  TUpdateDTO,
-} from '../../model/types';
-import {
   matchesItemExactlyIdx as matchesItemExactlyIndex,
   matchesSearch,
   matchingTxt,
   uuidv4,
-} from '../../util/app.utils';
+} from '../app.utils';
+import { IBaseItem, TUpdateDTO } from '../../model/base-item.types';
+import { ICategory, TCategoryId } from '../../model/category.types';
+import {
+  IListState,
+  TItemListMode,
+  TItemListSort,
+  TItemListSortDir,
+  TItemListSortType,
+} from '../../model/item-list.types';
 
 // Domain-blind reducer helpers shared by every list domain (tracking, grocery,
 // tasks). They operate over the generic `IListState<T>` shape and never read a
@@ -57,19 +55,28 @@ export const removeListItems = <T extends IListState<R>, R extends IBaseItem>(
   };
 };
 
+// An update for an item that is no longer in the list is a legitimate no-op:
+// the row can be deleted (or the list re-hydrated) while its edit dialog is
+// still open. Returning state unchanged is the whole behaviour — a reducer
+// helper must stay pure, so it does not log.
 export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
   state: T,
   item: TUpdateDTO<R> | undefined
 ): T => {
   if (!item) return state;
-  const items: TUpdateDTO<R>[] = [...state.items];
   const itemIndex = matchesItemExactlyIndex(item, state.items);
-  if (itemIndex >= 0) {
-    const original = state.items[itemIndex];
-    items[itemIndex] = { ...original, ...item };
-  } else {
-    console.warn('updateListItem: item not in list', item.id);
-  }
+  if (itemIndex < 0) return state;
+  const items: TUpdateDTO<R>[] = [...state.items];
+  // The matched row keeps its OWN id. `matchesItemExactly` falls back from id to
+  // name — right for add-dedupe, but here it means a stale DTO (dialog still open
+  // over a row that was deleted or re-hydrated under a new id) can land on a
+  // same-named row, and spreading the DTO's `id` would rewrite that row's
+  // identity out from under everything holding it.
+  items[itemIndex] = {
+    ...state.items[itemIndex],
+    ...item,
+    id: state.items[itemIndex].id,
+  };
   return { ...state, items };
 };
 
@@ -221,6 +228,26 @@ export const updateListCategory = <
       cat.id === categoryId ? { ...cat, name: to } : cat
     ),
   };
+};
+
+/**
+ * Store a searchbar query, trimmed and canonical. Returns the SAME state object
+ * when nothing changed, so a keystroke that lands on the same query cannot
+ * retrigger the reducer's downstream selectors.
+ *
+ * Trimming matters only for what is stored and redisplayed — matching already
+ * normalises through `matchingTxt` — but the four list reducers that each had
+ * their own copy of this disagreed about it, so two lists stored `'milk '` and
+ * two stored `'milk'`.
+ */
+export const updateListSearch = <T extends IListState<R>, R extends IBaseItem>(
+  state: T,
+  searchQuery?: string
+): T => {
+  const trimmed = searchQuery?.trim();
+  return trimmed === state.searchQuery
+    ? state
+    : { ...state, searchQuery: trimmed };
 };
 
 export const updatedSearchQuery = (

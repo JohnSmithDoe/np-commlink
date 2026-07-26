@@ -2,19 +2,15 @@ import { computed, inject, linkedSignal, Signal, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import {
-  IBaseItem,
-  ICategory,
-  TCategoryId,
-  TEditItemMode,
-  TItemListId,
-  TMarker,
-} from '../../model/types';
+import { TMarker } from '../../model/app.types';
+import { IBaseItem, TEditItemMode } from '../../model/base-item.types';
+import { ICategory, TCategoryId } from '../../model/category.types';
+import { TItemListId } from '../../model/item-list.types';
 import { categoriesByIds } from '../../util/categories/category.utils';
 import {
-  ItemDialogHost,
+  ItemDialogService,
   TItemDialogRequest,
-} from '../../data/item-dialogs/item-dialog-host';
+} from '../../util/item-dialog.service';
 
 // Both labels are pure functions of the edit mode. They used to be derived in the
 // itemDialogs reducer, i.e. a store round-trip for two strings.
@@ -31,8 +27,8 @@ const SAVE_BUTTON: Readonly<Record<TEditItemMode, TMarker>> = {
  * Abstract base for the per-domain edit-dialog wrappers (type:feature, lives in
  * @shared/feature so the sealed domains may extend it via
  * `featureMayUseSharedFeature`). Owns the plumbing every wrapper repeated: read
- * the domain-blind open-command off {@link ItemDialogHost}, keep the edit draft
- * LOCAL (no per-keystroke dispatch), and save via the domain's own facade
+ * the domain-blind open-command off {@link ItemDialogService}, keep the edit
+ * draft LOCAL (no per-keystroke dispatch), and save via the domain's own facade
  * command on confirm.
  *
  * The per-domain differences are abstract members the subclass supplies from its
@@ -44,7 +40,7 @@ const SAVE_BUTTON: Readonly<Record<TEditItemMode, TMarker>> = {
  * metadata, so each wrapper still declares its own imports/template.
  */
 export abstract class BaseEditItemDialog<T extends IBaseItem> {
-  protected readonly host = inject(ItemDialogHost);
+  protected readonly host = inject(ItemDialogService);
 
   protected abstract readonly listId: TItemListId;
   abstract readonly listItems: Signal<T[] | null | undefined>;
@@ -127,9 +123,9 @@ export abstract class BaseCategoryEditItemDialog<
 
   // Domain catalog commands the subclass wires to its own facade. Kept `void`
   // (not action factories) so no NgRx leaks into the wrapper.
-  protected abstract addCategoryCmd(category: ICategory): void;
-  protected abstract removeCategoryCmd(categoryId: TCategoryId): void;
-  protected abstract renameCategoryCmd(id: TCategoryId, to: string): void;
+  protected abstract addCategoryToCatalog(category: ICategory): void;
+  protected abstract removeCategoryFromCatalog(categoryId: TCategoryId): void;
+  protected abstract renameCategoryInCatalog(id: TCategoryId, to: string): void;
 
   removeCategory(categoryId: TCategoryId) {
     this.#dropFromDraft(categoryId);
@@ -149,21 +145,21 @@ export abstract class BaseCategoryEditItemDialog<
   }
 
   addCategory(category: ICategory) {
-    this.addCategoryCmd(category);
+    this.addCategoryToCatalog(category);
   }
 
   // Catalog delete (picker swipe): remove it from the domain catalog (cascades
   // to every item) and from the local draft so this item stays consistent
   // pre-save.
   deleteCategory(categoryId: TCategoryId) {
-    this.removeCategoryCmd(categoryId);
+    this.removeCategoryFromCatalog(categoryId);
     this.#dropFromDraft(categoryId);
   }
 
   // Rename is O(1) on the catalog; items reference by id, so the draft is
   // unchanged.
   renameCategory({ id, to }: { id: TCategoryId; to: string }) {
-    this.renameCategoryCmd(id, to);
+    this.renameCategoryInCatalog(id, to);
   }
 
   #dropFromDraft(categoryId: TCategoryId) {

@@ -11,7 +11,6 @@ import { parseNumberInput } from '../../../util/app.utils';
 @Component({
   selector: 'app-number-input',
   templateUrl: './number-input.component.html',
-  styleUrls: ['./number-input.component.scss'],
   imports: [IonItem, IonInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

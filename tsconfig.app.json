@@ -3,7 +3,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    // Chrome's built-in AI globals (LanguageModel & co) are ambient declarations,
+    // so they must be listed explicitly — this project opts out of auto-inclusion.
+    "types": ["dom-chromium-ai"]
   },
   "files": ["src/main.ts", "src/polyfills.ts"],
   "include": ["src/**/*.d.ts"]

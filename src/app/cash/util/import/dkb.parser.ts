@@ -1,9 +1,10 @@
-import { eurToCents } from '../money';
+import { eurToCents } from '../money.utils';
 import {
   findHeaderIndex,
   germanDateToISO,
   IBankParser,
   IParsedRow,
+  IParseResult,
   joinDescription,
   splitLines,
   splitRow,
@@ -25,19 +26,23 @@ const AMOUNT = 9;
 export const dkbParser: IBankParser = {
   bank: 'dkb',
   label: 'DKB',
-  parse(text: string): IParsedRow[] {
+  parse(text: string): IParseResult {
     const lines = splitLines(text);
     const header = findHeaderIndex(lines, HEADER);
-    if (header === -1) return [];
+    if (header === -1) return { rows: [], rejected: 0 };
 
     const rows: IParsedRow[] = [];
+    let rejected = 0;
     for (const line of lines.slice(header + 1)) {
       const cols = splitRow(line);
       const status = cols[STATUS] ?? '';
       if (status && status !== 'Gebucht') continue; // skip pending/rejected
       const dateISO = germanDateToISO(cols[DATE] ?? '');
       const amountCents = eurToCents(cols[AMOUNT] ?? '');
-      if (dateISO === null || amountCents === null) continue;
+      if (dateISO === null || amountCents === null) {
+        rejected++;
+        continue;
+      }
       const counterparty = cols[PAYER] || cols[PAYEE] || '';
       const text = joinDescription(counterparty, cols[PURPOSE] ?? '');
       rows.push({
@@ -47,6 +52,6 @@ export const dkbParser: IBankParser = {
         rawDescription: text,
       });
     }
-    return rows;
+    return { rows, rejected };
   },
 };

@@ -5,21 +5,21 @@ import {
   output,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem, ICategory } from '../../../@shared/model/types';
 import {
   IGrocerySearchResult,
   IProduct,
   IShoppingItem,
   IStorageItem,
-} from '../../model';
-import { CategoriesPipe } from '../../../@shared/util/categories/categories.pipe';
-import { TextItemComponent } from '../../../@shared/ui/base-item/item-list/item-list-items/text-item/text-item.component';
+} from '../../model/grocery-list.types';
+import { CategoriesPipe } from '../../util/categories.pipe';
+import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-item.component';
 import { ItemListComponent } from '../../../@shared/ui/base-item/item-list/item-list.component';
+import { IBaseItem } from '../../../@shared/model/base-item.types';
+import { ICategory } from '../../../@shared/model/category.types';
 
 @Component({
   selector: 'app-grocery-search-result',
   templateUrl: './grocery-search-result.component.html',
-  styleUrls: ['./grocery-search-result.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ItemListComponent,

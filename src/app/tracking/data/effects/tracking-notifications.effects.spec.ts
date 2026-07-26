@@ -3,88 +3,48 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, Observable, of, toArray } from 'rxjs';
-import { NotificationsStore } from '../../../@shared/data/notification/notifications.store';
+import { firstValueFrom, Observable, of } from 'rxjs';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import {
-  mockAppState,
+  mockKernelState,
   TEST_TIMESTAMP,
 } from '../../../@shared/testing/test-data';
 import {
   mockTrackingItem,
   mockTrackingState,
 } from '../../testing/tracking.test-data';
-import {
-  INotification,
-  INotificationsState,
-} from '../../../@shared/model/types';
-import { ITrackingState } from '../../model';
-import { TrackingActions } from '../tracking.actions';
+import { ITrackingState } from '../../model/tracking.types';
+import { TrackingActions } from '../actions/tracking.actions';
 import { TrackingNotificationsEffects } from './tracking-notifications.effects';
-import { trackingStateNotificationId } from '../tracking-notifications.utils';
+import { trackingStateNotificationId } from '../../util/tracking-notifications.utils';
+import { TProjectedNotification } from '../../../@shared/model/notifications.types';
 
-const OLD = '2020-01-01T00:00:00.000Z';
-
-const emissions = <T>(source: Observable<T>): Promise<T[]> =>
-  firstValueFrom(source.pipe(toArray()));
-
-function mockNotification(
-  overrides: Partial<INotification> = {}
-): INotification {
-  return {
-    id: 'notif-1',
-    name: 'Notice',
-    createdAt: TEST_TIMESTAMP,
-    body: 'body',
-    icon: 'ellipse',
-    color: 'medium',
-    status: 'new',
-    updatedAt: TEST_TIMESTAMP,
-    ...overrides,
-  };
-}
-
-const notifState = (items: INotification[]): INotificationsState => ({
-  items,
-  doneCollapsed: true,
-  lastViewedAt: '1970-01-01T00:00:00.000Z',
-});
+// Every reconcile hands the inbox tracking's complete row set, so the assertions
+// are all about what that set contains.
+const projected = async (
+  effect: Observable<Action>
+): Promise<TProjectedNotification[]> => {
+  const emitted = (await firstValueFrom(effect)) as ReturnType<
+    typeof NotificationsActions.project
+  >;
+  expect(emitted.type).toBe(NotificationsActions.project.type);
+  expect(emitted.owner).toBe('tracking');
+  return emitted.notifications;
+};
 
 describe('TrackingNotificationsEffects', () => {
   let effects: TrackingNotificationsEffects;
-  // Fake durable notifications store: `mutate` applies the transform to the
-  // held state (mirroring read-modify-write), `read` returns it.
-  let stored: INotificationsState;
-  let store: {
-    read: ReturnType<typeof vi.fn>;
-    mutate: ReturnType<typeof vi.fn>;
-  };
 
-  const setup = (
-    actions$: Observable<Action>,
-    options: {
-      tracking?: ITrackingState;
-      notifications?: INotification[];
-    } = {}
-  ) => {
-    stored = notifState(options.notifications ?? []);
-    store = {
-      read: vi.fn(async () => stored),
-      mutate: vi.fn(
-        async (t: (s: INotificationsState) => INotificationsState) => {
-          stored = t(stored);
-        }
-      ),
-    };
+  const setup = (actions$: Observable<Action>, tracking?: ITrackingState) => {
     TestBed.configureTestingModule({
       providers: [
         TrackingNotificationsEffects,
         provideMockActions(() => actions$),
         provideMockStore({
-          initialState: mockAppState({
-            tracking: options.tracking ?? mockTrackingState({ items: [] }),
+          initialState: mockKernelState({
+            tracking: tracking ?? mockTrackingState({ items: [] }),
           }),
         }),
-        { provide: NotificationsStore, useValue: store },
         {
           provide: TranslateService,
           useValue: { instant: (key: string) => key },
@@ -99,149 +59,105 @@ describe('TrackingNotificationsEffects', () => {
     expect(effects).toBeTruthy();
   });
 
-  describe('reconcileState$ (durable)', () => {
-    it('upserts a running state notification for the toggled item', async () => {
+  describe('reconcileState$', () => {
+    it('projects a running state notification for the toggled item', async () => {
       const item = mockTrackingItem({
         id: 't1',
         state: 'running',
         startTime: TEST_TIMESTAMP,
       });
-      setup(of(TrackingActions.toggleTrackingItem(item, 'now')), {
-        tracking: mockTrackingState({ items: [item] }),
-        notifications: [],
-      });
+      setup(
+        of(TrackingActions.toggleTrackingItem(item, 'now')),
+        mockTrackingState({ items: [item] })
+      );
 
-      await emissions(effects.reconcileState$);
+      const rows = await projected(effects.reconcileState$);
 
-      expect(store.mutate).toHaveBeenCalled();
-      expect(stored.items).toHaveLength(1);
-      expect(stored.items[0].id).toBe(trackingStateNotificationId('t1'));
-      expect(stored.items[0].icon).toBe('play-circle');
-      expect(stored.items[0].action?.type).toBe('tracking.pause');
+      expect(rows).toHaveLength(1);
+      expect(rows[0].id).toBe(trackingStateNotificationId('t1'));
+      expect(rows[0].icon).toBe('play-circle');
+      expect(rows[0].action?.type).toBe('tracking.pause');
+      expect(rows[0].variant).toBe('running');
     });
 
-    it('removes an orphaned tracking notification whose item is gone', async () => {
-      setup(of(TrackingActions.resetAllTracking()), {
-        tracking: mockTrackingState({ items: [] }),
-        notifications: [
-          mockNotification({ id: trackingStateNotificationId('ghost') }),
-        ],
-      });
+    // Tracking claims a set, not a diff: an item it no longer reports on simply
+    // isn't in the projection, and the inbox retires the row. This is what a
+    // removed item and a reset one (its startTime wiped) have in common.
+    it('projects nothing for items with no tracking to report', async () => {
+      setup(
+        of(TrackingActions.resetAllTracking()),
+        mockTrackingState({ items: [mockTrackingItem({ id: 'ghost' })] })
+      );
 
-      await emissions(effects.reconcileState$);
-
-      expect(stored.items).toEqual([]);
+      expect(await projected(effects.reconcileState$)).toEqual([]);
     });
 
-    it('leaves non-tracking notifications untouched', async () => {
-      setup(of(TrackingActions.resetAllTracking()), {
-        tracking: mockTrackingState({ items: [] }),
-        notifications: [mockNotification({ id: 'debug-1' })],
-      });
-
-      await emissions(effects.reconcileState$);
-
-      expect(stored.items.map((n) => n.id)).toEqual(['debug-1']);
-    });
-
-    it('preserves updatedAt for a cascade item whose kind did not change', async () => {
+    it('stamps updatedAt for the acted-on item and leaves the cascade to the inbox', async () => {
       const target = mockTrackingItem({
         id: 'a',
         state: 'running',
         startTime: TEST_TIMESTAMP,
       });
-      const cascade = mockTrackingItem({ id: 'b', state: 'running' });
-      setup(of(TrackingActions.toggleTrackingItem(target, 'now')), {
-        tracking: mockTrackingState({ items: [target, cascade] }),
-        notifications: [
-          mockNotification({
-            id: trackingStateNotificationId('b'),
-            updatedAt: OLD,
-            action: { type: 'tracking.pause', trackingItemId: 'b' },
-          }),
-        ],
+      const cascade = mockTrackingItem({
+        id: 'b',
+        state: 'running',
+        startTime: TEST_TIMESTAMP,
       });
-
-      await emissions(effects.reconcileState$);
-
-      const cascadeNotif = stored.items.find(
-        (n) => n.id === trackingStateNotificationId('b')
+      setup(
+        of(TrackingActions.toggleTrackingItem(target, 'now')),
+        mockTrackingState({ items: [target, cascade] })
       );
-      expect(cascadeNotif?.updatedAt).toBe(OLD);
+
+      const rows = await projected(effects.reconcileState$);
+
+      const byId = (id: string) =>
+        rows.find((row) => row.id === trackingStateNotificationId(id));
+      expect(byId('a')?.updatedAt).toBeTruthy();
+      expect(byId('b')?.updatedAt).toBeUndefined();
     });
   });
 
-  describe('applyNotificationCommand$ (durable)', () => {
+  describe('applyNotificationCommand$', () => {
     it('toggles with a stopped hint for a tracking.start CTA', async () => {
       const item = mockTrackingItem({ id: 't1', state: 'stopped' });
-      setup(of(TrackingActions.applyNotificationCommand('n1')), {
-        tracking: mockTrackingState({ items: [item] }),
-        notifications: [
-          mockNotification({
-            id: 'n1',
-            action: { type: 'tracking.start', trackingItemId: 't1' },
-          }),
-        ],
-      });
+      setup(
+        of(TrackingActions.applyNotificationCommand('tracking.start', 't1')),
+        mockTrackingState({ items: [item] })
+      );
 
-      const emitted = await emissions(effects.applyNotificationCommand$);
+      const emitted = await firstValueFrom(effects.applyNotificationCommand$);
 
-      expect(emitted).toHaveLength(1);
-      expect(emitted[0].type).toBe(TrackingActions.toggleTrackingItem.type);
-      const toggled = emitted[0] as ReturnType<
+      expect(emitted.type).toBe(TrackingActions.toggleTrackingItem.type);
+      const toggled = emitted as ReturnType<
         typeof TrackingActions.toggleTrackingItem
       >;
       expect(toggled.item.id).toBe('t1');
       expect(toggled.item.state).toBe('stopped');
-      // No separate markDone dispatch — reconcile (triggered by the toggle)
-      // updates the notification; the store is not mutated here.
-      expect(store.mutate).not.toHaveBeenCalled();
     });
 
     it('flips the hint to running for a tracking.pause CTA', async () => {
       const item = mockTrackingItem({ id: 't1', state: 'running' });
-      setup(of(TrackingActions.applyNotificationCommand('n1')), {
-        tracking: mockTrackingState({ items: [item] }),
-        notifications: [
-          mockNotification({
-            id: 'n1',
-            action: { type: 'tracking.pause', trackingItemId: 't1' },
-          }),
-        ],
-      });
+      setup(
+        of(TrackingActions.applyNotificationCommand('tracking.pause', 't1')),
+        mockTrackingState({ items: [item] })
+      );
 
-      const emitted = await emissions(effects.applyNotificationCommand$);
-      const toggled = emitted[0] as ReturnType<
-        typeof TrackingActions.toggleTrackingItem
-      >;
-      expect(toggled.item.state).toBe('running');
+      const emitted = (await firstValueFrom(
+        effects.applyNotificationCommand$
+      )) as ReturnType<typeof TrackingActions.toggleTrackingItem>;
+
+      expect(emitted.item.state).toBe('running');
     });
 
-    it('dismisses the notification durably (no toggle) when the item is gone', async () => {
-      setup(of(TrackingActions.applyNotificationCommand('n1')), {
-        tracking: mockTrackingState({ items: [] }),
-        notifications: [
-          mockNotification({
-            id: 'n1',
-            action: { type: 'tracking.start', trackingItemId: 'ghost' },
-          }),
-        ],
-      });
+    // Nothing to toggle means no reconcile, so the CTA re-projects instead — which
+    // is what retires the row the user just tapped.
+    it('re-projects (no toggle) when the item is gone', async () => {
+      setup(
+        of(TrackingActions.applyNotificationCommand('tracking.start', 'ghost')),
+        mockTrackingState({ items: [] })
+      );
 
-      const emitted = await emissions(effects.applyNotificationCommand$);
-
-      expect(emitted).toEqual([]);
-      expect(store.mutate).toHaveBeenCalled();
-      expect(stored.items.find((n) => n.id === 'n1')?.status).toBe('done');
-    });
-
-    it('emits nothing when the notification has no action', async () => {
-      setup(of(TrackingActions.applyNotificationCommand('n1')), {
-        notifications: [mockNotification({ id: 'n1', action: undefined })],
-      });
-
-      expect(await emissions(effects.applyNotificationCommand$)).toEqual([]);
-      expect(store.mutate).not.toHaveBeenCalled();
+      expect(await projected(effects.applyNotificationCommand$)).toEqual([]);
     });
   });
 });

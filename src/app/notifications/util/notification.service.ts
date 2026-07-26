@@ -1,9 +1,17 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import dayjs from 'dayjs';
+import { TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
+import { nextDailyOccurrence } from './notification-schedule.utils';
+
+const REMINDER_TITLE = marker('notifications.office-reminder.title');
+const REMINDER_BODY = marker('notifications.office-reminder.body');
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
+  readonly #translate = inject(TranslateService);
+
   private static readonly OFFICE_REMINDER_ID = 1;
   private static readonly OFFICE_REMINDER_HOUR = 9;
   private static readonly OFFICE_REMINDER_MINUTE = 0;
@@ -33,14 +41,24 @@ export class NotificationService {
       notifications: [{ id: NotificationService.OFFICE_REMINDER_ID }],
     });
 
+    // `get`, not `instant`: this runs on the eager boot path, where the
+    // translation bundle may not have loaded yet and `instant` would schedule a
+    // notification whose text is the raw key.
+    const copy = await firstValueFrom(
+      this.#translate.get([REMINDER_TITLE, REMINDER_BODY])
+    );
+
     await LocalNotifications.schedule({
       notifications: [
         {
           id: NotificationService.OFFICE_REMINDER_ID,
-          title: 'Bürotag heute?',
-          body: 'Vergiss nicht, deine Anwesenheit zu erfassen.',
+          title: copy[REMINDER_TITLE],
+          body: copy[REMINDER_BODY],
           schedule: {
-            at: this.#nextOfficeReminderTime(),
+            at: nextDailyOccurrence(
+              NotificationService.OFFICE_REMINDER_HOUR,
+              NotificationService.OFFICE_REMINDER_MINUTE
+            ),
             every: 'day',
             allowWhileIdle: true,
           },
@@ -63,14 +81,5 @@ export class NotificationService {
         },
       ],
     });
-  }
-
-  #nextOfficeReminderTime(): Date {
-    const target = dayjs()
-      .hour(NotificationService.OFFICE_REMINDER_HOUR)
-      .minute(NotificationService.OFFICE_REMINDER_MINUTE)
-      .second(0)
-      .millisecond(0);
-    return (target.isAfter(dayjs()) ? target : target.add(1, 'day')).toDate();
   }
 }

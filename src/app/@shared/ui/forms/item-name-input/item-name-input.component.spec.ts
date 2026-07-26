@@ -1,8 +1,8 @@
 import { provideZonelessChangeDetection, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem } from '../../../model/types';
 import { ItemNameInputComponent } from './item-name-input.component';
+import { IBaseItem } from '../../../model/base-item.types';
 
 const item = (name: string): IBaseItem => ({
   id: '1',

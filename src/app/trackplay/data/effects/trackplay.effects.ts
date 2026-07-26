@@ -5,8 +5,8 @@ import { ToastController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { tap, withLatestFrom } from 'rxjs';
-import { TrackplayActions } from '../trackplay.actions';
-import { selectLastDeleted } from '../trackplay.selector';
+import { TrackplayActions } from '../actions/trackplay.actions';
+import { selectLastDeleted } from '../selectors/trackplay.selector';
 
 @Injectable({ providedIn: 'root' })
 export class TrackplayEffects {
@@ -34,11 +34,16 @@ export class TrackplayEffects {
     { dispatch: false }
   );
 
+  #undoToast?: HTMLIonToastElement;
+
   async #presentUndoToast(name: string) {
-    // Only one undo toast at a time (a new delete supersedes the previous one).
-    while (await this.#toast.getTop()) {
-      await this.#toast.dismiss(null, 'cancel');
-    }
+    // Only one undo toast at a time (a new delete supersedes the previous one),
+    // and only ever *ours*: `getTop()` skips an overlay that is mid-leave, and
+    // `dismiss()` on one already leaving resolves false — so the old
+    // `while (await getTop()) await dismiss()` could spin on microtasks without
+    // yielding the frame that would finish the animation, and it also tore down
+    // other domains' toasts.
+    await this.#undoToast?.dismiss(null, 'cancel');
     const toast = await this.#toast.create({
       header: this.#translate.instant(marker('trackplay.toast.undo-delete')),
       message: name,
@@ -59,6 +64,7 @@ export class TrackplayEffects {
         },
       ],
     });
+    this.#undoToast = toast;
     await toast.present();
   }
 }

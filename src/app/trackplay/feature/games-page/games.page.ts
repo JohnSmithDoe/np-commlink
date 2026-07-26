@@ -15,17 +15,19 @@ import {
   IonRouterLink,
   ModalController,
   PopoverController,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline, diceOutline } from 'ionicons/icons';
-import { IGame, TID } from '../../model';
+import { IGame, TID } from '../../model/trackplay.types';
+import { gameTypeName } from '../../util/game-type.utils';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
-import { TrackplayGameEditDialogComponent } from '../../smart-ui/game-edit-dialog/game-edit-dialog.component';
-import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-settings-popover/game-settings-popover.component';
+import { TrackplayGameEditModalComponent } from '../game-edit-modal/game-edit-modal.component';
+import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
+import { presentModal } from '../../../@shared/util/present-modal';
 
 /**
  * TRACKPLAY program home — the games list. Header: new-game (+), a jump to the
@@ -36,7 +38,7 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
  * toast is raised automatically by the effect).
  */
 @Component({
-  selector: 'app-trackplay-games-page',
+  selector: 'app-page-trackplay-games',
   templateUrl: './games.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
@@ -53,11 +55,15 @@ import { TrackplayGameSettingsPopoverComponent } from '../../smart-ui/game-setti
     TrackplayGameListItemComponent,
   ],
 })
-export class TrackplayGamesPage implements ViewWillEnter {
+export class TrackplayGamesPage {
   readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #popoverCtrl = inject(PopoverController);
+  readonly #translate = inject(TranslateService);
+  readonly #unknownTypeLabel = this.#translate.instant(
+    marker('trackplay.label.unknown-type')
+  );
 
   readonly rxGames = this.#facade.gameList;
   readonly rxGameTypes = this.#facade.gameTypes;
@@ -86,12 +92,8 @@ export class TrackplayGamesPage implements ViewWillEnter {
     addIcons({ optionsOutline, peopleOutline, diceOutline });
   }
 
-  ionViewWillEnter(): void {
-    this.#facade.enterGamesPage();
-  }
-
   typeName(game: IGame): string {
-    return this.rxGameTypes()[game.type]?.name ?? 'Unbekannt';
+    return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
   }
 
   goToGame(id: TID): void {
@@ -112,7 +114,7 @@ export class TrackplayGamesPage implements ViewWillEnter {
 
   async openSettings(event: Event): Promise<void> {
     const popover = await this.#popoverCtrl.create({
-      component: TrackplayGameSettingsPopoverComponent,
+      component: TrackplayListSettingsPopoverComponent,
       componentProps: { mode: 'games' },
       event: event,
     });
@@ -123,10 +125,10 @@ export class TrackplayGamesPage implements ViewWillEnter {
     gameId?: TID;
     presetPlayerIds?: TID[];
   }): Promise<void> {
-    const modal = await this.#modalCtrl.create({
-      component: TrackplayGameEditDialogComponent,
-      componentProps: properties,
-    });
-    await modal.present();
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayGameEditModalComponent,
+      properties
+    );
   }
 }

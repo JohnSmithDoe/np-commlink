@@ -21,7 +21,7 @@
       <ion-button
         toolbarActionsEnd
         (click)="manageCategories()"
-        [attr.aria-label]="'grocery.a11y.manage-categories' | translate"
+        [attr.aria-label]="'categories.a11y.manage' | translate"
       >
         <ion-icon slot="icon-only" name="pricetags-outline" />
       </ion-button>
@@ -38,14 +38,16 @@
 
   <app-item-list
     [headerColor]="
-      facade.filter().isCategoryModeOrHasFilter === true ? 'primary' : color()
+      facade.filterState().isCategoryModeOrHasFilter === true
+        ? 'primary'
+        : color()
     "
     [header]="
-      facade.filter().isCategoryModeOrHasFilter === true
-        ? facade.filter().hasFilter === true
-          ? ('grocery.list-header.category.filter'
+      facade.filterState().isCategoryModeOrHasFilter === true
+        ? facade.filterState().hasFilter === true
+          ? ('item-list.header.category-filter'
             | translate: { category: filterName() })
-          : ('grocery.list-header.category' | translate)
+          : ('item-list.header.category' | translate)
         : listHeader()
     "
     [mode]="facade.state()?.mode ?? 'alphabetical'"

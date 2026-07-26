@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import {
+  mockGroceriesState,
   mockShoppingItem,
   mockShoppingState,
-} from '../../testing/grocery.test-data';
+} from '../../testing/groceries.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { ShoppingActions } from '../../data';
 import { ShoppingActionSheetComponent } from './shopping-action-sheet.component';
@@ -17,7 +18,9 @@ describe('ShoppingActionSheetComponent', () => {
   // The shopping slice is lazy, so the mock store must be seeded with it for
   // `selectShoppingListHasBoughtItems`.
   async function setup(
-    providers = provideTestingProviders({ shopping: mockShoppingState() })
+    providers = provideTestingProviders({
+      groceries: mockGroceriesState({ shopping: mockShoppingState() }),
+    })
   ) {
     await TestBed.configureTestingModule({
       imports: [ShoppingActionSheetComponent],
@@ -42,8 +45,10 @@ describe('ShoppingActionSheetComponent', () => {
   it('adds the move button when a bought item exists', async () => {
     await setup(
       provideTestingProviders({
-        shopping: mockShoppingState({
-          items: [mockShoppingItem({ state: 'bought' })],
+        groceries: mockGroceriesState({
+          shopping: mockShoppingState({
+            items: [mockShoppingItem({ state: 'bought' })],
+          }),
         }),
       })
     );

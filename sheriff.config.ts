@@ -20,7 +20,8 @@ const featureMayUseSharedFeature = (ctx: {
  * the domain-axis doesn't restrict it.
  *
  * Type axis:
- *   shell    → feature, data, util
+ *   shell    → routes, feature, data, util, model
+ *   routes   → feature, data, util             (a domain's own route manifest)
  *   feature  → smart-ui, ui, data, util, model (+ shared feature only)
  *   smart-ui → ui, data, util, model           (stateful presentational, leaf)
  *   ui       → self, util, model               (strict — pure dumb)
@@ -39,12 +40,18 @@ export const config: SheriffConfig = {
   },
 
   depRules: {
-    // main.ts wires reducers (type:data), the service worker, the OS
-    // notification service (type:util), and the shell composition.
-    root: ['type:shell', 'type:data', 'type:util'],
+    root: ['type:shell'],
 
     // ─── Type axis ─────────────────────────────────────────────
-    'type:shell': ['type:feature', 'type:data', 'type:util', specMayUseTesting],
+    'type:shell': [
+      'type:routes',
+      'type:feature',
+      'type:data',
+      'type:model',
+      'type:util',
+      specMayUseTesting,
+    ],
+    'type:routes': ['type:feature', 'type:data', 'type:util'],
     'type:feature': [
       featureMayUseSharedFeature,
       'type:smart-ui',

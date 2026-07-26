@@ -1,0 +1,21 @@
+// Recipe rows: the match verdict is the row's point, so it gets the deck's
+// signal colours — cyan for ready, amber for a shortfall. Frame + LED come from
+// the global .sr-* utilities.
+
+.recipe-ready,
+.recipe-missing {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.recipe-ready {
+  color: var(--sr-cyan);
+}
+
+.recipe-missing {
+  color: var(--sr-amber);
+}

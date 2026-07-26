@@ -14,7 +14,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { ICategory, TCategoryId } from '../../../model/types';
+import { ICategory, TCategoryId } from '../../../model/category.types';
 
 /**
  * Pure presentational (type:ui) category chips + "open picker" trigger — inputs

@@ -1,7 +1,8 @@
 import { inject } from '@angular/core';
-import { IBaseItem, ICategory, TCategoryId } from '../../@shared/model/types';
 import { BaseCategoryEditItemDialog } from '../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
 import { GroceryListPageFacade } from '../data';
+import { IBaseItem } from '../../@shared/model/base-item.types';
+import { ICategory, TCategoryId } from '../../@shared/model/category.types';
 
 /**
  * Intermediate base for the grocery edit-dialog wrappers (shopping + storage):
@@ -15,13 +16,13 @@ export abstract class BaseGroceryEditItemDialog<
 > extends BaseCategoryEditItemDialog<T> {
   protected readonly facade = inject(GroceryListPageFacade);
 
-  protected addCategoryCmd(category: ICategory): void {
+  protected addCategoryToCatalog(category: ICategory): void {
     this.facade.addGroceryCategory(category);
   }
-  protected removeCategoryCmd(categoryId: TCategoryId): void {
+  protected removeCategoryFromCatalog(categoryId: TCategoryId): void {
     this.facade.deleteCategory(categoryId);
   }
-  protected renameCategoryCmd(id: TCategoryId, to: string): void {
+  protected renameCategoryInCatalog(id: TCategoryId, to: string): void {
     this.facade.renameGroceryCategory(id, to);
   }
 }

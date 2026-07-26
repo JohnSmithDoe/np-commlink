@@ -53,7 +53,7 @@ async function enterScore(
 }
 
 async function createTwoPlayers(page: Page): Promise<void> {
-  await gotoTrackplay(page, 'trackplay/players', 'app-trackplay-players-page');
+  await gotoTrackplay(page, 'trackplay/players', 'app-page-trackplay-players');
   await createPlayer(page, 'Alice');
   await createPlayer(page, 'Bob');
 }
@@ -65,10 +65,10 @@ test.describe('trackplay full game', () => {
     await createTwoPlayers(page);
 
     // ── Create the game via the games-page dialog ────────────────────────
-    await gotoTrackplay(page, 'trackplay', 'app-trackplay-games-page');
-    await addButton(pageRoot(page, 'app-trackplay-games-page')).click();
+    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
+    await addButton(pageRoot(page, 'app-page-trackplay-games')).click();
 
-    const dialog = page.locator('app-trackplay-game-edit-dialog');
+    const dialog = page.locator('app-trackplay-game-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
     await dialog.locator('ion-input input').first().fill('Testspiel');
@@ -80,7 +80,7 @@ test.describe('trackplay full game', () => {
     // "Weiter" resolves the freshly-created game id and navigates to its grid.
     await dialog.getByRole('button', { name: 'Weiter' }).click();
     await expect(page).toHaveURL(/#\/trackplay\/game\//);
-    const grid = mainContent(page).locator('app-trackplay-game-play-page');
+    const grid = mainContent(page).locator('app-page-trackplay-game-play');
     await expect(grid).toBeVisible({ timeout: 30_000 });
 
     // Column order is the game's player order (player-select emits alphabetical).

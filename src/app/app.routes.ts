@@ -1,342 +1,97 @@
 import { Routes } from '@angular/router';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { CATEGORIES_FACADE } from './@shared/util/categories/categories-page.facade';
-import {
-  groceriesLazyProviders,
-  groceriesHydrationResolver,
-  GroceryCategoriesPageFacade,
-  listSettingsLazyProviders,
-  listSettingsHydrationResolver,
-} from './groceries/data';
-import {
-  TasksCategoriesPageFacade,
-  tasksLazyProviders,
-  tasksHydrationResolver,
-} from './tasks/data';
-import {
-  CashCategoriesPageFacade,
-  cashLazyProviders,
-  cashHydrationResolver,
-} from './cash/data';
-import {
-  trackplayLazyProviders,
-  trackplayHydrationResolver,
-} from './trackplay/data';
-import {
-  officeTimeLazyProviders,
-  officeTimeHydrationResolver,
-} from './office-time/data';
-import {
-  trackingLazyProviders,
-  trackingHydrationResolver,
-} from './tracking/data';
-import {
-  notificationsLazyProviders,
-  notificationsHydrationResolver,
-} from './notifications/data';
-import { barcodeLazyProviders, barcodeHydrationResolver } from './barcode/data';
 
-// Each bounded context owns its route hydration resolver (built from its own
-// load/loaded lifecycle) inside its `provide-*-lazy.ts`, so app.routes never
-// touches the action groups — it just references the exported resolvers. One
-// resolve-object reference is reused across a context's sibling routes (route
-// config is read-only).
-const trackplayResolve = { hydrated: trackplayHydrationResolver };
-
-const trackingResolve = { hydrated: trackingHydrationResolver };
-
-const officeTimeResolve = { hydrated: officeTimeHydrationResolver };
-
-// The grocery context co-hydrates its three lists via one `[Groceries]
-// load/loaded`, plus the `listSettings` slice on its own key.
-const groceriesResolve = {
-  hydrated: groceriesHydrationResolver,
-  listSettings: listSettingsHydrationResolver,
-};
-
+/**
+ * The composition root's URL table: each path names the domain that owns it and
+ * nothing else. A domain's state, hydration resolvers, facade bindings and page
+ * components are named inside its own `routes/<domain>.routes.ts`, which carries
+ * `domain:<domain>` + `type:routes` — so Sheriff seals a domain's routing to that
+ * domain, where the shell (tagged only `type:shell`) could reach anything.
+ *
+ * These `loadChildren` edges are also the only import from the shell into a
+ * domain, which is what keeps eleven data layers out of the initial chunk: the
+ * eager kernel (`provideAppKernel()`) is the sole eager composition site.
+ *
+ * Every path is a domain prefix, so there is no cross-domain ordering left to
+ * arbitrate here — a domain orders its own pages inside its manifest. `**` stays
+ * last. The two paths that don't read as their folder are deliberate: `/soykaf`
+ * and `/data` are product surfaces (deck programs), not structure.
+ */
 export const routes: Routes = [
   {
     path: 'commlink',
-    data: { title: marker('page-title.commlink') },
-    loadComponent: () =>
-      import('./commlink/feature/commlink-page/commlink.page').then(
-        (m) => m.CommlinkPage
-      ),
+    loadChildren: () =>
+      import('./commlink/routes/commlink.routes').then((m) => m.commlinkRoutes),
   },
   {
     path: 'tracking',
-    data: { title: marker('page-title.tracking') },
-    providers: trackingLazyProviders,
-    resolve: trackingResolve,
-    loadComponent: () =>
-      import('./tracking/feature/tracking-page/tracking.page').then(
-        (m) => m.TrackingPage
-      ),
+    loadChildren: () =>
+      import('./tracking/routes/tracking.routes').then((m) => m.trackingRoutes),
   },
   {
-    path: 'data/:listId',
-    data: { title: marker('page-title.data') },
-    providers: trackingLazyProviders,
-    resolve: trackingResolve,
-    loadComponent: () =>
-      import('./tracking/feature/stats-page/stats.page').then(
-        (m) => m.StatsPage
+    path: 'data',
+    loadChildren: () =>
+      import('./tracking/routes/tracking.routes').then(
+        (m) => m.trackingDataRoutes
       ),
   },
   {
     path: 'settings',
-    data: { title: marker('page-title.settings') },
-    providers: officeTimeLazyProviders,
-    resolve: officeTimeResolve,
-    loadComponent: () =>
-      import('./office-time/feature/settings-page/settings.page').then(
-        (m) => m.SettingsPage
-      ),
+    loadChildren: () =>
+      import('./settings/routes/settings.routes').then((m) => m.settingsRoutes),
   },
   {
     path: 'office-time',
-    data: { title: marker('page-title.office-time') },
-    providers: officeTimeLazyProviders,
-    resolve: officeTimeResolve,
-    loadComponent: () =>
-      import('./office-time/feature/office-time-page/office-time-page.component').then(
-        (m) => m.OfficeTimePage
+    loadChildren: () =>
+      import('./office-time/routes/office-time.routes').then(
+        (m) => m.officeTimeRoutes
       ),
   },
   {
     path: 'barcode',
-    data: { title: marker('page-title.barcode') },
-    // The SIGIL badge is its own sealed lazy context now (sheriff-tighten §1) —
-    // no longer a field inside office-time, so no cross-domain bridge.
-    providers: barcodeLazyProviders,
-    resolve: { hydrated: barcodeHydrationResolver },
-    loadComponent: () =>
-      import('./barcode/feature/barcode.page').then((m) => m.BarcodePage),
+    loadChildren: () =>
+      import('./barcode/routes/barcode.routes').then((m) => m.barcodeRoutes),
   },
   {
     path: 'notifications',
-    data: { title: marker('page-title.notifications') },
-    // notifications is lazy too (§7): its own list registers + hydrates here.
-    // Off-route writers (tracking) go through the durable NotificationsStore.
-    providers: notificationsLazyProviders,
-    resolve: { hydrated: notificationsHydrationResolver },
-    loadComponent: () =>
-      import('./notifications/feature/notifications.page').then(
-        (m) => m.NotificationsPage
+    loadChildren: () =>
+      import('./notifications/routes/notifications.routes').then(
+        (m) => m.notificationsRoutes
       ),
   },
   {
-    // SOYKAF standby mount point — the seam for the np-kitchen-bot app.
+    path: 'geist',
+    loadChildren: () =>
+      import('./geist/routes/geist.routes').then((m) => m.geistRoutes),
+  },
+  {
     path: 'soykaf',
-    data: { title: marker('page-title.soykaf') },
-    loadComponent: () =>
-      import('./kitchen/feature/kitchen-page/kitchen.page').then(
-        (m) => m.KitchenPage
-      ),
-  },
-  // Grocery features (from np-kitchen-bot) — each an independent top-level
-  // domain; the active list is derived from the :listId route param.
-  {
-    path: 'shopping/:listId',
-    data: { title: marker('grocery.page-title.shopping') },
-    providers: groceriesLazyProviders,
-    resolve: groceriesResolve,
-    loadComponent: () =>
-      import('./groceries/feature/shopping-page/shopping.page').then(
-        (m) => m.ShoppingPage
+    loadChildren: () =>
+      import('./groceries/routes/groceries.routes').then(
+        (m) => m.recipesRoutes
       ),
   },
   {
-    path: 'storage/:listId',
-    data: { title: marker('grocery.page-title.storage') },
-    providers: groceriesLazyProviders,
-    resolve: groceriesResolve,
-    loadComponent: () =>
-      import('./groceries/feature/storage-page/storage.page').then(
-        (m) => m.StoragePage
+    path: 'groceries',
+    loadChildren: () =>
+      import('./groceries/routes/groceries.routes').then(
+        (m) => m.groceriesRoutes
       ),
   },
   {
-    path: 'tasks/:listId',
-    data: { title: marker('grocery.page-title.tasks') },
-    providers: tasksLazyProviders,
-    resolve: { hydrated: tasksHydrationResolver },
-    loadComponent: () =>
-      import('./tasks/feature/tasks-page/tasks.page').then((m) => m.TasksPage),
+    path: 'tasks',
+    loadChildren: () =>
+      import('./tasks/routes/tasks.routes').then((m) => m.tasksRoutes),
   },
-  {
-    path: 'products/:listId',
-    data: { title: marker('grocery.page-title.products') },
-    providers: groceriesLazyProviders,
-    resolve: groceriesResolve,
-    loadComponent: () =>
-      import('./groceries/feature/products-page/products.page').then(
-        (m) => m.ProductsPage
-      ),
-  },
-  {
-    path: 'list-settings',
-    data: { title: marker('grocery.page-title.settings') },
-    // The settings page reads only the grocery `listSettings` slice, so it
-    // registers just that (NOT the full grocery context — see
-    // listSettingsLazyProviders) and hydrates it on entry.
-    providers: listSettingsLazyProviders,
-    resolve: { hydrated: listSettingsHydrationResolver },
-    loadComponent: () =>
-      import('./groceries/feature/list-settings-page/list-settings.page').then(
-        (m) => m.ListSettingsPage
-      ),
-  },
-  // Manage-categories pages. The shared, domain-blind EditCategoriesPage is
-  // mounted at both routes; the domain's lazy state providers + its
-  // CATEGORIES_FACADE binding come from the route. The static tasks path must
-  // precede `categories/:listId` so it isn't captured as a grocery listId.
-  {
-    path: 'categories/_tasks',
-    data: { title: marker('grocery.page-title.categories') },
-    providers: [
-      ...tasksLazyProviders,
-      { provide: CATEGORIES_FACADE, useExisting: TasksCategoriesPageFacade },
-    ],
-    resolve: { hydrated: tasksHydrationResolver },
-    loadComponent: () =>
-      import('./@shared/feature/edit-categories-page/edit-categories.page').then(
-        (m) => m.EditCategoriesPage
-      ),
-  },
-  {
-    path: 'categories/:listId',
-    data: { title: marker('grocery.page-title.categories') },
-    providers: [
-      ...groceriesLazyProviders,
-      { provide: CATEGORIES_FACADE, useExisting: GroceryCategoriesPageFacade },
-    ],
-    resolve: groceriesResolve,
-    loadComponent: () =>
-      import('./@shared/feature/edit-categories-page/edit-categories.page').then(
-        (m) => m.EditCategoriesPage
-      ),
-  },
-  // Cash — offline multi-account finance ledger (purpose-built; no :listId).
-  // `cash` is a lazy bounded context: every cash route registers the slice via
-  // `cashLazyProviders` and hydrates through the module resolver — cash is torn
-  // down on leaving the subtree, so each sibling route must re-register it.
   {
     path: 'cash',
-    data: { title: marker('cash.page-title.cash') },
-    providers: cashLazyProviders,
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./cash/feature/cash-page/cash.page').then((m) => m.CashPage),
+    loadChildren: () =>
+      import('./cash/routes/cash.routes').then((m) => m.cashRoutes),
   },
-  {
-    // Static paths must precede `cash/:accountId` so they aren't captured as a param.
-    path: 'cash/rules',
-    data: { title: marker('cash.page-title.rules') },
-    providers: cashLazyProviders,
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./cash/feature/cash-rules-page/cash-rules.page').then(
-        (m) => m.CashRulesPage
-      ),
-  },
-  {
-    path: 'cash/report',
-    data: { title: marker('cash.page-title.report') },
-    providers: cashLazyProviders,
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./cash/feature/cash-report-page/cash-report.page').then(
-        (m) => m.CashReportPage
-      ),
-  },
-  {
-    // Cash reuses the shared manage-categories page (replaces the rules page's
-    // old inline palette). Static path — must precede `cash/:accountId`.
-    path: 'cash/categories',
-    data: { title: marker('grocery.page-title.categories') },
-    providers: [
-      ...cashLazyProviders,
-      { provide: CATEGORIES_FACADE, useExisting: CashCategoriesPageFacade },
-    ],
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./@shared/feature/edit-categories-page/edit-categories.page').then(
-        (m) => m.EditCategoriesPage
-      ),
-  },
-  {
-    // Category→items drill: a category's transactions (cash's `?filter`
-    // equivalent). Two segments, so it never collides with `cash/:accountId`.
-    path: 'cash/category/:categoryId',
-    data: { title: marker('grocery.page-title.categories') },
-    providers: cashLazyProviders,
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./cash/feature/cash-category-page/cash-category.page').then(
-        (m) => m.CashCategoryPage
-      ),
-  },
-  {
-    path: 'cash/:accountId',
-    data: { title: marker('cash.page-title.cash') },
-    providers: cashLazyProviders,
-    resolve: { hydrated: cashHydrationResolver },
-    loadComponent: () =>
-      import('./cash/feature/cash-account-page/cash-account.page').then(
-        (m) => m.CashAccountPage
-      ),
-  },
-  // Trackplay (game-score tracker) — one sealed domain. `/trackplay` is the
-  // program home (games list); the rest are its sub-pages.
   {
     path: 'trackplay',
-    data: { title: marker('trackplay.page-title.games') },
-    providers: trackplayLazyProviders,
-    resolve: trackplayResolve,
-    loadComponent: () =>
-      import('./trackplay/feature/games-page/games.page').then(
-        (m) => m.TrackplayGamesPage
-      ),
-  },
-  {
-    path: 'trackplay/players',
-    data: { title: marker('trackplay.page-title.players') },
-    providers: trackplayLazyProviders,
-    resolve: trackplayResolve,
-    loadComponent: () =>
-      import('./trackplay/feature/players-page/players.page').then(
-        (m) => m.TrackplayPlayersPage
-      ),
-  },
-  {
-    path: 'trackplay/player/:id',
-    data: { title: marker('trackplay.page-title.player') },
-    providers: trackplayLazyProviders,
-    resolve: trackplayResolve,
-    loadComponent: () =>
-      import('./trackplay/feature/player-page/player.page').then(
-        (m) => m.TrackplayPlayerPage
-      ),
-  },
-  {
-    path: 'trackplay/game-types',
-    data: { title: marker('trackplay.page-title.game-types') },
-    providers: trackplayLazyProviders,
-    resolve: trackplayResolve,
-    loadComponent: () =>
-      import('./trackplay/feature/game-types-page/game-types.page').then(
-        (m) => m.TrackplayGameTypesPage
-      ),
-  },
-  {
-    path: 'trackplay/game/:id',
-    data: { title: marker('trackplay.page-title.game') },
-    providers: trackplayLazyProviders,
-    resolve: trackplayResolve,
-    loadComponent: () =>
-      import('./trackplay/feature/game-play-page/game-play.page').then(
-        (m) => m.TrackplayGamePlayPage
+    loadChildren: () =>
+      import('./trackplay/routes/trackplay.routes').then(
+        (m) => m.trackplayRoutes
       ),
   },
   {

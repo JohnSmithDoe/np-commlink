@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{
+        (isEdit() ? 'cash.txn-dialog.title-edit' : 'cash.txn-dialog.title-new')
+          | translate
+      }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="!canSave()" (click)="confirm()">
+        {{ 'cash.action.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment
+    [value]="draft().direction"
+    (ionChange)="patch({ direction: $any($event).detail.value })"
+  >
+    <ion-segment-button value="expense">
+      {{ 'cash.txn.expense' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="income">
+      {{ 'cash.txn.income' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list lines="full">
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.description' | translate }}"
+        [clearInput]="true"
+        [value]="draft().description"
+        (ionInput)="patch({ description: $any($event.target).value ?? '' })"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.amount' | translate }}"
+        inputmode="decimal"
+        placeholder="0,00"
+        [value]="draft().amount"
+        (ionInput)="patch({ amount: $any($event.target).value ?? '' })"
+      />
+    </ion-item>
+    @if (amountInvalid()) {
+      <ion-note color="danger" class="cash-txn-dialog__error">
+        {{ 'cash.txn-dialog.amount-invalid' | translate }}
+      </ion-note>
+    }
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'cash.label.date' | translate }}"
+        [value]="draft().date"
+        (ionInput)="patch({ date: $any($event.target).value ?? '' })"
+      />
+    </ion-item>
+
+    <app-cash-category-picker
+      [categories]="categories()"
+      [categoryId]="draft().categoryId"
+      (categoryIdChange)="patch({ categoryId: $event })"
+      (addNew)="onAddCategory($event)"
+      (deleted)="onDeleteCategory($event)"
+      (renamed)="onRenameCategory($event)"
+    ></app-cash-category-picker>
+
+    <ion-item>
+      <ion-toggle
+        [checked]="draft().pending"
+        (ionChange)="patch({ pending: $any($event).detail.checked })"
+      >
+        {{ 'cash.txn.pending' | translate }}
+      </ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -1,5 +1,5 @@
 import { mockCategory } from '../../testing/test-data';
-import { categoriesByIds } from './category.utils';
+import { categoriesByIds, categoryNameLookup } from './category.utils';
 
 describe('category.utils', () => {
   describe('categoriesByIds', () => {
@@ -28,6 +28,27 @@ describe('category.utils', () => {
 
     it('returns [] when no id matches', () => {
       expect(categoriesByIds(['nope'], catalog)).toEqual([]);
+    });
+  });
+
+  describe('categoryNameLookup', () => {
+    const catalog = [
+      mockCategory({ id: 'dairy', name: 'Dairy' }),
+      mockCategory({ id: 'bakery', name: 'Bakery' }),
+    ];
+
+    it('resolves the same names as categoryName, including the empty cases', () => {
+      const lookup = categoryNameLookup(catalog);
+      expect(lookup('dairy')).toBe('Dairy');
+      expect(lookup('nope')).toBe('');
+      expect(lookup(undefined)).toBe('');
+    });
+
+    it('indexes once — later catalog mutations do not leak in', () => {
+      const mutable = [...catalog];
+      const lookup = categoryNameLookup(mutable);
+      mutable.push(mockCategory({ id: 'fresh', name: 'Fresh' }));
+      expect(lookup('fresh')).toBe('');
     });
   });
 });

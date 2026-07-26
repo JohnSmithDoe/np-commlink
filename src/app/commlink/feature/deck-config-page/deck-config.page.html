@@ -1,0 +1,63 @@
+<app-page-header
+  icon="settings-outline"
+  [label]="'page-title.deck-config' | translate"
+  hideButtons="true"
+/>
+
+<ion-content class="ion-padding">
+  <ion-note>{{ 'deck.config.intro' | translate }}</ion-note>
+
+  <ion-list lines="full">
+    <ion-list-header>{{ 'deck.config.modules' | translate }}</ion-list-header>
+    @for (module of modules(); track module.module) {
+      <ion-item>
+        <ion-toggle
+          [checked]="!module.hidden"
+          (ionChange)="toggleModule(module.module)"
+        >
+          {{ module.labelKey | translate }}
+        </ion-toggle>
+      </ion-item>
+    }
+  </ion-list>
+
+  <ion-list lines="full">
+    <ion-list-header>{{ 'deck.config.entries' | translate }}</ion-list-header>
+    <ion-reorder-group
+      [disabled]="false"
+      (ionReorderEnd)="reorder($any($event))"
+    >
+      @for (entry of entries(); track entry.id) {
+        <ion-item [class.deck-config__muted]="entry.moduleHidden">
+          <ion-reorder slot="start" />
+          <ion-label>
+            <h2>{{ entry.nameKey | translate }}</h2>
+            <p>
+              @if (entry.moduleHidden) {
+                {{ 'deck.config.module-off' | translate }}
+              } @else {
+                {{ entry.titleKey | translate }}
+              }
+            </p>
+          </ion-label>
+          <ion-toggle
+            slot="end"
+            [checked]="!entry.hidden"
+            [disabled]="entry.moduleHidden"
+            (ionChange)="toggleEntry(entry.id)"
+          />
+        </ion-item>
+      }
+    </ion-reorder-group>
+  </ion-list>
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="ion-margin-top"
+    [disabled]="!hasCustomConfig()"
+    (click)="reset()"
+  >
+    {{ 'deck.config.reset' | translate }}
+  </ion-button>
+</ion-content>

@@ -28,22 +28,23 @@
         COMMLINK ONLINE
       </h1>
       <p class="cl-hero__meta">
-        {{ bootDate }} · RES {{ res() }} · FIREWALL 5 ·
-        <b>{{ onlineCount }}/{{ total }}</b> PROGRAMS LOADED
+        {{ bootDate }} · RES {{ resonanceRating() }} · FIREWALL 5 ·
+        <b>{{ onlineCount() }}/{{ total }}</b> PROGRAMS LOADED
       </p>
     </header>
 
     <div class="cl-grid">
-      @for (p of programs; track p.hex) {
+      @for (p of programs(); track p.id; let slot = $index) {
+        @let nodeStatus = status(p);
         <a
           class="cl-node sr-panel sr-corners"
-          [class.cl-node--standby]="p.status === 'standby'"
-          [class.cl-node--offline]="p.status === 'offline'"
+          [class.cl-node--standby]="nodeStatus === 'standby'"
+          [class.cl-node--offline]="nodeStatus === 'offline'"
           [routerLink]="p.route"
         >
           <span class="cl-node__scan"></span>
           <div class="cl-node__top">
-            <span class="cl-node__hex">{{ p.hex }}</span>
+            <span class="cl-node__hex">{{ slot | hex }}</span>
             <span class="cl-node__flags">
               <!-- Live metric from the dashboard read-model. Only positive
                    values badge: a 0 count is nothing to flag, and a
@@ -51,21 +52,25 @@
                    surfaced as a glanceable count. -->
               @let b = badge(p);
               @if (b !== null && b > 0) {
-                <span class="cl-node__badge">{{ b }}</span>
+                <span
+                  class="cl-node__badge"
+                  [class.cl-node__badge--currency]="p.currency"
+                  >{{ badgeLabel(p, b) }}</span
+                >
               }
               <i
                 class="sr-led"
-                [class.sr-led--on]="p.status === 'online'"
-                [class.sr-led--standby]="p.status === 'standby'"
-                [class.sr-led--off]="p.status === 'offline'"
+                [class.sr-led--on]="nodeStatus === 'online'"
+                [class.sr-led--standby]="nodeStatus === 'standby'"
+                [class.sr-led--off]="nodeStatus === 'offline'"
               ></i>
             </span>
           </div>
           <ion-icon class="cl-node__icon" [name]="p.icon" />
-          <div class="cl-node__name">{{ p.codename }}</div>
-          <div class="cl-node__desc">{{ p.desc }}</div>
+          <div class="cl-node__name">{{ p.nameKey | translate }}</div>
+          <div class="cl-node__desc">{{ p.descKey | translate }}</div>
           <div class="cl-node__foot">
-            @switch (p.status) {
+            @switch (nodeStatus) {
               @case ('online') {
                 &gt; RUN
               }
@@ -83,7 +88,7 @@
 
     <footer class="cl-tele">
       <span
-        >◈ NUYEN <b>¥ {{ nuyen() }}</b></span
+        >◈ NUYEN <b>{{ nuyenLabel() }}</b></span
       >
       <span>◈ TRACE <b>CLEAN</b></span>
       <span>◈ ICE <b>PASSIVE</b></span>

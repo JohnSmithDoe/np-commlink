@@ -3,7 +3,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["vitest/globals"]
+    // The deck catalog's spec asserts that every theme ships every label, which
+    // means reading the message catalogs themselves.
+    "resolveJsonModule": true,
+    "types": ["vitest/globals", "dom-chromium-ai"]
   },
   "files": ["src/polyfills.ts"],
   "include": [

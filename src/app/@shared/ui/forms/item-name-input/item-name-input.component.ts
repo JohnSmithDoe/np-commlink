@@ -12,7 +12,8 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonInput, IonItem } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { map } from 'rxjs';
-import { IBaseItem, TMarker } from '../../../model/types';
+import { TMarker } from '../../../model/app.types';
+import { IBaseItem } from '../../../model/base-item.types';
 import {
   matchesSearchExactly,
   validateNameInput,
@@ -21,7 +22,6 @@ import {
 @Component({
   selector: 'app-item-name-input',
   templateUrl: './item-name-input.component.html',
-  styleUrls: ['./item-name-input.component.scss'],
   imports: [IonInput, IonItem, ReactiveFormsModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

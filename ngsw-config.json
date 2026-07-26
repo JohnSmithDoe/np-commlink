@@ -21,9 +21,7 @@
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
-        "files": [
-          "/assets/i18n/*.json"
-        ]
+        "files": ["/i18n/*.json"]
       }
     },
     {

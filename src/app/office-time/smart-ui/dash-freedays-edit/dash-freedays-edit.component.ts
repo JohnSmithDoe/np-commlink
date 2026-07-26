@@ -14,12 +14,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs, { Dayjs } from 'dayjs';
-import {
-  OfficeTimeFacade,
-  dayjsToString,
-  daysToHolidaysHighlightsInputTransform,
-} from '../../data';
-import { DateTimeHighlight } from '../../model';
+import { OfficeTimeFacade, dayjsToString, holidayHighlights } from '../../data';
+import { DateTimeHighlight } from '../../model/office-time.types';
 
 @Component({
   selector: 'app-dash-freedays-edit',
@@ -50,7 +46,7 @@ export class DashFreedaysEditComponent {
 
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
     [],
-    { transform: daysToHolidaysHighlightsInputTransform }
+    { transform: holidayHighlights }
   );
 
   updateFreeDatesFromCalender(event: DatetimeCustomEvent) {

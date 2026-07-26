@@ -1,0 +1,320 @@
+// GEIST console — shares the commlink terminal register. Frame, corner
+// brackets, status LEDs and the brand row come from the global .sr-* utilities
+// (see _deck.scss / _shadowrun.scss); only layout + the transcript live here.
+
+:host {
+  --app-content-max-width: 100%;
+  --app-content-bg: transparent;
+}
+
+.gs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+  padding: 1rem 1.25rem 2rem;
+  font-family: var(--sr-deck-font);
+}
+
+// ── status strip ─────────────────────────────────────────────
+.gs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-size: 0.68rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: rgba(var(--sr-amber-rgb), 0.7);
+}
+.gs-bar__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.gs-bar__seg b {
+  color: var(--sr-amber);
+}
+.gs-bar__seg--ctx b {
+  color: var(--sr-cyan);
+}
+
+// ── one-state panels (unsupported / cold start / priming / flatline) ──
+.gs-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(520px, 100%);
+  margin: auto;
+  padding: 2.25rem 1.75rem;
+  text-align: center;
+}
+
+.gs-panel__icon {
+  font-size: 3rem;
+  color: var(--sr-amber);
+}
+:host-context([data-theme='cyberpunk']) .gs-panel__icon {
+  filter: drop-shadow(0 0 14px rgba(var(--sr-amber-rgb), 0.5));
+}
+
+.gs-panel__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 6vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow-lg);
+}
+
+.gs-panel__lead {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(var(--sr-amber-rgb), 0.78);
+}
+
+.gs-panel__fine {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-cyan);
+  opacity: 0.8;
+}
+
+.gs-meter {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  background: rgba(var(--sr-amber-rgb), 0.15);
+  border-radius: var(--sr-radius);
+}
+.gs-meter__fill {
+  display: block;
+  height: 100%;
+  background: var(--sr-cyan);
+  box-shadow: var(--sr-glow);
+  transition: width 0.3s ease;
+}
+
+// ── persona register picker ──────────────────────────────────
+.gs-personas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gs-persona {
+  display: flex;
+  flex: 1 1 8rem;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgba(var(--sr-amber-rgb), 0.28);
+  border-radius: var(--sr-radius);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.gs-persona:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.gs-persona--active {
+  background: rgba(var(--sr-amber-rgb), 0.1);
+  border-color: var(--sr-amber);
+}
+:host-context([data-theme='cyberpunk']) .gs-persona--active {
+  box-shadow: var(--sr-glow);
+}
+
+.gs-persona__name {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-amber);
+}
+.gs-persona__tag {
+  font-size: 0.66rem;
+  color: rgba(var(--sr-amber-rgb), 0.6);
+}
+
+// ── transcript ───────────────────────────────────────────────
+.gs-console {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 12rem;
+  max-height: 58vh;
+  overflow-y: auto;
+  padding: 1.1rem 1.25rem;
+}
+
+.gs-console__idle {
+  margin: auto 0;
+  font-size: 0.75rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-cyan);
+  opacity: 0.8;
+}
+
+.gs-turn__query {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-cyan);
+}
+
+// A <pre>, so its newlines survive — but wrapping, and in the deck font rather
+// than the browser's default monospace.
+.gs-turn__answer {
+  margin: 0;
+  font-family: var(--sr-deck-font);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: rgba(var(--sr-amber-rgb), 0.9);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.gs-turn__note {
+  margin: 0.35rem 0 0;
+  font-size: 0.68rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--ion-color-danger);
+}
+
+.gs-cursor {
+  color: var(--sr-cyan);
+  animation: gs-blink 1s steps(2, end) infinite;
+}
+
+// ── prompt row ───────────────────────────────────────────────
+.gs-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gs-input__field {
+  --background: rgba(var(--sr-amber-rgb), 0.04);
+  --color: var(--sr-amber);
+  --placeholder-color: rgba(var(--sr-amber-rgb), 0.45);
+  font-family: var(--sr-deck-font);
+  font-size: 0.85rem;
+}
+
+.gs-input__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  font-family: inherit;
+  font-size: 0.72rem;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  cursor: pointer;
+  color: var(--sr-amber);
+  background: rgba(var(--sr-amber-rgb), 0.08);
+  border: 1px solid rgba(var(--sr-amber-rgb), 0.4);
+  border-radius: var(--sr-radius);
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.gs-btn:hover:not(:disabled) {
+  background: rgba(var(--sr-amber-rgb), 0.16);
+  box-shadow: var(--sr-glow);
+}
+.gs-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.gs-btn--stop {
+  color: var(--ion-color-danger);
+  border-color: var(--ion-color-danger);
+  background: transparent;
+}
+
+.gs-btn--ghost {
+  color: var(--sr-cyan);
+  background: transparent;
+  border-color: rgba(var(--sr-cyan-rgb), 0.4);
+}
+
+// ── footer telemetry ─────────────────────────────────────────
+.gs-tele {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  font-size: 0.66rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: rgba(var(--sr-amber-rgb), 0.55);
+}
+.gs-tele b {
+  color: var(--sr-cyan);
+}
+
+.gs-back {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.72rem;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-cyan);
+  text-decoration: none;
+  border: 1px solid rgba(var(--sr-cyan-rgb), 0.4);
+  border-radius: var(--sr-radius);
+}
+.gs-back:hover {
+  background: rgba(var(--sr-cyan-rgb), 0.1);
+}
+
+.gs-dots::after {
+  content: '';
+  animation: gs-dots 1.6s steps(4, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-dots::after,
+  .gs-cursor {
+    animation: none;
+  }
+}
+
+@keyframes gs-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gs-dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}

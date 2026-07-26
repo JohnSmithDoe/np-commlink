@@ -2,58 +2,77 @@ import { TestBed } from '@angular/core/testing';
 import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
-import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockAppState } from '../../../@shared/testing/test-data';
+import { firstValueFrom, Observable, of, toArray } from 'rxjs';
+import {
+  mockKernelState,
+  TMockState,
+} from '../../../@shared/testing/test-data';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { mockTaskItem, mockTasksState } from '../../testing/tasks.test-data';
-import { TasksActions } from '../tasks.actions';
-import { TasksListEffects } from './tasks-list.effects';
+import { TasksActions } from '../actions/tasks.actions';
+import { tasksListEffects } from './tasks-list.effects';
 
-describe('TasksListEffects', () => {
+describe('tasksListEffects', () => {
   let actions$: Observable<Action>;
-  let effects: TasksListEffects;
 
-  const setup = (initialState = mockAppState()) => {
+  const setup = (state: TMockState = {}) => {
     TestBed.configureTestingModule({
       providers: [
-        TasksListEffects,
         provideMockActions(() => actions$),
-        provideMockStore({ initialState }),
+        provideMockStore({ initialState: mockKernelState(state) }),
       ],
     });
-    effects = TestBed.inject(TasksListEffects);
   };
 
+  const run = <T>(effect: () => Observable<T>): Observable<T> =>
+    TestBed.runInInjectionContext(() => effect());
+
   it('addItemFromSearch$ builds a task from the search query', async () => {
-    setup(
-      mockAppState({
-        tasks: mockTasksState({ searchQuery: 'Call', items: [] }),
-      })
-    );
+    setup({ tasks: mockTasksState({ searchQuery: 'Call', items: [] }) });
     actions$ = of(TasksActions.addItemFromSearch());
-    const emitted = await firstValueFrom(effects.addItemFromSearch$);
-    expect(emitted.type).toBe('[Tasks] Add Item');
-    expect((emitted as ReturnType<typeof TasksActions.addItem>).item.name).toBe(
-      'Call'
+
+    const emitted = await firstValueFrom(
+      run(tasksListEffects.addItemFromSearch$)
     );
+
+    expect(emitted).toEqual(
+      TasksActions.addItem(expect.objectContaining({ name: 'Call' }) as never)
+    );
+  });
+
+  it('addItemFromSearch$ reports a duplicate instead of adding it again', async () => {
+    const existing = mockTaskItem({ name: 'Call' });
+    setup({
+      tasks: mockTasksState({ searchQuery: 'Call', items: [existing] }),
+    });
+    actions$ = of(TasksActions.addItemFromSearch());
+
+    const emitted = await firstValueFrom(
+      run(tasksListEffects.addItemFromSearch$)
+    );
+
+    expect(emitted).toEqual(TasksActions.addItemFailure(existing));
   });
 
   describe('addOrUpdateItem$', () => {
     it('updates a task that already exists', async () => {
       const item = mockTaskItem();
-      setup(mockAppState({ tasks: mockTasksState({ items: [item] }) }));
+      setup({ tasks: mockTasksState({ items: [item] }) });
       actions$ = of(TasksActions.addOrUpdateItem(item));
-      expect(await firstValueFrom(effects.addOrUpdateItem$)).toEqual(
-        TasksActions.updateItem(item)
-      );
+
+      expect(
+        await firstValueFrom(run(tasksListEffects.addOrUpdateItem$))
+      ).toEqual(TasksActions.updateItem(item));
     });
 
     it('adds a task when the list is empty', async () => {
       const item = mockTaskItem();
-      setup(mockAppState({ tasks: mockTasksState({ items: [] }) }));
+      setup({ tasks: mockTasksState({ items: [] }) });
       actions$ = of(TasksActions.addOrUpdateItem(item));
-      expect(await firstValueFrom(effects.addOrUpdateItem$)).toEqual(
-        TasksActions.addItem(item)
-      );
+
+      expect(
+        await firstValueFrom(run(tasksListEffects.addOrUpdateItem$))
+      ).toEqual(TasksActions.addItem(item));
     });
   });
 
@@ -61,25 +80,42 @@ describe('TasksListEffects', () => {
     it('clears the filter when leaving categories mode', async () => {
       setup();
       actions$ = of(TasksActions.updateMode('alphabetical'));
-      expect(await firstValueFrom(effects.clearFilter$)).toEqual(
+
+      expect(await firstValueFrom(run(tasksListEffects.clearFilter$))).toEqual(
         TasksActions.updateFilter()
       );
     });
 
-    it('does not emit for categories mode', () => {
+    it('does not emit for categories mode', async () => {
       setup();
       actions$ = of(TasksActions.updateMode('categories'));
-      const emissions: Action[] = [];
-      effects.clearFilter$.subscribe((a) => emissions.push(a));
-      expect(emissions).toEqual([]);
+
+      expect(
+        await firstValueFrom(run(tasksListEffects.clearFilter$).pipe(toArray()))
+      ).toEqual([]);
     });
   });
 
   it('clearSearch$ resets the search on add item', async () => {
     setup();
     actions$ = of(TasksActions.addItem(mockTaskItem()));
-    expect(await firstValueFrom(effects.clearSearch$)).toEqual(
+
+    expect(await firstValueFrom(run(tasksListEffects.clearSearch$))).toEqual(
       TasksActions.updateSearch('')
+    );
+  });
+
+  it('addItemFailure$ toasts a duplicate-name notice', async () => {
+    setup();
+    const item = mockTaskItem({ name: 'Call' });
+    actions$ = of(TasksActions.addItemFailure(item));
+
+    expect(await firstValueFrom(run(tasksListEffects.addItemFailure$))).toEqual(
+      NotificationsActions.toast({
+        key: 'toast.add.item.failure',
+        params: { name: 'Call' },
+        color: 'medium',
+      })
     );
   });
 });

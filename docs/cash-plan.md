@@ -327,22 +327,18 @@ survivor. Never auto-picks. **Reversible:** the survivor row (tagged with
 - **i18n:** all cash keys stay namespaced under `cash.` (only `cash.page-title.cash`
   + `cash.landing.hint` exist today); TS-side keys use `marker('cash.…')`.
 
-## Status snapshot (2026-07-15)
+## Status snapshot
 
-- **P0 merged to `main`** (`4bf2c1b`); **P1–P5 built on branch `feature/cash`**
-  (worktree `np-commlink-cash`) — accounts overview, transactions, categories +
-  rules + categorization engine, per-bank CSV import + reconciliation, transfers
-  + reporting. **The roadmap is complete.**
+- **P0–P5 complete and merged to `main`** — accounts overview, transactions,
+  categories + rules + categorization engine, per-bank CSV import + reconciliation,
+  transfers + reporting. **The roadmap is complete.**
 - `cash` is auto-tagged `domain:cash` and fully **sealed** — no `sheriff.config.ts`
-  bridge (it references no other domain), and (after the `main` rebase) it is a
-  **lazy** bounded context (see § Slice registration & hydration).
+  bridge (it references no other domain) — and is a **lazy** bounded context that
+  registers + hydrates on its route (see § Slice registration & hydration, and
+  architecture.md §5). Its per-module `[Cash] load/loaded` lifecycle replaced the
+  old global `ApplicationActions` hydration the branch was first built on.
 - Every phase driven in the real app (Playwright) on top of the gate suite:
-  tsc (app+spec) · sheriff · eslint · **681 unit** · prod build — all green.
-- **Not yet pushed/merged.** When `feature/cash` meets the concurrent
-  `feature/lazy-modules` work, expect conflicts in the cash **data layer** seam
-  (`cash.actions`/`cash.reducer`/`types.ts`) — lazy-modules is swapping the
-  hydration model (`ApplicationActions` → per-module `load`/`loaded`) and this
-  branch still uses `ApplicationActions.loadedSuccessfully`. Cash UI is unaffected.
+  tsc (app+spec) · sheriff · eslint · unit · prod build — all green.
 - **Remaining polish (not roadmap):** see § Deferred polish.
 
 ## Deferred polish
@@ -358,12 +354,12 @@ Non-blocking follow-ups on the completed roadmap.
 - **DKB imported live only in spec.** The DKB parser is unit-tested against
   `docs/example2.csv`, but only Volksbank was driven end-to-end in-app. Do a
   manual DKB import pass when convenient.
-- **Shadowrun re-skin of the new surfaces.** The P1–P5 dialogs/pages
-  (account/transaction/rule/transfer modals, import preview, rules + report
-  pages) need the same contrast-vs-amber, monospace-clipping and German-string
-  audit noted for the grocery pages in `open-tasks.md`. The report chart palette
-  (`#2dd36f`/`#eb445a`/category ramp) is Ionic-default, not `--sr-*` tokens — pull
-  it onto the theme.
+- **Shadowrun re-skin of the new surfaces ✅ DONE.** The re-skin audit closed
+  app-wide (`open-tasks.md`): the report chart palette now reads live theme tokens
+  via `@shared/util/charts/chart-colors` instead of the Ionic-default
+  `#2dd36f`/`#eb445a` ramp, the dialog monospace-clipping is fixed by
+  `labelPlacement="stacked"` on the shared form inputs, and the last hardcoded
+  cash `aria-label`s / button strings moved to the `cash.a11y.*` i18n group.
 - **Rules drag-reorder.** Rules reorder via up/down controls today; the app wires
   no `ion-reorder-group` anywhere, so a drag implementation was deferred rather
   than pioneered blind.
@@ -375,6 +371,7 @@ Non-blocking follow-ups on the completed roadmap.
   cascade (clears it off transactions → uncategorized; rules keep their orphan
   label). Kept on the name-string model — the `{id,name}`-by-id migration is a
   separate deferred epic.
-- **Un-reconcile.** Reconciliation is one-way in the UI — the merged manual leg
-  is hidden (recoverable only via data). A "detach" affordance (clear
-  `matchedTxnId`, restore `pending`) would make it reversible.
+- **Un-reconcile ✅ DONE.** A survivor txn that absorbed a manual leg now shows a
+  start-swipe "detach" option (`CashActions.unreconcileTransaction` → clears
+  `matchedTxnId`, restores `pending`). `selectTransactionsForAccount` tags
+  survivors with `reconciledManualId`; reducer + selector spec'd.

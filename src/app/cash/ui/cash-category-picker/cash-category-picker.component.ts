@@ -7,11 +7,11 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ICategory, TCategoryId } from '../../../@shared/model/types';
 import { matchingTxt } from '../../../@shared/util/app.utils';
 import { categoriesByIds } from '../../../@shared/util/categories/category.utils';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
+import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
 
 /**
  * Dumb single-select category picker shared by the cash edit modals (rule +

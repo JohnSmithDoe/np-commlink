@@ -15,15 +15,9 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { addIcons } from 'ionicons';
-import { add, cart, list, remove } from 'ionicons/icons';
-import {
-  IBaseItem,
-  ICategory,
-  TCategoryId,
-  TColor,
-  TItemListCategory,
-} from '../../../model/types';
+import { TColor } from '../../../model/app.types';
+import { IBaseItem } from '../../../model/base-item.types';
+import { ICategory, TCategoryId } from '../../../model/category.types';
 import { CategoryItemComponent } from '../../categories/category-item/category-item.component';
 
 export type ItemListTemplateContext = {
@@ -62,7 +56,7 @@ export class ItemListComponent {
   });
   // Grocery lists render either a flat item list or a category overview.
   readonly categories = input<ReadonlyArray<{
-    category: TItemListCategory;
+    category: ICategory;
     count: number;
   }> | null>();
   // The raw {id,name} catalog, threaded into each row's template context so a
@@ -72,10 +66,6 @@ export class ItemListComponent {
 
   readonly selectCategory = output<TCategoryId>();
   readonly deleteCategory = output<TCategoryId>();
-
-  constructor() {
-    addIcons({ add, remove, cart, list });
-  }
 
   async closeSlidingItems() {
     await this.ionList()?.closeSlidingItems();

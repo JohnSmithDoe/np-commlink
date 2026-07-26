@@ -15,14 +15,14 @@ import {
   IonNote,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/model/types';
-import { IDataItem } from '../../model';
-import { NpTrackingTimePipe } from '../../util/np-tracking-time.pipe';
-import { NpTimeFromDataItemPipe } from '../../util/np-time-from-data-item.pipe';
-import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
+import { TIonDragEvent } from '../../../@shared/model/app.types';
+import { IDataItem } from '../../model/tracking.types';
+import { TrackingTimePipe } from '../../util/tracking-time.pipe';
+import { TimeFromDataItemPipe } from '../../util/time-from-data-item.pipe';
+import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
 
 @Component({
-  selector: 'app-data-item',
+  selector: 'app-stats-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stats-item.component.html',
   styleUrls: ['./stats-item.component.scss'],
@@ -35,8 +35,8 @@ import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
     IonItemOption,
     IonItemOptions,
     IonItemSliding,
-    NpTrackingTimePipe,
-    NpTimeFromDataItemPipe,
+    TrackingTimePipe,
+    TimeFromDataItemPipe,
   ],
 })
 export class StatsItemComponent {
@@ -46,8 +46,8 @@ export class StatsItemComponent {
 
   readonly deleteItem = output<void>();
 
-  async handleItemOptionsOnDrag(event: TIonDragEvent) {
-    switch (checkItemOptionsOnDrag(event)) {
+  async deleteOnSwipe(event: TIonDragEvent) {
+    switch (revealedSideFromDrag(event)) {
       case 'end': {
         return this.emitDeleteItem();
       }

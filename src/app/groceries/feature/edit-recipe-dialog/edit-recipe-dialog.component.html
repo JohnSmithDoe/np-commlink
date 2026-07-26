@@ -1,0 +1,104 @@
+<app-item-edit-modal
+  [item]="seedItem()"
+  [listItems]="listItems()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  closeButtonText="edit.item.dialog.button.close"
+  (nameChange)="updateName($event)"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <app-number-input
+    [value]="draft()?.servings"
+    (updateValue)="setServings($event)"
+  >
+    <div slot="label">{{ 'grocery.recipe.servings' | translate }}</div>
+  </app-number-input>
+
+  <app-number-input
+    [value]="draft()?.prepMinutes"
+    (updateValue)="setPrepMinutes($event)"
+  >
+    <div slot="label">{{ 'grocery.recipe.prep-minutes' | translate }}</div>
+  </app-number-input>
+
+  <ion-item lines="none">
+    <ion-label class="recipe-section">{{
+      'grocery.recipe.ingredients' | translate
+    }}</ion-label>
+  </ion-item>
+
+  @for (row of ingredientRows(); track row.line.id) {
+    <ion-item class="recipe-ingredient">
+      <ion-label class="ion-text-wrap">{{ row.name }}</ion-label>
+
+      <app-number-input
+        slot="end"
+        [value]="row.line.amount"
+        (updateValue)="setIngredientAmount(row.line.id, $event)"
+      >
+        <div slot="label">{{ 'grocery.recipe.amount' | translate }}</div>
+      </app-number-input>
+
+      <ion-select
+        slot="end"
+        labelPlacement="stacked"
+        interface="popover"
+        [label]="'grocery.recipe.unit' | translate"
+        [value]="row.line.unit"
+        (ionChange)="setIngredientUnit(row.line.id, $event)"
+      >
+        @for (unit of units; track unit) {
+          <ion-select-option [value]="unit">{{
+            'grocery.unit.' + unit | translate
+          }}</ion-select-option>
+        }
+      </ion-select>
+
+      <ion-button
+        slot="end"
+        fill="clear"
+        color="danger"
+        (click)="removeIngredient(row.line.id)"
+        [attr.aria-label]="'grocery.a11y.delete-ingredient' | translate"
+      >
+        <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
+      </ion-button>
+    </ion-item>
+  } @empty {
+    <ion-item lines="none">
+      <ion-label class="recipe-empty">{{
+        'grocery.recipe.no-ingredients' | translate
+      }}</ion-label>
+    </ion-item>
+  }
+
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      interface="popover"
+      [label]="'grocery.recipe.add-ingredient' | translate"
+      [value]="pickerValue()"
+      (ionChange)="addIngredient($event)"
+    >
+      @for (product of catalog(); track product.id) {
+        <ion-select-option [value]="product.id">{{
+          product.name
+        }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-textarea
+      labelPlacement="stacked"
+      [autoGrow]="true"
+      [rows]="4"
+      [label]="'grocery.recipe.steps' | translate"
+      [value]="draft()?.steps"
+      (ionInput)="setSteps($event)"
+    ></ion-textarea>
+  </ion-item>
+</app-item-edit-modal>

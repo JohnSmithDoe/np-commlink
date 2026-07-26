@@ -1,11 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IGrocerySearchResult, IStorageItem } from '../../model';
+import {
+  IGrocerySearchResult,
+  IStorageItem,
+} from '../../model/grocery-list.types';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import {
   mockProduct,
   mockShoppingItem,
   mockStorageItem,
-} from '../../testing/grocery.test-data';
+} from '../../testing/groceries.test-data';
 import { GrocerySearchResultComponent } from './grocery-search-result.component';
 
 function mockResults(

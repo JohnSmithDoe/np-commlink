@@ -35,16 +35,6 @@ describe('TrackplayPlayerPage', () => {
     expect(component.id).toBe('p1');
   });
 
-  it('dispatches enterPlayerPage with the route id on ionViewWillEnter', () => {
-    setup();
-
-    component.ionViewWillEnter();
-
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.enterPlayerPage('p1')
-    );
-  });
-
   it('dispatches deleteGame with the game', () => {
     const game = mockGame({ id: 'g1' });
     setup();
@@ -54,10 +44,12 @@ describe('TrackplayPlayerPage', () => {
     expect(dispatch).toHaveBeenCalledWith(TrackplayActions.deleteGame(game));
   });
 
-  it('resolves a game type name, falling back to Unbekannt', () => {
+  it('resolves a game type name, falling back to the unknown-type label', () => {
     setup();
 
     expect(component.typeName(mockGame({ type: 'default' }))).toBe('Standard');
-    expect(component.typeName(mockGame({ type: 'nope' }))).toBe('Unbekannt');
+    expect(component.typeName(mockGame({ type: 'nope' }))).toBe(
+      'trackplay.label.unknown-type'
+    );
   });
 });

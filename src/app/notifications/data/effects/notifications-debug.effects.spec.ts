@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { NotificationsActions } from '../../../@shared/data/notification/notifications.actions';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
+import { NotificationsInboxActions } from '../actions/notifications.actions';
 import { NotificationsDebugEffects } from './notifications-debug.effects';
 
 describe('NotificationsDebugEffects', () => {
@@ -19,20 +20,18 @@ describe('NotificationsDebugEffects', () => {
   };
 
   it('fabricates an actionable debug notification without reading tracking', async () => {
-    setup(of(NotificationsActions.addDebugNotification()));
+    setup(of(NotificationsInboxActions.addDebugNotification()));
 
     const emitted = await firstValueFrom(effects.addDebugNotification$);
 
-    expect(emitted.type).toBe(NotificationsActions.addNotification.type);
+    expect(emitted.type).toBe(NotificationsActions.notify.type);
     const { notification } = emitted as ReturnType<
-      typeof NotificationsActions.addNotification
+      typeof NotificationsActions.notify
     >;
     expect(notification.status).toBe('new');
-    // Synthetic (not from tracking state) but internally consistent, so the
+    // Synthetic (not from tracking state) but carries a target id, so the
     // deep-link CTA flow is exercisable end-to-end.
-    expect(notification.action?.trackingItemId).toBe(
-      notification.trackingItemId
-    );
+    expect(notification.action?.targetId).toBeTruthy();
     expect(['tracking.start', 'tracking.stop', 'tracking.pause']).toContain(
       notification.action?.type
     );

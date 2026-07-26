@@ -12,18 +12,18 @@ import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, pricetagsOutline, remove } from 'ionicons/icons';
-import {
-  TCategoryId,
-  TColor,
-  TItemListMode,
-  TItemListSortType,
-} from '../../model/types';
+import { TColor } from '../../model/app.types';
+import { TCategoryId } from '../../model/category.types';
+import { TItemListMode, TItemListSortType } from '../../model/item-list.types';
 import { categoryName } from '../../util/categories/category.utils';
 import { LIST_FACADE } from '../../util/list/list-page.facade';
-import { ItemListEmptyComponent } from '../../ui/base-item/item-list/item-list-empty/item-list-empty.component';
-import { ItemListSearchbarComponent } from '../../ui/base-item/item-list/item-list-searchbar/item-list-searchbar.component';
-import { ItemListToolbarComponent } from '../../ui/base-item/item-list/item-list-toolbar/item-list-toolbar.component';
-import { ItemListComponent } from '../../ui/base-item/item-list/item-list.component';
+import { ItemListEmptyComponent } from '../../ui/base-item/item-list-empty/item-list-empty.component';
+import { ItemListSearchbarComponent } from '../../ui/base-item/item-list-searchbar/item-list-searchbar.component';
+import { ItemListToolbarComponent } from '../../ui/base-item/item-list-toolbar/item-list-toolbar.component';
+import {
+  ItemListComponent,
+  ItemListTemplateContext,
+} from '../../ui/base-item/item-list/item-list.component';
 import { PageHeaderComponent } from '../../ui/page-header/page-header.component';
 import { CategoryNameDialogComponent } from '../../ui/categories/category-name-dialog/category-name-dialog.component';
 
@@ -39,7 +39,6 @@ import { CategoryNameDialogComponent } from '../../ui/categories/category-name-d
 @Component({
   selector: 'app-list-page',
   templateUrl: './list-page.component.html',
-  styleUrls: ['./list-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
@@ -62,7 +61,7 @@ export class ListPageComponent {
   // NgRx slice plus one guarded bridge effect per domain.
   readonly categoryDialog = signal<string | null>(null);
 
-  itemTemplate = input.required<TemplateRef<any>>();
+  itemTemplate = input.required<TemplateRef<ItemListTemplateContext>>();
   // Optional: grocery pages omit this for uniform amber chrome (per-domain
   // identity lives on the commlink deck tiles). When unset, page-header +
   // item-list fall back to the default shadowrun toolbar styling.

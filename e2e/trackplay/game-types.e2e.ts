@@ -10,14 +10,14 @@ test.describe('trackplay game types', () => {
     await gotoTrackplay(
       page,
       'trackplay/game-types',
-      'app-trackplay-game-types-page'
+      'app-page-trackplay-game-types'
     );
 
     await mainContent(page)
       .getByRole('button', { name: 'Neue Spielart anlegen' })
       .click();
 
-    const dialog = page.locator('app-trackplay-game-type-edit-dialog');
+    const dialog = page.locator('app-trackplay-game-type-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
     await dialog.locator('ion-input input').first().fill('Doppelkopf');
@@ -37,14 +37,14 @@ test.describe('trackplay game types', () => {
     await gotoTrackplay(
       page,
       'trackplay/game-types',
-      'app-trackplay-game-types-page'
+      'app-page-trackplay-game-types'
     );
 
     await mainContent(page)
       .getByRole('button', { name: 'Neue Spielart anlegen' })
       .click();
 
-    const dialog = page.locator('app-trackplay-game-type-edit-dialog');
+    const dialog = page.locator('app-trackplay-game-type-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
     await dialog.locator('ion-input input').first().fill('Canasta');

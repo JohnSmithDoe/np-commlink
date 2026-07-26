@@ -14,7 +14,7 @@ const FALLBACK_MS = 3000;
 @Injectable({ providedIn: 'root' })
 export class SplashService {
   #revealed = false;
-  #timer?: ReturnType<typeof setTimeout>;
+  readonly #timer?: ReturnType<typeof setTimeout>;
 
   // Instantiated eagerly (ThemeEffects injects it at boot), so arming the
   // fallback in the constructor guarantees the splash lifts even if `loaded`

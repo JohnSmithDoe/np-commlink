@@ -15,8 +15,8 @@ function setup(cats: Entry[] = []) {
   const remove = vi.fn();
   const drillTo = vi.fn();
   const facade: ICategoriesPageFacade = {
-    listTitleKey: signal('grocery.page-title.shopping'),
-    listHref: signal('/shopping/_shopping'),
+    listTitleKey: signal('page-title.groceries-shopping'),
+    listHref: signal('/groceries/shopping/_shopping'),
     categories: signal(cats),
     add,
     rename,

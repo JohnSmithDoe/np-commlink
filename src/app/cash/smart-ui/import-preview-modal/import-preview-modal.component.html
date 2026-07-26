@@ -26,6 +26,12 @@
     }}
   </ion-note>
 
+  @if (rejected) {
+    <ion-note class="cash-import__rejected" color="danger">
+      {{ 'cash.import.rejected' | translate: { rejected: rejected } }}
+    </ion-note>
+  }
+
   @if (transactions.length) {
     <ion-list lines="full">
       @for (txn of transactions; track txn.id) {

@@ -17,9 +17,9 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, dice, trash } from 'ionicons/icons';
-import { TIonDragEvent } from '../../../@shared/model/types';
-import { IGameType } from '../../model';
-import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
+import { TIonDragEvent } from '../../../@shared/model/app.types';
+import { IGameType } from '../../model/trackplay.types';
+import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
 
 /**
  * DUMB game-type row. Swipe start / tap option to delete (only when
@@ -54,8 +54,8 @@ export class TrackplayGameTypeListItemComponent {
     addIcons({ dice, trash, create });
   }
 
-  handleDrag(event: TIonDragEvent): void {
-    switch (checkItemOptionsOnDrag(event)) {
+  deleteOrEditOnSwipe(event: TIonDragEvent): void {
+    switch (revealedSideFromDrag(event)) {
       case 'start': {
         if (this.canDelete()) void this.emitDelete();
         break;

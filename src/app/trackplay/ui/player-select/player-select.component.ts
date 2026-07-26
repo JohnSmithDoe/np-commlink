@@ -13,7 +13,7 @@ import {
   IonLabel,
   IonList,
 } from '@ionic/angular/standalone';
-import { IPlayer, TID } from '../../model';
+import { IPlayer, TID } from '../../model/trackplay.types';
 
 /**
  * DUMB multi-select for the game-edit dialog. Renders one checkbox per player.

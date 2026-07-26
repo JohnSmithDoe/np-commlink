@@ -1,4 +1,4 @@
-<ion-item-sliding (ionDrag)="handleDrag($event)">
+<ion-item-sliding (ionDrag)="deleteOrEditOnSwipe($event)">
   <ion-item-options side="start">
     <ion-item-option color="danger" [expandable]="true" (click)="emitDelete()">
       <ion-icon slot="start" name="trash" aria-hidden="true" />

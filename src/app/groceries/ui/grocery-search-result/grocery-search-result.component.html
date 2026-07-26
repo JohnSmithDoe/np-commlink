@@ -8,7 +8,7 @@
   <ng-template #productItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories: catalog()"
+      [note]="item | categories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectProduct.emit(item)"
     ></app-text-item>
@@ -24,7 +24,7 @@
   <ng-template #shoppingItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories: catalog()"
+      [note]="item | categories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectShoppingItem.emit(item)"
     ></app-text-item>
@@ -40,7 +40,7 @@
   <ng-template #storageItem let-item>
     <app-text-item
       [label]="item.name"
-      [note]="item | appCategories: catalog()"
+      [note]="item | categories: catalog()"
       [helper]="'grocery.item-helper.search' | translate"
       (selectItem)="selectStorageItem.emit(item)"
     ></app-text-item>

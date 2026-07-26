@@ -1,9 +1,10 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IBaseItem, ICategory } from '../../model/types';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import { mockBaseItem, mockCategory } from '../../testing/test-data';
 import { CategoryNoteDirective } from './category-note.directive';
+import { IBaseItem } from '../../model/base-item.types';
+import { ICategory } from '../../model/category.types';
 
 @Component({
   standalone: true,

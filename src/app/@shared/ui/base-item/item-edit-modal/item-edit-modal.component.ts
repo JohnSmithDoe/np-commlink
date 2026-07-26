@@ -14,16 +14,15 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
-import { IBaseItem } from '../../../model/types';
 import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-input.component';
+import { IBaseItem } from '../../../model/base-item.types';
 
 /**
  * Pure presentational (type:ui) edit-modal shell — inputs in, events out, no
  * store. The domain feature wrapper owns the draft + open state and projects
- * its domain-specific fields through `<ng-content>`. Replaces the store-bound
- * `@shared/smart-ui/item-edit-modal` (dialog refactor — see
- * `docs/dialog-refactor-plan.md`). `closeButtonText` is an input because the
- * old shell hardcoded a `grocery.`-prefixed key, which is why tracking forked.
+ * its domain-specific fields through `<ng-content>` (see architecture.md §4.1b).
+ * `closeButtonText` is an input because the old store-bound shell hardcoded a
+ * `grocery.`-prefixed key, which is why tracking forked.
  */
 @Component({
   selector: 'app-item-edit-modal',

@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
  * Wiring guard for the LAZY cash context (lazy-modules Phase D).
  *
  * The /cash route registers the cash slice + effects via its route `providers`
- * (provide-cash-lazy.ts) and blocks activation on
+ * (cash.providers.ts) and blocks activation on
  * `moduleHydrationResolver(CashActions.load, CashActions.loaded)`. If the load
  * effect (CashLoadEffects) were dropped from those providers — the exact
  * regression the Phase-D review flagged — the resolver would await

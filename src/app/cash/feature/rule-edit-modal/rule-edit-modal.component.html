@@ -1,0 +1,138 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{
+        (isEdit()
+          ? 'cash.rule-dialog.title-edit'
+          : 'cash.rule-dialog.title-new'
+        ) | translate
+      }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" [disabled]="!canSave()" (click)="confirm()">
+        {{ 'cash.action.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list lines="full">
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.rule-name' | translate }}"
+        [clearInput]="true"
+        [value]="draft().name"
+        (ionInput)="patch({ name: $any($event.target).value ?? '' })"
+      />
+    </ion-item>
+
+    <app-cash-category-picker
+      [categories]="categories()"
+      [categoryId]="draft().categoryId"
+      (categoryIdChange)="patch({ categoryId: $event })"
+      (addNew)="onAddCategory($event)"
+      (deleted)="onDeleteCategory($event)"
+      (renamed)="onRenameCategory($event)"
+    ></app-cash-category-picker>
+  </ion-list>
+
+  <ion-segment
+    class="cash-rule-dialog__match"
+    [value]="draft().match"
+    (ionChange)="patch({ match: $any($event).detail.value })"
+  >
+    <ion-segment-button value="all">
+      {{ 'cash.match.all' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="any">
+      {{ 'cash.match.any' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list-header>{{ 'cash.label.conditions' | translate }}</ion-list-header>
+  <ion-list lines="full">
+    @for (condition of draft().conditions; track $index) {
+      <div class="cash-condition">
+        <div class="cash-condition__row">
+          <ion-select
+            [attr.aria-label]="'cash.a11y.field' | translate"
+            interface="popover"
+            [value]="condition.field"
+            (ionChange)="onField($index, $any($event).detail.value)"
+          >
+            <ion-select-option value="description">
+              {{ 'cash.field.description' | translate }}
+            </ion-select-option>
+            <ion-select-option value="amount">
+              {{ 'cash.field.amount' | translate }}
+            </ion-select-option>
+          </ion-select>
+
+          <ion-select
+            [attr.aria-label]="'cash.a11y.operator' | translate"
+            interface="popover"
+            [value]="condition.op"
+            (ionChange)="onOp($index, $any($event).detail.value)"
+          >
+            @for (op of opsFor(condition.field); track op) {
+              <ion-select-option [value]="op">
+                {{ 'cash.op.' + op | translate }}
+              </ion-select-option>
+            }
+          </ion-select>
+
+          <ion-button
+            fill="clear"
+            color="medium"
+            [attr.aria-label]="'cash.a11y.remove-condition' | translate"
+            (click)="removeCondition($index)"
+          >
+            <ion-icon slot="icon-only" name="close-outline" />
+          </ion-button>
+        </div>
+
+        <ion-item>
+          <ion-input
+            [attr.aria-label]="'cash.a11y.value' | translate"
+            [placeholder]="
+              (condition.field === 'amount'
+                ? 'cash.label.amount'
+                : 'cash.label.value'
+              ) | translate
+            "
+            [value]="condition.value"
+            (ionInput)="onValue($index, $any($event.target).value ?? '')"
+          />
+        </ion-item>
+
+        @if (condition.field === 'description') {
+          <ion-item>
+            <ion-toggle
+              [checked]="condition.caseSensitive ?? false"
+              (ionChange)="onCaseSensitive($index, $any($event).detail.checked)"
+            >
+              {{ 'cash.label.case-sensitive' | translate }}
+            </ion-toggle>
+          </ion-item>
+        }
+      </div>
+    }
+  </ion-list>
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="ion-margin-top"
+    (click)="addCondition()"
+  >
+    <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+    {{ 'cash.condition.add' | translate }}
+  </ion-button>
+</ion-content>

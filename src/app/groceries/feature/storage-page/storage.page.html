@@ -1,15 +1,15 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'grocery.page-title.storage' | translate }}"
+  pageHeader="{{ 'page-title.groceries-storage' | translate }}"
   listHeader="{{ 'grocery.list-header.storage' | translate }}"
   [itemTemplate]="storageItem"
 >
-  <app-item-list-quickadd
+  <app-item-list-quick-add
     quickAdd
     (quickAddItem)="facade.addItemFromSearch()"
     (quickCreateCategory)="facade.addCategoryFromSearch()"
     (quickCreateProduct)="facade.showCreateProductDialog()"
-  ></app-item-list-quickadd>
+  ></app-item-list-quick-add>
   <ion-button (click)="setSortMode('bestBefore')" toolbarActions>{{
     'grocery.list-toolbar.mhd' | translate
   }}</ion-button>

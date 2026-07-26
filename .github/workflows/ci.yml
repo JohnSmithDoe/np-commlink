@@ -37,7 +37,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Lint (eslint)
-        run: pnpm exec eslint "src/**/*.ts"
+        run: pnpm exec eslint "src/**/*.{ts,html}"
+
+      # Prettier is enforced by the lefthook pre-commit hook, which a
+      # --no-verify commit skips — so CI is the gate that actually holds.
+      - name: Format (prettier)
+        run: pnpm run format:check
 
       - name: Module boundaries (sheriff)
         run: pnpm exec sheriff verify src/main.ts
@@ -50,8 +55,10 @@ jobs:
       - name: Type-check (spec)
         run: pnpm exec tsc -p tsconfig.spec.json --noEmit
 
+      # Coverage rather than a bare run: the thresholds in vitest.config.ts are
+      # a regression floor, and they only bind if something checks them.
       - name: Unit tests (vitest)
-        run: pnpm test
+        run: pnpm run test:coverage
 
       - name: Production build
         run: pnpm run build

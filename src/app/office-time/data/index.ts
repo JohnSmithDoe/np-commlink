@@ -3,17 +3,16 @@
  *
  * Facade-only surface — consumers (the office-time feature pages, the dash
  * smart-ui components, and the shell route file) get the action contracts,
- * the display/stats selectors, the pure date utils, and the lazy providers,
- * and nothing else. The reducers, effects, load/save/telemetry effects,
- * initial state, and the raw feature selectors are module internals and stay
- * hidden: importing them from outside `office-time/data` is a Sheriff
- * encapsulation violation.
+ * the display/stats selectors, the pure date utils, and the lazy context
+ * bundle, and nothing else. The reducers, effects, initial state, and the raw
+ * feature selectors are module internals and stay hidden: importing them from
+ * outside `office-time/data` is a Sheriff encapsulation violation.
  *
  * Named re-exports only (never `export *`) so the public surface is explicit
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 
-export { OfficeTimeActions } from './office-time/office-time.actions';
+export { OfficeTimeActions } from './actions/office-time.actions';
 export { OfficeTimeFacade } from './office-time.facade';
 
 export {
@@ -24,25 +23,21 @@ export {
   selectHolidays,
   selectOfficedays,
   selectTargetOfficeDaysPerWeek,
-} from './office-time/office-time.selector';
+} from './selectors/office-time.selector';
 
 export {
   selectDashboardStatsMonth,
   selectDashboardStatsQuarter,
   selectDashboardStatsWeek,
   selectDashboardStatsYear,
-  selectTodayIsOfficeDay,
-} from './office-time/office-time.stats.selector';
+} from './selectors/office-time-stats.selector';
 
 export {
   dayjsFromString,
   dayjsToday,
   dayjsToString,
-  daysToFreedaysHighlightsInputTransform,
-  daysToHolidaysHighlightsInputTransform,
-} from './office-time/office-time.utils';
+  freedayHighlights,
+  holidayHighlights,
+} from '../util/office-time.utils';
 
-export {
-  officeTimeLazyProviders,
-  officeTimeHydrationResolver,
-} from './provide-office-time-lazy';
+export { officeTimeContext } from './office-time.providers';

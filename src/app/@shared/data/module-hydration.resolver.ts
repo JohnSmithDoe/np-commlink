@@ -5,11 +5,10 @@ import { Action, ActionCreator, Store } from '@ngrx/store';
 import { firstValueFrom, take } from 'rxjs';
 
 /**
- * Blocks route activation until a lazy module has hydrated its own data
- * (lazy-modules plan §2). Replaces the single global `datastoreHydrationResolver`
- * with a factory parameterised by a module's own `load`/`loaded` actions, so
- * entering a route reads only that module's keys instead of re-reading the
- * whole datastore.
+ * Blocks route activation until a lazy module has hydrated its own data.
+ * Replaces the single global `datastoreHydrationResolver` with a factory
+ * parameterised by a module's own `load`/`loaded` actions, so entering a route
+ * reads only that module's keys instead of re-reading the whole datastore.
  *
  * A lazy module registers its reducers via `provideState(...)` in the route's
  * `providers`; Angular creates that route `EnvironmentInjector` during route

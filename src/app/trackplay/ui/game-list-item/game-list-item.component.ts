@@ -19,9 +19,9 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, playCircle, trash } from 'ionicons/icons';
-import { TIonDragEvent } from '../../../@shared/model/types';
-import { IGame } from '../../model';
-import { checkItemOptionsOnDrag } from '../../../@shared/util/app.utils';
+import { TIonDragEvent } from '../../../@shared/model/app.types';
+import { IGame } from '../../model/trackplay.types';
+import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
 
 /**
  * DUMB game row for the games list. Renders a sliding item: swipe the start
@@ -62,8 +62,8 @@ export class TrackplayGameListItemComponent {
 
   // Start side (negative amount) deletes; end side (positive) edits. Mirrors the
   // legacy deleteOnDrag sign math via the shared drag helper.
-  handleDrag(event: TIonDragEvent): void {
-    switch (checkItemOptionsOnDrag(event)) {
+  deleteOrEditOnSwipe(event: TIonDragEvent): void {
+    switch (revealedSideFromDrag(event)) {
       case 'start': {
         void this.emitDelete();
         break;

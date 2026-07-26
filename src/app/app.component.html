@@ -3,120 +3,36 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>commlink</ion-title>
+        <!-- Permanent, and deliberately not one of the entries below: SYSOP is
+             hideable like everything else, so without this the user could hide
+             the only door back to the page that un-hides it. -->
+        <ion-buttons slot="end">
+          <ion-menu-toggle>
+            <ion-button
+              routerLink="/settings"
+              [attr.aria-label]="'page-title.settings' | translate"
+            >
+              <ion-icon slot="icon-only" name="settings-outline" />
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <main>
         <ion-list>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/commlink" lines="none">
-              <ion-icon slot="start" name="hardware-chip-outline" />
-              <ion-label>{{ 'page-title.commlink' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/soykaf" lines="none">
-              <ion-icon slot="start" name="cafe-outline" />
-              <ion-label>{{ 'page-title.soykaf' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/tracking" lines="none">
-              <ion-icon slot="start" name="timer-outline" />
-              <ion-label>{{ 'page-title.tracking' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/notifications" lines="none">
-              <ion-icon slot="start" name="notifications-outline" />
-              <ion-label>{{
-                'page-title.notifications' | translate
-              }}</ion-label>
-              @if (notificationsBadge() > 0) {
-                <ion-badge slot="end" color="danger">
-                  {{ notificationsBadge() }}
-                </ion-badge>
-              }
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/office-time" lines="none">
-              <ion-icon slot="start" name="business-outline" />
-              <ion-label>{{ 'page-title.office-time' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/barcode" lines="none">
-              <ion-icon slot="start" name="barcode-outline" />
-              <ion-label>{{ 'page-title.barcode' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item
-              [button]="true"
-              routerLink="/shopping/_shopping"
-              lines="none"
-            >
-              <ion-icon slot="start" name="cart-outline" />
-              <ion-label>{{
-                'grocery.page-title.shopping' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item
-              [button]="true"
-              routerLink="/storage/_storage"
-              lines="none"
-            >
-              <ion-icon slot="start" name="file-tray-stacked-outline" />
-              <ion-label>{{
-                'grocery.page-title.storage' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/tasks/_tasks" lines="none">
-              <ion-icon slot="start" name="checkbox-outline" />
-              <ion-label>{{
-                'grocery.page-title.tasks' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item
-              [button]="true"
-              routerLink="/products/_products"
-              lines="none"
-            >
-              <ion-icon slot="start" name="pricetags-outline" />
-              <ion-label>{{
-                'grocery.page-title.products' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/list-settings" lines="none">
-              <ion-icon slot="start" name="options-outline" />
-              <ion-label>{{
-                'grocery.page-title.settings' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/cash" lines="none">
-              <ion-icon slot="start" name="wallet-outline" />
-              <ion-label>{{ 'cash.page-title.cash' | translate }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-item [button]="true" routerLink="/trackplay" lines="none">
-              <ion-icon slot="start" name="dice-outline" />
-              <ion-label>{{
-                'trackplay.page-title.games' | translate
-              }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+          @for (entry of menuEntries(); track entry.id) {
+            <ion-menu-toggle>
+              <ion-item [button]="true" [routerLink]="entry.route" lines="none">
+                <ion-icon slot="start" [name]="entry.icon" />
+                <ion-label>{{ entry.titleKey | translate }}</ion-label>
+                @let badge = menuBadge(entry);
+                @if (badge > 0) {
+                  <ion-badge slot="end" color="danger">{{ badge }}</ion-badge>
+                }
+              </ion-item>
+            </ion-menu-toggle>
+          }
         </ion-list>
       </main>
     </ion-content>

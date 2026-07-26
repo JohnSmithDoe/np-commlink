@@ -1,9 +1,10 @@
-import { eurToCents } from '../money';
+import { eurToCents } from '../money.utils';
 import {
   findHeaderIndex,
   germanDateToISO,
   IBankParser,
   IParsedRow,
+  IParseResult,
   joinDescription,
   splitLines,
   splitRow,
@@ -20,17 +21,21 @@ const AMOUNT = 6;
 export const volksbankParser: IBankParser = {
   bank: 'volksbank',
   label: 'Volksbank',
-  parse(text: string): IParsedRow[] {
+  parse(text: string): IParseResult {
     const lines = splitLines(text);
     const header = findHeaderIndex(lines, HEADER);
-    if (header === -1) return [];
+    if (header === -1) return { rows: [], rejected: 0 };
 
     const rows: IParsedRow[] = [];
+    let rejected = 0;
     for (const line of lines.slice(header + 1)) {
       const cols = splitRow(line);
       const dateISO = germanDateToISO(cols[DATE] ?? '');
       const amountCents = eurToCents(cols[AMOUNT] ?? '');
-      if (dateISO === null || amountCents === null) continue; // skip junk rows
+      if (dateISO === null || amountCents === null) {
+        rejected++;
+        continue;
+      }
       const text = joinDescription(cols[PAYEE] ?? '', cols[PURPOSE] ?? '');
       rows.push({
         dateISO,
@@ -39,6 +44,6 @@ export const volksbankParser: IBankParser = {
         rawDescription: text,
       });
     }
-    return rows;
+    return { rows, rejected };
   },
 };

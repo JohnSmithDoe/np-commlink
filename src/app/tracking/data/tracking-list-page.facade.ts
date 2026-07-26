@@ -1,16 +1,16 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
-import {
-  TItemListCategory,
-  TItemListSortType,
-} from '../../@shared/model/types';
-import { ItemDialogHost } from '../../@shared/data/item-dialogs/item-dialog-host';
+import { ItemDialogService } from '../../@shared/util/item-dialog.service';
 import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
 import { listStateFilter } from '../../@shared/util/list/list.selector';
-import { IDataItem, ITrackingItem } from '../model';
+import {
+  IDataItem,
+  ITrackingItem,
+  TRACKING_LIST_ID,
+} from '../model/tracking.types';
 import { createTrackingItem } from '../util/tracking.factory';
-import { TrackingActions } from './tracking.actions';
+import { TrackingActions } from './actions/tracking.actions';
 import {
   selectAllTrackingSessions,
   selectSessionsByDayAndName,
@@ -20,11 +20,13 @@ import {
   selectTrackingListSearchResult,
   selectTrackingState,
   selectTrackingTime,
-} from './tracking.selector';
+} from './selectors/tracking.selector';
+import { ICategory } from '../../@shared/model/category.types';
+import { TItemListSortType } from '../../@shared/model/item-list.types';
 
 // Tracking has no categories; the shared list contract still wants a signal.
 const noTrackingCategories = (): {
-  category: TItemListCategory;
+  category: ICategory;
   count: number;
 }[] => [];
 
@@ -33,7 +35,7 @@ const noTrackingCategories = (): {
  * component (the tracker page, the stats page, and the daily-sessions /
  * sessions-chart smart-ui). It injects `Store` so the components never do, and
  * exposes tracking state as signals plus command methods that dispatch
- * `TrackingActions` (the edit dialog opens straight onto `ItemDialogHost`).
+ * `TrackingActions` (the edit dialog opens straight onto `ItemDialogService`).
  *
  * It also implements {@link IListPageFacade} (provided as `LIST_FACADE` on the
  * `/tracking` route) so the domain-blind `ListPageComponent` can drive the list
@@ -49,7 +51,7 @@ const noTrackingCategories = (): {
 @Injectable({ providedIn: 'root' })
 export class TrackingListPageFacade implements IListPageFacade {
   readonly #store = inject(Store);
-  readonly #dialogs = inject(ItemDialogHost);
+  readonly #dialogs = inject(ItemDialogService);
 
   // ── IListPageFacade queries ──────────────────────────────────────────────
   readonly state = this.#store.selectSignal(selectTrackingState);
@@ -57,12 +59,12 @@ export class TrackingListPageFacade implements IListPageFacade {
   readonly searchResult = this.#store.selectSignal(
     selectTrackingListSearchResult
   );
-  readonly filter = computed(() => listStateFilter(this.state()));
+  readonly filterState = computed(() => listStateFilter(this.state()));
   readonly categories = computed(noTrackingCategories);
 
   // ── Tracking-domain queries ──────────────────────────────────────────────
   readonly total = this.#store.selectSignal(selectTrackingTime);
-  readonly data = this.#store.selectSignal(selectTrackingData);
+  readonly sessionsByView = this.#store.selectSignal(selectTrackingData);
   readonly viewMode = this.#store.selectSignal(selectTrackingDataViewId);
   readonly allSessions = this.#store.selectSignal(selectAllTrackingSessions);
   readonly sessionsByDayAndName = this.#store.selectSignal(
@@ -94,24 +96,20 @@ export class TrackingListPageFacade implements IListPageFacade {
   showCreateDialog(): void {
     this.#dialogs.open({
       item: createTrackingItem(this.state()?.searchQuery ?? ''),
-      listId: '_tracking',
+      listId: TRACKING_LIST_ID,
       editMode: 'create',
     });
   }
 
   // ── Tracking-domain commands ─────────────────────────────────────────────
-  enterPage(): void {
-    this.#store.dispatch(TrackingActions.enterPage());
-  }
-
-  applyNotificationCommand(notificationId: string): void {
+  applyNotificationCommand(command: string, targetId: string): void {
     this.#store.dispatch(
-      TrackingActions.applyNotificationCommand(notificationId)
+      TrackingActions.applyNotificationCommand(command, targetId)
     );
   }
 
   showEditDialog(item: ITrackingItem): void {
-    this.#dialogs.open({ item, listId: '_tracking', editMode: 'update' });
+    this.#dialogs.open({ item, listId: TRACKING_LIST_ID, editMode: 'update' });
   }
 
   removeItem(item: ITrackingItem): void {
@@ -136,14 +134,14 @@ export class TrackingListPageFacade implements IListPageFacade {
     this.#store.dispatch(TrackingActions.saveAndResetTracking());
   }
 
-  generateDummyData(): void {
-    this.#store.dispatch(TrackingActions.generateDummyData());
+  seedDemoSessions(): void {
+    this.#store.dispatch(TrackingActions.seedDemoSessions());
   }
 
   createByTicket(): void {
     this.#dialogs.open({
       item: createTrackingItem('new ticket'),
-      listId: '_tracking',
+      listId: TRACKING_LIST_ID,
       editMode: 'create',
     });
   }

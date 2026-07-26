@@ -22,7 +22,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, play, square } from 'ionicons/icons';
-import { IRound, TID } from '../../model';
+import { IRound, TID } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
 
@@ -39,7 +39,7 @@ import { ScorePipe } from '../../util/score.pipe';
  * body to keep that blank row in view.
  */
 @Component({
-  selector: 'app-trackplay-game-play-page',
+  selector: 'app-page-trackplay-game-play',
   templateUrl: './game-play.page.html',
   styleUrls: ['./game-play.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

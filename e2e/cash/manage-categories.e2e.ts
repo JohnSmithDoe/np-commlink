@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { waitForPersisted } from '../helpers';
 
 /**
  * Cash adoption of the shared manage-categories page + the cash category→items
@@ -28,13 +29,13 @@ test.describe('cash manage categories', () => {
     await input.press('Enter');
 
     await expect(
-      page.locator('app-edit-categories-page').getByText('Miete', {
+      page.locator('app-page-edit-categories').getByText('Miete', {
         exact: true,
       })
     ).toBeVisible({ timeout: 10_000 });
     // No transactions yet → count 0.
     await expect(
-      page.locator('app-edit-categories-page ion-item-sliding', {
+      page.locator('app-page-edit-categories ion-item-sliding', {
         hasText: 'Miete',
       })
     ).toContainText('0');
@@ -75,24 +76,26 @@ test.describe('cash manage categories', () => {
     const pickerSearch = page.locator('ion-searchbar input').last();
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Miete');
-    await page.waitForTimeout(400); // > 250ms searchbar debounce
-    await page.getByText('Miete erstellen').click();
+    // The "create" row appearing is the searchbar debounce having landed.
+    const createMiete = page.getByText('Miete erstellen');
+    await expect(createMiete).toBeVisible({ timeout: 10_000 });
+    await createMiete.click();
     await txnModal.getByRole('button', { name: 'Speichern' }).click();
     await expect(account.getByText('Wohnung Miete')).toBeVisible({
       timeout: 10_000,
     });
-    await page.waitForTimeout(400); // let the catalog + txn save flush
+    await waitForPersisted(page, 'cash', 'Wohnung Miete');
 
     // Manage page shows the category with count 1; tapping drills to its txns.
     // Scope to the manage-page component — the (hidden) account page still has a
     // "Wohnung Miete" txn row that would otherwise also match.
     await page.goto('/#/cash/categories');
-    const row = page.locator('app-edit-categories-page ion-item-sliding', {
+    const row = page.locator('app-page-edit-categories ion-item-sliding', {
       hasText: 'Miete',
     });
     await expect(row).toContainText('1', { timeout: 10_000 });
     await page
-      .locator('app-edit-categories-page')
+      .locator('app-page-edit-categories')
       .getByText('Miete', { exact: true })
       .click();
 

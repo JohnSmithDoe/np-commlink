@@ -12,7 +12,6 @@ import { GroceryListPageFacade } from '../../data';
 @Component({
   selector: 'app-shopping-action-sheet',
   templateUrl: './shopping-action-sheet.component.html',
-  styleUrls: ['./shopping-action-sheet.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonActionSheet, TranslateModule],
 })

@@ -78,6 +78,9 @@ Thumbs.db
 # Qodana reports (generated)
 /qodana.sarif.json
 
+# SonarScanner work dir (generated)
+/.scannerwork
+
 # Playwright
 /test-results
 /playwright-report

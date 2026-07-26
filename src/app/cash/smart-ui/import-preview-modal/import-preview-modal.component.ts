@@ -19,10 +19,12 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { TCategoryId } from '../../../@shared/model/types';
-import { ICashTransaction } from '../../model';
+import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
+import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
+
+import { TCategoryId } from '../../../@shared/model/category.types';
 
 /**
  * Preview a parsed CSV import before committing (via `ModalController`). Fed the
@@ -54,13 +56,14 @@ export class CashImportPreviewModalComponent {
   readonly #facade = inject(CashFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #categories = this.#facade.categories;
-  readonly #categoryNameById = computed(
-    () => new Map(this.#categories().map((c) => [c.id, c.name]))
+  readonly #categoryName = computed(() =>
+    categoryNameLookup(this.#categories())
   );
 
   /** Imperative componentProps. */
   transactions: ICashTransaction[] = [];
   duplicates = 0;
+  rejected = 0;
 
   formatDate(iso: string): string {
     return dayjs(iso).format('DD.MM.YYYY');
@@ -68,7 +71,7 @@ export class CashImportPreviewModalComponent {
 
   /** Resolve an auto-assigned category id to its display name. */
   categoryName(id: TCategoryId | undefined): string {
-    return id ? (this.#categoryNameById().get(id) ?? '') : '';
+    return this.#categoryName()(id);
   }
 
   confirm(): void {

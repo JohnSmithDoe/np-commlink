@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
-import { ITrackingItem } from '../../model';
+import { ITrackingItem } from '../../model/tracking.types';
 import { selectAllTrackingSessions } from '../../data';
 import { DailySessionsComponent } from './daily-sessions.component';
 

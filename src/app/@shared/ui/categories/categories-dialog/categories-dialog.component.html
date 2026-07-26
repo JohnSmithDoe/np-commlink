@@ -35,7 +35,7 @@
       >
         @if (searchQuery().length && !searchContained()) {
           <ion-item
-            button
+            [button]="true"
             (click)="addNewCategory()"
             [detail]="true"
             color="primary"
@@ -50,9 +50,10 @@
             </ion-note>
           </ion-item>
         }
-        @for (cat of filteredCategories(); track cat.id) {
+
+        @for (category of filteredCategories(); track category.id) {
           <ion-item-sliding>
-            @if (editing() === cat.id) {
+            @if (editing() === category.id) {
               <ion-item>
                 <ion-input
                   [value]="renameText()"
@@ -63,34 +64,36 @@
                   placeholder="{{
                     'category-picker.rename-placeholder' | translate
                   }}"
-                ></ion-input>
+                />
               </ion-item>
             } @else {
               <ion-item
-                button
+                [button]="true"
                 role="option"
-                [attr.aria-selected]="isChecked(cat)"
-                (click)="rowClick(cat)"
+                [attr.aria-selected]="isChecked(category)"
+                (click)="rowClick(category)"
               >
                 <ion-icon
                   slot="start"
                   name="checkmark-outline"
                   aria-hidden="true"
-                  [style.visibility]="isChecked(cat) ? 'visible' : 'hidden'"
+                  [style.visibility]="
+                    isChecked(category) ? 'visible' : 'hidden'
+                  "
                 ></ion-icon>
-                <ion-label class="ion-text-wrap">{{ cat.name }}</ion-label>
+                <ion-label class="ion-text-wrap">{{ category.name }}</ion-label>
               </ion-item>
             }
             <ion-item-options side="end">
               <ion-item-option
-                (click)="startEdit(cat)"
+                (click)="startEdit(category)"
                 [attr.aria-label]="'category-picker.edit' | translate"
               >
                 <ion-icon slot="icon-only" name="create-outline"></ion-icon>
               </ion-item-option>
               <ion-item-option
                 color="danger"
-                (click)="deleteCategory(cat)"
+                (click)="deleteCategory(category)"
                 [attr.aria-label]="'category-picker.delete' | translate"
               >
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>

@@ -8,19 +8,16 @@ import {
   mergeMap,
   of,
   switchMap,
-  tap,
   withLatestFrom,
 } from 'rxjs';
-import { DatabaseService } from '../../../@shared/util/db/database.service';
-import { BarcodeActions } from '../barcode.actions';
-import { selectBarcodeState } from '../barcode.selector';
+import { BarcodeActions } from '../actions/barcode.actions';
+import { selectBarcodeState } from '../selectors/barcode.selector';
 import { rotateBase64 } from '../../util/barcode.utils';
 
 @Injectable({ providedIn: 'root' })
 export class BarcodeEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);
-  readonly #database = inject(DatabaseService);
 
   rotateBarcode$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -28,35 +25,15 @@ export class BarcodeEffects {
       withLatestFrom(this.#store.select(selectBarcodeState)),
       switchMap(([_, state]) => {
         return from(rotateBase64(state.dataUrl, 90)).pipe(
-          // When rotation actually produced a new image, commit it.
-          // Otherwise (no badge set, image load error, draw failure) emit
-          // nothing so we don't churn the save effect with an identical write.
+          // Commit whatever rotateBase64 produced; it returns undefined itself
+          // (no badge set, missing 2D context) so there is nothing here to
+          // second-guess.
           mergeMap((rotated) =>
-            rotated && rotated !== state.dataUrl
-              ? of(BarcodeActions.rotateBarcodeSuccess(rotated))
-              : EMPTY
+            rotated ? of(BarcodeActions.rotateBarcodeSuccess(rotated)) : EMPTY
           ),
           catchError(() => EMPTY)
         );
       })
     );
   });
-
-  // Persist the slice after any mutation. Matches specific mutation actions
-  // (never `load`/`loaded`), so hydration can't clobber the saved value. The
-  // reducer runs before this effect, so the store already holds the new slice.
-  saveOn$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        ofType(
-          BarcodeActions.saveBarcode,
-          BarcodeActions.deleteBarcode,
-          BarcodeActions.rotateBarcodeSuccess
-        ),
-        withLatestFrom(this.#store.select(selectBarcodeState)),
-        tap(([, state]) => void this.#database.save('barcode', state))
-      );
-    },
-    { dispatch: false }
-  );
 }

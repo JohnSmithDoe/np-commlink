@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
-import { IShoppingItem } from '../../model';
+import { IShoppingItem, TGroceryListId } from '../../model/grocery-list.types';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
@@ -26,7 +26,7 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
 export class EditShoppingItemDialogComponent extends BaseGroceryEditItemDialog<IShoppingItem> {
-  protected readonly listId = '_shopping' as const;
+  protected readonly listId: TGroceryListId = '_shopping';
   readonly categories = this.facade.shoppingCategories;
   readonly listItems = this.facade.shoppingListItems;
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
-import { TIonDragEvent } from '../../../model/types';
+import { TIonDragEvent } from '../../../model/app.types';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { CategoryItemComponent } from './category-item.component';
 
@@ -64,12 +64,12 @@ describe('CategoryItemComponent', () => {
     });
   });
 
-  describe('handleItemOptionsOnDrag', () => {
+  describe('deleteOnSwipe', () => {
     it('routes a large positive drag (end) to delete', async () => {
       const emitted: unknown[] = [];
       component.deleteCategory.subscribe(() => emitted.push(true));
 
-      await component.handleItemOptionsOnDrag(dragEvent(200));
+      await component.deleteOnSwipe(dragEvent(200));
 
       expect(emitted).toHaveLength(1);
       expect(ionList.closeSlidingItems).toHaveBeenCalledTimes(1);
@@ -79,7 +79,7 @@ describe('CategoryItemComponent', () => {
       const emitted: unknown[] = [];
       component.deleteCategory.subscribe(() => emitted.push(true));
 
-      await component.handleItemOptionsOnDrag(dragEvent(-200));
+      await component.deleteOnSwipe(dragEvent(-200));
 
       expect(emitted).toHaveLength(0);
       expect(ionList.closeSlidingItems).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('CategoryItemComponent', () => {
       const emitted: unknown[] = [];
       component.deleteCategory.subscribe(() => emitted.push(true));
 
-      await component.handleItemOptionsOnDrag(dragEvent(0));
+      await component.deleteOnSwipe(dragEvent(0));
 
       expect(emitted).toHaveLength(0);
       expect(ionList.closeSlidingItems).not.toHaveBeenCalled();

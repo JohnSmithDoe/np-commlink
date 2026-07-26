@@ -1,6 +1,7 @@
-import { TCategoryId } from '../../@shared/model/types';
 import { createBaseItem } from '../../@shared/util/app.factory';
-import { ITaskItem } from '../model';
+import { ITaskItem } from '../model/task.types';
+
+import { TCategoryId } from '../../@shared/model/category.types';
 
 /**
  * Production factory for the `tasks` item type. Moved out of

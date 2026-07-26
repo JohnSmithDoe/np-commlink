@@ -1,15 +1,15 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'grocery.page-title.tasks' | translate }}"
-  listHeader="{{ 'grocery.list-header.tasks' | translate }}"
+  pageHeader="{{ 'page-title.tasks' | translate }}"
+  listHeader="{{ 'list-header.tasks' | translate }}"
   [itemTemplate]="taskItem"
 >
   <ng-container toolbarActions>
     <ion-button (click)="setSortMode('prio')">{{
-      'grocery.list-toolbar.prio' | translate
+      'tasks.list-toolbar.prio' | translate
     }}</ion-button>
     <ion-button (click)="setSortMode('dueAt')">{{
-      'grocery.list-toolbar.due' | translate
+      'tasks.list-toolbar.due' | translate
     }}</ion-button>
   </ng-container>
 </app-list-page>
@@ -32,7 +32,7 @@
     @if (item.dueAt) {
       <ng-container itemDetails>
         <ion-note>
-          {{ 'grocery.item.due.note' | translate }}:
+          {{ 'tasks.item.due.note' | translate }}:
           {{ item.dueAt | date: undefined : undefined : 'de-DE' }}
         </ion-note>
         <br />
@@ -42,7 +42,7 @@
     @if (item.prio) {
       <ng-container itemDetails>
         <ion-note>
-          {{ 'grocery.item.prio' | translate }}:
+          {{ 'tasks.item.prio' | translate }}:
           {{ item.prio }}
         </ion-note>
         <br />

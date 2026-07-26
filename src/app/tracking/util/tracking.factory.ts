@@ -1,4 +1,4 @@
-import { ITrackingItem } from '../model';
+import { ITrackingItem } from '../model/tracking.types';
 import { createBaseItem } from '../../@shared/util/app.factory';
 
 // Tracking's item factory, moved out of the shared app.factory (DDD review #1)

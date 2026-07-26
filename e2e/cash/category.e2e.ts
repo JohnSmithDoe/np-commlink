@@ -45,9 +45,11 @@ test.describe('cash transaction category', () => {
     const pickerSearch = page.locator('ion-searchbar input').last();
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Kaffee');
-    await page.waitForTimeout(400); // > 250ms searchbar debounce
-    // single mode: tapping "create" selects + confirms + closes in one step
-    await page.getByText('Kaffee erstellen').click();
+    // single mode: tapping "create" selects + confirms + closes in one step.
+    // Its appearance is the searchbar debounce having landed.
+    const createKaffee = page.getByText('Kaffee erstellen');
+    await expect(createKaffee).toBeVisible({ timeout: 10_000 });
+    await createKaffee.click();
 
     await expect(
       txnModal.locator('app-category-input').getByText('Kaffee')
