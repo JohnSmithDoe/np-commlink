@@ -9,7 +9,7 @@ import {
   TemplateRef,
 } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, pricetagsOutline, remove } from 'ionicons/icons';
 import { TColor } from '../../model/app.types';
@@ -17,6 +17,7 @@ import { TCategoryId } from '../../model/category.types';
 import { TItemListMode, TItemListSortType } from '../../model/item-list.types';
 import { categoryName } from '../../util/categories/category.utils';
 import { LIST_FACADE } from '../../util/list/list-page.facade';
+import { listStateFilter } from '../../util/list/list.selector';
 import { ItemListEmptyComponent } from '../../ui/base-item/item-list-empty/item-list-empty.component';
 import { ItemListSearchbarComponent } from '../../ui/base-item/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../ui/base-item/item-list-toolbar/item-list-toolbar.component';
@@ -50,7 +51,7 @@ import { CategoryNameDialogComponent } from '../../ui/categories/category-name-d
     ItemListToolbarComponent,
     PageHeaderComponent,
     CategoryNameDialogComponent,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class ListPageComponent {
@@ -76,12 +77,26 @@ export class ListPageComponent {
   // edit-category dialog. Grocery + tasks keep the default (true).
   hasCategories = input(true, { transform: booleanAttribute });
 
+  // Which list header the content deserves. A pure function of `state`, so the
+  // page derives it rather than asking each domain for the same computation.
+  readonly filterState = computed(() => listStateFilter(this.facade.state()));
+
   // The active category filter resolved to a display name (filterBy is a
   // category id now). Empty when no filter is set.
   readonly filterName = computed(() => {
     const state = this.facade.state();
     return categoryName(state?.filterBy, state?.categories ?? []);
   });
+
+  // In categories display mode BOTH add affordances — the header button and the
+  // searchbar's enter key — create a CATEGORY instead of an item. It is a
+  // decision about what this shell's buttons mean, so it lives here once; it
+  // used to be re-implemented in every list facade and in the grocery engine's
+  // routing effect, which is why `IListPageFacade.addItemFromSearch` is now the
+  // unconditional item command its name promises.
+  readonly #isCategoriesMode = computed(
+    () => this.facade.state()?.mode === 'categories'
+  );
 
   constructor() {
     addIcons({ add, remove, pricetagsOutline });
@@ -96,7 +111,11 @@ export class ListPageComponent {
   }
 
   addItemFromSearch() {
-    this.facade.addItemFromSearch();
+    if (this.#isCategoriesMode()) {
+      this.addCategoryFromSearch();
+    } else {
+      this.facade.addItemFromSearch();
+    }
   }
 
   addCategoryFromSearch() {
@@ -119,13 +138,9 @@ export class ListPageComponent {
     this.facade.deleteCategory(categoryId);
   }
 
-  // In categories display mode the "add" affordance creates a CATEGORY instead of
-  // an item — a pure UI decision of this shell, so it branches here rather than in
-  // each domain's facade (where it used to be duplicated).
   showCreateDialog() {
-    const state = this.facade.state();
-    if (state?.mode === 'categories') {
-      this.categoryDialog.set(state.searchQuery ?? '');
+    if (this.#isCategoriesMode()) {
+      this.categoryDialog.set(this.facade.state()?.searchQuery ?? '');
     } else {
       this.facade.showCreateDialog();
     }

@@ -1,4 +1,8 @@
-<ion-modal [isOpen]="isOpen()" (didDismiss)="cancelled.emit()">
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="cancelled.emit()"
+  [attr.aria-label]="'edit.category.dialog.title.create' | translate"
+>
   <ng-template>
     <ion-header>
       <ion-toolbar>

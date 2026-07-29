@@ -74,6 +74,19 @@ describe('persisted-slice effects', () => {
   const run = <T>(effect: () => Observable<T>): Observable<T> =>
     TestBed.runInInjectionContext(() => effect());
 
+  const probeTelemetry = () =>
+    run(
+      createTelemetrySliceEffect(
+        {
+          source: 'probe',
+          select: selectProbe,
+          metrics: (state) => createMetric('count')(state?.items.length ?? 0),
+        },
+        ProbeActions,
+        'probe'
+      )
+    );
+
   describe('loadSliceEffect', () => {
     it('reads the slice key and emits loaded with the stored value', async () => {
       setup();
@@ -300,56 +313,49 @@ describe('persisted-slice effects', () => {
   describe('telemetrySliceEffect', () => {
     it('reports the projected metrics under the context source', async () => {
       setup();
-      actions$ = of();
+      markProbeRead();
+      actions$ = of(ProbeActions.loaded(probeState));
 
-      const emitted = await firstValueFrom(
-        run(
-          createTelemetrySliceEffect({
-            source: 'probe',
-            select: selectProbe,
-            metrics: (state) => createMetric('count')(state?.items.length ?? 0),
-          })
-        )
-      );
+      const emitted = await firstValueFrom(probeTelemetry());
 
       expect(emitted).toEqual(
         DashboardActions.report({ source: 'probe', metrics: { count: 1 } })
       );
     });
 
-    it('reports on subscription, so a lazy context flips its tile on route entry', async () => {
+    it('stays silent until its own slice has hydrated', async () => {
+      // The deck-clobbering case: `store.select` hands out initialState on
+      // subscription, and reporting that zero both mis-lights the tile and
+      // overwrites the previous session's summary doc.
       setup({ probe: { items: [] } });
-      actions$ = of();
+      markProbeRead();
+      actions$ = of(ProbeActions.load(), ProbeActions.addItem('x'));
 
-      // No action dispatched at all — the store.select emission is the trigger.
-      const emitted = await firstValueFrom(
-        run(
-          createTelemetrySliceEffect({
-            source: 'probe',
-            select: selectProbe,
-            metrics: (state) => createMetric('count')(state?.items.length ?? 0),
-          })
-        )
-      );
+      const emitted = await firstValueFrom(probeTelemetry().pipe(toArray()));
 
-      expect(emitted).toEqual(
-        DashboardActions.report({ source: 'probe', metrics: { count: 0 } })
-      );
+      expect(emitted).toEqual([]);
+    });
+
+    it('never reports when the slice read rejected, so the tile keeps its persisted summary', async () => {
+      // `loaded(null)` after a rejected read is indistinguishable from an absent
+      // key in the payload — the registry is what tells them apart, and it
+      // withheld the key.
+      setup({ probe: { items: [] } });
+      actions$ = of(ProbeActions.loaded(null));
+
+      const emitted = await firstValueFrom(probeTelemetry().pipe(toArray()));
+
+      expect(emitted).toEqual([]);
     });
 
     it('re-reports when the slice changes, so a tile tracks live state', () => {
       setup();
-      actions$ = of();
+      markProbeRead();
+      actions$ = of(ProbeActions.loaded(probeState));
       const store = TestBed.inject(MockStore);
       const reported: number[] = [];
 
-      const sub = run(
-        createTelemetrySliceEffect({
-          source: 'probe',
-          select: selectProbe,
-          metrics: (state) => createMetric('count')(state?.items.length ?? 0),
-        })
-      ).subscribe((action) =>
+      const sub = probeTelemetry().subscribe((action) =>
         reported.push(
           (action as ReturnType<typeof DashboardActions.report>).telemetry
             .metrics['count'] as number

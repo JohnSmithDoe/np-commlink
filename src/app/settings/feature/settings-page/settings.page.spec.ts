@@ -1,13 +1,10 @@
-import {
-  importProvidersFrom,
-  provideZonelessChangeDetection,
-  signal,
-} from '@angular/core';
+import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { IAccentColors } from '../../../@shared/model/settings.types';
-import { TTheme } from '../../../@shared/model/app.types';
+import { provideTranslateService } from '@ngx-translate/core';
+
+import { SegmentCustomEvent } from '@ionic/core/dist/types/interface';
+import { IAccentColors, TTheme } from '../../../@shared/model/app.types';
 import { SettingsFacade } from '../../data';
 import { SettingsPage } from './settings.page';
 
@@ -30,14 +27,30 @@ describe('SettingsPage', () => {
     settings.resetAccentColors.mockClear();
     TestBed.configureTestingModule({
       providers: [
+        provideTranslateService(),
         provideZonelessChangeDetection(),
         provideRouter([]),
-        importProvidersFrom(TranslateModule.forRoot()),
         { provide: SettingsFacade, useValue: settings },
       ],
     });
     return TestBed.createComponent(SettingsPage).componentInstance;
   };
+
+  describe('the theme picker', () => {
+    it('offers every member of the theme union, each with a label key', () => {
+      const page = setup();
+      expect(page.themes).toEqual(['cyberpunk', 'boomer']);
+      for (const option of page.themes) {
+        expect(page.themeLabelKeys[option]).toBe(`settings.theme.${option}`);
+      }
+    });
+
+    it('sets the theme the segment reports', () => {
+      const page = setup();
+      page.changeTheme({ detail: { value: 'boomer' } } as SegmentCustomEvent);
+      expect(settings.setTheme).toHaveBeenCalledWith('boomer');
+    });
+  });
 
   describe('swatches', () => {
     it("falls back to the active theme's built-in swatch when unset", () => {

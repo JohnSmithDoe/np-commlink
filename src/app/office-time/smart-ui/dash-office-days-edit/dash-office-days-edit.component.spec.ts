@@ -1,8 +1,9 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { OfficeTimeActions, dayjsFromString, dayjsToString } from '../../data';
+import { OfficeTimeActions } from '../../data';
+import { dayjsFromString, dayjsToString } from '../../util/office-time.utils';
 import { DashOfficeDaysEditComponent } from './dash-office-days-edit.component';
 
 describe('DashOfficeDaysEditComponent', () => {
@@ -11,8 +12,12 @@ describe('DashOfficeDaysEditComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DashOfficeDaysEditComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection(), provideMockStore()],
+      imports: [DashOfficeDaysEditComponent],
+      providers: [
+        provideTranslateService(),
+        provideZonelessChangeDetection(),
+        provideMockStore(),
+      ],
     });
     store = TestBed.inject(MockStore);
     component = TestBed.createComponent(

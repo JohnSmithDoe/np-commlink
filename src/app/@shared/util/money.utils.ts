@@ -1,9 +1,11 @@
 /**
  * Money formatting shared by 2+ domains — `cash` (its ledger, via
- * `MoneyEurPipe`) and `commlink` (the deck's themed currency label). de-DE for
- * now: the whole app is hardwired German. Cash-specific parsing/input helpers
- * (`eurToCents`, `centsToInput`, …) stay in `cash/util/money.utils.ts` — only
- * this display formatter is genuinely shared.
+ * `MoneyEurPipe`) and `commlink` (the deck's themed currency label). Both pass
+ * the active locale; the de-DE default is the language every amount was written
+ * in. Cash-specific parsing/input helpers (`eurToCents`, `centsToInput`, …) stay
+ * in `cash/util/money.utils.ts` — only this display formatter is genuinely
+ * shared, and only *formatting* can take a locale safely: parsing cannot, since
+ * the two conventions read each other's amounts as valid (see there).
  */
 
 const DEFAULT_LOCALE = 'de-DE';

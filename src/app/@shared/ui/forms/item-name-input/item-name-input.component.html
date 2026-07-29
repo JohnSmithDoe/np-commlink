@@ -3,7 +3,13 @@
     labelPlacement="stacked"
     label="{{ 'edit.item.dialog.name' | translate }}"
     placeholder="{{ 'edit.item.dialog.name.placeholder' | translate }}"
-    [formControl]="nameControl"
-    [errorText]="getErrorText() | translate"
+    [value]="value()"
+    (ionInput)="onInput($event)"
+    (ionBlur)="touchedChange.emit(true)"
   />
 </ion-item>
+@if (errorText(); as message) {
+  <ion-note color="danger" class="sr-field-note">
+    {{ message | translate }}
+  </ion-note>
+}

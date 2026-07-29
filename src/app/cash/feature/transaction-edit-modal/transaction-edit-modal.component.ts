@@ -5,6 +5,13 @@ import {
   inject,
 } from '@angular/core';
 import {
+  form,
+  FormField,
+  min,
+  SchemaFn,
+  validate,
+} from '@angular/forms/signals';
+import {
   IonButton,
   IonButtons,
   IonContent,
@@ -19,31 +26,50 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import {
+  requireParseableDate,
+  requireText,
+} from '../../../@shared/util/form-rules';
 import {
   ICashTransaction,
   TCashTxnStatus,
 } from '../../model/transaction.types';
 import { CashCategoryPickerComponent } from '../../ui/cash-category-picker/cash-category-picker.component';
 import { CashFacade } from '../../data';
-import { centsToInput, eurToCents } from '../../util/money.utils';
+import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
 
 type TDirection = 'expense' | 'income';
 
-// The signed `amountCents` is edited as a positive magnitude string + a direction
+// The signed `amountCents` is edited as a positive magnitude + a direction
 // segment, so the form is a view-model over ICashTransaction, not a copy.
 type TTransactionForm = {
   description: string;
-  amount: string;
+  amountCents: number | null;
   direction: TDirection;
   date: string;
   pending: boolean;
   // '' = no category.
   categoryId: TCategoryId;
+};
+
+const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
+
+// The amount names its empty case itself, which is what lets the note below
+// exclude it: an *empty* amount earns no error note, anything unusable in the box
+// does. `min` is usable because `app-money-input` hands over cents — and it
+// reports the unparseable case by itself.
+const transactionRules: SchemaFn<TTransactionForm> = (path) => {
+  requireText(path.description);
+  validate(path.amountCents, ({ value }) =>
+    value() === null ? MISSING_AMOUNT : null
+  );
+  min(path.amountCents, 1);
+  requireParseableDate(path.date);
 };
 
 /**
@@ -58,6 +84,7 @@ type TTransactionForm = {
   styleUrls: ['./transaction-edit-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -71,8 +98,9 @@ type TTransactionForm = {
     IonSegment,
     IonSegmentButton,
     IonToggle,
-    TranslateModule,
+    TranslatePipe,
     CashCategoryPickerComponent,
+    MoneyInputComponent,
   ],
 })
 export class CashTransactionEditModalComponent extends BaseModalDialog<
@@ -97,29 +125,24 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
       : undefined;
   });
 
-  readonly #magnitudeCents = computed(() => eurToCents(this.draft().amount));
-  readonly amountInvalid = computed(() => {
-    const cents = this.#magnitudeCents();
-    return this.draft().amount.trim() !== '' && (cents === null || cents <= 0);
-  });
-  // The date input is clearable, and `dayjs('').format()` is the *string*
-  // 'Invalid Date' — which persists, sorts above every real date, buckets into
-  // a phantom month in the report and can never be reconciled.
-  readonly dateInvalid = computed(() => !dayjs(this.draft().date).isValid());
-  readonly canSave = computed(() => {
-    const cents = this.#magnitudeCents();
-    return (
-      this.draft().description.trim().length > 0 &&
-      cents !== null &&
-      cents > 0 &&
-      !this.dateInvalid()
-    );
-  });
+  // `form` projects the draft signal rather than copying it, so the base's
+  // reseed-on-`existing()` still reaches every field.
+  protected readonly form = form(this.draft, transactionRules);
+
+  // Every error kind except "empty" earns the note — an unusable box says so,
+  // an untouched one just leaves the save disabled.
+  readonly amountInvalid = computed(() =>
+    this.form
+      .amountCents()
+      .errors()
+      .some(({ kind }) => kind !== MISSING_AMOUNT.kind)
+  );
+  readonly dateInvalid = computed(() => this.form.date().invalid());
 
   protected blank(): TTransactionForm {
     return {
       description: '',
-      amount: '',
+      amountCents: null,
       direction: 'expense',
       date: dayjs().format('YYYY-MM-DD'),
       pending: false,
@@ -130,7 +153,7 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
   protected toForm(transaction: ICashTransaction): TTransactionForm {
     return {
       description: transaction.description,
-      amount: centsToInput(Math.abs(transaction.amountCents)),
+      amountCents: Math.abs(transaction.amountCents),
       direction: transaction.amountCents < 0 ? 'expense' : 'income',
       date: dayjs(transaction.dateISO).format('YYYY-MM-DD'),
       pending: transaction.status === 'pending',
@@ -142,7 +165,7 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
     draft: TTransactionForm,
     existing: ICashTransaction | undefined
   ): void {
-    const magnitude = this.#magnitudeCents() ?? 0;
+    const magnitude = draft.amountCents ?? 0;
     const categoryId = draft.categoryId.trim() || undefined;
     const status: TCashTxnStatus = draft.pending ? 'pending' : 'confirmed';
     const fields = {

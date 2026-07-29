@@ -17,8 +17,8 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
-import dayjs from 'dayjs';
+import { TranslatePipe } from '@ngx-translate/core';
+import { localizedDate } from '../../../@shared/util/date-format.utils';
 import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
@@ -46,7 +46,7 @@ import { findReconciliationCandidates } from '../../util/reconcile.utils';
     IonItem,
     IonLabel,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     MoneyEurPipe,
   ],
 })
@@ -63,7 +63,7 @@ export class CashReconcileModalComponent {
   );
 
   formatDate(iso: string): string {
-    return dayjs(iso).format('DD.MM.YYYY');
+    return localizedDate(iso);
   }
 
   reconcileWith(imported: ICashTransaction): void {

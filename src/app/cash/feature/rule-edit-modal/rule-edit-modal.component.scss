@@ -1,11 +1,4 @@
 // Consumes the shared shadowrun tokens via var(--sr-*/--ion-*); no @use here.
-.cash-rule-dialog__error {
-  display: block;
-  padding: 0.35rem 1rem 0.5rem;
-  font-size: 0.8rem;
-  letter-spacing: var(--sr-label-tracking);
-}
-
 .cash-rule-dialog__match {
   margin: 0.75rem 0;
 }

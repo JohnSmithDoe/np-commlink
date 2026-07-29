@@ -10,7 +10,6 @@ import {
 } from '../../model/trackplay.types';
 import { TrackplayActions } from '../actions/trackplay.actions';
 import {
-  createGame,
   createGameType,
   createPlayer,
   createRound,
@@ -160,7 +159,6 @@ const deleteGameTypeCascade = (
   state: ITrackplayState,
   type: IGameType
 ): ITrackplayState => {
-  if (type.id === DEFAULT_GAME_TYPE_ID) return state; // default is undeletable
   const gameTypes = { ...state.gameTypes };
   delete gameTypes[type.id];
   return {
@@ -229,7 +227,11 @@ const touchGameAndPlayers = (
   gameId: TID,
   now: number
 ): ITrackplayState => {
+  // Re-read rather than take the caller's `game`: `appendBlankRound` may have
+  // replaced it in the state handed over, and stamping the stale copy would drop
+  // the round it just added.
   const game = state.games[gameId];
+  if (!game) return state;
   const players = { ...state.players };
   for (const playerId of game.players) {
     const player = players[playerId];
@@ -300,9 +302,7 @@ export const trackplayReducer = createReducer(
   })),
 
   // ── Games ──────────────────────────────────────────────────────────────
-  on(TrackplayActions.createGame, (state, { name, players }): ITrackplayState =>
-    upsertGame(state, createGame(name, DEFAULT_GAME_TYPE_ID, players))
-  ),
+  on(TrackplayActions.createGame, (state, { game }): ITrackplayState => upsertGame(state, game)),
   on(TrackplayActions.renameGame, (state, { gameId, name }): ITrackplayState => {
     const game = state.games[gameId];
     if (!game) return state;
@@ -340,6 +340,9 @@ export const trackplayReducer = createReducer(
     gameTypes: { ...state.gameTypes, [gameType.id]: gameType },
   })),
   on(TrackplayActions.deleteGameType, (state, { gameType }): ITrackplayState => {
+    // Returning `state` itself, not a copy: the undo toast fires on a *new*
+    // `lastDeleted` reference, so a refused delete must leave the stash
+    // reference-identical or it offers to restore an earlier deletion.
     if (gameType.id === DEFAULT_GAME_TYPE_ID) return state;
     return {
       ...deleteGameTypeCascade(state, gameType),

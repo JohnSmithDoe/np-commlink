@@ -5,8 +5,8 @@ import { settingsReducer } from './reducer/settings.reducer';
 import { selectSettingsState } from './selectors/settings.selector';
 
 /**
- * The app-global settings slice — the persisted schema `version` anchor + the
- * selected UI theme.
+ * The app-global settings slice — the selected UI theme with its accent
+ * overrides, and the UI language.
  *
  * `hydrate: 'boot'` and `provideAppKernel()` composing it are what make it eager:
  * the theme must reach `<html data-theme>` under the boot splash before first
@@ -22,6 +22,7 @@ export const settingsContext = providePersistedContext({
   save: {
     on: [
       SettingsActions.setTheme,
+      SettingsActions.setLanguage,
       SettingsActions.setAccentColors,
       SettingsActions.resetAccentColors,
     ],

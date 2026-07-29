@@ -20,12 +20,12 @@ import {
   IonReorder,
   IonText,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TColor, TIonDragEvent } from '../../../model/app.types';
 import { IBaseItem } from '../../../model/base-item.types';
 import { ICategory } from '../../../model/category.types';
 import { revealedSideFromDrag } from '../../../util/app.utils';
-import { CategoryNoteDirective } from '../../categories/category-note.directive';
+import { categoryNames } from '../../../util/categories/category.utils';
 
 @Component({
   selector: 'app-list-item',
@@ -44,8 +44,7 @@ import { CategoryNoteDirective } from '../../categories/category-note.directive'
     IonItemOptions,
     IonItemSliding,
     IonText,
-    TranslateModule,
-    CategoryNoteDirective,
+    TranslatePipe,
   ],
 })
 export class ListItemComponent {
@@ -60,9 +59,23 @@ export class ListItemComponent {
   readonly showQuantityActions = input(false, {
     transform: booleanAttribute,
   });
-  readonly showCartAction = input(false, { transform: booleanAttribute });
+  /**
+   * The i18n key naming the start-swipe action, and the switch that shows it.
+   *
+   * One input rather than a flag plus a label because the label cannot be
+   * defaulted here: the same swipe means "mark as bought" on the shopping list and
+   * "add to the shopping list" in storage, so the wording belongs to the domain
+   * mounting this row (docs/ionic-a11y-practices.md R2 — an icon-only
+   * `ion-item-option` renders a bare button with no name of its own). Tying the
+   * affordance to its name makes a nameless one impossible instead of silent.
+   */
+  readonly cartActionLabel = input('');
 
+  readonly showCartAction = computed(() => !!this.cartActionLabel());
   readonly hasStatusBar = computed(() => !!this.statusColor());
+  readonly categoryNote = computed(() =>
+    categoryNames(this.item(), this.categories()).join(', ')
+  );
 
   readonly increment = output<void>();
   readonly decrement = output<void>();

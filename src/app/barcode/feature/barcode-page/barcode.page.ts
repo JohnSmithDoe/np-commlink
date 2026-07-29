@@ -7,7 +7,7 @@ import {
   IonItem,
   IonList,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { BarcodeInputComponent } from '../../smart-ui/barcode-input/barcode-input.component';
 import { BarcodeFacade } from '../../data';
@@ -21,7 +21,7 @@ import { barcodeOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
-    TranslateModule,
+    TranslatePipe,
     IonContent,
     IonList,
     IonItem,

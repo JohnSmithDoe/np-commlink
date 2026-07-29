@@ -1,7 +1,6 @@
 import { Dayjs } from 'dayjs';
 
 export type TSettings = {
-  targetDate: string;
   showCorners: boolean; // Minuten werden in den Ecken angezeigt
   deZwanzigNach: boolean; // ZWANZIG NACH ... ZEHN VOR HALB
   deZwanzigVor: boolean; // ZWANZIG VOR ... ZEHN NACH HALB

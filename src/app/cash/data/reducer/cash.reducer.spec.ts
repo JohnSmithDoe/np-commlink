@@ -81,6 +81,34 @@ describe('cashReducer', () => {
     expect(state.transactions[0].categoryManual).toBe(true);
   });
 
+  it('re-files a whole rule run in one pass, clearing the manual flag', () => {
+    const start = mockCashState({
+      transactions: [
+        mockCashTransaction({ id: 't1' }),
+        mockCashTransaction({ id: 't2', categoryId: 'fun' }),
+        mockCashTransaction({ id: 't3', categoryId: 'rent' }),
+      ],
+    });
+
+    const state = cashReducer(
+      start,
+      CashActions.recategorizeTransactions([
+        { transactionId: 't1', categoryId: 'groceries' },
+        { transactionId: 't2', categoryId: undefined },
+      ])
+    );
+
+    expect(
+      state.transactions.map((t) => [t.id, t.categoryId, t.categoryManual])
+    ).toEqual([
+      ['t1', 'groceries', false],
+      ['t2', undefined, false],
+      // A row the run did not name keeps its category AND its object identity.
+      ['t3', 'rent', undefined],
+    ]);
+    expect(state.transactions[2]).toBe(start.transactions[2]);
+  });
+
   it('books both legs of a transfer and deletes the group as a unit', () => {
     const fromLeg = mockCashTransaction({
       id: 'f',

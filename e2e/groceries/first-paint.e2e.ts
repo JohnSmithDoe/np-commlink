@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { addViaSearch, ROUTE, waitForListPage } from '../helpers';
+import { addViaSearch, listRow, ROUTE, waitForListPage } from '../helpers';
 
 /**
  * Smoke test that every grocery list route paints its list page and can render
@@ -20,7 +20,7 @@ test.describe('grocery first paint', () => {
       await waitForListPage(page);
 
       await addViaSearch(page, item);
-      await expect(page.getByText(new RegExp(item)).first()).toBeVisible({
+      await expect(listRow(page, new RegExp(item))).toBeVisible({
         timeout: 10_000,
       });
     });

@@ -20,14 +20,14 @@ test.describe('notifications — CTA deep-link back into a producer', () => {
       .locator('#main-content app-tracking-item')
       .filter({ hasText: 'Meeting' });
     await expect(item).toBeVisible({ timeout: 10_000 });
-    await item.getByText('Meeting').first().click();
+    await item.click();
     await waitForPersisted(page, 'notifications', 'Meeting');
 
     await page.goto('/#/notifications');
     const inbox = page.locator('#main-content app-page-notifications');
-    const row = inbox.locator('ion-item.notification').filter({
-      hasText: 'Meeting',
-    });
+    const row = inbox
+      .getByTestId('notification-row')
+      .filter({ hasText: 'Meeting' });
     await expect(row).toBeVisible({ timeout: 30_000 });
     await expect(row).toContainText('Läuft');
 

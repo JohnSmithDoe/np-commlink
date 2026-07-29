@@ -6,26 +6,19 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonButton,
-  IonButtons,
   IonContent,
-  IonHeader,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonNote,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
-import { addIcons } from 'ionicons';
-import { arrowBackOutline } from 'ionicons/icons';
 import { CashFacade } from '../../data';
+import { CashDetailHeaderComponent } from '../../ui/cash-detail-header/cash-detail-header.component';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
 
@@ -43,18 +36,13 @@ Chart.register(...registerables);
   styleUrls: ['./cash-report.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
+    CashDetailHeaderComponent,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
-    IonIcon,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     MoneyEurPipe,
     BaseChartDirective,
   ],
@@ -133,10 +121,6 @@ export class CashReportPage {
       legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
     },
   };
-
-  constructor() {
-    addIcons({ arrowBackOutline });
-  }
 
   goBack(): void {
     void this.#router.navigate(['/cash']);

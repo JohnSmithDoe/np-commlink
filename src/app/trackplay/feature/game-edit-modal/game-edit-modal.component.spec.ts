@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
+import { IGame } from '../../model/trackplay.types';
 import {
   mockGame,
   mockPlayer,
@@ -29,9 +31,17 @@ describe('TrackplayGameEditModalComponent', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
   let dismiss: ReturnType<typeof vi.spyOn>;
 
+  // The created games (the action carries a pre-minted entity, so the id and the
+  // timestamps are only knowable from the dispatch itself).
+  const created = (): IGame[] =>
+    (dispatch.mock.calls as Array<[{ type: string; game?: IGame }]>)
+      .map((call) => call[0])
+      .filter((action) => action.type === TrackplayActions.createGame.type)
+      .map((action) => action.game as IGame);
+
   const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
-      imports: [TrackplayGameEditModalComponent, TranslateModule.forRoot()],
+      imports: [TrackplayGameEditModalComponent],
       providers: [provideTestingProviders({ trackplay: state })],
     });
     dismiss = vi
@@ -49,9 +59,13 @@ describe('TrackplayGameEditModalComponent', () => {
     component.patch({ name: 'New game' });
     component.confirm();
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.createGame('New game', [])
-    );
+    expect(created()).toEqual([
+      expect.objectContaining({
+        name: 'New game',
+        type: 'default',
+        players: [],
+      }),
+    ]);
     expect(dismiss).toHaveBeenCalled();
   });
 
@@ -62,9 +76,36 @@ describe('TrackplayGameEditModalComponent', () => {
     component.patch({ name: 'New game' });
     component.confirm();
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.createGame('New game', ['p1'])
+    expect(created()).toEqual([
+      expect.objectContaining({ name: 'New game', players: ['p1'] }),
+    ]);
+  });
+
+  // The chosen type rides along in the create action; it used to take a second
+  // dispatch, aimed at an id reverse-engineered from the games map.
+  it('creates with the chosen type in a single dispatch', () => {
+    setup();
+
+    component.patch({ name: 'Canasta', typeId: 'skat' });
+    component.confirm();
+
+    expect(created()).toEqual([expect.objectContaining({ type: 'skat' })]);
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: TrackplayActions.changeGameType.type })
     );
+  });
+
+  it('navigates to the game it just created', () => {
+    setup();
+    const navigate = vi
+      .spyOn(TestBed.inject(Router), 'navigate')
+      .mockResolvedValue(true);
+
+    component.patch({ name: 'New game', playerIds: ['p1'] });
+    component.goToGame();
+
+    expect(navigate).toHaveBeenCalledWith(['/trackplay/game', created()[0].id]);
+    expect(dismiss).toHaveBeenCalled();
   });
 
   // Unreachable via the UI (the OK button is `[disabled]="!canSave()"`), but the

@@ -87,7 +87,7 @@ export const selectTransactionsForCategory = (categoryId: TCategoryId) =>
  * Running balance per account: `openingBalanceCents + Σ signed amountCents`,
  * keyed by account id. Order-independent (a plain sum). Legs carrying a
  * `matchedTxnId` (a pending manual entry merged into an imported txn) are
- * EXCLUDED so a reconciled spend is not double-counted — see docs/cash-plan.md.
+ * EXCLUDED so a reconciled spend is not double-counted — see docs/project-summary.md §7.3.
  */
 export const selectAccountBalances = createSelector(
   selectCashAccounts,
@@ -99,9 +99,10 @@ export const selectAccountBalances = createSelector(
     }
     for (const txn of transactions) {
       if (txn.matchedTxnId) continue;
+      const running = balances[txn.accountId];
       // Ignore orphan txns whose account no longer exists.
-      if (balances[txn.accountId] === undefined) continue;
-      balances[txn.accountId] += txn.amountCents;
+      if (running === undefined) continue;
+      balances[txn.accountId] = running + txn.amountCents;
     }
     return balances;
   }
@@ -217,7 +218,7 @@ export const selectSpendByCategory = createSelector(
 // tile. Transfer legs net to zero across accounts, so they need no
 // special-casing; reconciled-away legs (matchedTxnId set) ARE excluded —
 // mirroring selectAccountBalances — so a spend logged before it cleared isn't
-// counted twice (cash-plan.md "exclude reconciled-away legs").
+// counted twice (docs/project-summary.md §7.3).
 export const selectCashBalanceEuros = createSelector(
   selectCashState,
   (state) => {

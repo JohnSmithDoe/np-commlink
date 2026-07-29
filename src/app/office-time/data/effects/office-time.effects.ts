@@ -19,22 +19,28 @@ import {
 } from '../selectors/office-time.selector';
 import { serializeDateMap, serializeDates } from '../../util/office-time.utils';
 import { berlinHolidaysFor } from '../../util/holidays.utils';
-import { IOfficeTimeStateStorage } from '../../model/office-time.types';
+import {
+  IOfficeTimeState,
+  IOfficeTimeStateStorage,
+} from '../../model/office-time.types';
 import { wrapVersioned } from '../../../@shared/util/db/versioned';
 import { APP_VERSION } from '../../../@shared/model/app.consts';
+
+// Storage keeps calendar days as ISO strings; the state keeps Dayjs.
+const serializedForStorage = (
+  state: IOfficeTimeState
+): IOfficeTimeStateStorage => ({
+  ...state,
+  holidays: serializeDateMap(state.holidays),
+  officedays: serializeDates(state.officedays),
+  freedays: serializeDates(state.freedays),
+});
 
 @Injectable({ providedIn: 'root' })
 export class OfficeTimeEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);
   readonly #database = inject(DatabaseService);
-
-  initOfficeTime$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(OfficeTimeActions.initOfficeTime),
-      map(() => OfficeTimeActions.loadHolidays())
-    );
-  });
 
   loadHolidays$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -49,10 +55,10 @@ export class OfficeTimeEffects {
 
   // When the tab becomes visible again, re-fetch holidays if the calendar
   // year has changed since the cached holidays were loaded — covers the
-  // "left open across midnight Dec 31" case. Page navigation already
-  // re-dispatches via initOfficeTime, so this is purely the long-session
-  // fallback. The loaded year is read off the cached holidays themselves
-  // instead of being mirrored into a separate field.
+  // "left open across midnight Dec 31" case. Page entry already re-dispatches
+  // `loadHolidays`, so this is purely the long-session fallback. The loaded year
+  // is read off the cached holidays themselves instead of being mirrored into a
+  // separate field.
   refreshOnYearRollover$ = createEffect(() => {
     return fromEvent(document, 'visibilitychange').pipe(
       filter(() => document.visibilityState === 'visible'),
@@ -70,7 +76,6 @@ export class OfficeTimeEffects {
       ofType(
         OfficeTimeActions.addFreeday,
         OfficeTimeActions.addOfficeTime,
-        OfficeTimeActions.addOfficeday,
         OfficeTimeActions.resetData,
         OfficeTimeActions.saveDashboardSettings,
         OfficeTimeActions.saveTargetOfficeDaysPerWeek,
@@ -81,26 +86,27 @@ export class OfficeTimeEffects {
     );
   });
 
-  saveOfficeTime$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(OfficeTimeActions.saveOfficeTime),
-      withLatestFrom(this.#store.select(selectOfficeTimeState)),
-      switchMap(([_, state]) => {
-        const toSave: IOfficeTimeStateStorage = {
-          ...state,
-          holidays: serializeDateMap(state.holidays),
-          officedays: serializeDates(state.officedays),
-          freedays: serializeDates(state.freedays),
-        };
-        return from(
-          this.#database.save('officeTime', wrapVersioned(APP_VERSION, toSave))
-        ).pipe(
-          map(() => OfficeTimeActions.saveOfficeTimeSuccess()),
-          // localforage can reject (storage quota, IndexedDB blocked).
-          // Swallow so the effect stays alive for the next save attempt.
-          catchError(() => EMPTY)
-        );
-      })
-    );
-  });
+  // Non-dispatching like the shared save factory: nothing reacted to a save
+  // having succeeded, so the write is the whole effect.
+  saveOfficeTime$ = createEffect(
+    () => {
+      return this.#actions$.pipe(
+        ofType(OfficeTimeActions.saveOfficeTime),
+        withLatestFrom(this.#store.select(selectOfficeTimeState)),
+        switchMap(([_, state]) =>
+          from(
+            this.#database.save(
+              'officeTime',
+              wrapVersioned(APP_VERSION, serializedForStorage(state))
+            )
+          ).pipe(
+            // localforage can reject (storage quota, IndexedDB blocked).
+            // Swallow so the effect stays alive for the next save attempt.
+            catchError(() => EMPTY)
+          )
+        )
+      );
+    },
+    { dispatch: false }
+  );
 }

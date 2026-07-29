@@ -13,21 +13,19 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
-  IonList,
   IonText,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, playCircle, trash } from 'ionicons/icons';
-import { TIonDragEvent } from '../../../@shared/model/app.types';
 import { IGame } from '../../model/trackplay.types';
-import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
+import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 
 /**
- * DUMB game row for the games list. Renders a sliding item: swipe the start
- * side (or tap the option) to delete, the end side to edit, tap the body to
- * open. Mirrors the legacy npTrackplay `game-list` renderer in the modern,
- * shadowrun-styled idiom. Holds no store — inputs in, outputs out.
+ * DUMB game row for the games list. A {@link BaseSwipeRow} whose body shows the
+ * game's name, type and timestamps; tap it to open. Mirrors the legacy
+ * npTrackplay `game-list` renderer in the modern, shadowrun-styled idiom. Holds
+ * no store — inputs in, outputs out.
  */
 @Component({
   selector: 'app-trackplay-game-list-item',
@@ -42,46 +40,19 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
     IonIcon,
     IonLabel,
     IonText,
-    TranslateModule,
+    TranslatePipe,
     DatePipe,
   ],
 })
-export class TrackplayGameListItemComponent {
+export class TrackplayGameListItemComponent extends BaseSwipeRow {
   readonly game = input.required<IGame>();
   readonly typeName = input('');
   readonly disabled = input(false, { transform: booleanAttribute });
-  readonly ionList = input.required<IonList>();
 
   readonly selectGame = output<void>();
-  readonly editGame = output<void>();
-  readonly deleteGame = output<void>();
 
   constructor() {
+    super();
     addIcons({ playCircle, trash, create });
-  }
-
-  // Start side (negative amount) deletes; end side (positive) edits. Mirrors the
-  // legacy deleteOnDrag sign math via the shared drag helper.
-  deleteOrEditOnSwipe(event: TIonDragEvent): void {
-    switch (revealedSideFromDrag(event)) {
-      case 'start': {
-        void this.emitDelete();
-        break;
-      }
-      case 'end': {
-        void this.emitEdit();
-        break;
-      }
-    }
-  }
-
-  async emitDelete(): Promise<void> {
-    await this.ionList().closeSlidingItems();
-    this.deleteGame.emit();
-  }
-
-  async emitEdit(): Promise<void> {
-    await this.ionList().closeSlidingItems();
-    this.editGame.emit();
   }
 }

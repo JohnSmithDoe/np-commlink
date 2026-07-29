@@ -9,6 +9,7 @@ import {
   IShoppingItem,
   IStorageItem,
   TGroceryListId,
+  TProductLinked,
 } from '../model/grocery-list.types';
 import { IRecipe, IRecipeIngredient } from '../model/recipe.types';
 
@@ -29,6 +30,20 @@ export function createStorageItem(
   return { ...base, quantity, bestBefore };
 }
 
+/**
+ * Carry a catalog reference onto a copied row.
+ *
+ * Spreading `productId` unconditionally would write the key as present-but-empty
+ * into the persisted doc — IndexedDB keeps `undefined` values where JSON drops
+ * them — so an absent link stays an absent key.
+ */
+function linkedToProduct<T extends TProductLinked>(
+  item: T,
+  productId: string | undefined
+): T {
+  return productId === undefined ? item : { ...item, productId };
+}
+
 export function createStorageItemFromProduct(
   product: IProduct,
   quantity = 1
@@ -39,19 +54,23 @@ export function createStorageItemFromProduct(
       .add(product.bestBeforeTimevalue ?? 1, product.bestBeforeTimespan)
       .format();
   }
-  return createStorageItem(
-    product.name,
-    product.categoryIds,
-    quantity,
-    bestBefore
+  return linkedToProduct(
+    createStorageItem(product.name, product.categoryIds, quantity, bestBefore),
+    product.id
   );
 }
 
+// Shopping → storage is the *common* way a product reaches the pantry (buy it,
+// then move the bought rows over), so the link has to survive this hop too — a
+// reference only the product→storage shortcut carried would miss most rows.
 export function createStorageItemFromShopping(
   shopping: IShoppingItem,
   quantity = 1
 ): IStorageItem {
-  return createStorageItem(shopping.name, shopping.categoryIds, quantity);
+  return linkedToProduct(
+    createStorageItem(shopping.name, shopping.categoryIds, quantity),
+    shopping.productId
+  );
 }
 
 export function createShoppingItem(
@@ -67,14 +86,20 @@ export function createShoppingItemFromProduct(
   product: IProduct,
   quantity = 1
 ): IShoppingItem {
-  return createShoppingItem(product.name, product.categoryIds, quantity);
+  return linkedToProduct(
+    createShoppingItem(product.name, product.categoryIds, quantity),
+    product.id
+  );
 }
 
 export function createShoppingItemFromStorage(
   storage: IStorageItem,
   quantity = 1
 ): IShoppingItem {
-  return createShoppingItem(storage.name, storage.categoryIds, quantity);
+  return linkedToProduct(
+    createShoppingItem(storage.name, storage.categoryIds, quantity),
+    storage.productId
+  );
 }
 
 export function createProduct(

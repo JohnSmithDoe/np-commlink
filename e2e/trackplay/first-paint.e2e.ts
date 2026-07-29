@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { gotoTrackplay, headerTitle, mainContent } from './helpers';
+import { gotoTrackplay, headerTitle, mainContent, pageRoot } from './helpers';
 
 /**
  * Smoke tests that each trackplay route paints its page shell (German header
@@ -9,7 +9,9 @@ import { gotoTrackplay, headerTitle, mainContent } from './helpers';
 test.describe('trackplay first paint', () => {
   test('paints the games (Spiele) home page', async ({ page }) => {
     await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
-    await expect(headerTitle(page)).toHaveText('Spiele');
+    await expect(
+      headerTitle(pageRoot(page, 'app-page-trackplay-games'))
+    ).toHaveText('Spiele');
   });
 
   test('paints the players (Spieler) page', async ({ page }) => {
@@ -18,7 +20,9 @@ test.describe('trackplay first paint', () => {
       'trackplay/players',
       'app-page-trackplay-players'
     );
-    await expect(headerTitle(page)).toHaveText('Spieler');
+    await expect(
+      headerTitle(pageRoot(page, 'app-page-trackplay-players'))
+    ).toHaveText('Spieler');
   });
 
   test('paints the game-types (Spielarten) page and seeds the 3 defaults', async ({
@@ -29,7 +33,9 @@ test.describe('trackplay first paint', () => {
       'trackplay/game-types',
       'app-page-trackplay-game-types'
     );
-    await expect(headerTitle(page)).toHaveText('Spielarten');
+    await expect(
+      headerTitle(pageRoot(page, 'app-page-trackplay-game-types'))
+    ).toHaveText('Spielarten');
 
     const content = mainContent(page);
     await expect(content.getByText('Standard', { exact: true })).toBeVisible();
@@ -52,11 +58,11 @@ test.describe('trackplay first paint', () => {
 
     // Standard is undeletable — its row renders no leading (delete) options…
     await expect(
-      standardRow.locator('ion-item-options[side="start"]')
+      standardRow.getByTestId('game-type-delete-options')
     ).toHaveCount(0);
     // …while a deletable type (Rommé) does.
-    await expect(
-      rommeeRow.locator('ion-item-options[side="start"]')
-    ).toHaveCount(1);
+    await expect(rommeeRow.getByTestId('game-type-delete-options')).toHaveCount(
+      1
+    );
   });
 });

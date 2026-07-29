@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ITrackingItem } from '../../model/tracking.types';
 import { TrackingItemComponent } from './tracking-item.component';
 
@@ -16,8 +16,8 @@ describe('TrackingItemComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TrackingItemComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection()],
+      imports: [TrackingItemComponent],
+      providers: [provideTranslateService(), provideZonelessChangeDetection()],
     });
     // No detectChanges: we exercise the mapping methods, not the template (the
     // required `item`/`ionList` inputs are only read during rendering).

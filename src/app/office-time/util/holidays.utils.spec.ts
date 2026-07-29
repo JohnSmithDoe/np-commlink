@@ -1,31 +1,49 @@
+import {
+  ONE_OFF_LIBERATION_DAY_2025,
+  PUBLISHED_YEARS,
+  publishedBerlinHolidays,
+} from '../testing/berlin-holidays.fixture';
 import { berlinHolidaysFor } from './holidays.utils';
 
 const on = (year: number, name: string): string =>
   berlinHolidaysFor(year)[name].format('YYYY-MM-DD');
 
+const computedDates = (year: number): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(berlinHolidaysFor(year)).map(([name, date]) => [
+      name,
+      date.format('YYYY-MM-DD'),
+    ])
+  );
+
+const ruleBasedDates = (year: number): Record<string, string> =>
+  Object.fromEntries(
+    Object.entries(publishedBerlinHolidays(year)).filter(
+      ([name]) => name !== ONE_OFF_LIBERATION_DAY_2025
+    )
+  );
+
 describe('berlinHolidaysFor', () => {
-  it('pins the fixed-date holidays', () => {
-    expect(on(2026, 'Neujahr')).toBe('2026-01-01');
-    expect(on(2026, 'Tag der Arbeit')).toBe('2026-05-01');
-    expect(on(2026, 'Tag der Deutschen Einheit')).toBe('2026-10-03');
-    expect(on(2026, '1. Weihnachtsfeiertag')).toBe('2026-12-25');
-    expect(on(2026, '2. Weihnachtsfeiertag')).toBe('2026-12-26');
-  });
+  // Pinned against berlin.de's published lists rather than against a second run
+  // of the same Easter arithmetic — a formula agreeing with itself proves
+  // nothing. 2027 is the year that carries the month-boundary case for free:
+  // its Easter falls in March, so the offsets cross into April and May.
+  it.each(PUBLISHED_YEARS)(
+    'computes every date the %i list publishes, and no others',
+    (year) => {
+      expect(computedDates(year)).toEqual(ruleBasedDates(year));
+    }
+  );
 
-  it('derives the movable holidays from Easter', () => {
-    // Easter Sunday 2026 is 5 April.
-    expect(on(2026, 'Karfreitag')).toBe('2026-04-03');
-    expect(on(2026, 'Ostermontag')).toBe('2026-04-06');
-    expect(on(2026, 'Christi Himmelfahrt')).toBe('2026-05-14');
-    expect(on(2026, 'Pfingstmontag')).toBe('2026-05-25');
-  });
-
-  it('handles a March Easter, where the offsets cross a month boundary', () => {
-    // Easter Sunday 2024 is 31 March — Karfreitag falls in March, the rest
-    // after it.
-    expect(on(2024, 'Karfreitag')).toBe('2024-03-29');
-    expect(on(2024, 'Ostermontag')).toBe('2024-04-01');
-    expect(on(2024, 'Christi Himmelfahrt')).toBe('2024-05-09');
+  // An act of parliament, not a rule — so the omission has to read as a
+  // decision rather than as a gap someone will "fix" later.
+  it('omits the one-off 80th-anniversary holiday of 2025', () => {
+    expect(Object.keys(publishedBerlinHolidays(2025))).toContain(
+      ONE_OFF_LIBERATION_DAY_2025
+    );
+    expect(
+      berlinHolidaysFor(2025)[ONE_OFF_LIBERATION_DAY_2025]
+    ).toBeUndefined();
   });
 
   it('handles the latest possible Easter', () => {
@@ -38,9 +56,5 @@ describe('berlinHolidaysFor', () => {
       berlinHolidaysFor(2018)['Internationaler Frauentag']
     ).toBeUndefined();
     expect(on(2019, 'Internationaler Frauentag')).toBe('2019-03-08');
-  });
-
-  it('returns ten holidays for a current year', () => {
-    expect(Object.keys(berlinHolidaysFor(2026))).toHaveLength(10);
   });
 });

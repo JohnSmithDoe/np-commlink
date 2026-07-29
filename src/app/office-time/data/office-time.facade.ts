@@ -69,7 +69,7 @@ export class OfficeTimeFacade {
   // have rolled over without anything in the slice changing.
   initOfficeTime(): void {
     this.#refreshToday();
-    this.#store.dispatch(OfficeTimeActions.initOfficeTime());
+    this.#store.dispatch(OfficeTimeActions.loadHolidays());
   }
 
   #refreshToday(): void {

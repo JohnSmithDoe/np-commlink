@@ -2,7 +2,7 @@ import { Injectable, Signal, signal } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { TTheme } from '../model/app.types';
-import { IAccentColors } from '../model/settings.types';
+import { IAccentColors } from '../model/app.types';
 import { deriveIonicColorSet, IIonicColorSet } from './ionic-color.utils';
 
 // The <meta name="theme-color"> value per theme (browser/PWA chrome + Android

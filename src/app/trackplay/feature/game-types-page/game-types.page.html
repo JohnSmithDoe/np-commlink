@@ -23,8 +23,8 @@
         [canDelete]="type.id !== defaultTypeId"
         [ionList]="typeList"
         (selectType)="openEdit(type)"
-        (editType)="openEdit(type)"
-        (deleteType)="deleteType(type)"
+        (editRequested)="openEdit(type)"
+        (deleteRequested)="deleteType(type)"
       />
     }
   </ion-list>

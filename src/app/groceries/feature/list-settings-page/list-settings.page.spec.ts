@@ -43,7 +43,9 @@ describe('ListSettingsPage', () => {
 
   it('renders a toggle per setting flag', () => {
     fixture.detectChanges();
-    const toggles = fixture.nativeElement.querySelectorAll('ion-toggle');
+    const toggles = fixture.nativeElement.querySelectorAll(
+      '[data-testid^="list-settings-flag-"]'
+    );
     expect(toggles.length).toBe(9);
   });
 

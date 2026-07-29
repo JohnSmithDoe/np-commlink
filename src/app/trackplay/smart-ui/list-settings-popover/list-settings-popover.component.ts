@@ -15,7 +15,7 @@ import {
   IonSelectOption,
   IonToggle,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { IGameConfig, ITrackplayConfig } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
@@ -41,7 +41,7 @@ type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
     IonSelect,
     IonSelectOption,
     IonToggle,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class TrackplayListSettingsPopoverComponent {

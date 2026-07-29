@@ -7,7 +7,6 @@ import {
   IonItem,
   IonList,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
 
 @Component({
@@ -19,7 +18,6 @@ import { Dayjs } from 'dayjs';
     IonCardContent,
     IonCardHeader,
     IonCardTitle,
-    TranslateModule,
     IonList,
     IonItem,
   ],

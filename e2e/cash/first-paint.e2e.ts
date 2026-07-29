@@ -28,7 +28,7 @@ test.describe('cash first paint', () => {
     // resolved (the load effect emitted `loaded`) and the page painted its
     // hydrated content — the `@else` empty branch only renders once `accounts()`
     // has hydrated to an empty array.
-    await expect(scaffold.locator('.cash-networth__value')).toBeVisible();
-    await expect(scaffold.locator('.cash-empty')).toBeVisible();
+    await expect(scaffold.getByTestId('cash-networth')).toBeVisible();
+    await expect(scaffold.getByTestId('cash-accounts-empty')).toBeVisible();
   });
 });

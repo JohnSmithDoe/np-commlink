@@ -42,19 +42,26 @@
         >
           <div class="tp-cell tp-cell--head tp-cell--round">#</div>
           @for (pid of playerIds(); track pid) {
-            <div class="tp-cell tp-cell--head">{{ playerName(pid) }}</div>
+            <div class="tp-cell tp-cell--head" data-testid="score-header-cell">
+              {{ playerName(pid) }}
+            </div>
           }
         </div>
 
         <!-- body: one row per round, editable numeric cells -->
         <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
           @for (round of rounds(); track round.id) {
-            <div class="tp-row tp-row--data">
+            <div class="tp-row tp-row--data" data-testid="score-row">
               <div class="tp-cell tp-cell--round">{{ round.idx }}</div>
               @for (pid of playerIds(); track pid) {
-                <div class="tp-cell tp-cell--edit">
+                <div class="tp-cell tp-cell--edit" data-testid="score-cell">
                   <ion-input
                     type="number"
+                    [attr.aria-label]="
+                      'trackplay.a11y.score-cell'
+                        | translate
+                          : { round: round.idx, player: playerName(pid) }
+                    "
                     inputmode="numeric"
                     [value]="valueFor(round, pid)"
                     (ionBlur)="onValue(round.id, pid, $event)"
@@ -69,12 +76,13 @@
         <!-- footer: sum marker + per-player totals -->
         <div
           class="tp-row tp-row--footer"
+          data-testid="score-total-row"
           #footerRow
           (scroll)="onScroll($event)"
         >
           <div class="tp-cell tp-cell--foot tp-cell--round">&sum;</div>
           @for (pid of playerIds(); track pid) {
-            <div class="tp-cell tp-cell--foot">
+            <div class="tp-cell tp-cell--foot" data-testid="score-total-cell">
               {{ scores()[pid] | score }}
             </div>
           }
@@ -86,7 +94,7 @@
         <p class="sr-hud">{{ 'trackplay.game.ended' | translate }}</p>
 
         @if (winner(); as winner) {
-          <p class="tp-result__winner">
+          <p class="tp-result__winner" data-testid="game-winner">
             <span>
               <strong class="sr-glow">{{
                 'trackplay.game.winner' | translate: { name: winner.name }
@@ -98,11 +106,12 @@
             </span>
           </p>
 
-          <!-- Pure-CSS victory HUD: rotating amber beams, a pulsing cyan
-               reticle, a bobbing trophy sigil and neon confetti. Decorative —
-               the winner is already announced by the text above. -->
+          <!-- Pure-CSS victory HUD: a trophy sigil, plus the deck theme's
+               rotating beams, reticle and confetti (see the SCSS — the plain
+               theme shows the flat trophy alone). Decorative — the winner is
+               already announced by the text above. -->
           <div class="tp-result__image" aria-hidden="true">
-            <div class="tp-victory">
+            <div class="tp-victory" data-testid="game-victory-art">
               <div class="tp-victory__rays"></div>
               <div class="tp-victory__ring"></div>
               <div class="tp-victory__trophy">

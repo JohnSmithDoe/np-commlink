@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { mockCashAccount, mockCashState } from '../../testing/cash.test-data';
 import { CashActions } from '../../data';
@@ -14,7 +14,7 @@ describe('CashAccountEditModalComponent', () => {
 
   const setup = (state = mockCashState()) => {
     TestBed.configureTestingModule({
-      imports: [CashAccountEditModalComponent, TranslateModule.forRoot()],
+      imports: [CashAccountEditModalComponent],
       providers: [provideTestingProviders({ cash: state })],
     });
     dismiss = vi
@@ -26,10 +26,10 @@ describe('CashAccountEditModalComponent', () => {
     ).componentInstance;
   };
 
-  it('parses the de-DE opening balance into signed cents on create', () => {
+  it('carries the opening balance out as signed cents on create', () => {
     setup();
 
-    component.patch({ name: 'Giro', openingBalance: '1.234,56' });
+    component.patch({ name: 'Giro', openingBalanceCents: 123_456 });
     component.confirm();
 
     expect(dispatch).toHaveBeenCalledWith(
@@ -53,12 +53,26 @@ describe('CashAccountEditModalComponent', () => {
     expect(component.canSave()).toBe(true);
   });
 
-  it('blocks saving on an unparseable balance', () => {
+  // A negative balance is a credit card, not an error — the only thing that can
+  // be wrong with the box is text that is not an amount, and `app-money-input`
+  // reports that itself (covered in `e2e/cash/amount-input.e2e.ts`).
+  it('accepts a negative opening balance', () => {
     setup();
 
-    component.patch({ name: 'Giro', openingBalance: 'abc' });
+    component.patch({ name: 'Visa', openingBalanceCents: -25_000 });
 
-    expect(component.balanceInvalid()).toBe(true);
+    expect(component.balanceInvalid()).toBe(false);
+    expect(component.canSave()).toBe(true);
+  });
+
+  // Same trap as the transaction dialog: a cleared date used to reach
+  // `openingDateISO` as the string 'Invalid Date'.
+  it('blocks saving on a cleared opening date', () => {
+    setup();
+
+    component.patch({ name: 'Giro', openingDate: '' });
+
+    expect(component.openingDateInvalid()).toBe(true);
     expect(component.canSave()).toBe(false);
 
     component.confirm();
@@ -84,9 +98,9 @@ describe('CashAccountEditModalComponent', () => {
 
     expect(component.isEdit()).toBe(true);
     expect(component.draft().name).toBe('Giro');
-    expect(component.draft().openingBalance).toBe('50,00');
+    expect(component.draft().openingBalanceCents).toBe(5000);
 
-    component.patch({ name: 'Giro 2', openingBalance: '10,00' });
+    component.patch({ name: 'Giro 2', openingBalanceCents: 1000 });
     component.confirm();
 
     expect(dispatch).toHaveBeenCalledWith(

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import {
   mockGame,
   mockTrackplayState,
@@ -15,7 +15,7 @@ describe('TrackplayGamesPage', () => {
 
   const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
-      imports: [TrackplayGamesPage, TranslateModule.forRoot()],
+      imports: [TrackplayGamesPage],
       providers: [provideTestingProviders({ trackplay: state })],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');

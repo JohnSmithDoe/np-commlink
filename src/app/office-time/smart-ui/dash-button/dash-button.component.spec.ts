@@ -1,32 +1,38 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
-import { OfficeTimeActions, selectOfficedays } from '../../data';
+import { mockKernelState } from '../../../@shared/testing/test-data';
+import { mockOfficeTimeState } from '../../testing/office-time.test-data';
+import { OfficeTimeActions } from '../../data';
 import { DashButtonComponent } from './dash-button.component';
+
+const officeTimeWith = (officedays: dayjs.Dayjs[]) =>
+  mockKernelState({ officeTime: mockOfficeTimeState({ officedays }) });
 
 describe('DashButtonComponent', () => {
   let store: MockStore;
 
   const create = (todayIsOfficeDay: boolean): DashButtonComponent => {
-    store.overrideSelector(selectOfficedays, todayIsOfficeDay ? [dayjs()] : []);
     // The facade is a root singleton, so its `todayIsOfficeDay` signal is
-    // created once — push the overridden value through the state stream so the
-    // existing computed recomputes (overrideSelector alone doesn't emit).
-    store.refreshState();
+    // created once — push the day list through the state stream so the existing
+    // computed recomputes.
+    store.setState(officeTimeWith(todayIsOfficeDay ? [dayjs()] : []));
     return TestBed.createComponent(DashButtonComponent).componentInstance;
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DashButtonComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection(), provideMockStore()],
+      imports: [DashButtonComponent],
+      providers: [
+        provideTranslateService(),
+        provideZonelessChangeDetection(),
+        provideMockStore({ initialState: officeTimeWith([]) }),
+      ],
     });
     store = TestBed.inject(MockStore);
   });
-
-  afterEach(() => store.resetSelectors());
 
   it('exposes whether today is already an office day', () => {
     expect(create(true).todayIsOfficeDay()).toBe(true);

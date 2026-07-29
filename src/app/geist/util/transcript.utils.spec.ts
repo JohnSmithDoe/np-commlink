@@ -1,5 +1,10 @@
 import { IGeistTurn } from '../model/geist.types';
-import { appendAnswerChunk, patchTurn } from './transcript.utils';
+import {
+  appendAnswerChunk,
+  isFollowingTail,
+  noteForStreamError,
+  patchTurn,
+} from './transcript.utils';
 
 const turn = (overrides: Partial<IGeistTurn> = {}): IGeistTurn => ({
   id: 1,
@@ -48,6 +53,49 @@ describe('geist transcript utils', () => {
       const turns = [turn({ id: 1 })];
 
       expect(patchTurn(turns, 99, { streaming: false })).toEqual(turns);
+    });
+  });
+
+  describe('noteForStreamError', () => {
+    it('reads a user abort as a stop, not a failure', () => {
+      const aborted = new DOMException('stopped', 'AbortError');
+
+      expect(noteForStreamError(aborted)).toBe('geist.note.aborted');
+    });
+
+    it('reads anything else as the geist going silent', () => {
+      expect(noteForStreamError(new Error('model exploded'))).toBe(
+        'geist.note.failed'
+      );
+      expect(noteForStreamError('not even an error')).toBe('geist.note.failed');
+    });
+  });
+
+  describe('isFollowingTail', () => {
+    it('follows a view parked at the bottom', () => {
+      expect(
+        isFollowingTail({
+          scrollTop: 400,
+          scrollHeight: 600,
+          clientHeight: 200,
+        })
+      ).toBe(true);
+    });
+
+    it('still follows one chunk‘s worth of drift, which is all a render hook can see', () => {
+      expect(
+        isFollowingTail({
+          scrollTop: 340,
+          scrollHeight: 600,
+          clientHeight: 200,
+        })
+      ).toBe(true);
+    });
+
+    it('leaves a reader who scrolled up alone', () => {
+      expect(
+        isFollowingTail({ scrollTop: 0, scrollHeight: 600, clientHeight: 200 })
+      ).toBe(false);
     });
   });
 });

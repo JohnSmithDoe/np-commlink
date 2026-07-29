@@ -1,5 +1,11 @@
 import { expect, Page, test } from '@playwright/test';
-import { addViaSearch, gotoFeature, ROUTE, waitForPersisted } from '../helpers';
+import {
+  addViaSearch,
+  gotoFeature,
+  ROUTE,
+  searchInput,
+  waitForPersisted,
+} from '../helpers';
 
 /**
  * SOYKAF — the recipe book. Covers what the unit tests cannot: that the route
@@ -87,7 +93,7 @@ test.describe('soykaf recipe book', () => {
     });
     // Click the ion-select host: its shadow `part="inner"` swallows a click
     // aimed at the accessible button.
-    await page.locator('ion-modal ion-select').first().click();
+    await page.getByTestId('recipe-product-select').click();
     await page.getByRole('radio', { name: 'Milk' }).click();
     await page.getByRole('button', { name: 'Übernehmen' }).click();
 
@@ -95,6 +101,72 @@ test.describe('soykaf recipe book', () => {
 
     await gotoFeature(page, ROUTE.storage);
     await addViaSearch(page, 'Milk');
+
+    await page.goto(SOYKAF);
+    await expect(row.getByText('Kochbar')).toBeVisible({ timeout: 10_000 });
+  });
+
+  // The id-based half of the match, which only a *copied* storage row exercises:
+  // `addViaSearch` types a row by hand, and a hand-typed row has no catalog link,
+  // so the test above proves the name fallback and nothing else. Here the pantry
+  // row comes from the product itself — after which renaming the product must not
+  // make the recipe look uncookable.
+  test('keeps a recipe cookable after its product is renamed', async ({
+    page,
+  }) => {
+    // The cross-list bucket is the only non-native way to put a *product* into
+    // storage, and it is off by default.
+    await page.goto('/#/groceries/list-settings');
+    const showProductsInStorage = page.getByTestId(
+      'list-settings-flag-show-products-in-storage'
+    );
+    await expect(showProductsInStorage).toBeVisible({ timeout: 30_000 });
+    await showProductsInStorage.click();
+    await expect(showProductsInStorage).toHaveAttribute('aria-checked', 'true');
+
+    await gotoFeature(page, ROUTE.products);
+    await addViaSearch(page, 'Milk');
+
+    // Type the name on the storage page: the product is not in storage yet, so it
+    // surfaces in the catalog bucket. Tapping it copies the product — link and all.
+    await gotoFeature(page, ROUTE.storage);
+    await searchInput(page).fill('Milk');
+    const fromCatalog = page
+      .locator('app-page-storage app-item-list', {
+        hasText: 'Aus den dauerhaften Einträgen',
+      })
+      .locator('app-text-item', { hasText: 'Milk' });
+    await expect(fromCatalog).toBeVisible({ timeout: 10_000 });
+    await fromCatalog.click();
+    await searchInput(page).fill('');
+
+    await gotoSoykaf(page);
+    await createRecipe(page, 'Pancakes');
+    const row = page.locator('#main-content ion-item', { hasText: 'Pancakes' });
+    await row.click();
+    await expect(page.getByText('Eintrag bearbeiten')).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByTestId('recipe-product-select').click();
+    await page.getByRole('radio', { name: 'Milk' }).click();
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+    await expect(row.getByText('Kochbar')).toBeVisible({ timeout: 10_000 });
+
+    // Rename the product. Before `productId`, this broke the match: the storage
+    // row still said "Milk" while the product had become "Oat milk".
+    await gotoFeature(page, ROUTE.products);
+    await page
+      .locator('app-page-products')
+      .getByTestId('list-row')
+      .filter({ hasText: 'Milk' })
+      .click();
+    const nameBox = page
+      .locator('ion-modal.show-modal')
+      .filter({ hasText: 'Eintrag bearbeiten' })
+      .getByRole('textbox', { name: 'Name' });
+    await expect(nameBox).toBeVisible({ timeout: 10_000 });
+    await nameBox.fill('Oat milk');
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
 
     await page.goto(SOYKAF);
     await expect(row.getByText('Kochbar')).toBeVisible({ timeout: 10_000 });
@@ -109,8 +181,10 @@ test.describe('soykaf recipe book', () => {
 
     await expect(
       page
-        .locator('#main-content .cl-node', { hasText: 'SOYKAF' })
-        .locator('.cl-node__badge')
+        .locator('#main-content')
+        .getByTestId('deck-tile')
+        .filter({ hasText: 'SOYKAF' })
+        .getByTestId('deck-tile-badge')
     ).toHaveText('1');
   });
 });

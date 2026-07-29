@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { getByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { ItemListToolbarComponent } from './item-list-toolbar.component';
 
@@ -42,13 +43,7 @@ describe('ItemListToolbarComponent', () => {
     const emitted: string[] = [];
     component.selectSortMode.subscribe((v) => emitted.push(v));
 
-    const buttons: HTMLElement[] = [
-      ...fixture.nativeElement.querySelectorAll('ion-button'),
-    ];
-    // The label is now i18n'd; TranslateModule.forRoot() has no loader in tests,
-    // so the pipe renders the key ('item-list.toolbar.sort-az').
-    const azButton = buttons.find((b) => b.textContent?.includes('sort-az'));
-    azButton?.click();
+    getByTestId(fixture, 'list-toolbar-sort-az').click();
 
     expect(emitted).toEqual(['name']);
   });

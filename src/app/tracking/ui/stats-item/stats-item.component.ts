@@ -14,7 +14,7 @@ import {
   IonList,
   IonNote,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TIonDragEvent } from '../../../@shared/model/app.types';
 import { IDataItem } from '../../model/tracking.types';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
@@ -29,7 +29,7 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
   imports: [
     IonItem,
     IonLabel,
-    TranslateModule,
+    TranslatePipe,
     NgTemplateOutlet,
     IonNote,
     IonItemOption,

@@ -77,6 +77,9 @@ describe('TrackingNotificationsEffects', () => {
       expect(rows[0].id).toBe(trackingStateNotificationId('t1'));
       expect(rows[0].icon).toBe('play-circle');
       expect(rows[0].action?.type).toBe('tracking.pause');
+      // The producer hands over the CTA's wording too, so the inbox never has to
+      // recognise the command to label the button.
+      expect(rows[0].action?.labelKey).toBe('notifications.action.pause');
       expect(rows[0].variant).toBe('running');
     });
 

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { getByTestId, queryByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { TextItemComponent } from './text-item.component';
 
@@ -23,16 +24,16 @@ describe('TextItemComponent', () => {
     fixture.componentRef.setInput('label', 'My section');
     fixture.detectChanges();
 
-    const h2 = fixture.nativeElement.querySelector('h2');
-    expect(h2.textContent).toContain('My section');
+    expect(getByTestId(fixture, 'text-item-label').textContent).toContain(
+      'My section'
+    );
   });
 
   it('passes the color through to the ion-item', () => {
     fixture.componentRef.setInput('color', 'storage');
     fixture.detectChanges();
 
-    const item = fixture.nativeElement.querySelector('ion-item');
-    expect(item.color).toBe('storage');
+    expect(getByTestId(fixture, 'text-item')['color']).toBe('storage');
   });
 
   it('renders the note when set', () => {
@@ -48,18 +49,17 @@ describe('TextItemComponent', () => {
     fixture.componentRef.setInput('helper', '3 items');
     fixture.detectChanges();
 
-    const helper = fixture.nativeElement.querySelector('.text-item-helper');
-    expect(helper).not.toBeNull();
-    expect(helper.textContent).toContain('3 items');
+    expect(getByTestId(fixture, 'text-item-helper').textContent).toContain(
+      '3 items'
+    );
   });
 
   it('does not render note/helper notes when they are unset', () => {
     fixture.componentRef.setInput('label', 'Label');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.text-item-helper')).toBeNull();
-    // The only ion-note in the template is the inline note, which is @if-guarded.
-    expect(fixture.nativeElement.querySelector('ion-note')).toBeNull();
+    expect(queryByTestId(fixture, 'text-item-helper')).toBeNull();
+    expect(queryByTestId(fixture, 'text-item-note')).toBeNull();
   });
 
   it('emits selectItem from selectCurrent()', () => {
@@ -77,7 +77,7 @@ describe('TextItemComponent', () => {
     const emitted: unknown[] = [];
     component.selectItem.subscribe(() => emitted.push(true));
 
-    fixture.nativeElement.querySelector('ion-item').click();
+    getByTestId(fixture, 'text-item').click();
 
     expect(emitted).toHaveLength(1);
   });

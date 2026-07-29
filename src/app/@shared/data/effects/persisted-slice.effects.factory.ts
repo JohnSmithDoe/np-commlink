@@ -9,6 +9,7 @@ import {
   map,
   of,
   switchMap,
+  take,
   tap,
   withLatestFrom,
 } from 'rxjs';
@@ -125,10 +126,44 @@ export const createSaveSliceEffect = <T>(
   );
 };
 
-export const createTelemetrySliceEffect = <S>(spec: TTelemetrySpec<S>) =>
+// The slice's own `loaded`, but only for a read that actually resolved — the
+// same gate, from the same registry, that lets the save effect write.
+const hydratedFromDisk = <T>(
+  actions$: Actions,
+  lifecycle: TSliceLifecycle<T>,
+  reads: PersistedReadRegistry,
+  key: string
+) =>
+  actions$.pipe(
+    ofType(lifecycle.loaded),
+    filter(() => reads.mayPersist(key)),
+    take(1)
+  );
+
+/**
+ * A context reports its telemetry only once its own slice has hydrated.
+ *
+ * `store.select` emits initialState the instant the effect registers, so a
+ * subscription-triggered reporter announces a zero the deck shows as live and
+ * the summary writer puts on disk over the previous session's real value —
+ * permanently, if that slice's read then fails. Triggering on `loaded` instead
+ * means every reported number came off disk or out of a user action, and a read
+ * that rejected never opens the gate at all: the tile keeps its persisted
+ * summary at `standby` ("last known"), which beats a confident zero.
+ */
+export const createTelemetrySliceEffect = <S, T>(
+  spec: TTelemetrySpec<S>,
+  lifecycle: TSliceLifecycle<T>,
+  key: string
+) =>
   createEffect(
-    (store = inject(Store)) => {
-      return store.select(spec.select).pipe(
+    (
+      actions$ = inject(Actions),
+      store = inject(Store),
+      reads = inject(PersistedReadRegistry)
+    ) => {
+      return hydratedFromDisk(actions$, lifecycle, reads, key).pipe(
+        switchMap(() => store.select(spec.select)),
         map((value) =>
           DashboardActions.report({
             source: spec.source,

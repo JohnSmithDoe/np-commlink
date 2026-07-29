@@ -5,6 +5,7 @@ const dataItem = (startTime?: string): IDataItem => ({
   id: '1',
   name: 'task',
   startTime,
+  sessionIds: ['s1'],
 });
 
 describe('TimeFromDataItemPipe', () => {

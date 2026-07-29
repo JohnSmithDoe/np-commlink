@@ -4,12 +4,13 @@
     [label]="label()"
     [disabled]="disabled()"
     class="trigger"
-    [value]="value() ?? '' | date: undefined : undefined : 'de-DE'"
+    [value]="value() ?? '' | date"
     type="text"
     id="open_cal"
   ></ion-input>
   <ion-modal
     trigger="open_cal"
+    [attr.aria-label]="'a11y.date-picker' | translate"
     [keepContentsMounted]="true"
     [initialBreakpoint]="0.65"
   >

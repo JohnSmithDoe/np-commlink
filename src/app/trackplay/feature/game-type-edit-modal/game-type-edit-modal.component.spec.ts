@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import {
   mockGameType,
   mockTrackplayState,
@@ -17,7 +17,7 @@ describe('TrackplayGameTypeEditModalComponent', () => {
 
   const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
-      imports: [TrackplayGameTypeEditModalComponent, TranslateModule.forRoot()],
+      imports: [TrackplayGameTypeEditModalComponent],
       providers: [provideTestingProviders({ trackplay: state })],
     });
     dismiss = vi

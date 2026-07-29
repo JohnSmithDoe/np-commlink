@@ -11,9 +11,12 @@ export type TItemListSort = {
 export type TItemListMode = 'alphabetical' | 'categories';
 export type TItemListId = string;
 
+// `id` is the list's own identity, read by the grocery cross-list search to pick
+// which sibling buckets to decorate a result with. There is deliberately no
+// `title`: a list's heading is an i18n key the page passes in, never persisted
+// state — the six slices each carried a hardcoded English one nothing read.
 export interface IItemList<T extends IBaseItem> {
   id?: TItemListId;
-  title: string;
   items: T[];
   categories: ICategory[];
   mode: TItemListMode;

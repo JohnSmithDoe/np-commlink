@@ -37,13 +37,9 @@ export function pageRoot(page: Page, selector: string): Locator {
   return mainContent(page).locator(selector);
 }
 
-/**
- * The page-header "+" add button within a given page-component scope. It is the
- * only header button carrying the `add` icon (the nav / settings buttons use
- * other icons), so this is unambiguous inside one page.
- */
+/** The page-header "+" add button within a given page-component scope. */
 export function addButton(scope: Locator): Locator {
-  return scope.locator('app-page-header ion-button:has(ion-icon[name="add"])');
+  return scope.getByTestId('page-header-add');
 }
 
 /** Navigate to a trackplay hash route and wait for its routed page to attach. */
@@ -58,9 +54,14 @@ export async function gotoTrackplay(
   });
 }
 
-/** The visible page-header title text (scoped to the routed page). */
-export function headerTitle(page: Page): Locator {
-  return mainContent(page).locator('.sr-brand__name').first();
+/**
+ * The page-header title of ONE routed page. It takes the page scope rather than
+ * the whole content area on purpose: every mounted page renders a title, so an
+ * unscoped locator needed a `.first()` that could just as easily have read the
+ * stale page's title as the one under test.
+ */
+export function headerTitle(scope: Locator): Locator {
+  return scope.getByTestId('page-header-title');
 }
 
 /**
@@ -72,7 +73,7 @@ export async function createPlayer(page: Page, name: string): Promise<void> {
   await addButton(players).click();
   const dialog = page.locator('app-trackplay-player-edit-modal');
   await expect(dialog).toBeVisible({ timeout: 15_000 });
-  const input = dialog.locator('ion-input input').first();
+  const input = dialog.getByTestId('player-name-input').locator('input');
   await input.click();
   await input.fill(name);
   await dialog.getByRole('button', { name: 'OK' }).click();
@@ -102,10 +103,8 @@ export async function togglePlayerInSelect(
   dialog: Locator,
   name: string
 ): Promise<void> {
-  const row = dialog
-    .locator('app-trackplay-player-select ion-item')
-    .filter({ hasText: name });
-  await row.locator('ion-checkbox').click();
+  const row = dialog.getByTestId('player-select-row').filter({ hasText: name });
+  await row.getByTestId('player-select-checkbox').click();
 }
 
 /**

@@ -12,7 +12,11 @@
               routerLink="/settings"
               [attr.aria-label]="'page-title.settings' | translate"
             >
-              <ion-icon slot="icon-only" name="settings-outline" />
+              <ion-icon
+                slot="icon-only"
+                name="settings-outline"
+                aria-hidden="true"
+              />
             </ion-button>
           </ion-menu-toggle>
         </ion-buttons>
@@ -23,9 +27,14 @@
         <ion-list>
           @for (entry of menuEntries(); track entry.id) {
             <ion-menu-toggle>
-              <ion-item [button]="true" [routerLink]="entry.route" lines="none">
-                <ion-icon slot="start" [name]="entry.icon" />
-                <ion-label>{{ entry.titleKey | translate }}</ion-label>
+              <ion-item
+                [button]="true"
+                [routerLink]="entry.route"
+                lines="none"
+                data-testid="menu-row"
+              >
+                <ion-icon slot="start" [name]="entry.icon" aria-hidden="true" />
+                <ion-label>{{ entry.nameKey | translate }}</ion-label>
                 @let badge = menuBadge(entry);
                 @if (badge > 0) {
                   <ion-badge slot="end" color="danger">{{ badge }}</ion-badge>
@@ -40,4 +49,19 @@
   <div class="ion-page" id="main-content">
     <ion-router-outlet></ion-router-outlet>
   </div>
+  <!-- Shell chrome, deliberately not on the NotificationsActions.toast
+       contract: this is an interactive affordance rather than a message, so it
+       carries no `toast.*` key and needs no presenter. -->
+  <ion-toast
+    [isOpen]="updateReady()"
+    [message]="'app.update.ready' | translate"
+    [buttons]="
+      updateActions(
+        'app.update.reload' | translate,
+        'app.update.later' | translate
+      )
+    "
+    position="bottom"
+    (ionToastDidDismiss)="dismissUpdate()"
+  />
 </ion-app>

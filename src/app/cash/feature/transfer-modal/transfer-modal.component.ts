@@ -6,6 +6,13 @@ import {
   signal,
 } from '@angular/core';
 import {
+  form,
+  FormField,
+  min,
+  SchemaFn,
+  validate,
+} from '@angular/forms/signals';
+import {
   IonButton,
   IonButtons,
   IonContent,
@@ -19,27 +26,49 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import {
+  requireParseableDate,
+  requireText,
+} from '../../../@shared/util/form-rules';
 import { CashFacade } from '../../data';
-import { eurToCents } from '../../util/money.utils';
+import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { buildTransferLegs } from '../../util/transfer.utils';
 
 type TTransferForm = {
   fromId: string;
   toId: string;
-  amount: string;
+  amountCents: number | null;
   date: string;
   description: string;
 };
 
+const SAME_ACCOUNT = { kind: 'sameAccount' } as const;
+const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
+
+// "Not into the account it came from" is a cross-field rule, and it belongs on
+// the target: `valueOf` reads the source field's live value, so the error lands
+// on the select the user would have to change.
+const transferRules: SchemaFn<TTransferForm> = (path) => {
+  requireText(path.fromId);
+  requireText(path.toId);
+  validate(path.toId, ({ value, valueOf }) =>
+    value() && value() === valueOf(path.fromId) ? SAME_ACCOUNT : null
+  );
+  validate(path.amountCents, ({ value }) =>
+    value() === null ? MISSING_AMOUNT : null
+  );
+  min(path.amountCents, 1);
+  requireParseableDate(path.date);
+};
+
 /**
  * Book a transfer between two own accounts (via `ModalController`). Composes the
- * paired legs with `buildTransferLegs` and dispatches `Book Transfer`. Guarded
- * so source and target must differ and the amount must parse to a positive value.
+ * paired legs with `buildTransferLegs` and dispatches `Book Transfer`.
  *
  * Create-only: a transfer is a *pair* of new legs, not an editable entity, so
  * `existing` is always undefined and `toForm` is unreachable.
@@ -47,9 +76,9 @@ type TTransferForm = {
 @Component({
   selector: 'app-cash-transfer-modal',
   templateUrl: './transfer-modal.component.html',
-  styleUrls: ['./transfer-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -62,7 +91,8 @@ type TTransferForm = {
     IonNote,
     IonSelect,
     IonSelectOption,
-    TranslateModule,
+    TranslatePipe,
+    MoneyInputComponent,
   ],
 })
 export class CashTransferModalComponent extends BaseModalDialog<
@@ -76,30 +106,29 @@ export class CashTransferModalComponent extends BaseModalDialog<
 
   protected readonly existing = signal<never | undefined>(undefined);
 
-  readonly #cents = computed(() => eurToCents(this.draft().amount));
-  readonly amountInvalid = computed(() => {
-    const cents = this.#cents();
-    return this.draft().amount.trim() !== '' && (cents === null || cents <= 0);
-  });
-  readonly sameAccount = computed(
-    () => !!this.draft().fromId && this.draft().fromId === this.draft().toId
+  protected readonly form = form(this.draft, transferRules);
+
+  readonly sameAccount = computed(() =>
+    this.form
+      .toId()
+      .errors()
+      .some(({ kind }) => kind === SAME_ACCOUNT.kind)
   );
-  readonly canSave = computed(() => {
-    const cents = this.#cents();
-    return (
-      !!this.draft().fromId &&
-      !!this.draft().toId &&
-      !this.sameAccount() &&
-      cents !== null &&
-      cents > 0
-    );
-  });
+  // An untouched amount leaves the save disabled without being flagged; a box
+  // holding something unusable says so.
+  readonly amountInvalid = computed(() =>
+    this.form
+      .amountCents()
+      .errors()
+      .some(({ kind }) => kind !== MISSING_AMOUNT.kind)
+  );
+  readonly dateInvalid = computed(() => this.form.date().invalid());
 
   protected blank(): TTransferForm {
     return {
       fromId: '',
       toId: '',
-      amount: '',
+      amountCents: null,
       date: dayjs().format('YYYY-MM-DD'),
       description: '',
     };
@@ -116,7 +145,7 @@ export class CashTransferModalComponent extends BaseModalDialog<
     const [fromLeg, toLeg] = buildTransferLegs(
       draft.fromId,
       draft.toId,
-      this.#cents() ?? 0,
+      draft.amountCents ?? 0,
       dayjs(draft.date).format(),
       description,
       uuidv4

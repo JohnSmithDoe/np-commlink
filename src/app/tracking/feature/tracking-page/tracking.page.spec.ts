@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { mockTrackingState } from '../../testing/tracking.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { TrackingActions } from '../../data';
@@ -14,7 +14,7 @@ describe('TrackingPage', () => {
 
   const setup = (queryParameters: Record<string, string> = {}) => {
     TestBed.configureTestingModule({
-      imports: [TrackingPage, TranslateModule.forRoot()],
+      imports: [TrackingPage],
       providers: [
         provideTestingProviders({ tracking: mockTrackingState() }),
         {

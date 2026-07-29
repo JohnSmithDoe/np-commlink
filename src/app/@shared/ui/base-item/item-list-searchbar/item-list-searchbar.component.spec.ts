@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { ItemListSearchbarComponent } from './item-list-searchbar.component';
 
 describe('ItemListSearchbarComponent', () => {
@@ -8,8 +8,7 @@ describe('ItemListSearchbarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection()],
+      providers: [provideTranslateService(), provideZonelessChangeDetection()],
     });
     component = TestBed.createComponent(
       ItemListSearchbarComponent

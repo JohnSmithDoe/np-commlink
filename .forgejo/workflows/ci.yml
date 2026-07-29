@@ -1,0 +1,148 @@
+name: CI
+
+# Forgejo Actions on Codeberg — the successor of this project's GitHub workflow.
+# Two facts of the host shape the whole file:
+#
+#   1. Codeberg's hosted runners are donated capacity and the terms ask for
+#      minimal pipelines, so every gate shares ONE container and ONE
+#      `pnpm install` instead of fanning out into jobs that each rebuild the
+#      dependency graph. As a bonus the Pages deploy then sits behind *every*
+#      gate, e2e included, with no artifact hand-off between jobs.
+#   2. Runners are wall-clock capped by label (see `runs-on` below).
+#
+# Two prerequisites live outside this file, in the repository settings:
+#   - Settings → Units → enable Actions (off by default on Codeberg).
+#   - Settings → Webhooks → add a *Forgejo* webhook with target URL
+#     https://letothec0dem0nkey.codeberg.page/np-commlink/ and branch filter
+#     `pages`; without it the git-pages server never learns about a deploy.
+#
+# Push and release are the same job on purpose: a push to main runs every gate
+# and publishes nothing, a `v1.2.3` tag runs the same gates and then deploys —
+# so what reaches Pages is always a tree this job just verified, rather than one
+# trusted to have been green on some earlier run.
+on:
+  # Deliberately unfiltered: Forgejo rejects `branches:` and `tags:` on the same
+  # `push` trigger, and both are needed here. The filter therefore lives in the
+  # job's `if:` — where a skipped run costs no runner.
+  push:
+  pull_request:
+
+# No `concurrency:` block — Forgejo already defaults cancel-in-progress to true
+# for push and pull_request, so a superseded commit is cancelled for us.
+
+env:
+  # Corepack asks for interactive confirmation before downloading the pinned
+  # pnpm; on a runner there is nobody to answer the prompt.
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+jobs:
+  verify:
+    # The trigger filter `on:` was not allowed to express: every pull request,
+    # every push to main, and every push of a version tag. Nothing else.
+    if: ${{ forge.event_name == 'pull_request' || forge.ref == 'refs/heads/main' || startsWith(forge.ref, 'refs/tags/v') }}
+    # `-lazy` trades a slower pickup for a 24h runtime budget. The plain
+    # `codeberg-medium` label kills a job at 10 minutes, which install + lint +
+    # two type-checks + coverage + Playwright + a prod build does not fit into.
+    # `medium` (4 CPU / 8G) is the smallest tier that holds an Angular build:
+    # Codeberg counts filesystem writes against the RAM quota, and node_modules
+    # plus a Chromium download is most of a gigabyte before the compiler starts.
+    runs-on: codeberg-medium-lazy
+    steps:
+      # Fully-qualified `uses:` URLs throughout: a bare `owner/repo` is resolved
+      # against the instance's DEFAULT_ACTIONS_URL, which is not github.com here.
+      - uses: https://code.forgejo.org/actions/checkout@v4
+
+      - uses: https://code.forgejo.org/actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      # Corepack takes the pnpm version from package.json's `packageManager`,
+      # so it stays pinned in one place instead of being restated here.
+      - name: Activate pnpm
+        run: corepack enable pnpm
+
+      # --frozen-lockfile fails if pnpm-lock.yaml is stale — CI must build the
+      # exact dependency graph the lockfile pins, never silently resolve newer.
+      - run: pnpm install --frozen-lockfile
+
+      # Through the script, not a glob restated here: one writer for the file
+      # set, so linting by hand cannot cover less than CI does.
+      - name: Lint (eslint)
+        run: pnpm run lint
+
+      # Prettier is enforced by the lefthook pre-commit hook, which a
+      # --no-verify commit skips — so CI is the gate that actually holds.
+      - name: Format (prettier)
+        run: pnpm run format:check
+
+      - name: Module boundaries (sheriff)
+        run: pnpm exec sheriff verify src/main.ts
+
+      # esbuild (build/test) transpiles without a full type-check, so tsc is a
+      # required, separate gate — it catches type-only breakage the others miss.
+      - name: Type-check (app)
+        run: pnpm exec tsc -p tsconfig.app.json --noEmit
+
+      - name: Type-check (spec)
+        run: pnpm exec tsc -p tsconfig.spec.json --noEmit
+
+      # Coverage rather than a bare run: the thresholds in vitest.config.ts are
+      # a regression floor, and they only bind if something checks them.
+      - name: Unit tests (vitest)
+        run: pnpm run test:coverage
+
+      - name: Install Playwright Chromium + OS deps
+        run: pnpm exec playwright install --with-deps chromium
+
+      # Playwright's webServer starts `ng serve` itself; CI mode
+      # (retries / 1 worker) auto-engages from the runner-provided CI=true.
+      - name: E2E (playwright)
+        run: pnpm run e2e
+
+      # Keep the HTML report + traces on a red run so it stays debuggable.
+      - uses: https://code.forgejo.org/actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      # `build:pages` rather than `build`: the Capacitor target wants a relative
+      # base href, a subpath deploy needs the absolute one. Run on pull requests
+      # too — a prod build that no longer compiles is a failure worth catching
+      # before merge, not at deploy time.
+      - name: Production build (Codeberg Pages base href)
+        run: pnpm run build:pages
+
+      # Codeberg Pages, branch variant: the tip of *this* repo's `pages` branch
+      # is served at https://letothec0dem0nkey.codeberg.page/np-commlink/ — one
+      # site per project, as opposed to the single per-user site a `pages`
+      # *repository* would give. Re-rooted and force-pushed every deploy: the
+      # branch is a publishing surface, not history, and keeping its commits
+      # would grow the repo by one full build per push. `forge.token` is filled
+      # in by Forgejo and carries write access on push events, so this needs no
+      # PAT secret.
+      #
+      # Publishing is release-gated: only a `vMAJOR.MINOR.PATCH` tag ships. The
+      # exact shape is asserted here in shell rather than as an `on.push.tags`
+      # glob, because a glob dialect that doesn't support what was written fails
+      # *silently* — it stops matching and releases just quietly stop happening.
+      # Pre-release tags (`v1.0.0-rc.1`) therefore verify without publishing.
+      - name: Deploy to the pages branch
+        if: ${{ startsWith(forge.ref, 'refs/tags/v') }}
+        env:
+          FORGE_TOKEN: ${{ forge.token }}
+          FORGE_REF: ${{ forge.ref }}
+        run: |
+          version="${FORGE_REF#refs/tags/}"
+          if ! printf '%s' "$version" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::notice::$version is not a release version — verified, not published."
+            exit 0
+          fi
+          cd www/browser
+          git init -q -b pages
+          git config user.name 'Forgejo Actions'
+          git config user.email 'noreply@codeberg.org'
+          git add -A
+          git commit -q -m "deploy $version (${{ forge.sha }})"
+          git push -q -f "https://${{ forge.actor }}:${FORGE_TOKEN}@codeberg.org/${{ forge.repository }}.git" pages

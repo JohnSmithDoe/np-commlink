@@ -45,12 +45,13 @@
         @if (trackingItem.startTime) {
           {{
             'tracking.item.start'
-              | translate: { time: trackingItem.startTime | date: 'HH:mm' }
+              | translate: { time: trackingItem.startTime | date: 'shortTime' }
           }}
           @if (trackingItem.breakTime) {
             {{
               'tracking.item.break'
-                | translate: { time: trackingItem.breakTime | date: 'HH:mm' }
+                | translate
+                  : { time: trackingItem.breakTime | date: 'shortTime' }
             }}
           } @else {
             {{ 'tracking.item.nobreak' | translate }}
@@ -74,6 +75,7 @@
   >
     <ion-button
       [id]="'kebab-' + item().id"
+      data-testid="tracking-item-kebab"
       fill="clear"
       color="medium"
       [attr.aria-label]="'tracking.a11y.more-actions' | translate"
@@ -100,15 +102,20 @@
           }}</ion-label>
         </ion-item>
         <ion-item button (click)="emitEditItem()">
-          <ion-icon slot="start" name="create-outline" />
+          <ion-icon slot="start" name="create-outline" aria-hidden="true" />
           <ion-label>{{ 'tracking.item.action.edit' | translate }}</ion-label>
         </ion-item>
         <ion-item button (click)="emitResetItem()">
-          <ion-icon slot="start" name="refresh-outline" />
+          <ion-icon slot="start" name="refresh-outline" aria-hidden="true" />
           <ion-label>{{ 'tracking.item.action.reset' | translate }}</ion-label>
         </ion-item>
         <ion-item button (click)="emitDeleteItem()">
-          <ion-icon slot="start" name="trash-outline" color="danger" />
+          <ion-icon
+            slot="start"
+            name="trash-outline"
+            color="danger"
+            aria-hidden="true"
+          />
           <ion-label color="danger">
             {{ 'tracking.item.action.delete' | translate }}
           </ion-label>

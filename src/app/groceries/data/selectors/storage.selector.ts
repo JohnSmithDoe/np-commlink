@@ -1,13 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import {
-  IGrocerySearchResult,
-  IStorageItem,
-  IStorageState,
-} from '../../model/grocery-list.types';
-import {
-  filterAndSortItemList,
-  filterBySearchQuery,
-} from './grocery-list.selector';
+import { IStorageItem, IStorageState } from '../../model/grocery-list.types';
 import { selectGroceriesState } from './groceries.selector';
 
 import { ICategory } from '../../../@shared/model/category.types';
@@ -25,18 +17,18 @@ export const selectStorageCategories = createSelector(
   (state): ICategory[] => state.categories
 );
 
-export const selectStorageListSearchResult = createSelector(
+/**
+ * Every row the storage list holds, unfiltered.
+ *
+ * Deliberately NOT the page's view: `selectListItems` applies the storage PAGE's
+ * search query and category filter, so reading that where the whole aggregate is
+ * meant makes the answer depend on what the user last typed. The edit dialog's
+ * duplicate-name rule is exactly such a reader — a search term left in the box
+ * would shrink the sibling set and let a duplicate through.
+ */
+export const selectStorageItems = createSelector(
   selectStorageState,
-  selectGroceriesState,
-  (listState, lists): IGrocerySearchResult<IStorageItem> | undefined =>
-    filterBySearchQuery(lists, listState)
-);
-
-export const selectStorageListItems = createSelector(
-  selectStorageState,
-  selectStorageListSearchResult,
-  (state: IStorageState, result): IStorageItem[] | undefined =>
-    filterAndSortItemList(state, result)
+  (state: IStorageState): IStorageItem[] => state?.items ?? []
 );
 
 // Count of low-stock items (below their minimum) for the deck's STASH tile.

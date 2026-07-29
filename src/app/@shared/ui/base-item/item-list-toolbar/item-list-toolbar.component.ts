@@ -6,7 +6,7 @@ import {
   output,
 } from '@angular/core';
 import { IonButton, IonButtons, IonToolbar } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   TItemListMode,
   TItemListSortType,
@@ -17,7 +17,7 @@ import {
   templateUrl: 'item-list-toolbar.component.html',
   styleUrls: ['item-list-toolbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonToolbar, IonButtons, IonButton, TranslateModule],
+  imports: [IonToolbar, IonButtons, IonButton, TranslatePipe],
 })
 export class ItemListToolbarComponent {
   // The list/categories display-mode toggle is a category-list affordance;

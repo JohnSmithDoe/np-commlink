@@ -25,7 +25,7 @@
     [title]="item.name"
     [ionList]="ionList"
     [categories]="categories"
-    [statusColor]="getItemStatusColor(item)"
+    [statusColor]="statusColor(item)"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
   >
@@ -33,7 +33,7 @@
       <ng-container itemDetails>
         <ion-note>
           {{ 'tasks.item.due.note' | translate }}:
-          {{ item.dueAt | date: undefined : undefined : 'de-DE' }}
+          {{ item.dueAt | date }}
         </ion-note>
         <br />
       </ng-container>

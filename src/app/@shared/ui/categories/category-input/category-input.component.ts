@@ -11,7 +11,7 @@ import {
   IonItem,
   IonLabel,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { ICategory, TCategoryId } from '../../../model/category.types';
@@ -29,7 +29,7 @@ import { ICategory, TCategoryId } from '../../../model/category.types';
   templateUrl: './category-input.component.html',
   styleUrls: ['./category-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonItem, IonLabel, IonChip, IonButton, IonIcon, TranslateModule],
+  imports: [IonItem, IonLabel, IonChip, IonButton, IonIcon, TranslatePipe],
 })
 export class CategoryInputComponent {
   readonly categories = input<ICategory[]>();

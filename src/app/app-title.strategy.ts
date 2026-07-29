@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class AppTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
   private readonly translate = inject(TranslateService);
-  private readonly appName = 'np-timetracker';
+  private readonly appName = 'CommLink';
 
   override updateTitle(snapshot: RouterStateSnapshot): void {
     let routeTitle = this.buildTitle(snapshot);

@@ -13,7 +13,7 @@ import {
   IonMenuButton,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TColor } from '../../model/app.types';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
@@ -29,7 +29,7 @@ import { add } from 'ionicons/icons';
     IonMenuButton,
     IonButton,
     IonIcon,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class PageHeaderComponent {

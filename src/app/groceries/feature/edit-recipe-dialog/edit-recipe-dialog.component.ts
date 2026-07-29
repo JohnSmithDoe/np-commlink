@@ -1,3 +1,4 @@
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,12 +17,13 @@ import {
   SelectCustomEvent,
   TextareaCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { trashOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/number-input.component';
+import { TMarker } from '../../../@shared/model/app.types';
 import { TItemUnit } from '../../model/grocery-list.types';
 import {
   IRecipe,
@@ -29,10 +31,22 @@ import {
   RECIPES_LIST_ID,
 } from '../../model/recipe.types';
 import { RecipesFacade } from '../../data';
-import { createRecipeIngredient } from '../../util/grocery.factory';
+import {
+  createRecipe,
+  createRecipeIngredient,
+} from '../../util/grocery.factory';
 import { TItemListId } from '../../../@shared/model/item-list.types';
 
 const UNITS: readonly TItemUnit[] = ['pieces', 'g', 'ml'];
+
+// Spelled out rather than composed as `'grocery.unit.' + unit`, which would make
+// the three keys invisible to `i18n:extract` and therefore prunable. The
+// annotation is what keeps a new unit from shipping without a label.
+const UNIT_LABEL_KEYS: Record<TItemUnit, TMarker> = {
+  pieces: marker('grocery.unit.pieces'),
+  g: marker('grocery.unit.g'),
+  ml: marker('grocery.unit.ml'),
+};
 
 /**
  * Recipe edit-dialog wrapper (type:feature). The only dialog in the app whose
@@ -51,7 +65,7 @@ const UNITS: readonly TItemUnit[] = ['pieces', 'g', 'ml'];
     IonSelect,
     IonSelectOption,
     IonTextarea,
-    TranslateModule,
+    TranslatePipe,
     ItemEditModalComponent,
     NumberInputComponent,
   ],
@@ -59,12 +73,17 @@ const UNITS: readonly TItemUnit[] = ['pieces', 'g', 'ml'];
   styleUrl: './edit-recipe-dialog.component.scss',
 })
 export class EditRecipeDialogComponent extends BaseEditItemDialog<IRecipe> {
+  protected blank(): IRecipe {
+    return createRecipe('');
+  }
+
   readonly #facade = inject(RecipesFacade);
 
   protected readonly listId: TItemListId = RECIPES_LIST_ID;
-  readonly listItems = this.#facade.recipes;
+  readonly siblings = this.#facade.recipes;
   readonly catalog = this.#facade.catalog;
   readonly units = UNITS;
+  readonly unitLabelKeys = UNIT_LABEL_KEYS;
 
   // The add-ingredient picker's value, reset to null after each pick so the same
   // product can be added twice and the control always reads as a fresh prompt.
@@ -76,7 +95,7 @@ export class EditRecipeDialogComponent extends BaseEditItemDialog<IRecipe> {
     const byId = new Map(
       this.catalog().map((product) => [product.id, product])
     );
-    return (this.draft()?.ingredients ?? []).map((line) => ({
+    return this.draft().ingredients.map((line) => ({
       line,
       name: byId.get(line.productId)?.name ?? line.productId,
     }));
@@ -137,9 +156,6 @@ export class EditRecipeDialogComponent extends BaseEditItemDialog<IRecipe> {
   #updateIngredients(
     update: (lines: IRecipeIngredient[]) => IRecipeIngredient[]
   ) {
-    const draft = this.draft();
-    if (draft) {
-      this.patch({ ingredients: update(draft.ingredients) });
-    }
+    this.patch({ ingredients: update(this.draft().ingredients) });
   }
 }

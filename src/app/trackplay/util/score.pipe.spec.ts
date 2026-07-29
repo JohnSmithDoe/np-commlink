@@ -1,9 +1,26 @@
+import { TestBed } from '@angular/core/testing';
+import { LanguageService } from '../../@shared/util/language.service';
 import { ScorePipe } from './score.pipe';
 
-describe('ScorePipe', () => {
-  const pipe = new ScorePipe();
+// The pipe reads the active locale once, at construction, so it has to be built
+// in an injection context — and building one per language is what proves the
+// separators actually follow it.
+const pipeFor = (locale: string): ScorePipe => {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: LanguageService, useValue: { locale: () => locale } },
+    ],
+  });
+  return TestBed.runInInjectionContext(() => new ScorePipe());
+};
 
-  it('formats with de-DE thousands separators', () => {
+describe('ScorePipe', () => {
+  const pipe = pipeFor('de-DE');
+
+  it('formats with the active language’s thousands separators', () => {
+    expect(pipeFor('en-US').transform(12_345)).toBe('12,345');
+
     expect(pipe.transform(42)).toBe('42');
     expect(pipe.transform(12_345)).toBe('12.345');
     expect(pipe.transform(1_000_000)).toBe('1.000.000');

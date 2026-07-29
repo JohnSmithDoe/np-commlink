@@ -1,6 +1,10 @@
 <app-page-header hideButtons="true">
   <div toolbar class="sr-brand">
-    <ion-icon name="hardware-chip-outline" class="sr-brand__icon" />
+    <ion-icon
+      name="hardware-chip-outline"
+      class="sr-brand__icon"
+      aria-hidden="true"
+    />
     <span class="sr-brand__name">np-commlink</span>
     <span class="cl-cursor">▊</span>
   </div>
@@ -8,39 +12,56 @@
 
 <ion-content>
   @let now = time();
+  @let hud = chrome();
 
   <div class="cl sr-scanlines">
     <div class="cl-bar">
       <span class="cl-bar__seg">
         <i class="sr-led sr-led--on"></i> SIN://np-commlink
       </span>
-      <span class="cl-bar__seg">GRID <b>ONLINE</b></span>
       <span class="cl-bar__seg"
-        >NOISE <b>{{ noise() }}</b></span
+        >{{ hud['grid'] | translate }}
+        <b>{{ hud['grid-value'] | translate }}</b></span
       >
-      <span class="cl-bar__seg cl-bar__seg--sig">SIGNAL <b>▚▚▚▚▚</b></span>
+      <span class="cl-bar__seg"
+        >{{ hud['noise'] | translate }} <b>{{ noise() }}</b></span
+      >
+      <span class="cl-bar__seg cl-bar__seg--sig"
+        >{{ hud['signal'] | translate }}
+        <b>{{ hud['signal-value'] | translate }}</b></span
+      >
       <span class="cl-bar__seg cl-bar__clock">{{ now }}</span>
     </div>
 
     <header class="cl-hero">
-      <p class="cl-hero__kicker">// matrix link established</p>
+      <p class="cl-hero__kicker">{{ hud['kicker'] | translate }}</p>
       <h1 class="cl-hero__title" data-text="COMMLINK ONLINE">
         COMMLINK ONLINE
       </h1>
-      <p class="cl-hero__meta">
-        {{ bootDate }} · RES {{ resonanceRating() }} · FIREWALL 5 ·
-        <b>{{ onlineCount() }}/{{ total }}</b> PROGRAMS LOADED
+      <p class="cl-hero__meta" data-testid="deck-status-strip">
+        {{ bootDate }} · {{ hud['res'] | translate }} {{ resonanceRating() }} ·
+        {{ hud['firewall'] | translate }}
+        {{ hud['firewall-value'] | translate }} ·
+        <b>{{ onlineCount() }}/{{ total }}</b>
+        {{ hud['programs-loaded'] | translate }}
       </p>
     </header>
 
     <div class="cl-grid">
       @for (p of programs(); track p.id; let slot = $index) {
         @let nodeStatus = status(p);
+        @let dark = nodeStatus === 'offline';
+        <!-- A dark tile is unreachable, not just un-clickable: the CSS drops
+             pointer events, and these two take it out of the tab order and say
+             why to a screen reader. -->
         <a
           class="cl-node sr-panel sr-corners"
           [class.cl-node--standby]="nodeStatus === 'standby'"
-          [class.cl-node--offline]="nodeStatus === 'offline'"
+          [class.cl-node--offline]="dark"
+          [attr.aria-disabled]="dark ? 'true' : null"
+          [attr.tabindex]="dark ? '-1' : null"
           [routerLink]="p.route"
+          data-testid="deck-tile"
         >
           <span class="cl-node__scan"></span>
           <div class="cl-node__top">
@@ -52,10 +73,20 @@
                    surfaced as a glanceable count. -->
               @let b = badge(p);
               @if (b !== null && b > 0) {
+                @let badgeText = badgeLabel(p, b);
+                <!-- role="img": ARIA prohibits naming the implicit `generic`
+                     role, so on a bare <span> the aria-label is not exposed at
+                     all and a reader announces the raw digits instead of what
+                     they count (R8). -->
                 <span
                   class="cl-node__badge"
+                  role="img"
                   [class.cl-node__badge--currency]="p.currency"
-                  >{{ badgeLabel(p, b) }}</span
+                  [attr.aria-label]="
+                    p.metricKey ?? '' | translate: { value: badgeText }
+                  "
+                  data-testid="deck-tile-badge"
+                  >{{ badgeText }}</span
                 >
               }
               <i
@@ -66,21 +97,11 @@
               ></i>
             </span>
           </div>
-          <ion-icon class="cl-node__icon" [name]="p.icon" />
+          <ion-icon class="cl-node__icon" [name]="p.icon" aria-hidden="true" />
           <div class="cl-node__name">{{ p.nameKey | translate }}</div>
           <div class="cl-node__desc">{{ p.descKey | translate }}</div>
           <div class="cl-node__foot">
-            @switch (nodeStatus) {
-              @case ('online') {
-                &gt; RUN
-              }
-              @case ('standby') {
-                &gt; STANDBY
-              }
-              @case ('offline') {
-                &gt; NO SIGNAL
-              }
-            }
+            {{ nodeStatusKey(nodeStatus) | translate }}
           </div>
         </a>
       }
@@ -88,12 +109,18 @@
 
     <footer class="cl-tele">
       <span
-        >◈ NUYEN <b>{{ nuyenLabel() }}</b></span
+        >{{ hud['nuyen'] | translate }} <b>{{ nuyenLabel() }}</b></span
       >
-      <span>◈ TRACE <b>CLEAN</b></span>
-      <span>◈ ICE <b>PASSIVE</b></span>
       <span
-        >◈ UPTIME <b>{{ now }}</b></span
+        >{{ hud['trace'] | translate }}
+        <b>{{ hud['trace-value'] | translate }}</b></span
+      >
+      <span
+        >{{ hud['ice'] | translate }}
+        <b>{{ hud['ice-value'] | translate }}</b></span
+      >
+      <span
+        >{{ hud['uptime'] | translate }} <b>{{ now }}</b></span
       >
     </footer>
   </div>

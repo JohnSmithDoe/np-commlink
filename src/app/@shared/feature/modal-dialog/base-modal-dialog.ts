@@ -1,4 +1,5 @@
 import { computed, inject, linkedSignal, signal, Signal } from '@angular/core';
+import { FieldTree } from '@angular/forms/signals';
 import { ModalController } from '@ionic/angular/standalone';
 
 /**
@@ -17,9 +18,13 @@ import { ModalController } from '@ionic/angular/standalone';
  * Here the id is a signal, so `existing` and `draft` are reactive and **no
  * subclass needs `OnInit`**.
  *
- * `TForm` is a view-model, not the entity: these dialogs edit mapped fields (cents
- * as a de-DE string, a signed amount as magnitude + direction), so the subclass
- * supplies {@link toForm} in and {@link persist} out.
+ * `TForm` is a view-model, not the entity: these dialogs edit mapped fields (a
+ * signed amount as magnitude + direction, a zero opening balance as an empty box),
+ * so the subclass supplies {@link toForm} in and {@link persist} out.
+ *
+ * Every subclass is on **Signal Forms**: it hands over a {@link form} field tree
+ * over the draft, and validity — hence {@link canSave} — comes from that tree's
+ * schema rather than from a hand-written conjunction per dialog.
  */
 export abstract class BaseModalDialog<TEntity, TForm extends object> {
   readonly #modalCtrl = inject(ModalController);
@@ -37,8 +42,13 @@ export abstract class BaseModalDialog<TEntity, TForm extends object> {
   protected abstract blank(): TForm;
   /** Entity → editable form fields. */
   protected abstract toForm(entity: TEntity): TForm;
-  abstract readonly canSave: Signal<boolean>;
   protected abstract persist(draft: TForm, existing: TEntity | undefined): void;
+  /**
+   * The subclass's Signal Forms tree over {@link draft} — `form(this.draft,
+   * rules)`. It must project the draft rather than a copy of it, or a reseed
+   * would not reach validity.
+   */
+  protected abstract readonly form: FieldTree<TForm>;
 
   readonly isEdit = computed(() => !!this.existing());
 
@@ -46,6 +56,14 @@ export abstract class BaseModalDialog<TEntity, TForm extends object> {
     const entity = this.existing();
     return entity ? this.toForm(entity) : this.blank();
   });
+
+  /**
+   * Saveable = the field tree is valid. Every dialog used to spell this out as a
+   * conjunction over its own draft, which is the bug class Signal Forms was
+   * adopted to end: a rule added to the schema had to be remembered here too,
+   * and `canSave` is what the save button reads.
+   */
+  readonly canSave = computed(() => this.form().valid());
 
   /** Public so templates can bind field edits straight to it. */
   patch(partial: Partial<TForm>): void {

@@ -1,13 +1,21 @@
 import { TMarker } from '../../@shared/model/app.types';
 
 /**
- * The deck's view of the on-device model. `unsupported` and `flatlined` are
- * ours, not the platform's: the Prompt API only reports whether weights are
- * present, it has no notion of "this runtime will never have them" (our Android
- * APK) versus "creating the session just failed".
+ * The deck's view of the on-device model. `unsupported`, `flatlined` and the
+ * `priming`/`reforging` pair are ours, not the platform's: the Prompt API only
+ * reports whether weights are present. It has no notion of "this runtime will
+ * never have them" (our Android APK) versus "creating the session just failed",
+ * nor of the difference between the first open, which downloads gigabytes, and
+ * every later one, which only re-creates a session against local weights.
  */
 export type TGeistLink =
-  'probing' | 'unsupported' | 'dormant' | 'priming' | 'jacked-in' | 'flatlined';
+  | 'probing'
+  | 'unsupported'
+  | 'dormant'
+  | 'priming'
+  | 'reforging'
+  | 'jacked-in'
+  | 'flatlined';
 
 export type TGeistPersonaId = 'fixer' | 'archivist' | 'mentor';
 

@@ -1,10 +1,12 @@
 <ion-list lines="full">
   @for (player of orderedPlayers(); track player.id) {
-    <ion-item>
+    <ion-item data-testid="player-select-row">
       <ion-checkbox
         slot="start"
+        [attr.aria-label]="player.name"
         [checked]="isChecked(player.id)"
         (ionChange)="onToggle(player.id, $event)"
+        data-testid="player-select-checkbox"
       />
       <ion-label>{{ player.name }}</ion-label>
     </ion-item>

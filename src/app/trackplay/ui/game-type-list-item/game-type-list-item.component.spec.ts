@@ -1,74 +1,35 @@
 import { provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/model/app.types';
+import { provideTranslateService } from '@ngx-translate/core';
 import { mockGameType } from '../../testing/trackplay.test-data';
 import { TrackplayGameTypeListItemComponent } from './game-type-list-item.component';
 
+// Smoke-level on purpose: the swipe mechanics (including the `canDelete` gate)
+// belong to BaseSwipeRow and are spec'd once in base-swipe-row.spec.ts. What is
+// this row's own is that its template compiles — including the `@if (canDelete())`
+// around the delete option — and binds to the inherited request outputs.
 const fakeIonList = () =>
   ({ closeSlidingItems: vi.fn().mockResolvedValue(undefined) }) as unknown as {
     closeSlidingItems: () => Promise<void>;
   } & IonList;
 
-const dragEvent = (amount: number): TIonDragEvent =>
-  ({ detail: { amount, ratio: 0 } }) as TIonDragEvent;
-
 describe('TrackplayGameTypeListItemComponent', () => {
-  let fixture: ComponentFixture<TrackplayGameTypeListItemComponent>;
-  let component: TrackplayGameTypeListItemComponent;
-  let ionList: ReturnType<typeof fakeIonList>;
-
-  beforeEach(() => {
+  it('closes the sliding items and asks for a delete', async () => {
     TestBed.configureTestingModule({
-      imports: [TrackplayGameTypeListItemComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection()],
+      imports: [TrackplayGameTypeListItemComponent],
+      providers: [provideTranslateService(), provideZonelessChangeDetection()],
     });
-    fixture = TestBed.createComponent(TrackplayGameTypeListItemComponent);
-    component = fixture.componentInstance;
-    ionList = fakeIonList();
+    const fixture = TestBed.createComponent(TrackplayGameTypeListItemComponent);
+    const ionList = fakeIonList();
     fixture.componentRef.setInput('gameType', mockGameType({ id: 'skat' }));
     fixture.componentRef.setInput('ionList', ionList);
-  });
-
-  it('closes the sliding items and emits deleteType', async () => {
     let emitted = false;
-    component.deleteType.subscribe(() => (emitted = true));
+    fixture.componentInstance.deleteRequested.subscribe(() => (emitted = true));
 
-    await component.emitDelete();
+    await fixture.componentInstance.emitDelete();
 
     expect(ionList.closeSlidingItems).toHaveBeenCalled();
     expect(emitted).toBe(true);
-  });
-
-  it('closes the sliding items and emits editType', async () => {
-    let emitted = false;
-    component.editType.subscribe(() => (emitted = true));
-
-    await component.emitEdit();
-
-    expect(ionList.closeSlidingItems).toHaveBeenCalled();
-    expect(emitted).toBe(true);
-  });
-
-  it('deletes on a start-side drag only when deletion is allowed', () => {
-    const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
-
-    fixture.componentRef.setInput('canDelete', false);
-    component.deleteOrEditOnSwipe(dragEvent(-200));
-    expect(del).not.toHaveBeenCalled();
-
-    fixture.componentRef.setInput('canDelete', true);
-    component.deleteOrEditOnSwipe(dragEvent(-200));
-    expect(del).toHaveBeenCalledTimes(1);
-  });
-
-  it('edits on an end-side drag regardless of canDelete', () => {
-    const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);
-
-    fixture.componentRef.setInput('canDelete', false);
-    component.deleteOrEditOnSwipe(dragEvent(200));
-
-    expect(edit).toHaveBeenCalledTimes(1);
   });
 });

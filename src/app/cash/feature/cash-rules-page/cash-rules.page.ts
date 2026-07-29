@@ -10,7 +10,6 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonItem,
   IonItemOption,
@@ -20,18 +19,16 @@ import {
   IonList,
   IonListHeader,
   IonNote,
-  IonTitle,
-  IonToolbar,
+  IonReorder,
+  IonReorderGroup,
   ModalController,
+  ReorderEndCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
-  arrowBackOutline,
-  arrowDownOutline,
-  arrowUpOutline,
   playOutline,
   pricetagsOutline,
   trashOutline,
@@ -40,16 +37,18 @@ import { ICashRule } from '../../model/rule.types';
 import { CashFacade } from '../../data';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { recategorizations } from '../../util/categorize.utils';
+import { CashDetailHeaderComponent } from '../../ui/cash-detail-header/cash-detail-header.component';
 import { CashRuleEditModalComponent } from '../rule-edit-modal/rule-edit-modal.component';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
+import { moveInList } from '../../../@shared/util/app.utils';
 import { presentModal } from '../../../@shared/util/present-modal';
 
 import { TCategoryId } from '../../../@shared/model/category.types';
 
 /**
  * Categories + categorization rules. The category palette (add/remove) feeds the
- * rule editor's category picker. Rules are shown in priority order with up/down
- * controls (→ `reorderRules`), tap-to-edit, swipe-to-delete. "Apply rules" runs
+ * rule editor's category picker. Rules are shown in priority order, dragged to
+ * re-prioritise (→ `reorderRules`), tap-to-edit, swipe-to-delete. "Apply rules" runs
  * the pure `categorize` engine over every non-manual transaction and reports how
  * many changed. Reached from the accounts overview header.
  */
@@ -59,9 +58,7 @@ import { TCategoryId } from '../../../@shared/model/category.types';
   styleUrls: ['./cash-rules.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
+    CashDetailHeaderComponent,
     IonButtons,
     IonButton,
     IonContent,
@@ -74,7 +71,9 @@ import { TCategoryId } from '../../../@shared/model/category.types';
     IonLabel,
     IonIcon,
     IonNote,
-    TranslateModule,
+    IonReorder,
+    IonReorderGroup,
+    TranslatePipe,
   ],
 })
 export class CashRulesPage {
@@ -103,11 +102,8 @@ export class CashRulesPage {
 
   constructor() {
     addIcons({
-      arrowBackOutline,
       addOutline,
       trashOutline,
-      arrowUpOutline,
-      arrowDownOutline,
       playOutline,
       pricetagsOutline,
     });
@@ -129,24 +125,39 @@ export class CashRulesPage {
     return this.#translate.instant(key, { count: rule.conditions.length });
   }
 
-  moveRule(rule: ICashRule, direction: -1 | 1): void {
-    const sorted = this.rules();
-    const index = sorted.findIndex((candidate) => candidate.id === rule.id);
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= sorted.length) return;
-    const ids = sorted.map((candidate) => candidate.id);
-    [ids[index], ids[targetIndex]] = [ids[targetIndex], ids[index]];
-    this.#facade.reorderRules(ids);
+  /**
+   * `complete(false)` leaves the DOM to Angular: the list re-renders from the
+   * stored order, so letting Ionic move the node as well would apply the drop
+   * twice. The payload is the *complete* order — the reducer rebuilds the rule
+   * list from these ids, so an omitted one would delete that rule.
+   */
+  reorder(event: ReorderEndCustomEvent): void {
+    const { from, to } = event.detail;
+    event.detail.complete(false);
+    this.#facade.reorderRules(
+      moveInList(
+        this.rules().map((rule) => rule.id),
+        from,
+        to
+      )
+    );
   }
 
   async openNewRule(): Promise<void> {
-    await presentModal(this.#modalCtrl, CashRuleEditModalComponent);
+    await presentModal(
+      this.#modalCtrl,
+      CashRuleEditModalComponent,
+      this.#translate.instant(marker('cash.rule-dialog.title-new'))
+    );
   }
 
   async openEditRule(rule: ICashRule): Promise<void> {
-    await presentModal(this.#modalCtrl, CashRuleEditModalComponent, {
-      ruleId: rule.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashRuleEditModalComponent,
+      this.#translate.instant(marker('cash.rule-dialog.title-edit')),
+      { ruleId: rule.id }
+    );
   }
 
   async confirmDeleteRule(rule: ICashRule): Promise<void> {
@@ -165,12 +176,8 @@ export class CashRulesPage {
 
   applyRules(): void {
     const changes = recategorizations(this.#transactions(), this.#rules());
-    for (const change of changes) {
-      this.#facade.setTransactionCategory(
-        change.transactionId,
-        change.categoryId,
-        false
-      );
+    if (changes.length > 0) {
+      this.#facade.recategorizeTransactions(changes);
     }
     this.#facade.reportRulesApplied(changes.length);
   }

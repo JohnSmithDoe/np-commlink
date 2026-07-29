@@ -132,8 +132,8 @@ describe('trackingReducer', () => {
     ).toBe(true);
   });
 
-  it('archives started items into data and resets the list on saveAndReset', () => {
-    const state = withItems([
+  describe('saveAndReset', () => {
+    const started = withItems([
       track({
         id: 'a',
         name: 'Started',
@@ -143,30 +143,80 @@ describe('trackingReducer', () => {
       }),
       track({ id: 'b', name: 'Untouched', state: 'stopped' }),
     ]);
-    const next = trackingReducer(state, TrackingActions.saveAndResetTracking());
 
-    expect(next.sessions).toHaveLength(1);
-    expect(next.sessions[0].name).toBe('Started');
-    expect(next.sessions[0].id).not.toBe('a'); // archived with a fresh id
-    expect(
-      next.items.every((index) => !index.startTime && index.state === 'stopped')
-    ).toBe(true);
+    it('archives started items into sessions and resets the list', () => {
+      const next = trackingReducer(
+        started,
+        TrackingActions.saveAndResetTracking()
+      );
+
+      expect(next.sessions).toHaveLength(1);
+      expect(next.sessions[0].name).toBe('Started');
+      expect(
+        next.items.every(
+          (index) => !index.startTime && index.state === 'stopped'
+        )
+      ).toBe(true);
+    });
+
+    // The arm used to mint a uuid, which made the reducer's output depend on
+    // something other than (state, action).
+    it('derives the archived id from the run it archives, so it is reproducible', () => {
+      const once = trackingReducer(
+        started,
+        TrackingActions.saveAndResetTracking()
+      );
+      const again = trackingReducer(
+        started,
+        TrackingActions.saveAndResetTracking()
+      );
+
+      expect(once.sessions[0].id).toBe('a@2026-06-01T09:00:00');
+      expect(again).toEqual(once);
+    });
   });
 
-  it('changes the data view and removes archived data items', () => {
+  it('merges the demo sessions the action carries, sorted by start time', () => {
+    const next = trackingReducer(
+      {
+        ...initialState,
+        sessions: [track({ id: 'old', startTime: '2026-06-03T09:00:00' })],
+      },
+      TrackingActions.seedDemoSessions([
+        track({ id: 'later', startTime: '2026-06-02T09:00:00' }),
+        track({ id: 'earlier', startTime: '2026-06-01T09:00:00' }),
+      ])
+    );
+
+    expect(next.sessions.map((session) => session.id)).toEqual([
+      'earlier',
+      'later',
+      'old',
+    ]);
+  });
+
+  it('changes the data view', () => {
     const view = trackingReducer(
       initialState,
       TrackingActions.changeDataView('monthly')
     );
     expect(view.sessionsViewId).toBe('monthly');
+  });
 
+  // A stats row is a bucket of merged sessions, so deleting it has to take all
+  // of them — keying the delete off the row's own id deleted exactly one.
+  it('removes every session an aggregated data item lists', () => {
     const withData = {
       ...initialState,
-      sessions: [track({ id: 'd1' }), track({ id: 'd2' })],
+      sessions: [track({ id: 'd1' }), track({ id: 'd2' }), track({ id: 'd3' })],
     };
     const removed = trackingReducer(
       withData,
-      TrackingActions.removeDataItem({ id: 'd1', name: 'Task' })
+      TrackingActions.removeDataItem({
+        id: '20260601Task',
+        name: 'Task',
+        sessionIds: ['d1', 'd3'],
+      })
     );
     expect(removed.sessions.map((index) => index.id)).toEqual(['d2']);
   });
@@ -183,7 +233,6 @@ describe('trackingReducer', () => {
     const next = trackingReducer(
       initialState,
       TrackingActions.loaded({
-        title: 'Time tracking',
         items: [track({ id: 'a' })],
         sessions: [],
         sessionsViewId: 'all',
@@ -195,29 +244,14 @@ describe('trackingReducer', () => {
     expect(next.searchQuery).toBeUndefined();
   });
 
-  it('hydrates archived sessions persisted under the pre-rename `data` key', () => {
+  it('keeps the archived sessions the stored doc carries', () => {
     const next = trackingReducer(
       initialState,
       TrackingActions.loaded({
-        title: 'Time tracking',
         items: [],
-        data: [track({ id: 'archived' })],
-        dataViewId: 'all',
+        sessions: [track({ id: 'archived' })],
       } as never)
     );
     expect(next.sessions.map((session) => session.id)).toEqual(['archived']);
-  });
-
-  it('prefers the current `sessions` key when both are present', () => {
-    const next = trackingReducer(
-      initialState,
-      TrackingActions.loaded({
-        title: 'Time tracking',
-        items: [],
-        sessions: [track({ id: 'new' })],
-        data: [track({ id: 'old' })],
-      } as never)
-    );
-    expect(next.sessions.map((session) => session.id)).toEqual(['new']);
   });
 });

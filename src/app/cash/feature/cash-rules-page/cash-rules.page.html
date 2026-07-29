@@ -1,76 +1,58 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button
-        (click)="goBack()"
-        [attr.aria-label]="'cash.a11y.back' | translate"
-      >
-        <ion-icon slot="icon-only" name="arrow-back-outline" />
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ 'page-title.cash-rules' | translate }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button
-        (click)="goToCategories()"
-        [attr.aria-label]="'cash.a11y.categories' | translate"
-      >
-        <ion-icon slot="icon-only" name="pricetags-outline" />
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-cash-detail-header
+  [heading]="'page-title.cash-rules' | translate"
+  (back)="goBack()"
+>
+  <ion-buttons slot="end" toolbar>
+    <ion-button
+      (click)="goToCategories()"
+      [attr.aria-label]="'cash.a11y.categories' | translate"
+    >
+      <ion-icon slot="icon-only" name="pricetags-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-cash-detail-header>
 
 <ion-content class="ion-padding">
   <ion-list-header>{{ 'cash.section.rules' | translate }}</ion-list-header>
   @if (rules().length) {
     <ion-list lines="full">
-      @for (
-        rule of rules();
-        track rule.id;
-        let first = $first;
-        let last = $last
-      ) {
-        <ion-item-sliding>
-          <ion-item
-            [button]="true"
-            [detail]="false"
-            (click)="openEditRule(rule)"
-          >
-            <ion-buttons slot="start">
-              <ion-button
-                [disabled]="first"
-                (click)="moveRule(rule, -1); $event.stopPropagation()"
-                [attr.aria-label]="'cash.a11y.move-up' | translate"
-              >
-                <ion-icon slot="icon-only" name="arrow-up-outline" />
-              </ion-button>
-              <ion-button
-                [disabled]="last"
-                (click)="moveRule(rule, 1); $event.stopPropagation()"
-                [attr.aria-label]="'cash.a11y.move-down' | translate"
-              >
-                <ion-icon slot="icon-only" name="arrow-down-outline" />
-              </ion-button>
-            </ion-buttons>
-            <ion-label>
-              <h2>{{ rule.name || categoryName(rule.categoryId) }}</h2>
-              <p>
-                {{ categoryName(rule.categoryId) }} ·
-                {{ conditionSummaryLabel(rule) }}
-              </p>
-            </ion-label>
-          </ion-item>
-          <ion-item-options side="end">
-            <ion-item-option
-              color="danger"
-              (click)="confirmDeleteRule(rule)"
-              [attr.aria-label]="'cash.a11y.delete-rule' | translate"
+      <ion-reorder-group
+        [disabled]="false"
+        (ionReorderEnd)="reorder($any($event))"
+      >
+        @for (rule of rules(); track rule.id) {
+          <ion-item-sliding>
+            <ion-item
+              [button]="true"
+              [detail]="false"
+              (click)="openEditRule(rule)"
+              data-testid="cash-rule-row"
             >
-              <ion-icon slot="icon-only" name="trash-outline" />
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
-      }
+              <ion-reorder slot="start" />
+              <ion-label>
+                <h2>{{ rule.name || categoryName(rule.categoryId) }}</h2>
+                <p>
+                  {{ categoryName(rule.categoryId) }} ·
+                  {{ conditionSummaryLabel(rule) }}
+                </p>
+              </ion-label>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option
+                color="danger"
+                (click)="confirmDeleteRule(rule)"
+                [attr.aria-label]="'cash.a11y.delete-rule' | translate"
+              >
+                <ion-icon
+                  slot="icon-only"
+                  name="trash-outline"
+                  aria-hidden="true"
+                />
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-reorder-group>
     </ion-list>
   } @else {
     <ion-note class="cash-hint">{{ 'cash.rules.empty' | translate }}</ion-note>

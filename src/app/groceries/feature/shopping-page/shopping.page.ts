@@ -6,7 +6,8 @@ import {
   ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
 import { IShoppingItem } from '../../model/grocery-list.types';
@@ -26,7 +27,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
   templateUrl: 'shopping.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     IonButton,
     IonButtons,
     IonIcon,
@@ -46,6 +47,10 @@ export class ShoppingPage implements ViewWillEnter {
   readonly facade = inject(GroceryListPageFacade);
   readonly rxState = this.facade.shoppingState;
   readonly showScanButton = this.#scanner.isNativePlatform;
+  /** Names the start-swipe action, which here marks an item bought. A key
+   *  declared in a template attribute would be invisible to `i18n:extract
+   *  --clean`, since the `translate` pipe applying it is in the shared row. */
+  readonly cartActionLabel = marker('grocery.a11y.buy-item');
 
   constructor() {
     addIcons({ barcodeOutline });

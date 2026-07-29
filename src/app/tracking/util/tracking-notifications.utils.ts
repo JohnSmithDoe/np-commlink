@@ -1,6 +1,6 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
-import { TColor } from '../../@shared/model/app.types';
+import { TColor, TMarker } from '../../@shared/model/app.types';
 import { ITrackingItem, TTrackingCommand } from '../model/tracking.types';
 
 marker('notifications.tracking.running.title');
@@ -9,6 +9,8 @@ marker('notifications.tracking.paused.title');
 marker('notifications.tracking.paused.body');
 marker('notifications.tracking.stopped.title');
 marker('notifications.tracking.stopped.body');
+marker('notifications.action.start');
+marker('notifications.action.pause');
 
 const TRACKING_STATE_PREFIX = 'tracking-page-state:';
 
@@ -22,12 +24,15 @@ export const trackingStateNotificationId = (itemId: string) =>
 
 export type TrackingNotificationKind = 'running' | 'paused' | 'stopped';
 
+// `cta` carries the label beside the command because the port renders whatever
+// wording the producer hands it — the inbox does not recognise the commands and
+// must not have to.
 export type TrackingNotificationPreset = {
   icon: string;
   color: TColor;
   titleKey: string;
   bodyKey: string;
-  action?: TTrackingCommand;
+  cta?: { type: TTrackingCommand; labelKey: TMarker };
 };
 
 export const TRACKING_NOTIFICATION_PRESETS: Record<
@@ -39,14 +44,14 @@ export const TRACKING_NOTIFICATION_PRESETS: Record<
     color: 'success',
     titleKey: 'notifications.tracking.running.title',
     bodyKey: 'notifications.tracking.running.body',
-    action: 'tracking.pause',
+    cta: { type: 'tracking.pause', labelKey: 'notifications.action.pause' },
   },
   paused: {
     icon: 'pause-circle',
     color: 'warning',
     titleKey: 'notifications.tracking.paused.title',
     bodyKey: 'notifications.tracking.paused.body',
-    action: 'tracking.start',
+    cta: { type: 'tracking.start', labelKey: 'notifications.action.start' },
   },
   stopped: {
     icon: 'stop-circle',

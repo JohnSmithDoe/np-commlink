@@ -33,7 +33,7 @@ export class BarcodeFacade {
   reportUploadFailure(): void {
     this.#store.dispatch(
       NotificationsActions.toast({
-        key: marker('officetime.barcode.upload.error'),
+        key: marker('barcode.upload.error'),
         color: 'danger',
       })
     );

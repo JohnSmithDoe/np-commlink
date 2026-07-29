@@ -1,11 +1,10 @@
 <app-item-edit-modal
-  [item]="seedItem()"
-  [listItems]="listItems()"
+  [nameField]="form.name"
+  [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
   [dialogTitle]="dialogTitle()"
   closeButtonText="edit.item.dialog.button.close"
-  (nameChange)="updateName($event)"
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
@@ -14,7 +13,7 @@
     <ion-select
       [label]="'grocery.item.best-before' | translate"
       interface="popover"
-      [value]="draft()?.bestBeforeTimespan"
+      [value]="draft().bestBeforeTimespan"
       (ionChange)="setBestBeforeTimespan($event)"
     >
       <ion-select-option value="forever">{{
@@ -35,8 +34,8 @@
     </ion-select>
   </ion-item>
   <app-number-input
-    [disabled]="draft()?.bestBeforeTimespan === 'forever'"
-    [value]="draft()?.bestBeforeTimevalue"
+    [disabled]="draft().bestBeforeTimespan === 'forever'"
+    [value]="draft().bestBeforeTimevalue"
     (updateValue)="setBestBeforeTimevalue($event)"
   >
     <div slot="label">
@@ -51,7 +50,7 @@
   <ion-item>
     <ion-toggle
       labelPlacement="start"
-      [checked]="!!draft()?.alwaysOnHand"
+      [checked]="!!draft().alwaysOnHand"
       (ionChange)="setAlwaysOnHand($event)"
       >{{ 'grocery.product.always-on-hand' | translate }}</ion-toggle
     >
@@ -66,7 +65,7 @@
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
     [categories]="categories()"
-    [selection]="draft()?.categoryIds ?? []"
+    [selection]="draft().categoryIds ?? []"
     (confirmed)="confirmCategories($event)"
     (cancelled)="cancelCategories()"
     (dismissed)="cancelCategories()"

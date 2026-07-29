@@ -76,6 +76,32 @@ export class DatabaseService {
   // future caller that writes before boot completes would have hit that; the
   // guard is memoized, so on the warm path this costs one resolved-promise tick.
   async save<T>(key: string, value: T | null | undefined) {
+    const write = this.#write(key, value);
+    this.#pendingWrites.add(write);
+    try {
+      return await write;
+    } finally {
+      this.#pendingWrites.delete(write);
+    }
+  }
+
+  /**
+   * Resolves once every write issued so far has settled.
+   *
+   * An *observation* of the one writer, not a second one: a caller that has to
+   * know the doc is on disk before it does something irreversible (the language
+   * switch reloads the app) would otherwise have to write the key itself and
+   * race the save effect for it. Rejections are absorbed — a failed write is
+   * already handled where it was issued, and "settled" here means "no longer
+   * in flight", not "succeeded".
+   */
+  async settled(): Promise<void> {
+    await Promise.allSettled(this.#pendingWrites);
+  }
+
+  readonly #pendingWrites = new Set<Promise<unknown>>();
+
+  async #write<T>(key: string, value: T | null | undefined) {
     await this.#ensureStorage();
     return await this.#storageService.set('npc-' + key, value);
   }

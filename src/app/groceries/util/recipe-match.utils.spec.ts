@@ -45,7 +45,38 @@ describe('rankRecipesByMissing', () => {
     expect(match.missing).toEqual(['Flour']);
   });
 
-  it('matches storage by name regardless of case or padding', () => {
+  // The reason `productId` exists: the storage row was copied from the catalog,
+  // then the product was renamed. Name matching answers "missing" here, which is
+  // wrong — it is the same product, and the pantry still holds it.
+  it('still matches a storage row whose product was renamed', () => {
+    const recipe = mockRecipe({ ingredients: [needs('p-milk')] });
+    const renamed = mockProduct({ id: 'p-milk', name: 'Oat milk' });
+
+    const [match] = rankRecipesByMissing(
+      [recipe],
+      [renamed],
+      [mockStorageItem({ name: 'Milk', productId: 'p-milk' })]
+    );
+
+    expect(match.missing).toEqual([]);
+  });
+
+  // The link points at a product, not at a name that happens to collide.
+  it('does not match a linked row against a different product', () => {
+    const recipe = mockRecipe({ ingredients: [needs('p-flour')] });
+
+    const [match] = rankRecipesByMissing(
+      [recipe],
+      [flour],
+      [mockStorageItem({ name: 'Milk', productId: 'p-milk' })]
+    );
+
+    expect(match.missing).toEqual(['Flour']);
+  });
+
+  // The fallback for rows the link cannot reach: typed straight into the pantry,
+  // or persisted before `productId` existed.
+  it('matches an unlinked storage row by name, regardless of case or padding', () => {
     const recipe = mockRecipe({ ingredients: [needs('p-milk')] });
 
     const [match] = rankRecipesByMissing(

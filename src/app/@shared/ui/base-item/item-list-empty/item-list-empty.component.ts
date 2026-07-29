@@ -5,7 +5,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TextItemComponent } from '../text-item/text-item.component';
 
 @Component({
@@ -13,7 +13,7 @@ import { TextItemComponent } from '../text-item/text-item.component';
   templateUrl: 'item-list-empty.component.html',
   styleUrls: ['item-list-empty.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TextItemComponent, TranslateModule],
+  imports: [TextItemComponent, TranslatePipe],
 })
 export class ItemListEmptyComponent {
   readonly isEmptyList = input(true, { transform: booleanAttribute });

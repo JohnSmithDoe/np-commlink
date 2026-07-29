@@ -12,7 +12,7 @@ import {
   ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { DashButtonComponent } from '../../smart-ui/dash-button/dash-button.component';
 import { DashCardSkeletonComponent } from '../../ui/dash-card-skeleton/dash-card-skeleton.component';
@@ -24,6 +24,7 @@ import { DashOfficeDaysEditComponent } from '../../smart-ui/dash-office-days-edi
 import { add, businessOutline, remove, settingsSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { OfficeTimeFacade } from '../../data';
+import { DASHBOARD_CARD_VISIBILITY } from '../../model/office-time.types';
 import { DashStatsComponent } from '../../ui/dash-stats/dash-stats.component';
 import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.component';
 
@@ -35,7 +36,7 @@ import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.c
   imports: [
     PageHeaderComponent,
     IonContent,
-    TranslateModule,
+    TranslatePipe,
     DashButtonComponent,
     DashCardSkeletonComponent,
     DashDateComponent,
@@ -72,47 +73,8 @@ export class OfficeTimePage implements ViewWillEnter {
     const settings = this.dashboardSettings();
     if (!items || !settings) return [];
     return items.filter((item) => {
-      switch (item) {
-        case 'date': {
-          return settings.showDateCard;
-        }
-        case 'button': {
-          return true;
-        }
-        case 'wordclock': {
-          return settings.showWordclockCard;
-        }
-        case 'officedays-list': {
-          return settings.showOfficedaysCardList;
-        }
-        case 'officedays-edit': {
-          return settings.showOfficedaysCardEdit;
-        }
-        case 'freedays-list': {
-          return settings.showFreedaysCardList;
-        }
-        case 'freedays-edit': {
-          return settings.showFreedaysCardEdit;
-        }
-        case 'stats-year': {
-          return settings.showStatsYear;
-        }
-        case 'stats-quarter': {
-          return settings.showStatsQuarter;
-        }
-        case 'stats-month': {
-          return settings.showStatsMonth;
-        }
-        case 'stats-week': {
-          return settings.showStatsWeek;
-        }
-        case 'holidays': {
-          return settings.showHolidaysCard;
-        }
-        default: {
-          return false;
-        }
-      }
+      const flag = DASHBOARD_CARD_VISIBILITY[item];
+      return flag ? settings[flag] : true;
     });
   });
 

@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
 import { IShoppingItem, TGroceryListId } from '../../model/grocery-list.types';
+import { createShoppingItem } from '../../util/grocery.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
@@ -16,7 +17,7 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   selector: 'app-edit-shopping-item-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     CategoryInputComponent,
     CategoriesDialogComponent,
     NumberInputComponent,
@@ -26,9 +27,13 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   styleUrl: './edit-shopping-item-dialog.component.scss',
 })
 export class EditShoppingItemDialogComponent extends BaseGroceryEditItemDialog<IShoppingItem> {
+  protected blank(): IShoppingItem {
+    return createShoppingItem('');
+  }
+
   protected readonly listId: TGroceryListId = '_shopping';
   readonly categories = this.facade.shoppingCategories;
-  readonly listItems = this.facade.shoppingListItems;
+  readonly siblings = this.facade.shoppingItems;
 
   protected save(item: IShoppingItem): void {
     this.facade.saveShoppingItem(item);

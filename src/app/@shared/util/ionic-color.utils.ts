@@ -13,15 +13,16 @@ export interface IIonicColorSet {
   tint: string;
 }
 
+// One capture group and three slices rather than three capture groups: a
+// `RegExpExecArray` index is `string | undefined` however many groups the pattern
+// declares, while `String.slice` is total — so the channels are read as the
+// `string`s they are, with no guard for a case the pattern already excluded.
 function parseHex(hex: string): IRgb {
-  const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!match) throw new Error(`Not a 6-digit hex color: ${hex}`);
-  const [, r, g, b] = match;
-  return {
-    r: Number.parseInt(r, 16),
-    g: Number.parseInt(g, 16),
-    b: Number.parseInt(b, 16),
-  };
+  const digits = /^#?([a-f\d]{6})$/i.exec(hex)?.[1];
+  if (!digits) throw new Error(`Not a 6-digit hex color: ${hex}`);
+  const channelAt = (at: number): number =>
+    Number.parseInt(digits.slice(at, at + 2), 16);
+  return { r: channelAt(0), g: channelAt(2), b: channelAt(4) };
 }
 
 function toHexChannel(value: number): string {

@@ -3,6 +3,10 @@ import {
   filterAndSortItemList,
   filterBySearchQuery,
   selectListCategories,
+  selectListIdParam,
+  selectListItems,
+  selectListSearchResult,
+  selectListState,
   categoryComparator as sortCategoriesFunction,
   itemComparator as sortItemListFunction,
 } from './grocery-list.selector';
@@ -12,6 +16,8 @@ import {
   mockGroceriesState,
   mockProduct,
   mockProductsState,
+  mockShoppingItem,
+  mockShoppingState,
   mockStorageItem,
   mockStorageState,
 } from '../../testing/groceries.test-data';
@@ -78,6 +84,225 @@ describe('item-list.selector', () => {
       // Buckets are no longer pre-seeded: when the setting is off the grocery
       // selector never decorates the base result, so `products` stays undefined.
       expect(filterBySearchQuery(lists, listState)?.products).toBeUndefined();
+    });
+
+    it('decorates the products list with the storage and shopping buckets', () => {
+      const listState = mockProductsState({
+        searchQuery: 'Sug',
+        items: [mockProduct({ id: 'p', name: 'Sugarcane' })],
+      });
+      const lists = mockGroceriesState({
+        products: listState,
+        storage: mockStorageState({
+          items: [mockStorageItem({ id: 's', name: 'Sugar cubes' })],
+        }),
+        shopping: mockShoppingState({
+          items: [mockShoppingItem({ id: 'h', name: 'Sugar syrup' })],
+        }),
+        listSettings: mockListSettings({
+          showStorageInProducts: true,
+          showShoppingInProducts: true,
+        }),
+      });
+      const result = filterBySearchQuery(lists, listState);
+      expect(result?.storageItems?.map((item) => item.name)).toEqual([
+        'Sugar cubes',
+      ]);
+      expect(result?.shoppingItems?.map((item) => item.name)).toEqual([
+        'Sugar syrup',
+      ]);
+    });
+
+    it('decorates the shopping list with the products and storage buckets', () => {
+      const listState = mockShoppingState({
+        searchQuery: 'Sug',
+        items: [mockShoppingItem({ id: 'h', name: 'Sugar syrup' })],
+      });
+      const lists = mockGroceriesState({
+        shopping: listState,
+        products: mockProductsState({
+          items: [mockProduct({ id: 'p', name: 'Sugarcane' })],
+        }),
+        storage: mockStorageState({
+          items: [mockStorageItem({ id: 's', name: 'Sugar cubes' })],
+        }),
+        listSettings: mockListSettings({
+          showProductsInShopping: true,
+          showStorageInShopping: true,
+        }),
+      });
+      const result = filterBySearchQuery(lists, listState);
+      expect(result?.products?.map((item) => item.name)).toEqual(['Sugarcane']);
+      expect(result?.storageItems?.map((item) => item.name)).toEqual([
+        'Sugar cubes',
+      ]);
+    });
+
+    it('decorates the storage list with the shopping bucket', () => {
+      const listState = mockStorageState({
+        searchQuery: 'Sug',
+        items: [],
+      });
+      const lists = mockGroceriesState({
+        storage: listState,
+        shopping: mockShoppingState({
+          items: [mockShoppingItem({ id: 'h', name: 'Sugar syrup' })],
+        }),
+        listSettings: mockListSettings({ showShoppingInStorage: true }),
+      });
+      expect(
+        filterBySearchQuery(lists, listState)?.shoppingItems?.map(
+          (item) => item.name
+        )
+      ).toEqual(['Sugar syrup']);
+    });
+
+    // A suggestion is only worth showing if that name isn't already on screen —
+    // in the list itself, or in a bucket rendered above this one.
+    it('suppresses a name already in the list or in an earlier bucket', () => {
+      const listState = mockStorageState({
+        searchQuery: 'Sugar',
+        items: [mockStorageItem({ id: 's', name: 'Sugar' })],
+      });
+      const lists = mockGroceriesState({
+        storage: listState,
+        products: mockProductsState({
+          items: [
+            mockProduct({ id: 'p1', name: 'Sugar' }),
+            mockProduct({ id: 'p2', name: 'Sugar syrup' }),
+          ],
+        }),
+        shopping: mockShoppingState({
+          items: [mockShoppingItem({ id: 'h', name: 'Sugar syrup' })],
+        }),
+        listSettings: mockListSettings({
+          showProductsInStorage: true,
+          showShoppingInStorage: true,
+        }),
+      });
+      const result = filterBySearchQuery(lists, listState);
+      // 'Sugar' is already a row in the list; 'Sugar syrup' is already the
+      // products bucket, which renders above the shopping one.
+      expect(result?.products?.map((item) => item.name)).toEqual([
+        'Sugar syrup',
+      ]);
+      expect(result?.shoppingItems).toEqual([]);
+    });
+
+    it('suggests a cross-list item whose category matches the query', () => {
+      const listState = mockStorageState({ searchQuery: 'dair', items: [] });
+      const lists = mockGroceriesState({
+        storage: listState,
+        products: mockProductsState({
+          categories: [mockCategory({ id: 'c', name: 'Dairy' })],
+          items: [mockProduct({ id: 'p', name: 'Butter', categoryIds: ['c'] })],
+        }),
+        listSettings: mockListSettings({ showProductsInStorage: true }),
+      });
+      expect(
+        filterBySearchQuery(lists, listState)?.products?.map(
+          (item) => item.name
+        )
+      ).toEqual(['Butter']);
+    });
+
+    // `/data/:listId` shares the param name with a different vocabulary, so a
+    // non-grocery list reaching this selector must not be decorated.
+    it('leaves a non-grocery list undecorated', () => {
+      const listState = mockStorageState({
+        id: '_tracking' as never,
+        searchQuery: 'Sug',
+        items: [],
+      });
+      const lists = mockGroceriesState({
+        products: mockProductsState({
+          items: [mockProduct({ id: 'p', name: 'Sugar' })],
+        }),
+        listSettings: mockListSettings({ showProductsInStorage: true }),
+      });
+      expect(filterBySearchQuery(lists, listState)?.products).toBeUndefined();
+    });
+  });
+
+  describe('selectListIdParam projector', () => {
+    it('narrows a grocery list id out of the route params', () => {
+      expect(selectListIdParam.projector({ listId: '_storage' })).toBe(
+        '_storage'
+      );
+    });
+
+    // Narrowed rather than cast: this root-singleton selector keeps reading the
+    // router from any route, including ones naming a foreign list.
+    it('is undefined for a foreign or absent list id', () => {
+      expect(
+        selectListIdParam.projector({ listId: '_tracking' })
+      ).toBeUndefined();
+      expect(selectListIdParam.projector({})).toBeUndefined();
+      // @ngrx types the params as always present, but the router slice is empty
+      // until the first navigation completes — which is why the source reads it
+      // with `?.` and why the cast here is the honest shape, not a convenience.
+      expect(selectListIdParam.projector(undefined as never)).toBeUndefined();
+    });
+  });
+
+  describe('selectListState projector', () => {
+    it('resolves the list the route names', () => {
+      const products = mockProductsState({
+        items: [mockProduct({ id: 'p' })],
+      });
+      const lists = mockGroceriesState({ products });
+      expect(selectListState.projector('_products', lists)).toBe(products);
+    });
+
+    it('is undefined off a grocery route', () => {
+      expect(
+        selectListState.projector(undefined, mockGroceriesState())
+      ).toBeUndefined();
+    });
+  });
+
+  describe('selectListSearchResult projector', () => {
+    const listState = mockStorageState({
+      searchQuery: 'Milk',
+      items: [mockStorageItem({ id: 'a', name: 'Milk' })],
+    });
+
+    it('searches the active list', () => {
+      expect(
+        selectListSearchResult.projector(
+          listState,
+          mockGroceriesState({ storage: listState })
+        )?.listItems
+      ).toHaveLength(1);
+    });
+
+    // In category mode the page renders the catalog, not a hit list.
+    it('does not search in category mode or without a list', () => {
+      expect(
+        selectListSearchResult.projector(
+          { ...listState, mode: 'categories' },
+          mockGroceriesState()
+        )
+      ).toBeUndefined();
+      expect(
+        selectListSearchResult.projector(undefined, mockGroceriesState())
+      ).toBeUndefined();
+    });
+  });
+
+  describe('selectListItems projector', () => {
+    it('sorts the resolved list, and is undefined off a grocery route', () => {
+      const state = mockStorageState({
+        sort: { sortBy: 'name', sortDir: 'asc' },
+        items: [
+          mockStorageItem({ id: 'b', name: 'Bread' }),
+          mockStorageItem({ id: 'a', name: 'Apple' }),
+        ],
+      });
+      expect(
+        selectListItems.projector(state, undefined)?.map((item) => item.name)
+      ).toEqual(['Apple', 'Bread']);
+      expect(selectListItems.projector(undefined, undefined)).toBeUndefined();
     });
   });
 

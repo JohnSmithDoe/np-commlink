@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { IProduct } from '../../model/grocery-list.types';
 import { GroceryListPageFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
@@ -17,7 +17,7 @@ import { ViewWillEnter } from '@ionic/angular/standalone';
   templateUrl: 'products.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     ListPageComponent,
     ItemListQuickAddComponent,
     GrocerySearchResultComponent,

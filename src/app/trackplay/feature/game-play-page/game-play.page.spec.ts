@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import {
   mockGame,
   mockPlayer,
@@ -20,7 +20,7 @@ describe('TrackplayGamePlayPage', () => {
 
   const setup = (state = mockTrackplayState(), id = 'g1') => {
     TestBed.configureTestingModule({
-      imports: [TrackplayGamePlayPage, TranslateModule.forRoot()],
+      imports: [TrackplayGamePlayPage],
       providers: [
         provideTestingProviders({ trackplay: state }),
         {

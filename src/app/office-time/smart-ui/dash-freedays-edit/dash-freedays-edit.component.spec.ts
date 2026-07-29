@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OfficeTimeActions } from '../../data';
 import { DashFreedaysEditComponent } from './dash-freedays-edit.component';
@@ -11,8 +11,12 @@ describe('DashFreedaysEditComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DashFreedaysEditComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection(), provideMockStore()],
+      imports: [DashFreedaysEditComponent],
+      providers: [
+        provideTranslateService(),
+        provideZonelessChangeDetection(),
+        provideMockStore(),
+      ],
     });
     store = TestBed.inject(MockStore);
     component = TestBed.createComponent(

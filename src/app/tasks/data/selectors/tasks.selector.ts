@@ -16,6 +16,18 @@ export const selectTasksCategories = createSelector(
   (state): ICategory[] => state.categories
 );
 
+/**
+ * Every task the list holds, unfiltered — as opposed to
+ * {@link selectTasksListItems}, which is the PAGE's view (its search query and
+ * category filter applied). The edit dialog's duplicate-name rule needs the
+ * aggregate: a search term left in the box would otherwise shrink the sibling set
+ * and let a duplicate save.
+ */
+export const selectTaskItems = createSelector(
+  selectTasksState,
+  (state): ITaskItem[] => state?.items ?? []
+);
+
 export const selectTasksListSearchResult = createSelector(
   selectTasksState,
   (listState): ISearchResult<ITaskItem> | undefined =>

@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { ITrackingItem } from '../../model/tracking.types';
@@ -36,11 +36,17 @@ describe('DailySessionsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DailySessionsComponent, TranslateModule.forRoot()],
-      providers: [provideZonelessChangeDetection(), provideMockStore()],
+      imports: [DailySessionsComponent],
+      providers: [
+        provideTranslateService(),
+        provideZonelessChangeDetection(),
+        provideMockStore(),
+      ],
     });
     store = TestBed.inject(MockStore);
   });
+
+  afterEach(() => store.resetSelectors());
 
   it("keeps only today's sessions, sorted by start time", () => {
     const early = dayjs().hour(9).minute(0).second(0);

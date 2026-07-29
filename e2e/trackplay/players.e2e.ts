@@ -44,7 +44,11 @@ test.describe('trackplay players', () => {
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })
     ).toHaveCount(0);
-    const toast = page.locator('ion-toast');
+    // The undo toast carries its own id, so this names *our* toast rather than
+    // "whichever one is presented" — the shell mounts one of its own (the
+    // service-worker update prompt), and inline overlays sit in the DOM whether
+    // presented or not.
+    const toast = page.getByTestId('undo-toast');
     await expect(toast).toBeVisible();
     await expect(toast).toContainText('Charlie');
 

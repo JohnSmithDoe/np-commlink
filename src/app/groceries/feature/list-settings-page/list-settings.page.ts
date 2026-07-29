@@ -6,7 +6,7 @@ import {
   IonListHeader,
   IonToggle,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BooleanKeys, IListSettings } from '../../model/list-settings.types';
 import { ListSettingsFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -18,7 +18,7 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   imports: [
     PageHeaderComponent,
     IonContent,
-    TranslateModule,
+    TranslatePipe,
     IonList,
     IonItem,
     IonToggle,

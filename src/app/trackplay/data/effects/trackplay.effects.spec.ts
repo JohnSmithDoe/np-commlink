@@ -1,18 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { ToastController } from '@ionic/angular/standalone';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { firstValueFrom, Observable, of, Subject, toArray } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { mockKernelState } from '../../../@shared/testing/test-data';
 import { ITrackplayDeleted } from '../../model/trackplay.types';
-import {
-  mockGame,
-  mockGameType,
-  mockPlayer,
-  mockTrackplayState,
-} from '../../testing/trackplay.test-data';
+import { mockTrackplayState } from '../../testing/trackplay.test-data';
 import { TrackplayActions } from '../actions/trackplay.actions';
 import { TrackplayEffects } from './trackplay.effects';
 
@@ -30,10 +23,15 @@ const stashedDelete = (name: string): ITrackplayDeleted => {
   return { name, snapshot: { players, games, gameTypes, rounds } };
 };
 
+// The toast is presented from an async method, so a *negative* assertion has to
+// outlast the microtask queue the effect's tap kicks off.
+const settle = (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('TrackplayEffects', () => {
-  let actions$: Observable<Action>;
   let effects: TrackplayEffects;
   let store: MockStore;
+  let subscription: Subscription;
   let toast: {
     present: ReturnType<typeof vi.fn>;
     dismiss: ReturnType<typeof vi.fn>;
@@ -44,7 +42,14 @@ describe('TrackplayEffects', () => {
     dismiss: ReturnType<typeof vi.fn>;
   };
 
-  const setup = (lastDeleted: ITrackplayDeleted | null) => {
+  // The effect watches the slice, not the action bus, so a spec drives it the
+  // way the reducer does: by publishing what the delete stashed.
+  const stash = (lastDeleted: ITrackplayDeleted | null): void =>
+    store.setState(
+      mockKernelState({ trackplay: mockTrackplayState({ lastDeleted }) })
+    );
+
+  const setup = () => {
     toast = {
       present: vi.fn().mockResolvedValue(undefined),
       dismiss: vi.fn().mockResolvedValue(true),
@@ -57,11 +62,8 @@ describe('TrackplayEffects', () => {
     TestBed.configureTestingModule({
       providers: [
         TrackplayEffects,
-        provideMockActions(() => actions$),
         provideMockStore({
-          initialState: mockKernelState({
-            trackplay: mockTrackplayState({ lastDeleted }),
-          }),
+          initialState: mockKernelState({ trackplay: mockTrackplayState() }),
         }),
         { provide: ToastController, useValue: toastController },
         {
@@ -72,18 +74,20 @@ describe('TrackplayEffects', () => {
     });
     store = TestBed.inject(MockStore);
     effects = TestBed.inject(TrackplayEffects);
+    subscription = effects.undoDeleteToast$.subscribe();
   };
+
+  afterEach(() => subscription.unsubscribe());
 
   const presentedToast = (index = 0): TPresentedToast =>
     toastController.create.mock.calls[index][0] as TPresentedToast;
 
   it('offers undo for the entity the reducer stashed', async () => {
-    setup(stashedDelete('Alice'));
-    actions$ = of(TrackplayActions.deletePlayer(mockPlayer()));
+    setup();
 
-    await firstValueFrom(effects.undoDeleteToast$);
+    stash(stashedDelete('Alice'));
+
     await vi.waitFor(() => expect(toastController.create).toHaveBeenCalled());
-
     expect(presentedToast()).toEqual(
       expect.objectContaining({
         header: 'trackplay.toast.undo-delete',
@@ -94,11 +98,11 @@ describe('TrackplayEffects', () => {
   });
 
   it('restores the snapshot when the undo button is tapped', async () => {
-    setup(stashedDelete('Alice'));
-    actions$ = of(TrackplayActions.deletePlayer(mockPlayer()));
+    setup();
     const dispatch = vi.spyOn(store, 'dispatch');
 
-    await firstValueFrom(effects.undoDeleteToast$);
+    stash(stashedDelete('Alice'));
+
     await vi.waitFor(() => expect(toastController.create).toHaveBeenCalled());
     const undo = presentedToast().buttons.find(
       (button) => button.text === 'trackplay.toast.undo'
@@ -116,61 +120,54 @@ describe('TrackplayEffects', () => {
    * restore the older snapshot. It dismisses *its own* toast rather than every
    * presented overlay — the controller sweep tore down other domains' toasts
    * and could spin forever on one already mid-leave-animation.
-   *
-   * Driven sequentially because that is the real flow: a second delete lands
-   * after the first toast is already up.
    */
   it('dismisses its own still-open undo toast before presenting the next one', async () => {
-    const deletes = new Subject<Action>();
-    actions$ = deletes;
-    setup(stashedDelete('Skat'));
-    const subscription = effects.undoDeleteToast$.subscribe();
+    setup();
 
-    deletes.next(TrackplayActions.deleteGameType(mockGameType()));
+    stash(stashedDelete('Skat'));
     await vi.waitFor(() => expect(toast.present).toHaveBeenCalledTimes(1));
 
-    deletes.next(TrackplayActions.deleteGameType(mockGameType()));
+    stash(stashedDelete('Rommé'));
     await vi.waitFor(() => expect(toast.present).toHaveBeenCalledTimes(2));
 
+    expect(presentedToast(1).message).toBe('Rommé');
     expect(toast.dismiss).toHaveBeenCalledWith(null, 'cancel');
     expect(toastController.dismiss).not.toHaveBeenCalled();
-    subscription.unsubscribe();
   });
 
-  it('offers undo for deleted games and game types too', async () => {
-    setup(stashedDelete('Game'));
-    actions$ = of(
-      TrackplayActions.deleteGame(mockGame()),
-      TrackplayActions.deleteGameType(mockGameType())
-    );
+  // Deleting the built-in game type is refused by the reducer: the stash keeps
+  // its identity, and offering undo then meant offering to restore an unrelated
+  // earlier deletion.
+  it('stays quiet when a refused delete leaves the stash untouched', async () => {
+    setup();
+    const stashed = stashedDelete('Alice');
 
-    await firstValueFrom(effects.undoDeleteToast$.pipe(toArray()));
-    await vi.waitFor(() =>
-      expect(toastController.create).toHaveBeenCalledTimes(2)
-    );
+    stash(stashed);
+    await vi.waitFor(() => expect(toast.present).toHaveBeenCalledTimes(1));
+    stash(stashed);
+    await settle();
 
-    // Both read the stash, not the action payload — that is where the reducer
-    // put the name of what actually went away (a cascade deletes more).
-    expect(presentedToast(0).message).toBe('Game');
-    expect(presentedToast(1).message).toBe('Game');
+    expect(toast.present).toHaveBeenCalledTimes(1);
   });
 
-  it('stays silent when the reducer stashed nothing', async () => {
-    setup(null);
-    actions$ = of(TrackplayActions.deletePlayer(mockPlayer()));
+  it('stays silent while nothing is stashed', async () => {
+    setup();
 
-    await firstValueFrom(effects.undoDeleteToast$);
+    stash(null);
+    await settle();
 
     expect(toastController.create).not.toHaveBeenCalled();
   });
 
-  it('ignores non-destructive actions', async () => {
-    setup(stashedDelete('Alice'));
-    actions$ = of(TrackplayActions.createPlayer('Bob'));
+  it('offers undo again after the previous snapshot was restored', async () => {
+    setup();
 
-    expect(
-      await firstValueFrom(effects.undoDeleteToast$.pipe(toArray()))
-    ).toEqual([]);
-    expect(toastController.create).not.toHaveBeenCalled();
+    stash(stashedDelete('Alice'));
+    await vi.waitFor(() => expect(toast.present).toHaveBeenCalledTimes(1));
+    stash(null);
+    stash(stashedDelete('Bob'));
+    await vi.waitFor(() => expect(toast.present).toHaveBeenCalledTimes(2));
+
+    expect(presentedToast(1).message).toBe('Bob');
   });
 });

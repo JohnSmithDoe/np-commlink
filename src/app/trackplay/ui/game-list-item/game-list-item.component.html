@@ -17,17 +17,13 @@
       <h2>{{ game().name }}</h2>
       <p class="second-line">
         <ion-text color="medium">{{ typeName() }}</ion-text>
-        <span class="value">{{
-          game().created | date: 'dd.MM.yyyy, HH:mm' : undefined : 'de-DE'
-        }}</span>
+        <span class="value">{{ game().created | date: 'short' }}</span>
       </p>
       <p class="second-line">
         <ion-text color="medium">{{
           'trackplay.label.last-played' | translate
         }}</ion-text>
-        <span class="value">{{
-          game().updated | date: 'dd.MM.yyyy, HH:mm' : undefined : 'de-DE'
-        }}</span>
+        <span class="value">{{ game().updated | date: 'short' }}</span>
       </p>
     </ion-label>
   </ion-item>

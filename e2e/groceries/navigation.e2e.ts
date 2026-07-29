@@ -19,8 +19,8 @@ test.describe('grocery navigation', () => {
 
   test('opens the list-settings page', async ({ page }) => {
     await page.goto('/#/groceries/list-settings');
-    await expect(page.locator('ion-toggle').first()).toBeVisible({
-      timeout: 30_000,
-    });
+    await expect(
+      page.getByTestId('list-settings-flag-show-quick-add')
+    ).toBeVisible({ timeout: 30_000 });
   });
 });

@@ -14,16 +14,31 @@ import {
  * while a recipe asks for a measure ("250 ml"), and nothing converts a bottle
  * into millilitres yet. So an ingredient is either in storage or it isn't;
  * "you are 200 ml short" needs the deferred pack-size bridge.
+ *
+ * Both sides are id-based now. The recipe side always was (an ingredient
+ * references a product); the storage side became so when the copy factories
+ * started carrying `productId`, which is what makes a product rename survive.
  */
 
 /**
- * Storage rows are name-copies of catalog products — `createStorageItemFromProduct`
- * copies `product.name` and no id — so the storage side of the match can only be
- * answered by name. The recipe side stays id-based (an ingredient references a
- * product), which is what survives a product rename.
+ * What storage can answer "do I have it" with, in order of trustworthiness.
+ *
+ * A row copied from the catalog carries `productId`, so the match survives a
+ * product rename. A row typed straight into the pantry never had a product, and
+ * rows persisted before that field existed have none — for those the name is the
+ * only handle there is, so the fallback stays rather than the name half being
+ * retired outright.
  */
-const namesInStorage = (storageItems: IStorageItem[]): Set<string> =>
-  new Set(storageItems.map((item) => matchingTxt(item.name)));
+const stockedFrom = (storageItems: IStorageItem[]) => ({
+  productIds: new Set(
+    storageItems
+      .map((item) => item.productId)
+      .filter((id): id is string => id !== undefined)
+  ),
+  names: new Set(storageItems.map((item) => matchingTxt(item.name))),
+});
+
+type TStocked = ReturnType<typeof stockedFrom>;
 
 const productsById = (products: IProduct[]): Map<string, IProduct> =>
   new Map(products.map((product) => [product.id, product]));
@@ -39,17 +54,20 @@ const missingLabel = (
   product?: IProduct
 ): string => product?.name ?? ingredient.productId;
 
-const isMissing = (product: IProduct | undefined, inStorage: Set<string>) =>
-  !product || (!product.alwaysOnHand && !inStorage.has(matchingTxt(product)));
+const isStocked = (product: IProduct, stocked: TStocked) =>
+  stocked.productIds.has(product.id) || stocked.names.has(matchingTxt(product));
+
+const isMissing = (product: IProduct | undefined, stocked: TStocked) =>
+  !product || (!product.alwaysOnHand && !isStocked(product, stocked));
 
 const missingIngredients = (
   recipe: IRecipe,
   catalog: Map<string, IProduct>,
-  inStorage: Set<string>
+  stocked: TStocked
 ): string[] =>
   recipe.ingredients
     .filter((ingredient) =>
-      isMissing(catalog.get(ingredient.productId), inStorage)
+      isMissing(catalog.get(ingredient.productId), stocked)
     )
     .map((ingredient) =>
       missingLabel(ingredient, catalog.get(ingredient.productId))
@@ -65,11 +83,11 @@ export const rankRecipesByMissing = (
   storageItems: IStorageItem[]
 ): IRecipeMatch[] => {
   const catalog = productsById(products);
-  const inStorage = namesInStorage(storageItems);
+  const stocked = stockedFrom(storageItems);
   return recipes
     .map((recipe) => ({
       recipe,
-      missing: missingIngredients(recipe, catalog, inStorage),
+      missing: missingIngredients(recipe, catalog, stocked),
     }))
     .toSorted(byMissingThenName);
 };

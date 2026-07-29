@@ -1,4 +1,4 @@
-import { TMarker } from '../../@shared/model/app.types';
+import { TMarker, TTheme } from '../../@shared/model/app.types';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 export type TProgramStatus = 'online' | 'standby' | 'offline';
@@ -31,10 +31,17 @@ export type TDeckEntryId = string;
 /**
  * One navigable destination, as the deck and the side menu both see it.
  *
- * It carries no label: codenames change with the theme, so the name and
- * description are looked up as `deck.<theme>.<id>.name`/`.desc` instead. The
- * menu row keeps `titleKey` — a menu row and its page's title are the same
- * string, and only what varies by theme belongs under `deck.*`.
+ * Codenames change with the theme, so an entry carries one label pair *per*
+ * theme rather than a single name: `labels` being a `Record<TTheme, …>` is what
+ * makes a new theme a compile error at every entry instead of a raw
+ * `deck.<theme>.<id>.name` on screen. The deck grid **and** the side menu both
+ * render the resolved `nameKey`, so a row and its tile never disagree.
+ *
+ * `titleKey` is the *page's* title (`page-title.*`), which is a different string
+ * from a navigation label: it is what the toolbar and `AppTitleStrategy` show,
+ * and it does not vary by theme. Keeping them apart is also what stops the menu
+ * from listing "Einstellungen" twice — `/settings` and `/groceries/list-settings`
+ * share a page title but have distinct names.
  */
 export type IDeckEntry = {
   id: TDeckEntryId;
@@ -42,16 +49,23 @@ export type IDeckEntry = {
   icon: string;
   route: string;
   titleKey: TMarker;
+  labels: Record<TTheme, { nameKey: TMarker; descKey: TMarker }>;
   /** Menu-only entries (the deck's own home link, the grocery flags page). */
   onDeck: boolean;
   /**
    * `source` + `metric` overlay a live count from the dashboard read-model onto
-   * the tile (via `selectTelemetry(source).metrics[metric]`) — commlink stays
-   * domain-blind, reading only the CQRS read-model. Tiles with no data domain
+   * the tile (`bySource[source].metrics[metric]`) — commlink stays domain-blind,
+   * reading only the CQRS read-model. Tiles with no data domain
    * (SIGIL, SYSOP, GEIST) leave them unset and render no badge.
    */
   source?: string;
   metric?: string;
+  /**
+   * The badge's accessible name. Spelled here rather than composed from
+   * `metric`, so extraction sees it — repeated across the entries that share a
+   * metric, which is the price of keeping `metric` a bare string.
+   */
+  metricKey?: TMarker;
   /**
    * Declared status, for the tiles with no telemetry source. A `source`-backed
    * tile reports what the read-model holds for it instead.

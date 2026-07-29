@@ -95,7 +95,6 @@ export function mockStorageState(
 ): IStorageState {
   return {
     id: '_storage',
-    title: 'Storage',
     items: [],
     categories: [],
     mode: 'alphabetical',
@@ -108,7 +107,6 @@ export function mockShoppingState(
 ): IShoppingState {
   return {
     id: '_shopping',
-    title: 'Shopping Items',
     items: [],
     categories: [],
     mode: 'alphabetical',
@@ -122,7 +120,6 @@ export function mockProductsState(
 ): IProductsState {
   return {
     id: '_products',
-    title: 'Product Items',
     items: [],
     categories: [],
     mode: 'alphabetical',
@@ -160,7 +157,6 @@ export function mockRecipesState(
 ): IRecipesState {
   return {
     id: RECIPES_LIST_ID,
-    title: 'Recipes',
     items: [],
     categories: [],
     mode: 'alphabetical',

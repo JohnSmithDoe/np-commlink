@@ -7,7 +7,8 @@ import {
   IonList,
   ModalController,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 import { IGameType } from '../../model/trackplay.types';
@@ -29,7 +30,7 @@ import { presentModal } from '../../../@shared/util/present-modal';
     IonButton,
     IonIcon,
     IonLabel,
-    TranslateModule,
+    TranslatePipe,
     PageHeaderComponent,
     TrackplayGameTypeListItemComponent,
   ],
@@ -37,6 +38,7 @@ import { presentModal } from '../../../@shared/util/present-modal';
 export class TrackplayGameTypesPage {
   readonly #facade = inject(TrackplayFacade);
   readonly #modalCtrl = inject(ModalController);
+  readonly #translate = inject(TranslateService);
 
   readonly rxTypes = this.#facade.gameTypeList;
   readonly defaultTypeId = DEFAULT_GAME_TYPE_ID;
@@ -58,8 +60,11 @@ export class TrackplayGameTypesPage {
   }
 
   async #openDialog(gameTypeId?: string): Promise<void> {
-    await presentModal(this.#modalCtrl, TrackplayGameTypeEditModalComponent, {
-      gameTypeId,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayGameTypeEditModalComponent,
+      this.#translate.instant(marker('trackplay.label.game-type')),
+      { gameTypeId }
+    );
   }
 }

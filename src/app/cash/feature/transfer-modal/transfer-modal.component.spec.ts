@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { mockCashAccount, mockCashState } from '../../testing/cash.test-data';
 import { CashActions } from '../../data';
@@ -14,7 +14,7 @@ describe('CashTransferModalComponent', () => {
 
   const setup = () => {
     TestBed.configureTestingModule({
-      imports: [CashTransferModalComponent, TranslateModule.forRoot()],
+      imports: [CashTransferModalComponent],
       providers: [
         provideTestingProviders({
           cash: mockCashState({
@@ -46,7 +46,7 @@ describe('CashTransferModalComponent', () => {
     component.patch({
       fromId: 'giro',
       toId: 'savings',
-      amount: '50,00',
+      amountCents: 5000,
       description: 'Sparen',
     });
     component.confirm();
@@ -76,7 +76,7 @@ describe('CashTransferModalComponent', () => {
   it('refuses a transfer into the account it comes from', () => {
     setup();
 
-    component.patch({ fromId: 'giro', toId: 'giro', amount: '50,00' });
+    component.patch({ fromId: 'giro', toId: 'giro', amountCents: 5000 });
 
     expect(component.sameAccount()).toBe(true);
     expect(component.canSave()).toBe(false);
@@ -85,15 +85,32 @@ describe('CashTransferModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  it('refuses a zero or unparseable amount', () => {
+  // `app-money-input` reports an unparseable box itself, so what is left here is
+  // `min(path.amountCents, 1)`: a transfer of nothing is not a transfer.
+  it('refuses a zero amount', () => {
     setup();
 
-    component.patch({ fromId: 'giro', toId: 'savings', amount: '0' });
+    component.patch({ fromId: 'giro', toId: 'savings', amountCents: 0 });
     expect(component.amountInvalid()).toBe(true);
     expect(component.canSave()).toBe(false);
 
-    component.patch({ amount: 'abc' });
-    expect(component.amountInvalid()).toBe(true);
+    component.confirm();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  // Same trap as the transaction dialog: the cleared date used to reach BOTH
+  // legs as the string 'Invalid Date'.
+  it('refuses a cleared date', () => {
+    setup();
+
+    component.patch({
+      fromId: 'giro',
+      toId: 'savings',
+      amountCents: 5000,
+      date: '',
+    });
+
+    expect(component.dateInvalid()).toBe(true);
     expect(component.canSave()).toBe(false);
 
     component.confirm();
@@ -115,7 +132,7 @@ describe('CashTransferModalComponent', () => {
     component.patch({
       fromId: 'giro',
       toId: 'savings',
-      amount: '10,00',
+      amountCents: 1000,
       description: ' ',
     });
     component.confirm();
@@ -130,7 +147,7 @@ describe('CashTransferModalComponent', () => {
   it('dismisses without booking half a transfer on cancel', () => {
     setup();
 
-    component.patch({ fromId: 'giro', toId: 'savings', amount: '50,00' });
+    component.patch({ fromId: 'giro', toId: 'savings', amountCents: 5000 });
     component.cancel();
 
     expect(dispatch).not.toHaveBeenCalled();

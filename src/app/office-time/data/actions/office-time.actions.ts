@@ -13,18 +13,15 @@ export const OfficeTimeActions = createActionGroup({
     load: emptyProps(),
     loaded: (officeTime: IOfficeTimeStateStorage | null) => ({ officeTime }),
 
-    initOfficeTime: emptyProps(),
     loadHolidays: emptyProps(),
     loadHolidaysSuccess: (holidays: Record<string, Dayjs>) => ({
       holidays,
     }),
     saveOfficeTime: emptyProps(),
-    saveOfficeTimeSuccess: emptyProps(),
     saveTargetOfficeDaysPerWeek: (daysPerWeek: number) => ({
       daysPerWeek,
     }),
     addOfficeTime: (today: Dayjs) => ({ today }),
-    addOfficeday: (officeday: Dayjs) => ({ officeday }),
     setOfficedays: (officedays: Dayjs[]) => ({ officedays }),
     addFreeday: (freeday: Dayjs) => ({ freeday }),
     setFreedays: (freedays: (string | undefined | null)[]) => ({ freedays }),

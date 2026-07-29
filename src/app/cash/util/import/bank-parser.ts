@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import { TBank } from '../../model/account.types';
 
 /**
- * Per-bank CSV import (see docs/cash-plan.md P4). An account's `bank` selects one
+ * Per-bank CSV import (see docs/project-summary.md §7.3 (Import)). An account's `bank` selects one
  * of these parsers; each owns its bank's column layout and quirks. Parsers are
  * pure `text -> rows` so they are trivially spec'd against the real example
- * exports (docs/example*.csv). Turning rows into `ICashTransaction`s (ids,
+ * exports (docs/cash/example*.csv). Turning rows into `ICashTransaction`s (ids,
  * dedup, categorization) is `plan-import.ts`, kept separate so the parsers stay
  * format-only.
  */
@@ -14,7 +14,6 @@ export interface IParsedRow {
   dateISO: string;
   amountCents: number;
   description: string;
-  rawDescription: string;
 }
 
 export interface IParseResult {

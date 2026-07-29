@@ -14,9 +14,7 @@ test.describe('cash transaction category', () => {
     const list = page.locator('#main-content app-page-cash');
     await expect(list).toBeVisible({ timeout: 30_000 });
 
-    await list
-      .locator('ion-button', { has: page.locator('ion-icon[name="add"]') })
-      .click();
+    await list.getByTestId('page-header-add').click();
     const accountModal = page.locator('app-cash-account-edit-modal');
     await accountModal
       .getByRole('textbox', { name: 'Name' })
@@ -41,8 +39,10 @@ test.describe('cash transaction category', () => {
 
     // assign a category via the picker — cash pages have no other searchbar, so
     // the picker's (teleported to the app root) is the only one on the page.
-    await txnModal.locator('app-category-input ion-item').first().click();
-    const pickerSearch = page.locator('ion-searchbar input').last();
+    await txnModal.getByTestId('category-input-trigger').click();
+    const pickerSearch = page
+      .getByTestId('category-picker-search')
+      .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Kaffee');
     // single mode: tapping "create" selects + confirms + closes in one step.

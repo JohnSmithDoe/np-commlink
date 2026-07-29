@@ -8,7 +8,7 @@
   [multiple]="false"
   [isOpen]="dialogOpen()"
   [categories]="categories()"
-  [selection]="categoryId() ? [categoryId()] : []"
+  [selection]="value() ? [value()] : []"
   (confirmed)="pick($event)"
   (cancelled)="close()"
   (dismissed)="close()"

@@ -20,12 +20,10 @@ test.describe('cash persistence', () => {
     await page.goto('/#/cash');
     const list = page.locator('#main-content app-page-cash');
     await expect(list).toBeVisible({ timeout: 30_000 });
-    await expect(list.locator('.cash-empty')).toBeVisible(); // hydrated, empty
+    await expect(list.getByTestId('cash-accounts-empty')).toBeVisible(); // hydrated, empty
 
     // --- create an account (name is the only required field) ---
-    await list
-      .locator('ion-button', { has: page.locator('ion-icon[name="add"]') })
-      .click();
+    await list.getByTestId('page-header-add').click();
     const accountModal = page.locator('app-cash-account-edit-modal');
     await accountModal
       .getByRole('textbox', { name: 'Name' })

@@ -13,33 +13,27 @@ import {
   IonDatetime,
   DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
+import { LanguageService } from '../../../@shared/util/language.service';
+import { OfficeTimeFacade } from '../../data';
 import {
-  OfficeTimeFacade,
   dayjsFromString,
   dayjsToString,
   freedayHighlights,
   holidayHighlights,
-} from '../../data';
+} from '../../util/office-time.utils';
 import { DateTimeHighlight } from '../../model/office-time.types';
 
 @Component({
   selector: 'app-dash-office-days-edit',
   templateUrl: './dash-office-days-edit.component.html',
   styleUrls: ['./dash-office-days-edit.component.scss'],
-  imports: [
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
-    TranslateModule,
-    IonDatetime,
-  ],
+  imports: [IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonDatetime],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashOfficeDaysEditComponent {
   readonly #facade = inject(OfficeTimeFacade);
+  readonly locale = inject(LanguageService).locale;
   readonly title = input<string | undefined>();
   readonly officedays = input<Array<Dayjs> | undefined | null>();
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(

@@ -1,0 +1,20 @@
+/* Turns off type-checking for this directory in the editor.
+ *
+ * These rules read an untyped AST — the Angular template parser's nodes are
+ * compiler nodes decorated with `type`/`loc`/`parent`, and the parser services
+ * come off `context.sourceCode.parserServices` as `any` — so every helper here
+ * would report implicit-`any` with no type available to satisfy it. Nothing
+ * type-checks these files in any gate either: no tsconfig includes them, and
+ * `ng lint` / CI lint `src` only. Without this file the editor shows a wall of
+ * errors that no change to the code can fix.
+ */
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "target": "es2022",
+    "module": "commonjs"
+  },
+  "include": ["**/*.js"]
+}

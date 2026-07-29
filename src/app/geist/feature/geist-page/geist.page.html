@@ -18,17 +18,26 @@
         <i
           class="sr-led"
           [class.sr-led--on]="state === 'jacked-in'"
-          [class.sr-led--standby]="state === 'dormant' || state === 'priming'"
+          [class.sr-led--standby]="
+            state === 'dormant' || state === 'priming' || state === 'reforging'
+          "
           [class.sr-led--off]="state === 'unsupported' || state === 'flatlined'"
         ></i>
-        LINK
+        {{ 'geist.hud.link' | translate }}
         <b>{{ linkLabel() | translate }}</b>
       </span>
-      <span class="gs-bar__seg"> NODE <b>LOCAL</b> </span>
-      <span class="gs-bar__seg"> TRACE <b>NONE</b> </span>
+      <span class="gs-bar__seg">
+        {{ 'geist.hud.node' | translate }}
+        <b>{{ 'geist.hud.node-value' | translate }}</b>
+      </span>
+      <span class="gs-bar__seg">
+        {{ 'geist.hud.trace' | translate }}
+        <b>{{ 'geist.hud.trace-value' | translate }}</b>
+      </span>
       @if (state === 'jacked-in') {
         <span class="gs-bar__seg gs-bar__seg--ctx">
-          CTX <b>{{ contextPercent() }}%</b>
+          {{ 'geist.hud.context' | translate }}
+          <b>{{ contextPercent() }}%</b>
         </span>
       }
     </div>
@@ -36,8 +45,14 @@
     @switch (state) {
       @case ('unsupported') {
         <div class="gs-panel sr-panel sr-corners">
-          <ion-icon name="sparkles-outline" class="gs-panel__icon" />
-          <h1 class="gs-panel__title">NO RESONANCE</h1>
+          <ion-icon
+            name="sparkles-outline"
+            class="gs-panel__icon"
+            aria-hidden="true"
+          />
+          <h1 class="gs-panel__title">
+            {{ 'geist.unsupported.title' | translate }}
+          </h1>
           <p class="gs-panel__lead">
             {{ 'geist.unsupported.body' | translate }}
           </p>
@@ -52,11 +67,17 @@
 
       @case ('flatlined') {
         <div class="gs-panel sr-panel sr-corners">
-          <ion-icon name="sparkles-outline" class="gs-panel__icon" />
-          <h1 class="gs-panel__title">FLATLINE</h1>
+          <ion-icon
+            name="sparkles-outline"
+            class="gs-panel__icon"
+            aria-hidden="true"
+          />
+          <h1 class="gs-panel__title">
+            {{ 'geist.flatlined.title' | translate }}
+          </h1>
           <p class="gs-panel__lead">{{ 'geist.flatlined.body' | translate }}</p>
           <button class="gs-btn" type="button" (click)="prime()">
-            <ion-icon name="cloud-download-outline" />
+            <ion-icon name="cloud-download-outline" aria-hidden="true" />
             {{ 'geist.action.retry' | translate }}
           </button>
         </div>
@@ -64,11 +85,17 @@
 
       @case ('dormant') {
         <div class="gs-panel sr-panel sr-corners">
-          <ion-icon name="cloud-download-outline" class="gs-panel__icon" />
-          <h1 class="gs-panel__title">COLD START</h1>
+          <ion-icon
+            name="cloud-download-outline"
+            class="gs-panel__icon"
+            aria-hidden="true"
+          />
+          <h1 class="gs-panel__title">
+            {{ 'geist.dormant.title' | translate }}
+          </h1>
           <p class="gs-panel__lead">{{ 'geist.dormant.body' | translate }}</p>
           <button class="gs-btn" type="button" (click)="prime()">
-            <ion-icon name="cloud-download-outline" />
+            <ion-icon name="cloud-download-outline" aria-hidden="true" />
             {{ 'geist.action.prime' | translate }}
           </button>
         </div>
@@ -76,8 +103,14 @@
 
       @case ('priming') {
         <div class="gs-panel sr-panel sr-corners">
-          <ion-icon name="cloud-download-outline" class="gs-panel__icon" />
-          <h1 class="gs-panel__title">LOADING WETWARE</h1>
+          <ion-icon
+            name="cloud-download-outline"
+            class="gs-panel__icon"
+            aria-hidden="true"
+          />
+          <h1 class="gs-panel__title">
+            {{ 'geist.priming.title' | translate }}
+          </h1>
           <p class="gs-panel__lead">
             {{ 'geist.priming.body' | translate: { percent: primedPercent() } }}
           </p>
@@ -93,7 +126,8 @@
       @case ('probing') {
         <div class="gs-panel sr-panel sr-corners">
           <p class="gs-panel__lead">
-            // probing local node<span class="gs-dots"></span>
+            // {{ 'geist.probing.body' | translate
+            }}<span class="gs-dots"></span>
           </p>
         </div>
       }
@@ -118,6 +152,7 @@
         </div>
 
         <div
+          #transcript
           class="gs-console sr-panel sr-corners"
           role="log"
           aria-live="polite"
@@ -146,6 +181,7 @@
         <div class="gs-input">
           <ion-textarea
             class="gs-input__field"
+            [attr.aria-label]="'geist.placeholder' | translate"
             fill="outline"
             autoGrow="true"
             rows="1"
@@ -160,7 +196,7 @@
                 type="button"
                 (click)="abort()"
               >
-                <ion-icon name="stop-circle-outline" />
+                <ion-icon name="stop-circle-outline" aria-hidden="true" />
                 {{ 'geist.action.abort' | translate }}
               </button>
             } @else {
@@ -170,7 +206,7 @@
                 [disabled]="!canSend()"
                 (click)="send()"
               >
-                <ion-icon name="send-outline" />
+                <ion-icon name="send-outline" aria-hidden="true" />
                 {{ 'geist.action.send' | translate }}
               </button>
             }
@@ -180,17 +216,21 @@
               [disabled]="turns().length === 0"
               (click)="purge()"
             >
-              <ion-icon name="trash-outline" />
+              <ion-icon name="trash-outline" aria-hidden="true" />
               {{ 'geist.action.purge' | translate }}
             </button>
           </div>
         </div>
 
         <footer class="gs-tele">
-          <span>◈ MODEL <b>GEMINI NANO</b></span>
-          <span>◈ EGRESS <b>NONE</b></span>
+          <span>◈ {{ 'geist.hud.model' | translate }} <b>Gemini Nano</b></span>
           <span
-            >◈ REGISTER <b>{{ persona().codename }}</b></span
+            >◈ {{ 'geist.hud.egress' | translate }}
+            <b>{{ 'geist.hud.egress-value' | translate }}</b></span
+          >
+          <span
+            >◈ {{ 'geist.hud.register' | translate }}
+            <b>{{ persona().codename }}</b></span
           >
         </footer>
       }

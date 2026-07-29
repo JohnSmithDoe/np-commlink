@@ -1,38 +1,31 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
+<app-cash-detail-header [heading]="account()?.name ?? ''" (back)="goBack()">
+  <ion-buttons slot="end" toolbar>
+    @if (canImport()) {
       <ion-button
-        (click)="goBack()"
-        [attr.aria-label]="'cash.a11y.back' | translate"
+        (click)="csv.click()"
+        [attr.aria-label]="'cash.a11y.import-csv' | translate"
       >
-        <ion-icon slot="icon-only" name="arrow-back-outline" />
+        <ion-icon
+          slot="icon-only"
+          name="cloud-upload-outline"
+          aria-hidden="true"
+        />
       </ion-button>
-    </ion-buttons>
-    <ion-title>{{ account()?.name }}</ion-title>
-    <ion-buttons slot="end">
-      @if (canImport()) {
-        <ion-button
-          (click)="csv.click()"
-          [attr.aria-label]="'cash.a11y.import-csv' | translate"
-        >
-          <ion-icon slot="icon-only" name="cloud-upload-outline" />
-        </ion-button>
-      }
-      <ion-button
-        (click)="editAccount()"
-        [attr.aria-label]="'cash.a11y.edit-account' | translate"
-      >
-        <ion-icon slot="icon-only" name="create-outline" />
-      </ion-button>
-      <ion-button
-        (click)="addTransaction()"
-        [attr.aria-label]="'cash.a11y.add-transaction' | translate"
-      >
-        <ion-icon slot="icon-only" name="add-outline" />
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+    }
+    <ion-button
+      (click)="editAccount()"
+      [attr.aria-label]="'cash.a11y.edit-account' | translate"
+    >
+      <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
+    </ion-button>
+    <ion-button
+      (click)="addTransaction()"
+      [attr.aria-label]="'cash.a11y.add-transaction' | translate"
+    >
+      <ion-icon slot="icon-only" name="add-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-cash-detail-header>
 
 <input
   #csv
@@ -86,7 +79,11 @@
                   (click)="reconcile(txn)"
                   [attr.aria-label]="'cash.a11y.reconcile' | translate"
                 >
-                  <ion-icon slot="icon-only" name="swap-horizontal-outline" />
+                  <ion-icon
+                    slot="icon-only"
+                    name="swap-horizontal-outline"
+                    aria-hidden="true"
+                  />
                 </ion-item-option>
               </ion-item-options>
             } @else if (txn.reconciledManualId) {
@@ -95,7 +92,11 @@
                   (click)="detachReconcile(txn)"
                   [attr.aria-label]="'cash.a11y.detach' | translate"
                 >
-                  <ion-icon slot="icon-only" name="unlink-outline" />
+                  <ion-icon
+                    slot="icon-only"
+                    name="unlink-outline"
+                    aria-hidden="true"
+                  />
                 </ion-item-option>
               </ion-item-options>
             }
@@ -105,7 +106,11 @@
                 (click)="confirmDelete(txn)"
                 [attr.aria-label]="'cash.a11y.delete-transaction' | translate"
               >
-                <ion-icon slot="icon-only" name="trash-outline" />
+                <ion-icon
+                  slot="icon-only"
+                  name="trash-outline"
+                  aria-hidden="true"
+                />
               </ion-item-option>
             </ion-item-options>
           </ion-item-sliding>

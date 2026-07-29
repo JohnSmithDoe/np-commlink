@@ -55,20 +55,20 @@ describe('TasksListPageFacade', () => {
     );
   });
 
-  it('adds an item from the search term in list mode', () => {
-    setup({ mode: 'alphabetical', searchQuery: 'Call mum' });
+  // Unconditionally an item, in every mode — `ListPageComponent` is what decides
+  // whether its add affordance means "item" or "category".
+  it('adds an item from the search term', () => {
+    setup({ mode: 'categories', searchQuery: 'Call mum' });
 
     facade.addItemFromSearch();
 
     expect(dispatch).toHaveBeenCalledWith(TasksActions.addItemFromSearch());
   });
 
-  // The categories-mode branch: the same affordance mints a category instead of
-  // an item (mirrors what the grocery orchestrator resolved for `_tasks`).
-  it('adds a category from the search term in categories mode', () => {
+  it('mints a category from the search term on the category command', () => {
     setup({ mode: 'categories', searchQuery: 'Errands' });
 
-    facade.addItemFromSearch();
+    facade.addCategoryFromSearch();
 
     expect(dispatch).toHaveBeenCalledWith(
       TasksActions.addCategory({
@@ -76,7 +76,6 @@ describe('TasksListPageFacade', () => {
         name: 'Errands',
       })
     );
-    expect(dispatch).not.toHaveBeenCalledWith(TasksActions.addItemFromSearch());
   });
 
   it('mints an id for a category confirmed by the name dialog', () => {

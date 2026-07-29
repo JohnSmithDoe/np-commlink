@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IonButton, IonNote, ViewWillEnter } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import dayjs from 'dayjs';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
 import { TColor } from '../../../@shared/model/app.types';
 import { TItemListSortType } from '../../../@shared/model/item-list.types';
 import { ITaskItem } from '../../model/task.types';
+import { dueStatusColor } from '../../util/task.utils';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
@@ -20,7 +20,7 @@ import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-
   templateUrl: 'tasks.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     DatePipe,
     IonButton,
     IonNote,
@@ -56,20 +56,7 @@ export class TasksPage implements ViewWillEnter {
     this.#facade.setSortMode(type);
   }
 
-  getItemStatusColor(item: ITaskItem): TColor {
-    if (!item.dueAt) {
-      return 'success';
-    }
-
-    const dueAt = dayjs(item.dueAt);
-    if (dueAt.isBefore()) {
-      return 'danger';
-    }
-
-    if (dueAt.isBefore(dayjs().add(3, 'days'))) {
-      return 'warning';
-    }
-
-    return 'success';
+  statusColor(item: ITaskItem): TColor {
+    return dueStatusColor(item);
   }
 }

@@ -17,7 +17,7 @@ import {
   IonToolbar,
   InputCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 
@@ -41,7 +41,7 @@ import { closeCircle } from 'ionicons/icons';
     IonList,
     IonItem,
     IonInput,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './category-name-dialog.component.html',
 })

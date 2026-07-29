@@ -3,16 +3,17 @@ import { Store } from '@ngrx/store';
 import {
   selectDashboardState,
   selectNotificationsUnread,
-  selectTelemetry,
 } from './selectors/dashboard.selector';
 
 /**
- * Read facade over the eager `dashboard` read-model (the CQRS query side).
- * Consumers (the app shell's notification badge, the commlink deck) read the
- * read-model through this service instead of injecting `Store` directly, so the
- * NgRx surface stays sealed inside the data layer. The shell reads the unread
- * count from here rather than the lazy `notifications` slice, so it never
- * depends on a lazy domain.
+ * Read facade over the `dashboard` read-model (the CQRS query side). Its two
+ * consumers — the app shell's notification badge and the commlink deck — read it
+ * through here instead of injecting `Store`, so the NgRx surface stays sealed
+ * inside the data layer.
+ *
+ * The badge deliberately reads its count from this read-model rather than from
+ * the notifications slice: the shell would otherwise name another domain's store
+ * key, and the persisted summary is what gives a cold launch its number.
  */
 @Injectable({ providedIn: 'root' })
 export class DashboardFacade {
@@ -22,11 +23,8 @@ export class DashboardFacade {
     selectNotificationsUnread
   );
 
-  // The whole read-model, for the commlink deck's per-tile badges.
+  // The whole read-model. One read path for the deck: it maps `source` → status,
+  // badge and status-strip readouts over an arbitrary set of tiles, so a
+  // per-source signal factory would just be this map, re-derived per caller.
   readonly dashboardState = this.#store.selectSignal(selectDashboardState);
-
-  // Per-source telemetry entry (called once from a component field initializer).
-  telemetry(source: string) {
-    return this.#store.selectSignal(selectTelemetry(source));
-  }
 }

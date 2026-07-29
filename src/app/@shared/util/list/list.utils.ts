@@ -17,8 +17,7 @@ import {
 // Domain-blind reducer helpers shared by every list domain (tracking, grocery,
 // tasks). They operate over the generic `IListState<T>` shape and never read a
 // concrete list identity — hence they live in the shared kernel, not in the
-// grocery engine. (Grocery-specific helpers stay in grocery-list.utils.ts and
-// re-export these for backwards compatibility.)
+// grocery engine.
 //
 // Categories are first-class {id,name} objects owned by the list's `categories`
 // catalog; items reference them by id (`categoryIds`). The catalog is
@@ -65,18 +64,15 @@ export const updateListItem = <T extends IListState<R>, R extends IBaseItem>(
 ): T => {
   if (!item) return state;
   const itemIndex = matchesItemExactlyIndex(item, state.items);
-  if (itemIndex < 0) return state;
+  const matched = state.items[itemIndex];
+  if (!matched) return state;
   const items: TUpdateDTO<R>[] = [...state.items];
   // The matched row keeps its OWN id. `matchesItemExactly` falls back from id to
   // name — right for add-dedupe, but here it means a stale DTO (dialog still open
   // over a row that was deleted or re-hydrated under a new id) can land on a
   // same-named row, and spreading the DTO's `id` would rewrite that row's
   // identity out from under everything holding it.
-  items[itemIndex] = {
-    ...state.items[itemIndex],
-    ...item,
-    id: state.items[itemIndex].id,
-  };
+  items[itemIndex] = { ...matched, ...item, id: matched.id };
   return { ...state, items };
 };
 

@@ -1,10 +1,10 @@
 import { TCategoryId } from '../../@shared/model/category.types';
 
 // Email-style categorization filter. A rule fires when its conditions match
-// (`all` = AND, `any` = OR), assigning `category`. Rules are ordered and the
+// (`all` = AND, `any` = OR), assigning `categoryId`. Rules are ordered and the
 // first matching rule wins. Ops are split by field: string ops apply to
 // `description`, numeric ops to `amount` (matched against signed cents — see
-// cash/util/categorize.ts and docs/cash-plan.md).
+// cash/util/categorize.utils.ts and docs/project-summary.md §7.3).
 export type TFilterField = 'description' | 'amount';
 export type TDescriptionOp =
   'contains' | 'startsWith' | 'endsWith' | 'equals' | 'regex';

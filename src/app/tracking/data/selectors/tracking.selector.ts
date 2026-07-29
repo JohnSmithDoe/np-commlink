@@ -1,4 +1,9 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createSelector,
+  createSelectorFactory,
+  resultMemoize,
+} from '@ngrx/store';
 import {
   IDataItem,
   ITrackingItem,
@@ -14,6 +19,18 @@ import { ISearchResult } from '../../../@shared/model/item-list.types';
 
 export const selectTrackingState =
   createFeatureSelector<ITrackingState>('tracking');
+
+// A started item is already a session — it is just not archived yet.
+const liveSessions = (state: ITrackingState): ITrackingItem[] =>
+  (state?.items ?? []).filter((item) => !!item.startTime);
+
+// The archive is what every session-derived view is really keyed on, and it is
+// untouched by the 1 Hz `updateTracking` tick — so reading it (instead of the
+// whole slice) is what keeps those views off the tick.
+const selectArchivedSessions = createSelector(
+  selectTrackingState,
+  (state: ITrackingState): ITrackingItem[] => state?.sessions ?? []
+);
 
 const getKey = (trackingItem: ITrackingItem, listId: string) => {
   switch (listId) {
@@ -32,39 +49,54 @@ const getKey = (trackingItem: ITrackingItem, listId: string) => {
     }
   }
 };
-const groupBy = (data: ITrackingItem[], listId: string) => {
-  const items =
+const bucketKeyFor = (trackingItem: ITrackingItem, listId: string): string =>
+  `${getKey(trackingItem, listId)}${trackingItem.name}`;
+
+const mergedInto = (
+  row: IDataItem | undefined,
+  session: ITrackingItem,
+  bucketKey: string
+): IDataItem => ({
+  ...session,
+  id: bucketKey,
+  trackedTimeInSeconds:
+    (row?.trackedTimeInSeconds ?? 0) + (session.trackedTimeInSeconds ?? 0),
+  sessionIds: [...(row?.sessionIds ?? []), session.id],
+});
+
+const groupBy = (data: ITrackingItem[], listId: string): IDataItem[] => {
+  const sessions =
     listId === 'today'
       ? data.filter((item) => dayjs(item.startTime).isSame(dayjs(), 'day'))
       : data;
-  const map: Record<string, IDataItem> = {};
-  for (const trackingItem of items) {
-    let key = getKey(trackingItem, listId);
-    key += trackingItem.name;
-    const current = map[key]?.trackedTimeInSeconds ?? 0;
-    map[key] = {
-      ...trackingItem,
-      trackedTimeInSeconds: current + (trackingItem.trackedTimeInSeconds ?? 0),
-    };
+  const rows: Record<string, IDataItem> = {};
+  for (const session of sessions) {
+    const bucketKey = bucketKeyFor(session, listId);
+    rows[bucketKey] = mergedInto(rows[bucketKey], session, bucketKey);
   }
 
-  return Object.values(map);
+  return Object.values(rows);
 };
 
 export const selectTrackingDataViewId = createSelector(
   selectTrackingState,
-  (state: ITrackingState) => {
-    let listId = state?.sessionsViewId;
-    return listId ?? 'today';
-  }
+  (state: ITrackingState): string => state?.sessionsViewId ?? 'today'
 );
 export const selectTrackingData = createSelector(
-  selectTrackingState,
+  selectArchivedSessions,
   selectTrackingDataViewId,
-  (state: ITrackingState, listId): IDataItem[] => {
-    let data = state?.sessions ?? [];
-    return groupBy(data, listId);
-  }
+  (sessions, listId): IDataItem[] => groupBy(sessions, listId)
+);
+
+/**
+ * Every tracked item, unfiltered — as opposed to {@link selectTrackingListItems},
+ * which is the PAGE's view (its search query and category filter applied). The
+ * edit dialog's duplicate-name rule needs the aggregate: a search term left in
+ * the box would otherwise shrink the sibling set and let a duplicate save.
+ */
+export const selectTrackingItems = createSelector(
+  selectTrackingState,
+  (state: ITrackingState): ITrackingItem[] => state?.items ?? []
 );
 
 export const selectTrackingListSearchResult = createSelector(
@@ -87,11 +119,41 @@ export const selectRunningTrackingItem = createSelector(
 
 export const selectAllTrackingSessions = createSelector(
   selectTrackingState,
-  (state: ITrackingState): ITrackingItem[] => {
-    const live = (state?.items ?? []).filter((item) => !!item.startTime);
-    const archived = state?.sessions ?? [];
-    return [...live, ...archived];
-  }
+  (state: ITrackingState): ITrackingItem[] => [
+    ...liveSessions(state),
+    ...(state?.sessions ?? []),
+  ]
+);
+
+// The chart renders whole days in hours, so a live row only needs minute
+// resolution — and that is what keeps the 1 Hz `updateTracking` tick out of the
+// 21-day aggregation below: the result keeps its identity until a live minute
+// genuinely rolls over, so the series is rebuilt once a minute, not once a
+// second (`selectAllTrackingSessions` stays at second resolution for the
+// daily-sessions panel, which shows a running clock).
+const toMinuteResolution = (session: ITrackingItem): ITrackingItem => ({
+  ...session,
+  trackedTimeInSeconds:
+    Math.floor((session.trackedTimeInSeconds ?? 0) / 60) * 60,
+});
+
+const sameChartSessions = (a: ITrackingItem[], b: ITrackingItem[]): boolean =>
+  a.length === b.length &&
+  a.every((session, index) => {
+    const other = b[index];
+    return (
+      other !== undefined &&
+      session.id === other.id &&
+      session.name === other.name &&
+      session.startTime === other.startTime &&
+      session.trackedTimeInSeconds === other.trackedTimeInSeconds
+    );
+  });
+
+const selectLiveChartSessions = createSelectorFactory<object, ITrackingItem[]>(
+  (projector) => resultMemoize(projector, sameChartSessions)
+)(selectTrackingState, (state: ITrackingState): ITrackingItem[] =>
+  liveSessions(state).map((session) => toMinuteResolution(session))
 );
 
 export type DailySeries = {
@@ -104,8 +166,10 @@ const CHART_TOP_N = 6;
 const OTHER_LABEL = 'Other';
 
 export const selectSessionsByDayAndName = createSelector(
-  selectAllTrackingSessions,
-  (sessions): DailySeries => {
+  selectArchivedSessions,
+  selectLiveChartSessions,
+  (archived, live): DailySeries => {
+    const sessions = [...live, ...archived];
     const today = dayjs().startOf('day');
     const windowStart = today.subtract(CHART_WINDOW_DAYS - 1, 'day');
 
@@ -157,7 +221,8 @@ export const selectSessionsByDayAndName = createSelector(
       const bucket = topSet.has(s.name) ? s.name : OTHER_LABEL;
       const array = seriesMap.get(bucket);
       if (!array) continue;
-      array[dayIndex] += (s.trackedTimeInSeconds ?? 0) / 3600;
+      array[dayIndex] =
+        (array[dayIndex] ?? 0) + (s.trackedTimeInSeconds ?? 0) / 3600;
     }
 
     return {

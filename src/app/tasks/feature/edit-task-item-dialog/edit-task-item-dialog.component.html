@@ -1,25 +1,24 @@
 <app-item-edit-modal
-  [item]="seedItem()"
-  [listItems]="listItems()"
+  [nameField]="form.name"
+  [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
   [dialogTitle]="dialogTitle()"
   closeButtonText="edit.item.dialog.button.close"
-  (nameChange)="updateName($event)"
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
 >
   <app-number-input
     [label]="'tasks.item.prio' | translate"
-    [value]="draft()?.prio"
+    [value]="draft().prio"
     (updateValue)="updatePrio($event)"
   ></app-number-input>
 
   <app-date-input
     [label]="'edit.item.dialog.dueAt' | translate"
-    [value]="draft()?.dueAt"
-    (updateValue)="updateDueAt($event)"
+    [value]="draft().dueAt ?? null"
+    (valueChange)="updateDueAt($event)"
   ></app-date-input>
 
   <app-category-input
@@ -31,7 +30,7 @@
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
     [categories]="categories()"
-    [selection]="draft()?.categoryIds ?? []"
+    [selection]="draft().categoryIds ?? []"
     (confirmed)="confirmCategories($event)"
     (cancelled)="cancelCategories()"
     (dismissed)="cancelCategories()"

@@ -28,19 +28,19 @@ import {
   selectListItems,
   selectListSearchResult,
   selectListState,
-  selectListStateFilter,
 } from './selectors/grocery-list.selector';
 import {
   selectShoppingCategories,
+  selectShoppingItems,
   selectShoppingListHasBoughtItems,
   selectShoppingState,
 } from './selectors/shopping.selector';
 import {
   selectStorageCategories,
-  selectStorageListItems,
+  selectStorageItems,
 } from './selectors/storage.selector';
 import {
-  selectProductListItems,
+  selectProductItems,
   selectProductsCategories,
 } from './selectors/products.selector';
 import {
@@ -70,7 +70,6 @@ export class GroceryListPageFacade implements IListPageFacade {
   readonly #listId = this.#store.selectSignal(selectListIdParam);
 
   readonly state = this.#store.selectSignal(selectListState);
-  readonly filterState = this.#store.selectSignal(selectListStateFilter);
   readonly items = this.#store.selectSignal(selectListItems);
   readonly searchResult = this.#store.selectSignal(selectListSearchResult);
   readonly categories = this.#store.selectSignal(selectListCategories);
@@ -93,7 +92,7 @@ export class GroceryListPageFacade implements IListPageFacade {
   );
 
   // Edit-dialog reads (the shopping/storage/product edit-dialog wrappers): the
-  // per-list category catalog and the list items. The open item itself comes off
+  // per-list category catalog and the list's items. The open item itself comes off
   // the ItemDialogService command, which the shared base reads directly.
   readonly shoppingCategories = this.#store.selectSignal(
     selectShoppingCategories
@@ -104,11 +103,12 @@ export class GroceryListPageFacade implements IListPageFacade {
   readonly productsCategories = this.#store.selectSignal(
     selectProductsCategories
   );
-  readonly storageListItems = this.#store.selectSignal(selectStorageListItems);
-  readonly productListItems = this.#store.selectSignal(selectProductListItems);
-  readonly shoppingListItems = computed(
-    () => this.shoppingState()?.items ?? null
-  );
+  // The whole aggregate per list, NOT `items` (the route-keyed page view): the
+  // dialogs' duplicate-name rule has to see every sibling, including the ones a
+  // search term or category filter is currently hiding.
+  readonly storageItems = this.#store.selectSignal(selectStorageItems);
+  readonly productItems = this.#store.selectSignal(selectProductItems);
+  readonly shoppingItems = this.#store.selectSignal(selectShoppingItems);
 
   readonly #activeListId = computed<TGroceryListId>(
     () => this.#listId() ?? '_shopping'

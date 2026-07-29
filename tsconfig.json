@@ -11,6 +11,17 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    // The one gate this repo lacked: nine dead imports had accumulated silently,
+    // because eslint configures no `no-unused-vars` either. A dead import is
+    // load-bearing information — it is how a deleted describe block or a retired
+    // helper announces itself.
+    "noUnusedLocals": true,
+    // An index read is a guess about length, not a fact the type system had.
+    // The code was already written defensively for this (`cols[DATE] ?? ''`,
+    // `ladder[from - 1]` behind an `if`), so the flag makes an existing
+    // discipline structural rather than habitual — a missed guard is now a
+    // compile error instead of an `undefined` that reaches a reducer.
+    "noUncheckedIndexedAccess": true,
     "sourceMap": true,
     "declaration": false,
     "skipLibCheck": true,

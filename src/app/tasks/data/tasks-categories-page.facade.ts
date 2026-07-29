@@ -23,7 +23,7 @@ export class TasksCategoriesPageFacade implements ICategoriesPageFacade {
 
   readonly categories = computed(() => listCategoriesWithCount(this.#state()));
   readonly listTitleKey = signal('page-title.tasks');
-  readonly listHref = signal('/tasks/_tasks');
+  readonly listHref = signal('/tasks/list');
 
   add(name: string): void {
     this.#store.dispatch(TasksActions.addCategory({ id: uuidv4(), name }));
@@ -37,8 +37,10 @@ export class TasksCategoriesPageFacade implements ICategoriesPageFacade {
     this.#store.dispatch(TasksActions.removeCategory(id));
   }
 
+  // Drilling has to land on the same list the back link points at, so both read
+  // the one href.
   drillTo(id: TCategoryId): void {
-    void this.#router.navigate(['/tasks/_tasks'], {
+    void this.#router.navigate([this.listHref()], {
       queryParams: { filter: id },
     });
   }

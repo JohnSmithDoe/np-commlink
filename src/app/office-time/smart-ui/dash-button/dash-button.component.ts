@@ -12,7 +12,7 @@ import {
   IonCardTitle,
   IonIcon,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { beer, business } from 'ionicons/icons';
 import { OfficeTimeFacade } from '../../data';
@@ -27,7 +27,7 @@ import { OfficeTimeFacade } from '../../data';
     IonCardHeader,
     IonCardTitle,
     IonIcon,
-    TranslateModule,
+    TranslatePipe,
     IonButton,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

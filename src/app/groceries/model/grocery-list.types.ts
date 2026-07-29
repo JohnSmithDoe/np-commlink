@@ -34,35 +34,51 @@ export interface IProduct extends IBaseItem {
   alwaysOnHand?: boolean;
 }
 
-export interface IShoppingItem extends IBaseItem {
-  quantity: number;
-  state: 'bought' | 'active';
-}
-
-export type IStorageItem = IBaseItem & {
-  quantity: number;
-  minAmount?: number;
-  bestBefore?: TTimestamp;
+/**
+ * The catalog reference a row copied from a product carries.
+ *
+ * Optional because it can be absent two honest ways — a row typed straight into
+ * the list was never a product, and rows persisted before this field existed
+ * have none — which is what keeps it migration-free. A reader must therefore
+ * treat it as a *better* answer than the name, not the only one: the recipe
+ * matcher tries the id first and falls back to the name (`recipe-match.utils`).
+ *
+ * Why it exists at all: the copy factories used to take `product.name` and drop
+ * the id, so renaming a product silently broke "do I have it" until the storage
+ * row was renamed to match.
+ */
+export type TProductLinked = {
+  productId?: string;
 };
 
-// Concrete grocery lists narrow `id`/`title` and re-require categories/mode
-// (optional on the shared IItemList base) so grocery selectors can read them
-// without null guards.
+export type IShoppingItem = IBaseItem &
+  TProductLinked & {
+    quantity: number;
+    state: 'bought' | 'active';
+  };
+
+export type IStorageItem = IBaseItem &
+  TProductLinked & {
+    quantity: number;
+    minAmount?: number;
+    bestBefore?: TTimestamp;
+  };
+
+// Concrete grocery lists narrow `id` and re-require categories/mode (optional on
+// the shared IItemList base) so grocery selectors can read them without null
+// guards.
 export type TStorageList = IItemList<IStorageItem> & {
   id: '_storage';
-  title: 'Storage';
   categories: ICategory[];
   mode: TItemListMode;
 };
 export type TProductsList = IItemList<IProduct> & {
   id: '_products';
-  title: 'Product Items';
   categories: ICategory[];
   mode: TItemListMode;
 };
 export type TShoppingList = IItemList<IShoppingItem> & {
   id: '_shopping';
-  title: 'Shopping Items';
   categories: ICategory[];
   mode: TItemListMode;
 };

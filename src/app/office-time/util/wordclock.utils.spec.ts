@@ -9,7 +9,6 @@ import {
 const at = (time: string) => dayjs(`2026-01-05T${time}:00`); // Mon, arbitrary day
 
 const base: TSettings = {
-  targetDate: '',
   showCorners: false,
   deZwanzigNach: false,
   deZwanzigVor: false,
@@ -39,6 +38,25 @@ describe('wordclock.utils', () => {
       expect(words(base, '13:00')).toContain('EIN');
       expect(words(base, '13:00')).not.toContain('EINS');
       expect(words(base, '13:05')).toContain('EINS');
+    });
+
+    // Every hour word has its own grid slot (three of them share letters with a
+    // minute word), so the whole dial is walked rather than sampled.
+    it.each([
+      ['00:00', 'ZWÖLF'],
+      ['01:00', 'EIN'],
+      ['02:00', 'ZWEI'],
+      ['03:00', 'DREI'],
+      ['04:00', 'VIER'],
+      ['05:00', 'FÜNF'],
+      ['06:00', 'SECHS'],
+      ['07:00', 'SIEBEN'],
+      ['08:00', 'ACHT'],
+      ['09:00', 'NEUN'],
+      ['10:00', 'ZEHN'],
+      ['11:00', 'ELF'],
+    ])('names the hour at %s as %s', (time, hourWord) => {
+      expect(words(base, time)).toEqual(['ES', 'IST', 'UHR', hourWord]);
     });
   });
 
@@ -75,6 +93,31 @@ describe('wordclock.utils', () => {
         'ZEHN',
       ]);
     });
+
+    // The whole hour, step by step: which side of half past a step falls on is
+    // what decides whether the phrase names this hour or the next one.
+    it.each([
+      ['09:00', ['UHR', 'NEUN']],
+      ['09:05', ['FÜNF', 'NACH', 'NEUN']],
+      ['09:10', ['ZEHN', 'NACH', 'NEUN']],
+      ['09:15', ['VIERTEL', 'NACH', 'NEUN']],
+      ['09:20', ['ZEHN', 'VOR', 'HALB', 'ZEHN']],
+      ['09:25', ['FÜNF', 'VOR', 'HALB', 'ZEHN']],
+      ['09:30', ['HALB', 'ZEHN']],
+      ['09:35', ['FÜNF', 'NACH', 'HALB', 'ZEHN']],
+      ['09:40', ['ZEHN', 'NACH', 'HALB', 'ZEHN']],
+      ['09:45', ['VIERTEL', 'VOR', 'ZEHN']],
+      ['09:50', ['ZEHN', 'VOR', 'ZEHN']],
+      ['09:55', ['FÜNF', 'VOR', 'ZEHN']],
+    ])('reads %s as %s', (time, phrase) => {
+      expect(words(base, time)).toEqual(['ES', 'IST', ...phrase]);
+    });
+
+    // Rounding up out of the hour is the one path where the spoken hour comes
+    // from the dial position rather than from the minute phrase.
+    it('rounds :58 up into the next full hour', () => {
+      expect(words(base, '09:58')).toEqual(['ES', 'IST', 'UHR', 'ZEHN']);
+    });
   });
 
   describe('computeFace — German regional variants', () => {
@@ -85,6 +128,19 @@ describe('wordclock.utils', () => {
       expect(words({ ...base, deZwanzigNach: true }, '09:20')).toEqual(
         expect.arrayContaining(['ZWANZIG', 'NACH'])
       );
+    });
+
+    it('switches twenty-to between "zehn nach halb" and "zwanzig vor"', () => {
+      expect(words(base, '09:40')).toEqual(
+        expect.arrayContaining(['ZEHN', 'NACH', 'HALB'])
+      );
+      expect(words({ ...base, deZwanzigVor: true }, '09:40')).toEqual([
+        'ES',
+        'IST',
+        'ZWANZIG',
+        'VOR',
+        'ZEHN',
+      ]);
     });
 
     it('switches quarter-to between "viertel vor" and "dreiviertel"', () => {

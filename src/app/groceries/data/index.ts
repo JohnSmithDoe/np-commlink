@@ -32,20 +32,17 @@ export { ListSettingsFacade } from './list-settings.facade';
 // instead of a LIST_FACADE binding: the matcher's rows are nothing like list rows.
 export { RecipesFacade } from './recipes.facade';
 
-// Display selectors read by the grocery pages/dialogs
+// Display selectors read by the grocery pages/dialogs. The per-list ITEM reads
+// are deliberately absent: every consumer goes through `GroceryListPageFacade`,
+// and publishing both a page view and an aggregate read of the same list is how a
+// caller ends up picking the filtered one by accident.
 export {
   selectShoppingState,
   selectShoppingListHasBoughtItems,
   selectShoppingCategories,
 } from './selectors/shopping.selector';
-export {
-  selectStorageListItems,
-  selectStorageCategories,
-} from './selectors/storage.selector';
-export {
-  selectProductListItems,
-  selectProductsCategories,
-} from './selectors/products.selector';
+export { selectStorageCategories } from './selectors/storage.selector';
+export { selectProductsCategories } from './selectors/products.selector';
 
 // Grocery list feature-flags (read by the list-settings page).
 export { selectListSettingsState } from './selectors/list-settings.selector';

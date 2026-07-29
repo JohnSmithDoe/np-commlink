@@ -13,7 +13,6 @@ import {
 const mockListState = (
   overrides: Partial<IListState<IBaseItem>> = {}
 ): IListState<IBaseItem> => ({
-  title: 'List',
   items: [],
   categories: [],
   mode: 'alphabetical',
@@ -91,6 +90,66 @@ describe('itemComparator', () => {
       expect(
         sortedNames(items, { sortBy: 'bestBefore', sortDir: 'desc' })
       ).toEqual(['Zulu', 'Alpha']);
+    });
+
+    // The "is it set" test is falsiness, not presence, so a `0` is read as
+    // unset and the tie breaks on the name instead of on the value.
+    it('treats a zero as unset', () => {
+      const zeroed = [named('Zulu', { prio: 0 }), named('Alpha', { prio: 0 })];
+
+      expect(sortedNames(zeroed, { sortBy: 'prio', sortDir: 'asc' })).toEqual([
+        'Alpha',
+        'Zulu',
+      ]);
+    });
+  });
+
+  // A string field that isn't a date sorts as text. The engine picks the
+  // comparison from the *value*, so this needs no field name in @shared.
+  describe('an optional text field', () => {
+    it('sorts it in both directions', () => {
+      const items = [
+        named('second', { note: 'zulu' }),
+        named('first', { note: 'alpha' }),
+      ];
+
+      expect(sortedNames(items, { sortBy: 'note', sortDir: 'asc' })).toEqual([
+        'first',
+        'second',
+      ]);
+      expect(sortedNames(items, { sortBy: 'note', sortDir: 'desc' })).toEqual([
+        'second',
+        'first',
+      ]);
+    });
+
+    // NOTE an asymmetry, pinned as-is rather than asserted as intended: the
+    // number and date comparators carry a per-direction sentinel so an unset
+    // field always loses, but text reads a missing field as `''`, which wins
+    // ascending. Latent today (no domain sorts by a text field yet) — but
+    // `sortBy` is an open string precisely so a domain can add one.
+    it('reads a missing field as empty, so it sorts first ascending', () => {
+      const items = [named('unset'), named('texted', { note: 'alpha' })];
+
+      expect(sortedNames(items, { sortBy: 'note', sortDir: 'asc' })).toEqual([
+        'unset',
+        'texted',
+      ]);
+      expect(sortedNames(items, { sortBy: 'note', sortDir: 'desc' })).toEqual([
+        'texted',
+        'unset',
+      ]);
+    });
+
+    // An empty string is present but says nothing to order by, so the tie
+    // breaks on the name rather than silently keeping the input order.
+    it('falls back to the name when the field is blank on both', () => {
+      const items = [named('Zulu', { note: '' }), named('Alpha', { note: '' })];
+
+      expect(sortedNames(items, { sortBy: 'note', sortDir: 'asc' })).toEqual([
+        'Alpha',
+        'Zulu',
+      ]);
     });
   });
 

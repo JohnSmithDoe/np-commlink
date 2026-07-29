@@ -32,8 +32,11 @@ describe('NotificationsDebugEffects', () => {
     // Synthetic (not from tracking state) but carries a target id, so the
     // deep-link CTA flow is exercisable end-to-end.
     expect(notification.action?.targetId).toBeTruthy();
-    expect(['tracking.start', 'tracking.stop', 'tracking.pause']).toContain(
+    expect(['debug.start', 'debug.stop', 'debug.pause']).toContain(
       notification.action?.type
     );
+    // The label rides on the action: the inbox renders the CTA without knowing
+    // what the command means.
+    expect(notification.action?.labelKey).toMatch(/^notifications\.action\./);
   });
 });

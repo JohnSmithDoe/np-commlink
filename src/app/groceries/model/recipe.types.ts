@@ -32,7 +32,6 @@ export interface IRecipe extends IBaseItem {
 
 export type TRecipesList = IItemList<IRecipe> & {
   id: typeof RECIPES_LIST_ID;
-  title: 'Recipes';
   categories: ICategory[];
   mode: TItemListMode;
 };

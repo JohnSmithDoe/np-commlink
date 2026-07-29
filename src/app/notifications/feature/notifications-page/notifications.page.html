@@ -21,7 +21,11 @@
 
     @if (!newItems?.length) {
       <ion-item lines="none" class="empty">
-        <ion-icon slot="start" name="notifications-off-outline" />
+        <ion-icon
+          slot="start"
+          name="notifications-off-outline"
+          aria-hidden="true"
+        />
         <ion-label>
           <p>{{ 'notifications.empty.new' | translate }}</p>
         </ion-label>
@@ -29,23 +33,31 @@
     }
 
     @for (n of newItems; track n.id) {
-      <ion-item lines="full" class="notification new">
+      <ion-item
+        lines="full"
+        class="notification new"
+        data-testid="notification-row"
+      >
         <ion-icon
           slot="start"
           [name]="n.icon"
           [style.color]="'var(--ion-color-' + n.color + ')'"
+          aria-hidden="true"
         />
         <ion-label>
           <h3>{{ n.name }}</h3>
           <p>{{ n.body }}</p>
           <div class="actions">
-            @if (n.action) {
+            <!-- Keyed off the label, not off `action`: a row persisted before the
+                 label joined the port carries a command with no wording, and an
+                 unlabeled button is worse than no button. -->
+            @if (n.action?.labelKey; as labelKey) {
               <ion-button
                 size="small"
                 [color]="n.color"
                 (click)="triggerAction(n, $event)"
               >
-                {{ actionLabelKey(n) | translate }}
+                {{ labelKey | translate }}
               </ion-button>
             }
             <ion-button
@@ -54,7 +66,11 @@
               color="medium"
               (click)="markDone(n, $event)"
             >
-              <ion-icon slot="start" name="checkmark-circle" />
+              <ion-icon
+                slot="start"
+                name="checkmark-circle"
+                aria-hidden="true"
+              />
               {{ 'notifications.action.mark-done' | translate }}
             </ion-button>
           </div>
@@ -102,7 +118,11 @@
       <div id="notifications-done-list">
         @if (!doneItems?.length) {
           <ion-item lines="none" class="empty">
-            <ion-icon slot="start" name="notifications-off-outline" />
+            <ion-icon
+              slot="start"
+              name="notifications-off-outline"
+              aria-hidden="true"
+            />
             <ion-label>
               <p>{{ 'notifications.empty.done' | translate }}</p>
             </ion-label>
@@ -110,11 +130,16 @@
         }
 
         @for (n of doneItems; track n.id) {
-          <ion-item lines="full" class="notification done">
+          <ion-item
+            lines="full"
+            class="notification done"
+            data-testid="notification-row"
+          >
             <ion-icon
               slot="start"
               [name]="n.icon"
               [style.color]="'var(--ion-color-' + n.color + ')'"
+              aria-hidden="true"
             />
             <ion-label>
               <h3>{{ n.name }}</h3>

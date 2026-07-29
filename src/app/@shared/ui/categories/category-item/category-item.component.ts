@@ -14,7 +14,7 @@ import {
   IonList,
   IonReorder,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { TColor, TIonDragEvent } from '../../../model/app.types';
 import { ICategory } from '../../../model/category.types';
 import { revealedSideFromDrag } from '../../../util/app.utils';
@@ -32,7 +32,7 @@ import { revealedSideFromDrag } from '../../../util/app.utils';
     IonItemOptions,
     IonItemOption,
     NgTemplateOutlet,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class CategoryItemComponent {

@@ -6,6 +6,14 @@
     // The deck catalog's spec asserts that every theme ships every label, which
     // means reading the message catalogs themselves.
     "resolveJsonModule": true,
+    // Inherited `true`, off here on purpose. What the flag buys in app code is
+    // that a missed bounds check becomes a compile error instead of an
+    // `undefined` reaching a reducer. A spec indexes a fixture it built three
+    // lines earlier, and an `undefined` there is not a silent fault — it is a red
+    // test with a TypeError, which is the signal the assertion exists to produce.
+    // Paying for it would mean `?.` on ~140 assertions, which reads worse and
+    // weakens the failure message for a guarantee the runner already gives.
+    "noUncheckedIndexedAccess": false,
     "types": ["vitest/globals", "dom-chromium-ai"]
   },
   "files": ["src/polyfills.ts"],

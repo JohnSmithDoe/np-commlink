@@ -2,12 +2,15 @@ import { TColor, TMarker, TTimestamp } from './app.types';
 import { IBaseItem } from './base-item.types';
 
 // A notification may carry ONE deep-link command. The port stays domain-blind:
-// it knows a command has a name and an entity it targets, and nothing about what
-// the names mean — the producing domain owns that vocabulary (tracking's
-// `TTrackingCommand`) and is the only thing that interprets it.
+// it knows a command has a name, an entity it targets and a label to offer it
+// under — and nothing about what the names mean. The producing domain owns that
+// vocabulary (tracking's `TTrackingCommand`) and is the only thing that
+// interprets it; the label travels WITH the command so the inbox never has to
+// recognise one to render its CTA.
 export type TNotificationAction = {
   type: string;
   targetId: string;
+  labelKey: TMarker;
 };
 
 // Which producer published this row, and which of its own shapes the row is in.

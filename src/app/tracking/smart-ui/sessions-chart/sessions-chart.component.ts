@@ -7,7 +7,7 @@ import {
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
-import { TrackingListPageFacade } from '../../data';
+import { TrackingFacade } from '../../data';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
 
 Chart.register(...registerables);
@@ -20,7 +20,7 @@ Chart.register(...registerables);
   imports: [BaseChartDirective],
 })
 export class SessionsChartComponent {
-  readonly #raw = inject(TrackingListPageFacade).sessionsByDayAndName;
+  readonly #raw = inject(TrackingFacade).sessionsByDayAndName;
   readonly #series = chartColors().series;
 
   readonly hasData = computed(() =>

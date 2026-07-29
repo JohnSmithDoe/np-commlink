@@ -11,13 +11,21 @@
     (quickCreateProduct)="facade.showCreateProductDialog()"
   ></app-item-list-quick-add>
   <ion-buttons slot="end" listActions>
-    <ion-button [hidden]="!rxState().items.length" (click)="openActionSheet()">
-      <ion-icon name="bag-add" slot="icon-only"></ion-icon>
+    <ion-button
+      [hidden]="!rxState().items.length"
+      (click)="openActionSheet()"
+      [attr.aria-label]="'grocery.a11y.actions' | translate"
+    >
+      <ion-icon name="bag-add" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </ion-buttons>
   @if (showScanButton) {
-    <ion-button (click)="scan()" toolbarActions>
-      <ion-icon slot="icon-only" name="barcode-outline" />
+    <ion-button
+      (click)="scan()"
+      toolbarActions
+      [attr.aria-label]="'grocery.a11y.scan' | translate"
+    >
+      <ion-icon slot="icon-only" name="barcode-outline" aria-hidden="true" />
     </ion-button>
   }
   <app-grocery-search-result
@@ -43,7 +51,7 @@
     [categories]="categories"
     [crossedOut]="item.state === 'bought'"
     [showQuantityActions]="true"
-    [showCartAction]="true"
+    [cartActionLabel]="cartActionLabel"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
     (increment)="changeQuantity(item, +1)"

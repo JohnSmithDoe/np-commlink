@@ -51,8 +51,8 @@
           [disabled]="game.players.length <= 0"
           [ionList]="list"
           (selectGame)="goToGame(game.id)"
-          (editGame)="openGameEdit(game)"
-          (deleteGame)="deleteGame(game)"
+          (editRequested)="openGameEdit(game)"
+          (deleteRequested)="deleteGame(game)"
         />
       }
     }
@@ -69,8 +69,8 @@
           [disabled]="game.players.length <= 0"
           [ionList]="list"
           (selectGame)="goToGame(game.id)"
-          (editGame)="openGameEdit(game)"
-          (deleteGame)="deleteGame(game)"
+          (editRequested)="openGameEdit(game)"
+          (deleteRequested)="deleteGame(game)"
         />
       }
     }

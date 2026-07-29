@@ -49,7 +49,7 @@ describe('BarcodeFacade', () => {
 
     expect(dispatch).toHaveBeenCalledWith(
       NotificationsActions.toast({
-        key: 'officetime.barcode.upload.error',
+        key: 'barcode.upload.error',
         color: 'danger',
       })
     );

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import {
   IonButton,
@@ -13,7 +13,7 @@ import { addIcons } from 'ionicons';
 import { documentsOutline, ellipse, square, triangle } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { SessionsChartComponent } from '../../smart-ui/sessions-chart/sessions-chart.component';
-import { TrackingListPageFacade } from '../../data';
+import { TrackingFacade } from '../../data';
 import { IDataItem } from '../../model/tracking.types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 
@@ -22,7 +22,7 @@ import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
   templateUrl: 'stats.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     StatsItemComponent,
     IonButton,
     IonContent,
@@ -35,7 +35,7 @@ import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
   ],
 })
 export class StatsPage {
-  readonly #facade = inject(TrackingListPageFacade);
+  readonly #facade = inject(TrackingFacade);
 
   readonly sessionsByView = this.#facade.sessionsByView;
   readonly viewMode = this.#facade.viewMode;

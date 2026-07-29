@@ -17,7 +17,6 @@ import { GroceriesActions } from '../actions/groceries.actions';
 import { StorageActions } from '../actions/storage.actions';
 
 export const initialState: IStorageState = {
-  title: 'Storage',
   id: '_storage',
   items: [],
   mode: 'alphabetical',

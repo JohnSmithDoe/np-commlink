@@ -6,6 +6,7 @@ import { NotificationsActions } from '../../@shared/data/actions/notifications.a
 import { ICashAccount } from '../model/account.types';
 import { ICashRule } from '../model/rule.types';
 import { ICashTransaction } from '../model/transaction.types';
+import { ICashRecategorization } from '../util/categorize.utils';
 import { CashActions } from './actions/cash.actions';
 import {
   selectAccountBalances,
@@ -104,6 +105,10 @@ export class CashFacade {
     this.#store.dispatch(
       CashActions.setTransactionCategory(id, categoryId, manual)
     );
+  }
+
+  recategorizeTransactions(changes: ICashRecategorization[]): void {
+    this.#store.dispatch(CashActions.recategorizeTransactions(changes));
   }
 
   reconcileTransaction(manualId: string, importedId: string): void {

@@ -5,8 +5,10 @@ import { TasksCategoriesPageFacade, tasksContext } from '../data';
 
 /**
  * The `/tasks` subtree: the list and its catalog share one context spread on the
- * componentless root, so the slice registers and hydrates once for both. The
- * static `categories` must precede `:listId` so it isn't captured as a list id.
+ * componentless root, so the slice registers and hydrates once for both. The list
+ * leaf carries no `:listId` — tasks is a single-list domain, and a route param
+ * nothing reads advertised a multi-list domain that does not exist (CR-066).
+ * `TASKS_LIST_ID` stays purely as the `ItemDialogService` handshake token.
  */
 export const tasksRoutes: Routes = [
   {
@@ -28,7 +30,7 @@ export const tasksRoutes: Routes = [
           ),
       },
       {
-        path: ':listId',
+        path: 'list',
         data: { title: marker('page-title.tasks') },
         loadComponent: () =>
           import('../feature/tasks-page/tasks.page').then((m) => m.TasksPage),

@@ -5,7 +5,7 @@ import {
   inject,
 } from '@angular/core';
 import { IonActionSheet, ActionSheetButton } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { GroceryListPageFacade } from '../../data';
 
@@ -13,7 +13,7 @@ import { GroceryListPageFacade } from '../../data';
   selector: 'app-shopping-action-sheet',
   templateUrl: './shopping-action-sheet.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonActionSheet, TranslateModule],
+  imports: [IonActionSheet, TranslatePipe],
 })
 export class ShoppingActionSheetComponent {
   readonly #facade = inject(GroceryListPageFacade);

@@ -5,7 +5,7 @@ import {
   isDevMode,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -19,7 +19,7 @@ import {
 import { ITrackingItem } from '../../model/tracking.types';
 import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
-import { TrackingListPageFacade } from '../../data';
+import { TrackingFacade, TrackingListPageFacade } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
 import {
@@ -37,7 +37,7 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
   styleUrls: ['tracking.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     ListPageComponent,
     DailySessionsComponent,
     IonButton,
@@ -50,11 +50,12 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
   providers: [{ provide: LIST_FACADE, useExisting: TrackingListPageFacade }],
 })
 export class TrackingPage implements ViewWillEnter {
-  readonly #facade = inject(TrackingListPageFacade);
+  readonly #list = inject(TrackingListPageFacade);
+  readonly #tracking = inject(TrackingFacade);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
 
-  readonly total = this.#facade.total;
+  readonly total = this.#tracking.total;
   readonly isDev = isDevMode();
 
   constructor() {
@@ -74,7 +75,7 @@ export class TrackingPage implements ViewWillEnter {
     const cmd = params.get('cmd');
     const target = params.get('target');
     if (!cmd || !target) return;
-    this.#facade.applyNotificationCommand(cmd, target);
+    this.#tracking.applyNotificationCommand(cmd, target);
     void this.#router.navigate([], {
       relativeTo: this.#route,
       queryParams: {},
@@ -83,33 +84,33 @@ export class TrackingPage implements ViewWillEnter {
   }
 
   removeItem(item: ITrackingItem) {
-    this.#facade.removeItem(item);
+    this.#list.removeItem(item);
   }
 
   showEditDialog(item: ITrackingItem) {
-    this.#facade.showEditDialog(item);
+    this.#list.showEditDialog(item);
   }
 
   toggleTracking(item: ITrackingItem) {
-    this.#facade.toggleTracking(item);
+    this.#tracking.toggleTracking(item);
   }
 
   resetAll() {
-    this.#facade.resetAll();
+    this.#tracking.resetAll();
   }
   resetItem(item: ITrackingItem) {
-    this.#facade.resetItem(item);
+    this.#tracking.resetItem(item);
   }
 
   saveAndResetAll() {
-    this.#facade.saveAndReset();
+    this.#tracking.saveAndReset();
   }
 
   seedDemoSessions() {
-    this.#facade.seedDemoSessions();
+    this.#tracking.seedDemoSessions();
   }
 
   protected generateTaskByTicket() {
-    this.#facade.createByTicket();
+    this.#list.createByTicket();
   }
 }

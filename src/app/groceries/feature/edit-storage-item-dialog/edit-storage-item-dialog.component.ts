@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
 import { IStorageItem, TGroceryListId } from '../../model/grocery-list.types';
+import { createStorageItem } from '../../util/grocery.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
@@ -17,7 +18,7 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   selector: 'app-edit-storage-item-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     CategoryInputComponent,
     CategoriesDialogComponent,
     NumberInputComponent,
@@ -28,16 +29,20 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   styleUrl: './edit-storage-item-dialog.component.scss',
 })
 export class EditStorageItemDialogComponent extends BaseGroceryEditItemDialog<IStorageItem> {
+  protected blank(): IStorageItem {
+    return createStorageItem('');
+  }
+
   protected readonly listId: TGroceryListId = '_storage';
   readonly categories = this.facade.storageCategories;
-  readonly listItems = this.facade.storageListItems;
+  readonly siblings = this.facade.storageItems;
 
   protected save(item: IStorageItem): void {
     this.facade.saveStorageItem(item);
   }
 
-  updateBestBefore(value: string | undefined) {
-    this.patch({ bestBefore: value });
+  updateBestBefore(value: string | null) {
+    this.patch({ bestBefore: value ?? undefined });
   }
 
   updateMinAmount(value: number) {

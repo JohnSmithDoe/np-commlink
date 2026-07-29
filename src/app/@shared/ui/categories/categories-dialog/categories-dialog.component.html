@@ -1,4 +1,8 @@
-<ion-modal [isOpen]="isOpen()" (didDismiss)="dismissed.emit()">
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="dismissed.emit()"
+  [attr.aria-label]="'category-picker.dialog' | translate"
+>
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -22,6 +26,7 @@
           (ionInput)="searchbarInput($event)"
           (keyup.enter)="addNewCategory()"
           [debounce]="250"
+          data-testid="category-picker-search"
         ></ion-searchbar>
       </ion-toolbar>
     </ion-header>
@@ -56,6 +61,7 @@
             @if (editing() === category.id) {
               <ion-item>
                 <ion-input
+                  [attr.aria-label]="'categories.a11y.rename' | translate"
                   [value]="renameText()"
                   (ionInput)="renameText.set($any($event.target).value ?? '')"
                   (keyup.enter)="commitEdit()"
@@ -89,14 +95,22 @@
                 (click)="startEdit(category)"
                 [attr.aria-label]="'category-picker.edit' | translate"
               >
-                <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                <ion-icon
+                  slot="icon-only"
+                  name="create-outline"
+                  aria-hidden="true"
+                ></ion-icon>
               </ion-item-option>
               <ion-item-option
                 color="danger"
                 (click)="deleteCategory(category)"
                 [attr.aria-label]="'category-picker.delete' | translate"
               >
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                <ion-icon
+                  slot="icon-only"
+                  name="trash-outline"
+                  aria-hidden="true"
+                ></ion-icon>
               </ion-item-option>
             </ion-item-options>
           </ion-item-sliding>

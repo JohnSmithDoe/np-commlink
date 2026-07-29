@@ -24,7 +24,7 @@ test.describe('notifications — cross-module write from another route', () => {
       .locator('#main-content app-tracking-item')
       .filter({ hasText: 'Meeting' });
     await expect(item).toBeVisible({ timeout: 10_000 });
-    await item.getByText('Meeting').first().click();
+    await item.click();
     await waitForPersisted(page, 'notifications');
 
     // First-ever visit to /notifications this session — the page is lazy, the
@@ -32,8 +32,8 @@ test.describe('notifications — cross-module write from another route', () => {
     await page.goto('/#/notifications');
     const content = page.locator('#main-content app-page-notifications');
     await expect(content).toBeVisible({ timeout: 30_000 });
-    await expect(content.getByText(/Meeting/).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(
+      content.getByTestId('notification-row').filter({ hasText: 'Meeting' })
+    ).toBeVisible({ timeout: 10_000 });
   });
 });

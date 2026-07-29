@@ -5,10 +5,10 @@
  * save and unwraps + migrates it on load, so a domain can evolve its own data
  * structure without the destructive global wipe. The logic is a pure,
  * domain-agnostic runner: `v` is a monotonically increasing integer and `data`
- * is whatever shape the domain owns. The load/save effect factories
- * (`@shared/data/create-{load,save}.effect`) call these helpers with the
- * app-wide `APP_VERSION` (@shared/model/app.consts); a context supplies only its
- * own migration ladder from `<domain>/data`.
+ * is whatever shape the domain owns. The load/save effect builders
+ * (`@shared/data/effects/persisted-slice.effects.factory`) call these helpers
+ * with the app-wide `APP_VERSION` (@shared/model/app.consts); a context supplies
+ * only its own migration ladder from `<domain>/data`.
  *
  * Versioning is app-level, migration is domain-level: one version counter for
  * the whole store, one ladder per persisted slice. Replaces the old global

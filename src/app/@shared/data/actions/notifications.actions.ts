@@ -11,7 +11,8 @@ import {
  * without being able to see it, so notifications imports no domain and no domain
  * imports notifications.
  *
- * The slice receiving these is EAGER (`main.ts`). Notifications is a fan-in sink
+ * The slice receiving these is EAGER (composed into `provideAppKernel()`).
+ * Notifications is a fan-in sink
  * — every route writes to it and the shell badge reads it — so it cannot be
  * scoped to any one producer's route lifecycle. That is what lets a producer
  * dispatch instead of writing storage behind the reducer's back.

@@ -14,7 +14,6 @@ import {
   IonListHeader,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
 import { TColor } from '../../../model/app.types';
 import { IBaseItem } from '../../../model/base-item.types';
 import { ICategory, TCategoryId } from '../../../model/category.types';
@@ -39,7 +38,6 @@ export type ItemListTemplateContext = {
     IonLabel,
     IonListHeader,
     NgTemplateOutlet,
-    TranslateModule,
     CategoryItemComponent,
   ],
 })

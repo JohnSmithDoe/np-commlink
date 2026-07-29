@@ -1,13 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import {
-  IGrocerySearchResult,
-  IProduct,
-  IProductsState,
-} from '../../model/grocery-list.types';
-import {
-  filterAndSortItemList,
-  filterBySearchQuery,
-} from './grocery-list.selector';
+import { IProduct, IProductsState } from '../../model/grocery-list.types';
 import { selectGroceriesState } from './groceries.selector';
 
 import { ICategory } from '../../../@shared/model/category.types';
@@ -24,18 +16,14 @@ export const selectProductsCategories = createSelector(
   (state): ICategory[] => state.categories
 );
 
-export const selectProductsListSearchResult = createSelector(
+/**
+ * Every product the catalog holds, unfiltered — see {@link selectStorageItems}
+ * for why the page's own filtered view is the wrong read for an aggregate. The
+ * ingredient picker's `selectRecipeIngredientCatalog` makes the same point.
+ */
+export const selectProductItems = createSelector(
   selectProductsState,
-  selectGroceriesState,
-  (listState, lists): IGrocerySearchResult<IProduct> | undefined =>
-    filterBySearchQuery(lists, listState)
-);
-
-export const selectProductListItems = createSelector(
-  selectProductsState,
-  selectProductsListSearchResult,
-  (state: IProductsState, result): IProduct[] | undefined =>
-    filterAndSortItemList(state, result)
+  (state: IProductsState): IProduct[] => state?.items ?? []
 );
 
 // Count of catalog products for the deck's CATALOG tile.

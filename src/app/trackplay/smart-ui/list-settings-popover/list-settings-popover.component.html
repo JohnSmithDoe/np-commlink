@@ -45,6 +45,7 @@
       <ion-item>
         <ion-toggle
           slot="start"
+          [attr.aria-label]="'trackplay.settings.show-ended' | translate"
           [checked]="gamesConfig().showEndedGames"
           (ionChange)="setShowEnded($any($event).detail.checked)"
         />

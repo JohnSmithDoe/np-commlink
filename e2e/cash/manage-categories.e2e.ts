@@ -49,9 +49,7 @@ test.describe('cash manage categories', () => {
     await openOverview(page);
     const list = page.locator('#main-content app-page-cash');
 
-    await list
-      .locator('ion-button', { has: page.locator('ion-icon[name="add"]') })
-      .click();
+    await list.getByTestId('page-header-add').click();
     const accountModal = page.locator('app-cash-account-edit-modal');
     await accountModal
       .getByRole('textbox', { name: 'Name' })
@@ -72,8 +70,10 @@ test.describe('cash manage categories', () => {
       .getByRole('textbox', { name: 'Beschreibung' })
       .fill('Wohnung Miete');
     await txnModal.getByRole('textbox', { name: 'Betrag' }).fill('750,00');
-    await txnModal.locator('app-category-input ion-item').first().click();
-    const pickerSearch = page.locator('ion-searchbar input').last();
+    await txnModal.getByTestId('category-input-trigger').click();
+    const pickerSearch = page
+      .getByTestId('category-picker-search')
+      .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Miete');
     // The "create" row appearing is the searchbar debounce having landed.

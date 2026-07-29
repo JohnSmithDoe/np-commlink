@@ -13,7 +13,7 @@ import {
   PopoverController,
 } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -49,7 +49,7 @@ import { presentModal } from '../../../@shared/util/present-modal';
     IonTitle,
     IonContent,
     IonList,
-    TranslateModule,
+    TranslatePipe,
     TrackplayGameListItemComponent,
   ],
 })
@@ -93,9 +93,12 @@ export class TrackplayPlayerPage {
   }
 
   async openPlayerEdit(): Promise<void> {
-    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent, {
-      playerId: this.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayPlayerEditModalComponent,
+      this.#translate.instant(marker('page-title.trackplay-player')),
+      { playerId: this.id }
+    );
   }
 
   async newGame(): Promise<void> {
@@ -122,6 +125,7 @@ export class TrackplayPlayerPage {
     await presentModal(
       this.#modalCtrl,
       TrackplayGameEditModalComponent,
+      this.#translate.instant(marker('page-title.trackplay-game')),
       properties
     );
   }

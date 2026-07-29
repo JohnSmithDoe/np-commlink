@@ -16,7 +16,7 @@ import {
   IonToggle,
   ToggleChangeEventDetail,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { OfficeTimeFacade } from '../../data';
 import { addIcons } from 'ionicons';
@@ -28,7 +28,7 @@ import { settingsOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
-    TranslateModule,
+    TranslatePipe,
     IonContent,
     IonList,
     IonItem,
@@ -49,12 +49,12 @@ export class OfficeTimeSettingsPage {
 
   readonly alertButtons: AlertButton[] = [
     {
-      text: this.#translate.instant('officetime.settings.reset.cancel'),
+      text: this.#translate.instant('office-time.page.settings.reset.cancel'),
       role: 'cancel',
       cssClass: 'alert-button-success',
     },
     {
-      text: this.#translate.instant('officetime.settings.reset.confirm'),
+      text: this.#translate.instant('office-time.page.settings.reset.confirm'),
       role: 'confirm',
       cssClass: 'alert-button-danger',
       handler: () => this.resetData(),

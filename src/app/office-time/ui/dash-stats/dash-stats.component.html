@@ -12,62 +12,62 @@
       }
       <div class="dash-stats-grid">
         <span>
-          {{ 'officetime.page.stats.officedays.label' | translate }}
+          {{ 'office-time.page.stats.officedays.label' | translate }}
         </span>
         <span>
           {{
-            'officetime.page.stats.officedays'
+            'office-time.page.stats.officedays'
               | translate: { value: stats.officedays, target: stats.targetdays }
           }}
         </span>
         <span>
-          {{ 'officetime.page.stats.workdays.label' | translate }}
+          {{ 'office-time.page.stats.workdays.label' | translate }}
         </span>
         <span>
           @if (stats.workdaysTotal !== stats.workdays) {
             {{
-              'officetime.page.stats.workdays'
+              'office-time.page.stats.workdays'
                 | translate
                   : { value: stats.workdays, total: stats.workdaysTotal }
             }}
           } @else {
             {{
-              'officetime.page.stats.workdays.single'
+              'office-time.page.stats.workdays.single'
                 | translate: { value: stats.workdays }
             }}
           }
         </span>
         <span>
-          {{ 'officetime.page.stats.remaining.label' | translate }}
+          {{ 'office-time.page.stats.remaining.label' | translate }}
         </span>
         <span>
           {{
-            'officetime.page.stats.remaining'
+            'office-time.page.stats.remaining'
               | translate: { value: stats.remaining }
           }}
         </span>
         <span>
-          {{ 'officetime.page.stats.freedays.label' | translate }}
+          {{ 'office-time.page.stats.freedays.label' | translate }}
         </span>
         <span>
           {{
-            'officetime.page.stats.freedays'
+            'office-time.page.stats.freedays'
               | translate: { value: stats.freedays }
           }}
         </span>
         <span>
-          {{ 'officetime.page.stats.holidays.label' | translate }}
+          {{ 'office-time.page.stats.holidays.label' | translate }}
         </span>
         <span>
           @if (stats.holidaysNotOnWeekend !== stats.holidays) {
             {{
-              'officetime.page.stats.holidays'
+              'office-time.page.stats.holidays'
                 | translate
                   : { value: stats.holidaysNotOnWeekend, total: stats.holidays }
             }}
           } @else {
             {{
-              'officetime.page.stats.holidays.single'
+              'office-time.page.stats.holidays.single'
                 | translate: { value: stats.holidays }
             }}
           }

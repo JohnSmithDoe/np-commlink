@@ -1,6 +1,9 @@
 <ion-toolbar>
   <ion-buttons slot="start">
-    <ion-button (click)="selectSortMode.emit('name')">
+    <ion-button
+      (click)="selectSortMode.emit('name')"
+      data-testid="list-toolbar-sort-az"
+    >
       {{ 'item-list.toolbar.sort-az' | translate }}
     </ion-button>
     <ng-content />

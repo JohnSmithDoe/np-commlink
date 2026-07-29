@@ -10,9 +10,20 @@ describe('settingsReducer', () => {
   it('hydrates from loaded()', () => {
     const state = settingsReducer(
       initialSettings,
-      SettingsActions.loaded({ theme: 'boomer' })
+      SettingsActions.loaded({ theme: 'boomer', language: 'de' })
     );
-    expect(state).toEqual({ theme: 'boomer' });
+    expect(state).toEqual({ theme: 'boomer', language: 'de' });
+  });
+
+  // The blast radius per byte is what makes this worth pinning: an undefined
+  // theme reaches <html data-theme> under the boot splash, before any other
+  // code could notice and correct it.
+  it('fills a persisted doc that is missing the theme from the defaults', () => {
+    const state = settingsReducer(
+      initialSettings,
+      SettingsActions.loaded({} as never)
+    );
+    expect(state.theme).toBe('cyberpunk');
   });
 
   it('keeps the initial state when loaded() carries null (fresh install)', () => {

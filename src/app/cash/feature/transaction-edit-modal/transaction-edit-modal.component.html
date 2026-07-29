@@ -20,10 +20,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-segment
-    [value]="draft().direction"
-    (ionChange)="patch({ direction: $any($event).detail.value })"
-  >
+  <ion-segment [formField]="form.direction">
     <ion-segment-button value="expense">
       {{ 'cash.txn.expense' | translate }}
     </ion-segment-button>
@@ -38,23 +35,16 @@
         labelPlacement="stacked"
         label="{{ 'cash.label.description' | translate }}"
         [clearInput]="true"
-        [value]="draft().description"
-        (ionInput)="patch({ description: $any($event.target).value ?? '' })"
+        [formField]="form.description"
       />
     </ion-item>
 
-    <ion-item>
-      <ion-input
-        labelPlacement="stacked"
-        label="{{ 'cash.label.amount' | translate }}"
-        inputmode="decimal"
-        placeholder="0,00"
-        [value]="draft().amount"
-        (ionInput)="patch({ amount: $any($event.target).value ?? '' })"
-      />
-    </ion-item>
+    <app-money-input
+      label="{{ 'cash.label.amount' | translate }}"
+      [formField]="form.amountCents"
+    />
     @if (amountInvalid()) {
-      <ion-note color="danger" class="cash-txn-dialog__error">
+      <ion-note color="danger" class="sr-field-note">
         {{ 'cash.txn-dialog.amount-invalid' | translate }}
       </ion-note>
     }
@@ -64,25 +54,20 @@
         labelPlacement="stacked"
         type="date"
         label="{{ 'cash.label.date' | translate }}"
-        [value]="draft().date"
-        (ionInput)="patch({ date: $any($event.target).value ?? '' })"
+        [formField]="form.date"
       />
     </ion-item>
 
     <app-cash-category-picker
       [categories]="categories()"
-      [categoryId]="draft().categoryId"
-      (categoryIdChange)="patch({ categoryId: $event })"
+      [formField]="form.categoryId"
       (addNew)="onAddCategory($event)"
       (deleted)="onDeleteCategory($event)"
       (renamed)="onRenameCategory($event)"
     ></app-cash-category-picker>
 
     <ion-item>
-      <ion-toggle
-        [checked]="draft().pending"
-        (ionChange)="patch({ pending: $any($event).detail.checked })"
-      >
+      <ion-toggle [formField]="form.pending">
         {{ 'cash.txn.pending' | translate }}
       </ion-toggle>
     </ion-item>

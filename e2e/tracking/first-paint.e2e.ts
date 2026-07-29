@@ -1,5 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { Locator } from '@playwright/test';
 import { addViaSearch, waitForListPage, waitForPersisted } from '../helpers';
+
+/**
+ * The tracking row whose name matches. `app-tracking-item` is the row's own
+ * component selector — already a contract — so this needs no id of its own;
+ * matching the row rather than the text is what drops the `.first()` a regex/text
+ * locator forced (it matches every ancestor containing the name too).
+ */
+const trackingRow = (content: Locator, name: string): Locator =>
+  content.locator('app-tracking-item').filter({ hasText: name });
 
 /**
  * Wiring guard for the now-LAZY tracking context (lazy-modules §7).
@@ -32,7 +42,7 @@ test.describe('tracking (lazy)', () => {
 
     await addViaSearch(page, 'Standup');
     const content = page.locator('#main-content');
-    await expect(content.getByText('Standup').first()).toBeVisible({
+    await expect(trackingRow(content, 'Standup')).toBeVisible({
       timeout: 10_000,
     });
     await waitForPersisted(page, 'tracking', 'Standup');
@@ -40,7 +50,7 @@ test.describe('tracking (lazy)', () => {
     await page.reload();
     await waitForListPage(page);
 
-    await expect(content.getByText('Standup').first()).toBeVisible({
+    await expect(trackingRow(content, 'Standup')).toBeVisible({
       timeout: 30_000,
     });
   });
@@ -61,15 +71,14 @@ test.describe('tracking (lazy)', () => {
 
     await addViaSearch(page, 'Standup');
     const content = page.locator('#main-content');
-    await expect(content.getByText('Standup').first()).toBeVisible({
+    await expect(trackingRow(content, 'Standup')).toBeVisible({
       timeout: 10_000,
     });
 
     // Open the item's kebab menu → "Bearbeiten" (dispatches the shared
     // ItemDialogsActions.showEditDialog onto the eager itemDialogs slice).
-    await content
-      .locator('app-tracking-item ion-button[id^="kebab-"]')
-      .first()
+    await trackingRow(content, 'Standup')
+      .getByTestId('tracking-item-kebab')
       .click();
     await page.locator('ion-popover').getByText('Bearbeiten').click();
 
@@ -79,7 +88,7 @@ test.describe('tracking (lazy)', () => {
     await nameField.fill('Retro');
     await page.getByRole('button', { name: 'Übernehmen' }).click();
 
-    await expect(content.getByText('Retro').first()).toBeVisible({
+    await expect(trackingRow(content, 'Retro')).toBeVisible({
       timeout: 10_000,
     });
     await expect(content.getByText('Standup')).toHaveCount(0);
@@ -117,11 +126,7 @@ test.describe('tracking (lazy)', () => {
 
     // [headerEnd] slot double-projected into the page-header toolbar — the
     // settings link must keep its routerLink and reach the tracking data view.
-    await trackingPage
-      .locator('ion-button', {
-        has: page.locator('ion-icon[icon="settings-sharp"]'),
-      })
-      .click();
+    await trackingPage.getByTestId('tracking-daily-view-link').click();
     await expect(page).toHaveURL(/#\/data$/);
   });
 });

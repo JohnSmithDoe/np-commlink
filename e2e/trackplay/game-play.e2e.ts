@@ -18,23 +18,23 @@ import {
 
 /** A player-column footer total cell (skips the leading ∑ marker column). */
 function footerCells(grid: Locator): Locator {
-  return grid.locator('.tp-row--footer .tp-cell--foot:not(.tp-cell--round)');
+  return grid.getByTestId('score-total-cell');
 }
 
 /** A player-column header cell (skips the leading "#" marker column). */
 function headerCells(grid: Locator): Locator {
-  return grid.locator('.tp-row--header .tp-cell--head:not(.tp-cell--round)');
+  return grid.getByTestId('score-header-cell');
 }
 
 function dataRows(grid: Locator): Locator {
-  return grid.locator('.tp-body .tp-row--data');
+  return grid.getByTestId('score-row');
 }
 
 /** The numeric input of a scoring cell at (round row `r`, player column `c`). */
 function cellInput(grid: Locator, r: number, c: number): Locator {
   return dataRows(grid)
     .nth(r)
-    .locator('.tp-cell--edit')
+    .getByTestId('score-cell')
     .nth(c)
     .locator('input');
 }
@@ -71,9 +71,16 @@ test.describe('trackplay full game', () => {
     const dialog = page.locator('app-trackplay-game-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog.locator('ion-input input').first().fill('Testspiel');
+    await dialog
+      .getByTestId('game-name-input')
+      .locator('input')
+      .fill('Testspiel');
     // Pick Skat (win-high) through the type select.
-    await pickSelectOption(page, dialog.locator('ion-select'), 'Skat');
+    await pickSelectOption(
+      page,
+      dialog.getByTestId('game-type-select'),
+      'Skat'
+    );
     await togglePlayerInSelect(dialog, 'Alice');
     await togglePlayerInSelect(dialog, 'Bob');
 
@@ -108,17 +115,17 @@ test.describe('trackplay full game', () => {
     await expect(grid.getByText('Das Spiel ist beendet.')).toBeVisible();
 
     // Winner is the HIGHER total for a win-high type (Alice 30 > Bob 20).
-    const winnerLine = grid.locator('.tp-result__winner');
+    const winnerLine = grid.getByTestId('game-winner');
     await expect(winnerLine).toContainText('Alice');
     await expect(winnerLine).toContainText('hat gewonnen');
     // No unfilled i18n placeholder should leak into the winner line.
     await expect(winnerLine).not.toContainText('{{');
     // Pure-CSS victory HUD (replaced the old winner.gif).
-    await expect(grid.locator('.tp-victory')).toBeVisible();
+    await expect(grid.getByTestId('game-victory-art')).toBeVisible();
 
     // ── Reopen (Weiter) returns to the editable grid ─────────────────────
     await grid.getByRole('button', { name: 'Weiter' }).click();
-    await expect(grid.locator('.tp-row--footer')).toBeVisible();
+    await expect(grid.getByTestId('score-total-row')).toBeVisible();
     await expect(footerCells(grid).nth(0)).toHaveText('30');
     await expect(dataRows(grid)).toHaveCount(3);
   });

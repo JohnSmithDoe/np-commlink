@@ -4,7 +4,7 @@ import {
   inject,
   output,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, cart, list, remove } from 'ionicons/icons';
 import { GroceryListPageFacade } from '../../data';
@@ -15,7 +15,7 @@ import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-
   templateUrl: 'item-list-quick-add.component.html',
   styleUrls: ['item-list-quick-add.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TextItemComponent, TranslateModule],
+  imports: [TextItemComponent, TranslatePipe],
 })
 export class ItemListQuickAddComponent {
   readonly #facade = inject(GroceryListPageFacade);

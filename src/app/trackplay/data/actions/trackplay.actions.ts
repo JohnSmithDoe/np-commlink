@@ -25,7 +25,10 @@ export const TrackplayActions = createActionGroup({
     deletePlayer: (player: IPlayer) => ({ player }),
 
     // ── Games ──────────────────────────────────────────────────────────────
-    createGame: (name: string, players: TID[] = []) => ({ name, players }),
+    // Carries a pre-minted game, unlike the two create actions below: the game
+    // dialog navigates to what it just created, so the id has to exist before the
+    // dispatch (it used to diff the games map afterwards to guess it).
+    createGame: (game: IGame) => ({ game }),
     renameGame: (gameId: TID, name: string) => ({ gameId, name }),
     changeGameType: (gameId: TID, typeId: TID) => ({ gameId, typeId }),
     setGamePlayers: (gameId: TID, players: TID[]) => ({ gameId, players }),

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { getByTestId, queryByTestId } from '../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import { PageHeaderComponent } from './page-header.component';
 
@@ -23,7 +24,7 @@ describe('PageHeaderComponent', () => {
     fixture.componentRef.setInput('label', 'page-title.storage');
     fixture.detectChanges();
 
-    const title = fixture.nativeElement.querySelector('.sr-brand__name');
+    const title = getByTestId(fixture, 'page-header-title');
     expect(title.textContent).toContain('page-title.storage');
   });
 
@@ -31,27 +32,26 @@ describe('PageHeaderComponent', () => {
     fixture.componentRef.setInput('color', 'storage');
     fixture.detectChanges();
 
-    const toolbar = fixture.nativeElement.querySelector('ion-toolbar');
-    expect(toolbar.color).toBe('storage');
+    const toolbar = getByTestId(fixture, 'page-header-toolbar');
+    expect(toolbar['color']).toBe('storage');
   });
 
   it('shows the add button by default and hides it when hideButtons is set', () => {
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('ion-button')).not.toBeNull();
+    expect(queryByTestId(fixture, 'page-header-add')).not.toBeNull();
 
     // OnPush + zoneless: mutate the input through setInput so the view is
     // marked dirty (and the booleanAttribute transform runs).
     fixture.componentRef.setInput('hideButtons', true);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('ion-button')).toBeNull();
+    expect(queryByTestId(fixture, 'page-header-add')).toBeNull();
   });
 
   it('disables the add button when disabled is set', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
-    const button = fixture.nativeElement.querySelector('ion-button');
-    expect(button.disabled).toBe(true);
+    expect(getByTestId(fixture, 'page-header-add')['disabled']).toBe(true);
   });
 
   it('emits addItem when the add button is clicked', () => {
@@ -59,17 +59,7 @@ describe('PageHeaderComponent', () => {
     const emitted: void[] = [];
     component.addItem.subscribe(() => emitted.push(undefined));
 
-    const button = fixture.nativeElement.querySelector('ion-button');
-    button.click();
-
-    expect(emitted).toHaveLength(1);
-  });
-
-  it('emits addItem when emit() is called', () => {
-    const emitted: void[] = [];
-    component.addItem.subscribe(() => emitted.push(undefined));
-
-    component.addItem.emit();
+    getByTestId(fixture, 'page-header-add').click();
 
     expect(emitted).toHaveLength(1);
   });

@@ -8,12 +8,13 @@ import {
   SelectCustomEvent,
   ToggleCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   IProduct,
   TBestBeforeTimespan,
   TGroceryListId,
 } from '../../model/grocery-list.types';
+import { createProduct } from '../../util/grocery.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
@@ -32,7 +33,7 @@ import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonItem,
-    TranslateModule,
+    TranslatePipe,
     IonSelect,
     IonSelectOption,
     IonText,
@@ -46,9 +47,13 @@ import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
   styleUrl: './edit-product-dialog.component.scss',
 })
 export class EditProductDialogComponent extends BaseGroceryEditItemDialog<IProduct> {
+  protected blank(): IProduct {
+    return createProduct('');
+  }
+
   protected readonly listId: TGroceryListId = '_products';
   readonly categories = this.facade.productsCategories;
-  readonly listItems = this.facade.productListItems;
+  readonly siblings = this.facade.productItems;
 
   protected save(item: IProduct): void {
     this.facade.saveProduct(item);

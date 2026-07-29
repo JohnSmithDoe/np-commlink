@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
   TLanguageModelAvailability,
@@ -36,6 +37,7 @@ describe('CommlinkPage', () => {
     bySource.set({});
     TestBed.configureTestingModule({
       providers: [
+        provideTranslateService(),
         provideZonelessChangeDetection(),
         { provide: LanguageModelService, useValue: { availability } },
         { provide: ThemeService, useValue: { theme } },
@@ -45,7 +47,6 @@ describe('CommlinkPage', () => {
             dashboardState: () => ({ bySource: bySource() }),
             notificationsUnread: () =>
               Number(bySource()['notifications']?.metrics['unread'] ?? 0),
-            telemetry: (source: string) => () => bySource()[source],
           },
         },
         {
@@ -149,6 +150,54 @@ describe('CommlinkPage', () => {
       const page = setup();
       bySource.set({ tracking: { metrics: { count: 0 } } });
       expect(page.badge(programOf(page, 'tracking'))).toBe(0);
+    });
+  });
+
+  describe('the HUD chrome', () => {
+    // The deck's own copy is voiced, so it is keyed by theme exactly as the
+    // codenames are — OK Boomer must not read "Rauschen" at a plain office desk.
+    it('follows the active theme', () => {
+      const page = setup();
+      expect(page.chrome()['noise']).toBe('deck.cyberpunk.chrome.noise');
+
+      theme.set('boomer');
+      expect(page.chrome()['noise']).toBe('deck.boomer.chrome.noise');
+    });
+
+    it('names a tile’s status word in that same register', () => {
+      const page = setup();
+      expect(page.nodeStatusKey('standby')).toBe(
+        'deck.cyberpunk.chrome.node-standby'
+      );
+
+      theme.set('boomer');
+      expect(page.nodeStatusKey('standby')).toBe(
+        'deck.boomer.chrome.node-standby'
+      );
+    });
+  });
+
+  describe('the deck clock', () => {
+    afterEach(() => vi.restoreAllMocks());
+
+    // Ionic keeps a visited route mounted for the whole session, so a 1 Hz
+    // interval left running would mark this subtree dirty from behind whatever
+    // page the user navigated to.
+    it('runs an interval only while the deck is the visible page', () => {
+      const page = setup();
+      const start = vi.spyOn(globalThis, 'setInterval');
+      const stop = vi.spyOn(globalThis, 'clearInterval');
+
+      page.ionViewWillEnter();
+      expect(start).toHaveBeenCalledTimes(1);
+
+      // Ionic re-enters a page it never destroyed; a second interval would then
+      // tick alongside the first for the rest of the session.
+      page.ionViewWillEnter();
+      expect(start).toHaveBeenCalledTimes(1);
+
+      page.ionViewWillLeave();
+      expect(stop).toHaveBeenCalledTimes(1);
     });
   });
 

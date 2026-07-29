@@ -17,7 +17,6 @@ const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
 });
 
 const state = (over: Partial<ITrackingState> = {}): ITrackingState => ({
-  title: 'Time tracking',
   items: [],
   categories: [],
   mode: 'alphabetical',
@@ -46,15 +45,35 @@ describe('tracking.selector', () => {
           trackedTimeInSeconds: 600,
         }),
       ];
-      const grouped = selectTrackingData.projector(
-        state({ sessions }),
-        'monthly'
-      );
+      const grouped = selectTrackingData.projector(sessions, 'monthly');
       const byName = Object.fromEntries(
         grouped.map((g) => [g.name, g.trackedTimeInSeconds])
       );
       expect(byName['A']).toBe(5400);
       expect(byName['B']).toBe(600);
+    });
+
+    // The row used to inherit the id of the last session merged into it, which
+    // made "delete this row" delete exactly one of the sessions behind it.
+    it('lists the sessions behind a merged row and keys the row by its bucket', () => {
+      const sessions = [
+        track({
+          id: 's1',
+          name: 'A',
+          startTime: '2026-05-01T09:00:00',
+          trackedTimeInSeconds: 3600,
+        }),
+        track({
+          id: 's2',
+          name: 'A',
+          startTime: '2026-05-20T09:00:00',
+          trackedTimeInSeconds: 1800,
+        }),
+      ];
+      const [row] = selectTrackingData.projector(sessions, 'monthly');
+
+      expect(row.sessionIds).toEqual(['s1', 's2']);
+      expect(row.id).toBe('202605A');
     });
   });
 
@@ -81,24 +100,67 @@ describe('tracking.selector', () => {
   describe('selectSessionsByDayAndName (chart series)', () => {
     it("buckets today's hours by name across a 21-day window", () => {
       const today = dayjs().hour(10).minute(0).second(0);
-      const series = selectSessionsByDayAndName.projector([
-        track({
-          name: 'A',
-          startTime: today.format(),
-          trackedTimeInSeconds: 3600,
-        }),
-        track({
-          name: 'A',
-          startTime: today.format(),
-          trackedTimeInSeconds: 1800,
-        }),
-      ]);
+      const series = selectSessionsByDayAndName.projector(
+        [
+          track({
+            name: 'A',
+            startTime: today.format(),
+            trackedTimeInSeconds: 3600,
+          }),
+          track({
+            name: 'A',
+            startTime: today.format(),
+            trackedTimeInSeconds: 1800,
+          }),
+        ],
+        []
+      );
 
       expect(series.days).toHaveLength(21);
       const a = series.series.find((s) => s.name === 'A')!;
       expect(a.hours).toHaveLength(21);
       // today is the last day in the window
       expect(a.hours[20]).toBeCloseTo(1.5, 5);
+    });
+
+    // The running item's `updateTracking` tick fires once a second; a stacked
+    // bar chart in hours cannot show that, so the series must not be rebuilt for
+    // it — the memoized live rows only change when a whole minute rolls over.
+    describe('per-second ticks', () => {
+      const archived: ITrackingItem[] = [];
+
+      const stateAtSecond = (trackedTimeInSeconds: number) => ({
+        tracking: state({
+          sessions: archived,
+          items: [
+            track({
+              id: 'live',
+              name: 'Live',
+              state: 'running',
+              startTime: dayjs().hour(10).minute(0).second(0).format(),
+              trackedTimeInSeconds,
+            }),
+          ],
+        }),
+      });
+
+      beforeEach(() => selectSessionsByDayAndName.release());
+
+      it('keeps the series it already built while the minute stands', () => {
+        const first = selectSessionsByDayAndName(stateAtSecond(100));
+        const second = selectSessionsByDayAndName(stateAtSecond(110));
+
+        expect(second).toBe(first);
+      });
+
+      it('rebuilds once the live minute rolls over', () => {
+        const first = selectSessionsByDayAndName(stateAtSecond(100));
+        const next = selectSessionsByDayAndName(stateAtSecond(130));
+
+        expect(next).not.toBe(first);
+        const live = next.series.find((s) => s.name === 'Live')!;
+        expect(live.hours[20]).toBeCloseTo(120 / 3600, 5);
+      });
     });
   });
 });

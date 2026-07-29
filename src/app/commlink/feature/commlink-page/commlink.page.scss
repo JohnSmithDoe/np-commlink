@@ -67,9 +67,6 @@
     font-weight: 600;
   }
 }
-.cl-bar__seg--sig b {
-  letter-spacing: -1px;
-}
 .cl-bar__clock {
   margin-left: auto;
   color: var(--sr-amber);
@@ -239,6 +236,7 @@
   margin-top: auto;
   font-size: 0.72rem;
   letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: var(--sr-cyan);
 }
 
@@ -306,12 +304,28 @@
 
 // Restore the deck's signature hero tracking under cyberpunk (the base uses the
 // tighter --sr-label-tracking so the plain hero reads as a normal heading).
+// The terminal glyphs are punctuation in the deck's voice, not content, so they
+// are drawn here rather than translated — plain reads them as noise.
 :host-context([data-theme='cyberpunk']) {
   .cl-hero__kicker {
     letter-spacing: 0.35em;
+
+    &::before {
+      content: '// ';
+    }
   }
   .cl-hero__title {
     letter-spacing: 0.22em;
+  }
+  .cl-node__foot::before {
+    content: '> ';
+  }
+  // Tightens the signal-bar glyphs; plain fills that slot with a word.
+  .cl-bar__seg--sig b {
+    letter-spacing: -1px;
+  }
+  .cl-tele span::before {
+    content: '◈ ';
   }
 }
 

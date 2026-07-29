@@ -5,7 +5,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -24,7 +23,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -54,9 +53,8 @@ import { TCategoryId } from '../../model/category.types';
   styleUrls: ['./edit-categories.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     IonHeader,
     IonToolbar,
     IonTitle,

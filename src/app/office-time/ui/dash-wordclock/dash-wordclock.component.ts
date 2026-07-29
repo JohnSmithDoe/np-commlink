@@ -26,7 +26,6 @@ export class DashWordclockComponent {
 
   // Minutes 1–4 past the nearest 5 are shown as dots in the four corners.
   readonly wordclockConfig: TSettings = {
-    targetDate: '',
     showCorners: true,
     deZwanzigNach: false,
     deZwanzigVor: false,

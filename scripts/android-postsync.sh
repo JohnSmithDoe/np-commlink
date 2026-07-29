@@ -13,7 +13,7 @@
 #   1. CAMERA / FLASHLIGHT permissions        — mlkit EAN-13 scanner
 #   2. POST_NOTIFICATIONS permission          — Android 13+ local notifications
 #   3. mlkit barcode_ui install meta-data     — bundles the scanner UI module
-#   4. versionName 1.0.0 / versionCode 1      — release identity
+#   4. versionName / versionCode              — release identity, from package.json
 #
 set -euo pipefail
 
@@ -43,8 +43,25 @@ perl -0pi -e '
     unless /com\.google\.mlkit\.vision\.DEPENDENCIES/;
 ' "$MANIFEST"
 
-# 4. release identity
-perl -pi -e 's{versionName "1\.0"}{versionName "1.0.0"};' "$GRADLE"
-perl -pi -e 's{versionCode \d+}{versionCode 1};' "$GRADLE"
+# 4. release identity — derived, so package.json stays the only place a version
+#    is written (the web build injects the same value via esbuild `define`).
+#
+#    versionCode is what Android actually compares to decide an install is an
+#    upgrade: a code that does not increase is rejected with
+#    INSTALL_FAILED_VERSION_DOWNGRADE, and the only way in is to uninstall —
+#    which wipes the IndexedDB holding every tracked session, the pantry and the
+#    ledger. Hence derived rather than pinned.
+#
+#    CONSTRAINT: minor and patch must each stay below 100, since 0.1.100 and
+#    0.2.0 would both compute to 200. The failure is silent at build time and
+#    only shows up as an APK Android refuses to install over its predecessor.
+VERSION_NAME="$(node -p "require('$ROOT/package.json').version")"
+VERSION_CODE="$(node -p "
+  const [major, minor, patch] = require('$ROOT/package.json').version.split('.').map(Number);
+  major * 10000 + minor * 100 + patch;
+")"
 
-echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit) and build.gradle (1.0.0 / 1)."
+perl -pi -e "s{versionName \"[^\"]*\"}{versionName \"$VERSION_NAME\"};" "$GRADLE"
+perl -pi -e "s{versionCode \\d+}{versionCode $VERSION_CODE};" "$GRADLE"
+
+echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit) and build.gradle ($VERSION_NAME / $VERSION_CODE)."

@@ -19,7 +19,7 @@ import {
   IonToolbar,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, play, square } from 'ionicons/icons';
 import { IRound, TID } from '../../model/trackplay.types';
@@ -52,7 +52,7 @@ import { ScorePipe } from '../../util/score.pipe';
     IonTitle,
     IonContent,
     IonInput,
-    TranslateModule,
+    TranslatePipe,
     ScorePipe,
   ],
 })

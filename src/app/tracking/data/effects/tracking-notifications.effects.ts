@@ -127,9 +127,7 @@ export class TrackingNotificationsEffects {
       }),
       icon: preset.icon,
       color: preset.color,
-      action: preset.action
-        ? { type: preset.action, targetId: item.id }
-        : undefined,
+      action: preset.cta ? { ...preset.cta, targetId: item.id } : undefined,
     };
   }
 

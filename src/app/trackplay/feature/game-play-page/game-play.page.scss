@@ -162,8 +162,31 @@ $round-width: 3rem;
     }
   }
 
+  // The beams, the reticle and the confetti are pure deck decoration: the plain
+  // theme shows the flat trophy above the ranked list and nothing else moves.
+  .tp-victory__rays,
+  .tp-victory__ring,
+  .tp-victory__spark {
+    display: none;
+  }
+
+  .tp-victory__trophy {
+    display: grid;
+    place-items: center;
+    color: var(--sr-amber);
+
+    svg {
+      width: 84px;
+      height: 84px;
+    }
+  }
+}
+
+// ── deck-only victory neon ───────────────────────────────────────────────────
+:host-context([data-theme='cyberpunk']) {
   // rotating "victory beams" — evenly spaced amber wedges, edges faded out
   .tp-victory__rays {
+    display: block;
     width: 150%;
     height: 150%;
     opacity: 0.55;
@@ -180,6 +203,7 @@ $round-width: 3rem;
 
   // pulsing cyan reticle ring
   .tp-victory__ring {
+    display: block;
     width: 130px;
     height: 130px;
     border: 1px solid rgba(var(--sr-cyan-rgb), 0.7);
@@ -190,22 +214,18 @@ $round-width: 3rem;
     animation: tp-ring 2.6s ease-out infinite;
   }
 
-  // bobbing amber trophy sigil
+  // the trophy sigil bobs and glows here; it stays flat in the plain theme
   .tp-victory__trophy {
-    display: grid;
-    place-items: center;
-    color: var(--sr-amber);
     animation: tp-bob 2.6s ease-in-out infinite;
 
     svg {
-      width: 84px;
-      height: 84px;
       filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.65));
     }
   }
 
   // neon confetti — alternating amber/cyan sparks raining down the tile
   .tp-victory__spark {
+    display: block;
     position: absolute;
     top: 0;
     width: 6px;
@@ -286,8 +306,10 @@ $round-width: 3rem;
   }
 }
 
+// Matches the deck rule's specificity and comes after it, so the sparks stay
+// hidden for a reduced-motion visitor even on the deck theme.
 @media (prefers-reduced-motion: reduce) {
-  :host .tp-victory__spark {
+  :host-context([data-theme='cyberpunk']) .tp-victory__spark {
     display: none;
   }
 }

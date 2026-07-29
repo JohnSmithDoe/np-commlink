@@ -6,6 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { form, FormField, SchemaFn } from '@angular/forms/signals';
 import {
   IonButton,
   IonButtons,
@@ -21,16 +22,19 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle, playCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import { requireText } from '../../../@shared/util/form-rules';
 import { IGame, TID } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-select.component';
 
 type TGameForm = { name: string; typeId: TID; playerIds: TID[] };
+
+const gameRules: SchemaFn<TGameForm> = (path) => requireText(path.name);
 
 /**
  * Game create/edit dialog (presented via ModalController). In create mode an
@@ -48,6 +52,7 @@ type TGameForm = { name: string; typeId: TID; playerIds: TID[] };
   styleUrls: ['./game-edit-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -61,7 +66,7 @@ type TGameForm = { name: string; typeId: TID; playerIds: TID[] };
     IonInput,
     IonSelect,
     IonSelectOption,
-    TranslateModule,
+    TranslatePipe,
     TrackplayPlayerSelectComponent,
   ],
 })
@@ -106,7 +111,8 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     () => this.existing()?.players ?? this.#presetPlayerIds() ?? []
   );
 
-  readonly canSave = computed(() => this.draft().name.trim().length > 0);
+  protected readonly form = form(this.draft, gameRules);
+
   readonly canPlay = computed(
     () => this.canSave() && this.draft().playerIds.length > 0
   );
@@ -140,9 +146,8 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     this.dismiss();
   }
 
-  // Apply every changed field and return the resolved game id (existing, or the
-  // uuid of the just-created game — resolved by diffing the games map keys,
-  // which NgRx updates synchronously on dispatch).
+  // Apply every changed field and return the game id under edit (existing, or the
+  // one the facade minted for the new game).
   #commit(draft: TGameForm, existing: IGame | undefined): TID | null {
     const name = draft.name.trim();
     const { typeId, playerIds } = draft;
@@ -163,14 +168,7 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     if (!name) {
       return null;
     }
-    const before = new Set(Object.keys(this.#games()));
-    this.#facade.createGame(name, playerIds);
-    const newId =
-      Object.keys(this.#games()).find((id) => !before.has(id)) ?? null;
-    if (newId && typeId !== DEFAULT_GAME_TYPE_ID) {
-      this.#facade.changeGameType(newId, typeId);
-    }
-    return newId;
+    return this.#facade.createGame(name, typeId, playerIds);
   }
 
   #hasSameIds(a: TID[], b: TID[]): boolean {

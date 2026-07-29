@@ -16,7 +16,6 @@ import { GroceriesActions } from '../actions/groceries.actions';
 import { ProductsActions } from '../actions/products.actions';
 
 export const initialState: IProductsState = {
-  title: 'Product Items',
   id: '_products',
   items: [],
   mode: 'alphabetical',

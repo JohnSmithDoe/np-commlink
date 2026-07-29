@@ -22,7 +22,6 @@ describe('TrackingListPageFacade', () => {
     // Seed the tracking selectors the facade reads so its signal fields resolve
     // without a real reducer state.
     store.overrideSelector(selectTrackingState, {
-      title: 'Time tracking',
       items: [],
       categories: [],
       mode: 'alphabetical',

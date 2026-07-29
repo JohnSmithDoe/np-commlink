@@ -1,4 +1,5 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TMarker } from '../../@shared/model/app.types';
 import { IDeckEntry } from './deck.types';
 
 /**
@@ -20,6 +21,16 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'hardware-chip-outline',
     route: '/commlink',
     titleKey: marker('page-title.commlink'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.commlink.name'),
+        descKey: marker('deck.cyberpunk.commlink.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.commlink.name'),
+        descKey: marker('deck.boomer.commlink.desc'),
+      },
+    },
     onDeck: false,
   },
   {
@@ -28,9 +39,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'timer-outline',
     route: '/tracking',
     titleKey: marker('page-title.tracking'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.tracking.name'),
+        descKey: marker('deck.cyberpunk.tracking.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.tracking.name'),
+        descKey: marker('deck.boomer.tracking.desc'),
+      },
+    },
     onDeck: true,
     source: 'tracking',
     metric: 'count',
+    metricKey: marker('deck.metric.count'),
   },
   {
     id: 'office-time',
@@ -38,9 +60,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'business-outline',
     route: '/office-time',
     titleKey: marker('page-title.office-time'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.office-time.name'),
+        descKey: marker('deck.cyberpunk.office-time.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.office-time.name'),
+        descKey: marker('deck.boomer.office-time.desc'),
+      },
+    },
     onDeck: true,
     source: 'office-time',
     metric: 'officedays',
+    metricKey: marker('deck.metric.officedays'),
   },
   {
     id: 'notifications',
@@ -48,9 +81,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'notifications-outline',
     route: '/notifications',
     titleKey: marker('page-title.notifications'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.notifications.name'),
+        descKey: marker('deck.cyberpunk.notifications.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.notifications.name'),
+        descKey: marker('deck.boomer.notifications.desc'),
+      },
+    },
     onDeck: true,
     source: 'notifications',
     metric: 'unread',
+    metricKey: marker('deck.metric.unread'),
   },
   {
     id: 'barcode',
@@ -58,6 +102,16 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'barcode-outline',
     route: '/barcode',
     titleKey: marker('page-title.barcode'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.barcode.name'),
+        descKey: marker('deck.cyberpunk.barcode.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.barcode.name'),
+        descKey: marker('deck.boomer.barcode.desc'),
+      },
+    },
     onDeck: true,
     status: 'online',
   },
@@ -67,9 +121,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'restaurant-outline',
     route: '/soykaf',
     titleKey: marker('page-title.soykaf'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.soykaf.name'),
+        descKey: marker('deck.cyberpunk.soykaf.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.soykaf.name'),
+        descKey: marker('deck.boomer.soykaf.desc'),
+      },
+    },
     onDeck: true,
     source: 'recipes',
     metric: 'count',
+    metricKey: marker('deck.metric.count'),
   },
   {
     id: 'shopping',
@@ -77,9 +142,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'cart-outline',
     route: '/groceries/shopping/_shopping',
     titleKey: marker('page-title.groceries-shopping'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.shopping.name'),
+        descKey: marker('deck.cyberpunk.shopping.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.shopping.name'),
+        descKey: marker('deck.boomer.shopping.desc'),
+      },
+    },
     onDeck: true,
     source: 'shopping',
     metric: 'active',
+    metricKey: marker('deck.metric.active'),
   },
   {
     id: 'storage',
@@ -87,19 +163,41 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'file-tray-stacked-outline',
     route: '/groceries/storage/_storage',
     titleKey: marker('page-title.groceries-storage'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.storage.name'),
+        descKey: marker('deck.cyberpunk.storage.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.storage.name'),
+        descKey: marker('deck.boomer.storage.desc'),
+      },
+    },
     onDeck: true,
     source: 'storage',
     metric: 'low',
+    metricKey: marker('deck.metric.low'),
   },
   {
     id: 'tasks',
     module: 'tasks',
     icon: 'checkbox-outline',
-    route: '/tasks/_tasks',
+    route: '/tasks/list',
     titleKey: marker('page-title.tasks'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.tasks.name'),
+        descKey: marker('deck.cyberpunk.tasks.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.tasks.name'),
+        descKey: marker('deck.boomer.tasks.desc'),
+      },
+    },
     onDeck: true,
     source: 'tasks',
     metric: 'open',
+    metricKey: marker('deck.metric.open'),
   },
   {
     id: 'products',
@@ -107,9 +205,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'pricetags-outline',
     route: '/groceries/products/_products',
     titleKey: marker('page-title.groceries-products'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.products.name'),
+        descKey: marker('deck.cyberpunk.products.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.products.name'),
+        descKey: marker('deck.boomer.products.desc'),
+      },
+    },
     onDeck: true,
     source: 'products',
     metric: 'count',
+    metricKey: marker('deck.metric.count'),
   },
   {
     id: 'list-settings',
@@ -117,6 +226,16 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'options-outline',
     route: '/groceries/list-settings',
     titleKey: marker('page-title.groceries-list-settings'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.list-settings.name'),
+        descKey: marker('deck.cyberpunk.list-settings.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.list-settings.name'),
+        descKey: marker('deck.boomer.list-settings.desc'),
+      },
+    },
     onDeck: false,
   },
   {
@@ -125,9 +244,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'wallet-outline',
     route: '/cash',
     titleKey: marker('page-title.cash'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.cash.name'),
+        descKey: marker('deck.cyberpunk.cash.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.cash.name'),
+        descKey: marker('deck.boomer.cash.desc'),
+      },
+    },
     onDeck: true,
     source: 'cash',
     metric: 'balance',
+    metricKey: marker('deck.metric.balance'),
     currency: true,
   },
   {
@@ -136,9 +266,20 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'dice-outline',
     route: '/trackplay',
     titleKey: marker('page-title.trackplay-games'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.trackplay.name'),
+        descKey: marker('deck.cyberpunk.trackplay.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.trackplay.name'),
+        descKey: marker('deck.boomer.trackplay.desc'),
+      },
+    },
     onDeck: true,
     source: 'trackplay',
     metric: 'games',
+    metricKey: marker('deck.metric.games'),
   },
   {
     id: 'settings',
@@ -146,6 +287,16 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'settings-outline',
     route: '/settings',
     titleKey: marker('page-title.settings'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.settings.name'),
+        descKey: marker('deck.cyberpunk.settings.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.settings.name'),
+        descKey: marker('deck.boomer.settings.desc'),
+      },
+    },
     onDeck: true,
     status: 'online',
   },
@@ -155,6 +306,16 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
     icon: 'sparkles-outline',
     route: '/geist',
     titleKey: marker('page-title.geist'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.geist.name'),
+        descKey: marker('deck.cyberpunk.geist.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.geist.name'),
+        descKey: marker('deck.boomer.geist.desc'),
+      },
+    },
     onDeck: true,
     needsLanguageModel: true,
   },
@@ -167,3 +328,41 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
 export const DECK_SLOT_COUNT = DECK_CATALOG.filter(
   (entry) => entry.onDeck
 ).length;
+
+/**
+ * Every piece of deck chrome whose wording is *voiced* — the HUD readouts, the
+ * hero kicker and the tile status words. Like the codenames, each is looked up
+ * as `deck.<theme>.chrome.<field>`, so a theme brings its own register: where
+ * the deck reads NOISE / ICE, a plain office tool names the same slots by what
+ * they actually mean.
+ *
+ * A field names the *slot* in the deck's reference expression, not the word a
+ * theme puts in it — a `-value` field is the stat's reading where that reading
+ * is static text rather than a live number.
+ */
+export const DECK_CHROME_FIELDS = [
+  'grid',
+  'grid-value',
+  'noise',
+  'signal',
+  'signal-value',
+  'kicker',
+  'res',
+  'firewall',
+  'firewall-value',
+  'programs-loaded',
+  'nuyen',
+  'trace',
+  'trace-value',
+  'ice',
+  'ice-value',
+  'uptime',
+  'node-online',
+  'node-standby',
+  'node-offline',
+] as const;
+
+export type TDeckChromeField = (typeof DECK_CHROME_FIELDS)[number];
+
+/** The deck's chrome as translate keys, resolved against the active theme. */
+export type TDeckChrome = Record<TDeckChromeField, TMarker>;

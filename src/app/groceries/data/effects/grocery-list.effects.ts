@@ -58,17 +58,13 @@ export class GroceryListEffects {
   readonly #actions$ = inject(Actions);
   readonly #lists$ = this.#store.select(selectGroceriesState);
 
-  // The generic list-page action, routed to either "add a category" (categories
-  // mode) or the concrete list's own from-search action.
+  // The generic list-page action, routed to the concrete list's own from-search
+  // action. Whether the affordance means "item" or "category" is the list page's
+  // decision, made once in `ListPageComponent`.
   routeAddItemFromSearch$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(GroceryListActions.addItemFromSearch),
-      withLatestFrom(this.#lists$),
-      map(([action, state]) =>
-        stateByListId(state, action.listId).mode === 'categories'
-          ? GroceryListActions.addCategoryFromSearch(action.listId)
-          : actionsByListId(action.listId).addItemFromSearch()
-      )
+      map(({ listId }) => actionsByListId(listId).addItemFromSearch())
     );
   });
 

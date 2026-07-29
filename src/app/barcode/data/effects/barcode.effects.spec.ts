@@ -1,18 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
-import { provideMockStore } from '@ngrx/store/testing';
-import { firstValueFrom, Observable, of, toArray } from 'rxjs';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { firstValueFrom, Observable, of, tap, toArray } from 'rxjs';
 import { mockKernelState } from '../../../@shared/testing/test-data';
 import { BarcodeActions } from '../actions/barcode.actions';
 import { BarcodeEffects } from './barcode.effects';
 
 const BADGE_URL = 'data:image/png;base64,BADGE';
-const ROTATED_URL = 'data:image/*;base64,ROTATED';
+const ROTATED_URL = 'data:image/png;base64,ROTATED';
+const ROTATED_TWICE_URL = 'data:image/png;base64,ROTATEDTWICE';
 
 // jsdom neither fetches images nor rasterises a canvas, so the real
 // `rotateBase64` runs against stand-ins for both.
-const stubBadgeImage = (outcome: 'load' | 'error') =>
+const stubBadgeImage = (outcome: 'load' | 'error'): string[] => {
+  const requested: string[] = [];
   vi.stubGlobal(
     'Image',
     class {
@@ -24,20 +26,23 @@ const stubBadgeImage = (outcome: 'load' | 'error') =>
         this.#handlers.set(type, handler);
       }
 
-      set src(_: string) {
+      set src(value: string) {
+        requested.push(value);
         queueMicrotask(() => this.#handlers.get(outcome)?.(new Event(outcome)));
       }
     }
   );
+  return requested;
+};
 
-const stubCanvasYielding = (rotated: string) => {
+const stubCanvasYielding = (...rotations: string[]) => {
   const canvas = {
     getContext: () => ({
       translate: vi.fn(),
       rotate: vi.fn(),
       drawImage: vi.fn(),
     }),
-    toDataURL: () => rotated,
+    toDataURL: () => rotations.shift() ?? '',
   };
   const createElement = document.createElement.bind(document);
   vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
@@ -48,6 +53,7 @@ const stubCanvasYielding = (rotated: string) => {
 describe('BarcodeEffects', () => {
   let actions$: Observable<Action>;
   let effects: BarcodeEffects;
+  let store: MockStore;
 
   const setup = (dataUrl?: string) => {
     TestBed.configureTestingModule({
@@ -60,6 +66,7 @@ describe('BarcodeEffects', () => {
       ],
     });
     effects = TestBed.inject(BarcodeEffects);
+    store = TestBed.inject(MockStore);
   };
 
   afterEach(() => {
@@ -87,6 +94,35 @@ describe('BarcodeEffects', () => {
     expect(await firstValueFrom(effects.rotateBarcode$)).toEqual(
       BarcodeActions.rotateBarcodeSuccess(BADGE_URL)
     );
+  });
+
+  // Double-tapping rotate has to turn the badge 180°: the second tap may neither
+  // be dropped nor rotate the pre-rotation badge a second time.
+  it('queues a second tap and rotates the result of the first', async () => {
+    setup(BADGE_URL);
+    const loaded = stubBadgeImage('load');
+    stubCanvasYielding(ROTATED_URL, ROTATED_TWICE_URL);
+    actions$ = of(
+      BarcodeActions.rotateBarcode(),
+      BarcodeActions.rotateBarcode()
+    );
+
+    const committed = await firstValueFrom(
+      effects.rotateBarcode$.pipe(
+        tap((action) =>
+          store.setState(
+            mockKernelState({ barcode: { dataUrl: action.dataUrl } })
+          )
+        ),
+        toArray()
+      )
+    );
+
+    expect(committed).toEqual([
+      BarcodeActions.rotateBarcodeSuccess(ROTATED_URL),
+      BarcodeActions.rotateBarcodeSuccess(ROTATED_TWICE_URL),
+    ]);
+    expect(loaded).toEqual([BADGE_URL, ROTATED_URL]);
   });
 
   it('emits nothing when no badge has been uploaded', async () => {

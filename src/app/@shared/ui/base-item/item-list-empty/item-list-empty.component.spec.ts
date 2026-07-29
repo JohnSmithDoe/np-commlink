@@ -26,7 +26,7 @@ describe('ItemListEmptyComponent', () => {
 
     const textItem = fixture.nativeElement.querySelector('app-text-item');
     expect(textItem).toBeTruthy();
-    // The TranslateModule has no translations loaded, so keys pass through.
+    // The TranslatePipe has no translations loaded, so keys pass through.
     expect(fixture.nativeElement.textContent).toContain(
       'item-list.empty.isempty'
     );
@@ -54,23 +54,5 @@ describe('ItemListEmptyComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('app-text-item')).toBeNull();
-  });
-
-  it('emits emptyList when the empty-list item is selected', () => {
-    const emitted: void[] = [];
-    component.emptyList.subscribe((v) => emitted.push(v));
-
-    component.emptyList.emit();
-
-    expect(emitted).toHaveLength(1);
-  });
-
-  it('emits emptySearch when the not-found item is selected', () => {
-    const emitted: void[] = [];
-    component.emptySearch.subscribe((v) => emitted.push(v));
-
-    component.emptySearch.emit();
-
-    expect(emitted).toHaveLength(1);
   });
 });

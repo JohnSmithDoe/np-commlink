@@ -1,10 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import {
-  IGrocerySearchResult,
-  IShoppingItem,
-  IShoppingState,
-} from '../../model/grocery-list.types';
-import { filterBySearchQuery } from './grocery-list.selector';
+import { IShoppingItem, IShoppingState } from '../../model/grocery-list.types';
 import { selectGroceriesState } from './groceries.selector';
 
 import { ICategory } from '../../../@shared/model/category.types';
@@ -21,11 +16,14 @@ export const selectShoppingCategories = createSelector(
   (state): ICategory[] => state.categories
 );
 
-export const selectShoppingSearchResult = createSelector(
+/**
+ * Every row the shopping list holds, bought ones included, unfiltered — see
+ * {@link selectStorageItems} for why the page's filtered view is the wrong read
+ * for an aggregate.
+ */
+export const selectShoppingItems = createSelector(
   selectShoppingState,
-  selectGroceriesState,
-  (listState, lists): IGrocerySearchResult<IShoppingItem> | undefined =>
-    filterBySearchQuery(lists, listState)
+  (state: IShoppingState): IShoppingItem[] => state?.items ?? []
 );
 
 export const selectShoppingListHasBoughtItems = createSelector(

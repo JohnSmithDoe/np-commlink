@@ -19,13 +19,13 @@ export const dashboardReducer = createReducer(
       [telemetry.source]: { ...telemetry, status: 'online' as const },
     },
   })),
-  // Hydration fills the GAPS, it doesn't overwrite: an eager reporter registers
-  // before this storage read resolves, so a source may already carry a live
-  // report by now — and a report read the slice, which is fresher than the doc.
-  // (Overwriting made an eager reporter's count revert to its persisted value at
-  // `standby` for the rest of the session, since `select` only re-emits on
-  // change.) `hydrate` fires exactly once at boot, so "already in state" can
-  // only mean "reported live".
+  // Hydration fills the GAPS, it doesn't overwrite. A reporter waits for its own
+  // slice's `loaded` before it reports (`createTelemetrySliceEffect`), so a
+  // source already in state by the time this boot read resolves carries a number
+  // derived from that hydrated slice — fresher than the doc, which is the
+  // previous session's. Overwriting parked such a source at its persisted value
+  // at `standby` for the rest of the session, since `select` only re-emits on
+  // change.
   on(
     DashboardReadModelActions.hydrate,
     (state, { summaries }): IDashboardState => ({

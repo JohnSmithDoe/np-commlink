@@ -14,18 +14,23 @@ import { deckReducer } from './reducer/deck.reducer';
 import { selectDeckState } from './selectors/deck.selector';
 
 /**
- * State + effects for the commlink-owned dashboard read-model. `provideAppKernel()`
- * composes it into the root injector, which is what makes it eager: the deck is
- * the `**` fallback and the shell's notification badge is always on, and a sink
- * every module writes to cannot be scoped to one producer's route lifecycle.
- * Hence `bootHydrationProvider` and an empty `resolve` in place of a
- * `moduleHydrationResolver`.
+ * State + effects for the commlink-owned dashboard read-model.
  *
- * The one slice that does NOT ride `providePersistedContext`, and the bundle
- * shape is what keeps that invisible to the composition site: it reads a key
- * *family* (`loadPrefixed('summary-')`) and gates persistence on `hydrate` so the
- * reporters' pre-hydration `report` cannot overwrite the previous session — an
- * ordering rule the generic save effect has no business carrying for one caller.
+ * THE one place the "why eager" argument lives — every other file in this domain
+ * points here. `provideAppKernel()` composes this bundle into the root injector
+ * instead of handing it to a route, because the dashboard is a capability SINK:
+ * its writers live outside its own route (every program reports while you are
+ * inside that program), so it cannot be scoped to any one producer's lifecycle,
+ * and its readers — the `**` fallback deck plus the always-on notification badge
+ * — must render a cold launch. Hence `bootHydrationProvider` and an empty
+ * `resolve` in place of a `moduleHydrationResolver`. Ownership (which domain
+ * holds the reducer) and lifecycle (when it registers) are independent axes; the
+ * bundle shape is the same either way.
+ *
+ * It is also the one slice that does NOT ride `providePersistedContext`, and the
+ * bundle shape keeps that invisible to the composition site: it reads a key
+ * *family* (`loadPrefixed('summary-')`) rather than a single doc — a shape the
+ * generic load effect has no business carrying for one caller.
  */
 const dashboardContext: TContextBundle = {
   providers: [

@@ -9,7 +9,7 @@ import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideMockStore } from '@ngrx/store/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { mockKernelState, TMockState } from './test-data';
 
 type TestProvider = Provider | EnvironmentProviders;
@@ -25,7 +25,7 @@ export const BASE_TEST_PROVIDERS: TestProvider[] = [
   provideHttpClient(),
   provideIonicAngular(),
   provideRouter([]),
-  importProvidersFrom(TranslateModule.forRoot()),
+  provideTranslateService(),
   importProvidersFrom(IonicStorageModule.forRoot()),
 ];
 

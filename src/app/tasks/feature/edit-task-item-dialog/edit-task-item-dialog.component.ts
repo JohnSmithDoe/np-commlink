@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
 import { ITaskItem, TASKS_LIST_ID } from '../../model/task.types';
+import { createTaskItem } from '../../util/task.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
@@ -20,7 +21,7 @@ import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
   selector: 'app-edit-task-item-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     CategoryInputComponent,
     CategoriesDialogComponent,
     ItemEditModalComponent,
@@ -31,10 +32,14 @@ import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
   styleUrl: './edit-task-item-dialog.component.scss',
 })
 export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<ITaskItem> {
+  protected blank(): ITaskItem {
+    return createTaskItem('');
+  }
+
   readonly #facade = inject(TasksListPageFacade);
   protected readonly listId = TASKS_LIST_ID;
   readonly categories = this.#facade.taskCategories;
-  readonly listItems = this.#facade.items;
+  readonly siblings = this.#facade.allItems;
 
   protected save(item: ITaskItem): void {
     this.#facade.saveItem(item);
@@ -53,7 +58,7 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<ITas
     this.patch({ prio: value });
   }
 
-  updateDueAt(value?: string) {
-    this.patch({ dueAt: value });
+  updateDueAt(value: string | null) {
+    this.patch({ dueAt: value ?? undefined });
   }
 }

@@ -18,18 +18,18 @@ export type DashboardStats = {
   percentage: number;
 };
 
-marker('officetime.page.settings.dashboard.showDateCard');
-marker('officetime.page.settings.dashboard.showPercentageCard');
-marker('officetime.page.settings.dashboard.showOfficedaysCardList');
-marker('officetime.page.settings.dashboard.showOfficedaysCardEdit');
-marker('officetime.page.settings.dashboard.showFreedaysCardList');
-marker('officetime.page.settings.dashboard.showFreedaysCardEdit');
-marker('officetime.page.settings.dashboard.showHolidaysCard');
-marker('officetime.page.settings.dashboard.showStatsWeek');
-marker('officetime.page.settings.dashboard.showStatsMonth');
-marker('officetime.page.settings.dashboard.showStatsQuarter');
-marker('officetime.page.settings.dashboard.showStatsYear');
-marker('officetime.page.settings.dashboard.showWordclockCard');
+marker('office-time.page.settings.dashboard.showDateCard');
+marker('office-time.page.settings.dashboard.showPercentageCard');
+marker('office-time.page.settings.dashboard.showOfficedaysCardList');
+marker('office-time.page.settings.dashboard.showOfficedaysCardEdit');
+marker('office-time.page.settings.dashboard.showFreedaysCardList');
+marker('office-time.page.settings.dashboard.showFreedaysCardEdit');
+marker('office-time.page.settings.dashboard.showHolidaysCard');
+marker('office-time.page.settings.dashboard.showStatsWeek');
+marker('office-time.page.settings.dashboard.showStatsMonth');
+marker('office-time.page.settings.dashboard.showStatsQuarter');
+marker('office-time.page.settings.dashboard.showStatsYear');
+marker('office-time.page.settings.dashboard.showWordclockCard');
 
 export type DashboardSettings = {
   showDateCard: boolean;
@@ -47,21 +47,30 @@ export type DashboardSettings = {
 };
 
 export type DashboardSettingsType = keyof DashboardSettings;
-const DASHBOARD_ITEMS = [
-  'date',
-  'button',
-  'wordclock',
-  'officedays-list',
-  'officedays-edit',
-  'freedays-list',
-  'freedays-edit',
-  'stats-year',
-  'stats-quarter',
-  'stats-month',
-  'stats-week',
-  'holidays',
-] as const;
-export type DashboardItemType = (typeof DASHBOARD_ITEMS)[number];
+
+/**
+ * Every dashboard card, mapped to the settings flag that hides it — `button` maps
+ * to none, because logging today is the page's reason to exist and is not
+ * hideable. This object IS the card vocabulary (`DashboardItemType` is its
+ * keys), so the two used to drift as a hand-kept list plus a switch in the page;
+ * now a new card cannot be added without saying whether it is hideable.
+ */
+export const DASHBOARD_CARD_VISIBILITY = {
+  date: 'showDateCard',
+  button: null,
+  wordclock: 'showWordclockCard',
+  'officedays-list': 'showOfficedaysCardList',
+  'officedays-edit': 'showOfficedaysCardEdit',
+  'freedays-list': 'showFreedaysCardList',
+  'freedays-edit': 'showFreedaysCardEdit',
+  'stats-year': 'showStatsYear',
+  'stats-quarter': 'showStatsQuarter',
+  'stats-month': 'showStatsMonth',
+  'stats-week': 'showStatsWeek',
+  holidays: 'showHolidaysCard',
+} as const satisfies Record<string, keyof DashboardSettings | null>;
+
+export type DashboardItemType = keyof typeof DASHBOARD_CARD_VISIBILITY;
 
 export type DateTimeHighlight = {
   date: string;

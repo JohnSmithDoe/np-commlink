@@ -24,12 +24,11 @@ export interface ITaskItem extends IBaseItem {
   prio?: number;
 }
 
-// Concrete task list narrows `id`/`title` and re-requires categories/mode
-// (optional on the shared IItemList base) so task selectors can read them
-// without null guards.
+// Concrete task list narrows `id` and re-requires categories/mode (optional on
+// the shared IItemList base) so task selectors can read them without null
+// guards.
 export type TTasksList = IItemList<ITaskItem> & {
   id: typeof TASKS_LIST_ID;
-  title: 'Tasks Items';
   categories: ICategory[];
   mode: TItemListMode;
 };

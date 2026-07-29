@@ -23,6 +23,7 @@
   gap: 0.4rem 1.1rem;
   font-size: 0.68rem;
   letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: rgba(var(--sr-amber-rgb), 0.7);
 }
 .gs-bar__seg {
@@ -62,6 +63,7 @@
   font-size: clamp(1.5rem, 6vw, 2.1rem);
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-heading-transform);
   color: var(--sr-amber);
   text-shadow: var(--sr-glow-lg);
 }
@@ -261,6 +263,7 @@
   gap: 0.4rem 1.1rem;
   font-size: 0.66rem;
   letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: rgba(var(--sr-amber-rgb), 0.55);
 }
 .gs-tele b {
@@ -272,6 +275,7 @@
   padding: 0.5rem 1rem;
   font-size: 0.72rem;
   letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
   color: var(--sr-cyan);
   text-decoration: none;
   border: 1px solid rgba(var(--sr-cyan-rgb), 0.4);

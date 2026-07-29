@@ -1,7 +1,6 @@
-import { filterBySearchQuery } from './grocery-list.selector';
 import {
+  selectShoppingItems,
   selectShoppingListHasBoughtItems,
-  selectShoppingSearchResult,
   selectShoppingState,
 } from './shopping.selector';
 import {
@@ -16,27 +15,21 @@ describe('shopping.selector', () => {
     expect(selectShoppingState({ groceries: lists })).toBe(lists.shopping);
   });
 
-  describe('selectShoppingSearchResult', () => {
-    it('returns undefined without a search query', () => {
-      const listState = mockShoppingState();
-      const lists = mockGroceriesState({ shopping: listState });
-      expect(
-        selectShoppingSearchResult.projector(listState, lists)
-      ).toBeUndefined();
-    });
-
-    it('returns the search result matching the query', () => {
-      const listState = mockShoppingState({
-        searchQuery: 'Bread',
+  // Same invariant as `selectStorageItems`, plus one shopping-only clause: a
+  // bought row is still a sibling, so its name stays taken.
+  describe('selectShoppingItems', () => {
+    it('ignores the page search query and keeps bought rows', () => {
+      const state = mockShoppingState({
+        searchQuery: 'Milk',
         items: [
-          mockShoppingItem({ id: 'a', name: 'Bread' }),
+          mockShoppingItem({ id: 'a', name: 'Bread', state: 'bought' }),
           mockShoppingItem({ id: 'b', name: 'Milk' }),
         ],
       });
-      const lists = mockGroceriesState({ shopping: listState });
-      const result = selectShoppingSearchResult.projector(listState, lists);
-      expect(result?.listItems.map((index) => index.name)).toEqual(['Bread']);
-      expect(result).toEqual(filterBySearchQuery(lists, listState));
+
+      expect(
+        selectShoppingItems.projector(state).map(({ name }) => name)
+      ).toEqual(['Bread', 'Milk']);
     });
   });
 

@@ -1,8 +1,8 @@
 /**
  * Public API of the `settings` data module (Sheriff barrel).
  *
- * The app-global settings slice — the persisted schema `version` anchor + the
- * selected UI `theme`. Sealed into its own domain (was `@shared/data/settings`):
+ * The app-global settings slice — the selected UI `theme` and its accent
+ * overrides. Sealed into its own domain (was `@shared/data/settings`):
  * its only reader is this domain's settings page, so it no longer needs to live
  * in the shared kernel bucket.
  *

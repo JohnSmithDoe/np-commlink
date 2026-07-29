@@ -9,7 +9,6 @@ const row = (over: Partial<IParsedRow> = {}): IParsedRow => ({
   dateISO: '2026-01-06T00:00:00+01:00',
   amountCents: -4299,
   description: 'REWE',
-  rawDescription: 'REWE',
   ...over,
 });
 
@@ -44,7 +43,7 @@ describe('planImport', () => {
       accountId: 'acc',
       dateISO: '2026-01-06T00:00:00+01:00',
       amountCents: -4299,
-      rawDescription: 'REWE',
+      description: 'REWE',
       source: 'imported',
     });
     const plan = planImport(
@@ -66,7 +65,7 @@ describe('planImport', () => {
       accountId: 'acc',
       dateISO: '2026-01-06T00:00:00+01:00',
       amountCents: -4299,
-      rawDescription: 'REWE',
+      description: 'REWE',
       source: 'imported',
     });
     const plan = planImport(

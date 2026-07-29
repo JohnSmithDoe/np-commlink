@@ -58,17 +58,6 @@ describe('OfficeTimeEffects', () => {
     });
   });
 
-  describe('initOfficeTime$', () => {
-    it('kicks off the holiday load on page entry', async () => {
-      const effects = setup();
-      actions$ = of(OfficeTimeActions.initOfficeTime());
-
-      expect(await firstValueFrom(effects.initOfficeTime$)).toEqual(
-        OfficeTimeActions.loadHolidays()
-      );
-    });
-  });
-
   describe('saveOfficeTime$', () => {
     it('serializes the dayjs date collections before writing', async () => {
       // The reason office-time opts out of the shared save effect: its state

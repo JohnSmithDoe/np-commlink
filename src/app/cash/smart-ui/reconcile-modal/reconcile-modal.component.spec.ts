@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
   mockCashState,
@@ -37,7 +37,7 @@ describe('CashReconcileModalComponent', () => {
 
   const setup = (transactions: ICashTransaction[]) => {
     TestBed.configureTestingModule({
-      imports: [CashReconcileModalComponent, TranslateModule.forRoot()],
+      imports: [CashReconcileModalComponent],
       providers: [
         provideTestingProviders({ cash: mockCashState({ transactions }) }),
       ],

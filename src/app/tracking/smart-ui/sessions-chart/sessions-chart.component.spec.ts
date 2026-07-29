@@ -23,6 +23,8 @@ describe('SessionsChartComponent', () => {
     store = TestBed.inject(MockStore);
   });
 
+  afterEach(() => store.resetSelectors());
+
   it('reports no data when every series is all-zero', () => {
     const component = create({
       days: ['2026-07-01'],

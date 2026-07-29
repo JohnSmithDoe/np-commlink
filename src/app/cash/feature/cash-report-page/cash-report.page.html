@@ -1,16 +1,7 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button
-        (click)="goBack()"
-        [attr.aria-label]="'cash.a11y.back' | translate"
-      >
-        <ion-icon slot="icon-only" name="arrow-back-outline" />
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ 'page-title.cash-report' | translate }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-cash-detail-header
+  [heading]="'page-title.cash-report' | translate"
+  (back)="goBack()"
+/>
 
 <ion-content class="ion-padding">
   @if (hasData()) {

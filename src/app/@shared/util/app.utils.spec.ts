@@ -1,4 +1,3 @@
-import { AbstractControl } from '@angular/forms';
 import { InputCustomEvent } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../model/app.types';
 import { IBaseItem } from '../model/base-item.types';
@@ -7,6 +6,7 @@ import {
   matchesId,
   matchesItemExactly,
   matchesItemExactlyIdx as matchesItemExactlyIndex,
+  moveInList,
   matchesNameExactly,
   matchesSearch,
   matchesSearchExactly,
@@ -16,9 +16,7 @@ import {
   parseNumberInput,
   revealedSideFromDrag,
   uuidv4,
-  validateNameInput,
 } from './app.utils';
-import { mockBaseItem } from '../testing/test-data';
 
 const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
   id: 'id-1',
@@ -32,9 +30,6 @@ const dragEvent = (amount: number): TIonDragEvent =>
 
 const inputEvent = (value: string | null): InputCustomEvent =>
   ({ detail: { value } }) as InputCustomEvent;
-
-const control = (value: string): AbstractControl =>
-  ({ value }) as AbstractControl;
 
 describe('app.utils', () => {
   describe('uuidv4', () => {
@@ -160,31 +155,18 @@ describe('app.utils', () => {
       expect(parseNumberInput(inputEvent(null))).toBe(0);
     });
   });
+});
 
-  describe('validateNameInput', () => {
-    it('flags empty names', () => {
-      const validator = validateNameInput([], null);
-      expect(validator(control(' '.repeat(3)))).toEqual({ empty: true });
-    });
+describe('moveInList', () => {
+  it('moves an entry down', () => {
+    expect(moveInList(['a', 'b', 'c'], 0, 2)).toEqual(['b', 'c', 'a']);
+  });
 
-    it('passes a unique name', () => {
-      const validator = validateNameInput(
-        [mockBaseItem({ name: 'Milk' })],
-        null
-      );
-      expect(validator(control('Bread'))).toBeNull();
-    });
+  it('moves an entry up', () => {
+    expect(moveInList(['a', 'b', 'c'], 2, 0)).toEqual(['c', 'a', 'b']);
+  });
 
-    it('flags a duplicate of another item', () => {
-      const existing = mockBaseItem({ id: 'a', name: 'Milk' });
-      const validator = validateNameInput([existing], null);
-      expect(validator(control('Milk'))).toEqual({ duplicate: true });
-    });
-
-    it('allows the item to keep its own name while editing', () => {
-      const editing = mockBaseItem({ id: 'a', name: 'Milk' });
-      const validator = validateNameInput([editing], editing);
-      expect(validator(control('Milk'))).toBeNull();
-    });
+  it('leaves the order alone when nothing moved', () => {
+    expect(moveInList(['a', 'b', 'c'], 1, 1)).toEqual(['a', 'b', 'c']);
   });
 });

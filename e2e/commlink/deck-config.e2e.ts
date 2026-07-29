@@ -15,17 +15,25 @@ import { waitForPersisted } from '../helpers';
  */
 
 const MARKET = 'MARKET';
-const MARKET_MENU_LABEL = 'Einkaufsliste';
+// The page title, which the menu deliberately no longer shows: both surfaces
+// render the theme-resolved codename, so a row and its tile cannot disagree.
+const MARKET_PAGE_TITLE = 'Einkaufsliste';
 const HOUSEHOLD_MODULE = 'Haushalt';
 
 const configRow = (page: Page, label: string) =>
-  page.locator('app-page-deck-config ion-item', { hasText: label });
+  page
+    .locator('app-page-deck-config')
+    .getByTestId('deck-config-row')
+    .filter({ hasText: label });
 
 const deckTile = (page: Page, codename: string) =>
-  page.locator('app-page-commlink .cl-node', { hasText: codename });
+  page
+    .locator('app-page-commlink')
+    .getByTestId('deck-tile')
+    .filter({ hasText: codename });
 
 const menuRow = (page: Page, label: string) =>
-  page.locator('ion-menu ion-item', { hasText: label });
+  page.locator('ion-menu').getByTestId('menu-row').filter({ hasText: label });
 
 async function gotoFresh(page: Page, hash: string): Promise<void> {
   await page.goto(`/#/${hash}`);
@@ -52,7 +60,7 @@ async function toggleAndPersist(
   label: string,
   marker: string
 ): Promise<void> {
-  await configRow(page, label).locator('ion-toggle').click();
+  await configRow(page, label).getByTestId('deck-config-row-toggle').click();
   await waitForPersisted(page, 'deck', marker);
 }
 
@@ -62,14 +70,15 @@ test.describe('deck configuration', () => {
   }) => {
     await openDeck(page);
     await expect(deckTile(page, MARKET)).toBeVisible();
-    await expect(menuRow(page, MARKET_MENU_LABEL)).toHaveCount(1);
+    await expect(menuRow(page, MARKET)).toHaveCount(1);
+    await expect(menuRow(page, MARKET_PAGE_TITLE)).toHaveCount(0);
 
     await openDeckConfig(page);
     await toggleAndPersist(page, MARKET, 'shopping');
 
     await openDeck(page);
     await expect(deckTile(page, MARKET)).toHaveCount(0);
-    await expect(menuRow(page, MARKET_MENU_LABEL)).toHaveCount(0);
+    await expect(menuRow(page, MARKET)).toHaveCount(0);
   });
 
   // Hiding is a navigation choice, not an uninstall, so the readout keeps
@@ -81,9 +90,11 @@ test.describe('deck configuration', () => {
     await toggleAndPersist(page, MARKET, 'shopping');
 
     await openDeck(page);
+    // The denominator is what this asserts — the surrounding copy is i18n and
+    // theme-cased, so matching it would pin the translation instead.
     await expect(
-      page.locator('app-page-commlink .cl-hero__meta')
-    ).toContainText('/13 PROGRAMS LOADED');
+      page.locator('app-page-commlink').getByTestId('deck-status-strip')
+    ).toContainText('/13');
   });
 
   // The module flag cascades on read and is never written into its entries, so

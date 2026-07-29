@@ -1,4 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { IBaseItem, TEditItemMode } from '../model/base-item.types';
 import { TItemListId } from '../model/item-list.types';
 
@@ -35,6 +38,24 @@ export class ItemDialogService {
 
   /** The open dialog's command, or null when no dialog is open. */
   readonly request = this.#request.asReadonly();
+
+  constructor() {
+    // A command belongs to the page that raised it. This host is a root
+    // singleton and the wrappers stay mounted (Ionic keeps a left route in the
+    // DOM, so `ngOnDestroy` is no signal), which means an abandoned request
+    // would otherwise sit here armed and re-present itself on return. Expiring
+    // it where it is created keeps one owner of the command's lifetime.
+    //
+    // Navigation is the expiry *trigger*, not part of what a command means, so
+    // a router-less host (a wrapper or facade under unit test) is still a valid
+    // host — it simply has nothing to expire on.
+    inject(Router, { optional: true })
+      ?.events.pipe(
+        filter((event) => event instanceof NavigationStart),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.close());
+  }
 
   open<T extends IBaseItem>(request: TItemDialogRequest<T>): void {
     // Copy the item so reopening the SAME object still yields a fresh reference.

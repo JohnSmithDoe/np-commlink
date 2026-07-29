@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../../../model/app.types';
+import { getByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { CategoryItemComponent } from './category-item.component';
 
@@ -38,8 +39,9 @@ describe('CategoryItemComponent', () => {
     fixture.componentRef.setInput('count', 3);
     fixture.detectChanges();
 
-    const h2 = fixture.nativeElement.querySelector('h2');
-    expect(h2.textContent).toContain('Dairy (3)');
+    expect(getByTestId(fixture, 'category-row-title').textContent).toContain(
+      'Dairy (3)'
+    );
   });
 
   it('emits selectCategory when the ion-item is clicked', () => {
@@ -47,7 +49,7 @@ describe('CategoryItemComponent', () => {
     const emitted: unknown[] = [];
     component.selectCategory.subscribe(() => emitted.push(true));
 
-    fixture.nativeElement.querySelector('ion-item').click();
+    getByTestId(fixture, 'category-row-select').click();
 
     expect(emitted).toHaveLength(1);
   });

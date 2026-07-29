@@ -23,7 +23,11 @@
         (click)="manageCategories()"
         [attr.aria-label]="'categories.a11y.manage' | translate"
       >
-        <ion-icon slot="icon-only" name="pricetags-outline" />
+        <ion-icon
+          slot="icon-only"
+          name="pricetags-outline"
+          aria-hidden="true"
+        />
       </ion-button>
     }
   </app-item-list-toolbar>
@@ -38,13 +42,11 @@
 
   <app-item-list
     [headerColor]="
-      facade.filterState().isCategoryModeOrHasFilter === true
-        ? 'primary'
-        : color()
+      filterState().isCategoryModeOrHasFilter === true ? 'primary' : color()
     "
     [header]="
-      facade.filterState().isCategoryModeOrHasFilter === true
-        ? facade.filterState().hasFilter === true
+      filterState().isCategoryModeOrHasFilter === true
+        ? filterState().hasFilter === true
           ? ('item-list.header.category-filter'
             | translate: { category: filterName() })
           : ('item-list.header.category' | translate)

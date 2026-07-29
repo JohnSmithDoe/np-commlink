@@ -1,18 +1,17 @@
 <app-item-edit-modal
-  [item]="seedItem()"
-  [listItems]="listItems()"
+  [nameField]="form.name"
+  [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
   [dialogTitle]="dialogTitle()"
   closeButtonText="edit.item.dialog.button.close"
-  (nameChange)="updateName($event)"
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
 >
   <app-number-input
     [label]="'grocery.item.quantity' | translate"
-    [value]="draft()?.quantity ?? 1"
+    [value]="draft().quantity"
     (updateValue)="updateQuantity($event)"
   ></app-number-input>
 
@@ -25,7 +24,7 @@
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
     [categories]="categories()"
-    [selection]="draft()?.categoryIds ?? []"
+    [selection]="draft().categoryIds ?? []"
     (confirmed)="confirmCategories($event)"
     (cancelled)="cancelCategories()"
     (dismissed)="cancelCategories()"

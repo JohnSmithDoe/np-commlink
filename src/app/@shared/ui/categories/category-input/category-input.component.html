@@ -1,4 +1,8 @@
-<ion-item [button]="true" (click)="openDialog.emit()">
+<ion-item
+  [button]="true"
+  (click)="openDialog.emit()"
+  data-testid="category-input-trigger"
+>
   <ion-label class="ion-text-wrap">
     {{ 'category-picker.label' | translate }}
     @for (cat of categories(); track cat.id) {

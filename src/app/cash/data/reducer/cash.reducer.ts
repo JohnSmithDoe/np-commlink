@@ -88,6 +88,19 @@ export const cashReducer = createReducer(
       ),
     })
   ),
+  on(CashActions.recategorizeTransactions, (state, { changes }): ICashState => {
+    const assigned = new Map(
+      changes.map((c) => [c.transactionId, c.categoryId])
+    );
+    return {
+      ...state,
+      transactions: state.transactions.map((t): ICashTransaction =>
+        assigned.has(t.id)
+          ? { ...t, categoryId: assigned.get(t.id), categoryManual: false }
+          : t
+      ),
+    };
+  }),
   on(
     CashActions.reconcileTransaction,
     (state, { manualId, importedId }): ICashState => {

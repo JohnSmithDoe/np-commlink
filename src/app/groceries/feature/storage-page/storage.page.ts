@@ -7,7 +7,8 @@ import {
   ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
 import { TColor } from '../../../@shared/model/app.types';
@@ -28,7 +29,7 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
   templateUrl: 'storage.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     DatePipe,
     IonButton,
     IonIcon,
@@ -48,6 +49,10 @@ export class StoragePage implements ViewWillEnter {
   readonly facade = inject(GroceryListPageFacade);
 
   readonly showScanButton = this.#scanner.isNativePlatform;
+  /** Names the start-swipe action, which here copies the item onto the shopping
+   *  list — the same swipe, a different verb than shopping's, which is why the
+   *  shared row cannot own this wording. */
+  readonly cartActionLabel = marker('grocery.a11y.to-shopping-list');
 
   constructor() {
     addIcons({ barcodeOutline });

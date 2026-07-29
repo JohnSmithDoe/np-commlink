@@ -1,16 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button
-        (click)="goBack()"
-        [attr.aria-label]="'cash.a11y.back' | translate"
-      >
-        <ion-icon slot="icon-only" name="arrow-back-outline" />
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ categoryName() }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-cash-detail-header [heading]="categoryName()" (back)="goBack()" />
 
 <ion-content>
   @if (transactions().length) {

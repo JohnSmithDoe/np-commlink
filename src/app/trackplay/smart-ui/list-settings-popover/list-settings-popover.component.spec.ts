@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { mockTrackplayState } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { TrackplayActions } from '../../data';
@@ -14,10 +14,7 @@ describe('TrackplayListSettingsPopoverComponent', () => {
 
   const setup = (mode: TSettingsMode = 'games') => {
     TestBed.configureTestingModule({
-      imports: [
-        TrackplayListSettingsPopoverComponent,
-        TranslateModule.forRoot(),
-      ],
+      imports: [TrackplayListSettingsPopoverComponent],
       providers: [provideTestingProviders({ trackplay: mockTrackplayState() })],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');

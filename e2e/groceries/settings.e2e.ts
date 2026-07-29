@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { waitForListPage } from '../helpers';
+import { waitForListPage, waitForPersisted } from '../helpers';
 
 /**
  * The toggle's `aria-checked` flips through an async NgRx round-trip
@@ -14,7 +14,7 @@ import { waitForListPage } from '../helpers';
 test.describe('list-settings', () => {
   test('toggles a setting flag', async ({ page }) => {
     await page.goto('/#/groceries/list-settings');
-    const toggle = page.locator('ion-toggle').first();
+    const toggle = page.getByTestId('list-settings-flag-show-quick-add');
     await expect(toggle).toBeVisible({ timeout: 30_000 });
 
     const before = await toggle.getAttribute('aria-checked');
@@ -27,20 +27,26 @@ test.describe('list-settings', () => {
     page,
   }) => {
     await page.goto('/#/groceries/list-settings');
-    const toggle = page.locator('ion-toggle').first();
+    const toggle = page.getByTestId('list-settings-flag-show-quick-add');
     await expect(toggle).toBeVisible({ timeout: 30_000 });
 
     const before = await toggle.getAttribute('aria-checked');
     const expected = before === 'true' ? 'false' : 'true';
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-checked', expected);
+    await waitForPersisted(page, 'groceries', `"showQuickAdd":${expected}`);
 
     await page.goto('/#/groceries/storage/_storage');
     await waitForListPage(page);
     await page.goto('/#/groceries/list-settings');
+    // Coming back mounts this page a second time and the first instance survives
+    // the navigation, so both carry the flag's id and the locator matches twice —
+    // naming an element cannot separate two copies of one template. The reload
+    // collapses the outlet to one, which makes the readback a cold one besides.
+    await page.reload();
 
-    const toggleAgain = page.locator('ion-toggle').first();
-    await expect(toggleAgain).toBeVisible();
+    const toggleAgain = page.getByTestId('list-settings-flag-show-quick-add');
+    await expect(toggleAgain).toBeVisible({ timeout: 30_000 });
     await expect(toggleAgain).toHaveAttribute('aria-checked', expected);
   });
 });

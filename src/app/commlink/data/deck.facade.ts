@@ -2,6 +2,7 @@ import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ThemeService } from '../../@shared/util/theme.service';
 import { DECK_CATALOG, DECK_SLOT_COUNT } from '../model/deck.catalog';
+import { DECK_MODULE_LABELS } from '../model/deck.labels';
 import {
   IDeckModuleConfig,
   IDeckProgramConfig,
@@ -70,7 +71,7 @@ export class DeckFacade {
     return [...new Set(DECK_CATALOG.map((entry) => entry.module))].map(
       (module) => ({
         module,
-        labelKey: `deck.module.${module}`,
+        labelKey: DECK_MODULE_LABELS[module],
         hidden: hidden.includes(module),
       })
     );

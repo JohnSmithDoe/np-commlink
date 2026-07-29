@@ -269,6 +269,17 @@ ion-menu ion-item {
   text-shadow: var(--sr-glow);
 }
 
+// A validation message under a form control. Global because a dialog's note and
+// a shared control's note must look identical, and the control cannot reach the
+// dialog's stylesheet: the five call sites each carried their own copy of these
+// four lines until the shared name input became the fifth.
+.sr-field-note {
+  display: block;
+  padding: 0.35rem 1rem 0;
+  font-size: 0.8rem;
+  letter-spacing: var(--sr-label-tracking);
+}
+
 // Eyebrow / HUD label — mono uppercase in cyberpunk, plain sentence-case sans.
 .sr-hud {
   font-family: var(--sr-deck-font);

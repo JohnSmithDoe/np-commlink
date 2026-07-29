@@ -1,7 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { SelectCustomEvent } from '@ionic/angular/standalone';
 import { MockStore } from '@ngrx/store/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
+import {
+  mockGroceriesState,
+  mockProduct,
+  mockProductsState,
+} from '../../testing/groceries.test-data';
+import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { createProduct } from '../../util/grocery.factory';
 import { ProductsActions, StorageActions } from '../../data';
@@ -14,11 +19,20 @@ describe('EditProductDialogComponent', () => {
   let host: ItemDialogService;
 
   const seed = createProduct('Butter', []);
+  // A real sibling, so the duplicate-name rule below has something to catch — an
+  // `items: []` slice would make that branch unreachable while looking seeded.
+  const sibling = mockProduct({ id: 'other', name: 'Margarine' });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditProductDialogComponent],
-      providers: [...COMMON_TEST_PROVIDERS],
+      providers: [
+        ...provideTestingProviders({
+          groceries: mockGroceriesState({
+            products: mockProductsState({ items: [sibling, seed] }),
+          }),
+        }),
+      ],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);
@@ -38,8 +52,8 @@ describe('EditProductDialogComponent', () => {
       detail: { value: 'days' },
     } as SelectCustomEvent);
 
-    expect(component.draft()?.bestBeforeTimespan).toBe('days');
-    expect(component.draft()?.bestBeforeTimevalue).toBe(1);
+    expect(component.draft().bestBeforeTimespan).toBe('days');
+    expect(component.draft().bestBeforeTimevalue).toBe(1);
     expect(dispatch).not.toHaveBeenCalled();
   });
 
@@ -48,8 +62,19 @@ describe('EditProductDialogComponent', () => {
       detail: { value: 'forever' },
     } as SelectCustomEvent);
 
-    expect(component.draft()?.bestBeforeTimespan).toBe('forever');
-    expect(component.draft()?.bestBeforeTimevalue).toBeUndefined();
+    expect(component.draft().bestBeforeTimespan).toBe('forever');
+    expect(component.draft().bestBeforeTimevalue).toBeUndefined();
+  });
+
+  // The rule is the BASE's schema now; which list it compares against is this
+  // wrapper's wiring, and that is the half that can silently go wrong (the catalog
+  // PAGE's view would drop a sibling its search box is hiding).
+  it('refuses a name a sibling in the catalog already has', () => {
+    expect(component.canSave()).toBe(true);
+
+    component.form.name().value.set('Margarine');
+
+    expect(component.canSave()).toBe(false);
   });
 
   it('saves the draft and hides the dialog on confirm', () => {

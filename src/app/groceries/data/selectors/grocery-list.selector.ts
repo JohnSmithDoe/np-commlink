@@ -16,7 +16,6 @@ import {
   filterAndSortItemList,
   filterListBySearchQuery,
   listCategoriesWithCount,
-  listStateFilter,
 } from '../../../@shared/util/list/list.selector';
 import { stateByListId } from '../../util/grocery-list.utils';
 import { IBaseItem } from '../../../@shared/model/base-item.types';
@@ -126,11 +125,6 @@ export const filterBySearchQuery = <
 export const selectListCategories = createSelector(
   selectListState,
   listCategoriesWithCount
-);
-
-export const selectListStateFilter = createSelector(
-  selectListState,
-  listStateFilter
 );
 
 export const selectListSearchResult = createSelector(

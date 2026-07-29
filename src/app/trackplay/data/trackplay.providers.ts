@@ -15,8 +15,8 @@ import {
  * navigating between sub-pages keeps the one slice present. Trackplay is fully
  * self-contained: no other route reads or dispatches `[Trackplay]`.
  *
- * Every `[Trackplay]` action persists, including the `Enter … Page`
- * orchestration hooks — a harmless re-write of already-hydrated data.
+ * Every `[Trackplay]` action persists — `enterGamePage` included, since it is the
+ * one page hook that can mutate (it appends the trailing blank round).
  */
 export const trackplayContext = providePersistedContext({
   key: 'trackplay',

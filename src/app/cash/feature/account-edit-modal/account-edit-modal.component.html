@@ -28,8 +28,7 @@
         labelPlacement="stacked"
         label="{{ 'cash.label.name' | translate }}"
         [clearInput]="true"
-        [value]="draft().name"
-        (ionInput)="patch({ name: $any($event.target).value ?? '' })"
+        [formField]="form.name"
       />
     </ion-item>
 
@@ -37,8 +36,7 @@
       <ion-select
         labelPlacement="stacked"
         label="{{ 'cash.label.kind' | translate }}"
-        [value]="draft().kind"
-        (ionChange)="patch({ kind: $any($event).detail.value })"
+        [formField]="form.kind"
       >
         @for (k of kinds; track k) {
           <ion-select-option [value]="k">
@@ -52,8 +50,7 @@
       <ion-select
         labelPlacement="stacked"
         label="{{ 'cash.label.bank' | translate }}"
-        [value]="draft().bank"
-        (ionChange)="patch({ bank: $any($event).detail.value })"
+        [formField]="form.bank"
       >
         <ion-select-option value="">{{
           'cash.bank.none' | translate
@@ -66,18 +63,12 @@
       </ion-select>
     </ion-item>
 
-    <ion-item>
-      <ion-input
-        labelPlacement="stacked"
-        label="{{ 'cash.label.opening-balance' | translate }}"
-        inputmode="decimal"
-        placeholder="0,00"
-        [value]="draft().openingBalance"
-        (ionInput)="patch({ openingBalance: $any($event.target).value ?? '' })"
-      />
-    </ion-item>
+    <app-money-input
+      label="{{ 'cash.label.opening-balance' | translate }}"
+      [formField]="form.openingBalanceCents"
+    />
     @if (balanceInvalid()) {
-      <ion-note color="danger" class="cash-account-dialog__error">
+      <ion-note color="danger" class="sr-field-note">
         {{ 'cash.account-dialog.balance-invalid' | translate }}
       </ion-note>
     }
@@ -87,8 +78,7 @@
         labelPlacement="stacked"
         type="date"
         label="{{ 'cash.label.opening-date' | translate }}"
-        [value]="draft().openingDate"
-        (ionInput)="patch({ openingDate: $any($event.target).value ?? '' })"
+        [formField]="form.openingDate"
       />
     </ion-item>
   </ion-list>

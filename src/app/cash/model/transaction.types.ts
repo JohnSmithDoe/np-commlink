@@ -10,9 +10,10 @@ export interface ICashTransaction {
   dateISO: TTimestamp;
   // Signed integer cents: < 0 = outflow (spending), > 0 = inflow (income).
   amountCents: number;
+  // For an import this is the bank's counterparty + purpose fields joined; it is
+  // what the categorization rules match on and what the import dedup key is
+  // built from, so it is display text and matching text in one.
   description: string;
-  // Original bank text (kept verbatim from import for rule matching + audit).
-  rawDescription?: string;
   // Category reference by id into ICashState.categories ({id,name} objects).
   categoryId?: TCategoryId;
   // Manual overrides win: rule re-runs skip transactions flagged here.

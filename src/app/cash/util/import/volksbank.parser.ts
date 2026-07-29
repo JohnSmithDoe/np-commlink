@@ -10,7 +10,7 @@ import {
   splitRow,
 } from './bank-parser';
 
-// Volksbank giro export (docs/example.csv). `;`-delimited, header first:
+// Volksbank giro export (docs/cash/example.csv). `;`-delimited, header first:
 // Buchungstag;Valuta;Auftraggeber/Beguenstigter;Verwendungszweck;IBAN;BIC;Betrag;…
 const HEADER = 'Buchungstag';
 const DATE = 0;
@@ -31,17 +31,18 @@ export const volksbankParser: IBankParser = {
     for (const line of lines.slice(header + 1)) {
       const cols = splitRow(line);
       const dateISO = germanDateToISO(cols[DATE] ?? '');
-      const amountCents = eurToCents(cols[AMOUNT] ?? '');
+      // Explicitly German, never the UI language: a German bank's export is
+      // German whatever the app is set to, and the two conventions read each
+      // other's amounts as valid (`1.234` is 1234 € here, 1.23 € under `en`).
+      const amountCents = eurToCents(cols[AMOUNT] ?? '', 'de');
       if (dateISO === null || amountCents === null) {
         rejected++;
         continue;
       }
-      const text = joinDescription(cols[PAYEE] ?? '', cols[PURPOSE] ?? '');
       rows.push({
         dateISO,
         amountCents,
-        description: text,
-        rawDescription: text,
+        description: joinDescription(cols[PAYEE] ?? '', cols[PURPOSE] ?? ''),
       });
     }
     return { rows, rejected };

@@ -10,10 +10,11 @@
   <ion-list lines="full">
     <ion-list-header>{{ 'deck.config.modules' | translate }}</ion-list-header>
     @for (module of modules(); track module.module) {
-      <ion-item>
+      <ion-item data-testid="deck-config-row">
         <ion-toggle
           [checked]="!module.hidden"
           (ionChange)="toggleModule(module.module)"
+          data-testid="deck-config-row-toggle"
         >
           {{ module.labelKey | translate }}
         </ion-toggle>
@@ -28,7 +29,10 @@
       (ionReorderEnd)="reorder($any($event))"
     >
       @for (entry of entries(); track entry.id) {
-        <ion-item [class.deck-config__muted]="entry.moduleHidden">
+        <ion-item
+          [class.deck-config__muted]="entry.moduleHidden"
+          data-testid="deck-config-row"
+        >
           <ion-reorder slot="start" />
           <ion-label>
             <h2>{{ entry.nameKey | translate }}</h2>
@@ -42,9 +46,11 @@
           </ion-label>
           <ion-toggle
             slot="end"
+            [attr.aria-label]="entry.titleKey | translate"
             [checked]="!entry.hidden"
             [disabled]="entry.moduleHidden"
             (ionChange)="toggleEntry(entry.id)"
+            data-testid="deck-config-row-toggle"
           />
         </ion-item>
       }

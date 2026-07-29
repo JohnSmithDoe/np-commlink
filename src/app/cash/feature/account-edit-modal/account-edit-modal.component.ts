@@ -4,6 +4,7 @@ import {
   computed,
   inject,
 } from '@angular/core';
+import { form, FormField, SchemaFn } from '@angular/forms/signals';
 import {
   IonButton,
   IonButtons,
@@ -18,14 +19,18 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import {
+  requireParseableDate,
+  requireText,
+} from '../../../@shared/util/form-rules';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { ICashAccount, TAccountKind, TBank } from '../../model/account.types';
 import { CashFacade } from '../../data';
-import { centsToInput, eurToCents } from '../../util/money.utils';
+import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { BANK_OPTIONS } from '../../util/import/bank-parsers';
 
 const ACCOUNT_KINDS: readonly TAccountKind[] = [
@@ -44,23 +49,32 @@ marker('cash.account.kind.cash');
 marker('cash.bank.volksbank');
 marker('cash.bank.dkb');
 
-// The opening balance is edited as a raw de-DE string and the bank as '' rather
-// than undefined, so the form is a view-model over ICashAccount, not a copy.
+// An unset bank is '' rather than undefined and a zero opening balance is null
+// (so the box reads empty, not `0,00`), so the form is a view-model over
+// ICashAccount, not a copy.
 type TAccountForm = {
   name: string;
   kind: TAccountKind;
   bank: TBank | '';
-  openingBalance: string;
+  openingBalanceCents: number | null;
   openingDate: string;
+};
+
+// The opening balance carries NO rule of its own: empty means zero and a
+// negative balance is a credit card, so the only thing that can be wrong with it
+// is text that isn't an amount — which `app-money-input` reports itself.
+const accountRules: SchemaFn<TAccountForm> = (path) => {
+  requireText(path.name);
+  requireParseableDate(path.openingDate);
 };
 
 /** Create/edit a cash account, presented via `ModalController`. */
 @Component({
   selector: 'app-cash-account-edit-modal',
   templateUrl: './account-edit-modal.component.html',
-  styleUrls: ['./account-edit-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -73,7 +87,8 @@ type TAccountForm = {
     IonNote,
     IonSelect,
     IonSelectOption,
-    TranslateModule,
+    TranslatePipe,
+    MoneyInputComponent,
   ],
 })
 export class CashAccountEditModalComponent extends BaseModalDialog<
@@ -98,24 +113,13 @@ export class CashAccountEditModalComponent extends BaseModalDialog<
       : undefined;
   });
 
-  readonly #parsedCents = computed(() =>
-    eurToCents(this.draft().openingBalance)
+  protected readonly form = form(this.draft, accountRules);
+
+  readonly balanceInvalid = computed(() =>
+    this.form.openingBalanceCents().invalid()
   );
-  // Empty is allowed and means "0"; otherwise it must parse.
-  readonly balanceInvalid = computed(
-    () =>
-      this.draft().openingBalance.trim() !== '' && this.#parsedCents() === null
-  );
-  // Same trap as the transaction modal: a cleared date would persist the
-  // string 'Invalid Date' as `openingDateISO`.
-  readonly openingDateInvalid = computed(
-    () => !dayjs(this.draft().openingDate).isValid()
-  );
-  readonly canSave = computed(
-    () =>
-      this.draft().name.trim().length > 0 &&
-      !this.balanceInvalid() &&
-      !this.openingDateInvalid()
+  readonly openingDateInvalid = computed(() =>
+    this.form.openingDate().invalid()
   );
 
   protected blank(): TAccountForm {
@@ -123,7 +127,7 @@ export class CashAccountEditModalComponent extends BaseModalDialog<
       name: '',
       kind: 'giro',
       bank: '',
-      openingBalance: '',
+      openingBalanceCents: null,
       openingDate: dayjs().format('YYYY-MM-DD'),
     };
   }
@@ -133,10 +137,8 @@ export class CashAccountEditModalComponent extends BaseModalDialog<
       name: account.name,
       kind: account.kind,
       bank: account.bank ?? '',
-      openingBalance:
-        account.openingBalanceCents === 0
-          ? ''
-          : centsToInput(account.openingBalanceCents),
+      openingBalanceCents:
+        account.openingBalanceCents === 0 ? null : account.openingBalanceCents,
       openingDate: dayjs(account.openingDateISO).format('YYYY-MM-DD'),
     };
   }
@@ -149,7 +151,7 @@ export class CashAccountEditModalComponent extends BaseModalDialog<
       name: draft.name.trim(),
       kind: draft.kind,
       bank: draft.bank || undefined,
-      openingBalanceCents: this.#parsedCents() ?? 0,
+      openingBalanceCents: draft.openingBalanceCents ?? 0,
       openingDateISO: dayjs(draft.openingDate).format(),
     };
     if (existing) {

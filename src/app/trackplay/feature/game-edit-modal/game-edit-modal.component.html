@@ -21,8 +21,8 @@
         labelPlacement="stacked"
         label="{{ 'trackplay.label.name' | translate }}"
         [clearInput]="true"
-        [value]="draft().name"
-        (ionInput)="patch({ name: $any($event.target).value ?? '' })"
+        [formField]="form.name"
+        data-testid="game-name-input"
       />
     </ion-item>
 
@@ -30,8 +30,8 @@
       <ion-select
         labelPlacement="stacked"
         label="{{ 'trackplay.label.game-type' | translate }}"
-        [value]="draft().typeId"
-        (ionChange)="patch({ typeId: $any($event).detail.value })"
+        [formField]="form.typeId"
+        data-testid="game-type-select"
       >
         @for (type of rxGameTypes(); track type.id) {
           <ion-select-option [value]="type.id">{{

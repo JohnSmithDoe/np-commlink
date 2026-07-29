@@ -64,7 +64,11 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
     sliceEffects[`save_${key}$`] = createSaveSliceEffect(save, select, key);
   }
   for (const spec of telemetry ?? []) {
-    sliceEffects[`report_${spec.source}$`] = createTelemetrySliceEffect(spec);
+    sliceEffects[`report_${spec.source}$`] = createTelemetrySliceEffect(
+      spec,
+      lifecycle,
+      key
+    );
   }
 
   return {

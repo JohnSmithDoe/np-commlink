@@ -1,5 +1,37 @@
-import { expect, test } from '@playwright/test';
-import { addViaSearch, searchInput, waitForListPage } from '../helpers';
+import { expect, Locator, Page, test } from '@playwright/test';
+import {
+  addViaSearch,
+  gotoFeature,
+  listRow,
+  ROUTE,
+  searchInput,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
+
+/**
+ * The presented item-edit dialog. Two things make the obvious scopes wrong, both
+ * verified from the DOM on this route: presenting **moves** the `ion-modal` to
+ * `ion-app` while leaving an `overlay-hidden` twin inside the wrapper (so
+ * `app-edit-storage-item-dialog` matches two), and this route mounts **five**
+ * `ion-modal`s (the item dialog, its category picker, the date picker, …). Ionic
+ * also puts **no `role="dialog"`** on `ion-modal`, so of CLAUDE.md's two keys —
+ * title or role — only the title exists: `.show-modal` narrows to what is
+ * presented, the title to which one.
+ */
+function editDialog(page: Page): Locator {
+  return page
+    .locator('ion-modal.show-modal')
+    .filter({ hasText: 'Eintrag bearbeiten' });
+}
+
+function nameBox(page: Page): Locator {
+  return editDialog(page).getByRole('textbox', { name: 'Name' });
+}
+
+function saveButton(page: Page): Locator {
+  return editDialog(page).getByRole('button', { name: 'Übernehmen' });
+}
 
 test.describe('storage list', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,25 +41,27 @@ test.describe('storage list', () => {
 
   test('adds an item through the searchbar', async ({ page }) => {
     await addViaSearch(page, 'Bananas');
-    await expect(page.getByText(/Bananas/).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(listRow(page, /Bananas/)).toBeVisible({ timeout: 10_000 });
   });
 
   test('keeps items across a navigation round-trip', async ({ page }) => {
     await addViaSearch(page, 'Yoghurt');
-    await expect(page.getByText(/Yoghurt/).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(listRow(page, /Yoghurt/)).toBeVisible({ timeout: 10_000 });
+    await waitForPersisted(page, 'groceries', 'Yoghurt');
 
-    await page.goto('/#/groceries/shopping/_shopping');
-    await waitForListPage(page);
-    await page.goto('/#/groceries/storage/_storage');
+    await gotoFeature(page, ROUTE.shopping);
+    // Re-entering a route mounts the page a SECOND time and the first instance
+    // outlives the navigation, so both carry `list-row` and the row locator is a
+    // strict-mode violation — an id cannot disambiguate two copies of one
+    // template. The reload collapses the outlet to one instance, and makes this a
+    // cold read of the persisted list besides. It has to follow `gotoFeature`,
+    // which awaits the URL: a hash navigation is same-document, so reloading
+    // straight after `goto` can reload the route we just left.
+    await gotoFeature(page, ROUTE.storage);
+    await page.reload();
     await waitForListPage(page);
 
-    await expect(page.getByText(/Yoghurt/).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(listRow(page, /Yoghurt/)).toBeVisible({ timeout: 10_000 });
   });
 
   test('filters the list by the search query', async ({ page }) => {
@@ -38,8 +72,8 @@ test.describe('storage list', () => {
     await input.fill('Apple');
 
     // Both assertions retry, so they outlast the searchbar debounce on their own.
-    await expect(page.getByText(/Apples/).first()).toBeVisible();
-    await expect(page.getByText(/Cucumber/)).toHaveCount(0);
+    await expect(listRow(page, /Apples/)).toBeVisible();
+    await expect(listRow(page, /Cucumber/)).toHaveCount(0);
   });
 
   // Exercises the refactored edit dialog end-to-end: open via row click (the
@@ -48,19 +82,56 @@ test.describe('storage list', () => {
   test('edits an item through the edit dialog', async ({ page }) => {
     await addViaSearch(page, 'Milk');
 
-    // Open the edit dialog via the row. Ionic teleports the presented modal to
-    // the app root, so drive it via the dialog role, not the wrapper element.
     await expect(page.getByText('1 x Milk')).toBeVisible({ timeout: 10_000 });
     await page.getByText('1 x Milk').click();
 
-    const nameField = page.getByRole('textbox', { name: 'Name' });
-    await expect(nameField).toBeVisible({ timeout: 10_000 });
-    await nameField.fill('Almond Milk');
-    await page.getByRole('button', { name: 'Übernehmen' }).click();
+    await expect(nameBox(page)).toBeVisible({ timeout: 10_000 });
+    await nameBox(page).fill('Almond Milk');
+    await saveButton(page).click();
 
     await expect(page.getByText('1 x Almond Milk')).toBeVisible({
       timeout: 10_000,
     });
+  });
+
+  // The name rule lives in the dialog's Signal Forms schema now, and the save
+  // button reads `canSave` off that tree — it used to read validity off the name
+  // input through a template ref. Only a real browser shows the button state, so
+  // this is where that move is actually proven — and the message alongside it,
+  // which a disabled-button assertion alone let regress once already: Ionic's own
+  // `errorText` slot needs `ion-invalid ion-touched`, classes only an `NgControl`
+  // on the `ion-input` produces.
+  test('refuses to save a name another item already has, and says why', async ({
+    page,
+  }) => {
+    await addViaSearch(page, 'Milk');
+    await addViaSearch(page, 'Bread');
+    await expect(page.getByText('1 x Bread')).toBeVisible({ timeout: 10_000 });
+
+    await page.getByText('1 x Milk').click();
+    await expect(nameBox(page)).toBeVisible({ timeout: 10_000 });
+    const save = saveButton(page);
+
+    await nameBox(page).fill('Bread');
+    await expect(save).toBeDisabled();
+    await expect(
+      editDialog(page).getByText('Der Name existiert bereits')
+    ).toBeVisible();
+
+    // Blank is the other rule the schema carries — whitespace included, which the
+    // built-in `required()` would have accepted.
+    await nameBox(page).fill('   ');
+    await expect(save).toBeDisabled();
+    await expect(
+      editDialog(page).getByText('Der Name darf nicht leer sein')
+    ).toBeVisible();
+
+    // Its own name is not a duplicate of itself, so the dialog recovers.
+    await nameBox(page).fill('Milk');
+    await expect(save).toBeEnabled();
+    await expect(
+      editDialog(page).getByText('Der Name existiert bereits')
+    ).toHaveCount(0);
   });
 
   // Drives the shared category picker (the Stage-1 custom selectable list): open
@@ -72,10 +143,8 @@ test.describe('storage list', () => {
     await page.getByText('1 x Cheese').click();
 
     // open the picker from the category-input row
-    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({
-      timeout: 10_000,
-    });
-    await page.locator('app-category-input ion-item').first().click();
+    await expect(nameBox(page)).toBeVisible({ timeout: 10_000 });
+    await editDialog(page).getByTestId('category-input-trigger').click();
 
     // The picker's <ion-modal> teleports to the app root, so its Confirm button
     // ("Auswählen") signals it opened; its searchbar is then the last one on the
@@ -83,7 +152,9 @@ test.describe('storage list', () => {
     await expect(page.getByRole('button', { name: 'Auswählen' })).toBeVisible({
       timeout: 10_000,
     });
-    const pickerSearch = page.locator('ion-searchbar input').last();
+    const pickerSearch = page
+      .getByTestId('category-picker-search')
+      .locator('input');
     await pickerSearch.fill('Fridge');
 
     // tap the "create" row (its appearance is the debounce having landed), then
@@ -94,15 +165,15 @@ test.describe('storage list', () => {
     await page.getByRole('button', { name: 'Auswählen' }).click();
 
     await expect(
-      page.locator('app-category-input').getByText('Fridge')
+      editDialog(page).locator('app-category-input').getByText('Fridge')
     ).toBeVisible({ timeout: 10_000 });
-    await page.getByRole('button', { name: 'Übernehmen' }).click();
+    await saveButton(page).click();
 
     // re-open the item → the category persisted onto it
     await expect(page.getByText('1 x Cheese')).toBeVisible({ timeout: 10_000 });
     await page.getByText('1 x Cheese').click();
     await expect(
-      page.locator('app-category-input').getByText('Fridge')
+      editDialog(page).locator('app-category-input').getByText('Fridge')
     ).toBeVisible({ timeout: 10_000 });
   });
 

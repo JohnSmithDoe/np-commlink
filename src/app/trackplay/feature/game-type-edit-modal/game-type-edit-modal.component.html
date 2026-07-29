@@ -21,16 +21,13 @@
         labelPlacement="stacked"
         label="{{ 'trackplay.label.name' | translate }}"
         [clearInput]="true"
-        [value]="draft().name"
-        (ionInput)="patch({ name: $any($event.target).value ?? '' })"
+        [formField]="form.name"
+        data-testid="game-type-name-input"
       />
     </ion-item>
 
     <ion-item>
-      <ion-toggle
-        [checked]="draft().winHigh"
-        (ionChange)="patch({ winHigh: $any($event).detail.checked })"
-      >
+      <ion-toggle [formField]="form.winHigh" data-testid="win-high-toggle">
         <ion-label class="ion-text-wrap">
           <h2>{{ 'trackplay.gametype.win-high' | translate }}</h2>
           <p>{{ 'trackplay.gametype.win-high-hint' | translate }}</p>

@@ -18,9 +18,11 @@ import {
   IonRouterLink,
   IonRouterOutlet,
   IonTitle,
+  IonToast,
   IonToolbar,
+  ToastButton,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   barcodeOutline,
@@ -39,6 +41,7 @@ import {
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
+import { AppUpdateService } from './@shared/util/app-update.service';
 import { DashboardFacade, DeckFacade } from './commlink/data';
 import { IDeckProgram } from './commlink/model/deck.types';
 
@@ -62,14 +65,16 @@ import { IDeckProgram } from './commlink/model/deck.types';
     IonLabel,
     IonIcon,
     IonBadge,
+    IonToast,
     RouterLink,
     IonMenuToggle,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class AppComponent {
   readonly #dashboard = inject(DashboardFacade);
   readonly #deck = inject(DeckFacade);
+  readonly #update = inject(AppUpdateService);
 
   /**
    * The menu is one of two renderings of the user's deck configuration (the
@@ -88,6 +93,29 @@ export class AppComponent {
    */
   menuBadge(entry: IDeckProgram): number {
     return entry.source === 'notifications' ? this.#notificationsUnread() : 0;
+  }
+
+  readonly updateReady = this.#update.updateReady;
+
+  /**
+   * Built here rather than in the service because `ion-toast` takes its buttons
+   * as a property — there is no slot to project a `| translate` into — and the
+   * labels are the template's business, which is what keeps `TranslateService`
+   * out of the shell entirely.
+   */
+  updateActions(reload: string, later: string): ToastButton[] {
+    return [
+      { text: reload, role: 'destructive', handler: () => this.applyUpdate() },
+      { text: later, role: 'cancel' },
+    ];
+  }
+
+  applyUpdate(): void {
+    this.#update.applyUpdate();
+  }
+
+  dismissUpdate(): void {
+    this.#update.dismiss();
   }
 
   constructor() {

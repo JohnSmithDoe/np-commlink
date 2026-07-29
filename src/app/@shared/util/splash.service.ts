@@ -1,4 +1,9 @@
-import { Injectable } from '@angular/core';
+import {
+  EnvironmentProviders,
+  Injectable,
+  inject,
+  provideAppInitializer,
+} from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 
@@ -14,13 +19,10 @@ const FALLBACK_MS = 3000;
 @Injectable({ providedIn: 'root' })
 export class SplashService {
   #revealed = false;
-  readonly #timer?: ReturnType<typeof setTimeout>;
+  #timer?: ReturnType<typeof setTimeout>;
 
-  // Instantiated eagerly (ThemeEffects injects it at boot), so arming the
-  // fallback in the constructor guarantees the splash lifts even if `loaded`
-  // never fires.
-  constructor() {
-    this.#timer = setTimeout(() => this.reveal(), FALLBACK_MS);
+  armDeadline(): void {
+    this.#timer ??= setTimeout(() => this.reveal(), FALLBACK_MS);
   }
 
   reveal(): void {
@@ -38,3 +40,13 @@ export class SplashService {
     setTimeout(() => element.remove(), FADE_MS);
   }
 }
+
+/**
+ * Arms the reveal deadline at boot. It is a provider rather than something the
+ * constructor does, because the deadline used to exist only as a side effect of
+ * `SettingsEffects` happening to inject this service — so whoever stopped
+ * injecting it would have silently removed the app's only guarantee that a
+ * stuck theme read cannot leave the splash up forever.
+ */
+export const provideSplashDeadline = (): EnvironmentProviders =>
+  provideAppInitializer(() => inject(SplashService).armDeadline());

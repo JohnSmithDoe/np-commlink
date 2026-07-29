@@ -8,6 +8,7 @@ export const GEIST_LINK_LABELS: Record<TGeistLink, TMarker> = {
   unsupported: marker('geist.link.unsupported'),
   dormant: marker('geist.link.dormant'),
   priming: marker('geist.link.priming'),
+  reforging: marker('geist.link.reforging'),
   'jacked-in': marker('geist.link.jacked-in'),
   flatlined: marker('geist.link.flatlined'),
 };
@@ -20,17 +21,20 @@ export const GEIST_LINK_LABELS: Record<TGeistLink, TMarker> = {
  * Gemini Nano is small: the prompts push hard on brevity and structure, because
  * left alone it rambles far past what a deck panel can show.
  */
+/** The register a fresh session opens in. */
+export const GEIST_DEFAULT_PERSONA: IGeistPersona = {
+  id: 'fixer',
+  codename: 'FIXER',
+  taglineKey: marker('geist.persona.fixer'),
+  systemPrompt:
+    'Du bist ein Fixer: ein abgebrühter Mittelsmann mit wenig Zeit. ' +
+    'Antworte auf Deutsch, in maximal zwei Sätzen, ohne Einleitung, ohne ' +
+    'Höflichkeitsfloskeln und ohne Rückfragen. Wenn du etwas nicht weißt, ' +
+    'sage das in einem Satz.',
+};
+
 export const GEIST_PERSONAS: readonly IGeistPersona[] = [
-  {
-    id: 'fixer',
-    codename: 'FIXER',
-    taglineKey: marker('geist.persona.fixer'),
-    systemPrompt:
-      'Du bist ein Fixer: ein abgebrühter Mittelsmann mit wenig Zeit. ' +
-      'Antworte auf Deutsch, in maximal zwei Sätzen, ohne Einleitung, ohne ' +
-      'Höflichkeitsfloskeln und ohne Rückfragen. Wenn du etwas nicht weißt, ' +
-      'sage das in einem Satz.',
-  },
+  GEIST_DEFAULT_PERSONA,
   {
     id: 'archivist',
     codename: 'ARCHIVAR',

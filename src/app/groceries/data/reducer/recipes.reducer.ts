@@ -11,7 +11,6 @@ import { ProductsActions } from '../actions/products.actions';
 import { RecipesActions } from '../actions/recipes.actions';
 
 export const initialState: IRecipesState = {
-  title: 'Recipes',
   id: RECIPES_LIST_ID,
   items: [],
   mode: 'alphabetical',

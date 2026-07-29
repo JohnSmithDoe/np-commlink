@@ -1,7 +1,6 @@
 import { RouterReducerState } from '@ngrx/router-store';
 import { IBaseItem } from '../model/base-item.types';
 import { ICategory } from '../model/category.types';
-import { ISettingsState } from '../model/settings.types';
 
 // NOTE: initial states are defined inline (rather than imported from the
 // reducers) on purpose: a reducer module can evaluate a factory like
@@ -18,16 +17,12 @@ import { ISettingsState } from '../model/settings.types';
  */
 export const TEST_TIMESTAMP = '2024-01-01T12:00:00.000Z';
 
-// NB: no `mockDashboardState` here — the dashboard read-model is commlink's
-// (see commlink/testing). @shared is tagged `domain:@shared` and Sheriff checks
-// every fromTag, so this file could not name a domain type even though
-// `type:testing` may reach any layer.
-
-export function mockSettings(
-  overrides: Partial<ISettingsState> = {}
-): ISettingsState {
-  return { theme: 'cyberpunk', ...overrides };
-}
+// NB: no `mockDashboardState` or `mockSettings` here — the dashboard read-model
+// belongs to commlink and the settings slice to settings (see their own
+// `testing/` folders). @shared is tagged `domain:@shared` and Sheriff checks every
+// fromTag, so this file could not name a domain type even though `type:testing`
+// may reach any layer. A domain fixture reaches `provideMockStore` through
+// `TMockState`'s `Record<string, unknown>` half, which exists for exactly this.
 
 function mockRouterState(): RouterReducerState {
   return {
@@ -76,7 +71,6 @@ export function mockBaseItem(overrides: Partial<IBaseItem> = {}): IBaseItem {
  */
 export type TMockKernelState = {
   router: RouterReducerState;
-  settings: ISettingsState;
 };
 
 export type TMockState = Partial<TMockKernelState> & Record<string, unknown>;
@@ -85,7 +79,6 @@ export type TMockState = Partial<TMockKernelState> & Record<string, unknown>;
 export function mockKernelState(overrides: TMockState = {}): TMockKernelState {
   return {
     router: mockRouterState(),
-    settings: mockSettings(),
     ...overrides,
   };
 }

@@ -1,11 +1,10 @@
 <app-item-edit-modal
-  [item]="seedItem()"
-  [listItems]="listItems()"
+  [nameField]="form.name"
+  [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
   [dialogTitle]="dialogTitle()"
   closeButtonText="edit.item.dialog.button.close"
-  (nameChange)="updateName($event)"
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"

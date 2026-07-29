@@ -4,15 +4,18 @@
   [color]="color()"
   [detail]="false"
   lines="full"
+  data-testid="text-item"
 >
   <ion-label class="ion-text-wrap">
-    <h2>{{ label() }}</h2>
+    <h2 data-testid="text-item-label">{{ label() }}</h2>
     @if (note()) {
-      <ion-note slot="end">{{ note() }}</ion-note>
+      <ion-note slot="end" data-testid="text-item-note">{{ note() }}</ion-note>
     }
   </ion-label>
   @if (helper()) {
-    <ion-note slot="end" class="text-item-helper">{{ helper() }} </ion-note>
+    <ion-note slot="end" class="text-item-helper" data-testid="text-item-helper"
+      >{{ helper() }}
+    </ion-note>
   }
   @if (time()) {
     <ion-label slot="end" class="text-item-helper">{{ time() }} </ion-label>

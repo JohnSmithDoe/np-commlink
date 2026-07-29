@@ -21,9 +21,9 @@
         labelPlacement="stacked"
         label="{{ 'trackplay.label.name' | translate }}"
         [clearInput]="true"
-        [value]="draft().name"
-        (ionInput)="patch({ name: $any($event.target).value ?? '' })"
+        [formField]="form.name"
         (keyup.enter)="onEnter($event)"
+        data-testid="player-name-input"
       />
     </ion-item>
   </ion-list>

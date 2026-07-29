@@ -15,7 +15,7 @@ import { expect, Locator, Page } from '@playwright/test';
 export const ROUTE = {
   shopping: 'groceries/shopping/_shopping',
   storage: 'groceries/storage/_storage',
-  tasks: 'tasks/_tasks',
+  tasks: 'tasks/list',
   products: 'groceries/products/_products',
 } as const;
 
@@ -29,6 +29,15 @@ export function searchInput(page: Page): Locator {
   return page
     .locator('app-item-list-searchbar ion-searchbar input:visible')
     .first();
+}
+
+/**
+ * The list row whose title matches. Matching the row element rather than the
+ * text avoids `.first()`: `getByText(/Milk/)` matches the heading *and* every
+ * ancestor whose text contains it, while exactly one `list-row` does.
+ */
+export function listRow(page: Page, text: string | RegExp): Locator {
+  return page.getByTestId('list-row').filter({ hasText: text });
 }
 
 /** Wait until the active grocery list page has booted (searchbar rendered). */

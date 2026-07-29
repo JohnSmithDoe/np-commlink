@@ -8,7 +8,7 @@ import {
   IonLabel,
   IonNote,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { restaurantOutline } from 'ionicons/icons';
 import { IRecipe } from '../../model/recipe.types';
@@ -36,7 +36,7 @@ import { EditRecipeDialogComponent } from '../edit-recipe-dialog/edit-recipe-dia
     IonItemSliding,
     IonLabel,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     ItemListEmptyComponent,
     PageHeaderComponent,
     EditRecipeDialogComponent,

@@ -1,14 +1,32 @@
+import { TestBed } from '@angular/core/testing';
+import { LanguageService } from '../../@shared/util/language.service';
 import { MoneyEurPipe } from './money.pipe';
+
+// The locale is read once at construction (a language switch restarts the app),
+// so the pipe has to be built in an injection context.
+const pipeFor = (locale: string): MoneyEurPipe => {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: LanguageService, useValue: { locale: () => locale } },
+    ],
+  });
+  return TestBed.runInInjectionContext(() => new MoneyEurPipe());
+};
 
 // ICU puts a non-breaking space before the symbol and that codepoint varies by
 // runtime, so assert on the parts rather than the whole string.
 describe('MoneyEurPipe', () => {
-  const pipe = new MoneyEurPipe();
+  const pipe = pipeFor('de-DE');
 
   it('renders cents as a de-DE euro amount', () => {
     const out = pipe.transform(1234);
     expect(out).toContain('12,34');
     expect(out).toContain('€');
+  });
+
+  it('follows the active locale', () => {
+    expect(pipeFor('en-US').transform(1234)).toContain('12.34');
   });
 
   it('keeps the sign on an outflow', () => {

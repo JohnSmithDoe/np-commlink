@@ -12,6 +12,7 @@
       <ion-toggle
         [checked]="!!settings().showQuickAdd"
         (ionChange)="toggleFlag('showQuickAdd')"
+        data-testid="list-settings-flag-show-quick-add"
         >{{ 'grocery.list-settings.show-quick-add' | translate }}</ion-toggle
       >
     </ion-item>
@@ -19,6 +20,7 @@
       <ion-toggle
         [checked]="!!settings().showQuickAddProduct"
         (ionChange)="toggleFlag('showQuickAddProduct')"
+        data-testid="list-settings-flag-show-quick-add-product"
         >{{
           'grocery.list-settings.show-quick-add-product' | translate
         }}</ion-toggle
@@ -28,6 +30,7 @@
       <ion-toggle
         [checked]="!!settings().showQuickAddCategory"
         (ionChange)="toggleFlag('showQuickAddCategory')"
+        data-testid="list-settings-flag-show-quick-add-category"
         >{{
           'grocery.list-settings.show-quick-add-category' | translate
         }}</ion-toggle
@@ -40,6 +43,7 @@
       <ion-toggle
         [checked]="!!settings().showProductsInStorage"
         (ionChange)="toggleFlag('showProductsInStorage')"
+        data-testid="list-settings-flag-show-products-in-storage"
         >{{ 'grocery.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
@@ -47,6 +51,7 @@
       <ion-toggle
         [checked]="!!settings().showShoppingInStorage"
         (ionChange)="toggleFlag('showShoppingInStorage')"
+        data-testid="list-settings-flag-show-shopping-in-storage"
         >{{ 'grocery.list-settings.show-shopping' | translate }}</ion-toggle
       >
     </ion-item>
@@ -57,6 +62,7 @@
       <ion-toggle
         [checked]="!!settings().showProductsInShopping"
         (ionChange)="toggleFlag('showProductsInShopping')"
+        data-testid="list-settings-flag-show-products-in-shopping"
         >{{ 'grocery.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
@@ -64,6 +70,7 @@
       <ion-toggle
         [checked]="!!settings().showStorageInShopping"
         (ionChange)="toggleFlag('showStorageInShopping')"
+        data-testid="list-settings-flag-show-storage-in-shopping"
         >{{ 'grocery.list-settings.show-storage' | translate }}</ion-toggle
       >
     </ion-item>
@@ -74,6 +81,7 @@
       <ion-toggle
         [checked]="!!settings().showStorageInProducts"
         (ionChange)="toggleFlag('showStorageInProducts')"
+        data-testid="list-settings-flag-show-storage-in-products"
         >{{ 'grocery.list-settings.show-storage' | translate }}</ion-toggle
       >
     </ion-item>
@@ -81,6 +89,7 @@
       <ion-toggle
         [checked]="!!settings().showShoppingInProducts"
         (ionChange)="toggleFlag('showShoppingInProducts')"
+        data-testid="list-settings-flag-show-shopping-in-products"
         >{{ 'grocery.list-settings.show-shopping' | translate }}</ion-toggle
       >
     </ion-item>

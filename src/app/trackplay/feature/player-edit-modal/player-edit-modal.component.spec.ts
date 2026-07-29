@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import {
   mockPlayer,
   mockTrackplayState,
@@ -16,7 +16,7 @@ describe('TrackplayPlayerEditModalComponent', () => {
 
   const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
-      imports: [TrackplayPlayerEditModalComponent, TranslateModule.forRoot()],
+      imports: [TrackplayPlayerEditModalComponent],
       providers: [provideTestingProviders({ trackplay: state })],
     });
     vi.spyOn(TestBed.inject(ModalController), 'dismiss').mockResolvedValue(

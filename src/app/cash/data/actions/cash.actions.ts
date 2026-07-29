@@ -3,6 +3,7 @@ import { ICashAccount } from '../../model/account.types';
 import { ICashState } from '../../model/cash.types';
 import { ICashRule } from '../../model/rule.types';
 import { ICashTransaction } from '../../model/transaction.types';
+import { ICashRecategorization } from '../../util/categorize.utils';
 import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
 
 // Source prefix `[Cash]` is load-bearing: CashSaveEffects.saveCashOnChange$
@@ -39,6 +40,12 @@ export const CashActions = createActionGroup({
       categoryId: TCategoryId | undefined,
       manual: boolean
     ) => ({ id, categoryId, manual }),
+    // Bulk re-filing from an "apply rules" run — one action = one persist, where
+    // one `setTransactionCategory` per changed row rewrote the whole ledger N
+    // times. Rule-assigned, so never `manual`.
+    recategorizeTransactions: (changes: ICashRecategorization[]) => ({
+      changes,
+    }),
     // Merge a pending manual entry into the imported txn it turned out to be:
     // the manual leg points at the survivor and is hidden from balance/spend.
     reconcileTransaction: (manualId: string, importedId: string) => ({

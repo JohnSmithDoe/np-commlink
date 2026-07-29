@@ -32,7 +32,7 @@ async function addCategory(
 
 test.describe('manage categories', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/tasks/_tasks');
+    await page.goto('/#/tasks/list');
     await waitForListPage(page);
   });
 
@@ -47,7 +47,7 @@ test.describe('manage categories', () => {
     // Back returns to the owning list (routerLink → listHref). ion-button with
     // routerLink renders as an anchor, so it carries the link role.
     await page.getByRole('link', { name: 'Zurück' }).first().click();
-    await expect(page).toHaveURL(/tasks\/_tasks$/);
+    await expect(page).toHaveURL(/tasks\/list$/);
   });
 
   test('drills from a category into the filtered list', async ({ page }) => {
@@ -61,7 +61,7 @@ test.describe('manage categories', () => {
       .getByText('Arbeit', { exact: true })
       .click();
 
-    await expect(page).toHaveURL(/tasks\/_tasks\?filter=/);
+    await expect(page).toHaveURL(/tasks\/list\?filter=/);
     await expect(
       page.locator('#main-content').getByText(/Kategorie: Arbeit/)
     ).toBeVisible({ timeout: 10_000 });

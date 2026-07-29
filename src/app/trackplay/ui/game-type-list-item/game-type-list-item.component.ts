@@ -1,5 +1,4 @@
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   input,
@@ -12,19 +11,17 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
-  IonList,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, dice, trash } from 'ionicons/icons';
-import { TIonDragEvent } from '../../../@shared/model/app.types';
 import { IGameType } from '../../model/trackplay.types';
-import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
+import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 
 /**
- * DUMB game-type row. Swipe start / tap option to delete (only when
- * `canDelete` — the built-in 'default' type is undeletable), swipe end to
- * edit, tap body to select. Mirrors the legacy `game-type-list` renderer.
+ * DUMB game-type row — a {@link BaseSwipeRow} whose delete side is gated by the
+ * inherited `canDelete` (the built-in 'default' type is undeletable); tap the
+ * body to select. Mirrors the legacy `game-type-list` renderer.
  */
 @Component({
   selector: 'app-trackplay-game-type-list-item',
@@ -38,42 +35,16 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
     IonItem,
     IonIcon,
     IonLabel,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
-export class TrackplayGameTypeListItemComponent {
+export class TrackplayGameTypeListItemComponent extends BaseSwipeRow {
   readonly gameType = input.required<IGameType>();
-  readonly canDelete = input(false, { transform: booleanAttribute });
-  readonly ionList = input.required<IonList>();
 
   readonly selectType = output<void>();
-  readonly editType = output<void>();
-  readonly deleteType = output<void>();
 
   constructor() {
+    super();
     addIcons({ dice, trash, create });
-  }
-
-  deleteOrEditOnSwipe(event: TIonDragEvent): void {
-    switch (revealedSideFromDrag(event)) {
-      case 'start': {
-        if (this.canDelete()) void this.emitDelete();
-        break;
-      }
-      case 'end': {
-        void this.emitEdit();
-        break;
-      }
-    }
-  }
-
-  async emitDelete(): Promise<void> {
-    await this.ionList().closeSlidingItems();
-    this.deleteType.emit();
-  }
-
-  async emitEdit(): Promise<void> {
-    await this.ionList().closeSlidingItems();
-    this.editType.emit();
   }
 }

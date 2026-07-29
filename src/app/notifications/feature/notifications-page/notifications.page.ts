@@ -16,7 +16,7 @@ import {
   IonNote,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   checkmarkCircle,
@@ -29,15 +29,10 @@ import {
   stopCircle,
   trashOutline,
 } from 'ionicons/icons';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { NotificationService } from '../../util/notification.service';
 import { NotificationsFacade } from '../../data';
 import { INotification } from '../../../@shared/model/notifications.types';
-
-marker('notifications.action.start');
-marker('notifications.action.stop');
-marker('notifications.action.pause');
 
 @Component({
   selector: 'app-page-notifications',
@@ -46,7 +41,7 @@ marker('notifications.action.pause');
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
-    TranslateModule,
+    TranslatePipe,
     IonContent,
     IonList,
     IonItem,
@@ -124,22 +119,5 @@ export class NotificationsPage implements ViewWillEnter {
 
   addDebugNotification() {
     this.#facade.addDebugNotification();
-  }
-
-  actionLabelKey(n: INotification): string {
-    switch (n.action?.type) {
-      case 'tracking.start': {
-        return 'notifications.action.start';
-      }
-      case 'tracking.stop': {
-        return 'notifications.action.stop';
-      }
-      case 'tracking.pause': {
-        return 'notifications.action.pause';
-      }
-      default: {
-        return '';
-      }
-    }
   }
 }

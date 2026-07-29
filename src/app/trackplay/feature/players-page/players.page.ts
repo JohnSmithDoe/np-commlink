@@ -13,7 +13,8 @@ import {
   ModalController,
   PopoverController,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline } from 'ionicons/icons';
 import { IPlayer, IPlayerStats, TID } from '../../model/trackplay.types';
@@ -41,7 +42,7 @@ const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
     IonList,
     IonButton,
     IonIcon,
-    TranslateModule,
+    TranslatePipe,
     PageHeaderComponent,
     TrackplayPlayerListItemComponent,
   ],
@@ -51,6 +52,7 @@ export class TrackplayPlayersPage {
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #popoverCtrl = inject(PopoverController);
+  readonly #translate = inject(TranslateService);
 
   readonly rxPlayers = this.#facade.playerList;
   readonly rxStats = this.#facade.playerStats;
@@ -77,13 +79,20 @@ export class TrackplayPlayersPage {
   }
 
   async newPlayer(): Promise<void> {
-    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent);
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayPlayerEditModalComponent,
+      this.#translate.instant(marker('page-title.trackplay-player'))
+    );
   }
 
   async openPlayerEdit(player: IPlayer): Promise<void> {
-    await presentModal(this.#modalCtrl, TrackplayPlayerEditModalComponent, {
-      playerId: player.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      TrackplayPlayerEditModalComponent,
+      this.#translate.instant(marker('page-title.trackplay-player')),
+      { playerId: player.id }
+    );
   }
 
   async openSettings(event: Event): Promise<void> {

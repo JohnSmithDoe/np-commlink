@@ -1,7 +1,6 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
+import { createItemListActionEvents } from '../../../@shared/data/actions/item-list.actions.factory';
 import { TTimestamp } from '../../../@shared/model/app.types';
-import { TUpdateDTO } from '../../../@shared/model/base-item.types';
-import { TItemListSortType } from '../../../@shared/model/item-list.types';
 import {
   IDataItem,
   ITrackingItem,
@@ -17,9 +16,12 @@ export const TrackingActions = createActionGroup({
     load: emptyProps(),
     loaded: (tracking: ITrackingState | null) => ({ tracking }),
 
-    // Effects only
-    addOrUpdateItem: (item: ITrackingItem) => ({ item }),
-    addItemFromSearch: emptyProps(),
+    // The shared list event map, one definition for every list-backed context.
+    // Three of its creators are inert here — tracking is category-less
+    // (`updateFilter`/`updateMode`) and its page has no enter flow
+    // (`enterPage`) — which is the price of the map having a single home.
+    ...createItemListActionEvents<ITrackingItem>(),
+
     // A notification CTA (fired from the eager /notifications page) deep-links
     // to /tracking?cmd=<command>&target=<itemId>; the tracking page dispatches
     // this so tracking applies its own command on activation (see
@@ -36,8 +38,6 @@ export const TrackingActions = createActionGroup({
       item,
       now,
     }),
-    pauseTracking: (item: ITrackingItem) => ({ item }),
-    startTracking: (item: ITrackingItem) => ({ item }),
     updateTracking: (item: ITrackingItem, now: TTimestamp) => ({
       item,
       now,
@@ -45,22 +45,12 @@ export const TrackingActions = createActionGroup({
     resetTracking: (item: ITrackingItem) => ({ item }),
     resetAllTracking: emptyProps(),
     saveAndResetTracking: emptyProps(),
-    endTracking: emptyProps(),
-    seedDemoSessions: emptyProps(),
+    // The generated sessions travel in the payload: the generator is random and
+    // clock-bound, and the reducer stays a pure merge of what it is handed.
+    seedDemoSessions: (sessions: ITrackingItem[]) => ({ sessions }),
 
     shareData: emptyProps(),
     removeDataItem: (item: IDataItem) => ({ item }),
     changeDataView: (viewId: string) => ({ viewId }),
-
-    addItem: (item: ITrackingItem) => ({ item }),
-    addItemFailure: (item: ITrackingItem) => ({ item }),
-
-    removeItem: (item: ITrackingItem) => ({ item }),
-    updateItem: (item: TUpdateDTO<ITrackingItem>) => ({ item }),
-    updateSearch: (searchQuery?: string) => ({ searchQuery }),
-    updateSort: (
-      sortBy?: TItemListSortType,
-      sortDir?: 'asc' | 'desc' | 'keep' | 'toggle'
-    ) => ({ sortBy, sortDir }),
   },
 });

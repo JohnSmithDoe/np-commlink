@@ -1,31 +1,10 @@
-import {
-  selectNotificationsUnread,
-  selectTelemetry,
-} from './dashboard.selector';
+import { selectNotificationsUnread } from './dashboard.selector';
 import { IDashboardTelemetry } from '../../../@shared/model/dashboard.types';
 
 const notifications: IDashboardTelemetry = {
   source: 'notifications',
   metrics: { unread: 5 },
 };
-
-describe('selectTelemetry', () => {
-  it('projects the telemetry for the requested source', () => {
-    expect(
-      selectTelemetry('notifications').projector({
-        bySource: { notifications },
-      })
-    ).toEqual(notifications);
-  });
-
-  it('returns undefined for a source that has not reported', () => {
-    expect(
-      selectTelemetry('office-time').projector({
-        bySource: { notifications },
-      })
-    ).toBeUndefined();
-  });
-});
 
 describe('selectNotificationsUnread', () => {
   it('surfaces the unread metric from the read-model for the badge', () => {

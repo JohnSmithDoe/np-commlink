@@ -9,10 +9,8 @@ import {
   updateListItem,
   updateListSort,
 } from '../../../@shared/util/list/list.utils';
-import { uuidv4 } from '../../../@shared/util/app.utils';
 
 export const initialState: ITrackingState = {
-  title: 'Time tracking',
   items: [],
   // categories/mode are required by the shared IItemList base (grocery lists
   // use them); the tracking list keeps an empty set and the default mode.
@@ -119,87 +117,32 @@ const updateTracking = (
   });
 };
 
-const DEMO_NAMES = [
-  'Code review',
-  'Standup',
-  'Feature work',
-  'Bug fixing',
-  'Documentation',
-  'Pair programming',
-  'Email & Slack',
-  'Deep work',
-];
-
-const DEMO_DAYS = 21;
-const DEMO_SESSIONS_PER_DAY_MIN = 2;
-const DEMO_SESSIONS_PER_DAY_SPREAD = 3;
-const DEMO_FIRST_HOUR = 8;
-const DEMO_FIRST_HOUR_SPREAD = 2;
-const DEMO_LAST_HOUR = 19;
-const DEMO_MINUTES_MIN = 15;
-const DEMO_MINUTES_SPREAD = 165;
-
-const upTo = (spread: number): number => Math.floor(Math.random() * spread);
-
 const byStartTime = (a: ITrackingItem, b: ITrackingItem): number =>
   dayjs(a.startTime).diff(b.startTime);
 
-const randomSession = (start: dayjs.Dayjs, minutes: number): ITrackingItem => ({
-  id: uuidv4(),
-  name: DEMO_NAMES[upTo(DEMO_NAMES.length)],
-  createdAt: start.format(),
-  startTime: start.format(),
-  trackedTimeInSeconds: minutes * 60,
-  state: 'stopped',
+const mergeSessions = (
+  state: ITrackingState,
+  sessions: ITrackingItem[]
+): ITrackingState => ({
+  ...state,
+  sessions: [...state.sessions, ...sessions].toSorted(byStartTime),
 });
 
-// Walks the working day forward so the generated sessions never overlap, and
-// stops once it would run past the evening.
-const randomSessionsForDay = (day: dayjs.Dayjs): ITrackingItem[] => {
-  const sessions: ITrackingItem[] = [];
-  const count = DEMO_SESSIONS_PER_DAY_MIN + upTo(DEMO_SESSIONS_PER_DAY_SPREAD);
-  let hour = DEMO_FIRST_HOUR + upTo(DEMO_FIRST_HOUR_SPREAD);
-  for (let index = 0; index < count; index++) {
-    const start = day.hour(hour).minute(upTo(50)).second(0);
-    const minutes = DEMO_MINUTES_MIN + upTo(DEMO_MINUTES_SPREAD);
-    sessions.push(randomSession(start, minutes));
-    hour += 1 + Math.floor(minutes / 60);
-    if (hour > DEMO_LAST_HOUR) break;
-  }
-  return sessions;
-};
-
-// `sessions` was persisted under the key `data` before it was renamed. Storage
-// is never migrated in this app, so the load path has to read the old key too.
-const legacySessions = (stored: unknown): ITrackingItem[] | undefined =>
-  (stored as { data?: ITrackingItem[] } | null | undefined)?.data;
-
-const seedDemoSessions = (state: ITrackingState): ITrackingState => {
-  const generated: ITrackingItem[] = [];
-  for (let dayOffset = 0; dayOffset < DEMO_DAYS; dayOffset++) {
-    generated.push(...randomSessionsForDay(dayjs().subtract(dayOffset, 'day')));
-  }
-  return {
-    ...state,
-    sessions: [...state.sessions, ...generated].toSorted(byStartTime),
-  };
-};
+// An archived session is "this activity, from that start moment", so its id is
+// derived from exactly that instead of minted: the arm stays a pure function of
+// (state, action), like every other one that takes its `now` from the payload.
+const archivedSessionId = (item: ITrackingItem): string =>
+  `${item.id}@${item.startTime}`;
 
 const saveAndReset = (state: ITrackingState): ITrackingState => {
-  const sessions: ITrackingItem[] = [
-    ...state.sessions,
-    ...state.items
-      .filter((item) => !!item.startTime)
-      .map((item): ITrackingItem => ({
-        ...item,
-        state: 'stopped',
-        id: uuidv4(),
-      })),
-  ].toSorted(byStartTime);
-  return {
-    ...resetTracking(state),
-    sessions,
-  };
+  const archived = state.items
+    .filter((item) => !!item.startTime)
+    .map((item): ITrackingItem => ({
+      ...item,
+      state: 'stopped',
+      id: archivedSessionId(item),
+    }));
+  return mergeSessions(resetTracking(state), archived);
 };
 
 export const trackingReducer = createReducer(
@@ -233,9 +176,12 @@ export const trackingReducer = createReducer(
   on(TrackingActions.saveAndResetTracking, (state): ITrackingState => {
     return saveAndReset(state);
   }),
-  on(TrackingActions.seedDemoSessions, (state): ITrackingState => {
-    return seedDemoSessions(state);
-  }),
+  on(
+    TrackingActions.seedDemoSessions,
+    (state, { sessions }): ITrackingState => {
+      return mergeSessions(state, sessions);
+    }
+  ),
   on(TrackingActions.updateTracking, (state, { item, now }): ITrackingState => {
     return updateTracking(state, item, now);
   }),
@@ -244,10 +190,12 @@ export const trackingReducer = createReducer(
     return { ...state, sessionsViewId: viewId };
   }),
 
+  // A stats row is a bucket of merged sessions, so it deletes the ones it lists.
   on(TrackingActions.removeDataItem, (state, { item }): ITrackingState => {
+    const deleted = new Set(item.sessionIds);
     return {
       ...state,
-      sessions: state.sessions.filter((session) => session.id !== item.id),
+      sessions: state.sessions.filter((session) => !deleted.has(session.id)),
     };
   }),
 
@@ -265,11 +213,7 @@ export const trackingReducer = createReducer(
       items: (tracking?.items ?? state.items).map((trackingItem) => ({
         ...trackingItem,
       })),
-      // `sessions` was persisted as `data` before the rename, and this arm
-      // spreads the stored doc raw — without the fallback an existing install's
-      // archived sessions would silently disappear.
-      sessions:
-        tracking?.sessions ?? legacySessions(tracking) ?? state.sessions,
+      sessions: tracking?.sessions ?? state.sessions,
       searchQuery: undefined,
       sessionsViewId: 'today',
     };

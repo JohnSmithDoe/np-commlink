@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
   mockCashState,
@@ -17,7 +17,7 @@ describe('CashTransactionEditModalComponent', () => {
 
   const setup = (state = mockCashState()) => {
     TestBed.configureTestingModule({
-      imports: [CashTransactionEditModalComponent, TranslateModule.forRoot()],
+      imports: [CashTransactionEditModalComponent],
       providers: [provideTestingProviders({ cash: state })],
     });
     dismiss = vi
@@ -34,7 +34,7 @@ describe('CashTransactionEditModalComponent', () => {
     setup();
     component.accountId = 'a1';
 
-    component.patch({ description: 'Coffee', amount: '3,50' });
+    component.patch({ description: 'Coffee', amountCents: 350 });
     component.confirm();
 
     expect(dispatch).toHaveBeenCalledWith(
@@ -58,7 +58,7 @@ describe('CashTransactionEditModalComponent', () => {
 
     component.patch({
       description: 'Salary',
-      amount: '1.000,00',
+      amountCents: 100_000,
       direction: 'income',
     });
     component.confirm();
@@ -70,15 +70,29 @@ describe('CashTransactionEditModalComponent', () => {
     );
   });
 
-  it('rejects a non-positive or unparseable amount', () => {
+  it('refuses to save a blank description', () => {
     setup();
 
-    component.patch({ description: 'X', amount: '0' });
+    component.patch({ description: ' \t ', amountCents: 1000 });
+
+    expect(component.canSave()).toBe(false);
+
+    component.confirm();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  // `app-money-input` reports an unparseable box itself, so the dialog only has
+  // to rule out zero and negative magnitudes — hence `min(path.amountCents, 1)`.
+  it('rejects a non-positive amount, and leaves an empty one unflagged', () => {
+    setup();
+
+    component.patch({ description: 'X', amountCents: 0 });
     expect(component.amountInvalid()).toBe(true);
     expect(component.canSave()).toBe(false);
 
-    component.patch({ amount: 'abc' });
-    expect(component.amountInvalid()).toBe(true);
+    component.patch({ amountCents: null });
+    expect(component.canSave()).toBe(false);
+    expect(component.amountInvalid()).toBe(false);
 
     component.confirm();
     expect(dispatch).not.toHaveBeenCalled();
@@ -90,7 +104,7 @@ describe('CashTransactionEditModalComponent', () => {
     // phantom month in the report, and can never be reconciled.
     setup();
 
-    component.patch({ description: 'X', amount: '10,00', date: '' });
+    component.patch({ description: 'X', amountCents: 1000, date: '' });
 
     expect(component.dateInvalid()).toBe(true);
     expect(component.canSave()).toBe(false);
@@ -105,7 +119,7 @@ describe('CashTransactionEditModalComponent', () => {
 
     component.patch({
       description: 'Coffee',
-      amount: '3,50',
+      amountCents: 350,
       categoryId: 'cat-1',
     });
     component.confirm();
@@ -126,7 +140,7 @@ describe('CashTransactionEditModalComponent', () => {
 
     component.patch({
       description: 'Coffee',
-      amount: '3,50',
+      amountCents: 350,
       categoryId: '',
     });
     component.confirm();
@@ -162,12 +176,12 @@ describe('CashTransactionEditModalComponent', () => {
     expect(component.isEdit()).toBe(true);
     expect(component.draft()).toMatchObject({
       description: 'Rent',
-      amount: '500,00',
+      amountCents: 50_000,
       direction: 'expense',
       pending: true,
     });
 
-    component.patch({ amount: '450,00' });
+    component.patch({ amountCents: 45_000 });
     component.confirm();
 
     expect(dispatch).toHaveBeenCalledWith(
@@ -179,6 +193,19 @@ describe('CashTransactionEditModalComponent', () => {
         }),
       })
     );
+  });
+
+  // The field tree projects the draft signal instead of copying it, so a reseed
+  // has to reach validity too — reading canSave() first materialises the tree
+  // over the blank create-mode draft, which is what would freeze a copy.
+  it('re-derives validity after the draft reseeds', () => {
+    setup(mockCashState({ transactions: [mockCashTransaction({ id: 't1' })] }));
+
+    expect(component.canSave()).toBe(false);
+
+    component.transactionId = 't1';
+
+    expect(component.canSave()).toBe(true);
   });
 
   it('dismisses without dispatching on cancel', () => {

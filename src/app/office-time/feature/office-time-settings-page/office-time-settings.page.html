@@ -13,7 +13,7 @@
         <ion-range
           labelPlacement="start"
           [label]="
-            'officetime.page.settings.targetOfficeDaysPerWeek' | translate
+            'office-time.page.settings.targetOfficeDaysPerWeek' | translate
           "
           [min]="0"
           [max]="5"
@@ -33,23 +33,23 @@
             (ionChange)="changeDashboardSettings($event)"
           >
             <ion-label>{{
-              'officetime.page.settings.dashboard.' + setting.key | translate
+              'office-time.page.settings.dashboard.' + setting.key | translate
             }}</ion-label>
           </ion-toggle>
         </ion-item>
       }
       <ion-item>
         <ion-button id="present-alert" [color]="'danger'">
-          {{ 'officetime.page.settings.reset.button' | translate }}
+          {{ 'office-time.page.settings.reset.button' | translate }}
         </ion-button>
       </ion-item>
     </ion-list>
   }
   <ion-alert
     trigger="present-alert"
-    [header]="'officetime.page.settings.reset.header' | translate"
-    [subHeader]="'officetime.page.settings.reset.subheader' | translate"
-    [message]="'officetime.page.settings.reset.message' | translate"
+    [header]="'office-time.page.settings.reset.header' | translate"
+    [subHeader]="'office-time.page.settings.reset.subheader' | translate"
+    [message]="'office-time.page.settings.reset.message' | translate"
     [buttons]="alertButtons"
   />
 </ion-content>

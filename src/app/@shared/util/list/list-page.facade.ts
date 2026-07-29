@@ -19,14 +19,14 @@ import {
  *
  * Grocery-only operations (`addProduct`/`addStorageItem`/`addShoppingItem`,
  * `showCreateProductDialog`) are deliberately NOT on this contract; they live on
- * the concrete grocery facade and are wired only from the grocery pages.
+ * the concrete grocery facade and are wired only from the grocery pages. Nor is
+ * anything that is a pure function of `state`: the filter/header derivation the
+ * page needs it computes itself, since asking three domains for one identical
+ * computation only invites them to disagree. `categories` does stay — a domain
+ * really does decorate its own catalog with its own counts.
  */
 export interface IListPageFacade {
   readonly state: Signal<IListState<IBaseItem> | undefined>;
-  readonly filterState: Signal<{
-    isCategoryModeOrHasFilter: boolean;
-    hasFilter: boolean;
-  }>;
   readonly items: Signal<IBaseItem[] | undefined>;
   readonly searchResult: Signal<ISearchResult<IBaseItem> | undefined>;
   readonly categories: Signal<{ category: ICategory; count: number }[]>;

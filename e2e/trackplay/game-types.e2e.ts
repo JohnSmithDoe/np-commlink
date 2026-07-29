@@ -20,9 +20,12 @@ test.describe('trackplay game types', () => {
     const dialog = page.locator('app-trackplay-game-type-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog.locator('ion-input input').first().fill('Doppelkopf');
+    await dialog
+      .getByTestId('game-type-name-input')
+      .locator('input')
+      .fill('Doppelkopf');
     // Default toggle is win-high (checked); flip it to make a win-low type.
-    await dialog.locator('ion-toggle').click();
+    await dialog.getByTestId('win-high-toggle').click();
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();
 
@@ -47,7 +50,10 @@ test.describe('trackplay game types', () => {
     const dialog = page.locator('app-trackplay-game-type-edit-modal');
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog.locator('ion-input input').first().fill('Canasta');
+    await dialog
+      .getByTestId('game-type-name-input')
+      .locator('input')
+      .fill('Canasta');
     // Leave the toggle in its default (win-high) state.
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();

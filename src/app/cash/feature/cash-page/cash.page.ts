@@ -20,7 +20,7 @@ import {
   IonNote,
   ModalController,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import {
@@ -73,7 +73,7 @@ const KIND_ICON: Record<TAccountKind, string> = {
     IonLabel,
     IonIcon,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     PageHeaderComponent,
     MoneyEurPipe,
   ],
@@ -121,11 +121,19 @@ export class CashPage {
   }
 
   async openTransfer(): Promise<void> {
-    await presentModal(this.#modalCtrl, CashTransferModalComponent);
+    await presentModal(
+      this.#modalCtrl,
+      CashTransferModalComponent,
+      this.#translate.instant(marker('cash.transfer.title'))
+    );
   }
 
   async openNew(): Promise<void> {
-    await presentModal(this.#modalCtrl, CashAccountEditModalComponent);
+    await presentModal(
+      this.#modalCtrl,
+      CashAccountEditModalComponent,
+      this.#translate.instant(marker('cash.account-dialog.title-new'))
+    );
   }
 
   goToAccount(account: ICashAccount): void {

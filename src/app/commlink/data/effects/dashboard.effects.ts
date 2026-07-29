@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, from, map, of, skipUntil, switchMap, tap } from 'rxjs';
+import { catchError, from, map, of, switchMap, tap } from 'rxjs';
 import { APP_VERSION } from '../../../@shared/model/app.consts';
 import { DatabaseService } from '../../../@shared/util/db/database.service';
 import {
@@ -17,10 +17,9 @@ import {
   summaryKey,
 } from '../../model/dashboard.types';
 
-// Eager persistence for the dashboard read-model. The dashboard is a
-// capability SINK — every module writes to it while inside that module, so it
-// cannot be scoped to any one producer's route lifecycle and stays eager. It owns its own load/persist here so producing modules stay
-// ignorant of the fact that their telemetry is persisted; they just `report`.
+// Load + persistence for the dashboard read-model, owned here so producing
+// modules stay ignorant that their telemetry is persisted at all — they just
+// `report`. Why this context boots eagerly: `commlink.providers.ts`.
 /**
  * Summary docs used to be written raw, so they were the only persisted documents
  * in the app without a `{v, data}` envelope and had no migration path at all.
@@ -77,20 +76,15 @@ export class DashboardEffects {
   // model drops `status`). Central, so modules never touch disk. This context
   // owns the key shape (`summaryKey`) and the doc shape; the port just stores.
   //
-  // Gated on `hydrate`: the eager reporters fire an initial pre-hydration
-  // `report` (initialState metrics) at effect-registration time, before load$
-  // has read the persisted summaries. Persisting that would clobber the prior
-  // session's good summary before bootstrap reads it. `hydrate` fires exactly
-  // once at boot (even on load failure → `hydrate([])`), after which every
-  // report persists. In the lazy end-state reporters register post-boot, so
-  // this gate is already open when they fire.
+  // Unconditional: a reporter cannot report before its own slice has hydrated
+  // (`createTelemetrySliceEffect` gates on that slice's `loaded`), so every
+  // report that arrives here already carries a real number. This effect used to
+  // hold a `skipUntil(hydrate)` for that, which only covered the boot window —
+  // a lazy context registering later slipped its zero straight through.
   persistSummary$ = createEffect(
     () => {
       return this.#actions$.pipe(
         ofType(DashboardActions.report),
-        skipUntil(
-          this.#actions$.pipe(ofType(DashboardReadModelActions.hydrate))
-        ),
         tap(({ telemetry }) => {
           const summary: IDashboardSummary = {
             source: telemetry.source,

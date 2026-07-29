@@ -1,12 +1,4 @@
-import {
-  filterAndSortItemList,
-  filterBySearchQuery,
-} from './grocery-list.selector';
-import {
-  selectProductListItems,
-  selectProductsListSearchResult,
-  selectProductsState,
-} from './products.selector';
+import { selectProductItems, selectProductsState } from './products.selector';
 import {
   mockGroceriesState,
   mockProduct,
@@ -19,47 +11,22 @@ describe('products.selector', () => {
     expect(selectProductsState({ groceries: lists })).toBe(lists.products);
   });
 
-  describe('selectProductsListSearchResult', () => {
-    it('returns undefined without a search query', () => {
-      const listState = mockProductsState();
-      const lists = mockGroceriesState({ products: listState });
-      expect(
-        selectProductsListSearchResult.projector(listState, lists)
-      ).toBeUndefined();
-    });
-
-    it('returns the search result matching the query', () => {
-      const listState = mockProductsState({
-        searchQuery: 'Sugar',
-        items: [
-          mockProduct({ id: 'a', name: 'Sugar' }),
-          mockProduct({ id: 'b', name: 'Salt' }),
-        ],
-      });
-      const lists = mockGroceriesState({ products: listState });
-      const result = selectProductsListSearchResult.projector(listState, lists);
-      expect(result?.listItems.map((index) => index.name)).toEqual(['Sugar']);
-      expect(result).toEqual(filterBySearchQuery(lists, listState));
-    });
-  });
-
-  describe('selectProductListItems', () => {
-    it('filters and sorts the item list', () => {
+  // Same invariant as `selectStorageItems`: an aggregate read, unaffected by
+  // whatever view state the catalog page happens to be holding.
+  describe('selectProductItems', () => {
+    it('ignores the page search query and category filter', () => {
       const state = mockProductsState({
-        sort: { sortBy: 'name', sortDir: 'asc' },
+        searchQuery: 'Salt',
+        filterBy: 'baking',
         items: [
-          mockProduct({ id: 'a', name: 'Sugar' }),
+          mockProduct({ id: 'a', name: 'Sugar', categoryIds: ['baking'] }),
           mockProduct({ id: 'b', name: 'Salt' }),
         ],
       });
-      expect(selectProductListItems.projector(state, undefined)).toEqual(
-        filterAndSortItemList(state)
-      );
+
       expect(
-        selectProductListItems
-          .projector(state, undefined)
-          ?.map((index) => index.name)
-      ).toEqual(['Salt', 'Sugar']);
+        selectProductItems.projector(state).map(({ name }) => name)
+      ).toEqual(['Sugar', 'Salt']);
     });
   });
 });

@@ -16,7 +16,7 @@ import {
   IonPopover,
   IonText,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TColor } from '../../../@shared/model/app.types';
 import { ITrackingItem } from '../../model/tracking.types';
@@ -51,7 +51,7 @@ marker('tracking.item.action.pause');
   imports: [
     IonItem,
     IonLabel,
-    TranslateModule,
+    TranslatePipe,
     IonNote,
     IonText,
     DatePipe,

@@ -1,6 +1,20 @@
 import dayjs from 'dayjs';
 import { OfficeTimeActions } from '../actions/office-time.actions';
+import {
+  IOfficeTimeState,
+  IOfficeTimeStateStorage,
+} from '../../model/office-time.types';
 import { initialOfficeTime, officeTimeReducer } from './office-time.reducer';
+
+const persistedWithCards = (
+  dashboardItems: IOfficeTimeState['dashboardItems']
+): IOfficeTimeStateStorage => ({
+  ...initialOfficeTime,
+  holidays: {},
+  officedays: [],
+  freedays: [],
+  dashboardItems,
+});
 
 describe('officeTimeReducer', () => {
   it('saves the target office days per week', () => {
@@ -31,6 +45,34 @@ describe('officeTimeReducer', () => {
     );
     expect(once.freedays).toHaveLength(1);
     expect(twice.freedays).toHaveLength(1);
+  });
+
+  describe('loaded', () => {
+    it('appends cards added since the user last persisted, keeping their order', () => {
+      const state = officeTimeReducer(
+        initialOfficeTime,
+        OfficeTimeActions.loaded(persistedWithCards(['holidays', 'date']))
+      );
+
+      expect(state.dashboardItems.slice(0, 2)).toEqual(['holidays', 'date']);
+      expect(state.dashboardItems).toEqual(
+        expect.arrayContaining(initialOfficeTime.dashboardItems)
+      );
+    });
+
+    // The page's visibility filter is total over the current card vocabulary, so
+    // a card this build no longer ships must not survive hydration — it would
+    // render an empty grid slot.
+    it('drops a card this build no longer ships', () => {
+      const state = officeTimeReducer(
+        initialOfficeTime,
+        OfficeTimeActions.loaded(
+          persistedWithCards(['date', 'retired-card' as never])
+        )
+      );
+
+      expect(state.dashboardItems).not.toContain('retired-card');
+    });
   });
 
   it('resets data while preserving holidays', () => {

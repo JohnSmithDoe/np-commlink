@@ -14,8 +14,12 @@
     'grocery.list-toolbar.mhd' | translate
   }}</ion-button>
   @if (showScanButton) {
-    <ion-button (click)="scan()" toolbarActions>
-      <ion-icon slot="icon-only" name="barcode-outline" />
+    <ion-button
+      (click)="scan()"
+      toolbarActions
+      [attr.aria-label]="'grocery.a11y.scan' | translate"
+    >
+      <ion-icon slot="icon-only" name="barcode-outline" aria-hidden="true" />
     </ion-button>
   }
   <app-grocery-search-result
@@ -41,7 +45,7 @@
     [categories]="categories"
     [statusColor]="getItemStatusColor(item)"
     [showQuantityActions]="true"
-    [showCartAction]="true"
+    [cartActionLabel]="cartActionLabel"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
     (increment)="changeQuantity(item, +1)"
@@ -52,7 +56,7 @@
       <ng-container itemDetails>
         <ion-note>
           {{ 'grocery.item.best-before.note' | translate }}:
-          {{ item.bestBefore | date: undefined : undefined : 'de-DE' }}
+          {{ item.bestBefore | date }}
         </ion-note>
         <br />
       </ng-container>

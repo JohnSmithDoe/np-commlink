@@ -68,22 +68,14 @@ describe('GroceryListEffects', () => {
     );
   });
 
-  describe('addItemFromSearch', () => {
-    it('adds an item in alphabetical mode', async () => {
-      setup({ storage: mockStorageState({ mode: 'alphabetical' }) });
-      actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
-      expect(await firstValueFrom(effects.routeAddItemFromSearch$)).toEqual(
-        StorageActions.addItemFromSearch()
-      );
-    });
-
-    it('adds a category in categories mode', async () => {
-      setup({ storage: mockStorageState({ mode: 'categories' }) });
-      actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
-      expect(await firstValueFrom(effects.routeAddItemFromSearch$)).toEqual(
-        GroceryListActions.addCategoryFromSearch('_storage')
-      );
-    });
+  // Unconditionally an item, in every mode: the list page decides whether its
+  // add affordance means "item" or "category" before dispatching.
+  it('routes addItemFromSearch to the addressed list', async () => {
+    setup({ storage: mockStorageState({ mode: 'categories' }) });
+    actions$ = of(GroceryListActions.addItemFromSearch('_storage'));
+    expect(await firstValueFrom(effects.routeAddItemFromSearch$)).toEqual(
+      StorageActions.addItemFromSearch()
+    );
   });
 
   it('addCategoryFromSearch mints a shared-catalog category from the list search query', async () => {

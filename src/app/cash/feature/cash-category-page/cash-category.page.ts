@@ -6,23 +6,16 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  IonButton,
-  IonButtons,
   IonContent,
-  IonHeader,
-  IonIcon,
   IonItem,
   IonLabel,
   IonList,
   IonNote,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
-import { addIcons } from 'ionicons';
-import { arrowBackOutline } from 'ionicons/icons';
 import { CashFacade } from '../../data';
+import { CashDetailHeaderComponent } from '../../ui/cash-detail-header/cash-detail-header.component';
 import { MoneyEurPipe } from '../../util/money.pipe';
 
 /**
@@ -37,18 +30,13 @@ import { MoneyEurPipe } from '../../util/money.pipe';
   styleUrls: ['./cash-category.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
+    CashDetailHeaderComponent,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
-    IonIcon,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     MoneyEurPipe,
   ],
 })
@@ -68,10 +56,6 @@ export class CashCategoryPage {
   readonly categoryName = computed(
     () => this.#categories().find((c) => c.id === this.#id)?.name ?? ''
   );
-
-  constructor() {
-    addIcons({ arrowBackOutline });
-  }
 
   accountName(accountId: string): string {
     return this.#accountNameById().get(accountId) ?? '';

@@ -17,7 +17,10 @@ import {
 
 /** The deck tile whose codename matches, scoped to the routed content. */
 function tile(page: Page, codename: string) {
-  return page.locator('#main-content .cl-node', { hasText: codename });
+  return page
+    .locator('#main-content')
+    .getByTestId('deck-tile')
+    .filter({ hasText: codename });
 }
 
 test.describe('commlink cold launch', () => {
@@ -38,9 +41,9 @@ test.describe('commlink cold launch', () => {
 
     // 3. The MARKET badge shows the persisted count — only the summary doc
     //    could supply it (the shopping slice/reporter are absent on this route).
-    await expect(tile(page, 'MARKET').locator('.cl-node__badge')).toHaveText(
-      '2'
-    );
+    await expect(
+      tile(page, 'MARKET').getByTestId('deck-tile-badge')
+    ).toHaveText('2');
   });
 
   test('reconciles the tile to the live count when the module is opened', async ({
@@ -53,9 +56,9 @@ test.describe('commlink cold launch', () => {
 
     await page.goto('/#/commlink');
     await page.reload();
-    await expect(tile(page, 'MARKET').locator('.cl-node__badge')).toHaveText(
-      '2'
-    );
+    await expect(
+      tile(page, 'MARKET').getByTestId('deck-tile-badge')
+    ).toHaveText('2');
 
     // Open the module (lazy reporter registers, reports live) and add an item.
     await gotoFeature(page, ROUTE.shopping);
@@ -65,8 +68,8 @@ test.describe('commlink cold launch', () => {
     // Back to the deck (SPA nav — read-model kept): the tile reflects the live
     // count, overriding the cold summary.
     await page.goto('/#/commlink');
-    await expect(tile(page, 'MARKET').locator('.cl-node__badge')).toHaveText(
-      '3'
-    );
+    await expect(
+      tile(page, 'MARKET').getByTestId('deck-tile-badge')
+    ).toHaveText('3');
   });
 });

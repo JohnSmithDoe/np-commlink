@@ -28,7 +28,7 @@ import {
   IonToolbar,
   SearchbarCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkOutline, createOutline, trashOutline } from 'ionicons/icons';
 import {
@@ -62,7 +62,7 @@ import { ICategory, TCategoryId } from '../../../model/category.types';
   templateUrl: './categories-dialog.component.html',
   styleUrls: ['./categories-dialog.component.scss'],
   imports: [
-    TranslateModule,
+    TranslatePipe,
     IonModal,
     IonHeader,
     IonToolbar,

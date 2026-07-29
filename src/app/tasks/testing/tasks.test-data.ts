@@ -19,7 +19,6 @@ export function mockTasksState(
 ): ITasksState {
   return {
     id: '_tasks',
-    title: 'Tasks Items',
     items: [],
     categories: [],
     mode: 'alphabetical',

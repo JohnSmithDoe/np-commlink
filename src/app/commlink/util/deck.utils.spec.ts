@@ -1,8 +1,10 @@
+import { DECK_CHROME_FIELDS } from '../model/deck.catalog';
+import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import { IDeckEntry, IDeckState } from '../model/deck.types';
 import {
   isEntryVisible,
-  moveEntry,
   orderEntries,
+  resolveChrome,
   resolveLabels,
   toggleIn,
   visibleEntries,
@@ -14,6 +16,10 @@ const entry = (id: string, module: IDeckEntry['module']): IDeckEntry => ({
   icon: 'icon',
   route: `/${id}`,
   titleKey: `page-title.${id}`,
+  labels: {
+    cyberpunk: { nameKey: `${id}.cyber.name`, descKey: `${id}.cyber.desc` },
+    boomer: { nameKey: `${id}.plain.name`, descKey: `${id}.plain.desc` },
+  },
   onDeck: true,
 });
 
@@ -97,16 +103,39 @@ describe('visibleEntries', () => {
 });
 
 describe('resolveLabels', () => {
-  it('keys the codename off the active theme', () => {
-    const resolved = resolveLabels('cyberpunk')(entry('shopping', 'groceries'));
-    expect(resolved.nameKey).toBe('deck.cyberpunk.shopping.name');
-    expect(resolved.descKey).toBe('deck.cyberpunk.shopping.desc');
+  const shopping = entry('shopping', 'groceries');
+
+  it('lifts the active theme’s pair onto the program', () => {
+    expect(resolveLabels('cyberpunk')(shopping)).toMatchObject(
+      shopping.labels.cyberpunk
+    );
   });
 
   it('follows a theme switch', () => {
-    expect(
-      resolveLabels('boomer')(entry('shopping', 'groceries')).nameKey
-    ).toBe('deck.boomer.shopping.name');
+    expect(resolveLabels('boomer')(shopping).nameKey).toBe(
+      shopping.labels.boomer.nameKey
+    );
+  });
+});
+
+describe('resolveChrome', () => {
+  it('hands back the active theme’s slot labels', () => {
+    expect(resolveChrome('cyberpunk')).toBe(DECK_CHROME_LABELS['cyberpunk']);
+    expect(resolveChrome('boomer')).toBe(DECK_CHROME_LABELS['boomer']);
+  });
+
+  // The point of a per-theme block: OK Boomer must not read "Rauschen" at a
+  // plain office desk.
+  it('gives the two themes distinct keys', () => {
+    expect(resolveChrome('cyberpunk')['noise']).not.toBe(
+      resolveChrome('boomer')['noise']
+    );
+  });
+
+  it('covers every declared chrome field', () => {
+    expect(Object.keys(resolveChrome('boomer'))).toEqual([
+      ...DECK_CHROME_FIELDS,
+    ]);
   });
 });
 
@@ -117,19 +146,5 @@ describe('toggleIn', () => {
 
   it('removes a value that is present', () => {
     expect(toggleIn(['a', 'b'], 'a')).toEqual(['b']);
-  });
-});
-
-describe('moveEntry', () => {
-  it('moves an entry down', () => {
-    expect(moveEntry(['a', 'b', 'c'], 0, 2)).toEqual(['b', 'c', 'a']);
-  });
-
-  it('moves an entry up', () => {
-    expect(moveEntry(['a', 'b', 'c'], 2, 0)).toEqual(['c', 'a', 'b']);
-  });
-
-  it('leaves the order alone when nothing moved', () => {
-    expect(moveEntry(['a', 'b', 'c'], 1, 1)).toEqual(['a', 'b', 'c']);
   });
 });

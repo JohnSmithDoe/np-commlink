@@ -21,7 +21,6 @@ export function mockTrackingState(
   overrides: Partial<ITrackingState> = {}
 ): ITrackingState {
   return {
-    title: 'Time tracking',
     items: [],
     categories: [],
     mode: 'alphabetical',

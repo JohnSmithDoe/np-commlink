@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button
+        (click)="back.emit()"
+        [attr.aria-label]="'cash.a11y.back' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ heading() }}</ion-title>
+    <ng-content select="[toolbar]" />
+  </ion-toolbar>
+</ion-header>

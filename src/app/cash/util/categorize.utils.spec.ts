@@ -65,10 +65,9 @@ describe('categorize util', () => {
       ).toBe(false);
     });
 
-    it('matches against rawDescription when present', () => {
+    it('matches against the imported bank text as stored', () => {
       const imported = mockCashTransaction({
-        description: 'clean name',
-        rawDescription: 'EDEKA//STUTTGART/DE',
+        description: 'EDEKA//STUTTGART/DE',
       });
       expect(
         matchesCondition(imported, {

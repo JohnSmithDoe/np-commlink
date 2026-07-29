@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import {
+  DASHBOARD_CARD_VISIBILITY,
   IOfficeTimeState,
   IOfficeTimeStateStorage,
 } from '../../model/office-time.types';
@@ -56,16 +57,20 @@ const withDay = (days: Dayjs[] | undefined, day: Dayjs): Dayjs[] => [
   day,
 ];
 
-// Self-heal: append any dashboard item added since this user last persisted
-// (e.g. 'wordclock'), preserving their existing order.
-const withNewlyAddedDashboardItems = (
+// Self-heal: append any dashboard card added since this user last persisted
+// (e.g. 'wordclock') and drop any this build no longer ships, preserving their
+// existing order. Dropping the unknown ones is what lets the page's visibility
+// filter be total — an unmapped card would otherwise render an empty grid slot.
+const withKnownDashboardItems = (
   storedItems: IOfficeTimeState['dashboardItems'] | undefined
 ): IOfficeTimeState['dashboardItems'] => {
-  const items = storedItems ?? initialOfficeTime.dashboardItems;
-  const missing = initialOfficeTime.dashboardItems.filter(
-    (item) => !items.includes(item)
+  const known = (storedItems ?? initialOfficeTime.dashboardItems).filter(
+    (item) => item in DASHBOARD_CARD_VISIBILITY
   );
-  return [...items, ...missing];
+  const missing = initialOfficeTime.dashboardItems.filter(
+    (item) => !known.includes(item)
+  );
+  return [...known, ...missing];
 };
 
 // Storage keeps calendar days as ISO strings; the state keeps Dayjs.
@@ -88,13 +93,6 @@ export const officeTimeReducer = createReducer(
     hasDay(state.officedays, today)
       ? state
       : { ...state, officedays: withDay(state.officedays, today) }
-  ),
-  on(
-    OfficeTimeActions.addOfficeday,
-    (state, { officeday }): IOfficeTimeState =>
-      hasDay(state.officedays, officeday)
-        ? state
-        : { ...state, officedays: withDay(state.officedays, officeday) }
   ),
   on(
     OfficeTimeActions.setOfficedays,
@@ -144,7 +142,7 @@ export const officeTimeReducer = createReducer(
         ...initialOfficeTime.dashboardSettings,
         ...officeTime.dashboardSettings,
       },
-      dashboardItems: withNewlyAddedDashboardItems(officeTime.dashboardItems),
+      dashboardItems: withKnownDashboardItems(officeTime.dashboardItems),
       ...deserializedDayCollections(officeTime),
     };
   })

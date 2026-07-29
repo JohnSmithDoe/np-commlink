@@ -196,6 +196,28 @@ describe('TrackingEffects', () => {
       );
     });
 
+    // One start-time format per view: the bucket the view groups by is what the
+    // column may claim (a month row must not pretend to know the hour).
+    it.each([
+      ['monthly', '01.2024'],
+      ['raw', dayjs(TEST_TIMESTAMP).format('DD.MM.YYYY HH:mm')],
+    ])(
+      'stamps the %s view with its own start-time format',
+      async (sessionsViewId, expected) => {
+        setup(
+          mockTrackingState({
+            sessionsViewId,
+            sessions: [trackedSession('Ticket', 3661, 's1')],
+          })
+        );
+        actions$ = of(TrackingActions.shareData());
+
+        await firstValueFrom(effects.shareData$);
+
+        expect(sharedCsvRows()[1]).toBe(`Ticket,${expected},3661,01:01:01`);
+      }
+    );
+
     // The all-time view has no bucket to date-stamp, so the column is blank
     // rather than carrying an arbitrary session's start.
     it('blanks the start-time column for the all-time view', async () => {

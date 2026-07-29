@@ -12,13 +12,13 @@ import {
   IonToggle,
   ReorderEndCustomEvent,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { settingsOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { DeckFacade } from '../../data';
 import { TAppModule, TDeckEntryId } from '../../model/deck.types';
-import { moveEntry } from '../../util/deck.utils';
+import { moveInList } from '../../../@shared/util/app.utils';
 
 /**
  * Where the user shapes their deck: which programs the grid and the side menu
@@ -44,7 +44,7 @@ import { moveEntry } from '../../util/deck.utils';
     IonToggle,
     IonReorder,
     IonReorderGroup,
-    TranslateModule,
+    TranslatePipe,
     PageHeaderComponent,
   ],
 })
@@ -76,7 +76,7 @@ export class DeckConfigPage {
     const { from, to } = event.detail;
     event.detail.complete(false);
     this.#deck.reorder(
-      moveEntry(
+      moveInList(
         this.entries().map((entry) => entry.id),
         from,
         to

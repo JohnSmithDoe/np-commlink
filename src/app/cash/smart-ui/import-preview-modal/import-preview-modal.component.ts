@@ -17,8 +17,8 @@ import {
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
-import dayjs from 'dayjs';
+import { TranslatePipe } from '@ngx-translate/core';
+import { localizedDate } from '../../../@shared/util/date-format.utils';
 import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/money.pipe';
@@ -48,7 +48,7 @@ import { TCategoryId } from '../../../@shared/model/category.types';
     IonItem,
     IonLabel,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     MoneyEurPipe,
   ],
 })
@@ -66,7 +66,7 @@ export class CashImportPreviewModalComponent {
   rejected = 0;
 
   formatDate(iso: string): string {
-    return dayjs(iso).format('DD.MM.YYYY');
+    return localizedDate(iso);
   }
 
   /** Resolve an auto-assigned category id to its display name. */

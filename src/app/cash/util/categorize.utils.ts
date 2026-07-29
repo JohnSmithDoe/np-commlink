@@ -7,20 +7,28 @@ import { TCategoryId } from '../../@shared/model/category.types';
 /**
  * The cash categorization engine — pure, so it is trivially testable and shared
  * by P3 ("Apply rules") and P4 (auto-run on an import batch). See
- * docs/cash-plan.md → Categorization engine. Rules never touch a transaction the
+ * docs/project-summary.md §7.3 → Categorization engine. Rules never touch a transaction the
  * user has flagged `categoryManual` — that shielding is the CALLER's job (this
  * module only decides which category a rule set would assign).
  */
 
-/** The text a description condition matches against: raw bank text if present. */
-const descriptionText = (txn: ICashTransaction): string =>
-  txn.rawDescription ?? txn.description;
+/**
+ * A stored threshold is always read as German, whatever the UI language is.
+ *
+ * `ICashFilterCondition.value` is a persisted *string*, and the two conventions
+ * are mutually ambiguous — `"1.234"` is 1234 € in German and 1.23 € in English —
+ * so reading it in the current language would silently re-interpret every
+ * existing rule the first time someone switched. German is therefore the
+ * canonical storage form, and the rule editor normalizes onto it (see
+ * `toCondition` in `rule-edit-modal`).
+ */
+const STORED_THRESHOLD_LANGUAGE = 'de' as const;
 
 const matchesAmountCondition = (
   amountCents: number,
   condition: ICashFilterCondition
 ): boolean => {
-  const target = eurToCents(condition.value);
+  const target = eurToCents(condition.value, STORED_THRESHOLD_LANGUAGE);
   if (target === null) return false; // unparseable threshold never matches
   switch (condition.op) {
     case 'eq': {
@@ -94,7 +102,7 @@ export function matchesCondition(
 ): boolean {
   return condition.field === 'amount'
     ? matchesAmountCondition(txn.amountCents, condition)
-    : matchesDescriptionCondition(descriptionText(txn), condition);
+    : matchesDescriptionCondition(txn.description, condition);
 }
 
 /** Does a rule fire? `all` = every condition (AND), `any` = at least one (OR). */

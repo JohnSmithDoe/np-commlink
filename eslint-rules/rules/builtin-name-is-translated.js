@@ -1,0 +1,69 @@
+'use strict';
+
+const {
+  boundAttribute,
+  staticAttribute,
+  templateParserServices,
+} = require('../lib/template-ast');
+
+// R7 — docs/ionic-a11y-practices.md
+//
+// Ionic hardcodes accessible names in English. For a bilingual app that is a real
+// gap rather than a curiosity — and these two are the overridable ones:
+// `ion-menu-button` announces "menu" and `ion-back-button` announces "back", and
+// both inherit `aria-label`. (The searchbar's "search text", the modal drag
+// handle, the datetime's month/year buttons and the clear button's "reset" are
+// not overridable at all; those belong in a recorded decision, not a workaround.)
+//
+// A static `aria-label="Menü"` is reported separately: it fixes the English name
+// by hardcoding a German one, which the *other* theme's language then gets wrong.
+// A binding is accepted whether or not the `translate` pipe is visible in it — a
+// component member may already hold a translated string.
+const HARDCODED_ENGLISH_NAME = {
+  'ion-menu-button': 'menu',
+  'ion-back-button': 'back',
+};
+
+module.exports = {
+  meta: {
+    type: 'problem',
+    docs: {
+      description:
+        "[Ionic a11y R7] Ionic's hardcoded English names are overridden with a translated one.",
+    },
+    schema: [],
+    messages: {
+      builtinNameNeedsOverride:
+        '<{{element}}> announces the hardcoded English "{{name}}". Override it: [attr.aria-label]="\'<domain>.a11y.{{name}}\' | translate". See docs/ionic-a11y-practices.md R7.',
+      builtinNameNotTranslated:
+        'aria-label on <{{element}}> is a hardcoded string, so it is wrong in the other language. Bind it through the translate pipe. See docs/ionic-a11y-practices.md R7.',
+    },
+  },
+  create(context) {
+    const services = templateParserServices(context);
+    return {
+      Element(element) {
+        const name = HARDCODED_ENGLISH_NAME[element.name];
+        if (!name) return;
+
+        if (boundAttribute(element, 'aria-label')) return;
+
+        const literal = staticAttribute(element, 'aria-label');
+        if (literal) {
+          context.report({
+            loc: literal.loc,
+            messageId: 'builtinNameNotTranslated',
+            data: { element: element.name },
+          });
+          return;
+        }
+
+        context.report({
+          loc: services.convertElementSourceSpanToLoc(context, element),
+          messageId: 'builtinNameNeedsOverride',
+          data: { element: element.name, name },
+        });
+      },
+    };
+  },
+};

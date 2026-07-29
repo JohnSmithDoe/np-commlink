@@ -1,4 +1,5 @@
 import { computed, inject, linkedSignal, Signal, signal } from '@angular/core';
+import { form, SchemaPathTree } from '@angular/forms/signals';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
@@ -7,6 +8,7 @@ import { IBaseItem, TEditItemMode } from '../../model/base-item.types';
 import { ICategory, TCategoryId } from '../../model/category.types';
 import { TItemListId } from '../../model/item-list.types';
 import { categoriesByIds } from '../../util/categories/category.utils';
+import { requireUniqueName } from '../../util/form-rules';
 import {
   ItemDialogService,
   TItemDialogRequest,
@@ -32,19 +34,37 @@ const SAVE_BUTTON: Readonly<Record<TEditItemMode, TMarker>> = {
  * command on confirm.
  *
  * The per-domain differences are abstract members the subclass supplies from its
- * DOMAIN facade: the `listId` it answers to, the typed `listItems` signal (for
- * the duplicate-name validator) and the `save` command. This keeps NgRx sealed
- * in the data layer — neither the base nor the subclass injects `Store`.
- * Domain-specific field updaters (quantity, prio, …) stay in the subclass —
- * different fields, nothing to share. Angular does not inherit `@Component`
- * metadata, so each wrapper still declares its own imports/template.
+ * DOMAIN facade: the `listId` it answers to, the `siblings` signal the name rule
+ * compares against, the `save` command and a `blank()` for the closed state. This
+ * keeps NgRx sealed in the data layer — neither the base nor the subclass injects
+ * `Store`. Domain-specific field updaters (quantity, prio, …) stay in the
+ * subclass — different fields, nothing to share. Angular does not inherit
+ * `@Component` metadata, so each wrapper still declares its own imports/template.
  */
 export abstract class BaseEditItemDialog<T extends IBaseItem> {
   protected readonly host = inject(ItemDialogService);
 
   protected abstract readonly listId: TItemListId;
-  abstract readonly listItems: Signal<T[] | null | undefined>;
+  /**
+   * The items the edited one has to stay distinct from: **the whole aggregate**,
+   * never a page's filtered view of it. Feeding a filtered signal here silently
+   * narrows the rule — with a search term or category filter left on the list
+   * page, the shrunken set no longer contains the twin and the duplicate saves.
+   */
+  abstract readonly siblings: Signal<readonly T[]>;
   protected abstract save(item: T): void;
+  /**
+   * The shape the draft holds while no edit is open — a real, valid entity from
+   * the domain's own factory, so this class never authors a second answer to
+   * "what does a fresh one look like".
+   *
+   * Needed because a Signal Forms tree cannot be built over `T | undefined` — its
+   * rules would run against nothing the moment the dialog closed. So "closed" is
+   * modelled by {@link isOpen} alone, as it always was, and the draft is simply
+   * never absent. The blank is never saved: `confirm()` is only reachable from an
+   * open dialog, which is always seeded.
+   */
+  protected abstract blank(): T;
 
   // One host serves every mounted wrapper, so the command's listId is what picks
   // the target; a request for a sibling list reads as "closed" here.
@@ -71,28 +91,62 @@ export abstract class BaseEditItemDialog<T extends IBaseItem> {
 
   // Local draft, reseeded whenever a new edit opens (the host copies the item, so
   // every open produces a fresh ref and the linkedSignal recomputes).
-  readonly draft = linkedSignal<T | undefined>(() => {
+  readonly draft = linkedSignal<T>(() => {
     const item = this.seedItem();
-    return item ? { ...item } : undefined;
+    return item ? { ...item } : this.blank();
   });
+
+  /**
+   * The field tree over {@link draft}, carrying the one rule every list item
+   * obeys: a filled-in name no sibling already has.
+   *
+   * The BASE owns it, not the subclass. Six wrappers each declaring
+   * `form(this.draft, rules)` meant six copies of the same `requireUniqueName`
+   * call, and a seventh that simply omitted it would have compiled — permanently
+   * saveable, happily persisting `name: '   '` for `persist()` to trim to `''`.
+   * An invariant every subclass must hold is not a subclass's decision.
+   *
+   * `form()` evaluates its schema **eagerly**, at field-initialization time, when
+   * a subclass's own fields do not exist yet — which is why `requireUniqueName`
+   * takes thunks. It also rules out an `extraRules` *field* hook, so if a dialog
+   * ever needs its own rule the hook has to be a prototype **method**.
+   */
+  readonly form = form(this.draft, (path) => {
+    // `T` is generic here, so its mapped path type stays deferred and `path.name`
+    // is unreachable; `T extends IBaseItem` is what makes the narrowing sound.
+    const { name } = path as SchemaPathTree<IBaseItem>;
+    requireUniqueName(
+      name,
+      () => this.siblings(),
+      () => this.seedItem()
+    );
+  });
+
+  /**
+   * Saveable = the field tree is valid — the same derivation `BaseModalDialog`
+   * makes, so both dialog families now read validity from a schema instead of the
+   * shell reading it off the name input.
+   */
+  readonly canSave = computed(() => this.form().valid());
 
   constructor() {
     addIcons({ closeCircle });
   }
 
+  /**
+   * Protected, unlike `BaseModalDialog.patch` — there a template genuinely binds
+   * it (`game-edit-modal`), here no template does. A spec that needs to set a
+   * field drives `form.<field>().value.set(...)`, the way the control would.
+   */
   protected patch(partial: Partial<T>) {
-    this.draft.update((draft) => (draft ? { ...draft, ...partial } : draft));
-  }
-
-  updateName(name: string) {
-    this.patch({ name } as Partial<T>);
+    this.draft.update((draft) => ({ ...draft, ...partial }));
   }
 
   confirm() {
-    const draft = this.draft();
-    if (draft) {
-      this.save(draft);
+    if (!this.canSave()) {
+      return;
     }
+    this.save(this.draft());
     this.host.close();
   }
 
@@ -118,7 +172,7 @@ export abstract class BaseCategoryEditItemDialog<
 
   // The draft's category ids resolved to {id,name} objects for the chip row.
   readonly selectedCategories = computed<ICategory[]>(() =>
-    categoriesByIds(this.draft()?.categoryIds, this.categories())
+    categoriesByIds(this.draft().categoryIds, this.categories())
   );
 
   // Domain catalog commands the subclass wires to its own facade. Kept `void`
@@ -164,7 +218,7 @@ export abstract class BaseCategoryEditItemDialog<
 
   #dropFromDraft(categoryId: TCategoryId) {
     this.patch({
-      categoryIds: (this.draft()?.categoryIds ?? []).filter(
+      categoryIds: (this.draft().categoryIds ?? []).filter(
         (id) => id !== categoryId
       ),
     } as Partial<T>);

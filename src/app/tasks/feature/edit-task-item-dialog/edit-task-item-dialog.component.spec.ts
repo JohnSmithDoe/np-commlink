@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
-import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
+import { mockTaskItem, mockTasksState } from '../../testing/tasks.test-data';
+import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
 import { createTaskItem } from '../../util/task.factory';
@@ -14,11 +15,18 @@ describe('EditTaskItemDialogComponent', () => {
   let host: ItemDialogService;
 
   const seed = createTaskItem('Buy stamps', [], 1);
+  // A real sibling, so the duplicate-name rule below has something to catch — an
+  // `items: []` slice would make that branch unreachable while looking seeded.
+  const sibling = mockTaskItem({ id: 'other', name: 'Post letters' });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditTaskItemDialogComponent],
-      providers: [...COMMON_TEST_PROVIDERS],
+      providers: [
+        ...provideTestingProviders({
+          tasks: mockTasksState({ items: [sibling, seed] }),
+        }),
+      ],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);
@@ -36,12 +44,23 @@ describe('EditTaskItemDialogComponent', () => {
   it('edits the local draft without dispatching per keystroke', () => {
     component.updatePrio(3);
     component.updateDueAt('2024-06-01');
-    component.updateName('Post letters');
+    component.form.name().value.set('Fetch stamps');
 
-    expect(component.draft()?.prio).toBe(3);
-    expect(component.draft()?.dueAt).toBe('2024-06-01');
-    expect(component.draft()?.name).toBe('Post letters');
+    expect(component.draft().prio).toBe(3);
+    expect(component.draft().dueAt).toBe('2024-06-01');
+    expect(component.draft().name).toBe('Fetch stamps');
     expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  // The rule is the BASE's schema now; which list it compares against is this
+  // wrapper's wiring, and that is the half that can silently go wrong (the tasks
+  // PAGE's view would drop a sibling its search box is hiding).
+  it('refuses a name a sibling task already has', () => {
+    expect(component.canSave()).toBe(true);
+
+    component.form.name().value.set('Post letters');
+
+    expect(component.canSave()).toBe(false);
   });
 
   it('saves the draft and hides the dialog on confirm', () => {

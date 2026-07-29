@@ -1,6 +1,6 @@
 <ion-item-sliding (ionDrag)="deleteOrEditOnSwipe($event)">
   @if (canDelete()) {
-    <ion-item-options side="start">
+    <ion-item-options side="start" data-testid="game-type-delete-options">
       <ion-item-option
         color="danger"
         [expandable]="true"

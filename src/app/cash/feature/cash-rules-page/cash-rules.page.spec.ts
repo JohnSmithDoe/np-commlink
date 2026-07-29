@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
   mockCashRule,
@@ -21,7 +21,7 @@ describe('CashRulesPage', () => {
 
   const setup = (state = mockCashState()) => {
     TestBed.configureTestingModule({
-      imports: [CashRulesPage, TranslateModule.forRoot()],
+      imports: [CashRulesPage],
       providers: [provideTestingProviders({ cash: state })],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
@@ -36,11 +36,11 @@ describe('CashRulesPage', () => {
     component = TestBed.createComponent(CashRulesPage).componentInstance;
   };
 
-  const categorizations = () =>
+  const recategorizations = () =>
     (dispatch.mock.calls as Array<[{ type: string }]>)
       .map((call) => call[0])
       .filter(
-        (action) => action.type === CashActions.setTransactionCategory.type
+        (action) => action.type === CashActions.recategorizeTransactions.type
       );
 
   it('files only the transactions the rules re-categorize and reports the count', () => {
@@ -67,14 +67,12 @@ describe('CashRulesPage', () => {
 
     component.applyRules();
 
-    // `manual: false` is load-bearing: a rule-assigned category must stay
-    // rule-owned, or the next run would shield it as a user override.
-    expect(categorizations()).toEqual([
-      expect.objectContaining({
-        id: 't-new',
-        categoryId: 'cat-groceries',
-        manual: false,
-      }),
+    // One dispatch for the whole run — the ledger is rewritten (and persisted)
+    // once, not once per changed row.
+    expect(recategorizations()).toEqual([
+      CashActions.recategorizeTransactions([
+        { transactionId: 't-new', categoryId: 'cat-groceries' },
+      ]),
     ]);
     expect(reportRulesApplied).toHaveBeenCalledWith(1);
   });
@@ -91,35 +89,28 @@ describe('CashRulesPage', () => {
 
     component.applyRules();
 
-    expect(categorizations()).toEqual([]);
+    // Nothing to re-file must not dispatch at all: a `[Cash]` action would
+    // persist the unchanged ledger.
+    expect(recategorizations()).toEqual([]);
     expect(reportRulesApplied).toHaveBeenCalledWith(0);
   });
 
-  it('swaps a rule with its neighbour in priority order', () => {
+  it('re-prioritises on a drop, in the order the list renders', () => {
     const first = mockCashRule({ id: 'r1', order: 0 });
     const second = mockCashRule({ id: 'r2', order: 1 });
     const third = mockCashRule({ id: 'r3', order: 2 });
     setup(mockCashState({ rules: [third, first, second] }));
 
-    component.moveRule(third, -1);
+    // `complete(false)` is what leaves the DOM to Angular; moving the node here
+    // too would apply the drop twice.
+    const complete = vi.fn();
+    component.reorder({ detail: { from: 2, to: 1, complete } } as never);
 
+    expect(complete).toHaveBeenCalledWith(false);
     // The reducer rebuilds the rule list FROM these ids, so the payload must be
     // the complete order — an omitted id deletes that rule.
     expect(dispatch).toHaveBeenCalledWith(
       CashActions.reorderRules(['r1', 'r3', 'r2'])
-    );
-  });
-
-  it('ignores a move past either end of the list', () => {
-    const first = mockCashRule({ id: 'r1', order: 0 });
-    const second = mockCashRule({ id: 'r2', order: 1 });
-    setup(mockCashState({ rules: [first, second] }));
-
-    component.moveRule(first, -1);
-    component.moveRule(second, 1);
-
-    expect(dispatch).not.toHaveBeenCalledWith(
-      expect.objectContaining({ type: CashActions.reorderRules.type })
     );
   });
 
@@ -128,9 +119,13 @@ describe('CashRulesPage', () => {
 
     await component.openNewRule();
 
+    // `htmlAttributes` is the only seam a controller-presented overlay has for a
+    // name — `ion-modal` derives none — and the key is the dialog's own title, so
+    // the announced name cannot drift from the visible heading (a11y R4).
     expect(createModal).toHaveBeenCalledWith({
       component: CashRuleEditModalComponent,
       componentProps: undefined,
+      htmlAttributes: { 'aria-label': 'cash.rule-dialog.title-new' },
     });
     expect(present).toHaveBeenCalled();
   });
@@ -144,6 +139,7 @@ describe('CashRulesPage', () => {
     expect(createModal).toHaveBeenCalledWith({
       component: CashRuleEditModalComponent,
       componentProps: { ruleId: 'r1' },
+      htmlAttributes: { 'aria-label': 'cash.rule-dialog.title-edit' },
     });
     expect(present).toHaveBeenCalled();
   });

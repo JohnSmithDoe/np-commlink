@@ -1,4 +1,6 @@
 import { TTheme } from '../../@shared/model/app.types';
+import { TDeckChrome } from '../model/deck.catalog';
+import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import {
   IDeckEntry,
   IDeckProgram,
@@ -46,28 +48,21 @@ export const visibleEntries = (
 
 /**
  * Codenames are theme-dependent (MARKET on the deck, plain wording under OK
- * Boomer), so the theme is an axis of the key rather than a second label field
- * on the catalog — a third theme is then a JSON block, not a code change.
+ * Boomer), so the entry carries a label pair per theme and this picks one.
  */
 export const resolveLabels =
   (theme: TTheme) =>
-  (entry: IDeckEntry): IDeckProgram => ({
-    ...entry,
-    nameKey: `deck.${theme}.${entry.id}.name`,
-    descKey: `deck.${theme}.${entry.id}.desc`,
-  });
+  (entry: IDeckEntry): IDeckProgram => ({ ...entry, ...entry.labels[theme] });
+
+/**
+ * The same bargain for the deck's own chrome: the HUD readouts, the kicker and
+ * the tile status words are voiced too, so a theme fills the slots rather than
+ * the template branching on which theme is active.
+ */
+export const resolveChrome = (theme: TTheme): TDeckChrome =>
+  DECK_CHROME_LABELS[theme];
 
 export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)
     ? list.filter((entry) => entry !== value)
     : [...list, value];
-
-export function moveEntry(
-  order: readonly TDeckEntryId[],
-  from: number,
-  to: number
-): TDeckEntryId[] {
-  const next = [...order];
-  next.splice(to, 0, ...next.splice(from, 1));
-  return next;
-}

@@ -1,4 +1,4 @@
-@let now = time();
+@let today = data();
 <ion-card>
   @if (title()) {
     <ion-card-header>
@@ -6,11 +6,11 @@
     </ion-card-header>
   }
   <ion-card-content>
-    <p class="week">{{ 'dash-date.week' | translate }} {{ data.week }}</p>
+    <p class="week">{{ 'dash-date.week' | translate }} {{ today.week }}</p>
     <p class="day">
-      {{ data.day }},<br />
-      <span class="date">{{ data.date }}</span>
+      {{ today.day }},<br />
+      <span class="date">{{ today.date }}</span>
     </p>
-    <p class="time">{{ now }}</p>
+    <p class="time">{{ time() }}</p>
   </ion-card-content>
 </ion-card>

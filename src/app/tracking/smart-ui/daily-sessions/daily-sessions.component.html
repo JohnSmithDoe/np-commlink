@@ -11,7 +11,7 @@
     @if (isToday()) {
       {{ 'tracking.daily-sessions.title' | translate }}
     } @else {
-      {{ selectedDateIso() | date: 'EEEE, dd.MM.yyyy' }}
+      {{ selectedDateIso() | date: 'fullDate' }}
     }
   </div>
   <ion-button
@@ -37,7 +37,7 @@
       <ion-item lines="full">
         <ion-label class="ion-text-wrap">
           <h2>{{ session.name }}</h2>
-          <ion-note>{{ session.startTime | date: 'HH:mm' }}</ion-note>
+          <ion-note>{{ session.startTime | date: 'shortTime' }}</ion-note>
         </ion-label>
         @if (session.state === 'running') {
           <ion-badge slot="end" color="success">

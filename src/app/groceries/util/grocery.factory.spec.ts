@@ -59,6 +59,40 @@ describe('grocery.factory', () => {
     });
   });
 
+  // Buy it, then move the bought rows to the pantry: the common path a product
+  // takes into storage, and the one the recipe matcher's id-based half depends
+  // on surviving.
+  describe('the catalog link, across every copy', () => {
+    const product = mockProduct({ id: 'p-milk', name: 'Milk' });
+
+    it('is stamped when a row is created from a product', () => {
+      expect(createStorageItemFromProduct(product).productId).toBe('p-milk');
+      expect(createShoppingItemFromProduct(product).productId).toBe('p-milk');
+    });
+
+    it('survives product → shopping → storage', () => {
+      const bought = createShoppingItemFromProduct(product);
+
+      expect(createStorageItemFromShopping(bought).productId).toBe('p-milk');
+    });
+
+    it('survives storage → shopping (running out, re-buying)', () => {
+      const stocked = createStorageItemFromProduct(product);
+
+      expect(createShoppingItemFromStorage(stocked).productId).toBe('p-milk');
+    });
+
+    // An absent link must stay an ABSENT key, not a present-but-empty one:
+    // IndexedDB persists `undefined` values where JSON would drop them.
+    it('leaves no key at all on a row that never had a product', () => {
+      const typed = createStorageItemFromShopping(
+        mockShoppingItem({ name: 'Bread' })
+      );
+
+      expect('productId' in typed).toBe(false);
+    });
+  });
+
   describe('shopping factories', () => {
     it('createShoppingItem defaults to an active item with quantity 1', () => {
       const item = createShoppingItem('Bread');

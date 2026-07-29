@@ -1,14 +1,16 @@
 <ion-header>
-  <ion-toolbar [color]="color()">
+  <ion-toolbar [color]="color()" data-testid="page-header-toolbar">
     <ion-buttons slot="start">
-      <ion-menu-button />
+      <ion-menu-button [attr.aria-label]="'a11y.menu' | translate" />
     </ion-buttons>
     @if (label()) {
       <div class="sr-brand">
         @if (icon()) {
           <ion-icon [name]="icon()" class="sr-brand__icon" aria-hidden="true" />
         }
-        <span class="sr-brand__name">{{ label() | translate }}</span>
+        <span class="sr-brand__name" data-testid="page-header-title">{{
+          label() | translate
+        }}</span>
       </div>
     }
     <ng-content select="[toolbar]" />
@@ -18,6 +20,7 @@
           (click)="addItem.emit()"
           [disabled]="disabled()"
           [attr.aria-label]="'a11y.add-item' | translate"
+          data-testid="page-header-add"
         >
           <ion-icon name="add" slot="icon-only" aria-hidden="true" />
         </ion-button>

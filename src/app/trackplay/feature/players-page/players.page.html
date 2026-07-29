@@ -26,8 +26,8 @@
         [stats]="statsFor(player)"
         [ionList]="list"
         (selectPlayer)="goToPlayer(player.id)"
-        (editPlayer)="openPlayerEdit(player)"
-        (deletePlayer)="deletePlayer(player)"
+        (editRequested)="openPlayerEdit(player)"
+        (deleteRequested)="deletePlayer(player)"
       />
     }
   </ion-list>

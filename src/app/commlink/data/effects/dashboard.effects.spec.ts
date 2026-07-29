@@ -92,11 +92,9 @@ describe('DashboardEffects', () => {
   });
 
   describe('persistSummary$', () => {
-    it('mirrors a report to its npc-summary-<source> doc (metrics only) once hydrated', async () => {
+    it('mirrors a report to its npc-summary-<source> doc (metrics only)', async () => {
       setup();
-      // hydrate opens the gate; the subsequent report is persisted.
       actions$ = of(
-        DashboardReadModelActions.hydrate([]),
         DashboardActions.report({
           source: 'office-time',
           status: 'online',
@@ -117,23 +115,30 @@ describe('DashboardEffects', () => {
       );
     });
 
-    it('does not persist a report that arrives before hydrate', async () => {
+    it('persists a report that arrives before this boot read resolves', async () => {
+      // A report is only ever raised once the REPORTING slice has hydrated
+      // (`createTelemetrySliceEffect` waits for its `loaded`), so it always
+      // carries a real number — even when that context hydrated before the
+      // summary family came back. This effect used to `skipUntil(hydrate)` to
+      // fend off pre-hydration zeros, which only covered the boot window and let
+      // a lazy context's registration-time zero through.
       setup();
-      // The eager reporters' pre-hydration boot report must NOT clobber the
-      // prior session's persisted summary before bootstrap reads it.
       actions$ = of(
         DashboardActions.report({
           source: 'office-time',
-          metrics: { officedays: 0 },
+          metrics: { officedays: 12 },
         })
       );
 
-      const emitted = await firstValueFrom(
-        effects.persistSummary$.pipe(toArray())
-      );
+      await firstValueFrom(effects.persistSummary$);
 
-      expect(emitted).toEqual([]);
-      expect(database.save).not.toHaveBeenCalled();
+      expect(database.save).toHaveBeenCalledWith(
+        'summary-office-time',
+        wrapVersioned(APP_VERSION, {
+          source: 'office-time',
+          metrics: { officedays: 12 },
+        })
+      );
     });
   });
 });

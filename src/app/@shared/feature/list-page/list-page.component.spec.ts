@@ -9,7 +9,6 @@ import { IListState } from '../../model/item-list.types';
 const mockListState = (
   overrides: Partial<IListState<IBaseItem>> = {}
 ): IListState<IBaseItem> => ({
-  title: 'List',
   items: [],
   categories: [],
   mode: 'alphabetical',
@@ -20,22 +19,32 @@ const mockListState = (
 // without reaching into any concrete list domain (grocery/tasks).
 const fakeFacade = (
   state: WritableSignal<IListState<IBaseItem> | undefined>
-): IListPageFacade & { opened: number; savedCategories: string[] } => {
+): IListPageFacade & {
+  opened: number;
+  savedCategories: string[];
+  itemsFromSearch: number;
+  categoriesFromSearch: number;
+} => {
   const facade = {
     state,
-    filterState: signal({ isCategoryModeOrHasFilter: false, hasFilter: false }),
     items: signal(undefined),
     searchResult: signal(undefined),
     categories: signal([]),
     search: () => {},
-    addItemFromSearch: () => {},
-    addCategoryFromSearch: () => {},
     setDisplayMode: () => {},
     setSortMode: () => {},
     selectCategory: () => {},
     deleteCategory: () => {},
     opened: 0,
     savedCategories: [] as string[],
+    itemsFromSearch: 0,
+    categoriesFromSearch: 0,
+    addItemFromSearch: () => {
+      facade.itemsFromSearch += 1;
+    },
+    addCategoryFromSearch: () => {
+      facade.categoriesFromSearch += 1;
+    },
     showCreateDialog: () => {
       facade.opened += 1;
     },
@@ -96,5 +105,38 @@ describe('ListPageComponent', () => {
 
     expect(facade.savedCategories).toEqual(['Fridge']);
     expect(component.categoryDialog()).toBeNull();
+  });
+
+  it('adds an item from the searchbar in item mode', () => {
+    component.addItemFromSearch();
+
+    expect(facade.itemsFromSearch).toBe(1);
+    expect(facade.categoriesFromSearch).toBe(0);
+  });
+
+  // Same rule as the header button, same single owner: the searchbar's enter key
+  // names a category while the list is showing categories. It used to be decided
+  // a third time, in each domain's facade.
+  it('adds a category from the searchbar in categories mode', () => {
+    state.set(mockListState({ mode: 'categories', searchQuery: 'Dairy' }));
+
+    component.addItemFromSearch();
+
+    expect(facade.categoriesFromSearch).toBe(1);
+    expect(facade.itemsFromSearch).toBe(0);
+  });
+
+  it('derives the filter state the header reads from the list state alone', () => {
+    expect(component.filterState()).toEqual({
+      isCategoryModeOrHasFilter: false,
+      hasFilter: false,
+    });
+
+    state.set(mockListState({ filterBy: 'cat-1' }));
+
+    expect(component.filterState()).toEqual({
+      isCategoryModeOrHasFilter: true,
+      hasFilter: true,
+    });
   });
 });

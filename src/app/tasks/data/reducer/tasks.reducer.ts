@@ -14,7 +14,6 @@ import {
 import { TasksActions } from '../actions/tasks.actions';
 
 export const initialState: ITasksState = {
-  title: 'Tasks Items',
   id: TASKS_LIST_ID,
   items: [],
   mode: 'alphabetical',

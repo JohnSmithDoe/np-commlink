@@ -2,16 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   inject,
+  signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
   IonContent,
   IonIcon,
   IonRouterLinkWithHref,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   barcodeOutline,
@@ -30,16 +31,18 @@ import {
   walletOutline,
 } from 'ionicons/icons';
 import dayjs from 'dayjs';
-import { interval, map, startWith } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
   LanguageModelService,
   TLanguageModelAvailability,
 } from '../../../@shared/util/language-model.service';
+import { LanguageService } from '../../../@shared/util/language.service';
 import { ThemeService } from '../../../@shared/util/theme.service';
 import { DashboardFacade, DeckFacade } from '../../data';
+import { TDeckChromeField } from '../../model/deck.catalog';
 import { IDeckEntry, TProgramStatus } from '../../model/deck.types';
 import { currencyLabel } from '../../util/currency-label.utils';
+import { resolveChrome } from '../../util/deck.utils';
 import { HexPipe } from '../../util/hex.pipe';
 
 /**
@@ -59,6 +62,14 @@ const LANGUAGE_MODEL_STATUS: Record<
   unavailable: 'offline',
 };
 
+const NODE_STATUS_FIELD: Record<TProgramStatus, TDeckChromeField> = {
+  online: 'node-online',
+  standby: 'node-standby',
+  offline: 'node-offline',
+};
+
+const clockLabel = (): string => dayjs().format('HH:mm:ss');
+
 @Component({
   selector: 'app-page-commlink',
   templateUrl: './commlink.page.html',
@@ -69,7 +80,7 @@ const LANGUAGE_MODEL_STATUS: Record<
     IonIcon,
     IonRouterLinkWithHref,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     PageHeaderComponent,
     HexPipe,
   ],
@@ -79,9 +90,13 @@ export class CommlinkPage {
   readonly #deck = inject(DeckFacade);
   readonly #languageModel = inject(LanguageModelService);
   readonly #theme = inject(ThemeService).theme;
+  readonly #locale = inject(LanguageService).locale;
 
   /** The tiles this user shows, in their order. */
   readonly programs = this.#deck.programs;
+
+  /** The HUD's own copy, in the active theme's register. */
+  readonly chrome = computed(() => resolveChrome(this.#theme()));
 
   // The status strip reports the grid, not this user's view of it: hiding a
   // program is a navigation choice, not an uninstall. So both halves of the
@@ -121,41 +136,71 @@ export class CommlinkPage {
    */
   badge(program: IDeckEntry): number | null {
     if (!program.source || !program.metric) return null;
-    const value =
-      this.#telemetry().bySource[program.source]?.metrics[program.metric];
-    return value == undefined ? null : Number(value);
+    return this.#reported(program.source, program.metric);
   }
 
   /** A tile's badge value as it should render — themed for a currency tile. */
   badgeLabel(program: IDeckEntry, value: number): string {
     return program.currency
-      ? currencyLabel(this.#theme(), value)
+      ? currencyLabel(this.#theme(), value, this.#locale())
       : String(value);
+  }
+
+  /** The word a tile's foot shows for its status, in the theme's register. */
+  nodeStatusKey(status: TProgramStatus): string {
+    return this.chrome()[NODE_STATUS_FIELD[status]];
+  }
+
+  #reported(source: string, metric: string): number | null {
+    const value = this.#telemetry().bySource[source]?.metrics[metric];
+    return value == undefined ? null : Number(value);
   }
 
   /** Unread signals → drives the NOISE status-strip readout. */
   readonly noise = this.#dashboard.notificationsUnread;
-  readonly #office = this.#dashboard.telemetry('office-time');
-  readonly #cash = this.#dashboard.telemetry('cash');
   /** The ledger balance, themed like the CREDSTICK tile's own badge. */
   readonly nuyenLabel = computed(() =>
-    currencyLabel(this.#theme(), Number(this.#cash()?.metrics['balance'] ?? 0))
+    currencyLabel(
+      this.#theme(),
+      this.#reported('cash', 'balance') ?? 0,
+      this.#locale()
+    )
   );
   /** Derived from the year's office-day target progress (0–6+). */
   readonly resonanceRating = computed(() =>
-    ((Number(this.#office()?.metrics['percentage'] ?? 0) / 100) * 6).toFixed(1)
+    (((this.#reported('office-time', 'percentage') ?? 0) / 100) * 6).toFixed(1)
   );
 
   readonly bootDate = dayjs().format('ddd DD MMM YYYY').toUpperCase();
-  readonly time = toSignal(
-    interval(1000).pipe(
-      startWith(0),
-      map(() => dayjs().format('HH:mm:ss'))
-    ),
-    { requireSync: true }
-  );
+
+  readonly #clock = signal(clockLabel());
+  readonly time = this.#clock.asReadonly();
+  #tick: ReturnType<typeof setInterval> | null = null;
+
+  /**
+   * The clock ticks only while the deck is the page you are looking at. Ionic
+   * keeps a visited route mounted for the whole session (`IonicRouteStrategy`
+   * never destroys the view), so an unconditional 1 Hz interval would go on
+   * marking this subtree dirty from behind whatever page the user navigated to.
+   */
+  ionViewWillEnter(): void {
+    this.#clock.set(clockLabel());
+    this.#tick ??= setInterval(() => this.#clock.set(clockLabel()), 1000);
+  }
+
+  ionViewWillLeave(): void {
+    this.#stopClock();
+  }
+
+  #stopClock(): void {
+    if (this.#tick !== null) clearInterval(this.#tick);
+    this.#tick = null;
+  }
 
   constructor() {
+    // `ionViewWillLeave` covers navigation; this is the backstop for a destroy
+    // that never routes, so the interval cannot outlive the component either way.
+    inject(DestroyRef).onDestroy(() => this.#stopClock());
     addIcons({
       hardwareChipOutline,
       timerOutline,

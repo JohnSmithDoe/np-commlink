@@ -1,25 +1,15 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import dayjs from 'dayjs';
 import { ItemDialogService } from '../../@shared/util/item-dialog.service';
 import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
-import { listStateFilter } from '../../@shared/util/list/list.selector';
-import {
-  IDataItem,
-  ITrackingItem,
-  TRACKING_LIST_ID,
-} from '../model/tracking.types';
+import { ITrackingItem, TRACKING_LIST_ID } from '../model/tracking.types';
 import { createTrackingItem } from '../util/tracking.factory';
 import { TrackingActions } from './actions/tracking.actions';
 import {
-  selectAllTrackingSessions,
-  selectSessionsByDayAndName,
-  selectTrackingData,
-  selectTrackingDataViewId,
+  selectTrackingItems,
   selectTrackingListItems,
   selectTrackingListSearchResult,
   selectTrackingState,
-  selectTrackingTime,
 } from './selectors/tracking.selector';
 import { ICategory } from '../../@shared/model/category.types';
 import { TItemListSortType } from '../../@shared/model/item-list.types';
@@ -31,16 +21,12 @@ const noTrackingCategories = (): {
 }[] => [];
 
 /**
- * The `tracking` domain facade — the single NgRx surface for every tracking
- * component (the tracker page, the stats page, and the daily-sessions /
- * sessions-chart smart-ui). It injects `Store` so the components never do, and
- * exposes tracking state as signals plus command methods that dispatch
- * `TrackingActions` (the edit dialog opens straight onto `ItemDialogService`).
- *
- * It also implements {@link IListPageFacade} (provided as `LIST_FACADE` on the
- * `/tracking` route) so the domain-blind `ListPageComponent` can drive the list
- * — exactly the way `TasksListPageFacade` drives the sealed `_tasks` list. This
- * is what seals `tracking` behind the shared, domain-blind `ListPageComponent`.
+ * Tracking's list of activities: the {@link IListPageFacade} implementation
+ * bound to `LIST_FACADE` on the `/tracking` route, so the domain-blind
+ * `ListPageComponent` can drive the list — exactly the way `TasksListPageFacade`
+ * drives the sealed `_tasks` list — plus the row/dialog affordances that edit an
+ * activity. What the timer does *with* those activities (and the session archive
+ * it writes) is `TrackingFacade`.
  *
  * Tracking has **no categories** (the tracking list carries an empty categories
  * array and 'alphabetical' mode). The category-mode operations are therefore
@@ -59,17 +45,12 @@ export class TrackingListPageFacade implements IListPageFacade {
   readonly searchResult = this.#store.selectSignal(
     selectTrackingListSearchResult
   );
-  readonly filterState = computed(() => listStateFilter(this.state()));
   readonly categories = computed(noTrackingCategories);
 
-  // ── Tracking-domain queries ──────────────────────────────────────────────
-  readonly total = this.#store.selectSignal(selectTrackingTime);
-  readonly sessionsByView = this.#store.selectSignal(selectTrackingData);
-  readonly viewMode = this.#store.selectSignal(selectTrackingDataViewId);
-  readonly allSessions = this.#store.selectSignal(selectAllTrackingSessions);
-  readonly sessionsByDayAndName = this.#store.selectSignal(
-    selectSessionsByDayAndName
-  );
+  // Edit-dialog read: the whole aggregate — NOT `items`, which is this page's
+  // filtered view, so the duplicate-name rule would stop seeing a sibling the
+  // moment a search term hid it.
+  readonly allItems = this.#store.selectSignal(selectTrackingItems);
 
   // ── IListPageFacade commands ─────────────────────────────────────────────
   search(term?: string): void {
@@ -101,41 +82,13 @@ export class TrackingListPageFacade implements IListPageFacade {
     });
   }
 
-  // ── Tracking-domain commands ─────────────────────────────────────────────
-  applyNotificationCommand(command: string, targetId: string): void {
-    this.#store.dispatch(
-      TrackingActions.applyNotificationCommand(command, targetId)
-    );
-  }
-
+  // ── Activity row + dialog commands ───────────────────────────────────────
   showEditDialog(item: ITrackingItem): void {
     this.#dialogs.open({ item, listId: TRACKING_LIST_ID, editMode: 'update' });
   }
 
   removeItem(item: ITrackingItem): void {
     this.#store.dispatch(TrackingActions.removeItem(item));
-  }
-
-  toggleTracking(item: ITrackingItem): void {
-    this.#store.dispatch(
-      TrackingActions.toggleTrackingItem(item, dayjs().format())
-    );
-  }
-
-  resetItem(item: ITrackingItem): void {
-    this.#store.dispatch(TrackingActions.resetTracking(item));
-  }
-
-  resetAll(): void {
-    this.#store.dispatch(TrackingActions.resetAllTracking());
-  }
-
-  saveAndReset(): void {
-    this.#store.dispatch(TrackingActions.saveAndResetTracking());
-  }
-
-  seedDemoSessions(): void {
-    this.#store.dispatch(TrackingActions.seedDemoSessions());
   }
 
   createByTicket(): void {
@@ -146,20 +99,6 @@ export class TrackingListPageFacade implements IListPageFacade {
     });
   }
 
-  // ── Stats-page commands ──────────────────────────────────────────────────
-  shareCsv(): void {
-    this.#store.dispatch(TrackingActions.shareData());
-  }
-
-  removeDataItem(item: IDataItem): void {
-    this.#store.dispatch(TrackingActions.removeDataItem(item));
-  }
-
-  changeDataView(viewId: string): void {
-    this.#store.dispatch(TrackingActions.changeDataView(viewId));
-  }
-
-  // ── Edit-dialog command ──────────────────────────────────────────────────
   saveItem(item: ITrackingItem): void {
     this.#store.dispatch(TrackingActions.addOrUpdateItem(item));
   }

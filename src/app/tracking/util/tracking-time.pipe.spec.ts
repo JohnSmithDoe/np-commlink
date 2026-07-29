@@ -5,6 +5,7 @@ const dataItem = (trackedTimeInSeconds?: number): IDataItem => ({
   id: '1',
   name: 'task',
   trackedTimeInSeconds,
+  sessionIds: ['s1'],
 });
 
 describe('TrackingTimePipe', () => {

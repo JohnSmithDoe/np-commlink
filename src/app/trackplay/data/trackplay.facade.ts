@@ -7,6 +7,7 @@ import {
   IPlayer,
   TID,
 } from '../model/trackplay.types';
+import { createGame as newGame } from '../util/trackplay.factory';
 import { TrackplayActions } from './actions/trackplay.actions';
 import {
   selectGameById,
@@ -91,8 +92,15 @@ export class TrackplayFacade {
   }
 
   // ── Games ────────────────────────────────────────────────────────────────
-  createGame(name: string, players: TID[]): void {
-    this.#store.dispatch(TrackplayActions.createGame(name, players));
+  /**
+   * Returns the new game's id, because the game dialog's "go to game" navigates
+   * to what it just created — minting here is what lets it, and what lets the
+   * chosen type ride along instead of needing a follow-up `changeGameType`.
+   */
+  createGame(name: string, typeId: TID, players: TID[]): TID {
+    const game = newGame(name, typeId, players);
+    this.#store.dispatch(TrackplayActions.createGame(game));
+    return game.id;
   }
   renameGame(gameId: TID, name: string): void {
     this.#store.dispatch(TrackplayActions.renameGame(gameId, name));

@@ -1,24 +1,23 @@
 <app-item-edit-modal
-  [item]="seedItem()"
-  [listItems]="listItems()"
+  [nameField]="form.name"
+  [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
   [dialogTitle]="dialogTitle()"
   closeButtonText="edit.item.dialog.button.close"
-  (nameChange)="updateName($event)"
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
 >
   <app-number-input
-    [value]="draft()?.servings"
+    [value]="draft().servings"
     (updateValue)="setServings($event)"
   >
     <div slot="label">{{ 'grocery.recipe.servings' | translate }}</div>
   </app-number-input>
 
   <app-number-input
-    [value]="draft()?.prepMinutes"
+    [value]="draft().prepMinutes"
     (updateValue)="setPrepMinutes($event)"
   >
     <div slot="label">{{ 'grocery.recipe.prep-minutes' | translate }}</div>
@@ -52,7 +51,7 @@
       >
         @for (unit of units; track unit) {
           <ion-select-option [value]="unit">{{
-            'grocery.unit.' + unit | translate
+            unitLabelKeys[unit] | translate
           }}</ion-select-option>
         }
       </ion-select>
@@ -82,6 +81,7 @@
       [label]="'grocery.recipe.add-ingredient' | translate"
       [value]="pickerValue()"
       (ionChange)="addIngredient($event)"
+      data-testid="recipe-product-select"
     >
       @for (product of catalog(); track product.id) {
         <ion-select-option [value]="product.id">{{
@@ -97,7 +97,7 @@
       [autoGrow]="true"
       [rows]="4"
       [label]="'grocery.recipe.steps' | translate"
-      [value]="draft()?.steps"
+      [value]="draft().steps"
       (ionInput)="setSteps($event)"
     ></ion-textarea>
   </ion-item>

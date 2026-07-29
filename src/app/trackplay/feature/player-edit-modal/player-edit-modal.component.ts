@@ -15,14 +15,18 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { form, FormField, SchemaFn } from '@angular/forms/signals';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import { requireText } from '../../../@shared/util/form-rules';
 import { IPlayer } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
 type TPlayerForm = { name: string };
+
+const playerRules: SchemaFn<TPlayerForm> = (path) => requireText(path.name);
 
 /**
  * Player create/rename dialog (presented via ModalController). Port of the legacy
@@ -33,6 +37,7 @@ type TPlayerForm = { name: string };
   templateUrl: './player-edit-modal.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -42,7 +47,7 @@ type TPlayerForm = { name: string };
     IonList,
     IonItem,
     IonInput,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class TrackplayPlayerEditModalComponent extends BaseModalDialog<
@@ -62,7 +67,7 @@ export class TrackplayPlayerEditModalComponent extends BaseModalDialog<
     return id ? this.#players()[id] : undefined;
   });
 
-  readonly canSave = computed(() => this.draft().name.trim().length > 0);
+  protected readonly form = form(this.draft, playerRules);
 
   constructor() {
     super();

@@ -10,7 +10,6 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonItem,
   IonItemOption,
@@ -19,26 +18,24 @@ import {
   IonLabel,
   IonList,
   IonNote,
-  IonTitle,
-  IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
-  arrowBackOutline,
   cloudUploadOutline,
   createOutline,
   swapHorizontalOutline,
   trashOutline,
   unlinkOutline,
 } from 'ionicons/icons';
+import { localizedDate } from '../../../@shared/util/date-format.utils';
 import { ICashTransaction } from '../../model/transaction.types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { CashFacade, TAccountTxn } from '../../data';
+import { CashDetailHeaderComponent } from '../../ui/cash-detail-header/cash-detail-header.component';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/money.pipe';
 import { parserForBank } from '../../util/import/bank-parsers';
@@ -67,9 +64,7 @@ import { TCategoryId } from '../../../@shared/model/category.types';
   styleUrls: ['./cash-account.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
+    CashDetailHeaderComponent,
     IonButtons,
     IonButton,
     IonContent,
@@ -81,7 +76,7 @@ import { TCategoryId } from '../../../@shared/model/category.types';
     IonLabel,
     IonIcon,
     IonNote,
-    TranslateModule,
+    TranslatePipe,
     MoneyEurPipe,
   ],
 })
@@ -113,7 +108,6 @@ export class CashAccountPage {
 
   constructor() {
     addIcons({
-      arrowBackOutline,
       createOutline,
       addOutline,
       trashOutline,
@@ -124,9 +118,12 @@ export class CashAccountPage {
   }
 
   async reconcile(txn: ICashTransaction): Promise<void> {
-    await presentModal(this.#modalCtrl, CashReconcileModalComponent, {
-      transaction: txn,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashReconcileModalComponent,
+      this.#translate.instant(marker('cash.reconcile.title')),
+      { transaction: txn }
+    );
   }
 
   /** Reverse a reconciliation from the surviving txn: detach the manual leg it
@@ -137,7 +134,7 @@ export class CashAccountPage {
   }
 
   formatDate(iso: string): string {
-    return dayjs(iso).format('DD.MM.YYYY');
+    return localizedDate(iso);
   }
 
   goBack(): void {
@@ -145,9 +142,12 @@ export class CashAccountPage {
   }
 
   async editAccount(): Promise<void> {
-    await presentModal(this.#modalCtrl, CashAccountEditModalComponent, {
-      accountId: this.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashAccountEditModalComponent,
+      this.#translate.instant(marker('cash.account-dialog.title-edit')),
+      { accountId: this.id }
+    );
   }
 
   async importCsv(event: Event): Promise<void> {
@@ -170,24 +170,34 @@ export class CashAccountPage {
   }
 
   async #presentImportPreview(plan: IImportPlan): Promise<void> {
-    await presentModal(this.#modalCtrl, CashImportPreviewModalComponent, {
-      transactions: plan.toImport,
-      duplicates: plan.duplicates,
-      rejected: plan.rejected,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashImportPreviewModalComponent,
+      this.#translate.instant(marker('cash.import.title')),
+      {
+        transactions: plan.toImport,
+        duplicates: plan.duplicates,
+        rejected: plan.rejected,
+      }
+    );
   }
 
   async addTransaction(): Promise<void> {
-    await presentModal(this.#modalCtrl, CashTransactionEditModalComponent, {
-      accountId: this.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashTransactionEditModalComponent,
+      this.#translate.instant(marker('cash.txn-dialog.title-new')),
+      { accountId: this.id }
+    );
   }
 
   async editTransaction(txn: ICashTransaction): Promise<void> {
-    await presentModal(this.#modalCtrl, CashTransactionEditModalComponent, {
-      accountId: this.id,
-      transactionId: txn.id,
-    });
+    await presentModal(
+      this.#modalCtrl,
+      CashTransactionEditModalComponent,
+      this.#translate.instant(marker('cash.txn-dialog.title-edit')),
+      { accountId: this.id, transactionId: txn.id }
+    );
   }
 
   async confirmDelete(txn: ICashTransaction): Promise<void> {

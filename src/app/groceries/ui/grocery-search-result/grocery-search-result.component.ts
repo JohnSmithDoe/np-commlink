@@ -4,7 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import {
   IGrocerySearchResult,
   IProduct,
@@ -25,7 +25,7 @@ import { ICategory } from '../../../@shared/model/category.types';
     ItemListComponent,
     TextItemComponent,
     CategoriesPipe,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class GrocerySearchResultComponent<T extends IBaseItem> {

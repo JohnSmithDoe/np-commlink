@@ -7,7 +7,7 @@ import {
 } from '@ionic/angular/standalone';
 import { DashboardStats } from '../../model/office-time.types';
 import { DashPercentageComponent } from '../dash-percentage/dash-percentage.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dash-stats',
@@ -19,7 +19,7 @@ import { TranslateModule } from '@ngx-translate/core';
     IonCardHeader,
     IonCardTitle,
     DashPercentageComponent,
-    TranslateModule,
+    TranslatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

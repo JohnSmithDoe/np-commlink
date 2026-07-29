@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../../../model/app.types';
+import { getByTestId, queryByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { mockBaseItem, mockCategory } from '../../../testing/test-data';
 import { ListItemComponent } from './list-item.component';
@@ -44,19 +45,29 @@ describe('ListItemComponent', () => {
     ]);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('h2').textContent).toContain(
+    expect(getByTestId(fixture, 'list-row-title').textContent).toContain(
       '2 x Bread'
     );
-    const note = fixture.nativeElement.querySelector('ion-note');
-    expect(note.textContent).toBe('Bakery');
-    expect(note.style.display).toBe('block');
+    expect(getByTestId(fixture, 'list-row-category').textContent).toBe(
+      'Bakery'
+    );
+  });
+
+  it('renders no category note when the catalog resolves none of the ids', () => {
+    fixture.componentRef.setInput(
+      'item',
+      mockBaseItem({ categoryIds: ['c-x'] })
+    );
+    fixture.detectChanges();
+
+    expect(queryByTestId(fixture, 'list-row-category')).toBeNull();
   });
 
   it('marks the label as bought when crossedOut is true', () => {
     fixture.componentRef.setInput('crossedOut', true);
     fixture.detectChanges();
 
-    const label = fixture.nativeElement.querySelector('ion-label');
+    const label = getByTestId(fixture, 'list-row-label');
     expect(label.classList.contains('bought')).toBe(true);
   });
 
@@ -89,7 +100,7 @@ describe('ListItemComponent', () => {
     const selected: unknown[] = [];
     component.selectItem.subscribe(() => selected.push(true));
 
-    fixture.nativeElement.querySelector('ion-item').click();
+    getByTestId(fixture, 'list-row-select').click();
 
     expect(selected).toHaveLength(1);
   });
@@ -123,14 +134,17 @@ describe('ListItemComponent', () => {
     expect(deleted).toHaveLength(1);
   });
 
-  it('routes start drag to cart only when enabled', async () => {
+  // The cart affordance exists only where the host named it: the same swipe means
+  // "mark as bought" on the shopping list and "add to the shopping list" in
+  // storage, so an unnamed one would be a nameless button (a11y R2).
+  it('routes start drag to cart only once the host has named the action', async () => {
     const carted: unknown[] = [];
     component.cartItem.subscribe(() => carted.push(true));
 
     await component.deleteOrCartOnSwipe(dragEvent(-200));
     expect(carted).toHaveLength(0);
 
-    fixture.componentRef.setInput('showCartAction', true);
+    fixture.componentRef.setInput('cartActionLabel', 'grocery.a11y.buy-item');
     await component.deleteOrCartOnSwipe(dragEvent(-200));
     expect(carted).toHaveLength(1);
   });
@@ -139,6 +153,6 @@ describe('ListItemComponent', () => {
     fixture.componentRef.setInput('statusColor', 'warning');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.status-bar')).toBeTruthy();
+    expect(queryByTestId(fixture, 'list-row-status')).not.toBeNull();
   });
 });

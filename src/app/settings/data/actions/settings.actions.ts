@@ -1,15 +1,16 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { TTheme } from '../../../@shared/model/app.types';
 import {
   IAccentColors,
-  ISettingsState,
-} from '../../../@shared/model/settings.types';
+  TLanguage,
+  TTheme,
+} from '../../../@shared/model/app.types';
+import { ISettingsState } from '../../model/settings.types';
 
-// The app-global settings contract (eager kernel). Currently just the persisted
-// schema `version` anchor for the migration framework (@shared/util/migrations):
-// the grocery feature-flags that historically rode a shared "settings" slice
-// moved into the groceries domain (IListSettings) and office-time owns its own
-// OfficeTimeSettings, so `version` is the one genuinely app-wide setting left.
+// The app-global settings contract (eager kernel): the UI theme, its accent
+// overrides and the UI language — the only genuinely app-wide settings left. The grocery
+// feature-flags that historically rode a shared "settings" slice moved into the
+// groceries domain (IListSettings), and office-time's own settings slice was
+// deleted as dead code.
 export const SettingsActions = createActionGroup({
   source: 'Settings',
   events: {
@@ -21,6 +22,11 @@ export const SettingsActions = createActionGroup({
     // User picked a UI theme in the settings page. The reducer merges it, a
     // settings.effect applies it to <html data-theme> and persists the doc.
     setTheme: (theme: TTheme) => ({ theme }),
+
+    // User picked a UI language. The reducer merges it, a settings.effect hands
+    // it to LanguageService (translate bundle + dayjs + <html lang>) and
+    // persists the doc.
+    setLanguage: (language: TLanguage) => ({ language }),
 
     // User picked a custom accent pair for one theme (the settings page always
     // edits the currently-selected theme's override).

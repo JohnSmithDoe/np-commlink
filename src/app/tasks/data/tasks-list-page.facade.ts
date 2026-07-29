@@ -6,12 +6,10 @@ import { ItemDialogService } from '../../@shared/util/item-dialog.service';
 import { ITaskItem, TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
 import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
-import {
-  listCategoriesWithCount,
-  listStateFilter,
-} from '../../@shared/util/list/list.selector';
+import { listCategoriesWithCount } from '../../@shared/util/list/list.selector';
 import { TasksActions } from './actions/tasks.actions';
 import {
+  selectTaskItems,
   selectTasksCategories,
   selectTasksListItems,
   selectTasksListSearchResult,
@@ -29,10 +27,6 @@ import {
  * `TasksActions` — never the grocery multi-list engine. This is what seals
  * `tasks` off the grocery domain: the generic `ListPageComponent` drives it
  * entirely through this contract.
- *
- * The dispatch bodies mirror what the shell GroceryListEffects orchestrator
- * resolved for `_tasks` (via `actionsByListId`), so behaviour is preserved: e.g.
- * "add from search" in categories mode adds a category, otherwise an item.
  */
 @Injectable({ providedIn: 'root' })
 export class TasksListPageFacade implements IListPageFacade {
@@ -43,25 +37,21 @@ export class TasksListPageFacade implements IListPageFacade {
   readonly state = this.#store.selectSignal(selectTasksState);
   readonly items = this.#store.selectSignal(selectTasksListItems);
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
-  readonly filterState = computed(() => listStateFilter(this.state()));
   readonly categories = computed(() => listCategoriesWithCount(this.state()));
 
-  // Edit-dialog read (the tasks edit-dialog wrapper): the raw {id,name} catalog
-  // for the category picker. The open item rides the ItemDialogService command.
+  // Edit-dialog reads (the tasks edit-dialog wrapper): the raw {id,name} catalog
+  // for the category picker, and the whole aggregate — NOT `items`, which is this
+  // page's filtered view, so the duplicate-name rule would stop seeing a sibling
+  // the moment a search term or category filter hid it.
   readonly taskCategories = this.#store.selectSignal(selectTasksCategories);
+  readonly allItems = this.#store.selectSignal(selectTaskItems);
 
   search(term?: string): void {
     this.#store.dispatch(TasksActions.updateSearch(term));
   }
 
   addItemFromSearch(): void {
-    // Mirror GroceryListEffects.addItemFromSearch: in categories mode the
-    // "add from search" affordance creates a category instead of an item.
-    if (this.state()?.mode === 'categories') {
-      this.addCategoryFromSearch();
-    } else {
-      this.#store.dispatch(TasksActions.addItemFromSearch());
-    }
+    this.#store.dispatch(TasksActions.addItemFromSearch());
   }
 
   addCategoryFromSearch(): void {

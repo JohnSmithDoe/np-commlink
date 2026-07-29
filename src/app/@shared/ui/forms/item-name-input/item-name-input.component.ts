@@ -3,68 +3,79 @@ import {
   Component,
   computed,
   input,
-  OnChanges,
-  SimpleChanges,
+  model,
+  output,
 } from '@angular/core';
-import { outputFromObservable, toSignal } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormValueControl, ValidationError } from '@angular/forms/signals';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IonInput, IonItem } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
-import { map } from 'rxjs';
-import { TMarker } from '../../../model/app.types';
-import { IBaseItem } from '../../../model/base-item.types';
 import {
-  matchesSearchExactly,
-  validateNameInput,
-} from '../../../util/app.utils';
+  InputCustomEvent,
+  IonInput,
+  IonItem,
+  IonNote,
+} from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
+import { TMarker } from '../../../model/app.types';
+import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/form-rules';
 
+// Deliberately PARTIAL over the kind space — `form-rules` names kinds this field
+// can never report (a date's, say) — so the index access has to yield
+// `TMarker | undefined` for the "renders nothing" branch below to be reachable.
+const ERROR_TEXT: Readonly<Partial<Record<string, TMarker>>> = {
+  [DUPLICATE_NAME.kind]: marker('edit.item.dialog.name.duplicate.error'),
+  [BLANK_TEXT.kind]: marker('edit.item.dialog.name.empty.error'),
+};
+
+/**
+ * The name field every list-item dialog opens with, as a Signal Forms control:
+ * a dialog binds `[formField]="form.name"` and the rules live in its schema
+ * (`requireUniqueName`) instead of in this component.
+ *
+ * It owns no validation — it *reports* what the bound field found. `errors` is
+ * one of the optional `FormUiControl` inputs the `Field` directive fills in,
+ * which is what lets a dumb control render a real message without knowing why
+ * the name is wrong. Before this it carried a reactive-forms `FormControl` with
+ * its own validator, an `ngOnChanges` that reseeded it and a `statusChanges`
+ * subscription — the last reactive-forms holdout in the app.
+ *
+ * The message is an `<ion-note>` of our own rather than `ion-input`'s
+ * `errorText`: Ionic renders that only while the `ion-input` host carries
+ * `ion-invalid ion-touched`, and those classes come exclusively from
+ * `@ionic/angular`'s `ValueAccessor` — which needs an `NgControl` on the
+ * `ion-input` itself. `[formField]` binds the custom control (this host), so no
+ * accessor ever runs and the built-in slot stays empty. It is also the idiom the
+ * seven `BaseModalDialog` dialogs already use.
+ */
 @Component({
   selector: 'app-item-name-input',
   templateUrl: './item-name-input.component.html',
-  imports: [IonInput, IonItem, ReactiveFormsModule, TranslateModule],
+  imports: [IonInput, IonItem, IonNote, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ItemNameInputComponent implements OnChanges {
-  readonly item = input<IBaseItem | null>();
-  readonly listItems = input<IBaseItem[] | null>();
+export class ItemNameInputComponent implements FormValueControl<string> {
+  readonly value = model<string>('');
+  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
 
-  readonly nameControl: FormControl = new FormControl('');
+  /**
+   * Blur marks the bound field touched. Angular reaches a custom control's
+   * touched state only through an output of exactly this name
+   * (`listenToCustomControlOutput('touchedChange')`), so without it the field's
+   * `touched` is a permanent lie — invisible today, wrong for anything later
+   * keyed on it (`markAllAsTouched()`, a `provideSignalFormsConfig({classes})`).
+   */
+  readonly touchedChange = output<boolean>();
 
-  // Forward every value change out as an output (signal-era replacement for a
-  // valueChanges subscription; auto-unsubscribes via the injection context).
-  readonly updateValue = outputFromObservable(
-    this.nameControl.valueChanges.pipe(map((value) => value ?? ''))
-  );
-
-  // Validity as signals so parents can read `invalid()` in an OnPush/zoneless
-  // template without a manual statusChanges subscription mutating a field.
-  readonly #status = toSignal(this.nameControl.statusChanges, {
-    initialValue: this.nameControl.status,
+  // A duplicate is the more specific complaint, so it wins if a field reports
+  // both; an unrecognised kind renders nothing rather than a raw key.
+  readonly errorText = computed(() => {
+    const kinds = this.errors().map(({ kind }) => kind);
+    const kind = kinds.includes(DUPLICATE_NAME.kind)
+      ? DUPLICATE_NAME.kind
+      : kinds[0];
+    return kind ? ERROR_TEXT[kind] : undefined;
   });
-  readonly valid = computed(() => this.#status() === 'VALID');
-  readonly invalid = computed(() => !this.valid());
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const item = this.item();
-    if (
-      changes.hasOwnProperty('item') &&
-      !!item &&
-      !matchesSearchExactly(item, this.nameControl.value ?? '')
-    ) {
-      this.nameControl.setValue(item.name);
-      this.nameControl.markAsTouched();
-    }
-    const listItems = this.listItems();
-    if (changes.hasOwnProperty('listItems') && listItems) {
-      this.nameControl.setValidators(validateNameInput(listItems, item));
-      this.nameControl.updateValueAndValidity();
-    }
-  }
-
-  getErrorText(): TMarker {
-    return this.nameControl.hasError('duplicate')
-      ? marker('edit.item.dialog.name.duplicate.error')
-      : marker('edit.item.dialog.name.empty.error');
+  protected onInput(event: InputCustomEvent): void {
+    this.value.set(String(event.detail.value ?? ''));
   }
 }

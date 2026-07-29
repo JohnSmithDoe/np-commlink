@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ModalController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
-import { TranslateModule } from '@ngx-translate/core';
+
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
   mockCashAccount,
@@ -60,7 +60,7 @@ describe('CashAccountPage', () => {
 
   const setup = (state: ICashState) => {
     TestBed.configureTestingModule({
-      imports: [CashAccountPage, TranslateModule.forRoot()],
+      imports: [CashAccountPage],
       providers: [
         provideTestingProviders({ cash: state }),
         {
@@ -151,7 +151,6 @@ describe('CashAccountPage', () => {
         dateISO: expect.stringContaining('2026-01-06'),
         amountCents: -1999,
         description: REWE_TEXT,
-        rawDescription: REWE_TEXT,
         source: 'imported',
         status: 'confirmed',
       }),
@@ -188,7 +187,7 @@ describe('CashAccountPage', () => {
             id: 'already-imported',
             dateISO: '2026-01-06',
             amountCents: -1999,
-            rawDescription: REWE_TEXT,
+            description: REWE_TEXT,
             source: 'imported',
           }),
         ],

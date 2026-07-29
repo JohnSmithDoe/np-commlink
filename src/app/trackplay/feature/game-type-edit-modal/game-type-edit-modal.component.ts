@@ -17,14 +17,18 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { form, FormField, SchemaFn } from '@angular/forms/signals';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import { requireText } from '../../../@shared/util/form-rules';
 import { IGameType } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
 type TGameTypeForm = { name: string; winHigh: boolean };
+
+const gameTypeRules: SchemaFn<TGameTypeForm> = (path) => requireText(path.name);
 
 /**
  * Game-type create/edit dialog (presented via ModalController). Port of the legacy
@@ -36,6 +40,7 @@ type TGameTypeForm = { name: string; winHigh: boolean };
   styleUrls: ['./game-type-edit-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormField,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -47,7 +52,7 @@ type TGameTypeForm = { name: string; winHigh: boolean };
     IonInput,
     IonToggle,
     IonLabel,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class TrackplayGameTypeEditModalComponent extends BaseModalDialog<
@@ -67,7 +72,7 @@ export class TrackplayGameTypeEditModalComponent extends BaseModalDialog<
     return id ? this.#gameTypes()[id] : undefined;
   });
 
-  readonly canSave = computed(() => this.draft().name.trim().length > 0);
+  protected readonly form = form(this.draft, gameTypeRules);
 
   constructor() {
     super();

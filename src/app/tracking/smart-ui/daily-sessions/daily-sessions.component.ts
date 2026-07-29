@@ -15,12 +15,12 @@ import {
   IonListHeader,
   IonNote,
 } from '@ionic/angular/standalone';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
-import { TrackingListPageFacade } from '../../data';
+import { TrackingFacade } from '../../data';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 
 @Component({
@@ -39,11 +39,11 @@ import { TrackingTimePipe } from '../../util/tracking-time.pipe';
     IonListHeader,
     IonNote,
     TrackingTimePipe,
-    TranslateModule,
+    TranslatePipe,
   ],
 })
 export class DailySessionsComponent {
-  readonly #allSessions = inject(TrackingListPageFacade).allSessions;
+  readonly #allSessions = inject(TrackingFacade).allSessions;
   readonly selectedDate = signal<Dayjs>(dayjs().startOf('day'));
 
   readonly isToday = computed(() => this.selectedDate().isSame(dayjs(), 'day'));
