@@ -1,0 +1,72 @@
+// The CREDSTICK surfaces' shared pieces. Side-effect-free: this file emits
+// nothing on its own, so a component `@use`s it and `@include`s what it needs —
+// the same seam as `theme/_dashboard.scss` and `theme/_charts.scss`.
+//
+// Extracted because all three blocks below had been copy-pasted across the six
+// cash surfaces and had already drifted: `.cash-empty` six times,
+// `.cash-txn__amount` four (two carrying a font-size the other two omit) and the
+// net-worth strip twice with different padding, under a comment claiming reuse.
+// Values stay `var(--sr-*)`/`var(--ion-*)` so both themes keep flowing through.
+
+@use 'deck';
+
+// The empty-state caption. Only the top offset ever differed per surface — a page
+// pushes it further down than a modal — so that is the one parameter.
+@mixin empty-state($padding-top: 12vh) {
+  padding-top: $padding-top;
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-text-dim);
+}
+
+// The caption under a modal/page header. Only the padding ever differed per
+// surface, so that is the one parameter — the deck font is NOT included because
+// exactly one of the three call sites paints it, and that difference is real.
+@mixin hint($padding) {
+  display: block;
+  padding: $padding;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-text-dim);
+}
+
+// A signed ledger amount. `$font-size` is opt-in because the pages set 1rem while
+// the modals deliberately inherit the list's own size.
+@mixin txn-amount($font-size: null) {
+  font-family: var(--sr-deck-font);
+  @if $font-size {
+    font-size: $font-size;
+  }
+
+  &--out {
+    color: var(--ion-color-danger);
+  }
+
+  &--in {
+    color: var(--ion-color-success);
+  }
+}
+
+// The label/value strip above a ledger. Spacing is NOT included: the overview and
+// the per-account header genuinely space it differently, and that difference is
+// what the two copies disagreed on — so each caller keeps its own padding and only
+// the layout and typography are shared.
+@mixin networth-strip {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--sr-line);
+
+  &__label {
+    @include deck.hud-label;
+    font-size: var(--fs-small);
+    color: var(--sr-text-dim);
+  }
+
+  &__value {
+    font-family: var(--sr-deck-font);
+    font-size: var(--fs-xlarge);
+    color: var(--sr-amber);
+    text-shadow: var(--sr-glow);
+  }
+}

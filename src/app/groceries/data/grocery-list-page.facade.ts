@@ -2,58 +2,76 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import {
   IProduct,
   IShoppingItem,
   IStorageItem,
   TGroceryListId,
 } from '../model/grocery-list.types';
-import { uuidv4 } from '../../@shared/util/app.utils';
-import { ItemDialogService } from '../../@shared/util/item-dialog.service';
-import { IListPageFacade } from '../../@shared/util/list/list-page.facade';
+import { BarcodeScannerService } from '../util/barcode-scanner.service';
+import { categoryById } from '../../@shared/util/categories/category.utils';
+import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { IListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
 import {
   createGroceryItem,
   createProduct,
   withQuantityChangedBy,
 } from '../util/grocery.factory';
-import { GroceryListActions } from './actions/grocery-list.actions';
-import { GroceryCategoriesActions } from './actions/grocery-categories.actions';
-import { ShoppingActions } from './actions/shopping.actions';
-import { StorageActions } from './actions/storage.actions';
-import { ProductsActions } from './actions/products.actions';
+import { GroceryListActions } from './grocery-list.actions';
+import { GroceryCategoriesActions } from './categories/grocery-categories.actions';
+import { ShoppingActions } from './shopping/shopping.actions';
+import { StorageActions } from './storage/storage.actions';
+import { ProductsActions } from './products/products.actions';
 import {
-  selectListCategories,
-  selectListIdParam,
+  selectGroceryCategories,
+  selectListIdParameter,
   selectListItems,
   selectListSearchResult,
   selectListState,
-} from './selectors/grocery-list.selector';
+} from './grocery-list.selector';
 import {
-  selectShoppingCategories,
   selectShoppingItems,
   selectShoppingListHasBoughtItems,
   selectShoppingState,
-} from './selectors/shopping.selector';
+} from './shopping/shopping.selector';
+import { selectStorageItems } from './storage/storage.selector';
+import { selectProductItems } from './products/products.selector';
 import {
-  selectStorageCategories,
-  selectStorageItems,
-} from './selectors/storage.selector';
-import {
-  selectProductItems,
-  selectProductsCategories,
-} from './selectors/products.selector';
-import {
-  selectQuickAddCanAddCategory,
   selectQuickAddCanAddLocal,
   selectQuickAddCanAddProduct,
   selectQuickAddState,
-} from './selectors/quick-add.selector';
+} from './quick-add/quick-add.selector';
 import { ICategory, TCategoryId } from '../../@shared/model/category.types';
-import {
-  TItemListMode,
-  TItemListSortType,
-} from '../../@shared/model/item-list.types';
+import { TItemListSortType } from '../../@shared/model/item-list.types';
+
+/**
+ * Where each cross-list suggestion lands, keyed by the list the shopper is
+ * standing on. `Exclude` drops the item's OWN list: copying a product into the
+ * product catalogue is not a command, and expressing that in the type is what
+ * replaces the `default:` arm these three used to fall through — it returned a
+ * `configurationError` action that no reducer and no effect ever handled, so the
+ * invalid diagonal was a silent no-op reachable from all three pages.
+ */
+type TCopyTargets<TOwnList extends TGroceryListId, TItem> = Record<
+  Exclude<TGroceryListId, TOwnList>,
+  (item: TItem) => Action
+>;
+
+const PRODUCT_COPY_TARGETS: TCopyTargets<'_products', IProduct> = {
+  _storage: StorageActions.addProduct,
+  _shopping: ShoppingActions.addProduct,
+};
+
+const STORAGE_COPY_TARGETS: TCopyTargets<'_storage', IStorageItem> = {
+  _products: ProductsActions.addStorageItem,
+  _shopping: ShoppingActions.addStorageItem,
+};
+
+const SHOPPING_COPY_TARGETS: TCopyTargets<'_shopping', IShoppingItem> = {
+  _storage: StorageActions.addShoppingItem,
+  _products: ProductsActions.addShoppingItem,
+};
 
 /**
  * {@link IListPageFacade} implementation for the grocery multi-list engine. The
@@ -67,12 +85,16 @@ export class GroceryListPageFacade implements IListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
-  readonly #listId = this.#store.selectSignal(selectListIdParam);
+  readonly #scanner = inject(BarcodeScannerService);
+
+  /** The camera only exists on the APK target, so the button is native-only. */
+  readonly showScanButton = this.#scanner.isNativePlatform;
+  readonly #listId = this.#store.selectSignal(selectListIdParameter);
 
   readonly state = this.#store.selectSignal(selectListState);
   readonly items = this.#store.selectSignal(selectListItems);
   readonly searchResult = this.#store.selectSignal(selectListSearchResult);
-  readonly categories = this.#store.selectSignal(selectListCategories);
+  readonly catalog = this.#store.selectSignal(selectGroceryCategories);
 
   // Per-list reads the grocery pages + the shopping action-sheet render.
   readonly shoppingState = this.#store.selectSignal(selectShoppingState);
@@ -87,22 +109,12 @@ export class GroceryListPageFacade implements IListPageFacade {
   readonly quickAddCanAddProduct = this.#store.selectSignal(
     selectQuickAddCanAddProduct
   );
-  readonly quickAddCanAddCategory = this.#store.selectSignal(
-    selectQuickAddCanAddCategory
-  );
 
   // Edit-dialog reads (the shopping/storage/product edit-dialog wrappers): the
-  // per-list category catalog and the list's items. The open item itself comes off
-  // the ItemDialogService command, which the shared base reads directly.
-  readonly shoppingCategories = this.#store.selectSignal(
-    selectShoppingCategories
-  );
-  readonly storageCategories = this.#store.selectSignal(
-    selectStorageCategories
-  );
-  readonly productsCategories = this.#store.selectSignal(
-    selectProductsCategories
-  );
+  // list's items. There used to be three catalog signals here, one per list —
+  // three reads of what is now literally one list, so `catalog` above serves all
+  // three wrappers. The open item itself comes off the ItemDialogService command,
+  // which the shared base reads directly.
   // The whole aggregate per list, NOT `items` (the route-keyed page view): the
   // dialogs' duplicate-name rule has to see every sibling, including the ones a
   // search term or category filter is currently hiding.
@@ -126,18 +138,6 @@ export class GroceryListPageFacade implements IListPageFacade {
     );
   }
 
-  addCategoryFromSearch(): void {
-    this.#store.dispatch(
-      GroceryListActions.addCategoryFromSearch(this.#activeListId())
-    );
-  }
-
-  setDisplayMode(mode: TItemListMode): void {
-    this.#store.dispatch(
-      GroceryListActions.updateMode(this.#activeListId(), mode)
-    );
-  }
-
   setSortMode(type: TItemListSortType): void {
     this.#store.dispatch(
       GroceryListActions.updateSort(this.#activeListId(), type, 'toggle')
@@ -150,12 +150,7 @@ export class GroceryListPageFacade implements IListPageFacade {
     );
   }
 
-  deleteCategory(categoryId: TCategoryId): void {
-    this.#store.dispatch(GroceryCategoriesActions.remove(categoryId));
-  }
-
-  // Create seeded from whatever is in the searchbar. (The categories-mode variant
-  // is the shell's own `saveCategory` path — it never reaches here.)
+  // Create seeded from whatever is in the searchbar.
   showCreateDialog(): void {
     const listId = this.#activeListId();
     const state = this.state();
@@ -170,10 +165,6 @@ export class GroceryListPageFacade implements IListPageFacade {
     });
   }
 
-  saveCategory(name: string): void {
-    this.addGroceryCategory({ id: uuidv4(), name });
-  }
-
   manageCategories(): void {
     void this.#router.navigate(['/groceries/categories', this.#activeListId()]);
   }
@@ -183,21 +174,25 @@ export class GroceryListPageFacade implements IListPageFacade {
   // the create-product quick-add button.
 
   addProduct(item: IProduct): void {
-    this.#store.dispatch(
-      GroceryListActions.addProduct(this.#activeListId(), item)
-    );
+    this.#copyToActiveList(item, PRODUCT_COPY_TARGETS);
   }
 
   addStorageItem(item: IStorageItem): void {
-    this.#store.dispatch(
-      GroceryListActions.addStorageItem(this.#activeListId(), item)
-    );
+    this.#copyToActiveList(item, STORAGE_COPY_TARGETS);
   }
 
   addShoppingItem(item: IShoppingItem): void {
-    this.#store.dispatch(
-      GroceryListActions.addShoppingItem(this.#activeListId(), item)
-    );
+    this.#copyToActiveList(item, SHOPPING_COPY_TARGETS);
+  }
+
+  // No target for the list being viewed means the item already lives here — a
+  // list never shows its own suggestion bucket, so there is nothing to copy.
+  #copyToActiveList<TItem>(
+    item: TItem,
+    targets: Partial<Record<TGroceryListId, (item: TItem) => Action>>
+  ): void {
+    const toAction = targets[this.#activeListId()];
+    if (toAction) this.#store.dispatch(toAction(item));
   }
 
   // Quick-create a product from the searchbar while standing on storage/shopping,
@@ -213,7 +208,23 @@ export class GroceryListPageFacade implements IListPageFacade {
   }
 
   // Barcode scan → CREATE a product seeded with the EAN as its name; wired from
-  // the storage/shopping pages' native scan button.
+  // the storage/shopping pages' native scan button. The outcome triage lives here
+  // rather than in each page: it was byte-identical in both, so a fourth
+  // `outcome.reason` would have kept the old behaviour on whichever page nobody
+  // remembered to edit.
+  async scan(): Promise<void> {
+    const outcome = await this.#scanner.scanEan();
+    if (outcome.ok) {
+      this.showCreateProductFromScan(outcome.ean);
+      return;
+    }
+    // `cancelled`/`unsupported` are the user's own doing or a known platform
+    // limit; only a denied permission or a rejecting plugin needs saying.
+    if (outcome.reason !== 'cancelled' && outcome.reason !== 'unsupported') {
+      this.reportScanFailure();
+    }
+  }
+
   reportScanFailure(): void {
     this.#store.dispatch(
       NotificationsActions.toast({
@@ -232,14 +243,6 @@ export class GroceryListPageFacade implements IListPageFacade {
   }
 
   // ── Shopping list page/action-sheet commands ─────────────────────────────
-  enterShopping(): void {
-    this.#store.dispatch(ShoppingActions.enterPage());
-  }
-
-  filterShoppingByCategory(categoryId: string): void {
-    this.#store.dispatch(ShoppingActions.updateFilter(categoryId));
-  }
-
   removeShoppingItem(item: IShoppingItem): void {
     this.#store.dispatch(ShoppingActions.removeItem(item));
   }
@@ -275,24 +278,12 @@ export class GroceryListPageFacade implements IListPageFacade {
   }
 
   // ── Storage list page commands ───────────────────────────────────────────
-  enterStorage(): void {
-    this.#store.dispatch(StorageActions.enterPage());
-  }
-
-  filterStorageByCategory(categoryId: string): void {
-    this.#store.dispatch(StorageActions.updateFilter(categoryId));
-  }
-
   removeStorageItem(item: IStorageItem): void {
     this.#store.dispatch(StorageActions.removeItem(item));
   }
 
   showEditStorageItem(item: IStorageItem): void {
     this.#dialogs.open({ item, listId: '_storage', editMode: 'update' });
-  }
-
-  setStorageSort(type: TItemListSortType): void {
-    this.#store.dispatch(StorageActions.updateSort(type, 'toggle'));
   }
 
   changeStorageQuantity(item: IStorageItem, diff: number): void {
@@ -306,14 +297,6 @@ export class GroceryListPageFacade implements IListPageFacade {
   }
 
   // ── Products (catalog) page commands ─────────────────────────────────────
-  enterProducts(): void {
-    this.#store.dispatch(ProductsActions.enterPage());
-  }
-
-  filterProductsByCategory(categoryId: string): void {
-    this.#store.dispatch(ProductsActions.updateFilter(categoryId));
-  }
-
   removeProduct(item: IProduct): void {
     this.#store.dispatch(ProductsActions.removeItem(item));
   }
@@ -335,14 +318,19 @@ export class GroceryListPageFacade implements IListPageFacade {
     this.#store.dispatch(ProductsActions.addOrUpdateItem(item));
   }
 
-  // Shared grocery catalog (one across all three lists). Catalog delete reuses
-  // `deleteCategory` above (both dispatch GroceryCategoriesActions.remove).
+  // Shared grocery catalog (one across all three lists).
   addGroceryCategory(category: ICategory): void {
-    this.#store.dispatch(GroceryCategoriesActions.add(category));
+    this.#store.dispatch(GroceryCategoriesActions.addItem(category));
   }
 
   renameGroceryCategory(id: TCategoryId, to: string): void {
-    this.#store.dispatch(GroceryCategoriesActions.rename(id, to));
+    this.#store.dispatch(GroceryCategoriesActions.updateItem({ id, name: to }));
+  }
+
+  removeGroceryCategory(id: TCategoryId): void {
+    const category = categoryById(this.catalog(), id);
+    if (!category) return;
+    this.#store.dispatch(GroceryCategoriesActions.removeItem(category));
   }
 
   // "Create & add to another list" flow from the product dialog: push the new

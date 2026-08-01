@@ -1,9 +1,14 @@
 import dayjs, { Dayjs } from 'dayjs';
 
-// Meeus/Jones/Butcher "anonymous Gregorian" algorithm. Every movable German
-// holiday is an offset from Easter Sunday, and Easter is a closed formula — so
-// an offline-first app can know its own workdays without a network call or a
-// per-year asset that goes stale.
+// Meeus/Jones/Butcher "anonymous Gregorian" algorithm.
+// Every movable German holiday is an offset from Easter Sunday.
+// Easter itself is a closed formula.
+// So the app knows its workdays offline, with no per-year asset to go stale.
+// `a`..`m` are the published algorithm's own variable names, and checking the
+// formula means reading it against the reference. The rule reaches exactly two
+// of the thirteen (`e`, `i`), so obeying it would leave eleven bare letters and
+// two expanded ones — less recognisable than either whole convention.
+/* eslint-disable unicorn/prevent-abbreviations */
 const easterSunday = (year: number): Dayjs => {
   const a = year % 19;
   const b = Math.floor(year / 100);
@@ -22,6 +27,7 @@ const easterSunday = (year: number): Dayjs => {
     new Date(year, Math.floor(dayOfYear / 31) - 1, (dayOfYear % 31) + 1)
   );
 };
+/* eslint-enable unicorn/prevent-abbreviations */
 
 const fixedDay = (year: number, month: number, day: number): Dayjs =>
   dayjs(new Date(year, month - 1, day));

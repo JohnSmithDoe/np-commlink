@@ -1,4 +1,11 @@
-import { ITaskItem, ITasksState } from '../model/task.types';
+import { ICategoryList } from '../../@shared/model/category.types';
+import {
+  ITaskItem,
+  ITasksState,
+  TASK_CATEGORIES_LIST_ID,
+  TASKS_LIST_ID,
+  TTasksList,
+} from '../model/task.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 // Deterministic task fixtures (type:testing), moved out of the shared
@@ -14,14 +21,26 @@ export function mockTaskItem(overrides: Partial<ITaskItem> = {}): ITaskItem {
   };
 }
 
+export function mockTasksList(overrides: Partial<TTasksList> = {}): TTasksList {
+  return { id: TASKS_LIST_ID, items: [], ...overrides };
+}
+
+function mockTaskCategoryList(
+  overrides: Partial<ICategoryList> = {}
+): ICategoryList {
+  return { id: TASK_CATEGORIES_LIST_ID, items: [], ...overrides };
+}
+
+// Seeds either half by name, so a spec that only cares about tasks does not have
+// to spell out an empty catalog (and vice versa).
 export function mockTasksState(
-  overrides: Partial<ITasksState> = {}
+  overrides: {
+    list?: Partial<TTasksList>;
+    categoryList?: Partial<ICategoryList>;
+  } = {}
 ): ITasksState {
   return {
-    id: '_tasks',
-    items: [],
-    categories: [],
-    mode: 'alphabetical',
-    ...overrides,
+    list: mockTasksList(overrides.list),
+    categoryList: mockTaskCategoryList(overrides.categoryList),
   };
 }

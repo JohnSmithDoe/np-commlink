@@ -2,9 +2,9 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { BarcodeActions } from './actions/barcode.actions';
+import { BarcodeActions } from './barcode.actions';
 import { BarcodeFacade } from './barcode.facade';
-import { selectBarcodeDataUrl } from './selectors/barcode.selector';
+import { selectBarcodeDataUrl } from './barcode.selector';
 
 describe('BarcodeFacade', () => {
   let store: MockStore;

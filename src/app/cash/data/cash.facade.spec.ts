@@ -5,11 +5,12 @@ import { mockCategory } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
 import {
   mockCashAccount,
+  mockCashCategoryList,
   mockCashRule,
   mockCashState,
   mockCashTransaction,
 } from '../testing/cash.test-data';
-import { CashActions } from './actions/cash.actions';
+import { CashActions } from './cash.actions';
 import { CashFacade } from './cash.facade';
 
 describe('CashFacade', () => {
@@ -38,7 +39,9 @@ describe('CashFacade', () => {
   const ledger = mockCashState({
     accounts: [giro, card],
     transactions: [spend, income],
-    categories: [mockCategory({ id: 'c1', name: 'Lebensmittel' })],
+    categories: mockCashCategoryList({
+      items: [mockCategory({ id: 'c1', name: 'Lebensmittel' })],
+    }),
     rules: [mockCashRule({ id: 'r1' })],
   });
 
@@ -153,7 +156,7 @@ describe('CashFacade', () => {
     expect(dispatch).toHaveBeenCalledWith(
       NotificationsActions.toast({
         key: 'cash.rules.apply-result',
-        params: { count: 3 },
+        parameters: { count: 3 },
         color: 'medium',
       })
     );

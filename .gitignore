@@ -91,3 +91,9 @@ Thumbs.db
 /.plan-workspace
 # codegraph
 .codegraph
+
+# Bank exports are real account data — keep them local, never commit one again
+docs/cash/*.csv
+
+# eslint --cache (per-file result cache; CI always runs cold)
+.eslintcache

@@ -1,9 +1,5 @@
-@use 'theme/consts';
+@use 'theme/fonts'; // @font-face (self-hosted JetBrains Mono)
 @use 'theme/shadowrun';
-// THEME SEAM: alternate palettes live under theme/palettes/ as commented-out
-// `.ion-palette-<name>` blocks. The example is all-comments today (emits no CSS)
-// — the documented hook for a future second theme. See theme/palettes/_example.scss.
-@use 'theme/palettes/example';
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -43,12 +39,6 @@ ion-content > * {
   background: var(--app-content-bg);
 }
 
-app-item-list-toolbar {
-  display: block;
-  max-width: var(--app-content-max-width);
-  margin-inline: auto;
-}
-
 .trigger {
   cursor: pointer;
 }
@@ -84,11 +74,10 @@ button.alert-button.alert-button-danger {
 }
 
 /* Fill the area behind the (transparent) edge-to-edge system bars on Android 16
-   so no white shows through in this dark-themed app. Fallback retuned from KB's
-   #2b2b2b to shadowrun #0f141b. */
+   so no white shows through in this dark-themed app. */
 html,
 body {
-  background-color: var(--ion-background-color, #0f141b);
+  background-color: var(--ion-background-color);
 }
 
 [hidden] {

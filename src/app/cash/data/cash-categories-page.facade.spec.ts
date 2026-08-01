@@ -3,8 +3,14 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { mockCategory } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
-import { mockCashState, mockCashTransaction } from '../testing/cash.test-data';
-import { CashActions } from './actions/cash.actions';
+import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { CASH_CATEGORIES_LIST_ID } from '../model/cash.types';
+import {
+  mockCashCategoryList,
+  mockCashState,
+  mockCashTransaction,
+} from '../testing/cash.test-data';
+import { CashActions } from './cash.actions';
 import { CashCategoriesPageFacade } from './cash-categories-page.facade';
 
 describe('CashCategoriesPageFacade', () => {
@@ -23,59 +29,86 @@ describe('CashCategoriesPageFacade', () => {
     facade = TestBed.inject(CashCategoriesPageFacade);
   };
 
-  // Cash has one flat catalog (no `:listId`), so the page's list identity is
-  // constant rather than route-derived.
-  it('names the cash ledger as the owning list', () => {
-    setup();
-
-    expect(facade.listTitleKey()).toBe('page-title.cash');
-    expect(facade.listHref()).toBe('/cash');
-  });
-
-  it('serves the catalog decorated with live transaction counts', () => {
+  // The catalog is a list, so its page view sorts through the shared engine
+  // instead of the facade decorating and ordering it.
+  it('serves the catalog as an ordinary sorted list', () => {
     setup(
       mockCashState({
-        categories: [
-          mockCategory({ id: 'c2', name: 'Wohnen' }),
-          mockCategory({ id: 'c1', name: 'Lebensmittel' }),
-        ],
-        transactions: [
-          mockCashTransaction({ id: 't1', categoryId: 'c1' }),
-          mockCashTransaction({ id: 't2', categoryId: 'c1' }),
-        ],
+        categories: mockCashCategoryList({
+          items: [
+            mockCategory({ id: 'c2', name: 'Wohnen' }),
+            mockCategory({ id: 'c1', name: 'Lebensmittel' }),
+          ],
+          sort: { sortBy: 'name', sortDirection: 'asc' },
+        }),
       })
     );
 
-    expect(facade.categories()).toEqual([
-      { category: mockCategory({ id: 'c1', name: 'Lebensmittel' }), count: 2 },
-      { category: mockCategory({ id: 'c2', name: 'Wohnen' }), count: 0 },
+    expect(facade.items()?.map((entry) => entry.name)).toEqual([
+      'Lebensmittel',
+      'Wohnen',
     ]);
   });
 
-  // The page hands over a name only — the facade mints the id every txn and rule
-  // will reference.
-  it('mints the id for an added category', () => {
-    setup();
-
-    facade.add('Lebensmittel');
-
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: CashActions.addCategory.type,
-        category: { id: expect.stringMatching(/\S/), name: 'Lebensmittel' },
+  // The count is a lookup the row reads, not a shape the catalog is wrapped in.
+  it('counts only live transactions per category', () => {
+    setup(
+      mockCashState({
+        categories: mockCashCategoryList({
+          items: [mockCategory({ id: 'c1', name: 'Lebensmittel' })],
+        }),
+        transactions: [
+          mockCashTransaction({ id: 't1', categoryId: 'c1' }),
+          mockCashTransaction({ id: 't2', categoryId: 'c1' }),
+          mockCashTransaction({
+            id: 't3',
+            categoryId: 'c1',
+            matchedTxnId: 't1',
+          }),
+        ],
       })
     );
+
+    expect(facade.countById().get('c1')).toBe(2);
   });
 
-  it('renames and removes by id', () => {
-    setup();
+  it('opens the shared dialog over an existing entry for a rename', () => {
+    const food = mockCategory({ id: 'c1', name: 'Lebensmittel' });
+    setup(
+      mockCashState({ categories: mockCashCategoryList({ items: [food] }) })
+    );
 
-    facade.rename('c1', 'Essen');
-    facade.remove('c2');
+    facade.showEditDialog(food);
 
+    const request = TestBed.inject(ItemDialogService).request();
+    expect(request?.listId).toBe(CASH_CATEGORIES_LIST_ID);
+    expect(request?.editMode).toBe('update');
+    expect(request?.item.name).toBe('Lebensmittel');
+  });
+
+  // One save command, two cash events: cash's add and rename carry different
+  // cascades, so the facade has to decide which this is.
+  it('routes a save to add for a new entry and to rename for a known one', () => {
+    const food = mockCategory({ id: 'c1', name: 'Lebensmittel' });
+    setup(
+      mockCashState({ categories: mockCashCategoryList({ items: [food] }) })
+    );
+
+    facade.saveCategory({ ...food, name: 'Essen' });
     expect(dispatch).toHaveBeenCalledWith(
       CashActions.updateCategory('c1', 'Essen')
     );
+
+    const fresh = mockCategory({ id: 'c9', name: 'Wohnen' });
+    facade.saveCategory(fresh);
+    expect(dispatch).toHaveBeenCalledWith(CashActions.addCategory(fresh));
+  });
+
+  it('removes by id', () => {
+    setup();
+
+    facade.removeCategory(mockCategory({ id: 'c2', name: 'Wohnen' }));
+
     expect(dispatch).toHaveBeenCalledWith(CashActions.removeCategory('c2'));
   });
 

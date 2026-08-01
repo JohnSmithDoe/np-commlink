@@ -20,15 +20,6 @@ describe('ItemListToolbarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('emits the selected display mode', () => {
-    const emitted: string[] = [];
-    component.selectDisplayMode.subscribe((v) => emitted.push(v));
-
-    component.selectDisplayMode.emit('categories');
-
-    expect(emitted).toEqual(['categories']);
-  });
-
   it('emits the selected sort mode', () => {
     const emitted: string[] = [];
     component.selectSortMode.subscribe((v) => emitted.push(v));

@@ -42,11 +42,28 @@ export default defineConfig({
      * about the app.
      */
     coverage: {
+      /**
+       * Templates are excluded, so the floor measures the code it is meant to
+       * protect. 62 of them were in the denominator at 39% statements and 1.4%
+       * functions, against 91% and 84% for the `.ts` files beside them — which
+       * dragged the aggregate to 76/73.6 and left roughly eight points of room
+       * for TypeScript to regress into before any threshold spoke.
+       *
+       * Their coverage is not a gap being hidden. Nothing here asserts rendered
+       * Ionic DOM (see the note above), so a template's statements are executed
+       * only incidentally, by the specs that happen to call `detectChanges()`.
+       * Rendered behaviour is the e2e suite's, and a number that moves with the
+       * incidental half is not a signal.
+       *
+       * The two i18n bundles go with them: `deck.catalog.spec.ts` imports them
+       * via `resolveJsonModule`, and a data file scores a free 100%.
+       */
+      exclude: ['**/*.html', 'public/i18n/*.json'],
       thresholds: {
-        statements: 70,
-        branches: 72,
-        functions: 68,
-        lines: 75,
+        statements: 88,
+        branches: 83,
+        functions: 80,
+        lines: 88,
       },
     },
   },

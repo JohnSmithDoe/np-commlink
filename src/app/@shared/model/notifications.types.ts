@@ -7,7 +7,7 @@ import { IBaseItem } from './base-item.types';
 // vocabulary (tracking's `TTrackingCommand`) and is the only thing that
 // interprets it; the label travels WITH the command so the inbox never has to
 // recognise one to render its CTA.
-export type TNotificationAction = {
+type TNotificationAction = {
   type: string;
   targetId: string;
   labelKey: TMarker;
@@ -18,7 +18,7 @@ export type TNotificationAction = {
 // exactly the rows carrying its own `owner`, and re-stamps `updatedAt` only where
 // `variant` changed. A one-off `notify` carries no origin, so no projection can
 // touch it.
-export type TNotificationOrigin = {
+type TNotificationOrigin = {
   owner: string;
   variant: string;
 };
@@ -27,7 +27,7 @@ export type INotification = IBaseItem & {
   body: string;
   icon: string;
   color: TColor;
-  status: 'new' | 'done';
+  status: 'open' | 'done';
   updatedAt: TTimestamp;
   origin?: TNotificationOrigin;
   action?: TNotificationAction;
@@ -65,6 +65,6 @@ export interface INotificationsState {
 // effect keeps TranslateService out of every producer.
 export interface IToastMessage {
   key: TMarker;
-  params?: Record<string, string | number>;
+  parameters?: Record<string, string | number>;
   color?: TColor;
 }

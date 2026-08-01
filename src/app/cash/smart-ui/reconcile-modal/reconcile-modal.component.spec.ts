@@ -1,8 +1,4 @@
-import { TestBed } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
-
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
+import { setupModalSpec } from '../../../@shared/testing/modal-spec';
 import {
   mockCashState,
   mockCashTransaction,
@@ -36,19 +32,10 @@ describe('CashReconcileModalComponent', () => {
   let dismiss: ReturnType<typeof vi.spyOn>;
 
   const setup = (transactions: ICashTransaction[]) => {
-    TestBed.configureTestingModule({
-      imports: [CashReconcileModalComponent],
-      providers: [
-        provideTestingProviders({ cash: mockCashState({ transactions }) }),
-      ],
-    });
-    dismiss = vi
-      .spyOn(TestBed.inject(ModalController), 'dismiss')
-      .mockResolvedValue(true);
-    dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
-    component = TestBed.createComponent(
-      CashReconcileModalComponent
-    ).componentInstance;
+    ({ component, dispatch, dismiss } = setupModalSpec(
+      CashReconcileModalComponent,
+      { cash: mockCashState({ transactions }) }
+    ));
     // `transaction` is a plain componentProp, not a signal, so `candidates()`
     // captures whatever is set at its first read — Ionic writes componentProps
     // before the first render, and this assignment stands in for that.

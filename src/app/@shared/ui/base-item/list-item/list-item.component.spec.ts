@@ -117,9 +117,9 @@ describe('ListItemComponent', () => {
 
   it('emits cart and closes sliding items', async () => {
     const carted: unknown[] = [];
-    component.cartItem.subscribe(() => carted.push(true));
+    component.startSwipe.subscribe(() => carted.push(true));
 
-    await component.emitCartItem();
+    await component.emitStartSwipe();
 
     expect(ionList.closeSlidingItems).toHaveBeenCalledTimes(1);
     expect(carted).toHaveLength(1);
@@ -139,12 +139,15 @@ describe('ListItemComponent', () => {
   // storage, so an unnamed one would be a nameless button (a11y R2).
   it('routes start drag to cart only once the host has named the action', async () => {
     const carted: unknown[] = [];
-    component.cartItem.subscribe(() => carted.push(true));
+    component.startSwipe.subscribe(() => carted.push(true));
 
     await component.deleteOrCartOnSwipe(dragEvent(-200));
     expect(carted).toHaveLength(0);
 
-    fixture.componentRef.setInput('cartActionLabel', 'grocery.a11y.buy-item');
+    fixture.componentRef.setInput('startSwipeAction', {
+      labelKey: 'grocery.a11y.buy-item',
+      icon: 'cart',
+    });
     await component.deleteOrCartOnSwipe(dragEvent(-200));
     expect(carted).toHaveLength(1);
   });

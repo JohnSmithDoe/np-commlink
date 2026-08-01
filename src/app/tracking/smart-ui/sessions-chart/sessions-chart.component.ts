@@ -4,13 +4,21 @@ import {
   computed,
   inject,
 } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
-import dayjs from 'dayjs';
 import { TrackingFacade } from '../../data';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
+import { localizedDayMonth } from '../../../@shared/util/formatting/date-format.utils';
+import { LanguageService } from '../../../@shared/util/theme/language.service';
 
 Chart.register(...registerables);
+
+// The remainder bucket's legend entry. It is named here, not in the selector
+// that computes it: a `createSelector` projector has no injector, so a label it
+// invents can only ever be in one hardcoded language.
+const REMAINDER_LABEL = marker('tracking.chart.other');
 
 @Component({
   selector: 'app-sessions-chart',
@@ -21,6 +29,8 @@ Chart.register(...registerables);
 })
 export class SessionsChartComponent {
   readonly #raw = inject(TrackingFacade).sessionsByDayAndName;
+  readonly #language = inject(LanguageService).language;
+  readonly #translate = inject(TranslateService);
   readonly #series = chartColors().series;
 
   readonly hasData = computed(() =>
@@ -30,9 +40,10 @@ export class SessionsChartComponent {
   readonly chartData = computed<ChartData<'bar'>>(() => {
     const { days, series } = this.#raw();
     return {
-      labels: days.map((d) => dayjs(d).format('DD.MM.')),
+      labels: days.map((d) => localizedDayMonth(d, this.#language())),
       datasets: series.map((s, index) => ({
-        label: s.name,
+        // A nameless entry is the remainder bucket — see `DailySeries`.
+        label: s.name ?? this.#translate.instant(REMAINDER_LABEL),
         data: s.hours,
         backgroundColor: this.#series[index % this.#series.length],
         borderWidth: 0,

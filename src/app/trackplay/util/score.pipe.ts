@@ -1,5 +1,5 @@
 import { inject, Pipe, PipeTransform } from '@angular/core';
-import { LanguageService } from '../../@shared/util/language.service';
+import { LanguageService } from '../../@shared/util/theme/language.service';
 
 /**
  * Formats a game score with the active language's thousands separators

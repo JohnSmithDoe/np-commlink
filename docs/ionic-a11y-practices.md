@@ -5,10 +5,11 @@ rule nor re-implement a behaviour the framework ships. Every rule below is eithe
 Ionic API docs or verified against the installed source (`@ionic/angular 8.8.x` / `ionicons 7.2.x`);
 where the two disagree, the source wins and the discrepancy is called out.
 
-**Seven of the eight rules below are enforced**, by this project's own eslint rule set in
-`eslint-rules/` — one rule per R-number, wired up in `eslint.config.js` (`docs/project-summary.md`
-§10). They have to be ours: `angular-eslint`'s `templateAccessibility` set keys off *native* elements
-and every control here is a custom element Ionic defines at runtime, so enabling that set alone
+**Seven of the nine rules below are enforced**, by this project's own eslint plugin,
+`eslint-plugin-commlink/` — one `commlink/a11y-*` rule per R-number, enabled through the plugin's
+self-scoping `configs.all` (`docs/testing.md`). They have to be ours: `angular-eslint`'s
+`templateAccessibility` set keys off *native* elements and every control here is a custom element
+Ionic defines at runtime, so enabling that set alone
 reported a clean pass over three genuinely unlabelled toolbar buttons. **R5 is the exception and
 always will be** — see it for why.
 
@@ -57,7 +58,7 @@ implementation-defined. `aria-hidden="true"` is therefore the default, not an op
 ## R2 — An icon-only button carries the name; a FAB always does
 
 The name goes on the interactive parent (R1), which for `ion-button` means `aria-label` /
-`aria-labelledby` or text of its own. Gated by `ionic-a11y/icon-only-control-has-name` — which checks
+`aria-labelledby` or text of its own. Gated by `commlink/a11y-icon-only-control-has-name` — which checks
 all three of the elements below, where the selector it replaced checked only `ion-button`.
 
 `ion-fab-button` needs the same:
@@ -71,7 +72,7 @@ The same applies to every other icon-only affordance Ionic does *not* name for u
 
 ## R3 — Every form control has a name of its own
 
-> "If no visible label is needed, developers should still supply an `aria-label` so the [control] is
+> "If no visible label is needed, developers should still supply an `aria-label` so the \[control] is
 > accessible to screen readers."
 > — [ion-input § Labels](https://ionicframework.com/docs/api/input#labels),
 > [ion-select § Labels](https://ionicframework.com/docs/api/select#labels)
@@ -183,6 +184,25 @@ visually-hidden span.
 This is the one rule below that is not Ionic-specific; it is here because a themed HUD is exactly the
 place where labels get attached to `<span>`s.
 
+## R9 — The viewport never locks zoom
+
+`src/index.html`'s viewport is `viewport-fit=cover, width=device-width, initial-scale=1.0` and grows
+no scale clamps. `maximum-scale=1.0` and `user-scalable=no` — both shipped by the Ionic starter this
+app began as — fail WCAG 2.2 SC 1.4.4 (Resize Text): a user who needs 200% has no way to get it, and
+pinch-zoom is the only magnifier many people have on a phone.
+
+They also bought nothing. iOS Safari has ignored `user-scalable=no` since iOS 10, which is the exact
+platform the flag was written for, so the line was inert where it mattered and an audit finding
+everywhere else.
+
+The trade-off accepted in exchange: the Android WebView will pinch-zoom the whole shell, chrome
+included, rather than only the content. A native app that wants content-only zoom has to opt in per
+surface — it is not something the viewport tag can express.
+
+**Not enforced by a rule.** `index.html` is not an Angular template, so the template parser the
+`commlink/a11y-*` rules read never sees it; there is exactly one viewport tag in the repo and a
+whole-repo gate for a single line is not worth its own rule.
+
 ## What Ionic already handles — do not re-implement
 
 - **Focus trapping in modals.** "When a modal is presented, focus will be trapped inside of the
@@ -198,20 +218,21 @@ place where labels get attached to `<span>`s.
 
 ## Review checklist
 
-The `ionic-a11y/*` rule that enforces each one, from `eslint-rules/`. A rule reports what it can
+The `commlink/a11y-*` rule that enforces each one, from `eslint-plugin-commlink/`. A rule reports what it can
 *decide*: where a fact is unknowable from the source — options built by a helper, a spread — it passes
 rather than guesses, because a gate that reports what it cannot know teaches people to disable it.
 
 | # | Rule | Enforced by |
 |---|---|---|
-| R1 | every `ion-icon` has `aria-hidden="true"` or an `aria-label` | `icon-is-hidden-or-named` |
-| R2 | icon-only `ion-button` / `ion-fab-button` / `ion-item-option` has an accessible name | `icon-only-control-has-name` |
-| R3 | every `ion-input`/`ion-select`/`ion-textarea`/`ion-checkbox`/`ion-toggle`/`ion-range` has `label`, slotted text, or `aria-label` | `form-control-has-label` |
-| R4 | every `ion-modal` has `aria-label`; every action sheet / loading has a header or `htmlAttributes` name | `overlay-has-name` (templates) + `overlay-options-have-name` (`*Ctrl.create({…})`) |
+| R1 | every `ion-icon` has `aria-hidden="true"` or an `aria-label` | `commlink/a11y-icon-is-hidden-or-named` |
+| R2 | icon-only `ion-button` / `ion-fab-button` / `ion-item-option` has an accessible name | `commlink/a11y-icon-only-control-has-name` |
+| R3 | every `ion-input`/`ion-select`/`ion-textarea`/`ion-checkbox`/`ion-toggle`/`ion-range` has `label`, slotted text, or `aria-label` | `commlink/a11y-form-control-has-label` |
+| R4 | every `ion-modal` has `aria-label`; every action sheet / loading has a header or `htmlAttributes` name | `commlink/a11y-overlay-has-name` (templates) + `commlink/a11y-overlay-options-have-name` (`*Ctrl.create({…})`) |
 | R5 | no action reachable only by swipe or drag | **nothing — not decidable, see R5** |
-| R6 | no toast button is the only path to its action | `no-actionable-toast-button` (flags a button with a `handler`) |
-| R7 | `ion-menu-button` / `ion-back-button` names are translated | `builtin-name-is-translated` |
-| R8 | no `aria-label` on a roleless `<div>`/`<span>` | `aria-label-needs-role` |
+| R6 | no toast button is the only path to its action | `commlink/a11y-no-actionable-toast-button` (flags a button with a `handler`) |
+| R7 | `ion-menu-button` / `ion-back-button` names are translated | `commlink/a11y-builtin-name-is-translated` |
+| R8 | no `aria-label` on a roleless `<div>`/`<span>` | `commlink/a11y-aria-label-needs-role` |
+| R9 | the viewport never clamps scale | **nothing — `index.html` is not a template, see R9** |
 
 Sources: Ionic API docs for
 [icon](https://ionicframework.com/docs/api/icon#accessibility),

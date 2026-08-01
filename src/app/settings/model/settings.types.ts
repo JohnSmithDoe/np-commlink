@@ -14,4 +14,9 @@ export interface ISettingsState {
   // User-picked accent override, keyed by theme — unset falls back to that
   // theme's built-in swatch. Additive/optional: no persistence migration.
   customAccents?: Partial<Record<TTheme, IAccentColors>>;
+  // Emoji the user has actually saved into an item name, most recent first — a
+  // cross-cutting preference with no owning domain, like the two above. Written
+  // via the published `EmojiActions.used` contract, read back through
+  // `EmojiRecentsService`. Additive/optional: no persistence migration.
+  recentEmojis?: string[];
 }

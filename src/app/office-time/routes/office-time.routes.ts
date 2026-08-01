@@ -9,7 +9,7 @@ export const officeTimeRoutes: Routes = [
     children: [
       {
         path: '',
-        data: { title: marker('page-title.office-time') },
+        title: marker('page-title.office-time'),
         loadComponent: () =>
           import('../feature/office-time-page/office-time.page').then(
             (m) => m.OfficeTimePage
@@ -21,7 +21,7 @@ export const officeTimeRoutes: Routes = [
         // holds only the app-global theme. Reached from the office-time page's
         // gear.
         path: 'settings',
-        data: { title: marker('page-title.office-time-settings') },
+        title: marker('page-title.office-time-settings'),
         loadComponent: () =>
           import('../feature/office-time-settings-page/office-time-settings.page').then(
             (m) => m.OfficeTimeSettingsPage

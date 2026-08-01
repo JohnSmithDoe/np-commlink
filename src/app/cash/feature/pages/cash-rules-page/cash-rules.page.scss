@@ -1,0 +1,13 @@
+@use '../../../../../theme/cash';
+
+// Categories + rules editor (P3).
+.cash-hint {
+  @include cash.hint(0.5rem 1rem);
+}
+
+// The move up/down controls sit tight against the row start.
+ion-buttons[slot='start'] ion-button {
+  --padding-start: 0.15rem;
+  --padding-end: 0.15rem;
+  margin: 0;
+}

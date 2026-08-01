@@ -17,8 +17,8 @@ import {
   trash,
 } from 'ionicons/icons';
 import { ITrackingItem } from '../../model/tracking.types';
-import { LIST_FACADE } from '../../../@shared/util/list/list-page.facade';
-import { ListPageComponent } from '../../../@shared/feature/list-page/list-page.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { TrackingFacade, TrackingListPageFacade } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
@@ -71,9 +71,9 @@ export class TrackingPage implements ViewWillEnter {
   // tracking, so we dispatch the command and immediately strip the params
   // (replaceUrl) so a reload/re-enter can't re-fire the toggle.
   #applyNotificationCommand(): void {
-    const params = this.#route.snapshot.queryParamMap;
-    const cmd = params.get('cmd');
-    const target = params.get('target');
+    const queryParameters = this.#route.snapshot.queryParamMap;
+    const cmd = queryParameters.get('cmd');
+    const target = queryParameters.get('target');
     if (!cmd || !target) return;
     this.#tracking.applyNotificationCommand(cmd, target);
     void this.#router.navigate([], {

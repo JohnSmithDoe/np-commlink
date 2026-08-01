@@ -74,7 +74,9 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly rounds = this.#facade.roundsByGame(this.id);
   readonly scores = this.#facade.scoresByGame(this.id);
   readonly result = this.#facade.resultByGame(this.id);
-  readonly winner = this.#facade.winnerByGame(this.id);
+  // The ranking's head — reading it off the result already held avoids computing
+  // every score a second time through an independently-memoized selector.
+  readonly winner = computed(() => this.result()[0]);
 
   // Column order is the game's own player order; names resolved via the map.
   readonly playerIds = computed<TID[]>(() => this.game()?.players ?? []);

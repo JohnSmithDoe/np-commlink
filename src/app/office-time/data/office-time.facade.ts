@@ -2,7 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import { DashboardSettingsType } from '../model/office-time.types';
-import { OfficeTimeActions } from './actions/office-time.actions';
+import { OfficeTimeActions } from './office-time.actions';
 import {
   selectDashboardItems,
   selectDashboardSettings,
@@ -11,14 +11,14 @@ import {
   selectHolidays,
   selectOfficedays,
   selectTargetOfficeDaysPerWeek,
-} from './selectors/office-time.selector';
+} from './office-time.selector';
+import { selectStatsKeys } from './office-time-stats.selector';
 import {
-  selectDashboardStatsMonth,
-  selectDashboardStatsQuarter,
-  selectDashboardStatsWeek,
-  selectDashboardStatsYear,
-} from './selectors/office-time-stats.selector';
-import { dayjsToday, isOfficeDay } from '../util/office-time.utils';
+  calculateStats,
+  dayjsToday,
+  isOfficeDay,
+  TimePeriod,
+} from '../util/office-time.utils';
 
 /**
  * The `office-time` (Soft-clock dashboard) domain facade — the single NgRx
@@ -53,10 +53,16 @@ export class OfficeTimeFacade {
     isOfficeDay(this.#today(), this.officedays())
   );
 
-  readonly statsWeek = this.#store.selectSignal(selectDashboardStatsWeek);
-  readonly statsMonth = this.#store.selectSignal(selectDashboardStatsMonth);
-  readonly statsQuarter = this.#store.selectSignal(selectDashboardStatsQuarter);
-  readonly statsYear = this.#store.selectSignal(selectDashboardStatsYear);
+  // The same argument as `todayIsOfficeDay` above, and the cards were on the
+  // wrong side of it: every stat is a function of the slice AND of what day it
+  // is, so only the day-key half can be a memoized selector. Read as one, a
+  // resumed session showed a live "log today" button beside a month card still
+  // reporting the month that had just ended.
+  readonly #statsKeys = this.#store.selectSignal(selectStatsKeys);
+  readonly statsWeek = this.#statsFor('week');
+  readonly statsMonth = this.#statsFor('month');
+  readonly statsQuarter = this.#statsFor('quarter');
+  readonly statsYear = this.#statsFor('year');
 
   constructor() {
     document.addEventListener('visibilitychange', () => {
@@ -75,6 +81,12 @@ export class OfficeTimeFacade {
   #refreshToday(): void {
     const today = dayjsToday();
     if (!today.isSame(this.#today(), 'day')) this.#today.set(today);
+  }
+
+  #statsFor(period: TimePeriod) {
+    return computed(() =>
+      calculateStats(period, this.#statsKeys(), this.#today())
+    );
   }
 
   // Mark today as an office day (the dash button); the "today" timestamp is a

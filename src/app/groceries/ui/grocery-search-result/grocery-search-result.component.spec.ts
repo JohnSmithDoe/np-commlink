@@ -16,7 +16,6 @@ function mockResults(
 ): IGrocerySearchResult<IStorageItem> {
   return {
     listItems: [],
-    hasSearchTerm: true,
     searchTerm: 'su',
     products: [],
     storageItems: [],

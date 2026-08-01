@@ -32,10 +32,22 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
+  // Two projects rather than one matrix: the suite mirrors the Capacitor/Android
+  // target, so everything runs mobile EXCEPT the surfaces gated to desktop. The
+  // emoji picker is one (`Platform.is('desktop')` — a mobile keyboard already
+  // has one), and its trigger simply does not render on a Pixel 5, so its spec
+  // can only ever run in the desktop project. Partitioned by file rather than
+  // run twice, so the suite stays a single pass.
   projects: [
     {
       name: 'mobile-chromium',
       use: { ...devices['Pixel 5'] },
+      testIgnore: '**/desktop/**',
+    },
+    {
+      name: 'desktop-chromium',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/desktop/**',
     },
   ],
 

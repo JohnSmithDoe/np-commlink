@@ -32,8 +32,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkOutline, createOutline, trashOutline } from 'ionicons/icons';
 import {
+  matcherFor,
   matchesSearchExactly,
-  matchesSearchString,
   uuidv4,
 } from '../../../util/app.utils';
 import { ICategory, TCategoryId } from '../../../model/category.types';
@@ -60,7 +60,6 @@ import { ICategory, TCategoryId } from '../../../model/category.types';
   selector: 'app-categories-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './categories-dialog.component.html',
-  styleUrls: ['./categories-dialog.component.scss'],
   imports: [
     TranslatePipe,
     IonModal,
@@ -115,9 +114,9 @@ export class CategoriesDialogComponent {
   readonly filteredCategories = computed<ICategory[]>(() => {
     const query = this.searchQuery();
     const all = this.categories();
-    return query.length === 0
-      ? all
-      : all.filter((cat) => matchesSearchString(cat.name, query));
+    if (query.length === 0) return all;
+    const matches = matcherFor(query);
+    return all.filter((cat) => matches(cat.name));
   });
 
   // True when the typed query already names an existing category (so we hide the

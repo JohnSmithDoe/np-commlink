@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { CATEGORIES_FACADE } from '../../@shared/util/categories/categories-page.facade';
+import { provideCategoryListFacade } from '../../@shared/util/categories/category-list.facade';
 import { CashCategoriesPageFacade, cashContext } from '../data';
 
 /**
@@ -19,54 +19,53 @@ export const cashRoutes: Routes = [
     children: [
       {
         path: '',
-        data: { title: marker('page-title.cash') },
+        title: marker('page-title.cash'),
         loadComponent: () =>
-          import('../feature/cash-page/cash.page').then((m) => m.CashPage),
+          import('../feature/pages/cash-page/cash.page').then(
+            (m) => m.CashPage
+          ),
       },
       {
         path: 'rules',
-        data: { title: marker('page-title.cash-rules') },
+        title: marker('page-title.cash-rules'),
         loadComponent: () =>
-          import('../feature/cash-rules-page/cash-rules.page').then(
+          import('../feature/pages/cash-rules-page/cash-rules.page').then(
             (m) => m.CashRulesPage
           ),
       },
       {
         path: 'report',
-        data: { title: marker('page-title.cash-report') },
+        title: marker('page-title.cash-report'),
         loadComponent: () =>
-          import('../feature/cash-report-page/cash-report.page').then(
+          import('../feature/pages/cash-report-page/cash-report.page').then(
             (m) => m.CashReportPage
           ),
       },
       {
-        // Cash reuses the shared manage-categories page (replaces the rules
-        // page's old inline palette).
+        // The catalog on the shared LIST page.
         path: 'categories',
-        data: { title: marker('page-title.categories') },
-        providers: [
-          { provide: CATEGORIES_FACADE, useExisting: CashCategoriesPageFacade },
-        ],
+        title: marker('page-title.categories'),
+        providers: provideCategoryListFacade(CashCategoriesPageFacade),
         loadComponent: () =>
-          import('../../@shared/feature/edit-categories-page/edit-categories.page').then(
-            (m) => m.EditCategoriesPage
+          import('../../@shared/feature/categories/category-list-page/category-list.page').then(
+            (m) => m.CategoryListPage
           ),
       },
       {
         // Category→items drill: a category's transactions (cash's `?filter`
         // equivalent). Two segments, so it never collides with `:accountId`.
         path: 'category/:categoryId',
-        data: { title: marker('page-title.categories') },
+        title: marker('page-title.categories'),
         loadComponent: () =>
-          import('../feature/cash-category-page/cash-category.page').then(
+          import('../feature/pages/cash-category-page/cash-category.page').then(
             (m) => m.CashCategoryPage
           ),
       },
       {
         path: ':accountId',
-        data: { title: marker('page-title.cash') },
+        title: marker('page-title.cash'),
         loadComponent: () =>
-          import('../feature/cash-account-page/cash-account.page').then(
+          import('../feature/pages/cash-account-page/cash-account.page').then(
             (m) => m.CashAccountPage
           ),
       },

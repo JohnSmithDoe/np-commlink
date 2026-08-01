@@ -1,13 +1,14 @@
 @use '../../../../theme/dashboard';
 :host {
-  @include dashboard.dashboard-item();
+  @include dashboard.dashboard-item;
 }
-@include dashboard.dashboard-item-card();
+@include dashboard.dashboard-item-card;
+// Ionic's ion-card-content is 0.875rem; this grid is body copy, not card note.
 .dash-stats-grid {
-  font-size: 1rem;
+  font-size: var(--fs-body);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 0 1rem;
+  gap: 0 1rem;
   padding: 0;
 
   & > *:nth-child(odd) {

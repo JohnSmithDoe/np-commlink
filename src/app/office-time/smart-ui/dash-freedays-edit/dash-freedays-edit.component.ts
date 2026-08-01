@@ -5,15 +5,15 @@ import {
   input,
 } from '@angular/core';
 import {
+  DatetimeCustomEvent,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonDatetime,
-  DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
 import { Dayjs } from 'dayjs';
-import { LanguageService } from '../../../@shared/util/language.service';
+import { LanguageService } from '../../../@shared/util/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
 import { dayjsToString, holidayHighlights } from '../../util/office-time.utils';
 import { DateTimeHighlight } from '../../model/office-time.types';
@@ -32,10 +32,7 @@ export class DashFreedaysEditComponent {
   readonly title = input<string | undefined>();
   readonly freedays = input<Array<string>, Array<Dayjs> | undefined | null>(
     [],
-    {
-      transform: (value) =>
-        (value ?? []).map((s) => dayjsToString(s)).filter(Boolean),
-    }
+    { transform: (value) => (value ?? []).map((day) => dayjsToString(day)) }
   );
 
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(

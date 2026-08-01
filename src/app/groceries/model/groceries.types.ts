@@ -3,6 +3,7 @@ import {
   IShoppingState,
   IStorageState,
 } from './grocery-list.types';
+import { ICategoryList } from '../../@shared/model/category.types';
 import { IListSettings } from './list-settings.types';
 import { IRecipesState } from './recipe.types';
 
@@ -21,4 +22,7 @@ export type IGroceriesState = {
   shopping: IShoppingState;
   recipes: IRecipesState;
   listSettings: IListSettings;
+  // ONE catalog for all three lists — it used to be copied into each of them,
+  // kept in step only by every list reducer reacting to the same event.
+  categories: ICategoryList;
 };

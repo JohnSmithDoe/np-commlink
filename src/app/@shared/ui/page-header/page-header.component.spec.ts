@@ -28,14 +28,6 @@ describe('PageHeaderComponent', () => {
     expect(title.textContent).toContain('page-title.storage');
   });
 
-  it('reflects the color onto the ion-toolbar', () => {
-    fixture.componentRef.setInput('color', 'storage');
-    fixture.detectChanges();
-
-    const toolbar = getByTestId(fixture, 'page-header-toolbar');
-    expect(toolbar['color']).toBe('storage');
-  });
-
   it('shows the add button by default and hides it when hideButtons is set', () => {
     fixture.detectChanges();
     expect(queryByTestId(fixture, 'page-header-add')).not.toBeNull();

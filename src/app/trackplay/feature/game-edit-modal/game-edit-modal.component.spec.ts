@@ -1,7 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 
 import { IGame } from '../../model/trackplay.types';
 import {
@@ -9,7 +7,7 @@ import {
   mockPlayer,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
+import { setupModalSpec } from '../../../@shared/testing/modal-spec';
 import { TrackplayActions } from '../../data';
 import { TrackplayGameEditModalComponent } from './game-edit-modal.component';
 
@@ -40,17 +38,10 @@ describe('TrackplayGameEditModalComponent', () => {
       .map((action) => action.game as IGame);
 
   const setup = (state = mockTrackplayState()) => {
-    TestBed.configureTestingModule({
-      imports: [TrackplayGameEditModalComponent],
-      providers: [provideTestingProviders({ trackplay: state })],
-    });
-    dismiss = vi
-      .spyOn(TestBed.inject(ModalController), 'dismiss')
-      .mockResolvedValue(true);
-    dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
-    component = TestBed.createComponent(
-      TrackplayGameEditModalComponent
-    ).componentInstance;
+    ({ component, dispatch, dismiss } = setupModalSpec(
+      TrackplayGameEditModalComponent,
+      { trackplay: state }
+    ));
   };
 
   it('dispatches createGame in create mode', () => {

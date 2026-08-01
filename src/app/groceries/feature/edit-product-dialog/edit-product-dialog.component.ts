@@ -44,7 +44,6 @@ import { BaseGroceryEditItemDialog } from '../base-grocery-edit-item-dialog';
     ItemEditModalComponent,
   ],
   templateUrl: './edit-product-dialog.component.html',
-  styleUrl: './edit-product-dialog.component.scss',
 })
 export class EditProductDialogComponent extends BaseGroceryEditItemDialog<IProduct> {
   protected blank(): IProduct {
@@ -52,7 +51,7 @@ export class EditProductDialogComponent extends BaseGroceryEditItemDialog<IProdu
   }
 
   protected readonly listId: TGroceryListId = '_products';
-  readonly categories = this.facade.productsCategories;
+  readonly categories = this.facade.catalog;
   readonly siblings = this.facade.productItems;
 
   protected save(item: IProduct): void {

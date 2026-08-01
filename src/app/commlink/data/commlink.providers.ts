@@ -1,17 +1,18 @@
 import { provideEffects } from '@ngrx/effects';
 import { provideState } from '@ngrx/store';
-import { bootHydrationProvider } from '../../@shared/data/boot-hydration.provider';
+import { bootHydrationProvider } from '../../@shared/data/persisted-states/boot-hydration.provider';
 import {
   mergeContexts,
   providePersistedContext,
   TContextBundle,
-} from '../../@shared/data/persisted-context.provider';
-import { DashboardReadModelActions } from './actions/dashboard.actions';
-import { DeckActions } from './actions/deck.actions';
-import { DashboardEffects } from './effects/dashboard.effects';
-import { dashboardReducer } from './reducer/dashboard.reducer';
-import { deckReducer } from './reducer/deck.reducer';
-import { selectDeckState } from './selectors/deck.selector';
+} from '../../@shared/data/persisted-states/persisted-context.provider';
+import { DashboardReadModelActions } from './dashboard/dashboard.actions';
+import { DeckActions } from './deck/deck.actions';
+import { DashboardEffects } from './dashboard/dashboard.effects';
+import { dashboardReducer } from './dashboard/dashboard.reducer';
+import { deckReducer } from './deck/deck.reducer';
+import { DASHBOARD_STATE_KEY } from './dashboard/dashboard.selector';
+import { DECK_STATE_KEY, selectDeckState } from './deck/deck.selector';
 
 /**
  * State + effects for the commlink-owned dashboard read-model.
@@ -34,7 +35,7 @@ import { selectDeckState } from './selectors/deck.selector';
  */
 const dashboardContext: TContextBundle = {
   providers: [
-    provideState('dashboard', dashboardReducer),
+    provideState(DASHBOARD_STATE_KEY, dashboardReducer),
     provideEffects(DashboardEffects),
     bootHydrationProvider(DashboardReadModelActions.load),
   ],
@@ -51,7 +52,7 @@ const dashboardContext: TContextBundle = {
  * `loaded` itself), so a new command persists without being listed twice.
  */
 const deckContext = providePersistedContext({
-  key: 'deck',
+  key: DECK_STATE_KEY,
   reducer: deckReducer,
   lifecycle: DeckActions,
   select: selectDeckState,

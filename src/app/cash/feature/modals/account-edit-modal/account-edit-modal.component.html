@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        {{ 'cash.action.cancel' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{
+        (isEdit()
+          ? 'cash.account-dialog.title-edit'
+          : 'cash.account-dialog.title-new'
+        ) | translate
+      }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button [strong]="true" [disabled]="!canSave()" (click)="confirm()">
+        {{ 'cash.action.save' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list lines="full">
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        label="{{ 'cash.label.name' | translate }}"
+        [clearInput]="true"
+        [formField]="form.name"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        label="{{ 'cash.label.kind' | translate }}"
+        [formField]="form.kind"
+      >
+        @for (k of kinds; track k) {
+          <ion-select-option [value]="k">
+            {{ kindLabelKeys[k] | translate }}
+          </ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        label="{{ 'cash.label.bank' | translate }}"
+        [formField]="form.bank"
+      >
+        <ion-select-option value="">{{
+          'cash.bank.none' | translate
+        }}</ion-select-option>
+        @for (b of banks; track b) {
+          <ion-select-option [value]="b">{{
+            bankLabelKeys[b] | translate
+          }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <app-money-input
+      label="{{ 'cash.label.opening-balance' | translate }}"
+      [formField]="form.openingBalanceCents"
+    />
+    @if (balanceInvalid()) {
+      <ion-note color="danger" class="sr-field-note">
+        {{ 'cash.account-dialog.balance-invalid' | translate }}
+      </ion-note>
+    }
+
+    <ion-item>
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'cash.label.opening-date' | translate }}"
+        [formField]="form.openingDate"
+      />
+    </ion-item>
+  </ion-list>
+</ion-content>

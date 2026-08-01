@@ -69,10 +69,8 @@ export class OfficeTimePage implements ViewWillEnter {
 
   readonly dashboardItems = this.#facade.dashboardItems;
   readonly visibleDashboardItems = computed(() => {
-    const items = this.dashboardItems();
     const settings = this.dashboardSettings();
-    if (!items || !settings) return [];
-    return items.filter((item) => {
+    return this.dashboardItems().filter((item) => {
       const flag = DASHBOARD_CARD_VISIBILITY[item];
       return flag ? settings[flag] : true;
     });

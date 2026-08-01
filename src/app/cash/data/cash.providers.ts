@@ -1,11 +1,12 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { createMetric } from '../../@shared/data/effects/persisted-slice.effects.factory';
-import { CashActions } from './actions/cash.actions';
-import { cashReducer } from './reducer/cash.reducer';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
+import { CashActions } from './cash.actions';
+import { cashReducer } from './cash.reducer';
 import {
+  CASH_STATE_KEY,
   selectCashBalanceEuros,
   selectCashState,
-} from './selectors/cash.selector';
+} from './cash.selector';
 
 /**
  * The `cash` bounded context, registered on every `/cash*` route.
@@ -14,7 +15,7 @@ import {
  * so it registers on its own, and each sibling route re-registers it.
  */
 export const cashContext = providePersistedContext({
-  key: 'cash',
+  key: CASH_STATE_KEY,
   reducer: cashReducer,
   lifecycle: CashActions,
   select: selectCashState,

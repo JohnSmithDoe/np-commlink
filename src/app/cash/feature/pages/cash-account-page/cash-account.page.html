@@ -1,0 +1,123 @@
+<app-cash-detail-header [heading]="account()?.name ?? ''" (back)="goBack()">
+  <ion-buttons slot="end" toolbar>
+    @if (canImport()) {
+      <ion-button
+        (click)="csv.click()"
+        [attr.aria-label]="'cash.a11y.import-csv' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="cloud-upload-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    }
+    <ion-button
+      (click)="editAccount()"
+      [attr.aria-label]="'cash.a11y.edit-account' | translate"
+    >
+      <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
+    </ion-button>
+    <ion-button
+      (click)="addTransaction()"
+      [attr.aria-label]="'cash.a11y.add-transaction' | translate"
+    >
+      <ion-icon slot="icon-only" name="add-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-cash-detail-header>
+
+<input
+  #csv
+  type="file"
+  accept=".csv,text/csv"
+  hidden
+  id="csv-input"
+  (change)="importCsv($event)"
+/>
+
+<ion-content>
+  @if (account()) {
+    <header class="cash-networth ion-padding-horizontal">
+      <span class="cash-networth__label">{{ 'cash.balance' | translate }}</span>
+      <span class="cash-networth__value">{{ balanceCents() | moneyEur }}</span>
+    </header>
+
+    @if (transactions().length) {
+      <ion-list lines="full">
+        @for (txn of transactions(); track txn.id) {
+          <ion-item-sliding>
+            <ion-item
+              [button]="true"
+              [detail]="false"
+              (click)="editTransaction(txn)"
+            >
+              <ion-label>
+                <h2>{{ txn.description }}</h2>
+                <p>
+                  {{ txn.dateISO | localizedDate }}
+                  @if (txn.categoryId) {
+                    · {{ categoryName(txn.categoryId) }}
+                  }
+                  @if (txn.status === 'pending') {
+                    · {{ 'cash.txn.pending' | translate }}
+                  }
+                </p>
+              </ion-label>
+              <ion-note
+                slot="end"
+                class="cash-txn__amount"
+                [class.cash-txn__amount--out]="txn.amountCents < 0"
+                [class.cash-txn__amount--in]="txn.amountCents > 0"
+              >
+                {{ txn.amountCents | moneyEur }}
+              </ion-note>
+            </ion-item>
+            @if (txn.status === 'pending') {
+              <ion-item-options side="start">
+                <ion-item-option
+                  (click)="reconcile(txn)"
+                  [attr.aria-label]="'cash.a11y.reconcile' | translate"
+                >
+                  <ion-icon
+                    slot="icon-only"
+                    name="swap-horizontal-outline"
+                    aria-hidden="true"
+                  />
+                </ion-item-option>
+              </ion-item-options>
+            } @else if (txn.reconciledManualId) {
+              <ion-item-options side="start">
+                <ion-item-option
+                  (click)="detachReconcile(txn)"
+                  [attr.aria-label]="'cash.a11y.detach' | translate"
+                >
+                  <ion-icon
+                    slot="icon-only"
+                    name="unlink-outline"
+                    aria-hidden="true"
+                  />
+                </ion-item-option>
+              </ion-item-options>
+            }
+            <ion-item-options side="end">
+              <ion-item-option
+                color="danger"
+                (click)="confirmDelete(txn)"
+                [attr.aria-label]="'cash.a11y.delete-transaction' | translate"
+              >
+                <ion-icon
+                  slot="icon-only"
+                  name="trash-outline"
+                  aria-hidden="true"
+                />
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+      </ion-list>
+    } @else {
+      <p class="cash-empty">{{ 'cash.txns.empty' | translate }}</p>
+    }
+  }
+</ion-content>

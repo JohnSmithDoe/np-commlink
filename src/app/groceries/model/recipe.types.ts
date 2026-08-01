@@ -1,6 +1,5 @@
 import { IBaseItem } from '../../@shared/model/base-item.types';
-import { ICategory } from '../../@shared/model/category.types';
-import { IItemList, TItemListMode } from '../../@shared/model/item-list.types';
+import { IItemList } from '../../@shared/model/item-list.types';
 import { TItemUnit } from './grocery-list.types';
 
 // The recipe book (SOYKAF) — an aggregate of this context rather than a domain of
@@ -30,11 +29,7 @@ export interface IRecipe extends IBaseItem {
   prepMinutes: number;
 }
 
-export type TRecipesList = IItemList<IRecipe> & {
-  id: typeof RECIPES_LIST_ID;
-  categories: ICategory[];
-  mode: TItemListMode;
-};
+type TRecipesList = IItemList<IRecipe> & { id: typeof RECIPES_LIST_ID };
 
 export type IRecipesState = Readonly<TRecipesList>;
 

@@ -1,78 +1,75 @@
 @let stats = data();
-@if (stats) {
-  <ion-card>
-    @if (title()) {
-      <ion-card-header>
-        <ion-card-title>{{ title() }}</ion-card-title>
-      </ion-card-header>
+<ion-card>
+  @if (title()) {
+    <ion-card-header>
+      <ion-card-title>{{ title() }}</ion-card-title>
+    </ion-card-header>
+  }
+  <ion-card-content>
+    @if (showPercentage()) {
+      <app-dash-percentage [stats]="stats" />
     }
-    <ion-card-content>
-      @if (showPercentage()) {
-        <app-dash-percentage [stats]="stats" />
-      }
-      <div class="dash-stats-grid">
-        <span>
-          {{ 'office-time.page.stats.officedays.label' | translate }}
-        </span>
-        <span>
+    <div class="dash-stats-grid">
+      <span>
+        {{ 'office-time.page.stats.officedays.label' | translate }}
+      </span>
+      <span>
+        {{
+          'office-time.page.stats.officedays'
+            | translate: { value: stats.officedays, target: stats.targetdays }
+        }}
+      </span>
+      <span>
+        {{ 'office-time.page.stats.workdays.label' | translate }}
+      </span>
+      <span>
+        @if (stats.workdaysTotal !== stats.workdays) {
           {{
-            'office-time.page.stats.officedays'
-              | translate: { value: stats.officedays, target: stats.targetdays }
+            'office-time.page.stats.workdays'
+              | translate: { value: stats.workdays, total: stats.workdaysTotal }
           }}
-        </span>
-        <span>
-          {{ 'office-time.page.stats.workdays.label' | translate }}
-        </span>
-        <span>
-          @if (stats.workdaysTotal !== stats.workdays) {
-            {{
-              'office-time.page.stats.workdays'
-                | translate
-                  : { value: stats.workdays, total: stats.workdaysTotal }
-            }}
-          } @else {
-            {{
-              'office-time.page.stats.workdays.single'
-                | translate: { value: stats.workdays }
-            }}
-          }
-        </span>
-        <span>
-          {{ 'office-time.page.stats.remaining.label' | translate }}
-        </span>
-        <span>
+        } @else {
           {{
-            'office-time.page.stats.remaining'
-              | translate: { value: stats.remaining }
+            'office-time.page.stats.workdays.single'
+              | translate: { value: stats.workdays }
           }}
-        </span>
-        <span>
-          {{ 'office-time.page.stats.freedays.label' | translate }}
-        </span>
-        <span>
+        }
+      </span>
+      <span>
+        {{ 'office-time.page.stats.remaining.label' | translate }}
+      </span>
+      <span>
+        {{
+          'office-time.page.stats.remaining'
+            | translate: { value: stats.remaining }
+        }}
+      </span>
+      <span>
+        {{ 'office-time.page.stats.freedays.label' | translate }}
+      </span>
+      <span>
+        {{
+          'office-time.page.stats.freedays'
+            | translate: { value: stats.freedays }
+        }}
+      </span>
+      <span>
+        {{ 'office-time.page.stats.holidays.label' | translate }}
+      </span>
+      <span>
+        @if (stats.holidaysNotOnWeekend !== stats.holidays) {
           {{
-            'office-time.page.stats.freedays'
-              | translate: { value: stats.freedays }
+            'office-time.page.stats.holidays'
+              | translate
+                : { value: stats.holidaysNotOnWeekend, total: stats.holidays }
           }}
-        </span>
-        <span>
-          {{ 'office-time.page.stats.holidays.label' | translate }}
-        </span>
-        <span>
-          @if (stats.holidaysNotOnWeekend !== stats.holidays) {
-            {{
-              'office-time.page.stats.holidays'
-                | translate
-                  : { value: stats.holidaysNotOnWeekend, total: stats.holidays }
-            }}
-          } @else {
-            {{
-              'office-time.page.stats.holidays.single'
-                | translate: { value: stats.holidays }
-            }}
-          }
-        </span>
-      </div>
-    </ion-card-content>
-  </ion-card>
-}
+        } @else {
+          {{
+            'office-time.page.stats.holidays.single'
+              | translate: { value: stats.holidays }
+          }}
+        }
+      </span>
+    </div>
+  </ion-card-content>
+</ion-card>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { BaseCategoryEditItemDialog } from '../../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
+import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ITaskItem, TASKS_LIST_ID } from '../../model/task.types';
 import { createTaskItem } from '../../util/task.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
@@ -29,7 +29,6 @@ import { ICategory, TCategoryId } from '../../../@shared/model/category.types';
     NumberInputComponent,
   ],
   templateUrl: './edit-task-item-dialog.component.html',
-  styleUrl: './edit-task-item-dialog.component.scss',
 })
 export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<ITaskItem> {
   protected blank(): ITaskItem {
@@ -38,7 +37,7 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<ITas
 
   readonly #facade = inject(TasksListPageFacade);
   protected readonly listId = TASKS_LIST_ID;
-  readonly categories = this.#facade.taskCategories;
+  readonly categories = this.#facade.catalog;
   readonly siblings = this.#facade.allItems;
 
   protected save(item: ITaskItem): void {
@@ -48,7 +47,7 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<ITas
     this.#facade.addCategory(category);
   }
   protected removeCategoryFromCatalog(categoryId: TCategoryId): void {
-    this.#facade.deleteCategory(categoryId);
+    this.#facade.removeCategory(categoryId);
   }
   protected renameCategoryInCatalog(id: TCategoryId, to: string): void {
     this.#facade.renameCategory(id, to);

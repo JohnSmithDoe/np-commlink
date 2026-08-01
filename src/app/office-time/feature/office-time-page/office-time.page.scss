@@ -1,9 +1,7 @@
 @use '../../../../theme/dashboard' as dashboard;
-@use 'sass:math' as math;
 
 :host {
   --app-content-max-width: 100%;
-  --app-content-bg: transparent;
 }
 
 $padding: 16px;

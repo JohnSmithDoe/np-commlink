@@ -16,7 +16,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TIonDragEvent } from '../../../@shared/model/app.types';
-import { IDataItem } from '../../model/tracking.types';
+import { IDataItem, TTrackingViewId } from '../../model/tracking.types';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 import { TimeFromDataItemPipe } from '../../util/time-from-data-item.pipe';
 import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
@@ -25,7 +25,6 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
   selector: 'app-stats-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stats-item.component.html',
-  styleUrls: ['./stats-item.component.scss'],
   imports: [
     IonItem,
     IonLabel,
@@ -41,7 +40,7 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
 })
 export class StatsItemComponent {
   readonly item = input.required<IDataItem>();
-  readonly view = input.required<string>();
+  readonly view = input.required<TTrackingViewId>();
   readonly ionList = input.required<IonList>();
 
   readonly deleteItem = output<void>();

@@ -1,6 +1,5 @@
 .section-header {
-  --background: var(--ion-color-step-100);
-  --color: var(--ion-text-color);
+  --background: var(--sr-panel);
 
   h2 {
     font-weight: 600;
@@ -10,7 +9,7 @@
   ion-note {
     margin-left: 0.5rem;
     font-weight: 400;
-    color: var(--ion-color-step-600);
+    color: var(--sr-text-dim);
   }
 }
 
@@ -23,6 +22,7 @@
   }
 
   ion-icon[slot='start'] {
+    /* stylelint-disable-next-line commlink/font-size-uses-scale -- icon box size, not type. */
     font-size: 1.75rem;
   }
 }

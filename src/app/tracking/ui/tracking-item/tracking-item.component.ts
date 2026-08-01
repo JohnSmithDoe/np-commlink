@@ -19,7 +19,10 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TColor } from '../../../@shared/model/app.types';
-import { ITrackingItem } from '../../model/tracking.types';
+import {
+  ITrackingItem,
+  TRACKING_STATE_LABEL_KEYS,
+} from '../../model/tracking.types';
 import { MinutesFromSecondsPipe } from '../../util/minutes-from-seconds.pipe';
 import { addIcons } from 'ionicons';
 import {
@@ -37,9 +40,6 @@ import {
 } from 'ionicons/icons';
 import { TimeWithUnitPipe } from '../../util/time-with-unit.pipe';
 
-marker('tracking.item.state.running');
-marker('tracking.item.state.stopped');
-marker('tracking.item.state.paused');
 marker('tracking.item.action.start');
 marker('tracking.item.action.pause');
 
@@ -65,6 +65,8 @@ marker('tracking.item.action.pause');
   ],
 })
 export class TrackingItemComponent {
+  readonly stateLabelKeys = TRACKING_STATE_LABEL_KEYS;
+
   readonly item = input.required<ITrackingItem>();
   readonly ionList = input.required<IonList>();
 
@@ -111,9 +113,6 @@ export class TrackingItemComponent {
         return 'warning';
       }
     }
-  }
-  getOppositeColor(item: ITrackingItem): TColor {
-    return item.state === 'running' ? 'warning' : 'success';
   }
   async emitResetItem() {
     await this.ionList().closeSlidingItems();

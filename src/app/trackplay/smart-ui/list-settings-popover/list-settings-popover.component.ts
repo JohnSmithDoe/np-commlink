@@ -16,10 +16,14 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { IGameConfig, ITrackplayConfig } from '../../model/trackplay.types';
+import {
+  IGameConfig,
+  IPlayersConfig,
+  ITrackplayConfig,
+} from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
-type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
+export type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
 
 /**
  * Sort / filter settings, presented via PopoverController. `mode` (an imperative
@@ -87,8 +91,8 @@ export class TrackplayListSettingsPopoverComponent {
     this.#dispatch({ filter: value });
   }
 
-  setGamesDir(value: 'asc' | 'desc'): void {
-    this.#dispatch({ dir: value });
+  setGamesDirection(value: 'asc' | 'desc'): void {
+    this.#dispatch({ direction: value });
   }
 
   setGamesSort(value: IGameConfig['sort']): void {
@@ -99,11 +103,11 @@ export class TrackplayListSettingsPopoverComponent {
     this.#facade.updatePlayersConfig({ filter: value });
   }
 
-  setPlayersDir(value: 'asc' | 'desc'): void {
-    this.#facade.updatePlayersConfig({ dir: value });
+  setPlayersDirection(value: IPlayersConfig['direction']): void {
+    this.#facade.updatePlayersConfig({ direction: value });
   }
 
-  setPlayersSort(value: 'name' | 'date' | 'last'): void {
+  setPlayersSort(value: IPlayersConfig['sort']): void {
     this.#facade.updatePlayersConfig({ sort: value });
   }
 }

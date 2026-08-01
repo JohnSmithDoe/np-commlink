@@ -11,16 +11,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    // The one gate this repo lacked: nine dead imports had accumulated silently,
-    // because eslint configures no `no-unused-vars` either. A dead import is
-    // load-bearing information — it is how a deleted describe block or a retired
-    // helper announces itself.
     "noUnusedLocals": true,
-    // An index read is a guess about length, not a fact the type system had.
-    // The code was already written defensively for this (`cols[DATE] ?? ''`,
-    // `ladder[from - 1]` behind an `if`), so the flag makes an existing
-    // discipline structural rather than habitual — a missed guard is now a
-    // compile error instead of an `undefined` that reaches a reducer.
     "noUncheckedIndexedAccess": true,
     "sourceMap": true,
     "declaration": false,
@@ -31,7 +22,12 @@
     "target": "es2022",
     "lib": ["ES2023", "DOM", "DOM.Iterable", "DOM.AsyncIterable"],
     "module": "es2020",
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    // Pinned rather than left to auto-inclusion, because lint reads `src/**`
+    // through *this* project (see the note on `references`) while the build
+    // reads tsconfig.app.json. An unrelated `@types/*` install would otherwise
+    // move only one of the two.
+    "types": ["dom-chromium-ai"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -40,8 +36,28 @@
     "strictTemplates": true
   },
   "exclude": ["**/*.spec.ts", "src/app/@shared/testing/**/*.ts"],
+  // Not for `tsc -b` — no child sets `composite`, so a build refuses at this
+  // project with one TS6306 per reference (after emitting the three children).
+  // `tsc -p tsconfig.json` refuses the same way, plus 30× TS6305: the implicit
+  // `**/*` here overlaps every child's roots, so tsc redirects those files to
+  // `.d.ts` outputs nothing ever built. Nothing runs either — each project is
+  // checked directly by its own gate — and making it work is not free: composite
+  // requires every input be listed, which tsconfig.app.json's two-`files` entry
+  // point deliberately is not.
+  //
+  // What the list IS for: typescript-eslint's `projectService` falls back to it
+  // for files this project does not claim itself. Ownership is nearest-ancestor
+  // tsconfig first, so `src/app/app.component.ts` lints under *this* config, not
+  // under the app project — it is no `files` root there, while `**/*` matches it
+  // here. A reference wins only where the child lists the file as its own root:
+  // `**/*.spec.ts` is excluded here, and dropping the list once turned 178 specs
+  // into "not found by the project service"; `e2e/**/*.ts` resolves the same way.
+  // So a new tsconfig belongs here only if its files fall outside this project's
+  // globs or into its `exclude` — eslint-plugin-commlink's needs no entry, being
+  // found by the directory walk.
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.spec.json" }
+    { "path": "./tsconfig.spec.json" },
+    { "path": "./tsconfig.e2e.json" }
   ]
 }

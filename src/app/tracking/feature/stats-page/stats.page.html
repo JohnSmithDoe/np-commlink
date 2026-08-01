@@ -13,21 +13,11 @@
         (ionChange)="selectViewMode($event)"
         [label]="'data.page.view' | translate"
       >
-        <ion-select-option value="raw">
-          {{ 'data.page.title.raw' | translate }}
-        </ion-select-option>
-        <ion-select-option value="today">
-          {{ 'data.page.title.today' | translate }}
-        </ion-select-option>
-        <ion-select-option value="daily">
-          {{ 'data.page.title.daily' | translate }}
-        </ion-select-option>
-        <ion-select-option value="monthly">
-          {{ 'data.page.title.monthly' | translate }}
-        </ion-select-option>
-        <ion-select-option value="all">
-          {{ 'data.page.title.all' | translate }}
-        </ion-select-option>
+        @for (viewId of viewIds; track viewId) {
+          <ion-select-option [value]="viewId">
+            {{ viewLabelKeys[viewId] | translate }}
+          </ion-select-option>
+        }
       </ion-select>
     </ion-item>
   </ion-list>

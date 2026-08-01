@@ -2,15 +2,14 @@ import { InputCustomEvent } from '@ionic/angular/standalone';
 import { TIonDragEvent } from '../model/app.types';
 import { IBaseItem } from '../model/base-item.types';
 import {
-  itemHasCategory,
   matchesId,
   matchesItemExactly,
-  matchesItemExactlyIdx as matchesItemExactlyIndex,
+  matchesItemExactlyIndex as matchesItemExactlyIndex,
   moveInList,
   matchesNameExactly,
   matchesSearch,
   matchesSearchExactly,
-  matchesSearchString,
+  matcherFor,
   matchingTxt,
   matchingTxtIsNotEmpty,
   parseNumberInput,
@@ -53,10 +52,6 @@ describe('app.utils', () => {
 
     it('returns false within the trigger threshold', () => {
       expect(revealedSideFromDrag(dragEvent(50))).toBeUndefined();
-    });
-
-    it('respects a custom trigger amount', () => {
-      expect(revealedSideFromDrag(dragEvent(50), 40)).toBe('end');
     });
   });
 
@@ -109,7 +104,7 @@ describe('app.utils', () => {
       ).toBeUndefined();
     });
 
-    it('matchesItemExactlyIdx returns the index of the match', () => {
+    it('matchesItemExactlyIndex returns the index of the match', () => {
       const list = [
         baseItem({ id: 'a', name: 'a' }),
         baseItem({ id: 'b', name: 'b' }),
@@ -122,26 +117,28 @@ describe('app.utils', () => {
       ).toBe(-1);
     });
 
-    it('matchesSearch / matchesSearchString do case-insensitive substring matches', () => {
+    it('matchesSearch does case-insensitive substring matches over an item or a string', () => {
       expect(matchesSearch(baseItem({ name: 'Banana' }), 'ana')).toBe(true);
       expect(matchesSearch('Banana', 'xyz')).toBe(false);
-      expect(matchesSearchString('Banana', 'BAN')).toBe(true);
-      expect(matchesSearchString('Banana')).toBe(true);
+      expect(matchesSearch('Banana', 'BAN')).toBe(true);
+      expect(matchesSearch('Banana')).toBe(true);
+    });
+
+    // The curried form exists to normalize the needle once per filter pass
+    // instead of once per candidate, so it must agree with the direct form —
+    // including on the trimming, which is what `matchingTxt` adds.
+    it('matcherFor agrees with matchesSearch, needle trimmed', () => {
+      const matches = matcherFor('  BAN ');
+      expect(matches('Banana')).toBe(true);
+      expect(matches(baseItem({ name: 'Banana' }))).toBe(true);
+      expect(matches('Cherry')).toBe(false);
+      expect(matcherFor()('anything')).toBe(true);
     });
 
     it('matchesSearchExactly requires a full normalized match', () => {
       expect(matchesSearchExactly('Milk', 'milk')).toBe(true);
       expect(matchesSearchExactly('Milk', 'mil')).toBe(false);
       expect(matchesSearchExactly('')).toBe(true);
-    });
-
-    it('itemHasCategory checks the item categoryIds for the given id', () => {
-      const item = baseItem({ categoryIds: ['c-fruit', 'c-fresh'] });
-      expect(itemHasCategory(item, 'c-fruit')).toBe(true);
-      expect(itemHasCategory(item, 'c-fresh')).toBe(true);
-      expect(itemHasCategory(item, 'c-veg')).toBe(false);
-      // an item without categoryIds never matches
-      expect(itemHasCategory(baseItem(), 'c-fruit')).toBe(false);
     });
   });
 

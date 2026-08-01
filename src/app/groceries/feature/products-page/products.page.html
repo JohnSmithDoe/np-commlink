@@ -7,13 +7,12 @@
   <app-item-list-quick-add
     quickAdd
     (quickAddItem)="facade.addItemFromSearch()"
-    (quickCreateCategory)="facade.addCategoryFromSearch()"
     (quickCreateProduct)="facade.showCreateProductDialog()"
   ></app-item-list-quick-add>
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
-    [catalog]="facade.state()?.categories ?? []"
+    [catalog]="facade.catalog()"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"

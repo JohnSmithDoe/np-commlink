@@ -14,7 +14,6 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { TColor } from '../../model/app.types';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
 
@@ -37,8 +36,6 @@ export class PageHeaderComponent {
   // ionicon name shown before the (lowercased) title — the deck brand look
   // established on /commlink and /soykaf.
   readonly icon = input<string>();
-  // Optional toolbar tint used by the grocery pages (slate per-domain color).
-  readonly color = input<TColor>();
   readonly hideButtons = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();

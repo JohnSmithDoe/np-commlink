@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { addViaSearch, waitForListPage, waitForPersisted } from '../helpers';
+import {
+  addViaSearch,
+  pageRoot,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
 
 /**
  * Acceptance for the notification CTA round-trip, which is a *route* contract
@@ -24,7 +29,7 @@ test.describe('notifications — CTA deep-link back into a producer', () => {
     await waitForPersisted(page, 'notifications', 'Meeting');
 
     await page.goto('/#/notifications');
-    const inbox = page.locator('#main-content app-page-notifications');
+    const inbox = pageRoot(page, 'app-page-notifications');
     const row = inbox
       .getByTestId('notification-row')
       .filter({ hasText: 'Meeting' });

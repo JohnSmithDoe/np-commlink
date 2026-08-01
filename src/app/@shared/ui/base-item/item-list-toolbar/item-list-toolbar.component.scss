@@ -1,11 +1,6 @@
 :host {
   display: flex;
   flex-direction: column;
-
-  ion-toolbar {
-  }
-
-  ion-list-header {
-    background: var(--ion-color-tint);
-  }
+  max-width: var(--app-content-max-width);
+  margin-inline: auto;
 }

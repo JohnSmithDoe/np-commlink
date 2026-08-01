@@ -18,7 +18,7 @@ import { settingsOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { DeckFacade } from '../../data';
 import { TAppModule, TDeckEntryId } from '../../model/deck.types';
-import { moveInList } from '../../../@shared/util/app.utils';
+import { reorderedIds } from '../../../@shared/util/app.utils';
 
 /**
  * Where the user shapes their deck: which programs the grid and the side menu
@@ -67,21 +67,8 @@ export class DeckConfigPage {
     this.#deck.reset();
   }
 
-  /**
-   * `complete(false)` leaves the DOM to Angular: the list re-renders from the
-   * stored order, so letting Ionic move the node as well would apply the drop
-   * twice.
-   */
   reorder(event: ReorderEndCustomEvent): void {
-    const { from, to } = event.detail;
-    event.detail.complete(false);
-    this.#deck.reorder(
-      moveInList(
-        this.entries().map((entry) => entry.id),
-        from,
-        to
-      )
-    );
+    this.#deck.reorder(reorderedIds(event, this.entries()));
   }
 
   constructor() {

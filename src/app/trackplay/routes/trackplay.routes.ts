@@ -14,7 +14,7 @@ export const trackplayRoutes: Routes = [
     children: [
       {
         path: '',
-        data: { title: marker('page-title.trackplay-games') },
+        title: marker('page-title.trackplay-games'),
         loadComponent: () =>
           import('../feature/games-page/games.page').then(
             (m) => m.TrackplayGamesPage
@@ -22,7 +22,7 @@ export const trackplayRoutes: Routes = [
       },
       {
         path: 'players',
-        data: { title: marker('page-title.trackplay-players') },
+        title: marker('page-title.trackplay-players'),
         loadComponent: () =>
           import('../feature/players-page/players.page').then(
             (m) => m.TrackplayPlayersPage
@@ -30,7 +30,7 @@ export const trackplayRoutes: Routes = [
       },
       {
         path: 'player/:id',
-        data: { title: marker('page-title.trackplay-player') },
+        title: marker('page-title.trackplay-player'),
         loadComponent: () =>
           import('../feature/player-page/player.page').then(
             (m) => m.TrackplayPlayerPage
@@ -38,7 +38,7 @@ export const trackplayRoutes: Routes = [
       },
       {
         path: 'game-types',
-        data: { title: marker('page-title.trackplay-game-types') },
+        title: marker('page-title.trackplay-game-types'),
         loadComponent: () =>
           import('../feature/game-types-page/game-types.page').then(
             (m) => m.TrackplayGameTypesPage
@@ -46,7 +46,7 @@ export const trackplayRoutes: Routes = [
       },
       {
         path: 'game/:id',
-        data: { title: marker('page-title.trackplay-game') },
+        title: marker('page-title.trackplay-game'),
         loadComponent: () =>
           import('../feature/game-play-page/game-play.page').then(
             (m) => m.TrackplayGamePlayPage

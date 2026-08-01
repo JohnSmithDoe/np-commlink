@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { BarcodeActions } from './actions/barcode.actions';
-import { selectBarcodeDataUrl } from './selectors/barcode.selector';
+import { BarcodeActions } from './barcode.actions';
+import { selectBarcodeDataUrl } from './barcode.selector';
 
 /**
  * The `barcode` (SIGIL) domain facade — the single NgRx surface for the barcode

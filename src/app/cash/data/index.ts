@@ -11,8 +11,8 @@
  * Named re-exports only (never `export *`) so the public surface is explicit
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
-export { CashActions } from './actions/cash.actions';
-export type { TAccountTxn } from './selectors/cash.selector';
+export { CashActions } from './cash.actions';
+export type { TAccountTxn } from './cash.selector';
 
 export { CashFacade } from './cash.facade';
 export { CashCategoriesPageFacade } from './cash-categories-page.facade';

@@ -7,7 +7,7 @@ import {
   mockProductsState,
 } from '../../testing/groceries.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { createProduct } from '../../util/grocery.factory';
 import { ProductsActions, StorageActions } from '../../data';
 import { EditProductDialogComponent } from './edit-product-dialog.component';

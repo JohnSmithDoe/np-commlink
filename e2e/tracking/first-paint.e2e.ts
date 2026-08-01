@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { Locator } from '@playwright/test';
-import { addViaSearch, waitForListPage, waitForPersisted } from '../helpers';
+import {
+  addViaSearch,
+  mainContent,
+  pageRoot,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
 
 /**
  * The tracking row whose name matches. `app-tracking-item` is the row's own
@@ -31,7 +37,7 @@ test.describe('tracking (lazy)', () => {
     await page.goto('/#/tracking');
     await waitForListPage(page);
 
-    await expect(page.locator('#main-content app-page-tracking')).toBeVisible({
+    await expect(pageRoot(page, 'app-page-tracking')).toBeVisible({
       timeout: 30_000,
     });
   });
@@ -41,7 +47,7 @@ test.describe('tracking (lazy)', () => {
     await waitForListPage(page);
 
     await addViaSearch(page, 'Standup');
-    const content = page.locator('#main-content');
+    const content = mainContent(page);
     await expect(trackingRow(content, 'Standup')).toBeVisible({
       timeout: 10_000,
     });
@@ -70,17 +76,23 @@ test.describe('tracking (lazy)', () => {
     await waitForListPage(page);
 
     await addViaSearch(page, 'Standup');
-    const content = page.locator('#main-content');
+    const content = mainContent(page);
     await expect(trackingRow(content, 'Standup')).toBeVisible({
       timeout: 10_000,
     });
 
-    // Open the item's kebab menu → "Bearbeiten" (dispatches the shared
-    // ItemDialogsActions.showEditDialog onto the eager itemDialogs slice).
+    // Open the item's kebab menu → edit, which calls ItemDialogService.open()
+    // straight from the facade (there is no dialogs slice any more).
+    //
+    // Still scoped to `ion-popover`, which is the documented overlay case: a
+    // presented popover teleports to the app root, so the row cannot scope it.
+    // Only *one* is ever matchable — an `ng-template` inside `ion-popover` is not
+    // rendered until it is presented, so the other rows' copies are not in the
+    // DOM at all.
     await trackingRow(content, 'Standup')
       .getByTestId('tracking-item-kebab')
       .click();
-    await page.locator('ion-popover').getByText('Bearbeiten').click();
+    await page.locator('ion-popover').getByTestId('kebab-edit').click();
 
     // The shared modal opens; rename via its local draft and save.
     const nameField = page.getByRole('textbox', { name: 'Name' });
@@ -100,9 +112,9 @@ test.describe('tracking (lazy)', () => {
    * refactor): the reset/save toolbar buttons projected into
    * `[toolbarActionsEnd]`, the daily-sessions panel in `[searchExtras]`, and the
    * settings link double-projected through `[headerEnd]` into the page-header
-   * toolbar. It also proves the category UI is suppressed (`[hasCategories]`
-   * false) so tracking renders a plain list — a naive swap would have silently
-   * dropped the first two and wrongly shown the last.
+   * toolbar. It also proves the category UI is suppressed (the facade omits
+   * `manageCategories`) so tracking renders a plain list — a naive swap would
+   * have silently dropped the first two and wrongly shown the last.
    */
   test('renders the projected chrome and suppresses the category UI', async ({
     page,
@@ -110,7 +122,7 @@ test.describe('tracking (lazy)', () => {
     await page.goto('/#/tracking');
     await waitForListPage(page);
 
-    const trackingPage = page.locator('#main-content app-page-tracking');
+    const trackingPage = pageRoot(page, 'app-page-tracking');
 
     // [searchExtras] slot — the daily-sessions panel.
     await expect(trackingPage.locator('app-daily-sessions')).toBeVisible();

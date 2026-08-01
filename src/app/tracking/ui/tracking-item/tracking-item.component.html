@@ -2,13 +2,8 @@
      button, so Enter/Space reach it — a click bound to the inner label would be
      mouse-only. Trailing controls and the inline popover stop propagation so
      their own actions don't also toggle the item. -->
-<ion-item
-  [button]="true"
-  lines="full"
-  [class]="'tracking-page-item-' + item().state"
-  (click)="selectItem.emit()"
->
-  <div class="status-bar">
+<ion-item [button]="true" lines="full" (click)="selectItem.emit()">
+  <div class="sr-status-bar">
     <ion-text [color]="getColor(item())"></ion-text>
   </div>
   <ion-label class="ion-text-wrap">
@@ -21,7 +16,7 @@
             trackingItem.state
           }}"
         >
-          {{ 'tracking.item.state.' + trackingItem.state | translate }}
+          {{ stateLabelKeys[trackingItem.state] | translate }}
         </span>
       </h2>
 
@@ -101,7 +96,7 @@
             ) | translate
           }}</ion-label>
         </ion-item>
-        <ion-item button (click)="emitEditItem()">
+        <ion-item button data-testid="kebab-edit" (click)="emitEditItem()">
           <ion-icon slot="start" name="create-outline" aria-hidden="true" />
           <ion-label>{{ 'tracking.item.action.edit' | translate }}</ion-label>
         </ion-item>

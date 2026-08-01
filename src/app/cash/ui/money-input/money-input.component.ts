@@ -1,5 +1,4 @@
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   inject,
@@ -14,7 +13,7 @@ import {
 } from '@angular/forms/signals';
 import { InputCustomEvent, IonInput, IonItem } from '@ionic/angular/standalone';
 import { TLanguage } from '../../../@shared/model/app.types';
-import { LanguageService } from '../../../@shared/util/language.service';
+import { LanguageService } from '../../../@shared/util/theme/language.service';
 import { centsToInput, eurToCents } from '../../util/money.utils';
 
 /** What the field reports while the box holds something that is not an amount. */
@@ -52,7 +51,6 @@ export function parseAmount(
 export class MoneyInputComponent implements FormValueControl<number | null> {
   readonly value = model<number | null>(null);
   readonly label = input<string>();
-  readonly disabled = input(false, { transform: booleanAttribute });
 
   /**
    * Blur marks the bound field touched. An output of exactly this name is the

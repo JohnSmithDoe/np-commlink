@@ -7,15 +7,14 @@
   <app-item-list-quick-add
     quickAdd
     (quickAddItem)="facade.addItemFromSearch()"
-    (quickCreateCategory)="facade.addCategoryFromSearch()"
     (quickCreateProduct)="facade.showCreateProductDialog()"
   ></app-item-list-quick-add>
-  <ion-button (click)="setSortMode('bestBefore')" toolbarActions>{{
+  <ion-button (click)="facade.setSortMode('bestBefore')" toolbarActions>{{
     'grocery.list-toolbar.mhd' | translate
   }}</ion-button>
-  @if (showScanButton) {
+  @if (facade.showScanButton) {
     <ion-button
-      (click)="scan()"
+      (click)="facade.scan()"
       toolbarActions
       [attr.aria-label]="'grocery.a11y.scan' | translate"
     >
@@ -25,7 +24,7 @@
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
-    [catalog]="facade.state()?.categories ?? []"
+    [catalog]="facade.catalog()"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"
@@ -45,12 +44,12 @@
     [categories]="categories"
     [statusColor]="getItemStatusColor(item)"
     [showQuantityActions]="true"
-    [cartActionLabel]="cartActionLabel"
+    [startSwipeAction]="startSwipeAction"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
     (increment)="changeQuantity(item, +1)"
     (decrement)="changeQuantity(item, -1)"
-    (cartItem)="copyToShoppingList(item)"
+    (startSwipe)="copyToShoppingList(item)"
   >
     @if (item.bestBefore) {
       <ng-container itemDetails>

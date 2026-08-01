@@ -29,11 +29,11 @@ test.describe('trackplay game types', () => {
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();
 
-    const newRow = mainContent(page)
+    const createdRow = mainContent(page)
       .locator('app-trackplay-game-type-list-item')
       .filter({ hasText: 'Doppelkopf' });
-    await expect(newRow).toBeVisible();
-    await expect(newRow).toContainText('Niedrigste Punktzahl gewinnt');
+    await expect(createdRow).toBeVisible();
+    await expect(createdRow).toContainText('Niedrigste Punktzahl gewinnt');
   });
 
   test('creates a win-high game type via the dialog', async ({ page }) => {
@@ -58,10 +58,10 @@ test.describe('trackplay game types', () => {
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();
 
-    const newRow = mainContent(page)
+    const createdRow = mainContent(page)
       .locator('app-trackplay-game-type-list-item')
       .filter({ hasText: 'Canasta' });
-    await expect(newRow).toBeVisible();
-    await expect(newRow).toContainText('Höchste Punktzahl gewinnt');
+    await expect(createdRow).toBeVisible();
+    await expect(createdRow).toContainText('Höchste Punktzahl gewinnt');
   });
 });

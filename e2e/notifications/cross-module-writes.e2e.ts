@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { addViaSearch, waitForListPage, waitForPersisted } from '../helpers';
+import {
+  addViaSearch,
+  pageRoot,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
 
 /**
  * Acceptance for the notifications inbox as an eager fan-in sink.
@@ -30,7 +35,7 @@ test.describe('notifications — cross-module write from another route', () => {
     // First-ever visit to /notifications this session — the page is lazy, the
     // slice is not, so what tracking published is already in it.
     await page.goto('/#/notifications');
-    const content = page.locator('#main-content app-page-notifications');
+    const content = pageRoot(page, 'app-page-notifications');
     await expect(content).toBeVisible({ timeout: 30_000 });
     await expect(
       content.getByTestId('notification-row').filter({ hasText: 'Meeting' })

@@ -2,6 +2,7 @@ import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
   gotoFeature,
+  mainContent,
   ROUTE,
   waitForListPage,
   waitForPersisted,
@@ -17,8 +18,7 @@ import {
 
 /** The deck tile whose codename matches, scoped to the routed content. */
 function tile(page: Page, codename: string) {
-  return page
-    .locator('#main-content')
+  return mainContent(page)
     .getByTestId('deck-tile')
     .filter({ hasText: codename });
 }

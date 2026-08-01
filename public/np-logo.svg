@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!--
+    The np mark, as vectors: a hairline `n` whose stem carries on upward as a
+    trunk and forks into three PCB traces ending in ring nodes, beside a black
+    `p`. Redrawn from public/icons/icon-512x512.png — the raster app icon is the
+    original and cannot be read as paths, so this is a reconstruction of the same
+    mark rather than a conversion of it. The hairline-vs-black weight contrast is
+    the signature; keep it if the geometry is ever adjusted.
+
+    Monochrome by requirement, not by taste: its first consumer is the boot
+    splash, which runs before the theme is known, so a single currentColor is the
+    only thing that can invert against either backdrop. That is also why the
+    letters are drawn, never set — the splash has no font loaded yet.
+
+    Strokes are currentColor, so inlining this into a template inherits the
+    surrounding colour; the `svg` rule below is only the standalone fallback, for
+    use as <img> or a favicon, and it follows the viewer's colour preference
+    because a standalone SVG has no theme to read.
+
+    A second copy of these shapes is inlined in src/index.html for the splash —
+    deliberately, since a request would leave it blank for exactly the window it
+    exists to cover. Change one, change the other.
+  -->
+  <style>
+    svg {
+      color: #1f2733;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        color: #dfe4ea;
+      }
+    }
+  </style>
+  <path
+    d="M21 24L14 17H10.5M21 24V14M21 24L28 17"
+    stroke="currentColor"
+    stroke-width="1.8"
+  />
+  <circle cx="8.5" cy="17" r="2" stroke="currentColor" stroke-width="1.8" />
+  <circle cx="21" cy="12" r="2" stroke="currentColor" stroke-width="1.8" />
+  <circle cx="29.4" cy="15.6" r="2" stroke="currentColor" stroke-width="1.8" />
+  <path
+    d="M21 44V24M21 32A6 6 0 0 1 33 32V44"
+    stroke="currentColor"
+    stroke-width="2.5"
+  />
+  <path d="M43 26V54" stroke="currentColor" stroke-width="5.5" />
+  <circle cx="51" cy="35" r="6.25" stroke="currentColor" stroke-width="5.5" />
+</svg>

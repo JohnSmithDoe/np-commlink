@@ -1,10 +1,7 @@
-import { DECK_CHROME_FIELDS } from '../model/deck.catalog';
-import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import { IDeckEntry, IDeckState } from '../model/deck.types';
 import {
   isEntryVisible,
   orderEntries,
-  resolveChrome,
   resolveLabels,
   toggleIn,
   visibleEntries,
@@ -13,7 +10,7 @@ import {
 const entry = (id: string, module: IDeckEntry['module']): IDeckEntry => ({
   id,
   module,
-  icon: 'icon',
+  icon: 'hardware-chip-outline',
   route: `/${id}`,
   titleKey: `page-title.${id}`,
   labels: {
@@ -38,7 +35,7 @@ const state = (overrides: Partial<IDeckState> = {}): IDeckState => ({
 
 describe('orderEntries', () => {
   it('falls back to catalog order when nothing is configured', () => {
-    expect(orderEntries(CATALOG, []).map((e) => e.id)).toEqual([
+    expect(orderEntries(CATALOG, []).map((ordered) => ordered.id)).toEqual([
       'shopping',
       'storage',
       'cash',
@@ -47,25 +44,25 @@ describe('orderEntries', () => {
 
   it('follows the configured order', () => {
     expect(
-      orderEntries(CATALOG, ['cash', 'storage', 'shopping']).map((e) => e.id)
+      orderEntries(CATALOG, ['cash', 'storage', 'shopping']).map(
+        (ordered) => ordered.id
+      )
     ).toEqual(['cash', 'storage', 'shopping']);
   });
 
   // Absence means default, which is what lets the catalog grow between releases
   // without a migration: an entry the config predates lands at the end.
   it('appends entries the configuration has never seen', () => {
-    expect(orderEntries(CATALOG, ['cash']).map((e) => e.id)).toEqual([
-      'cash',
-      'shopping',
-      'storage',
-    ]);
+    expect(
+      orderEntries(CATALOG, ['cash']).map((ordered) => ordered.id)
+    ).toEqual(['cash', 'shopping', 'storage']);
   });
 
   // The other half of the same bargain: a released entry can be deleted.
   it('drops ids the catalog no longer carries', () => {
-    expect(orderEntries(CATALOG, ['retired', 'cash']).map((e) => e.id)).toEqual(
-      ['cash', 'shopping', 'storage']
-    );
+    expect(
+      orderEntries(CATALOG, ['retired', 'cash']).map((ordered) => ordered.id)
+    ).toEqual(['cash', 'shopping', 'storage']);
   });
 });
 
@@ -95,10 +92,9 @@ describe('visibleEntries', () => {
       order: ['cash', 'storage', 'shopping'],
       hiddenEntries: ['storage'],
     });
-    expect(visibleEntries(CATALOG, config).map((e) => e.id)).toEqual([
-      'cash',
-      'shopping',
-    ]);
+    expect(
+      visibleEntries(CATALOG, config).map((ordered) => ordered.id)
+    ).toEqual(['cash', 'shopping']);
   });
 });
 
@@ -115,27 +111,6 @@ describe('resolveLabels', () => {
     expect(resolveLabels('boomer')(shopping).nameKey).toBe(
       shopping.labels.boomer.nameKey
     );
-  });
-});
-
-describe('resolveChrome', () => {
-  it('hands back the active theme’s slot labels', () => {
-    expect(resolveChrome('cyberpunk')).toBe(DECK_CHROME_LABELS['cyberpunk']);
-    expect(resolveChrome('boomer')).toBe(DECK_CHROME_LABELS['boomer']);
-  });
-
-  // The point of a per-theme block: OK Boomer must not read "Rauschen" at a
-  // plain office desk.
-  it('gives the two themes distinct keys', () => {
-    expect(resolveChrome('cyberpunk')['noise']).not.toBe(
-      resolveChrome('boomer')['noise']
-    );
-  });
-
-  it('covers every declared chrome field', () => {
-    expect(Object.keys(resolveChrome('boomer'))).toEqual([
-      ...DECK_CHROME_FIELDS,
-    ]);
   });
 });
 

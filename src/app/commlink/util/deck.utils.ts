@@ -1,6 +1,4 @@
 import { TTheme } from '../../@shared/model/app.types';
-import { TDeckChrome } from '../model/deck.catalog';
-import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import {
   IDeckEntry,
   IDeckProgram,
@@ -53,14 +51,6 @@ export const visibleEntries = (
 export const resolveLabels =
   (theme: TTheme) =>
   (entry: IDeckEntry): IDeckProgram => ({ ...entry, ...entry.labels[theme] });
-
-/**
- * The same bargain for the deck's own chrome: the HUD readouts, the kicker and
- * the tile status words are voiced too, so a theme fills the slots rather than
- * the template branching on which theme is active.
- */
-export const resolveChrome = (theme: TTheme): TDeckChrome =>
-  DECK_CHROME_LABELS[theme];
 
 export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)

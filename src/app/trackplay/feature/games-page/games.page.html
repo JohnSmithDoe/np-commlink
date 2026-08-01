@@ -1,7 +1,7 @@
 <app-page-header
   label="page-title.trackplay-games"
   icon="dice-outline"
-  (addItem)="newGame()"
+  (addItem)="createGame()"
 >
   <ion-button
     slot="end"
@@ -48,7 +48,6 @@
         <app-trackplay-game-list-item
           [game]="game"
           [typeName]="typeName(game)"
-          [disabled]="game.players.length <= 0"
           [ionList]="list"
           (selectGame)="goToGame(game.id)"
           (editRequested)="openGameEdit(game)"
@@ -66,7 +65,6 @@
         <app-trackplay-game-list-item
           [game]="game"
           [typeName]="typeName(game)"
-          [disabled]="game.players.length <= 0"
           [ionList]="list"
           (selectGame)="goToGame(game.id)"
           (editRequested)="openGameEdit(game)"

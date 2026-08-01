@@ -1,6 +1,7 @@
 {
-  "name": "CommLink",
-  "short_name": "CL",
+  "name": "np-commlink",
+  "short_name": "np-commlink",
+  "description": "Persönliches Cyberdeck: Zeiterfassung, Vorräte, Einkaufslisten, Rezepte, Aufgaben, Finanzen und Spielstände in einer App.",
   "display": "standalone",
   "theme_color": "#0f141b",
   "background_color": "#0f141b",

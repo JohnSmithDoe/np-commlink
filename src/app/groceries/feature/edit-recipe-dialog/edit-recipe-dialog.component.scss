@@ -1,3 +1,5 @@
+@use '../../../../theme/deck';
+
 // Ingredient rows pack a name, an amount, a unit and a delete into one item, so
 // they wrap on narrow screens instead of squeezing the controls.
 .recipe-ingredient {
@@ -6,14 +8,12 @@
 }
 
 .recipe-section {
-  font-family: var(--sr-deck-font);
-  font-size: 0.78rem;
-  letter-spacing: var(--sr-label-tracking);
-  text-transform: var(--sr-label-transform);
+  @include deck.hud-label;
+  font-size: var(--fs-small);
   color: var(--sr-amber);
 }
 
 .recipe-empty {
-  font-size: 0.78rem;
+  font-size: var(--fs-small);
   opacity: 0.7;
 }

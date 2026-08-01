@@ -1,12 +1,8 @@
-import { TestBed } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
-
 import {
   mockGameType,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
+import { setupModalSpec } from '../../../@shared/testing/modal-spec';
 import { TrackplayActions } from '../../data';
 import { TrackplayGameTypeEditModalComponent } from './game-type-edit-modal.component';
 
@@ -16,17 +12,10 @@ describe('TrackplayGameTypeEditModalComponent', () => {
   let dismiss: ReturnType<typeof vi.spyOn>;
 
   const setup = (state = mockTrackplayState()) => {
-    TestBed.configureTestingModule({
-      imports: [TrackplayGameTypeEditModalComponent],
-      providers: [provideTestingProviders({ trackplay: state })],
-    });
-    dismiss = vi
-      .spyOn(TestBed.inject(ModalController), 'dismiss')
-      .mockResolvedValue(true);
-    dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
-    component = TestBed.createComponent(
-      TrackplayGameTypeEditModalComponent
-    ).componentInstance;
+    ({ component, dispatch, dismiss } = setupModalSpec(
+      TrackplayGameTypeEditModalComponent,
+      { trackplay: state }
+    ));
   };
 
   it('dispatches createGameType in create mode', () => {

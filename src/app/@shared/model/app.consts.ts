@@ -27,6 +27,21 @@ export const APP_RELEASE =
     : 'dev';
 
 /**
+ * The wordmark — one spelling, wherever a human reads the app's own name.
+ *
+ * It was three: `commlink` in the side menu, `np-commlink` on the deck,
+ * `CommLink` in the document title and the manifest. Lowercase wins because the
+ * deck lowercases the brand row anyway (`--sr-brand-transform`), so a
+ * capitalised spelling was never visible in the default theme to begin with.
+ *
+ * Two copies cannot import this and are kept in step by hand: `<title>` in
+ * `src/index.html`, and `name`/`short_name` in `public/manifest.webmanifest`.
+ * Both are read before any app code runs — by a crawler, and by the install
+ * prompt — which is precisely why a const cannot reach them.
+ */
+export const APP_WORDMARK = 'np-commlink';
+
+/**
  * AGPL §13: a copy reached over a network owes its users the corresponding
  * source, and Codeberg Pages serves exactly such a copy — so the settings page
  * links here rather than leaving the offer to the README nobody opens.

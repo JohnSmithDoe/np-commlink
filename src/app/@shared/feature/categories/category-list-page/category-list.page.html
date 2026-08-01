@@ -1,0 +1,34 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="{{ 'page-title.categories' | translate }}"
+  listHeader="{{ 'page-title.categories' | translate }}"
+  [itemTemplate]="categoryItem"
+>
+  <ion-button
+    toolbarActions
+    [routerLink]="facade.listHref()"
+    [attr.aria-label]="'a11y.back' | translate"
+  >
+    <ion-icon slot="icon-only" name="arrow-back-outline" aria-hidden="true" />
+  </ion-button>
+</app-list-page>
+
+<ng-template #categoryItem let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [startSwipeAction]="startSwipeAction"
+    (selectItem)="facade.drillTo(item.id)"
+    (startSwipe)="rename(item)"
+    (deleteItem)="facade.removeCategory(item)"
+  >
+    <ng-container itemDetails>
+      <ion-note>
+        {{ 'categories.count' | translate: { count: count(item.id) } }}
+      </ion-note>
+    </ng-container>
+  </app-list-item>
+</ng-template>
+
+<app-edit-category-dialog />

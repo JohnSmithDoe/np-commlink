@@ -4,15 +4,20 @@
 # If the hooks ever go missing, re-wire them with:
 #   ./node_modules/.bin/lefthook install
 #
-# pre-commit runs two jobs, in order (lefthook runs jobs sequentially unless
+# pre-commit runs three jobs, in order (lefthook runs jobs sequentially unless
 # `parallel: true`):
-#   1. prettier — format the staged files and re-stage the result (stage_fixed),
+#   1. prettier  — format the staged files and re-stage the result (stage_fixed),
 #      so every commit is prettier-clean.
-#   2. eslint   — lint the staged src *.ts / *.html (check only, no --fix); a
-#      lint error aborts the commit. Scoped to src/** to match `pnpm lint` and to
+#   2. eslint    — lint the staged src *.ts / *.html (check only, no --fix); a
+#      lint error aborts the commit. Deliberately NARROWER than `pnpm lint` (which
+#      covers e2e/, the plugin, JSON and markdown too), both to keep the hook fast and to
 #      keep the type-aware projectService off root-level config files.
+#   3. stylelint — the style layer, which eslint cannot read at all (it has no
+#      SCSS parser). Unlike eslint this is NOT narrowed: it is the same glob CI
+#      runs, because neither reason for narrowing applies — stylelint needs no
+#      type information and the whole style layer lints in well under a second.
 # Order matters: prettier fixes formatting first, so eslint's prettier/prettier
-# rule sees already-formatted files. Both tools are invoked through `pnpm exec`
+# rule sees already-formatted files. All three are invoked through `pnpm exec`
 # because lefthook runs commands via `sh -c` with the inherited PATH and does NOT
 # add node_modules/.bin — a bare `prettier`/`eslint` would not resolve.
 pre-commit:
@@ -24,3 +29,23 @@ pre-commit:
     - name: eslint
       glob: 'src/**/*.{ts,html}'
       run: pnpm exec eslint {staged_files}
+    - name: stylelint
+      glob: 'src/**/*.{scss,css}'
+      run: pnpm exec stylelint {staged_files}
+
+# pre-push runs the full fifteen-gate suite — the same work CI does, ~100s cold.
+# It belongs here rather than in pre-commit for two reasons. A minute per commit
+# would be routed around with --no-verify, and that flag is all-or-nothing: skip
+# it once and prettier, eslint and stylelint go with it. And Codeberg's runners
+# are donated capacity whose terms ask for minimal pipelines, so not pushing a
+# red tree is courtesy, not just convenience — a push is rare enough to afford
+# the wait, a commit is not.
+#
+# It reads the WORKING TREE, on the assumption that nothing is uncommitted at
+# push time. When that does not hold the runner says so in its header rather
+# than blocking: verifying a dirty tree is a weaker claim than verifying the
+# commits being pushed, and a gate should not quietly overstate what it checked.
+pre-push:
+  jobs:
+    - name: verify-all
+      run: ./scripts/verify-all.sh

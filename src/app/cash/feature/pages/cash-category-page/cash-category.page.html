@@ -1,0 +1,33 @@
+<app-cash-detail-header [heading]="categoryName()" (back)="goBack()" />
+
+<ion-content>
+  @if (transactions().length) {
+    <ion-list lines="full">
+      @for (txn of transactions(); track txn.id) {
+        <ion-item
+          [button]="true"
+          [detail]="true"
+          (click)="openAccount(txn.accountId)"
+        >
+          <ion-label>
+            <h2>{{ txn.description }}</h2>
+            <p>
+              {{ txn.dateISO | localizedDate }} ·
+              {{ accountName(txn.accountId) }}
+            </p>
+          </ion-label>
+          <ion-note
+            slot="end"
+            class="cash-txn__amount"
+            [class.cash-txn__amount--out]="txn.amountCents < 0"
+            [class.cash-txn__amount--in]="txn.amountCents > 0"
+          >
+            {{ txn.amountCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <p class="cash-empty">{{ 'cash.category-txns.empty' | translate }}</p>
+  }
+</ion-content>

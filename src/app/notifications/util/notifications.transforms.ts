@@ -74,7 +74,7 @@ const statusFor = (
   variant: string,
   existing: INotification | undefined
 ): INotification['status'] =>
-  existing?.origin?.variant === variant ? existing.status : 'new';
+  existing?.origin?.variant === variant ? existing.status : 'open';
 
 const touchedAt = (
   variant: string,
@@ -109,7 +109,7 @@ export const clearDoneNotifications = (
 ): INotification[] => items.filter((n) => n.status !== 'done');
 
 const isUnread = (notification: INotification, lastViewedAt: string): boolean =>
-  notification.status === 'new' && notification.updatedAt > lastViewedAt;
+  notification.status === 'open' && notification.updatedAt > lastViewedAt;
 
 // The single source of truth for the badge metric.
 export const unreadCount = (state: INotificationsState): number =>

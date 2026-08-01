@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { ICashTransaction } from '../model/transaction.types';
 
 /**
- * Reconciliation candidate matching (see docs/project-summary.md §7.3 → Reconciliation).
+ * Reconciliation candidate matching (see docs/cash.md §7.3 → Reconciliation).
  * For a `pending` manual transaction, the imported transactions it could be the
  * same real spend as: same account, EQUAL signed cents, `dateISO` within ±3
  * days, and not already the survivor of another match. We only ever *propose* —

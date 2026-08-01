@@ -1,12 +1,15 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { OfficeTimeActions } from './actions/office-time.actions';
-import { officeTimeReducer } from './reducer/office-time.reducer';
-import { OfficeTimeEffects } from './effects/office-time.effects';
-import { selectOfficeTimeState } from './selectors/office-time.selector';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { OfficeTimeActions } from './office-time.actions';
+import { officeTimeReducer } from './office-time.reducer';
+import { OfficeTimeEffects } from './office-time.effects';
+import {
+  OFFICE_TIME_STATE_KEY,
+  selectOfficeTimeState,
+} from './office-time.selector';
 import {
   selectDashboardStatsYear,
   toDashboardStatsMetrics,
-} from './selectors/office-time-stats.selector';
+} from './office-time-stats.selector';
 
 /**
  * The `office-time` bounded context, registered as ONE unit on both routes that
@@ -19,7 +22,7 @@ import {
  * swallows a storage rejection, so it owns its own persistence.
  */
 export const officeTimeContext = providePersistedContext({
-  key: 'officeTime',
+  key: OFFICE_TIME_STATE_KEY,
   reducer: officeTimeReducer,
   lifecycle: OfficeTimeActions,
   select: selectOfficeTimeState,

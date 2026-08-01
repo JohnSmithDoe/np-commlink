@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import {
-  booleanAttribute,
+  computed,
   ChangeDetectionStrategy,
   Component,
   input,
@@ -47,9 +47,14 @@ import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 export class TrackplayGameListItemComponent extends BaseSwipeRow {
   readonly game = input.required<IGame>();
   readonly typeName = input('');
-  readonly disabled = input(false, { transform: booleanAttribute });
 
   readonly selectGame = output<void>();
+
+  // A game with no players cannot be opened — the rule belongs to the row that
+  // owns the affordance, not to each of the three lists that render it.
+  protected readonly disabled = computed(
+    () => this.game().players.length === 0
+  );
 
   constructor() {
     super();

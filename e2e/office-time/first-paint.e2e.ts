@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
+import { expect, Locator, Page, test } from '@playwright/test';
+import { pageRoot, waitForPersisted } from '../helpers';
 
 /**
  * Wiring guard for the LAZY office-time context.
@@ -18,12 +18,17 @@ import { waitForPersisted } from '../helpers';
 const LOG_OFFICE_DAY = 'Bürotag erfassen';
 const OFFICE_DAY_LOGGED = 'Bürotag erfasst.';
 
+/** The dashboard, once the lazy context has hydrated far enough to paint it. */
+async function openDashboard(page: Page): Promise<Locator> {
+  await page.goto('/#/office-time');
+  const dashboard = pageRoot(page, 'app-page-office-time');
+  await expect(dashboard).toBeVisible({ timeout: 30_000 });
+  return dashboard;
+}
+
 test.describe('office-time (lazy)', () => {
   test('hydrates and paints the dashboard cards', async ({ page }) => {
-    await page.goto('/#/office-time');
-
-    const dashboard = page.locator('#main-content app-page-office-time');
-    await expect(dashboard).toBeVisible({ timeout: 30_000 });
+    const dashboard = await openDashboard(page);
 
     // Two of the cards the default `dashboardItems` order puts above the fold.
     await expect(dashboard.locator('app-dash-date')).toBeVisible({
@@ -33,15 +38,10 @@ test.describe('office-time (lazy)', () => {
   });
 
   test('keeps a logged office day across a full reload', async ({ page }) => {
-    await page.goto('/#/office-time');
+    const dashboard = await openDashboard(page);
+    await expect(dashboard.getByText(LOG_OFFICE_DAY)).toBeVisible();
 
-    const dashboard = page.locator('#main-content app-page-office-time');
-    const logButton = dashboard.locator('app-dash-button ion-button');
-    await expect(dashboard.getByText(LOG_OFFICE_DAY)).toBeVisible({
-      timeout: 30_000,
-    });
-
-    await logButton.click();
+    await dashboard.locator('app-dash-button ion-button').click();
 
     // The card reports the logged day by swapping its own label — the office-day
     // list is derived state, so this is the domain's own read-back.
@@ -50,8 +50,7 @@ test.describe('office-time (lazy)', () => {
 
     await page.reload();
 
-    const reloaded = page.locator('#main-content app-page-office-time');
-    await expect(reloaded.getByText(OFFICE_DAY_LOGGED)).toBeVisible({
+    await expect(dashboard.getByText(OFFICE_DAY_LOGGED)).toBeVisible({
       timeout: 30_000,
     });
   });
@@ -59,16 +58,13 @@ test.describe('office-time (lazy)', () => {
   test('reaches the settings page from the dashboard header', async ({
     page,
   }) => {
-    await page.goto('/#/office-time');
-
-    const dashboard = page.locator('#main-content app-page-office-time');
-    await expect(dashboard).toBeVisible({ timeout: 30_000 });
+    const dashboard = await openDashboard(page);
 
     await dashboard.getByTestId('office-time-settings-link').click();
 
     await expect(page).toHaveURL(/#\/office-time\/settings$/);
-    await expect(
-      page.locator('#main-content app-page-office-time-settings')
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(pageRoot(page, 'app-page-office-time-settings')).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });

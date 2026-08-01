@@ -1,11 +1,12 @@
 # Mirrors the eslint globalIgnores (eslint.config.js) plus package-manager and
 # tooling artefacts. Keeps the pre-commit hook from rewriting generated output.
-www/
-dist/
-coverage/
+.*/
 android/
+coverage/
+dist/
 out-tsc/
-projects/
-.angular/
+playwright-report/
+test-results/
+www/
 node_modules/
 pnpm-lock.yaml

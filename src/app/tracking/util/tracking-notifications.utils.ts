@@ -27,7 +27,7 @@ export type TrackingNotificationKind = 'running' | 'paused' | 'stopped';
 // `cta` carries the label beside the command because the port renders whatever
 // wording the producer hands it — the inbox does not recognise the commands and
 // must not have to.
-export type TrackingNotificationPreset = {
+type TrackingNotificationPreset = {
   icon: string;
   color: TColor;
   titleKey: string;

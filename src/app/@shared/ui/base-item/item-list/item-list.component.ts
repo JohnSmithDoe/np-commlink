@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
-  output,
   TemplateRef,
   viewChild,
 } from '@angular/core';
@@ -16,8 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TColor } from '../../../model/app.types';
 import { IBaseItem } from '../../../model/base-item.types';
-import { ICategory, TCategoryId } from '../../../model/category.types';
-import { CategoryItemComponent } from '../../categories/category-item/category-item.component';
+import { ICategory } from '../../../model/category.types';
 
 export type ItemListTemplateContext = {
   $implicit: IBaseItem;
@@ -32,14 +30,7 @@ export type ItemListTemplateContext = {
   templateUrl: 'item-list.component.html',
   styleUrls: ['item-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    IonToolbar,
-    IonList,
-    IonLabel,
-    IonListHeader,
-    NgTemplateOutlet,
-    CategoryItemComponent,
-  ],
+  imports: [IonToolbar, IonList, IonLabel, IonListHeader, NgTemplateOutlet],
 })
 export class ItemListComponent {
   readonly ionList = viewChild<IonList>('ionList');
@@ -52,18 +43,9 @@ export class ItemListComponent {
   readonly listHeader = input<boolean, unknown>(false, {
     transform: booleanAttribute,
   });
-  // Grocery lists render either a flat item list or a category overview.
-  readonly categories = input<ReadonlyArray<{
-    category: ICategory;
-    count: number;
-  }> | null>();
-  // The raw {id,name} catalog, threaded into each row's template context so a
-  // projected `<app-list-item>` can resolve its item's category ids → names.
+  // The catalog, threaded into each row's template context so a projected
+  // `<app-list-item>` can resolve its item's category ids → names.
   readonly catalog = input<readonly ICategory[]>([]);
-  readonly mode = input<'alphabetical' | 'categories'>('alphabetical');
-
-  readonly selectCategory = output<TCategoryId>();
-  readonly deleteCategory = output<TCategoryId>();
 
   async closeSlidingItems() {
     await this.ionList()?.closeSlidingItems();

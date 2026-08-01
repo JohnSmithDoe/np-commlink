@@ -14,35 +14,21 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import {
-  barcodeOutline,
-  businessOutline,
-  cartOutline,
-  checkboxOutline,
-  diceOutline,
-  fileTrayStackedOutline,
-  hardwareChipOutline,
-  notificationsOutline,
-  pricetagsOutline,
-  restaurantOutline,
-  settingsOutline,
-  sparklesOutline,
-  timerOutline,
-  walletOutline,
-} from 'ionicons/icons';
 import dayjs from 'dayjs';
+import { APP_WORDMARK } from '../../../@shared/model/app.consts';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
   LanguageModelService,
   TLanguageModelAvailability,
-} from '../../../@shared/util/language-model.service';
-import { LanguageService } from '../../../@shared/util/language.service';
-import { ThemeService } from '../../../@shared/util/theme.service';
+} from '../../../@shared/util/theme/language-model.service';
+import { LanguageService } from '../../../@shared/util/theme/language.service';
+import { ThemeService } from '../../../@shared/util/theme/theme.service';
 import { DashboardFacade, DeckFacade } from '../../data';
 import { TDeckChromeField } from '../../model/deck.catalog';
+import { DECK_CHROME_LABELS } from '../../model/deck.labels';
+import { DECK_ICONS } from '../../model/deck.icons';
 import { IDeckEntry, TProgramStatus } from '../../model/deck.types';
 import { currencyLabel } from '../../util/currency-label.utils';
-import { resolveChrome } from '../../util/deck.utils';
 import { HexPipe } from '../../util/hex.pipe';
 
 /**
@@ -86,6 +72,7 @@ const clockLabel = (): string => dayjs().format('HH:mm:ss');
   ],
 })
 export class CommlinkPage {
+  protected readonly wordmark = APP_WORDMARK;
   readonly #dashboard = inject(DashboardFacade);
   readonly #deck = inject(DeckFacade);
   readonly #languageModel = inject(LanguageModelService);
@@ -96,7 +83,7 @@ export class CommlinkPage {
   readonly programs = this.#deck.programs;
 
   /** The HUD's own copy, in the active theme's register. */
-  readonly chrome = computed(() => resolveChrome(this.#theme()));
+  readonly chrome = computed(() => DECK_CHROME_LABELS[this.#theme()]);
 
   // The status strip reports the grid, not this user's view of it: hiding a
   // program is a navigation choice, not an uninstall. So both halves of the
@@ -156,6 +143,34 @@ export class CommlinkPage {
     return value == undefined ? null : Number(value);
   }
 
+  /**
+   * One view model per visible tile.
+   *
+   * The grid used to call `status`/`badge`/`badgeLabel`/`nodeStatusKey` as METHODS
+   * from inside `@for`, and the status strip's 1 Hz clock marks this view dirty
+   * every second — so all four re-ran for all 13 tiles on every tick, `Intl`
+   * currency formatting included, for inputs that had not changed. This computed
+   * reads none of the clock, so a tick re-reads a cached array instead. The
+   * methods stay the unit of logic (the status precedence is pinned on them, and
+   * `onlineCount` reads them over the full catalog) — this only caches the result.
+   */
+  readonly tiles = computed(() =>
+    this.programs().map((program) => {
+      const status = this.status(program);
+      const badge = this.badge(program);
+      return {
+        program,
+        status,
+        dark: status === 'offline',
+        // Only positive values badge: a 0 count is nothing to flag, and a
+        // non-positive balance (an overdraft) is deliberately not glanceable.
+        badgeText:
+          badge !== null && badge > 0 ? this.badgeLabel(program, badge) : null,
+        statusKey: this.nodeStatusKey(status),
+      };
+    })
+  );
+
   /** Unread signals → drives the NOISE status-strip readout. */
   readonly noise = this.#dashboard.notificationsUnread;
   /** The ledger balance, themed like the CREDSTICK tile's own badge. */
@@ -201,21 +216,6 @@ export class CommlinkPage {
     // `ionViewWillLeave` covers navigation; this is the backstop for a destroy
     // that never routes, so the interval cannot outlive the component either way.
     inject(DestroyRef).onDestroy(() => this.#stopClock());
-    addIcons({
-      hardwareChipOutline,
-      timerOutline,
-      businessOutline,
-      notificationsOutline,
-      barcodeOutline,
-      restaurantOutline,
-      cartOutline,
-      fileTrayStackedOutline,
-      checkboxOutline,
-      pricetagsOutline,
-      walletOutline,
-      diceOutline,
-      settingsOutline,
-      sparklesOutline,
-    });
+    addIcons(DECK_ICONS);
   }
 }

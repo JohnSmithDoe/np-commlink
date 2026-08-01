@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
+import { pageRoot, waitForPersisted } from '../helpers';
 
 /**
  * Mutate → reload persistence guard for the LAZY cash context (the parity guard
@@ -18,7 +18,7 @@ test.describe('cash persistence', () => {
     page,
   }) => {
     await page.goto('/#/cash');
-    const list = page.locator('#main-content app-page-cash');
+    const list = pageRoot(page, 'app-page-cash');
     await expect(list).toBeVisible({ timeout: 30_000 });
     await expect(list.getByTestId('cash-accounts-empty')).toBeVisible(); // hydrated, empty
 
@@ -35,7 +35,7 @@ test.describe('cash persistence', () => {
     });
 
     await list.getByText('CREDSTICK-01').click();
-    const account = page.locator('#main-content app-page-cash-account');
+    const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
 
     await account
@@ -56,7 +56,7 @@ test.describe('cash persistence', () => {
     // --- cold reload → fresh boot → re-enter the lazy account route ---
     await page.reload();
 
-    const accountAfter = page.locator('#main-content app-page-cash-account');
+    const accountAfter = pageRoot(page, 'app-page-cash-account');
     await expect(accountAfter.getByText('Soykaf refill')).toBeVisible({
       timeout: 30_000,
     });

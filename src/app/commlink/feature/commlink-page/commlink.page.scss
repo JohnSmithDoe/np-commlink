@@ -7,7 +7,19 @@
 
 :host {
   --app-content-max-width: 100%;
-  --app-content-bg: transparent;
+
+  // Two local flip tokens. Both axes are pure deck decoration — a black wash
+  // behind the status strip, a black lift under the amber bloom on a hovered
+  // tile — so the plain theme must not inherit them. They stay local rather
+  // than joining the --sr-* group because this page is the only consumer.
+  --cl-bar-bg: var(--sr-panel);
+  --cl-lift: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+:host-context([data-theme='cyberpunk']) {
+  --cl-bar-bg: rgba(0, 0, 0, 0.3);
+  --cl-lift:
+    0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(var(--sr-amber-rgb), 0.35);
 }
 
 .cl {
@@ -15,7 +27,7 @@
   min-height: 100%;
   padding: 1.25rem clamp(1rem, 4vw, 2.5rem) 2rem;
   font-family: var(--sr-deck-font);
-  color: rgba(var(--sr-amber-rgb), 0.9);
+  color: var(--sr-text-dim);
 }
 
 // Faint alignment-grid overlay — cyberpunk only. Scanlines come from the shared
@@ -56,11 +68,14 @@
   padding: 0.5rem 0.85rem;
   border: 1px solid var(--sr-line);
   border-radius: var(--sr-radius);
-  background: rgba(0, 0, 0, 0.3);
-  font-size: 0.72rem;
+  background: var(--cl-bar-bg);
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
-  color: rgba(var(--sr-amber-rgb), 0.8);
+  // The muted-label token rather than a hand-rolled amber-at-0.8: in cyberpunk
+  // it IS amber (at 0.85), but in plain the accent is a corporate blue, and
+  // blue-at-0.8 on the panel is 3.96:1 against this 0.72rem type.
+  color: var(--sr-text-dim);
 
   b {
     color: var(--sr-cyan);
@@ -80,7 +95,7 @@
 .cl-hero__kicker {
   margin: 0 0 0.6rem;
   color: var(--sr-cyan);
-  font-size: 0.78rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
   opacity: 0.85;
@@ -89,6 +104,7 @@
   position: relative;
   display: inline-block;
   margin: 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- fluid head: interpolates with viewport width, so it cannot be a fixed rung. */
   font-size: clamp(1.8rem, 6vw, 3.4rem);
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
@@ -97,10 +113,10 @@
 }
 .cl-hero__meta {
   margin: 0.85rem 0 0;
-  font-size: 0.74rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
-  color: rgba(var(--sr-amber-rgb), 0.85);
+  color: var(--sr-text-dim);
 
   b {
     color: var(--sr-cyan);
@@ -126,31 +142,11 @@
   padding: 1rem;
   overflow: hidden;
   text-decoration: none;
-  color: rgba(var(--sr-amber-rgb), 0.9);
+  color: var(--sr-text-dim);
   transition:
     transform 0.18s ease,
     border-color 0.18s ease,
     box-shadow 0.18s ease;
-}
-
-.cl-node:not(.cl-node--offline):hover,
-.cl-node:not(.cl-node--offline):focus-visible {
-  transform: translateY(-3px);
-  border-color: var(--sr-amber);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.5),
-    0 0 18px rgba(var(--sr-amber-rgb), 0.35);
-  outline: none;
-}
-.cl-node:not(.cl-node--offline):hover::before,
-.cl-node:not(.cl-node--offline):hover::after,
-.cl-node:not(.cl-node--offline):focus-visible::before,
-.cl-node:not(.cl-node--offline):focus-visible::after {
-  opacity: 1;
-}
-.cl-node:not(.cl-node--offline):hover .cl-node__icon {
-  color: var(--sr-cyan);
-  text-shadow: 0 0 14px rgba(var(--sr-cyan-rgb), 0.7);
 }
 
 // Sweep highlight that runs down the tile on hover.
@@ -166,8 +162,35 @@
     transparent
   );
 }
-.cl-node:not(.cl-node--offline):hover .cl-node__scan {
-  animation: cl-sweep 0.9s ease;
+
+// The whole hover/focus response for a reachable tile. The negation is what
+// keeps an offline tile inert, and it is spelled once here rather than eight
+// times. The split is deliberate: the lift and the corner brackets answer to
+// keyboard focus too, while the sweep and the icon recolour are pointer-only.
+.cl-node:not(.cl-node--offline) {
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--sr-amber);
+    box-shadow: var(--cl-lift);
+    outline: none;
+
+    &::before,
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  &:hover {
+    .cl-node__icon {
+      color: var(--sr-cyan);
+      text-shadow: 0 0 14px rgba(var(--sr-cyan-rgb), 0.7);
+    }
+
+    .cl-node__scan {
+      animation: cl-sweep 0.9s ease;
+    }
+  }
 }
 
 .cl-node__top {
@@ -177,9 +200,9 @@
   width: 100%;
 }
 .cl-node__hex {
-  font-size: 0.68rem;
+  font-size: var(--fs-xsmall);
   letter-spacing: var(--sr-label-tracking);
-  color: rgba(var(--sr-amber-rgb), 0.85);
+  color: var(--sr-text-dim);
 }
 .cl-node__flags {
   display: flex;
@@ -195,7 +218,7 @@
   // --sr-red only clears it as a dot/border/large icon, not as a text bg.
   background: var(--sr-red-deep);
   color: #fff;
-  font-size: 0.66rem;
+  font-size: var(--fs-xsmall);
   font-weight: 700;
   line-height: 1.2;
   text-align: center;
@@ -214,6 +237,7 @@
 }
 .cl-node__icon {
   margin: 0.15rem 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- icon box size, not type. */
   font-size: 2.4rem;
   color: var(--sr-amber);
   transition:
@@ -221,20 +245,20 @@
     text-shadow 0.18s ease;
 }
 .cl-node__name {
-  font-size: 1.15rem;
+  font-size: var(--fs-large);
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
   color: var(--sr-text);
 }
 .cl-node__desc {
-  font-size: 0.72rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
-  color: rgba(var(--sr-amber-rgb), 0.85);
+  color: var(--sr-text-dim);
 }
 .cl-node__foot {
   margin-top: auto;
-  font-size: 0.72rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
   color: var(--sr-cyan);
@@ -273,10 +297,10 @@
   margin-top: 1.5rem;
   padding: 0.6rem 0.85rem 0;
   border-top: 1px solid var(--sr-line);
-  font-size: 0.72rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
-  color: rgba(var(--sr-amber-rgb), 0.85);
+  color: var(--sr-text-dim);
 
   b {
     color: var(--sr-cyan);

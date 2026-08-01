@@ -3,26 +3,17 @@ import {
   addViaSearch,
   gotoFeature,
   listRow,
+  presentedDialog,
   ROUTE,
   searchInput,
   waitForListPage,
   waitForPersisted,
 } from '../helpers';
 
-/**
- * The presented item-edit dialog. Two things make the obvious scopes wrong, both
- * verified from the DOM on this route: presenting **moves** the `ion-modal` to
- * `ion-app` while leaving an `overlay-hidden` twin inside the wrapper (so
- * `app-edit-storage-item-dialog` matches two), and this route mounts **five**
- * `ion-modal`s (the item dialog, its category picker, the date picker, …). Ionic
- * also puts **no `role="dialog"`** on `ion-modal`, so of CLAUDE.md's two keys —
- * title or role — only the title exists: `.show-modal` narrows to what is
- * presented, the title to which one.
- */
+/** The presented item-edit dialog — see `presentedDialog` for why it is keyed
+ * off `.show-modal` plus the title and nothing else. */
 function editDialog(page: Page): Locator {
-  return page
-    .locator('ion-modal.show-modal')
-    .filter({ hasText: 'Eintrag bearbeiten' });
+  return presentedDialog(page, 'Eintrag bearbeiten');
 }
 
 function nameBox(page: Page): Locator {
@@ -118,9 +109,8 @@ test.describe('storage list', () => {
       editDialog(page).getByText('Der Name existiert bereits')
     ).toBeVisible();
 
-    // Blank is the other rule the schema carries — whitespace included, which the
-    // built-in `required()` would have accepted.
-    await nameBox(page).fill('   ');
+    const value = ' '.repeat(3);
+    await nameBox(page).fill(value);
     await expect(save).toBeDisabled();
     await expect(
       editDialog(page).getByText('Der Name darf nicht leer sein')
@@ -177,46 +167,18 @@ test.describe('storage list', () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  // The category-NAME dialog: in categories display mode the "+" names a new
-  // category instead of opening the item dialog. That branch used to live in two
-  // guarded NgRx effects with the working name written to the store per keystroke;
-  // it is now the shared list page's own signal + IListPageFacade.saveCategory.
-  test('names a new category from the "+" in categories display mode', async ({
-    page,
-  }) => {
-    await page.getByRole('button', { name: 'Kategorien', exact: true }).click();
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
+  // Mirror image of e2e/desktop/emoji-picker.e2e.ts: the picker is gated to
+  // desktop, so on the Pixel 5 this project emulates the trigger must not exist
+  // at all — a mobile keyboard already has one, and an always-mounted ion-modal
+  // would make every overlay locator on this route ambiguous for nothing.
+  test('offers no emoji picker on mobile', async ({ page }) => {
+    await addViaSearch(page, 'Milk');
+    await listRow(page, /Milk/).click();
+    await expect(editDialog(page)).toBeVisible({ timeout: 10_000 });
 
-    // The dialog's <ion-modal> teleports to the app root, so key off its title.
-    await expect(page.getByText('Neue Kategorie anlegen')).toBeVisible({
-      timeout: 10_000,
-    });
-    await page.getByPlaceholder('Gib einen Namen ein').fill('Frozen');
-    await page.getByRole('button', { name: 'Anlegen' }).click();
-
-    await expect(page.locator('#main-content').getByText('Frozen')).toBeVisible(
-      { timeout: 10_000 }
-    );
-  });
-
-  // A cancelled name must not leak into the next open (the draft resets on open).
-  test('discards a cancelled category name', async ({ page }) => {
-    await page.getByRole('button', { name: 'Kategorien', exact: true }).click();
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
-    await expect(page.getByText('Neue Kategorie anlegen')).toBeVisible({
-      timeout: 10_000,
-    });
-
-    await page.getByPlaceholder('Gib einen Namen ein').fill('Typo');
-    await page.getByRole('button', { name: 'Abbrechen' }).click();
-
-    await page.getByRole('button', { name: 'Hinzufügen' }).click();
-    await expect(page.getByText('Neue Kategorie anlegen')).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByPlaceholder('Gib einen Namen ein')).toHaveValue('');
-    await expect(page.locator('#main-content').getByText('Typo')).toHaveCount(
-      0
-    );
+    await expect(
+      editDialog(page).getByTestId('emoji-picker-trigger')
+    ).toHaveCount(0);
+    await expect(page.locator('app-emoji-picker')).toHaveCount(0);
   });
 });

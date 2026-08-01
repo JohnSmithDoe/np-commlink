@@ -21,6 +21,7 @@ import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { TrackingFacade } from '../../data';
+import { TodayService } from '../../util/today.service';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 
 @Component({
@@ -44,9 +45,21 @@ import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 })
 export class DailySessionsComponent {
   readonly #allSessions = inject(TrackingFacade).allSessions;
+  readonly #today = inject(TodayService).today;
   readonly selectedDate = signal<Dayjs>(dayjs().startOf('day'));
 
-  readonly isToday = computed(() => this.selectedDate().isSame(dayjs(), 'day'));
+  /**
+   * Reads the day as a value, not off the clock — a `computed` memoizes on its
+   * declared dependencies, and `dayjs()` is not one.
+   *
+   * This one locked the user out rather than merely misreading: it also drives
+   * `[disabled]` on the next-day button and the early return in {@link nextDay}.
+   * Left open past midnight, the panel still called yesterday "today" and refused
+   * to advance to the day that had actually started.
+   */
+  readonly isToday = computed(() =>
+    this.selectedDate().isSame(this.#today(), 'day')
+  );
   readonly selectedDateIso = computed(() => this.selectedDate().toISOString());
 
   readonly sessions = computed(() => {

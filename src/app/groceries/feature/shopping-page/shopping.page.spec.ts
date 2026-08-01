@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockShoppingItem } from '../../testing/groceries.test-data';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { ShoppingActions } from '../../data';
 import { ShoppingPage } from './shopping.page';
 
@@ -26,11 +26,6 @@ describe('ShoppingPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('dispatches enterPage on ionViewWillEnter', () => {
-    component.ionViewWillEnter();
-    expect(dispatch).toHaveBeenCalledWith(ShoppingActions.enterPage());
   });
 
   it('dispatches removeItem with the item', () => {

@@ -19,14 +19,12 @@ import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-
 })
 export class ItemListQuickAddComponent {
   readonly #facade = inject(GroceryListPageFacade);
-  rxState = this.#facade.quickAddState;
-  rxShowLocal = this.#facade.quickAddCanAddLocal;
-  rxShowProduct = this.#facade.quickAddCanAddProduct;
-  rxShowCategoy = this.#facade.quickAddCanAddCategory;
+  readonly state = this.#facade.quickAddState;
+  readonly canAddLocal = this.#facade.quickAddCanAddLocal;
+  readonly canAddProduct = this.#facade.quickAddCanAddProduct;
 
   quickAddItem = output<void>();
   quickCreateProduct = output<void>();
-  quickCreateCategory = output<void>();
 
   constructor() {
     addIcons({ add, remove, cart, list });

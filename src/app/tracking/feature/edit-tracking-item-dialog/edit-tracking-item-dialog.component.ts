@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { BaseEditItemDialog } from '../../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
+import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { TrackingListPageFacade } from '../../data';
 import { ITrackingItem, TRACKING_LIST_ID } from '../../model/tracking.types';
@@ -20,7 +20,6 @@ marker('edit.item.dialog.button.close');
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ItemEditModalComponent],
   templateUrl: './edit-tracking-item-dialog.component.html',
-  styleUrl: './edit-tracking-item-dialog.component.scss',
 })
 export class EditTrackingItemDialogComponent extends BaseEditItemDialog<ITrackingItem> {
   protected blank(): ITrackingItem {

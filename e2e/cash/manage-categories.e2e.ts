@@ -1,44 +1,40 @@
 import { expect, Page, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
+import {
+  addViaSearch,
+  listRow,
+  pageRoot,
+  waitForListPage,
+  waitForPersisted,
+} from '../helpers';
 
 /**
- * Cash adoption of the shared manage-categories page + the cash category→items
- * drill (a category's transactions — cash's equivalent of the grocery/tasks
- * `?filter` list, since cash has no filterBy).
+ * Cash adoption of the shared CATALOG LIST page + the cash category→items drill
+ * (a category's transactions — cash's equivalent of the grocery/tasks `?filter`
+ * list, since cash has no filterBy).
  */
 async function openOverview(page: Page) {
   await page.goto('/#/cash');
-  await expect(page.locator('#main-content app-page-cash')).toBeVisible({
+  await expect(pageRoot(page, 'app-page-cash')).toBeVisible({
     timeout: 30_000,
   });
 }
 
 test.describe('cash manage categories', () => {
-  test('adds a category from the manage page and returns via back', async ({
+  test('adds a category from the catalog page and returns via back', async ({
     page,
   }) => {
     await openOverview(page);
-    // Toolbar shortcut → the shared manage page (cash CATEGORIES_FACADE).
+    // Toolbar shortcut → the shared catalog list page (cash CATEGORY_LIST_FACADE).
     await page.getByRole('button', { name: 'Kategorien' }).first().click();
     await expect(page).toHaveURL(/cash\/categories/);
 
-    const input = page.getByPlaceholder('Neue Kategorie');
-    await expect(input).toBeVisible({ timeout: 10_000 });
-    await input.click();
-    await input.fill('Miete');
-    await input.press('Enter');
+    // The catalog is a list, so the shared add-via-searchbar helper works on it.
+    await waitForListPage(page);
+    await addViaSearch(page, 'Miete');
 
-    await expect(
-      page.locator('app-page-edit-categories').getByText('Miete', {
-        exact: true,
-      })
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(listRow(page, 'Miete')).toBeVisible({ timeout: 10_000 });
     // No transactions yet → count 0.
-    await expect(
-      page.locator('app-page-edit-categories ion-item-sliding', {
-        hasText: 'Miete',
-      })
-    ).toContainText('0');
+    await expect(listRow(page, 'Miete')).toContainText('0');
 
     // Back → the cash overview (listHref).
     await page.getByRole('link', { name: 'Zurück' }).first().click();
@@ -47,7 +43,7 @@ test.describe('cash manage categories', () => {
 
   test('drills from a category into its transactions', async ({ page }) => {
     await openOverview(page);
-    const list = page.locator('#main-content app-page-cash');
+    const list = pageRoot(page, 'app-page-cash');
 
     await list.getByTestId('page-header-add').click();
     const accountModal = page.locator('app-cash-account-edit-modal');
@@ -60,7 +56,7 @@ test.describe('cash manage categories', () => {
     });
 
     await list.getByText('CREDSTICK-07').click();
-    const account = page.locator('#main-content app-page-cash-account');
+    const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
     await account
       .getByRole('button', { name: 'Transaktion hinzufügen' })
@@ -90,14 +86,10 @@ test.describe('cash manage categories', () => {
     // Scope to the manage-page component — the (hidden) account page still has a
     // "Wohnung Miete" txn row that would otherwise also match.
     await page.goto('/#/cash/categories');
-    const row = page.locator('app-page-edit-categories ion-item-sliding', {
-      hasText: 'Miete',
+    await expect(listRow(page, 'Miete')).toContainText('1', {
+      timeout: 10_000,
     });
-    await expect(row).toContainText('1', { timeout: 10_000 });
-    await page
-      .locator('app-page-edit-categories')
-      .getByText('Miete', { exact: true })
-      .click();
+    await listRow(page, 'Miete').click();
 
     await expect(page).toHaveURL(/cash\/category\//);
     await expect(

@@ -1,13 +1,13 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemDialogService } from '../../@shared/util/item-dialog.service';
-import { TrackingActions } from './actions/tracking.actions';
+import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { TrackingActions } from './tracking.actions';
 import {
   selectTrackingListItems,
   selectTrackingListSearchResult,
   selectTrackingState,
-} from './selectors/tracking.selector';
+} from './tracking.selector';
 import { TrackingListPageFacade } from './tracking-list-page.facade';
 
 describe('TrackingListPageFacade', () => {
@@ -24,7 +24,6 @@ describe('TrackingListPageFacade', () => {
     store.overrideSelector(selectTrackingState, {
       items: [],
       categories: [],
-      mode: 'alphabetical',
     } as never);
     store.overrideSelector(selectTrackingListItems, []);
     store.overrideSelector(selectTrackingListSearchResult, undefined);
@@ -66,13 +65,9 @@ describe('TrackingListPageFacade', () => {
     expect(request?.item.name).toBe('new ticket');
   });
 
-  it('has no categories and its category ops are inert', () => {
+  it('has no categories, so its one category op is inert', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
-    expect(facade.categories()).toEqual([]);
-    facade.addCategoryFromSearch();
-    facade.setDisplayMode();
     facade.selectCategory();
-    facade.deleteCategory();
     expect(dispatch).not.toHaveBeenCalled();
   });
 });

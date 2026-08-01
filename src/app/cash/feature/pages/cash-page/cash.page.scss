@@ -1,0 +1,21 @@
+@use '../../../../../theme/cash';
+
+// Accounts overview (P1). Consumes the shared shadowrun tokens via
+// var(--sr-*/--ion-*); the cash mixins carry the pieces the sibling surfaces
+// share.
+// Spacing before the include: the mixin ends in nested `&__` rules, so anything
+// after it would be emitted as a second `.cash-networth` block.
+.cash-networth {
+  padding: 0.25rem 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
+  @include cash.networth-strip;
+}
+
+.cash-account__balance {
+  font-family: var(--sr-deck-font);
+  font-size: var(--fs-body);
+}
+
+.cash-empty {
+  @include cash.empty-state;
+}

@@ -2,15 +2,20 @@
   (ionDrag)="deleteOrCartOnSwipe($event)"
   data-testid="list-row"
 >
-  @if (showCartAction()) {
+  @let startSwipe = startSwipeAction();
+  @if (startSwipe) {
     <ion-item-options side="start">
       <ion-item-option
         color="success"
         [expandable]="true"
-        (click)="emitCartItem()"
-        [attr.aria-label]="cartActionLabel() | translate"
+        (click)="emitStartSwipe()"
+        [attr.aria-label]="startSwipe.labelKey | translate"
       >
-        <ion-icon name="cart" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon
+          [name]="startSwipe.icon"
+          slot="icon-only"
+          aria-hidden="true"
+        ></ion-icon>
       </ion-item-option>
     </ion-item-options>
   }
@@ -23,7 +28,7 @@
     data-testid="list-row-select"
   >
     @if (hasStatusBar()) {
-      <div class="status-bar" data-testid="list-row-status">
+      <div class="sr-status-bar" data-testid="list-row-status">
         <ion-text [color]="statusColor()"></ion-text>
       </div>
     }

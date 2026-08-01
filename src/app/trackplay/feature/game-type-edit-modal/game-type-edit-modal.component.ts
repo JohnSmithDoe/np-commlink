@@ -17,12 +17,12 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { form, FormField, SchemaFn } from '@angular/forms/signals';
+import { FormField, SchemaFn, SchemaPathTree } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
-import { requireText } from '../../../@shared/util/form-rules';
+import { requireText } from '../../../@shared/util/forms/form-rules';
 import { IGameType } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
@@ -72,7 +72,9 @@ export class TrackplayGameTypeEditModalComponent extends BaseModalDialog<
     return id ? this.#gameTypes()[id] : undefined;
   });
 
-  protected readonly form = form(this.draft, gameTypeRules);
+  protected applyRules(path: SchemaPathTree<TGameTypeForm>): void {
+    gameTypeRules(path);
+  }
 
   constructor() {
     super();

@@ -1,5 +1,3 @@
-import { expect, Locator, Page } from '@playwright/test';
-
 /**
  * Shared helpers for the trackplay e2e suite.
  *
@@ -21,21 +19,13 @@ import { expect, Locator, Page } from '@playwright/test';
  * Dialogs / toasts / select-alerts are Ionic overlays rendered at the app root
  * (outside `#main-content`) — scope those to their own component / element.
  */
+import { expect, Locator, Page } from '@playwright/test';
+// `mainContent`/`pageRoot` moved to the suite-wide helpers: every feature scopes
+// to `#main-content`, not just trackplay. Re-exported so this suite's specs keep
+// importing them from one place.
+import { mainContent, openRowSwipe, pageRoot } from '../helpers';
 
-/** The routed-page container. The side menu lives outside it. */
-export function mainContent(page: Page): Locator {
-  return page.locator('#main-content');
-}
-
-/**
- * A single routed page component, scoped inside `#main-content`. Ionic's
- * router-outlet keeps previously-visited sibling pages mounted (and, for
- * URL/hash navigations, still visible) alongside the active one, so page-level
- * locators MUST be scoped to their own page component to stay unambiguous.
- */
-export function pageRoot(page: Page, selector: string): Locator {
-  return mainContent(page).locator(selector);
-}
+export { mainContent, pageRoot };
 
 /** The page-header "+" add button within a given page-component scope. */
 export function addButton(scope: Locator): Locator {
@@ -107,16 +97,8 @@ export async function togglePlayerInSelect(
   await row.getByTestId('player-select-checkbox').click();
 }
 
-/**
- * Open an `ion-item-sliding` row's leading (start / delete) options and click
- * the delete option. Ionic keeps the options translated off-screen, so we drive
- * the component's own `open()` method instead of faking a swipe gesture.
- */
+/** Reveal a trackplay row's leading options and click the delete one. */
 export async function slideDelete(row: Locator): Promise<void> {
-  const sliding = row.locator('ion-item-sliding');
-  await sliding.evaluate(
-    (el: HTMLElement & { open(side: string): Promise<void> }) =>
-      el.open('start')
-  );
-  await row.locator('ion-item-option').filter({ hasText: 'Löschen' }).click();
+  await openRowSwipe(row.locator('ion-item-sliding'), 'start');
+  await row.getByTestId('row-delete').click();
 }

@@ -7,21 +7,20 @@
   <app-item-list-quick-add
     quickAdd
     (quickAddItem)="facade.addItemFromSearch()"
-    (quickCreateCategory)="facade.addCategoryFromSearch()"
     (quickCreateProduct)="facade.showCreateProductDialog()"
   ></app-item-list-quick-add>
   <ion-buttons slot="end" listActions>
     <ion-button
-      [hidden]="!rxState().items.length"
+      [hidden]="!state().items.length"
       (click)="openActionSheet()"
       [attr.aria-label]="'grocery.a11y.actions' | translate"
     >
       <ion-icon name="bag-add" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </ion-buttons>
-  @if (showScanButton) {
+  @if (facade.showScanButton) {
     <ion-button
-      (click)="scan()"
+      (click)="facade.scan()"
       toolbarActions
       [attr.aria-label]="'grocery.a11y.scan' | translate"
     >
@@ -31,7 +30,7 @@
   <app-grocery-search-result
     searchExtras
     [results]="facade.searchResult()"
-    [catalog]="facade.state()?.categories ?? []"
+    [catalog]="facade.catalog()"
     (selectProduct)="facade.addProduct($event)"
     (selectStorageItem)="facade.addStorageItem($event)"
     (selectShoppingItem)="facade.addShoppingItem($event)"
@@ -51,12 +50,12 @@
     [categories]="categories"
     [crossedOut]="item.state === 'bought'"
     [showQuantityActions]="true"
-    [cartActionLabel]="cartActionLabel"
+    [startSwipeAction]="startSwipeAction"
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
     (increment)="changeQuantity(item, +1)"
     (decrement)="changeQuantity(item, -1)"
-    (cartItem)="buyItem(item)"
+    (startSwipe)="buyItem(item)"
   ></app-list-item>
 </ng-template>
 

@@ -1,5 +1,5 @@
+@use '../../../../theme/trackplay';
+
 :host {
-  ion-label p {
-    color: var(--sr-text-dim);
-  }
+  @include trackplay.label-secondary;
 }

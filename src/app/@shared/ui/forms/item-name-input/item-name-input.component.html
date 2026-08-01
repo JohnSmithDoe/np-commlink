@@ -6,10 +6,37 @@
     [value]="value()"
     (ionInput)="onInput($event)"
     (ionBlur)="touchedChange.emit(true)"
-  />
+  >
+    @if (offersEmojiPicker) {
+      <ion-button
+        slot="end"
+        fill="clear"
+        [attr.aria-label]="'emoji-picker.open' | translate"
+        (click)="pickerOpen.set(true)"
+        data-testid="emoji-picker-trigger"
+      >
+        <ion-icon slot="icon-only" name="happy-outline" aria-hidden="true" />
+      </ion-button>
+    }
+  </ion-input>
 </ion-item>
 @if (errorText(); as message) {
   <ion-note color="danger" class="sr-field-note">
     {{ message | translate }}
   </ion-note>
+}
+<!-- Behind the same gate as its trigger, not just hidden: an always-mounted
+     ion-modal makes every element-name locator for that overlay ambiguous
+     app-wide, and on mobile this one could never be opened anyway.
+     `multiple`: a name is often built from more than one glyph ("🥛 Milch 🌾"),
+     and reopening the picker per emoji is three taps for the second one. -->
+@if (offersEmojiPicker) {
+  <app-emoji-picker
+    mode="multiple"
+    [isOpen]="pickerOpen()"
+    [recent]="recentEmojis()"
+    (picked)="insertEmoji($event)"
+    (closed)="pickerOpen.set(false)"
+    (dismissed)="onPickerDismissed()"
+  />
 }

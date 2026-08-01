@@ -6,7 +6,7 @@ import { LOCALE_BY_LANGUAGE, TLanguage } from '../../@shared/model/app.types';
  * roles between them: `1.234,56` and `1,234.56` are the same amount, and reading
  * one with the other's convention is off by a factor of a thousand. Display
  * formatting (`formatEur`) lives in `@shared/util/money.utils` once `commlink`
- * needed it too. See docs/project-summary.md §7.3 → "Money parsing takes the
+ * needed it too. See docs/cash.md §7.3 → "Money parsing takes the
  * language explicitly".
  */
 

@@ -20,7 +20,7 @@ type TestProvider = Provider | EnvironmentProviders;
  * detection, HttpClient (translate loader), Ionic config, Ionic Storage,
  * TranslateService and a no-op router.
  */
-export const BASE_TEST_PROVIDERS: TestProvider[] = [
+const BASE_TEST_PROVIDERS: TestProvider[] = [
   provideZonelessChangeDetection(),
   provideHttpClient(),
   provideIonicAngular(),

@@ -26,7 +26,6 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
     ItemEditModalComponent,
   ],
   templateUrl: './edit-storage-item-dialog.component.html',
-  styleUrl: './edit-storage-item-dialog.component.scss',
 })
 export class EditStorageItemDialogComponent extends BaseGroceryEditItemDialog<IStorageItem> {
   protected blank(): IStorageItem {
@@ -34,7 +33,7 @@ export class EditStorageItemDialogComponent extends BaseGroceryEditItemDialog<IS
   }
 
   protected readonly listId: TGroceryListId = '_storage';
-  readonly categories = this.facade.storageCategories;
+  readonly categories = this.facade.catalog;
   readonly siblings = this.facade.storageItems;
 
   protected save(item: IStorageItem): void {

@@ -20,7 +20,7 @@ import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-in
 /**
  * Pure presentational (type:ui) edit-modal shell — inputs in, events out, no
  * store. The domain feature wrapper owns the draft + open state and projects
- * its domain-specific fields through `<ng-content>` (see docs/project-summary.md §2.6).
+ * its domain-specific fields through `<ng-content>` (see docs/dialogs-and-forms.md §2.6).
  * `closeButtonText` is an input because the old store-bound shell hardcoded a
  * `grocery.`-prefixed key, which is why tracking forked.
  *
@@ -34,7 +34,6 @@ import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-in
 @Component({
   selector: 'app-item-edit-modal',
   templateUrl: './item-edit-modal.component.html',
-  styleUrls: ['./item-edit-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,

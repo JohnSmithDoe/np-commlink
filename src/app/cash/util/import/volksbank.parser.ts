@@ -10,7 +10,7 @@ import {
   splitRow,
 } from './bank-parser';
 
-// Volksbank giro export (docs/cash/example.csv). `;`-delimited, header first:
+// Volksbank giro export. `;`-delimited, header first:
 // Buchungstag;Valuta;Auftraggeber/Beguenstigter;Verwendungszweck;IBAN;BIC;Betrag;…
 const HEADER = 'Buchungstag';
 const DATE = 0;
@@ -19,8 +19,6 @@ const PURPOSE = 3;
 const AMOUNT = 6;
 
 export const volksbankParser: IBankParser = {
-  bank: 'volksbank',
-  label: 'Volksbank',
   parse(text: string): IParseResult {
     const lines = splitLines(text);
     const header = findHeaderIndex(lines, HEADER);

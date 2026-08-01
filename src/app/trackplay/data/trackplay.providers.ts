@@ -1,12 +1,13 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { createMetric } from '../../@shared/data/effects/persisted-slice.effects.factory';
-import { TrackplayActions } from './actions/trackplay.actions';
-import { trackplayReducer } from './reducer/trackplay.reducer';
-import { TrackplayEffects } from './effects/trackplay.effects';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
+import { TrackplayActions } from './trackplay.actions';
+import { trackplayReducer } from './trackplay.reducer';
+import { TrackplayEffects } from './trackplay.effects';
 import {
+  TRACKPLAY_STATE_KEY,
   selectGameCount,
   selectTrackplayPersisted,
-} from './selectors/trackplay.selector';
+} from './trackplay.selector';
 
 /**
  * The `trackplay` bounded context, registered on ALL trackplay routes
@@ -19,7 +20,7 @@ import {
  * one page hook that can mutate (it appends the trailing blank round).
  */
 export const trackplayContext = providePersistedContext({
-  key: 'trackplay',
+  key: TRACKPLAY_STATE_KEY,
   reducer: trackplayReducer,
   lifecycle: TrackplayActions,
   select: selectTrackplayPersisted,

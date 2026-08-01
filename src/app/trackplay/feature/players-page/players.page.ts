@@ -22,10 +22,9 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
 import { TrackplayFacade } from '../../data';
 import { TrackplayPlayerListItemComponent } from '../../ui/player-list-item/player-list-item.component';
 import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
-import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
-import { presentModal } from '../../../@shared/util/present-modal';
-
-const EMPTY_STATS: IPlayerStats = { play: 0, win: 0, loss: 0, open: 0 };
+import { presentModal } from '../../../@shared/util/app.modal.utils';
+import { presentListSettings } from '../present-list-settings';
+import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
 
 /**
  * Players list. New-player (+) and the sort/filter settings popover in the
@@ -67,7 +66,7 @@ export class TrackplayPlayersPage {
   }
 
   statsFor(player: IPlayer): IPlayerStats {
-    return this.rxStats()[player.id] ?? EMPTY_STATS;
+    return this.rxStats()[player.id] ?? NO_PLAYER_STATS;
   }
 
   goToPlayer(id: TID): void {
@@ -78,7 +77,7 @@ export class TrackplayPlayersPage {
     this.#facade.deletePlayer(player);
   }
 
-  async newPlayer(): Promise<void> {
+  async createPlayer(): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       TrackplayPlayerEditModalComponent,
@@ -95,12 +94,7 @@ export class TrackplayPlayersPage {
     );
   }
 
-  async openSettings(event: Event): Promise<void> {
-    const popover = await this.#popoverCtrl.create({
-      component: TrackplayListSettingsPopoverComponent,
-      componentProps: { mode: 'players' },
-      event: event,
-    });
-    await popover.present();
+  openSettings(event: Event): Promise<void> {
+    return presentListSettings(this.#popoverCtrl, 'players', event);
   }
 }

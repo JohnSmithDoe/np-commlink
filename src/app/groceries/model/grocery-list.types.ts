@@ -1,23 +1,18 @@
 import { TTimestamp } from '../../@shared/model/app.types';
 import { IBaseItem } from '../../@shared/model/base-item.types';
-import { ICategory } from '../../@shared/model/category.types';
-import {
-  IItemList,
-  ISearchResult,
-  TItemListMode,
-} from '../../@shared/model/item-list.types';
+import { IItemList, ISearchResult } from '../../@shared/model/item-list.types';
 
 // The three shopper-facing lists: the product catalog, the shopping list and the
 // pantry. They share the shared `IItemList` engine but each narrows its identity,
 // and the search buckets below are what makes them cross-readable.
 
-export const GROCERY_LIST_IDS = ['_storage', '_products', '_shopping'] as const;
+const GROCERY_LIST_IDS = ['_storage', '_products', '_shopping'] as const;
 export type TGroceryListId = (typeof GROCERY_LIST_IDS)[number];
 export const isGroceryListId = (value?: string): value is TGroceryListId =>
   GROCERY_LIST_IDS.includes(value as TGroceryListId);
 
 export type TItemUnit = 'ml' | 'g' | 'pieces';
-export type TPackagingUnit = 'bottle' | 'package' | 'loose' | 'tin-can';
+type TPackagingUnit = 'bottle' | 'package' | 'loose' | 'tin-can';
 export type TBestBeforeTimespan =
   'forever' | 'days' | 'weeks' | 'months' | 'years';
 
@@ -64,24 +59,15 @@ export type IStorageItem = IBaseItem &
     bestBefore?: TTimestamp;
   };
 
-// Concrete grocery lists narrow `id` and re-require categories/mode (optional on
-// the shared IItemList base) so grocery selectors can read them without null
-// guards.
-export type TStorageList = IItemList<IStorageItem> & {
-  id: '_storage';
-  categories: ICategory[];
-  mode: TItemListMode;
-};
-export type TProductsList = IItemList<IProduct> & {
-  id: '_products';
-  categories: ICategory[];
-  mode: TItemListMode;
-};
-export type TShoppingList = IItemList<IShoppingItem> & {
-  id: '_shopping';
-  categories: ICategory[];
-  mode: TItemListMode;
-};
+// The catalog is a fourth list beside the three, shared by all of them. Its id is
+// only the `ItemDialogService` handshake token — unlike the three item lists,
+// nothing routes on it, so the type stays the plain shared one.
+export const GROCERY_CATEGORIES_LIST_ID = '_grocery-categories';
+
+// Concrete grocery lists narrow `id`; everything else comes from the shared base.
+type TStorageList = IItemList<IStorageItem> & { id: '_storage' };
+type TProductsList = IItemList<IProduct> & { id: '_products' };
+type TShoppingList = IItemList<IShoppingItem> & { id: '_shopping' };
 
 export type IStorageState = Readonly<TStorageList>;
 export type IShoppingState = Readonly<TShoppingList> & {

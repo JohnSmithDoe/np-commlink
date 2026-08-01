@@ -1,4 +1,5 @@
 import { createActionGroup } from '@ngrx/store';
+import dayjs from 'dayjs';
 import {
   INotification,
   IToastMessage,
@@ -32,6 +33,15 @@ import {
  * page-viewed, debug trigger) is a separate notifications-owned group
  * (`NotificationsInboxActions`, same `'Notifications'` source string) — the same
  * split as `DashboardActions` vs `DashboardReadModelActions`.
+ *
+ * **The two events that stamp a time carry it in the payload, defaulted here.**
+ * The reducer used to read `dayjs()` itself, which made it a function of more
+ * than (state, action): replaying a recorded action produced a different state
+ * than the one recorded, and every spec over it could only assert "not the old
+ * value". Capturing the clock in the creator is the conventional place for it —
+ * the action becomes the complete description of what happened. The default is
+ * what keeps this off every producer's call site: a producer describes data, and
+ * "when" is not something it should have to know to reach the sink.
  */
 export const NotificationsActions = createActionGroup({
   source: 'Notifications',
@@ -43,12 +53,13 @@ export const NotificationsActions = createActionGroup({
      * projects are dropped, so a producer never has to hunt down its own stale
      * entries. Rows other owners published are left alone.
      */
-    project: (owner: string, notifications: TProjectedNotification[]) => ({
-      owner,
-      notifications,
-    }),
+    project: (
+      owner: string,
+      notifications: TProjectedNotification[],
+      at: string = dayjs().format()
+    ) => ({ owner, notifications, at }),
     /** Mark handled: it stays in the inbox's done section. */
-    dismiss: (id: string) => ({ id }),
+    dismiss: (id: string, at: string = dayjs().format()) => ({ id, at }),
     /** Drop it entirely — the reason it existed is gone. */
     remove: (id: string) => ({ id }),
     /** Flash a message; no reducer reacts — it never enters the inbox. */

@@ -22,10 +22,8 @@ export function mockTrackingState(
 ): ITrackingState {
   return {
     items: [],
-    categories: [],
-    mode: 'alphabetical',
     sessions: [],
-    sessionsViewId: '',
+    sessionsViewId: 'all',
     ...overrides,
   };
 }

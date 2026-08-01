@@ -1,9 +1,12 @@
 import { EnvironmentProviders, LOCALE_ID, Provider } from '@angular/core';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import { provideGlobalErrorHandler } from './@shared/util/global-error-handler';
-import { bootLanguage, bootLocale } from './@shared/util/language.service';
-import { provideSplashDeadline } from './@shared/util/splash.service';
+import { provideGlobalErrorHandler } from './@shared/util/errors/global-error-handler';
+import {
+  bootLanguage,
+  bootLocale,
+} from './@shared/util/theme/language.service';
+import { provideSplashDeadline } from './@shared/util/services/splash.service';
 import { commlinkContext } from './commlink/data';
 import { notificationsContext } from './notifications/data';
 import { settingsContext } from './settings/data';

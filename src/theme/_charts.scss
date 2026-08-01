@@ -20,13 +20,14 @@ $track: var(--sr-red-deep);
     content: '';
     position: absolute;
     inset: $thickness;
-    background: var(--ion-background-color, #0f141b);
+    // The meter's hole must match the surface it sits on, not the page.
+    background: var(--sr-panel);
     border-radius: 50%;
   }
   .circular-meter .center-text {
     position: relative;
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: var(--fs-xlarge);
     z-index: 1;
     color: var(--ion-text-color);
   }

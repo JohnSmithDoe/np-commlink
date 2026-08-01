@@ -4,7 +4,7 @@
  *
  * - `DeckFacade` — the user's navigation configuration (which programs the grid
  *   and the side menu list, and in what order), resolved against the catalog in
- *   `commlink/model`; rationale in `docs/project-summary.md` §7.1.
+ *   `commlink/model`; rationale in `docs/deck-catalog.md` §7.1.
  * - `DashboardFacade` — the dashboard READ-MODEL, the CQRS query side of the
  *   telemetry contract whose write side (`DashboardActions.report` +
  *   `IDashboardTelemetry` + `createTelemetrySliceEffect`) stays in
@@ -18,6 +18,6 @@
  * read-model action group and `dashboard.selector` stay module internals: the
  * shell composes the providers, the two consumers read the facades.
  */
-export { DashboardFacade } from './dashboard.facade';
-export { DeckFacade } from './deck.facade';
+export { DashboardFacade } from './dashboard/dashboard.facade';
+export { DeckFacade } from './deck/deck.facade';
 export { commlinkContext } from './commlink.providers';

@@ -25,9 +25,8 @@ import { gameTypeName } from '../../util/game-type.utils';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
-import { TrackplayGameEditModalComponent } from '../game-edit-modal/game-edit-modal.component';
-import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
-import { presentModal } from '../../../@shared/util/present-modal';
+import { presentGameDialog } from '../present-game-dialog';
+import { presentListSettings } from '../present-list-settings';
 
 /**
  * TRACKPLAY program home — the games list. Header: new-game (+), a jump to the
@@ -104,32 +103,17 @@ export class TrackplayGamesPage {
     this.#facade.deleteGame(game);
   }
 
-  async newGame(): Promise<void> {
-    await this.#presentGameDialog({});
+  async createGame(): Promise<void> {
+    await presentGameDialog(this.#modalCtrl, this.#translate, {});
   }
 
   async openGameEdit(game: IGame): Promise<void> {
-    await this.#presentGameDialog({ gameId: game.id });
-  }
-
-  async openSettings(event: Event): Promise<void> {
-    const popover = await this.#popoverCtrl.create({
-      component: TrackplayListSettingsPopoverComponent,
-      componentProps: { mode: 'games' },
-      event: event,
+    await presentGameDialog(this.#modalCtrl, this.#translate, {
+      gameId: game.id,
     });
-    await popover.present();
   }
 
-  async #presentGameDialog(properties: {
-    gameId?: TID;
-    presetPlayerIds?: TID[];
-  }): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayGameEditModalComponent,
-      this.#translate.instant(marker('page-title.trackplay-game')),
-      properties
-    );
+  openSettings(event: Event): Promise<void> {
+    return presentListSettings(this.#popoverCtrl, 'games', event);
   }
 }

@@ -7,7 +7,7 @@ import { ICashAccount } from '../model/account.types';
 import { ICashRule } from '../model/rule.types';
 import { ICashTransaction } from '../model/transaction.types';
 import { ICashRecategorization } from '../util/categorize.utils';
-import { CashActions } from './actions/cash.actions';
+import { CashActions } from './cash.actions';
 import {
   selectAccountBalances,
   selectAccountById,
@@ -23,7 +23,7 @@ import {
   selectTransactionsForAccount,
   selectTransactionsForCategory,
   TAccountTxn,
-} from './selectors/cash.selector';
+} from './cash.selector';
 
 /**
  * The `cash` (CREDSTICK) domain facade — the single NgRx surface for every cash
@@ -155,7 +155,7 @@ export class CashFacade {
     this.#store.dispatch(
       NotificationsActions.toast({
         key: marker('cash.rules.apply-result'),
-        params: { count },
+        parameters: { count },
         color: 'medium',
       })
     );

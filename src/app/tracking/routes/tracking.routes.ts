@@ -4,13 +4,13 @@ import { trackingContext } from '../data';
 
 /**
  * The tracking context publishes two mount points because its stats page sits at
- * `/data/:listId` — a product URL that does not share the `/tracking` prefix
+ * `/data` — a product URL that does not share the `/tracking` prefix
  * (route path ≠ folder). Both spread the same single-slice context.
  */
 export const trackingRoutes: Routes = [
   {
     path: '',
-    data: { title: marker('page-title.tracking') },
+    title: marker('page-title.tracking'),
     ...trackingContext,
     loadComponent: () =>
       import('../feature/tracking-page/tracking.page').then(
@@ -25,7 +25,7 @@ export const trackingDataRoutes: Routes = [
     // in-page switcher, so a path segment only ever advertised a choice the
     // route could not make.
     path: '',
-    data: { title: marker('page-title.data') },
+    title: marker('page-title.data'),
     ...trackingContext,
     loadComponent: () =>
       import('../feature/stats-page/stats.page').then((m) => m.StatsPage),

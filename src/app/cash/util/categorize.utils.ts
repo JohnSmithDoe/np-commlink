@@ -7,7 +7,7 @@ import { TCategoryId } from '../../@shared/model/category.types';
 /**
  * The cash categorization engine — pure, so it is trivially testable and shared
  * by P3 ("Apply rules") and P4 (auto-run on an import batch). See
- * docs/project-summary.md §7.3 → Categorization engine. Rules never touch a transaction the
+ * docs/cash.md §7.3 → Categorization engine. Rules never touch a transaction the
  * user has flagged `categoryManual` — that shielding is the CALLER's job (this
  * module only decides which category a rule set would assign).
  */

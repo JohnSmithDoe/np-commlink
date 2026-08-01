@@ -4,8 +4,8 @@ import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
   TLanguageModelAvailability,
-} from '../../../@shared/util/language-model.service';
-import { ThemeService } from '../../../@shared/util/theme.service';
+} from '../../../@shared/util/theme/language-model.service';
+import { ThemeService } from '../../../@shared/util/theme/theme.service';
 import { TTheme } from '../../../@shared/model/app.types';
 import { DashboardFacade, DeckFacade } from '../../data';
 import { DECK_CATALOG } from '../../model/deck.catalog';

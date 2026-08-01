@@ -16,9 +16,14 @@ import {
   IonToggle,
   ToggleChangeEventDetail,
 } from '@ionic/angular/standalone';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { OfficeTimeFacade } from '../../data';
+import {
+  DASHBOARD_SETTING_LABEL_KEYS,
+  DashboardSettingsType,
+} from '../../model/office-time.types';
 import { addIcons } from 'ionicons';
 import { settingsOutline } from 'ionicons/icons';
 
@@ -49,12 +54,16 @@ export class OfficeTimeSettingsPage {
 
   readonly alertButtons: AlertButton[] = [
     {
-      text: this.#translate.instant('office-time.page.settings.reset.cancel'),
+      text: this.#translate.instant(
+        marker('office-time.page.settings.reset.cancel')
+      ),
       role: 'cancel',
       cssClass: 'alert-button-success',
     },
     {
-      text: this.#translate.instant('office-time.page.settings.reset.confirm'),
+      text: this.#translate.instant(
+        marker('office-time.page.settings.reset.confirm')
+      ),
       role: 'confirm',
       cssClass: 'alert-button-danger',
       handler: () => this.resetData(),
@@ -64,9 +73,15 @@ export class OfficeTimeSettingsPage {
   readonly #dashboardSettings = this.#facade.dashboardSettings;
   readonly dashboardSettings = computed(() => {
     const settings = this.#dashboardSettings();
-    return settings
-      ? Object.entries(settings).map(([key, value]) => ({ key, value }))
-      : undefined;
+    if (!settings) return;
+    // `Object.keys` widens to string, so the flag union is restored once here;
+    // each row then carries its own label key from the exhaustive table rather
+    // than the template composing one.
+    return (Object.keys(settings) as DashboardSettingsType[]).map((key) => ({
+      key,
+      value: settings[key],
+      labelKey: DASHBOARD_SETTING_LABEL_KEYS[key],
+    }));
   });
 
   readonly targetOfficeDaysPerWeek = this.#facade.targetOfficeDaysPerWeek;

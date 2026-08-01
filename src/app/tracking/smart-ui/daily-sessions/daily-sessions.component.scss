@@ -16,14 +16,13 @@
 
 .daily-sessions-title {
   font-weight: 600;
-  font-size: 1rem;
   text-align: center;
   flex: 1;
 }
 
 .daily-sessions-totals {
-  font-size: 0.85rem;
-  color: var(--ion-color-medium);
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
   font-weight: 400;
 }
 
@@ -33,6 +32,6 @@
 }
 
 .daily-sessions-empty {
-  color: var(--ion-color-medium);
-  font-size: 0.9rem;
+  color: var(--sr-text-dim);
+  font-size: var(--fs-small);
 }

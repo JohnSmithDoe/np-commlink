@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { pageRoot } from '../helpers';
 
 /**
  * Drives the shared category picker in **single-select** mode (Stage 2): a cash
@@ -11,7 +12,7 @@ test.describe('cash transaction category', () => {
     page,
   }) => {
     await page.goto('/#/cash');
-    const list = page.locator('#main-content app-page-cash');
+    const list = pageRoot(page, 'app-page-cash');
     await expect(list).toBeVisible({ timeout: 30_000 });
 
     await list.getByTestId('page-header-add').click();
@@ -25,7 +26,7 @@ test.describe('cash transaction category', () => {
     });
 
     await list.getByText('CREDSTICK-01').click();
-    const account = page.locator('#main-content app-page-cash-account');
+    const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
     await account
       .getByRole('button', { name: 'Transaktion hinzufügen' })

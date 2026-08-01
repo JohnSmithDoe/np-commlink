@@ -9,8 +9,9 @@ export const BANK_PARSERS: Record<TBank, IBankParser> = {
   dkb: dkbParser,
 };
 
-/** Banks offered in the account dialog's bank picker. */
-export const BANK_OPTIONS: readonly TBank[] = ['volksbank', 'dkb'];
+// Banks offered in the account dialog's bank picker. Derived from the registry
+// so a bank cannot ship with a parser the picker never offers.
+export const BANK_OPTIONS = Object.keys(BANK_PARSERS) as readonly TBank[];
 
 /** The parser for an account's bank, or undefined (manual-only account). */
 export const parserForBank = (

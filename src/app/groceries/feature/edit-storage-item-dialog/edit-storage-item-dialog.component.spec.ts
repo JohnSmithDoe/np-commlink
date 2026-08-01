@@ -6,7 +6,7 @@ import {
   mockStorageState,
 } from '../../testing/groceries.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { createStorageItem } from '../../util/grocery.factory';
 import { GroceryCategoriesActions, StorageActions } from '../../data';
@@ -78,7 +78,7 @@ describe('EditStorageItemDialogComponent', () => {
     const category = mockCategory({ id: 'dairy', name: 'Dairy' });
     component.addCategory(category);
     expect(dispatch).toHaveBeenCalledWith(
-      GroceryCategoriesActions.add(category)
+      GroceryCategoriesActions.addItem(category)
     );
   });
 

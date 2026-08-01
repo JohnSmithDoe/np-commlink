@@ -1,10 +1,10 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TColor } from '../../@shared/model/app.types';
 import { IBaseItem } from '../../@shared/model/base-item.types';
-import { ICategory } from '../../@shared/model/category.types';
 import { IListState } from '../../@shared/model/item-list.types';
 import { IGroceriesState } from '../model/groceries.types';
 import {
+  isGroceryListId,
   IShoppingItem,
   IStorageItem,
   IStorageState,
@@ -20,7 +20,7 @@ import {
 import {
   addListItem,
   updateListItem,
-} from '../../@shared/util/list/list.utils';
+} from '../../@shared/util/item-lists/list.utils';
 
 // Only the grocery-specific engine helpers live here — the ones that read a
 // concrete list identity or cross-list state. The domain-blind helpers are
@@ -28,16 +28,28 @@ import {
 // re-exporting them from here made the grocery reducers *look* like they used a
 // grocery engine when they use the shared one.
 
+// The action-source prefix each grocery list publishes under. Parsing the source
+// is fair game — it identifies a slice, not an event — but this lookup used to be
+// an if/else chain ending in `throw new Error('should not happen')`, the one
+// non-exhaustive member of a family of four sibling tables over TGroceryListId.
+// A fourth list now fails to compile here like it does at the other three,
+// instead of throwing inside an effect and taking that effect's stream with it.
+const SOURCE_PREFIX_BY_LIST_ID: Record<TGroceryListId, string> = {
+  _storage: '[Storage]',
+  _shopping: '[Shopping]',
+  _products: '[Products]',
+};
+
 export const listIdByPrefix = (type: string): TGroceryListId => {
-  if (type.startsWith('[Storage]')) {
-    return '_storage';
-  } else if (type.startsWith('[Shopping]')) {
-    return '_shopping';
-  } else if (type.startsWith('[Products]')) {
-    return '_products';
-  } else {
-    throw new Error('should not happen');
+  for (const listId of Object.keys(SOURCE_PREFIX_BY_LIST_ID)) {
+    if (
+      isGroceryListId(listId) &&
+      type.startsWith(SOURCE_PREFIX_BY_LIST_ID[listId])
+    ) {
+      return listId;
+    }
   }
+  throw new Error(`no grocery list publishes the action source in "${type}"`);
 };
 
 export const stateByListId = (
@@ -62,10 +74,6 @@ export const searchQueryByListId = (
   state: IGroceriesState,
   listId: TGroceryListId
 ) => stateByListId(state, listId).searchQuery?.trim();
-export const filterByByListId = (
-  state: IGroceriesState,
-  listId: TGroceryListId
-) => stateByListId(state, listId).filterBy?.trim();
 
 // Uniform amber quick-add accent across every list (per-domain tint dropped).
 const QUICK_ADD_COLOR: TColor = 'primary';
@@ -76,14 +84,8 @@ const LIST_NAME_MARKER: Record<TGroceryListId, string> = {
   _shopping: marker('grocery.list-header.shopping'),
 };
 
-const isCategoryMode = (list: IListState<IBaseItem>) =>
-  list.mode === 'categories';
-
 const hasItemNamedExactly = (items: IBaseItem[], query?: string) =>
   items.some((item) => matchesSearchExactly(item, query));
-
-const hasCategoryNamedExactly = (categories: ICategory[], query?: string) =>
-  categories.some((category) => matchesSearchExactly(category.name, query));
 
 export const updateQuickAddState = (
   state: IGroceriesState,
@@ -91,10 +93,7 @@ export const updateQuickAddState = (
 ): IQuickAddState => {
   const list = stateByListId(state, listId);
   const query = list.searchQuery;
-  const isTypingItemName =
-    matchingTxtIsNotEmpty(query) && !isCategoryMode(list);
-  const isTypingCategoryName =
-    matchingTxtIsNotEmpty(query) && isCategoryMode(list);
+  const isTypingItemName = matchingTxtIsNotEmpty(query);
   return {
     searchQuery: query,
     canAddLocal: isTypingItemName && !hasItemNamedExactly(list.items, query),
@@ -102,8 +101,6 @@ export const updateQuickAddState = (
       isTypingItemName &&
       listId !== '_products' &&
       !hasItemNamedExactly(state.products.items, query),
-    canAddCategory:
-      isTypingCategoryName && !hasCategoryNamedExactly(list.categories, query),
     listName: LIST_NAME_MARKER[listId],
     color: QUICK_ADD_COLOR,
   };
@@ -131,12 +128,12 @@ export const addShoppinglistToStorage = (
   state: IStorageState,
   items: IShoppingItem[]
 ): IStorageState => {
-  let newState: IStorageState = { ...state };
+  let nextState: IStorageState = { ...state };
   for (const item of items) {
     const storageItem = createStorageItemFromShopping(item, item.quantity);
-    newState = addListItemOrIncreaseQuantity(newState, storageItem, false);
+    nextState = addListItemOrIncreaseQuantity(nextState, storageItem, false);
   }
   // Categories are a shared, authoritative catalog now (kept in lockstep across
   // the grocery lists) — copied items carry ids valid here, so no re-derive.
-  return newState;
+  return nextState;
 };

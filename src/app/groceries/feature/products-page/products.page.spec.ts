@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockProduct } from '../../testing/groceries.test-data';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { ProductsActions } from '../../data';
 import { ProductsPage } from './products.page';
 
@@ -28,18 +28,13 @@ describe('ProductsPage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('dispatches enterPage on ionViewWillEnter', () => {
-    component.ionViewWillEnter();
-    expect(dispatch).toHaveBeenCalledWith(ProductsActions.enterPage());
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockProduct();
     component.removeItem(item);
     expect(dispatch).toHaveBeenCalledWith(ProductsActions.removeItem(item));
   });
 
-  it('opens the edit dialog scoped to the globals list', () => {
+  it('opens the edit dialog scoped to the products list', () => {
     const item = mockProduct();
     component.showEditDialog(item);
     expect(TestBed.inject(ItemDialogService).request()).toEqual({

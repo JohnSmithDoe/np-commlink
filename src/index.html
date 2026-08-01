@@ -1,24 +1,37 @@
 <!doctype html>
-<!-- data-theme defaults to the cyberpunk deck so the shell paints correctly
-     before Angular boots; theme.service overrides it once `settings` hydrates
-     (a boomer user's brief flash is covered by the boot splash — see §4). -->
-<html lang="en" data-theme="cyberpunk">
+<!-- data-theme defaults to the cyberpunk deck and lang to German — each the
+     default its owning service seeds (theme.service, bootLanguage) — so the
+     shell paints and reads correctly before Angular boots; both are overwritten
+     once `settings` hydrates (a boomer user's brief flash is covered by the boot
+     splash — theming.md §8, decision 4). -->
+<html lang="de" data-theme="cyberpunk">
   <head>
     <meta charset="utf-8" />
-    <title>CommLink</title>
+    <title>np-commlink</title>
 
     <base href="/" />
 
-    <meta name="color-scheme" content="dark light" />
-    <!-- Intentional literal mirror of --sr-bg (_shadowrun.scss): a static <meta>
-         cannot read a CSS custom property. Keep in sync if --sr-bg changes. -->
+    <!-- Governs only the canvas before the stylesheet arrives — the same window
+         `data-theme` above bets on the deck for. Once _shadowrun.scss loads, its
+         own `color-scheme` declaration wins and follows the theme. -->
+    <meta name="color-scheme" content="dark" />
+    <!-- Intentional literal mirrors of --sr-bg/--sr-text (_shadowrun.scss): this
+         value, and the two bg/text pairs in the #app-splash block below — one per
+         theme. Neither a static <meta> nor a splash painted before the stylesheet
+         loads can read a custom property, so keep them in sync by hand. -->
     <meta name="theme-color" content="#0f141b" />
     <meta
       name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
     />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- German because <html lang> is: this is the one string neither bundle can
+         serve, since a crawler and an install prompt read it before any app code
+         runs. Mirrored in manifest.webmanifest, which has no access to it. -->
+    <meta
+      name="description"
+      content="Persönliches Cyberdeck: Zeiterfassung, Vorräte, Einkaufslisten, Rezepte, Aufgaben, Finanzen und Spielstände in einer App."
+    />
 
     <link
       rel="icon"
@@ -27,7 +40,8 @@
       href="icons/icon-192x192.png"
     />
 
-    <!-- add to homescreen for ios -->
+    <!-- add to homescreen — the standard hint, plus Apple's older pair -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -36,39 +50,49 @@
          by SplashService.reveal() once `settings` hydrates + <html data-theme> is
          applied underneath — so a boomer user never sees the cyberpunk shell
          flash on reload. On native the @capacitor/splash-screen launch screen
-         covers boot instead (launchAutoHide:false); reveal() hides both. A
-         branded dark loading screen (the deck identity), it fades to whichever
-         theme resolved. -->
+         covers boot instead (launchAutoHide:false); reveal() hides both.
+         Deliberately self-contained and theme-neutral: it cannot read a token
+         (no stylesheet yet) and cannot know the theme (no settings yet), so it
+         renders no text at all — a wordmark would need a font this document
+         cannot have loaded, and every string here was a second source of truth.
+         An inline SVG on the OS's colour preference is the most a document can
+         honestly commit to before either answer arrives. -->
     <style>
       #app-splash {
         position: fixed;
         inset: 0;
         z-index: 99999;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
         background: #0f141b;
-        color: #de8b27;
-        font-family:
-          'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+        color: #dfe4ea;
         transition: opacity 300ms ease;
       }
+      /* The OS preference is a guess at the theme, not a read of it — but it is
+         the only signal available this early, and it beats always handing a light
+         theme a dark screen. Each pair is one theme's own --sr-bg/--sr-text. */
+      @media (prefers-color-scheme: light) {
+        #app-splash {
+          background: #f4f6f8;
+          color: #1f2733;
+        }
+      }
+      /* pointer-events, because opacity alone still hit-tests: the invisible
+         overlay would swallow the first tap on the revealed app for the whole
+         fade (SplashService.reveal removes the element only afterwards). */
       #app-splash.app-splash--hidden {
         opacity: 0;
+        pointer-events: none;
       }
-      #app-splash .app-splash__mark {
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
+      .app-splash__logo {
+        width: 80px;
+        height: 80px;
       }
-      #app-splash .app-splash__dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #32aea6;
-        animation: app-splash-pulse 1.2s ease-in-out infinite;
+      @media (prefers-reduced-motion: no-preference) {
+        .app-splash__logo {
+          animation: app-splash-pulse 1.6s ease-in-out infinite;
+        }
       }
       @keyframes app-splash-pulse {
         0%,
@@ -76,25 +100,80 @@
           opacity: 1;
         }
         50% {
-          opacity: 0.3;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        #app-splash .app-splash__dot {
-          animation: none;
+          opacity: 0.45;
         }
       }
     </style>
+
+    <!-- Without scripting nothing ever calls reveal(), so the splash would cover
+         the <noscript> message below it forever — an opaque fixed overlay at
+         z-index 99999 against in-flow static text. This is the one condition
+         under which the splash has no owner, which is exactly what <noscript>
+         states. -->
+    <noscript>
+      <style>
+        #app-splash {
+          display: none;
+        }
+      </style>
+    </noscript>
   </head>
 
-  <body class="dark">
+  <body>
     <app-root></app-root>
+    <!-- The np mark — the same shapes as public/np-logo.svg, which is the reusable
+         copy and carries the design notes. Inlined rather than referenced, because
+         an <img src> would leave the splash blank for exactly the window it exists
+         to cover; that is the whole reason the duplication is accepted, so a change
+         to either copy belongs in both. Every stroke is currentColor so the mark
+         inverts with the backdrop above, and the letters are *drawn*, so the one
+         thing this document cannot have yet — a font — is not involved. -->
     <div id="app-splash" aria-hidden="true">
-      <div class="app-splash__mark">np-commlink</div>
-      <div class="app-splash__dot"></div>
+      <svg class="app-splash__logo" viewBox="0 0 64 64" fill="none">
+        <path
+          d="M21 24L14 17H10.5M21 24V14M21 24L28 17"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+        <circle
+          cx="8.5"
+          cy="17"
+          r="2"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+        <circle
+          cx="21"
+          cy="12"
+          r="2"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+        <circle
+          cx="29.4"
+          cy="15.6"
+          r="2"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+        <path
+          d="M21 44V24M21 32A6 6 0 0 1 33 32V44"
+          stroke="currentColor"
+          stroke-width="2.5"
+        />
+        <path d="M43 26V54" stroke="currentColor" stroke-width="5.5" />
+        <circle
+          cx="51"
+          cy="35"
+          r="6.25"
+          stroke="currentColor"
+          stroke-width="5.5"
+        />
+      </svg>
     </div>
     <noscript
-      >Please enable JavaScript to continue using this application.</noscript
+      >Bitte aktiviere JavaScript, um diese Anwendung zu nutzen. — Please enable
+      JavaScript to continue using this application.</noscript
     >
   </body>
 </html>

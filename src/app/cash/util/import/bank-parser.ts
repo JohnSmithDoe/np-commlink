@@ -1,13 +1,12 @@
 import dayjs from 'dayjs';
-import { TBank } from '../../model/account.types';
 
 /**
- * Per-bank CSV import (see docs/project-summary.md §7.3 (Import)). An account's `bank` selects one
+ * Per-bank CSV import (see docs/cash.md §7.3 (Import)). An account's `bank` selects one
  * of these parsers; each owns its bank's column layout and quirks. Parsers are
- * pure `text -> rows` so they are trivially spec'd against the real example
- * exports (docs/cash/example*.csv). Turning rows into `ICashTransaction`s (ids,
- * dedup, categorization) is `plan-import.ts`, kept separate so the parsers stay
- * format-only.
+ * pure `text -> rows`, so a spec is a string in and rows out — each
+ * `*.parser.spec.ts` carries its bank's sample rows inline. Turning rows into
+ * `ICashTransaction`s (ids, dedup, categorization) is `plan-import.ts`, kept
+ * separate so the parsers stay format-only.
  */
 
 export interface IParsedRow {
@@ -27,8 +26,6 @@ export interface IParseResult {
 }
 
 export interface IBankParser {
-  readonly bank: TBank;
-  readonly label: string;
   parse(text: string): IParseResult;
 }
 
@@ -52,11 +49,11 @@ export function splitRow(line: string): string[] {
   const fields: string[] = [];
   let field = '';
   let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (inQuotes && char === '"' && line[i + 1] === '"') {
+  for (let index = 0; index < line.length; index++) {
+    const char = line[index];
+    if (inQuotes && char === '"' && line[index + 1] === '"') {
       field += '"';
-      i++;
+      index++;
     } else if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ';' && !inQuotes) {

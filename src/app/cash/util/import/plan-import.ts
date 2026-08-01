@@ -14,7 +14,7 @@ export interface IImportPlan {
 }
 
 /**
- * Natural key for idempotent re-import — see docs/project-summary.md §7.3 (Import). The date is
+ * Natural key for idempotent re-import — see docs/cash.md §7.3 (Import). The date is
  * keyed on its `YYYY-MM-DD` prefix only: `dateISO` is a local-midnight ISO whose
  * offset (`+01:00`/`+02:00`) shifts with the device timezone, so keying on the
  * full string would defeat dedup after a DST/timezone change.

@@ -1,24 +1,5 @@
-:host {
-  ion-item {
-    --padding-start: 0;
-    &.tracking-item-running {
-      --ion-background-color: rgba(var(--ion-color-success-rgb), 0.35);
-    }
-    &.tracking-item-paused {
-      --ion-background-color: rgba(var(--ion-color-warning-rgb), 0.18);
-    }
-  }
-}
-
-.status-bar {
-  display: flex;
-  width: 4px;
-  height: 100%;
-  margin-right: 1rem;
-  ion-text {
-    flex: 1;
-    background: currentColor;
-  }
+:host ion-item {
+  --padding-start: 0;
 }
 
 .tracking-item-title {
@@ -30,7 +11,7 @@
 .tracking-item-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 0.6rem;
+  font-size: var(--fs-xsmall);
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
@@ -47,12 +28,11 @@
 }
 .tracking-item-badge-stopped {
   background: var(--sr-panel);
-  color: var(--ion-color-step-650);
+  color: var(--sr-text-dim);
 }
 
 .tracking-item-timer {
-  font-family: inherit;
-  font-size: 1.5rem;
+  font-size: var(--fs-xlarge);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.5;
@@ -62,7 +42,7 @@
   color: var(--ion-color-warning);
 }
 .tracking-item-timer-stopped {
-  color: var(--ion-color-step-650);
+  color: var(--sr-text-dim);
 }
 .tracking-item-timer-running {
   color: var(--ion-color-success);

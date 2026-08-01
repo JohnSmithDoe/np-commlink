@@ -1,0 +1,31 @@
+/* Type-checking only — Node never reads this file.
+ *
+ * The plugin is loaded straight from source: Node >= 22.18 strips types on
+ * `require()` of a `.ts` file, with no flags and no build. Stripping does not
+ * *check* anything, though, so `tsc -p` (wired into `pnpm run lint`) is the only
+ * thing standing between a type annotation here and pure decoration.
+ *
+ * Two options exist to keep the source loadable rather than merely correct:
+ *   - erasableSyntaxOnly  rejects `enum` / `namespace` / `export =` /
+ *     parameter properties at check time (TS1294) instead of letting Node fail
+ *     at config load with "not supported in strip-only mode".
+ *   - allowImportingTsExtensions  because relative imports must carry `.ts`;
+ *     Node resolves no extension for us. It requires `noEmit`, which is the case.
+ */
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2022",
+    "lib": ["es2023"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": [],
+    "noEmit": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts"]
+}

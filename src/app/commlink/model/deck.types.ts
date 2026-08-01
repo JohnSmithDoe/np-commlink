@@ -1,4 +1,5 @@
 import { TMarker, TTheme } from '../../@shared/model/app.types';
+import { TDeckIcon } from './deck.icons';
 
 /** online = jacked in · standby = wired, app not merged yet · offline = dark. */
 export type TProgramStatus = 'online' | 'standby' | 'offline';
@@ -46,7 +47,9 @@ export type TDeckEntryId = string;
 export type IDeckEntry = {
   id: TDeckEntryId;
   module: TAppModule;
-  icon: string;
+  // Narrowed to the registered set, so an entry cannot name an icon nobody
+  // registers — which used to render as an empty glyph with no compile error.
+  icon: TDeckIcon;
   route: string;
   titleKey: TMarker;
   labels: Record<TTheme, { nameKey: TMarker; descKey: TMarker }>;

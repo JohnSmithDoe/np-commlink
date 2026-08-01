@@ -37,7 +37,7 @@
         [attr.aria-labelledby]="'language-picker-label'"
       >
         @for (option of languages; track option) {
-          <ion-segment-button [value]="option">
+          <ion-segment-button data-testid="language-option" [value]="option">
             <ion-label>{{ languageLabels[option] }}</ion-label>
           </ion-segment-button>
         }

@@ -1,7 +1,7 @@
 import { TTimestamp } from '../../@shared/model/app.types';
 import { TCategoryId } from '../../@shared/model/category.types';
 
-export type TCashTxnSource = 'imported' | 'manual';
+type TCashTxnSource = 'imported' | 'manual';
 export type TCashTxnStatus = 'pending' | 'confirmed';
 
 export interface ICashTransaction {

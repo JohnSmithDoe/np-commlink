@@ -32,9 +32,7 @@
             [checked]="setting.value"
             (ionChange)="changeDashboardSettings($event)"
           >
-            <ion-label>{{
-              'office-time.page.settings.dashboard.' + setting.key | translate
-            }}</ion-label>
+            <ion-label>{{ setting.labelKey | translate }}</ion-label>
           </ion-toggle>
         </ion-item>
       }

@@ -1,16 +1,22 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { IDataItem, ITrackingItem } from '../model/tracking.types';
+import {
+  IDataItem,
+  ITrackingItem,
+  TTrackingViewId,
+} from '../model/tracking.types';
 import { createDemoSessions } from '../util/demo-sessions.factory';
-import { TrackingActions } from './actions/tracking.actions';
+import { dailySeries, groupSessionsByView } from '../util/sessions.utils';
+import { TodayService } from '../util/today.service';
+import { TrackingActions } from './tracking.actions';
 import {
   selectAllTrackingSessions,
-  selectSessionsByDayAndName,
-  selectTrackingData,
+  selectArchivedSessions,
+  selectLiveChartSessions,
   selectTrackingDataViewId,
   selectTrackingTime,
-} from './selectors/tracking.selector';
+} from './tracking.selector';
 
 /**
  * The `tracking` domain facade — the timer and the session archive it produces.
@@ -24,14 +30,32 @@ import {
 @Injectable({ providedIn: 'root' })
 export class TrackingFacade {
   readonly #store = inject(Store);
+  readonly #today = inject(TodayService).today;
 
   // ── Queries ──────────────────────────────────────────────────────────────
   readonly total = this.#store.selectSignal(selectTrackingTime);
-  readonly sessionsByView = this.#store.selectSignal(selectTrackingData);
   readonly viewMode = this.#store.selectSignal(selectTrackingDataViewId);
   readonly allSessions = this.#store.selectSignal(selectAllTrackingSessions);
-  readonly sessionsByDayAndName = this.#store.selectSignal(
-    selectSessionsByDayAndName
+
+  readonly #archived = this.#store.selectSignal(selectArchivedSessions);
+  readonly #liveForChart = this.#store.selectSignal(selectLiveChartSessions);
+
+  /**
+   * The two views that depend on what day it is, composed here rather than in a
+   * selector.
+   *
+   * Both were `createSelector`s whose projectors called `dayjs()` — a dependency
+   * memoization cannot see, so each froze at whatever "today" meant when the
+   * session array last changed, and an app left open past midnight went on
+   * calling yesterday "Heute". As `computed`s over {@link TodayService} the day is
+   * a declared dependency like any other, so the roll-over recomputes them and
+   * nothing else does.
+   */
+  readonly sessionsByView = computed(() =>
+    groupSessionsByView(this.#archived(), this.viewMode(), this.#today())
+  );
+  readonly sessionsByDayAndName = computed(() =>
+    dailySeries(this.#archived(), this.#liveForChart(), this.#today())
   );
 
   // ── Timer commands ───────────────────────────────────────────────────────
@@ -76,7 +100,7 @@ export class TrackingFacade {
     this.#store.dispatch(TrackingActions.removeDataItem(item));
   }
 
-  changeDataView(viewId: string): void {
+  changeDataView(viewId: TTrackingViewId): void {
     this.#store.dispatch(TrackingActions.changeDataView(viewId));
   }
 }

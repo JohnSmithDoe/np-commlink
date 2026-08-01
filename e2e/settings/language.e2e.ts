@@ -24,8 +24,11 @@ async function openSettings(page: Page): Promise<void> {
 }
 
 async function pickLanguage(page: Page, label: string): Promise<void> {
+  // The id, not `ion-segment-button`: this page carries two segments (theme and
+  // language) and only the label told them apart. The label stays as *which*
+  // option — a language's own name is deliberately untranslated.
   await settingsPage(page)
-    .locator('ion-segment-button')
+    .getByTestId('language-option')
     .filter({ hasText: label })
     .click();
 }

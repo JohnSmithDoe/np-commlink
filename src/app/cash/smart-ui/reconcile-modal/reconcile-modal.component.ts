@@ -18,10 +18,10 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { localizedDate } from '../../../@shared/util/date-format.utils';
+import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
-import { MoneyEurPipe } from '../../util/money.pipe';
+import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { findReconciliationCandidates } from '../../util/reconcile.utils';
 
 /**
@@ -48,6 +48,7 @@ import { findReconciliationCandidates } from '../../util/reconcile.utils';
     IonNote,
     TranslatePipe,
     MoneyEurPipe,
+    LocalizedDatePipe,
   ],
 })
 export class CashReconcileModalComponent {
@@ -61,10 +62,6 @@ export class CashReconcileModalComponent {
   readonly candidates = computed(() =>
     findReconciliationCandidates(this.transaction, this.#transactions())
   );
-
-  formatDate(iso: string): string {
-    return localizedDate(iso);
-  }
 
   reconcileWith(imported: ICashTransaction): void {
     this.#facade.reconcileTransaction(this.transaction.id, imported.id);

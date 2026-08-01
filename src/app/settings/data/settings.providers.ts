@@ -1,8 +1,9 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { SettingsActions } from './actions/settings.actions';
-import { SettingsEffects } from './effects/settings.effects';
-import { settingsReducer } from './reducer/settings.reducer';
-import { selectSettingsState } from './selectors/settings.selector';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { EmojiActions } from '../../@shared/data/emoji/emoji.actions';
+import { SettingsActions } from './settings.actions';
+import { SettingsEffects } from './settings.effects';
+import { settingsReducer } from './settings.reducer';
+import { SETTINGS_STATE_KEY, selectSettingsState } from './settings.selector';
 
 /**
  * The app-global settings slice — the selected UI theme with its accent
@@ -15,7 +16,7 @@ import { selectSettingsState } from './selectors/settings.selector';
  * boot dispatch does not block bootstrap.
  */
 export const settingsContext = providePersistedContext({
-  key: 'settings',
+  key: SETTINGS_STATE_KEY,
   reducer: settingsReducer,
   lifecycle: SettingsActions,
   select: selectSettingsState,
@@ -25,6 +26,10 @@ export const settingsContext = providePersistedContext({
       SettingsActions.setLanguage,
       SettingsActions.setAccentColors,
       SettingsActions.resetAccentColors,
+      // Published by @shared, folded by this slice's reducer — so the save
+      // trigger has to name it too, or a remembered emoji would live only until
+      // the next reload.
+      EmojiActions.used,
     ],
   },
   hydrate: 'boot',

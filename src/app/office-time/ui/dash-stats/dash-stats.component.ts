@@ -25,6 +25,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class DashStatsComponent {
   readonly title = input<string | undefined>();
-  readonly data = input<DashboardStats | undefined | null>();
+  readonly data = input.required<DashboardStats>();
   readonly showPercentage = input<boolean | undefined>();
 }

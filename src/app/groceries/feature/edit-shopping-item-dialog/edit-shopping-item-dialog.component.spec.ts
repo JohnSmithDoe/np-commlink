@@ -6,7 +6,7 @@ import {
   mockShoppingState,
 } from '../../testing/groceries.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { createShoppingItem } from '../../util/grocery.factory';
 import { GroceryCategoriesActions, ShoppingActions } from '../../data';
@@ -81,7 +81,7 @@ describe('EditShoppingItemDialogComponent', () => {
     const category = mockCategory({ id: 'drinks', name: 'Drinks' });
     component.addCategory(category);
     expect(dispatch).toHaveBeenCalledWith(
-      GroceryCategoriesActions.add(category)
+      GroceryCategoriesActions.addItem(category)
     );
   });
 });

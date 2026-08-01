@@ -1,0 +1,84 @@
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="dismissed.emit()"
+  [attr.aria-label]="'emoji-picker.dialog' | translate"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closed.emit()">
+            {{ 'emoji-picker.close' | translate }}
+          </ion-button>
+        </ion-buttons>
+        <ion-title>{{ 'emoji-picker.dialog' | translate }}</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar
+          [value]="query()"
+          (ionInput)="searchbarInput($event)"
+          [debounce]="150"
+          placeholder="{{ 'emoji-picker.search' | translate }}"
+          data-testid="emoji-picker-search"
+        ></ion-searchbar>
+      </ion-toolbar>
+      @if (!query().trim()) {
+        <ion-toolbar>
+          <ion-segment
+            [value]="activeGroup()"
+            (ionChange)="segmentChange($event)"
+            [scrollable]="true"
+          >
+            @for (group of groupIds; track group) {
+              <ion-segment-button [value]="group">
+                <ion-label>{{ groupLabels[group] | translate }}</ion-label>
+              </ion-segment-button>
+            }
+          </ion-segment>
+        </ion-toolbar>
+      }
+    </ion-header>
+
+    <ion-content>
+      @if (recent().length && !query().trim()) {
+        <h2 class="emoji-picker__heading">
+          {{ 'emoji-picker.recent' | translate }}
+        </h2>
+        <div class="emoji-picker__grid">
+          @for (glyph of recent(); track glyph) {
+            <button
+              type="button"
+              class="emoji-picker__cell"
+              (click)="pick(glyph)"
+              data-testid="emoji-option"
+            >
+              {{ glyph }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="emoji-picker__grid">
+        @for (entry of visible(); track entry.glyph) {
+          <button
+            type="button"
+            class="emoji-picker__cell"
+            [attr.aria-label]="entry.label"
+            (click)="pick(entry.glyph)"
+            data-testid="emoji-option"
+          >
+            {{ entry.glyph }}
+          </button>
+        } @empty {
+          <ion-note class="emoji-picker__empty">
+            @if (isLoading()) {
+              {{ 'emoji-picker.loading' | translate }}
+            } @else {
+              {{ 'emoji-picker.empty' | translate }}
+            }
+          </ion-note>
+        }
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

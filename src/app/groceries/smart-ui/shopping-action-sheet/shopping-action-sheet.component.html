@@ -1,5 +1,5 @@
 <ion-action-sheet
-  [isOpen]="rxState().showActionSheet"
+  [isOpen]="state().showActionSheet"
   [header]="'grocery.shopping.action-sheet.header' | translate"
   [buttons]="actionSheetButtons()"
   (didDismiss)="triggerAction($event)"

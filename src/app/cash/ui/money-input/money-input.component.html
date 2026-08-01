@@ -4,7 +4,6 @@
     inputmode="decimal"
     placeholder="0,00"
     [label]="label()"
-    [disabled]="disabled()"
     [value]="raw()"
     (ionInput)="onInput($event)"
     (ionBlur)="touchedChange.emit(true)"

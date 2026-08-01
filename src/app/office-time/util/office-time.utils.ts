@@ -4,9 +4,9 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 
 dayjs.extend(quarterOfYear);
 
-type TimePeriod = 'year' | 'quarter' | 'month' | 'week';
+export type TimePeriod = 'year' | 'quarter' | 'month' | 'week';
 
-export interface StatsInputs {
+interface StatsInputs {
   officedays: Dayjs[];
   freedays: Dayjs[];
   holidays: Record<string, Dayjs>;
@@ -27,31 +27,15 @@ const allDaysBetween = (start: Dayjs, end: Dayjs) => {
   const days: Dayjs[] = [];
   let current = start;
   while (current.isBefore(end) || current.isSame(end)) {
-    days.push(current.clone());
+    // dayjs is immutable — `add` already returns a fresh object and `current` is
+    // never mutated, so cloning here allocated a second Dayjs (and a second
+    // Date) per day, ~500 of them per dashboard rebuild.
+    days.push(current);
     current = current.add(1, 'day');
   }
   return days;
 };
 
-export const isFreeday = (current: Dayjs, freedays: Dayjs[]) => {
-  return freedays.some((freeday) => freeday.isSame(current, 'day'));
-};
-
-export const isHoliday = (current: Dayjs, holidays: Dayjs[]) => {
-  return holidays.some((holiday) => holiday.isSame(current, 'day'));
-};
-
-export const isHolidayOrFreeday = (
-  current: Dayjs,
-  holidays: Dayjs[],
-  freedays: Dayjs[]
-) => {
-  return (
-    isWeekend(current) ||
-    isFreeday(current, freedays) ||
-    isHoliday(current, holidays)
-  );
-};
 export const isWeekend = (current: Dayjs) => {
   const day = current.day();
   const isSunday = day === 0;
@@ -78,6 +62,27 @@ export const getTargetPercentage = (
 const dayKeys = (days: Dayjs[]): Set<string> =>
   new Set(days.map((day) => dayjsToString(day)));
 
+interface StatsKeys {
+  officeKeys: Set<string>;
+  freeKeys: Set<string>;
+  holidayKeys: Set<string>;
+  targetOfficeDaysPerWeek: number;
+}
+
+/**
+ * The day-key sets `calculateStats` reads, hoisted out of it so the four period
+ * cards share ONE build. They are a pure function of the slice, not of the
+ * period, but each period selector used to call `calculateStats` and pay for
+ * them again — four `format()` passes over officedays + freedays + holidays per
+ * state change where one suffices.
+ */
+export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => ({
+  officeKeys: dayKeys(inputs.officedays),
+  freeKeys: dayKeys(inputs.freedays),
+  holidayKeys: dayKeys(Object.values(inputs.holidays)),
+  targetOfficeDaysPerWeek: inputs.targetOfficeDaysPerWeek,
+});
+
 /**
  * One pass over the period, not seven.
  *
@@ -92,17 +97,23 @@ const dayKeys = (days: Dayjs[]): Set<string> =>
  * an exact substitute for the `isSame(day)` scans. ISO keys also compare
  * lexicographically in date order, which is what makes the "from today" cut in
  * `remaining` a string comparison.
+ *
+ * `today` is a parameter rather than a `dayjs()` call in here, because the
+ * result is a function of the clock as much as of the slice and a caller that
+ * memoizes on the slice alone would never expire it. That is not hypothetical:
+ * the four dashboard cards were memoized selectors over the day-key sets, so
+ * they went on reporting the previous month until something else wrote to the
+ * slice.
  */
 export const calculateStats = (
   period: TimePeriod,
-  inputs: StatsInputs
+  keys: StatsKeys,
+  today: Dayjs
 ): DashboardStats => {
-  const officeKeys = dayKeys(inputs.officedays);
-  const freeKeys = dayKeys(inputs.freedays);
-  const holidayKeys = dayKeys(Object.values(inputs.holidays));
+  const { officeKeys, freeKeys, holidayKeys, targetOfficeDaysPerWeek } = keys;
 
-  const start = dayjs().startOf(period);
-  const todayKey = dayjsToString(dayjs());
+  const start = today.startOf(period);
+  const todayKey = dayjsToString(today);
 
   let officedays = 0;
   let freedays = 0;
@@ -134,10 +145,10 @@ export const calculateStats = (
     percentage: getTargetPercentage(
       workdays,
       officedays,
-      inputs.targetOfficeDaysPerWeek
+      targetOfficeDaysPerWeek
     ),
     officedays,
-    targetdays: roundedTargetDays(workdays, inputs.targetOfficeDaysPerWeek),
+    targetdays: roundedTargetDays(workdays, targetOfficeDaysPerWeek),
     workdays,
     workdaysTotal,
     remaining,

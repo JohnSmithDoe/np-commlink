@@ -1,6 +1,11 @@
 <ion-item-sliding (ionDrag)="deleteOrEditOnSwipe($event)">
   <ion-item-options side="start">
-    <ion-item-option color="danger" [expandable]="true" (click)="emitDelete()">
+    <ion-item-option
+      color="danger"
+      data-testid="row-delete"
+      [expandable]="true"
+      (click)="emitDelete()"
+    >
       <ion-icon slot="start" name="trash" aria-hidden="true" />
       {{ 'trackplay.action.delete' | translate }}
     </ion-item-option>

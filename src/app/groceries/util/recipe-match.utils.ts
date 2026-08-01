@@ -28,15 +28,25 @@ import {
  * rows persisted before that field existed have none — for those the name is the
  * only handle there is, so the fallback stays rather than the name half being
  * retired outright.
+ *
+ * A row at `quantity: 0` is NOT stock. The storage stepper floors at zero
+ * instead of deleting the row (`withQuantityChangedBy`), which is the whole
+ * reason `selectLowStockCount` exists — so counting every row present would
+ * rank a recipe as cookable off an empty pantry entry while the deck tile
+ * flagged the same item as out. This is presence, still: it asks whether there
+ * is any, never how much, so it needs none of the deferred pack-size bridge.
  */
-const stockedFrom = (storageItems: IStorageItem[]) => ({
-  productIds: new Set(
-    storageItems
-      .map((item) => item.productId)
-      .filter((id): id is string => id !== undefined)
-  ),
-  names: new Set(storageItems.map((item) => matchingTxt(item.name))),
-});
+const stockedFrom = (storageItems: IStorageItem[]) => {
+  const inStock = storageItems.filter((item) => item.quantity > 0);
+  return {
+    productIds: new Set(
+      inStock
+        .map((item) => item.productId)
+        .filter((id): id is string => id !== undefined)
+    ),
+    names: new Set(inStock.map((item) => matchingTxt(item.name))),
+  };
+};
 
 type TStocked = ReturnType<typeof stockedFrom>;
 

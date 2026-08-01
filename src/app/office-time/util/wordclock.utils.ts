@@ -7,14 +7,14 @@ export type TSettings = {
   deDreiviertel: boolean; // DREIVIERTEL ... VIERTEL VOR
 };
 
-export type Corners = {
+type Corners = {
   topLeft: boolean;
   topRight: boolean;
   botLeft: boolean;
   botRight: boolean;
 };
 export type ActiveWord = { word: string; row: number };
-export type ClockFace = { corners: Corners; activeWords: ActiveWord[] };
+type ClockFace = { corners: Corners; activeWords: ActiveWord[] };
 
 const W_ES = 'ES';
 const W_IST = 'IST';

@@ -10,7 +10,7 @@ import {
   splitRow,
 } from './bank-parser';
 
-// DKB giro export (docs/cash/example2.csv). `;`-delimited, header first:
+// DKB giro export. `;`-delimited, header first:
 // Buchungsdatum;Wertstellung;Status;Zahlungspflichtige*r;Zahlungsempfänger*in;
 // Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;IBAN;Betrag (€)
 // The counterparty is whichever of payer/payee is filled (depends on direction);
@@ -24,8 +24,6 @@ const PURPOSE = 5;
 const AMOUNT = 9;
 
 export const dkbParser: IBankParser = {
-  bank: 'dkb',
-  label: 'DKB',
   parse(text: string): IParseResult {
     const lines = splitLines(text);
     const header = findHeaderIndex(lines, HEADER);

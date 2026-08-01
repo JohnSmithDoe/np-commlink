@@ -20,7 +20,7 @@
         <ion-item button detail="true" (click)="reconcileWith(txn)">
           <ion-label>
             <h2>{{ txn.description }}</h2>
-            <p>{{ formatDate(txn.dateISO) }}</p>
+            <p>{{ txn.dateISO | localizedDate }}</p>
           </ion-label>
           <ion-note
             slot="end"

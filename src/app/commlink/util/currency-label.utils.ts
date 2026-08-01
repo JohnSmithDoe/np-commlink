@@ -1,4 +1,4 @@
-import { formatEur } from '../../@shared/util/money.utils';
+import { formatEur } from '../../@shared/util/formatting/money-format.utils';
 import { TTheme } from '../../@shared/model/app.types';
 
 /**

@@ -6,9 +6,9 @@
 // distinct from the ISO-string TTimestamp used by the timetracker/grocery items.
 
 export type TID = string;
-export type TDateTime = number; // epoch ms (Date.now())
+type TDateTime = number; // epoch ms (Date.now())
 
-export interface IBase {
+interface IBase {
   id: TID;
   name: string;
   created: TDateTime;
@@ -45,20 +45,26 @@ export interface IGame extends IBase {
 // Per-list sort/filter config (games list, games-for-player list).
 export interface IGameConfig {
   sort: 'name' | 'date' | 'updated';
-  dir: 'asc' | 'desc';
+  direction: 'asc' | 'desc';
   filter: string;
   typeId: TID; // '' = no type filter
   showEndedGames: boolean;
 }
 
+// The players list sorts by a third key the games lists have no notion of, so it
+// is its own shape rather than a narrowing of IGameConfig. Named, because an
+// inline literal here meant the action, the facade and the popover each respelled
+// it and a fourth sort key had to be added in four places.
+export interface IPlayersConfig {
+  sort: 'name' | 'date' | 'last';
+  direction: 'asc' | 'desc';
+  filter: string;
+}
+
 export interface ITrackplayConfig {
   games: IGameConfig;
   gamesForPlayer: IGameConfig;
-  players: {
-    sort: 'name' | 'date' | 'last';
-    dir: 'asc' | 'desc';
-    filter: string;
-  };
+  players: IPlayersConfig;
 }
 
 // Derived per-player counters (from games + rounds). `loss` replaces the
@@ -78,7 +84,7 @@ export interface IPlayerStats {
  * the settings popover is one tap away during the 8s undo toast — so restoring
  * them reverted a sort or filter the user had changed in the meantime.
  */
-export interface ITrackplaySnapshot {
+interface ITrackplaySnapshot {
   players: Record<TID, IPlayer>;
   games: Record<TID, IGame>;
   gameTypes: Record<TID, IGameType>;

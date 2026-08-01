@@ -18,7 +18,7 @@ import { GroceryListPageFacade } from '../../data';
 export class ShoppingActionSheetComponent {
   readonly #facade = inject(GroceryListPageFacade);
   readonly translate = inject(TranslateService);
-  readonly rxState = this.#facade.shoppingState;
+  readonly state = this.#facade.shoppingState;
   readonly #hasBoughtItems = this.#facade.shoppingHasBoughtItems;
 
   readonly actionSheetButtons = computed<ActionSheetButton[]>(() => {

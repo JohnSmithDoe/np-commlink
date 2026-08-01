@@ -20,7 +20,7 @@ $lg-item-width: $sm-item-width * 4;
     padding: 1rem;
 
     ion-card-header {
-      padding: 0 0 1rem 0;
+      padding: 0 0 1rem;
     }
 
     ion-card-content {
@@ -34,7 +34,7 @@ $lg-item-width: $sm-item-width * 4;
 }
 
 @mixin dashboard-item-card-with-list {
-  @include dashboard-item-card();
+  @include dashboard-item-card;
   ion-card-content {
     overflow: auto;
     height: $item-height-max-height;
@@ -45,7 +45,7 @@ $lg-item-width: $sm-item-width * 4;
   }
 }
 @mixin dashboard-item-card-with-calendar {
-  @include dashboard-item-card();
+  @include dashboard-item-card;
   ion-datetime {
     max-width: unset;
   }

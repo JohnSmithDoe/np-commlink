@@ -7,6 +7,7 @@ import {
   IonItem,
   IonList,
 } from '@ionic/angular/standalone';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { BarcodeInputComponent } from '../../smart-ui/barcode-input/barcode-input.component';
@@ -37,9 +38,12 @@ export class BarcodePage {
   readonly barcode = this.#facade.barcode;
 
   readonly deleteAlertButtons: AlertButton[] = [
-    { text: this.#translate.instant('barcode.action.cancel'), role: 'cancel' },
     {
-      text: this.#translate.instant('barcode.action.delete'),
+      text: this.#translate.instant(marker('barcode.action.cancel')),
+      role: 'cancel',
+    },
+    {
+      text: this.#translate.instant(marker('barcode.action.delete')),
       role: 'destructive',
       handler: () => this.deleteBarcode(),
     },

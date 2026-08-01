@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../@shared/testing/test-providers';
 import { mockStorageItem } from '../../testing/groceries.test-data';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { StorageActions } from '../../data';
 import { StoragePage } from './storage.page';
 
@@ -28,11 +28,6 @@ describe('StoragePage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('dispatches enterPage on ionViewWillEnter', () => {
-    component.ionViewWillEnter();
-    expect(dispatch).toHaveBeenCalledWith(StorageActions.enterPage());
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockStorageItem();
     component.removeItem(item);
@@ -47,13 +42,6 @@ describe('StoragePage', () => {
       listId: '_storage',
       editMode: 'update',
     });
-  });
-
-  it('dispatches a toggling updateSort for the given sort type', () => {
-    component.setSortMode('name');
-    expect(dispatch).toHaveBeenCalledWith(
-      StorageActions.updateSort('name', 'toggle')
-    );
   });
 
   it('increases quantity by a positive diff', () => {

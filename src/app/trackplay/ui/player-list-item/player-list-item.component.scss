@@ -1,13 +1,5 @@
-:host {
-  .second-line {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
+@use '../../../../theme/trackplay';
 
-  .value {
-    font-family: var(--sr-deck-font);
-    color: var(--sr-text);
-  }
+:host {
+  @include trackplay.list-row-second-line;
 }

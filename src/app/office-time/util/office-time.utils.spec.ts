@@ -1,13 +1,12 @@
 import dayjs from 'dayjs';
 import {
   calculateStats,
+  statsKeysFrom,
   dayjsFromString,
   dayjsToString,
   deserializeIsoStringMap,
   deserializeIsoStrings,
   getTargetPercentage,
-  isFreeday,
-  isHoliday,
   isOfficeDay,
   isWeekend,
   serializeDateMap,
@@ -23,11 +22,10 @@ describe('office-time.utils', () => {
       expect(isWeekend(dayjs('2021-01-04'))).toBe(false);
     });
 
-    it('matches membership by day for freedays, holidays and office days', () => {
+    it('matches membership by day for office days', () => {
       const day = dayjs('2026-07-01');
-      expect(isFreeday(day, [dayjs('2026-07-01T18:00:00')])).toBe(true);
-      expect(isFreeday(day, [dayjs('2026-07-02')])).toBe(false);
-      expect(isHoliday(day, [dayjs('2026-07-01')])).toBe(true);
+      expect(isOfficeDay(day, [dayjs('2026-07-01T18:00:00')])).toBe(true);
+      expect(isOfficeDay(day, [dayjs('2026-07-02')])).toBe(false);
       expect(isOfficeDay(day, [dayjs('2026-07-01')])).toBe(true);
       expect(isOfficeDay(day, [])).toBe(false);
       expect(isOfficeDay(day)).toBe(false);
@@ -88,21 +86,36 @@ describe('office-time.utils', () => {
     });
   });
 
+  // `today` is an argument, so these pin a real date instead of anchoring on the
+  // day the suite runs — which is also the property the four dashboard cards
+  // needed: the answer moves with the clock, so the clock has to be an input.
   describe('calculateStats', () => {
+    const TODAY = dayjs('2026-08-01').hour(12); // a Saturday
+    const keysFor = (
+      officedays: dayjs.Dayjs[] = [TODAY],
+      holidays: Record<string, dayjs.Dayjs> = {},
+      targetOfficeDaysPerWeek = 3
+    ) =>
+      statsKeysFrom({
+        officedays,
+        freedays: [],
+        holidays,
+        targetOfficeDaysPerWeek,
+      });
+
     it('counts office days in the current month and keeps invariants', () => {
-      const monthStart = dayjs().startOf('month');
+      const monthStart = TODAY.startOf('month');
       const officedays = [
         monthStart.hour(12),
         monthStart.add(1, 'day').hour(12),
         monthStart.add(2, 'day').hour(12),
       ];
 
-      const stats = calculateStats('month', {
-        officedays,
-        freedays: [],
-        holidays: {},
-        targetOfficeDaysPerWeek: 2.5,
-      });
+      const stats = calculateStats(
+        'month',
+        keysFor(officedays, {}, 2.5),
+        TODAY
+      );
 
       expect(stats.officedays).toBe(3);
       expect(stats.freedays).toBe(0);
@@ -113,6 +126,59 @@ describe('office-time.utils', () => {
       expect(stats.targetdays).toBe(
         Math.round(((stats.workdays * 2.5) / 5) * 2) / 2
       );
+    });
+
+    // Every period contains today, so one office day today must surface in all
+    // four — which is what proves each call threads its own period through.
+    it('counts an office day today in every period', () => {
+      for (const period of ['year', 'quarter', 'month', 'week'] as const) {
+        expect(calculateStats(period, keysFor(), TODAY).officedays).toBe(1);
+      }
+    });
+
+    it('nests the periods, so each window spans at least the next smaller one', () => {
+      const [year, quarter, month, week] = (
+        ['year', 'quarter', 'month', 'week'] as const
+      ).map((period) => calculateStats(period, keysFor(), TODAY).workdaysTotal);
+
+      expect(year).toBeGreaterThanOrEqual(quarter);
+      expect(quarter).toBeGreaterThanOrEqual(month);
+      expect(month).toBeGreaterThanOrEqual(week);
+      expect(week).toBeGreaterThan(0);
+    });
+
+    it('drops an office day that falls outside the period', () => {
+      const lastYear = [TODAY.subtract(1, 'year')];
+
+      expect(calculateStats('year', keysFor(lastYear), TODAY).officedays).toBe(
+        0
+      );
+      expect(calculateStats('week', keysFor(lastYear), TODAY).officedays).toBe(
+        0
+      );
+    });
+
+    it('excludes free days and holidays from the workday count', () => {
+      const holiday = TODAY.startOf('week').add(3, 'day');
+      const plain = calculateStats('week', keysFor([]), TODAY);
+      const reduced = calculateStats(
+        'week',
+        keysFor([], { [holiday.format('YYYY-MM-DD')]: holiday }),
+        TODAY
+      );
+
+      expect(reduced.holidays).toBe(1);
+      expect(reduced.workdays).toBe(plain.workdays - 1);
+    });
+
+    // The regression the parameter exists for: same slice, later day, different
+    // answer. A memoized selector over the day-keys alone could not produce it.
+    it('reports a different window when the day rolls into a new month', () => {
+      const july = dayjs('2026-07-31').hour(12);
+      const keys = keysFor([july]);
+
+      expect(calculateStats('month', keys, july).officedays).toBe(1);
+      expect(calculateStats('month', keys, TODAY).officedays).toBe(0);
     });
   });
 });

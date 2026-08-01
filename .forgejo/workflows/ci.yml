@@ -61,13 +61,34 @@ jobs:
       - name: Activate pnpm
         run: corepack enable pnpm
 
+      # Caching CUTS the donated capacity this file is written to be careful with
+      # rather than spending more of it: a hit skips the network for the whole
+      # dependency graph, and below, for a Chromium download.
+      #
+      # Both caches key on the LOCKFILE hash and nothing else. Keying the browser
+      # on the resolved Playwright version would miss less often, but it needs a
+      # step output and `pnpm store path` needs another — machinery this pipeline
+      # cannot be tested against, having never run. The lockfile moves whenever
+      # Playwright does, so an unrelated bump costs one extra download and a wrong
+      # hit remains impossible; that is the right way round for a first run.
+      #
+      # `--store-dir` pins the store where the cache can find it, instead of
+      # asking pnpm where it put it.
+      - uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
       # --frozen-lockfile fails if pnpm-lock.yaml is stale — CI must build the
       # exact dependency graph the lockfile pins, never silently resolve newer.
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
 
       # Through the script, not a glob restated here: one writer for the file
-      # set, so linting by hand cannot cover less than CI does.
-      - name: Lint (eslint)
+      # set, so linting by hand cannot cover less than CI does. `lint` chains
+      # stylelint after eslint, because eslint cannot read SCSS at all — see
+      # stylelint/font-size-uses-scale.mjs for what that gap cost.
+      - name: Lint (eslint + stylelint)
         run: pnpm run lint
 
       # Prettier is enforced by the lefthook pre-commit hook, which a
@@ -76,7 +97,32 @@ jobs:
         run: pnpm run format:check
 
       - name: Module boundaries (sheriff)
-        run: pnpm exec sheriff verify src/main.ts
+        run: pnpm run verify
+
+      # The two whole-repo set differences behind the data-testid contract: an id
+      # no spec references, and a spec locator no template declares. Neither is
+      # decidable per file, so they cannot be eslint rules — the per-file half
+      # (an id must be a static literal, which is what makes both sides greppable)
+      # is `commlink/testid-is-static` in gate 1. 60ms.
+      - name: Test-id contract (declared ↔ referenced)
+        run: pnpm run verify:testids
+
+      # Markdown is outside prettier, eslint and tsc alike, so a doc that names a
+      # deleted folder reads exactly as well as one that does not. This is the
+      # only gate that can see it — it caught a fixture directory two docs and a
+      # code comment described and nobody built.
+      - name: Doc paths resolve
+        run: pnpm run verify:docs
+
+      # `noUnusedLocals` is on and cannot see an exported declaration, so
+      # `export` is the one keyword that hides dead code from the compiler. Same
+      # shape as the two gates above and eslint cannot be it for the same reason:
+      # whether an export is necessary is a fact about every OTHER file. 8s — the
+      # TypeScript language service, because the shell reaches eleven domains
+      # only through dynamic `loadChildren`/`loadComponent` imports and a text
+      # scan would report every route manifest as dead.
+      - name: Export surface (no unnecessary export)
+        run: pnpm run verify:exports
 
       # esbuild (build/test) transpiles without a full type-check, so tsc is a
       # required, separate gate — it catches type-only breakage the others miss.
@@ -90,6 +136,14 @@ jobs:
       # a regression floor, and they only bind if something checks them.
       - name: Unit tests (vitest)
         run: pnpm run test:coverage
+
+      # `--with-deps` still runs below on a hit: the OS packages it installs live
+      # outside this path and are not cacheable, and the install is a no-op once
+      # the browser is already there.
+      - uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Chromium + OS deps
         run: pnpm exec playwright install --with-deps chromium
@@ -114,6 +168,16 @@ jobs:
       - name: Production build (Codeberg Pages base href)
         run: pnpm run build:pages
 
+      # The one thing nothing else touches: the build is DEPLOYED from a subpath
+      # and never REQUESTED from one. e2e drives `ng serve` at the root, so the
+      # two faults CLAUDE.md names by title — a relative `<base href>`, and a
+      # `TranslateHttpLoader` prefix that went absolute and 404s every label into
+      # its raw key — both survive a fully green pipeline. This serves
+      # `www/browser` under /np-commlink/ and makes real requests, which is the
+      # only thing that can tell.
+      - name: Pages build is serveable from its subpath
+        run: pnpm run verify:pages
+
       # Codeberg Pages, branch variant: the tip of *this* repo's `pages` branch
       # is served at https://letothec0dem0nkey.codeberg.page/np-commlink/ — one
       # site per project, as opposed to the single per-user site a `pages`
@@ -128,11 +192,23 @@ jobs:
       # glob, because a glob dialect that doesn't support what was written fails
       # *silently* — it stops matching and releases just quietly stop happening.
       # Pre-release tags (`v1.0.0-rc.1`) therefore verify without publishing.
+      #
+      # EVERY `forge.*` value reaches the script through `env:`, never as a
+      # `${{ }}` spliced into the shell. Three of them used to be spliced while
+      # the other two went through `env:` — and the inconsistency is the whole
+      # problem: expression interpolation is textual substitution into the script
+      # BEFORE a shell ever sees it, so the value is code rather than data. These
+      # particular ones are hostile-input-free, which is exactly why it survived;
+      # it is a habit that stops being safe the first time a field an outsider can
+      # write (a branch name, a PR title) is used the same way.
       - name: Deploy to the pages branch
         if: ${{ startsWith(forge.ref, 'refs/tags/v') }}
         env:
           FORGE_TOKEN: ${{ forge.token }}
           FORGE_REF: ${{ forge.ref }}
+          FORGE_SHA: ${{ forge.sha }}
+          FORGE_ACTOR: ${{ forge.actor }}
+          FORGE_REPOSITORY: ${{ forge.repository }}
         run: |
           version="${FORGE_REF#refs/tags/}"
           if ! printf '%s' "$version" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
@@ -144,5 +220,5 @@ jobs:
           git config user.name 'Forgejo Actions'
           git config user.email 'noreply@codeberg.org'
           git add -A
-          git commit -q -m "deploy $version (${{ forge.sha }})"
-          git push -q -f "https://${{ forge.actor }}:${FORGE_TOKEN}@codeberg.org/${{ forge.repository }}.git" pages
+          git commit -q -m "deploy $version ($FORGE_SHA)"
+          git push -q -f "https://${FORGE_ACTOR}:${FORGE_TOKEN}@codeberg.org/${FORGE_REPOSITORY}.git" pages

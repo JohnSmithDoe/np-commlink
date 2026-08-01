@@ -46,7 +46,7 @@ describe('ListSettingsPage', () => {
     const toggles = fixture.nativeElement.querySelectorAll(
       '[data-testid^="list-settings-flag-"]'
     );
-    expect(toggles.length).toBe(9);
+    expect(toggles.length).toBe(8);
   });
 
   it('dispatches toggleFlag with the given flag', () => {

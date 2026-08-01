@@ -1,0 +1,19 @@
+@use '../../../../../theme/cash';
+
+// Per-account ledger (P2). Shares the net-worth strip with the overview; the
+// spacing stays local, which is the one thing the two copies ever disagreed on.
+// Spacing before the include: the mixin ends in nested `&__` rules, so anything
+// after it would be emitted as a second `.cash-networth` block.
+.cash-networth {
+  padding-top: 0.5rem;
+  padding-bottom: 0.75rem;
+  @include cash.networth-strip;
+}
+
+.cash-txn__amount {
+  @include cash.txn-amount(var(--fs-body));
+}
+
+.cash-empty {
+  @include cash.empty-state;
+}

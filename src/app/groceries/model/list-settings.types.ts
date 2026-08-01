@@ -17,7 +17,6 @@ export type BooleanKeys<T> = {
 export interface IListSettings {
   showQuickAdd: boolean;
   showQuickAddProduct: boolean;
-  showQuickAddCategory: boolean;
   showProductsInStorage: boolean;
   showShoppingInStorage: boolean;
   showProductsInShopping: boolean;
@@ -28,7 +27,7 @@ export interface IListSettings {
 
 // The grocery quick-add row's derived UI state — the one aggregate that is NOT
 // part of the persisted slice: the engine recomputes it (updateQuickAddState) on
-// search/mode changes, and the quick-add component reads it ANDed with the
+// search changes, and the quick-add component reads it ANDed with the
 // showQuickAdd* flags above.
 export type IQuickAddState = Readonly<{
   listName?: string;
@@ -36,5 +35,4 @@ export type IQuickAddState = Readonly<{
   searchQuery?: string;
   canAddLocal?: boolean;
   canAddProduct?: boolean;
-  canAddCategory: boolean;
 }>;

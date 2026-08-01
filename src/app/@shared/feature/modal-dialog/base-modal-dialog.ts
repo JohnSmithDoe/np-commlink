@@ -1,5 +1,12 @@
-import { computed, inject, linkedSignal, signal, Signal } from '@angular/core';
-import { FieldTree } from '@angular/forms/signals';
+import {
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+  Signal,
+  untracked,
+} from '@angular/core';
+import { form, SchemaPathTree } from '@angular/forms/signals';
 import { ModalController } from '@ionic/angular/standalone';
 
 /**
@@ -43,19 +50,61 @@ export abstract class BaseModalDialog<TEntity, TForm extends object> {
   /** Entity → editable form fields. */
   protected abstract toForm(entity: TEntity): TForm;
   protected abstract persist(draft: TForm, existing: TEntity | undefined): void;
+
   /**
-   * The subclass's Signal Forms tree over {@link draft} — `form(this.draft,
-   * rules)`. It must project the draft rather than a copy of it, or a reseed
-   * would not reach validity.
+   * The dialog's own validation schema, applied to the tree this base builds.
+   *
+   * A **method**, not a field: {@link form} below evaluates its schema eagerly,
+   * during this base's field initialization — so a subclass field would not exist
+   * yet, while a prototype method always does. Anything the schema *reads* has to
+   * be deferred for the same reason, which is why the rule dialog hands its
+   * locale over as a thunk (the arrangement `requireUniqueName` already uses).
    */
-  protected abstract readonly form: FieldTree<TForm>;
+  protected abstract applyRules(path: SchemaPathTree<TForm>): void;
 
   readonly isEdit = computed(() => !!this.existing());
 
-  readonly draft = linkedSignal<TForm>(() => {
-    const entity = this.existing();
-    return entity ? this.toForm(entity) : this.blank();
+  /**
+   * Reseeded when a DIFFERENT entity comes under edit — which is what
+   * {@link editId} changing means — and not merely when the store hands back a
+   * new object for the same one.
+   *
+   * Tracking `existing` itself made any reducer write that rewrote the edited
+   * row discard the user's work, and the category cascades do exactly that:
+   * deleting a category clears it off every transaction and drops every rule
+   * using it, and a merging rename remaps both. Both cash modals embed the
+   * category picker, so deleting a category from inside an open transaction
+   * modal silently reverted the description, amount, direction, date and
+   * pending flag — and from the rule modal it reseeded to `blank()`, flipping a
+   * half-edited rule into create mode.
+   *
+   * The entity is read untracked for that reason. It cannot be missing while
+   * `editId` is set: all seven subclasses resolve `existing` out of a slice
+   * their route resolver has already hydrated, so there is no "arrives later"
+   * state a reference subscription would have been needed to catch.
+   */
+  readonly draft = linkedSignal<string | undefined, TForm>({
+    source: () => this.editId(),
+    computation: () => {
+      const entity = untracked(() => this.existing());
+      return entity ? this.toForm(entity) : this.blank();
+    },
   });
+
+  /**
+   * The Signal Forms tree over {@link draft}, built here rather than by each
+   * subclass.
+   *
+   * It must *project* the draft signal rather than a copy of it, or the reseed on
+   * `existing()` would never reach validity — and that was seven verbatim
+   * `form(this.draft, rules)` declarations, two of which carried a comment
+   * restating the rule, which is what enforcement-by-memory looks like. An eighth
+   * modal writing `form(signal({ ...this.draft() }), rules)` would have compiled
+   * and then silently stopped re-validating after a reseed. Same argument as
+   * `BaseEditItemDialog` owning its field tree: an invariant every subclass must
+   * hold is not a subclass's decision.
+   */
+  protected readonly form = form(this.draft, (path) => this.applyRules(path));
 
   /**
    * Saveable = the field tree is valid. Every dialog used to spell this out as a

@@ -17,19 +17,20 @@ import { ICategory } from '../model/category.types';
  */
 export const TEST_TIMESTAMP = '2024-01-01T12:00:00.000Z';
 
-// NB: no `mockDashboardState` or `mockSettings` here — the dashboard read-model
-// belongs to commlink and the settings slice to settings (see their own
-// `testing/` folders). @shared is tagged `domain:@shared` and Sheriff checks every
+// NB: no `mockDashboardState` here — the dashboard read-model belongs to
+// commlink, and @shared is tagged `domain:@shared` while Sheriff checks every
 // fromTag, so this file could not name a domain type even though `type:testing`
-// may reach any layer. A domain fixture reaches `provideMockStore` through
-// `TMockState`'s `Record<string, unknown>` half, which exists for exactly this.
+// may reach any layer. commlink has no `testing/` folder either: a summary is a
+// two-field literal, so each dashboard spec writes its own. A domain fixture
+// reaches `provideMockStore` through `TMockState`'s `Record<string, unknown>`
+// half, which exists for exactly this.
 
 function mockRouterState(): RouterReducerState {
   return {
     state: {
       url: '/',
       root: {
-        params: {},
+        parameters: {},
         data: {},
         url: [],
         outlet: 'primary',
@@ -69,7 +70,7 @@ export function mockBaseItem(overrides: Partial<IBaseItem> = {}): IBaseItem {
  * A `type` alias, not an `interface`: aliases get an implicit index signature,
  * so a domain's own bundle type (`mockGroceriesState()`) stays assignable.
  */
-export type TMockKernelState = {
+type TMockKernelState = {
   router: RouterReducerState;
 };
 

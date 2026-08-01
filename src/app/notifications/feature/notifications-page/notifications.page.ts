@@ -57,7 +57,7 @@ export class NotificationsPage implements ViewWillEnter {
   readonly #router = inject(Router);
   readonly #osNotifications = inject(NotificationService);
 
-  readonly newNotifications = this.#facade.newNotifications;
+  readonly openNotifications = this.#facade.openNotifications;
   readonly doneNotifications = this.#facade.doneNotifications;
   readonly doneCollapsed = this.#facade.doneCollapsed;
   readonly isDev = isDevMode();

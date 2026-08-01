@@ -6,179 +6,177 @@ $footer-height: 56px;
 $cell-min-width: 100px;
 $round-width: 3rem;
 
-:host {
-  .tp-grid {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    font-family: var(--sr-deck-font);
-    color: var(--sr-text);
-  }
+.tp-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: var(--sr-deck-font);
+  color: var(--sr-text);
+}
 
-  // shared horizontal-scroll rows (header + footer scroll in sync with body)
-  .tp-row,
-  .tp-body {
-    display: flex;
-    flex-wrap: nowrap;
-    width: 100%;
+// shared horizontal-scroll rows (header + footer scroll in sync with body)
+.tp-row,
+.tp-body {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
 
-    // hide the native scrollbars — the three regions scroll as one
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .tp-row {
-    flex: 0 0 auto;
-    align-items: stretch;
-    border-bottom: 1px solid var(--sr-line);
-  }
-
-  // The body scrolls both axes; the header + footer scroll horizontally and are
-  // kept in sync with the body via JS. Data rows never scroll on their own.
-  .tp-body {
-    flex: 1 1 auto;
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  .tp-row--header {
-    height: $header-height;
-    overflow-x: auto;
-    background: var(--sr-panel);
-    font-weight: bold;
-    text-transform: var(--sr-label-transform);
-    letter-spacing: var(--sr-label-tracking);
-  }
-
-  .tp-row--footer {
-    height: $footer-height;
-    overflow-x: auto;
-    background: var(--sr-panel);
-    font-weight: bold;
-    color: var(--sr-amber);
-  }
-
-  .tp-row--data {
-    min-height: $row-height;
-
-    &:nth-child(odd) {
-      background: var(--sr-panel-2);
-    }
-    &:nth-child(even) {
-      background: var(--sr-panel);
-    }
-  }
-
-  .tp-cell {
-    flex: 1 0 $cell-min-width;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border-left: 1px solid var(--sr-line);
-
-    &:last-child {
-      border-right: 1px solid var(--sr-line);
-    }
-
-    ion-input {
-      --padding-top: 0;
-      --padding-bottom: 0;
-      --padding-start: 4px;
-      --padding-end: 4px;
-      --color: var(--sr-text);
-      text-align: center;
-      font-family: var(--sr-deck-font);
-    }
-  }
-
-  // sticky round marker column — stays pinned while player columns scroll
-  .tp-cell--round {
-    flex: 0 0 $round-width;
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background: inherit;
-    color: var(--sr-text-dim);
-    border-left: none;
-  }
-
-  .tp-cell--head,
-  .tp-cell--foot {
-    background: var(--sr-panel);
-  }
-
-  // ── ended result screen ──────────────────────────────────────────────
-  .tp-result {
-    color: var(--sr-text);
-  }
-
-  .tp-result__winner,
-  .tp-result__row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .tp-result__winner strong {
-    font-size: 1.3rem;
-    color: var(--sr-amber);
-  }
-
-  .tp-result__score {
-    font-family: var(--sr-deck-font);
-    color: var(--sr-text-dim);
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .tp-result__image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 238px;
-    margin: 1rem 0;
-  }
-
-  // ── pure-CSS victory HUD (replaces the old winner.gif) ───────────────────
-  .tp-victory {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-
-    // every direct child stacks in the same centred grid cell
-    > * {
-      grid-area: 1 / 1;
-    }
-  }
-
-  // The beams, the reticle and the confetti are pure deck decoration: the plain
-  // theme shows the flat trophy above the ranked list and nothing else moves.
-  .tp-victory__rays,
-  .tp-victory__ring,
-  .tp-victory__spark {
+  // hide the native scrollbars — the three regions scroll as one
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
     display: none;
   }
+}
 
-  .tp-victory__trophy {
-    display: grid;
-    place-items: center;
-    color: var(--sr-amber);
+.tp-row {
+  flex: 0 0 auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--sr-line);
+}
 
-    svg {
-      width: 84px;
-      height: 84px;
-    }
+// The body scrolls both axes; the header + footer scroll horizontally and are
+// kept in sync with the body via JS. Data rows never scroll on their own.
+.tp-body {
+  flex: 1 1 auto;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.tp-row--header {
+  height: $header-height;
+  overflow-x: auto;
+  background: var(--sr-panel);
+  font-weight: bold;
+  text-transform: var(--sr-label-transform);
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.tp-row--footer {
+  height: $footer-height;
+  overflow-x: auto;
+  background: var(--sr-panel);
+  font-weight: bold;
+  color: var(--sr-amber);
+}
+
+.tp-row--data {
+  min-height: $row-height;
+
+  &:nth-child(odd) {
+    background: var(--sr-panel-2);
+  }
+  &:nth-child(even) {
+    background: var(--sr-panel);
+  }
+}
+
+.tp-cell {
+  flex: 1 0 $cell-min-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left: 1px solid var(--sr-line);
+
+  &:last-child {
+    border-right: 1px solid var(--sr-line);
+  }
+
+  ion-input {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --color: var(--sr-text);
+    text-align: center;
+    font-family: var(--sr-deck-font);
+  }
+}
+
+// sticky round marker column — stays pinned while player columns scroll
+.tp-cell--round {
+  flex: 0 0 $round-width;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: inherit;
+  color: var(--sr-text-dim);
+  border-left: none;
+}
+
+.tp-cell--head,
+.tp-cell--foot {
+  background: var(--sr-panel);
+}
+
+// ── ended result screen ──────────────────────────────────────────────
+.tp-result {
+  color: var(--sr-text);
+}
+
+.tp-result__winner,
+.tp-result__row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tp-result__winner strong {
+  font-size: var(--fs-xlarge);
+  color: var(--sr-amber);
+}
+
+.tp-result__score {
+  font-family: var(--sr-deck-font);
+  color: var(--sr-text-dim);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tp-result__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 238px;
+  margin: 1rem 0;
+}
+
+// ── pure-CSS victory HUD (replaces the old winner.gif) ───────────────────
+.tp-victory {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  // every direct child stacks in the same centred grid cell
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+// The beams, the reticle and the confetti are pure deck decoration: the plain
+// theme shows the flat trophy above the ranked list and nothing else moves.
+.tp-victory__rays,
+.tp-victory__ring,
+.tp-victory__spark {
+  display: none;
+}
+
+.tp-victory__trophy {
+  display: grid;
+  place-items: center;
+  color: var(--sr-amber);
+
+  svg {
+    width: 84px;
+    height: 84px;
   }
 }
 
@@ -196,6 +194,9 @@ $round-width: 3rem;
       rgba(var(--sr-amber-rgb), 0.22) 9deg 13deg,
       transparent 13deg 24deg
     );
+    /* stylelint-disable-next-line property-no-vendor-prefix -- unprefixed mask
+       is Safari 15.4+; the PWA still runs on older iOS, and the prefix is the
+       only thing that clips the beams into a disc there. */
     -webkit-mask: radial-gradient(circle at center, #000 24%, transparent 70%);
     mask: radial-gradient(circle at center, #000 24%, transparent 70%);
     animation: tp-rays 14s linear infinite;

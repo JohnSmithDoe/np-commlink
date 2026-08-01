@@ -14,6 +14,18 @@ import { TrackplayGamePlayPage } from './game-play.page';
 const inputEvent = (value: string): Event =>
   ({ target: { value } }) as unknown as Event;
 
+// The two parse assertions name the fields rather than rebuilding the action:
+// `setRoundValue` stamps `now` from the clock by default, and a second
+// construction in the expectation would read it a tick later.
+const scored = (value: number) =>
+  expect.objectContaining({
+    type: TrackplayActions.setRoundValue.type,
+    gameId: 'g1',
+    roundId: 'r1',
+    playerId: 'p1',
+    value,
+  });
+
 describe('TrackplayGamePlayPage', () => {
   let component: TrackplayGamePlayPage;
   let dispatch: ReturnType<typeof vi.spyOn>;
@@ -54,9 +66,7 @@ describe('TrackplayGamePlayPage', () => {
 
     component.onValue('r1', 'p1', inputEvent('15'));
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.setRoundValue('g1', 'r1', 'p1', 15)
-    );
+    expect(dispatch).toHaveBeenCalledWith(scored(15));
   });
 
   it('coerces a blank or non-numeric cell to 0', () => {
@@ -64,9 +74,7 @@ describe('TrackplayGamePlayPage', () => {
 
     component.onValue('r1', 'p1', inputEvent(''));
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.setRoundValue('g1', 'r1', 'p1', 0)
-    );
+    expect(dispatch).toHaveBeenCalledWith(scored(0));
   });
 
   it('dispatches toggleGameEnded for the route id', () => {

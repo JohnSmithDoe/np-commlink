@@ -1,10 +1,15 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import {
+  provideZonelessChangeDetection,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { ITrackingItem } from '../../model/tracking.types';
 import { selectAllTrackingSessions } from '../../data';
+import { TodayService } from '../../util/today.service';
 import { DailySessionsComponent } from './daily-sessions.component';
 
 // Proof-of-concept: an Ionic + store-connected component unit-tested via
@@ -28,6 +33,10 @@ const session = (
 
 describe('DailySessionsComponent', () => {
   let store: MockStore;
+  // Stubbed rather than real so a test can roll the day forward without waiting
+  // for midnight — which is the whole reason the day is a signal and not a
+  // `dayjs()` call inside the component's `computed`.
+  let today: WritableSignal<string>;
 
   const create = (sessions: ITrackingItem[]): DailySessionsComponent => {
     store.overrideSelector(selectAllTrackingSessions, sessions);
@@ -35,12 +44,14 @@ describe('DailySessionsComponent', () => {
   };
 
   beforeEach(() => {
+    today = signal(dayjs().format('YYYY-MM-DD'));
     TestBed.configureTestingModule({
       imports: [DailySessionsComponent],
       providers: [
         provideTranslateService(),
         provideZonelessChangeDetection(),
         provideMockStore(),
+        { provide: TodayService, useValue: { today } },
       ],
     });
     store = TestBed.inject(MockStore);
@@ -82,6 +93,28 @@ describe('DailySessionsComponent', () => {
     const component = create([]);
 
     expect(component.isToday()).toBe(true);
+    component.nextDay();
+    expect(component.isToday()).toBe(true);
+  });
+
+  /**
+   * The lock-out this reads for: `isToday` also drives `[disabled]` on the
+   * next-day button and the early return in `nextDay()`, so while it read the
+   * clock inside a `computed` — a dependency memoization cannot see — an app left
+   * open past midnight went on calling yesterday "today" AND refused to advance
+   * to the day that had actually started.
+   *
+   * Rolling the stub forward is what real midnight does, on the SAME instance:
+   * the point is not merely that the day is an input, but that changing it
+   * re-derives everything downstream.
+   */
+  it('releases the next-day button once the day rolls over', () => {
+    const component = create([]);
+    expect(component.isToday()).toBe(true);
+
+    today.set(dayjs().add(1, 'day').format('YYYY-MM-DD'));
+
+    expect(component.isToday()).toBe(false);
     component.nextDay();
     expect(component.isToday()).toBe(true);
   });

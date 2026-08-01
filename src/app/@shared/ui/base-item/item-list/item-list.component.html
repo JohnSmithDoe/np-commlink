@@ -13,26 +13,6 @@
       </ion-toolbar>
     }
   }
-  @if (mode() === 'categories') {
-    <ng-container *ngTemplateOutlet="categoryMode" />
-  } @else {
-    <ng-container *ngTemplateOutlet="listMode" />
-  }
-</ion-list>
-
-<ng-template #categoryMode>
-  @for (cat of categories(); track cat.category.id) {
-    <app-category-item
-      [category]="cat.category"
-      [count]="cat.count"
-      [ionList]="ionList"
-      (selectCategory)="selectCategory.emit(cat.category.id)"
-      (deleteCategory)="deleteCategory.emit(cat.category.id)"
-    />
-  }
-</ng-template>
-
-<ng-template #listMode>
   @for (item of items(); track item.id) {
     <ng-container
       *ngTemplateOutlet="
@@ -41,4 +21,4 @@
       "
     />
   }
-</ng-template>
+</ion-list>

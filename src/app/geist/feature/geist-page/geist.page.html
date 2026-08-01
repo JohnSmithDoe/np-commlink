@@ -17,11 +17,9 @@
       <span class="gs-bar__seg">
         <i
           class="sr-led"
-          [class.sr-led--on]="state === 'jacked-in'"
-          [class.sr-led--standby]="
-            state === 'dormant' || state === 'priming' || state === 'reforging'
-          "
-          [class.sr-led--off]="state === 'unsupported' || state === 'flatlined'"
+          [class.sr-led--on]="linkLed() === 'on'"
+          [class.sr-led--standby]="linkLed() === 'standby'"
+          [class.sr-led--off]="linkLed() === 'off'"
         ></i>
         {{ 'geist.hud.link' | translate }}
         <b>{{ linkLabel() | translate }}</b>
@@ -59,7 +57,7 @@
           <p class="gs-panel__fine">
             {{ 'geist.unsupported.requirements' | translate }}
           </p>
-          <a class="gs-back" routerLink="/commlink"
+          <a class="gs-btn gs-btn--ghost gs-back" routerLink="/commlink"
             >&lt; {{ 'geist.action.back-to-deck' | translate }}</a
           >
         </div>
@@ -117,7 +115,7 @@
           <div class="gs-meter">
             <span
               class="gs-meter__fill"
-              [style.width.%]="primedPercent()"
+              [style.--gs-primed]="primedPercent() / 100"
             ></span>
           </div>
         </div>

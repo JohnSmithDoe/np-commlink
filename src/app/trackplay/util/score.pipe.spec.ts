@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { LanguageService } from '../../@shared/util/language.service';
+import { LanguageService } from '../../@shared/util/theme/language.service';
 import { ScorePipe } from './score.pipe';
 
 // The pipe reads the active locale once, at construction, so it has to be built

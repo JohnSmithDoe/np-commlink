@@ -1,5 +1,5 @@
 import { expect, Locator, Page, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
+import { pageRoot, waitForPersisted } from '../helpers';
 
 /**
  * The rule builder is the app's only Signal Forms surface with a **repeated**
@@ -13,7 +13,7 @@ import { waitForPersisted } from '../helpers';
 const RULES = '/#/cash/rules';
 
 function rulesPage(page: Page): Locator {
-  return page.locator('#main-content app-page-cash-rules');
+  return pageRoot(page, 'app-page-cash-rules');
 }
 
 function dialog(page: Page): Locator {

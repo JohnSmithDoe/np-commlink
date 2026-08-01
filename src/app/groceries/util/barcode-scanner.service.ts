@@ -10,7 +10,7 @@ import { Capacitor } from '@capacitor/core';
  * dismissed scanner and an empty result identically, and neither warrants a
  * message.
  */
-export type TScanOutcome =
+type TScanOutcome =
   | { ok: true; ean: string }
   | { ok: false; reason: 'unsupported' | 'denied' | 'cancelled' | 'error' };
 

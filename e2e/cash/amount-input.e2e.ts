@@ -1,4 +1,5 @@
 import { expect, Locator, Page, test } from '@playwright/test';
+import { pageRoot } from '../helpers';
 
 /**
  * `app-money-input` is a Signal Forms control over integer **cents**: the dialog
@@ -9,11 +10,11 @@ import { expect, Locator, Page, test } from '@playwright/test';
  */
 
 function accounts(page: Page): Locator {
-  return page.locator('#main-content app-page-cash');
+  return pageRoot(page, 'app-page-cash');
 }
 
 function account(page: Page): Locator {
-  return page.locator('#main-content app-page-cash-account');
+  return pageRoot(page, 'app-page-cash-account');
 }
 
 function txnModal(page: Page): Locator {

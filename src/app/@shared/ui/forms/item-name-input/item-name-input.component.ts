@@ -2,21 +2,32 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   model,
   output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { FormValueControl, ValidationError } from '@angular/forms/signals';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   InputCustomEvent,
+  IonButton,
+  IonIcon,
   IonInput,
   IonItem,
   IonNote,
+  Platform,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { happyOutline } from 'ionicons/icons';
 import { TMarker } from '../../../model/app.types';
-import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/form-rules';
+import { EmojiRecentsService } from '../../../util/emoji/emoji-recents.service';
+import { insertAt } from '../../../util/emoji/emoji-text.utils';
+import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/forms/form-rules';
+import { EmojiPickerComponent } from '../../emoji-picker/emoji-picker.component';
 
 // Deliberately PARTIAL over the kind space — `form-rules` names kinds this field
 // can never report (a date's, say) — so the index access has to yield
@@ -49,12 +60,45 @@ const ERROR_TEXT: Readonly<Partial<Record<string, TMarker>>> = {
 @Component({
   selector: 'app-item-name-input',
   templateUrl: './item-name-input.component.html',
-  imports: [IonInput, IonItem, IonNote, TranslatePipe],
+  imports: [
+    IonButton,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonNote,
+    TranslatePipe,
+    EmojiPickerComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemNameInputComponent implements FormValueControl<string> {
+  readonly #emojiRecents = inject(EmojiRecentsService);
+
   readonly value = model<string>('');
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+
+  protected readonly recentEmojis = this.#emojiRecents.recent;
+  protected readonly pickerOpen = signal(false);
+
+  /**
+   * Desktop only — every mobile keyboard already has an emoji picker, and ours
+   * would be a second, worse one that also costs a lazy chunk to open.
+   *
+   * `Platform.is('desktop')` rather than `Capacitor.isNativePlatform()`, which
+   * the camera-scanner and status-bar gates use: those ask "can this device do
+   * the thing at all", and native is exactly that question. This one asks "does
+   * the user already have a better way", and the PWA on a phone is not native
+   * yet still has the OS keyboard. A plain field, not a signal: a platform does
+   * not change mid-session.
+   */
+  protected readonly offersEmojiPicker = inject(Platform).is('desktop');
+  // viewChild can't sit on an ES-private (#) field (NG1053); protected readonly,
+  // matching the categories-dialog convention.
+  protected readonly input = viewChild(IonInput);
+
+  constructor() {
+    addIcons({ happyOutline });
+  }
 
   /**
    * Blur marks the bound field touched. Angular reaches a custom control's
@@ -77,5 +121,39 @@ export class ItemNameInputComponent implements FormValueControl<string> {
 
   protected onInput(event: InputCustomEvent): void {
     this.value.set(String(event.detail.value ?? ''));
+  }
+
+  /**
+   * The caret has to come off the native element — `ion-input` is a Stencil
+   * host with no selection API of its own — and it is absent whenever the field
+   * was never focused, which is exactly when appending is right.
+   *
+   * Writing through `value` rather than the DOM is what keeps Signal Forms in
+   * the loop: the bound field revalidates, so `requireUniqueName` sees the new
+   * name.
+   *
+   * Advancing the selection without focusing is what makes `multiple` work: the
+   * picker is still presented and owns focus, so the next pick has to find the
+   * caret where this one left it rather than re-reading a stale position and
+   * inserting the second glyph in front of the first.
+   */
+  protected async insertEmoji(glyph: string): Promise<void> {
+    const current = this.value();
+    const native = await this.input()?.getInputElement();
+    const caret = native?.selectionStart ?? current.length;
+
+    this.value.set(insertAt(current, glyph, caret));
+
+    native?.setSelectionRange(caret + glyph.length, caret + glyph.length);
+  }
+
+  /**
+   * Focus returns to the field only once the overlay is *gone* — `didDismiss`,
+   * not the close click. An `ion-modal` traps focus while it is presented, so
+   * focusing underneath it mid-dismissal races its own restore.
+   */
+  protected async onPickerDismissed(): Promise<void> {
+    this.pickerOpen.set(false);
+    await this.input()?.setFocus();
   }
 }

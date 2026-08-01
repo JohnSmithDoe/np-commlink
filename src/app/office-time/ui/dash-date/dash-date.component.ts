@@ -12,7 +12,7 @@ import {
 } from '@ionic/angular/standalone';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-import { localizedLongDate } from '../../../@shared/util/date-format.utils';
+import { localizedLongDate } from '../../../@shared/util/formatting/date-format.utils';
 import { TranslatePipe } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {

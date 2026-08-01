@@ -5,7 +5,7 @@ Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notificat
 ## Prerequisites
 
 - Node 22 (`.nvmrc`)
-- pnpm 11.9.x (`packageManager` in `package.json`)
+- pnpm 11.18.x (`packageManager` in `package.json` pins the exact version)
 
 ## Common commands
 
@@ -17,7 +17,7 @@ pnpm test           # vitest, single run
 pnpm test:watch     # vitest, watch
 pnpm e2e            # playwright
 pnpm lint           # eslint (flat config)
-pnpm i18n:extract   # ngx-translate-extract → public/i18n/de.json
+pnpm i18n:extract   # ngx-translate-extract → public/i18n/{de,en}.json (--clean)
 pnpm build:android  # web build + cap sync android + scripts/android-postsync.sh
 pnpm apk:debug      # …then gradlew assembleDebug  → android/app/build/outputs/apk/debug/
 pnpm open:android   # open the project in Android Studio
@@ -66,7 +66,7 @@ still needs a keystore.
 
 ## Layout
 
-DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `CLAUDE.md` for the authoritative developer guide and `docs/project-summary.md` for everything else — how the parts talk to each other, the per-feature design decisions, and what is still open. The merge decision log and refactor history live in the git commit log.
+DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `CLAUDE.md` for the authoritative developer guide and `docs/project-summary.md` for everything else — it indexes the architecture compendium: how the parts talk to each other, the per-feature design decisions, and what is still open. The merge decision log and refactor history live in the git commit log.
 
 ## License
 
@@ -78,4 +78,4 @@ It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
 
 In practice: fork it, change it, ship it — but anyone you pass it to gets the source under the same terms, and that includes people who only ever reach it **over a network**. If you host the PWA for others, you owe those users the corresponding source (AGPL §13); the settings page carries the source link that discharges this for the canonical deployment.
 
-Third-party code keeps its own terms: the dependency tree is MIT / Apache-2.0 / 0BSD throughout, and a production build emits their notices to `www/browser/3rdpartylicenses.txt`. The Android APK additionally bundles Google's proprietary ML Kit binary (pulled in by `@capacitor-mlkit/barcode-scanning`), so the APK as shipped is not wholly free software.
+Third-party code keeps its own terms: the dependency tree is MIT / Apache-2.0 / 0BSD throughout, and a production build emits their notices to `www/3rdpartylicenses.txt`. The Android APK additionally bundles Google's proprietary ML Kit binary (pulled in by `@capacitor-mlkit/barcode-scanning`), so the APK as shipped is not wholly free software.

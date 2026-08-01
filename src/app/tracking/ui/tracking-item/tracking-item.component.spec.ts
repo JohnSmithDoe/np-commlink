@@ -31,10 +31,4 @@ describe('TrackingItemComponent', () => {
     expect(component.getColor(track('stopped'))).toBe('medium');
     expect(component.getColor(track('paused'))).toBe('warning');
   });
-
-  it('maps to the opposite (toggle-target) color', () => {
-    expect(component.getOppositeColor(track('running'))).toBe('warning');
-    expect(component.getOppositeColor(track('stopped'))).toBe('success');
-    expect(component.getOppositeColor(track('paused'))).toBe('success');
-  });
 });

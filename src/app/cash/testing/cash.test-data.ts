@@ -1,5 +1,6 @@
+import { ICategoryList } from '../../@shared/model/category.types';
 import { ICashAccount } from '../model/account.types';
-import { ICashState } from '../model/cash.types';
+import { CASH_CATEGORIES_LIST_ID, ICashState } from '../model/cash.types';
 import { ICashRule } from '../model/rule.types';
 import { ICashTransaction } from '../model/transaction.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
@@ -47,12 +48,18 @@ export function mockCashRule(overrides: Partial<ICashRule> = {}): ICashRule {
   };
 }
 
+export function mockCashCategoryList(
+  overrides: Partial<ICategoryList> = {}
+): ICategoryList {
+  return { id: CASH_CATEGORIES_LIST_ID, items: [], ...overrides };
+}
+
 export function mockCashState(overrides: Partial<ICashState> = {}): ICashState {
   return {
     accounts: [],
     transactions: [],
     rules: [],
-    categories: [],
+    categories: mockCashCategoryList(),
     ...overrides,
   };
 }

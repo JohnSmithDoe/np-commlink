@@ -18,10 +18,10 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { localizedDate } from '../../../@shared/util/date-format.utils';
+import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { ICashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
-import { MoneyEurPipe } from '../../util/money.pipe';
+import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 
 import { TCategoryId } from '../../../@shared/model/category.types';
@@ -50,6 +50,7 @@ import { TCategoryId } from '../../../@shared/model/category.types';
     IonNote,
     TranslatePipe,
     MoneyEurPipe,
+    LocalizedDatePipe,
   ],
 })
 export class CashImportPreviewModalComponent {
@@ -64,10 +65,6 @@ export class CashImportPreviewModalComponent {
   transactions: ICashTransaction[] = [];
   duplicates = 0;
   rejected = 0;
-
-  formatDate(iso: string): string {
-    return localizedDate(iso);
-  }
 
   /** Resolve an auto-assigned category id to its display name. */
   categoryName(id: TCategoryId | undefined): string {

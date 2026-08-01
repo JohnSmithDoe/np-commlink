@@ -1,0 +1,41 @@
+@use '../../../../theme/deck';
+
+.emoji-picker__heading {
+  @include deck.hud-label;
+
+  color: var(--sr-text-dim);
+  margin: 0.75rem 1rem 0.25rem;
+}
+
+// Fixed columns rather than auto-fill: a grid of 1644 glyphs reflowing per
+// keystroke is the one place this dialog can feel slow, and the cell is sized
+// for a thumb either way.
+.emoji-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: 0.125rem;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.emoji-picker__cell {
+  aspect-ratio: 1;
+  background: none;
+  border: none;
+  border-radius: var(--sr-radius);
+  font-size: var(--fs-xlarge);
+  // The glyph is the content, so it must not inherit the deck's letter-spacing.
+  letter-spacing: normal;
+  line-height: 1;
+
+  &:hover,
+  &:focus-visible {
+    background: rgb(var(--sr-amber-rgb) / 12%);
+  }
+}
+
+.emoji-picker__empty {
+  display: block;
+  grid-column: 1 / -1;
+  padding: 1.5rem 0.25rem;
+  text-align: center;
+}

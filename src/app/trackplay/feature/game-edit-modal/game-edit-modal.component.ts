@@ -6,7 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { form, FormField, SchemaFn } from '@angular/forms/signals';
+import { FormField, SchemaFn, SchemaPathTree } from '@angular/forms/signals';
 import {
   IonButton,
   IonButtons,
@@ -26,7 +26,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle, playCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
-import { requireText } from '../../../@shared/util/form-rules';
+import { requireText } from '../../../@shared/util/forms/form-rules';
 import { IGame, TID } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
@@ -111,7 +111,9 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     () => this.existing()?.players ?? this.#presetPlayerIds() ?? []
   );
 
-  protected readonly form = form(this.draft, gameRules);
+  protected applyRules(path: SchemaPathTree<TGameForm>): void {
+    gameRules(path);
+  }
 
   readonly canPlay = computed(
     () => this.canSave() && this.draft().playerIds.length > 0

@@ -1,0 +1,30 @@
+// The TRACKPLAY surfaces' shared pieces. Side-effect-free: this file emits
+// nothing on its own, so a component `@use`s it and `@include`s what it needs —
+// the same seam as `theme/_cash.scss` and `theme/_dashboard.scss`.
+//
+// Extracted because the game row and the player row are the same widget with
+// different content, and their two stylesheets were byte-identical copies.
+
+// The secondary line inside a list row's `ion-label`. One declaration, but it
+// is the whole content of two byte-identical stylesheets, so it lives here for
+// the same reason the second line does.
+@mixin label-secondary {
+  ion-label p {
+    color: var(--sr-text-dim);
+  }
+}
+
+// The metadata line under a list row's title: label left, value right.
+@mixin list-row-second-line {
+  .second-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .value {
+    font-family: var(--sr-deck-font);
+    color: var(--sr-text);
+  }
+}

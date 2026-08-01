@@ -1,8 +1,25 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Platform } from '@ionic/angular/standalone';
 import { provideTranslateService } from '@ngx-translate/core';
-import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/form-rules';
+import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/forms/form-rules';
 import { ItemNameInputComponent } from './item-name-input.component';
+
+const createOn = (platform: string) => {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    imports: [ItemNameInputComponent],
+    providers: [
+      provideTranslateService(),
+      provideZonelessChangeDetection(),
+      { provide: Platform, useValue: { is: (p: string) => p === platform } },
+    ],
+  });
+  return TestBed.createComponent(ItemNameInputComponent).componentInstance;
+};
+
+const offersPicker = (component: ItemNameInputComponent) =>
+  (component as unknown as { offersEmojiPicker: boolean }).offersEmojiPicker;
 
 describe('ItemNameInputComponent', () => {
   let fixture: ComponentFixture<ItemNameInputComponent>;
@@ -48,5 +65,18 @@ describe('ItemNameInputComponent', () => {
   it('renders no message for a kind it does not know', () => {
     reportErrors('somethingElse');
     expect(component.errorText()).toBeUndefined();
+  });
+
+  // A mobile keyboard already has an emoji picker; ours would be a second,
+  // worse one. Read once at construction, so the override has to be in place
+  // before the component is created.
+  describe('the emoji picker gate', () => {
+    it('offers the picker on desktop', () => {
+      expect(offersPicker(createOn('desktop'))).toBe(true);
+    });
+
+    it('leaves it to the keyboard on mobile', () => {
+      expect(offersPicker(createOn('mobile'))).toBe(false);
+    });
   });
 });

@@ -5,10 +5,11 @@ import {
   IGameConfig,
   IGameType,
   IPlayer,
+  IPlayersConfig,
   TID,
 } from '../model/trackplay.types';
-import { createGame as newGame } from '../util/trackplay.factory';
-import { TrackplayActions } from './actions/trackplay.actions';
+import { createGame as buildGame } from '../util/trackplay.factory';
+import { TrackplayActions } from './trackplay.actions';
 import {
   selectGameById,
   selectGameList,
@@ -25,8 +26,7 @@ import {
   selectScoresByGame,
   selectStatsForPlayer,
   selectTrackplayConfig,
-  selectWinnerByGame,
-} from './selectors/trackplay.selector';
+} from './trackplay.selector';
 
 /**
  * The `trackplay` (TRACKPLAY) domain facade — the single NgRx surface for every
@@ -65,9 +65,6 @@ export class TrackplayFacade {
   resultByGame(id: TID) {
     return this.#store.selectSignal(selectResultByGame(id));
   }
-  winnerByGame(id: TID) {
-    return this.#store.selectSignal(selectWinnerByGame(id));
-  }
   gamesForPlayer(id: TID) {
     return this.#store.selectSignal(selectGamesForPlayer(id));
   }
@@ -98,7 +95,7 @@ export class TrackplayFacade {
    * chosen type ride along instead of needing a follow-up `changeGameType`.
    */
   createGame(name: string, typeId: TID, players: TID[]): TID {
-    const game = newGame(name, typeId, players);
+    const game = buildGame(name, typeId, players);
     this.#store.dispatch(TrackplayActions.createGame(game));
     return game.id;
   }
@@ -143,11 +140,7 @@ export class TrackplayFacade {
   updateGamesForPlayerConfig(config: Partial<IGameConfig>): void {
     this.#store.dispatch(TrackplayActions.updateGamesForPlayerConfig(config));
   }
-  updatePlayersConfig(config: {
-    sort?: 'name' | 'date' | 'last';
-    dir?: 'asc' | 'desc';
-    filter?: string;
-  }): void {
+  updatePlayersConfig(config: Partial<IPlayersConfig>): void {
     this.#store.dispatch(TrackplayActions.updatePlayersConfig(config));
   }
 }

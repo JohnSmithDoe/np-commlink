@@ -2,6 +2,7 @@ import {
   IGame,
   IGameType,
   IPlayer,
+  IPlayerStats,
   IRound,
   ITrackplayConfig,
   TID,
@@ -15,6 +16,15 @@ import { uuidv4 } from '../../@shared/util/app.utils';
  * numbers (`Date.now()`), not the ISO strings the timetracker/grocery items
  * use, so there is no shared timestamp helper to reuse here.
  */
+
+// The row a player who has played nothing reads as. Spread it wherever the
+// copy is then counted into.
+export const NO_PLAYER_STATS: IPlayerStats = {
+  play: 0,
+  win: 0,
+  loss: 0,
+  open: 0,
+};
 
 export function createPlayer(name: string): IPlayer {
   return {
@@ -78,18 +88,18 @@ export const DEFAULT_GAME_TYPES: Record<TID, IGameType> = {
 
 export const initialTrackplayConfig: ITrackplayConfig = {
   games: {
-    dir: 'desc',
+    direction: 'desc',
     filter: '',
     sort: 'updated',
     typeId: '',
     showEndedGames: true,
   },
   gamesForPlayer: {
-    dir: 'desc',
+    direction: 'desc',
     filter: '',
     sort: 'updated',
     typeId: '',
     showEndedGames: false,
   },
-  players: { dir: 'asc', filter: '', sort: 'name' },
+  players: { direction: 'asc', filter: '', sort: 'name' },
 };

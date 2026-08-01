@@ -6,23 +6,24 @@
  * utils are module internals and stay hidden: importing them from outside
  * `tracking/data` is a Sheriff encapsulation violation.
  *
- * The one exception is documented rather than hidden: the two chart/session
- * selectors below have **no production consumer** — they exist so a component
- * spec can `overrideSelector` the aggregate a facade signal reads, which is the
- * seam that keeps those specs off the wall clock (the 21-day window and "today"
- * both derive from `dayjs()`). Everything else a spec needs it seeds as state.
+ * The exceptions are documented rather than hidden: the session selectors below
+ * have **no production consumer** — they exist so a component spec can
+ * `overrideSelector` the aggregate a facade signal reads. That used to be the
+ * seam keeping those specs off the wall clock; the clock is now an argument
+ * (`util/sessions.utils` + `TodayService`), so what they buy is only the shorter
+ * setup. Everything else a spec needs it seeds as state.
  *
  * Named re-exports only (never `export *`) so the public surface is explicit
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 
-export { TrackingActions } from './actions/tracking.actions';
+export { TrackingActions } from './tracking.actions';
 
 export {
   selectAllTrackingSessions,
-  selectSessionsByDayAndName,
-} from './selectors/tracking.selector';
-export type { DailySeries } from './selectors/tracking.selector';
+  selectArchivedSessions,
+  selectLiveChartSessions,
+} from './tracking.selector';
 
 // The timer + session archive
 export { TrackingFacade } from './tracking.facade';

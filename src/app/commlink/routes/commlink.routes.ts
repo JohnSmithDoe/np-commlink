@@ -13,7 +13,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 export const commlinkRoutes: Routes = [
   {
     path: 'deck',
-    data: { title: marker('page-title.deck-config') },
+    title: marker('page-title.deck-config'),
     loadComponent: () =>
       import('../feature/deck-config-page/deck-config.page').then(
         (m) => m.DeckConfigPage
@@ -21,7 +21,7 @@ export const commlinkRoutes: Routes = [
   },
   {
     path: '',
-    data: { title: marker('page-title.commlink') },
+    title: marker('page-title.commlink'),
     loadComponent: () =>
       import('../feature/commlink-page/commlink.page').then(
         (m) => m.CommlinkPage

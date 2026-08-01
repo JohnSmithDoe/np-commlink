@@ -1,8 +1,8 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { BarcodeActions } from './actions/barcode.actions';
-import { barcodeReducer } from './reducer/barcode.reducer';
-import { BarcodeEffects } from './effects/barcode.effects';
-import { selectBarcodeState } from './selectors/barcode.selector';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { BarcodeActions } from './barcode.actions';
+import { barcodeReducer } from './barcode.reducer';
+import { BarcodeEffects } from './barcode.effects';
+import { BARCODE_STATE_KEY, selectBarcodeState } from './barcode.selector';
 
 /**
  * The `barcode` bounded context (SIGIL — the uploaded badge image), registered
@@ -17,7 +17,7 @@ import { selectBarcodeState } from './selectors/barcode.selector';
  * Display-only — it reports nothing to the deck.
  */
 export const barcodeContext = providePersistedContext({
-  key: 'barcode',
+  key: BARCODE_STATE_KEY,
   reducer: barcodeReducer,
   lifecycle: BarcodeActions,
   select: selectBarcodeState,

@@ -1,7 +1,6 @@
 import {
   addListItemOrIncreaseQuantity,
   addShoppinglistToStorage,
-  filterByByListId,
   listIdByPrefix,
   searchQueryByListId,
   stateByListId,
@@ -83,7 +82,7 @@ describe('grocery list utils', () => {
     });
   });
 
-  describe('stateByListId / searchQueryByListId / filterByByListId', () => {
+  describe('stateByListId / searchQueryByListId', () => {
     const appState = mockGroceriesState({
       storage: mockStorageState({
         searchQuery: '  milk  ',
@@ -97,9 +96,8 @@ describe('grocery list utils', () => {
       expect(stateByListId(appState, '_shopping')).toBe(appState.shopping);
     });
 
-    it('trims the search query / filter of a list', () => {
+    it('trims the search query of a list', () => {
       expect(searchQueryByListId(appState, '_storage')).toBe('milk');
-      expect(filterByByListId(appState, '_storage')).toBe('Dairy');
     });
   });
 
@@ -108,7 +106,6 @@ describe('grocery list utils', () => {
       const state = mockGroceriesState({
         storage: mockStorageState({
           searchQuery: 'Milk',
-          mode: 'alphabetical',
         }),
       });
       const result = updateQuickAddState(state, '_storage');
@@ -116,7 +113,6 @@ describe('grocery list utils', () => {
       expect(result.color).toBe('primary');
       expect(result.canAddLocal).toBe(true);
       expect(result.canAddProduct).toBe(true);
-      expect(result.canAddCategory).toBe(false);
     });
 
     it('disallows adding a local item that already exists exactly', () => {
@@ -127,15 +123,6 @@ describe('grocery list utils', () => {
         }),
       });
       expect(updateQuickAddState(state, '_storage').canAddLocal).toBe(false);
-    });
-
-    it('offers category creation in categories mode', () => {
-      const state = mockGroceriesState({
-        storage: mockStorageState({ searchQuery: 'Dairy', mode: 'categories' }),
-      });
-      const result = updateQuickAddState(state, '_storage');
-      expect(result.canAddCategory).toBe(true);
-      expect(result.canAddLocal).toBe(false);
     });
 
     it('never offers a global item for the globals or tasks list', () => {

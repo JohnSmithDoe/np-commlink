@@ -1,4 +1,7 @@
-import { ICategory } from '../../@shared/model/category.types';
+import { ICategoryList } from '../../@shared/model/category.types';
+
+// The `ItemDialogService` handshake token for the cash catalog.
+export const CASH_CATEGORIES_LIST_ID = '_cash-categories';
 import { ICashAccount } from './account.types';
 import { ICashRule } from './rule.types';
 import { ICashTransaction } from './transaction.types';
@@ -10,6 +13,7 @@ export interface ICashState {
   accounts: ICashAccount[];
   transactions: ICashTransaction[];
   rules: ICashRule[];
-  // First-class {id,name} catalog; txns/rules reference entries by id.
-  categories: ICategory[];
+  // The catalog, as a list of its own: txns and rules reference its entries by
+  // id, and the shared list page + edit dialog drive it like any other list.
+  categories: ICategoryList;
 }

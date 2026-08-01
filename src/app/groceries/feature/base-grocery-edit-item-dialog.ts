@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { BaseCategoryEditItemDialog } from '../../@shared/feature/edit-item-dialog/base-edit-item-dialog';
+import { BaseCategoryEditItemDialog } from '../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { GroceryListPageFacade } from '../data';
 import { IBaseItem } from '../../@shared/model/base-item.types';
 import { ICategory, TCategoryId } from '../../@shared/model/category.types';
@@ -20,7 +20,7 @@ export abstract class BaseGroceryEditItemDialog<
     this.facade.addGroceryCategory(category);
   }
   protected removeCategoryFromCatalog(categoryId: TCategoryId): void {
-    this.facade.deleteCategory(categoryId);
+    this.facade.removeGroceryCategory(categoryId);
   }
   protected renameCategoryInCatalog(id: TCategoryId, to: string): void {
     this.facade.renameGroceryCategory(id, to);

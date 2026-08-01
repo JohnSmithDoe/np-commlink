@@ -1,5 +1,3 @@
-import { registerLocaleData } from '@angular/common';
-import de from '@angular/common/locales/de';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -24,25 +22,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import {
-  barcodeOutline,
-  businessOutline,
-  cartOutline,
-  checkboxOutline,
-  diceOutline,
-  fileTrayStackedOutline,
-  hardwareChipOutline,
-  notificationsOutline,
-  optionsOutline,
-  pricetagsOutline,
-  restaurantOutline,
-  settingsOutline,
-  sparklesOutline,
-  timerOutline,
-  walletOutline,
-} from 'ionicons/icons';
-import { AppUpdateService } from './@shared/util/app-update.service';
+import { APP_WORDMARK } from './@shared/model/app.consts';
+import { AppUpdateService } from './@shared/util/service-worker/app-update.service';
 import { DashboardFacade, DeckFacade } from './commlink/data';
+import { DECK_ICONS } from './commlink/model/deck.icons';
 import { IDeckProgram } from './commlink/model/deck.types';
 
 @Component({
@@ -72,6 +55,7 @@ import { IDeckProgram } from './commlink/model/deck.types';
   ],
 })
 export class AppComponent {
+  protected readonly wordmark = APP_WORDMARK;
   readonly #dashboard = inject(DashboardFacade);
   readonly #deck = inject(DeckFacade);
   readonly #update = inject(AppUpdateService);
@@ -119,23 +103,6 @@ export class AppComponent {
   }
 
   constructor() {
-    registerLocaleData(de);
-    addIcons({
-      hardwareChipOutline,
-      sparklesOutline,
-      restaurantOutline,
-      timerOutline,
-      businessOutline,
-      notificationsOutline,
-      barcodeOutline,
-      cartOutline,
-      fileTrayStackedOutline,
-      checkboxOutline,
-      pricetagsOutline,
-      optionsOutline,
-      walletOutline,
-      diceOutline,
-      settingsOutline,
-    });
+    addIcons(DECK_ICONS);
   }
 }

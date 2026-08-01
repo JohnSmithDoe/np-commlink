@@ -27,7 +27,6 @@ import { ICategory, TCategoryId } from '../../../model/category.types';
 @Component({
   selector: 'app-category-input',
   templateUrl: './category-input.component.html',
-  styleUrls: ['./category-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonItem, IonLabel, IonChip, IonButton, IonIcon, TranslatePipe],
 })

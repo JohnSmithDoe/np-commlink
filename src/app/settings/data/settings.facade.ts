@@ -5,12 +5,12 @@ import {
   TLanguage,
   TTheme,
 } from '../../@shared/model/app.types';
-import { SettingsActions } from './actions/settings.actions';
+import { SettingsActions } from './settings.actions';
 import {
   selectCustomAccents,
   selectLanguage,
   selectTheme,
-} from './selectors/settings.selector';
+} from './settings.selector';
 
 /**
  * Facade over the eager, app-global `settings` slice: the selected UI `theme`

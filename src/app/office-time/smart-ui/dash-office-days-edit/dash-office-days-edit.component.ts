@@ -6,15 +6,15 @@ import {
   input,
 } from '@angular/core';
 import {
+  DatetimeCustomEvent,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
   IonDatetime,
-  DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
 import { Dayjs } from 'dayjs';
-import { LanguageService } from '../../../@shared/util/language.service';
+import { LanguageService } from '../../../@shared/util/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
 import {
   dayjsFromString,

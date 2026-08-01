@@ -10,6 +10,6 @@
  * Named re-exports only (never `export *`) so the public surface is explicit
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
-export { TrackplayActions } from './actions/trackplay.actions';
+export { TrackplayActions } from './trackplay.actions';
 export { TrackplayFacade } from './trackplay.facade';
 export { trackplayContext } from './trackplay.providers';

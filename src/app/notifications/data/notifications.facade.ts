@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { NotificationsInboxActions } from './actions/notifications.actions';
+import { NotificationsInboxActions } from './notifications.actions';
 import {
   selectDoneCollapsed,
   selectDoneNotifications,
-  selectNewNotifications,
-} from './selectors/notifications.selector';
+  selectOpenNotifications,
+} from './notifications.selector';
 
 /**
  * The `notifications` domain facade — the single NgRx surface for the inbox
@@ -18,7 +18,9 @@ import {
 export class NotificationsFacade {
   readonly #store = inject(Store);
 
-  readonly newNotifications = this.#store.selectSignal(selectNewNotifications);
+  readonly openNotifications = this.#store.selectSignal(
+    selectOpenNotifications
+  );
   readonly doneNotifications = this.#store.selectSignal(
     selectDoneNotifications
   );

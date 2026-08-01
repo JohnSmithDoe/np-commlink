@@ -2,6 +2,8 @@ import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
   gotoFeature,
+  mainContent,
+  presentedDialog,
   ROUTE,
   searchInput,
   waitForPersisted,
@@ -160,10 +162,10 @@ test.describe('soykaf recipe book', () => {
       .getByTestId('list-row')
       .filter({ hasText: 'Milk' })
       .click();
-    const nameBox = page
-      .locator('ion-modal.show-modal')
-      .filter({ hasText: 'Eintrag bearbeiten' })
-      .getByRole('textbox', { name: 'Name' });
+    const nameBox = presentedDialog(page, 'Eintrag bearbeiten').getByRole(
+      'textbox',
+      { name: 'Name' }
+    );
     await expect(nameBox).toBeVisible({ timeout: 10_000 });
     await nameBox.fill('Oat milk');
     await page.getByRole('button', { name: 'Übernehmen' }).click();
@@ -180,8 +182,7 @@ test.describe('soykaf recipe book', () => {
     await page.goto('/#/commlink');
 
     await expect(
-      page
-        .locator('#main-content')
+      mainContent(page)
         .getByTestId('deck-tile')
         .filter({ hasText: 'SOYKAF' })
         .getByTestId('deck-tile-badge')

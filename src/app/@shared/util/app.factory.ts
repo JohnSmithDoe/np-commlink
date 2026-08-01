@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { uuidv4 } from './app.utils';
 import { IBaseItem } from '../model/base-item.types';
-import { TCategoryId } from '../model/category.types';
+import { ICategory, TCategoryId } from '../model/category.types';
 
 export function createBaseItem(
   name: string,
@@ -18,4 +18,10 @@ export function createBaseItem(
     categoryIds,
     createdAt: dayjs().format(),
   };
+}
+
+// The one place a category's shape is decided, so every mint site — the reducer,
+// the edit dialog's blank draft, the grocery fan-out — agrees on it.
+export function createCategory(name: string): ICategory {
+  return createBaseItem(name);
 }

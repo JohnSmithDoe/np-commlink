@@ -6,7 +6,7 @@ import {
   mockTrackingItem,
   mockTrackingState,
 } from '../testing/tracking.test-data';
-import { TrackingActions } from './actions/tracking.actions';
+import { TrackingActions } from './tracking.actions';
 import { TrackingFacade } from './tracking.facade';
 
 describe('TrackingFacade', () => {

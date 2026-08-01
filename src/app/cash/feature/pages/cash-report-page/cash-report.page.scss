@@ -1,0 +1,57 @@
+@use '../../../../../theme/cash';
+@use '../../../../../theme/deck';
+
+// CREDSTICK reporting (P5).
+.cash-report__totals {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--sr-line);
+}
+
+.cash-report__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cash-report__label {
+  @include deck.hud-label;
+  font-size: var(--fs-xsmall);
+  color: var(--sr-text-dim);
+}
+
+.cash-report__value {
+  font-family: var(--sr-deck-font);
+  font-size: var(--fs-large);
+  color: var(--sr-amber);
+
+  &--in {
+    color: var(--ion-color-success);
+  }
+
+  &--out {
+    color: var(--ion-color-danger);
+  }
+}
+
+.cash-report__heading {
+  @include deck.hud-label;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  margin: 1.25rem 0 0.5rem;
+}
+
+.cash-report__chart {
+  position: relative;
+  height: 240px;
+}
+
+.cash-report__cat-amount {
+  font-family: var(--sr-deck-font);
+}
+
+.cash-empty {
+  @include cash.empty-state(14vh);
+}

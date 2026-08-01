@@ -1,56 +1,50 @@
-:root {
-  --qlock-max-height: unset;
-}
-
 :host {
   display: block;
   height: 100%;
   overflow: hidden;
 
   background-color: var(--sr-bg);
-  max-height: var(--qlock-max-height);
 
   .char-wrapper {
     height: 100%;
+  }
 
-    .char-row {
-      width: 100%;
-      height: 100%;
+  .char-row {
+    width: 100%;
+    height: 100%;
+  }
 
-      .char {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        background-color: var(--sr-panel);
-        transition: color 1s ease-in-out;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  .char {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: var(--sr-panel);
+    transition: color 1s ease-in-out;
 
-        &.active {
-          color: var(--sr-amber);
-          text-shadow: var(--sr-glow);
-        }
-      }
+    &.active {
+      color: var(--sr-amber);
+      text-shadow: var(--sr-glow);
     }
   }
 
-  .minCornerRowTop,
-  .minCornerRowBot {
-    font-size: 32px;
+  .min-corner-row-top,
+  .min-corner-row-bot {
+    font-size: var(--fs-xxlarge);
     line-height: 0;
     position: relative;
   }
 
-  .minCornerRowTop {
+  .min-corner-row-top {
     top: 10px;
   }
 
-  .minCornerRowBot {
+  .min-corner-row-bot {
     bottom: 8px;
   }
 
-  .minCornerLeft,
-  .minCornerRight {
+  .min-corner-left,
+  .min-corner-right {
     position: absolute;
     transition: color 1s ease-in-out;
 
@@ -60,11 +54,18 @@
     }
   }
 
-  .minCornerLeft {
+  .min-corner-left {
     left: 4px;
   }
 
-  .minCornerRight {
+  .min-corner-right {
     right: 4px;
   }
+}
+
+// The seams between the glyph cells are deck decoration, and a blurred shadow
+// on each of the 110 cells is the most expensive thing this component paints —
+// so the plain theme, which wants a flat grid anyway, simply does not get it.
+:host-context([data-theme='cyberpunk']) .char {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }

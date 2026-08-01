@@ -15,12 +15,12 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { form, FormField, SchemaFn } from '@angular/forms/signals';
+import { FormField, SchemaFn, SchemaPathTree } from '@angular/forms/signals';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
-import { requireText } from '../../../@shared/util/form-rules';
+import { requireText } from '../../../@shared/util/forms/form-rules';
 import { IPlayer } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
@@ -67,7 +67,9 @@ export class TrackplayPlayerEditModalComponent extends BaseModalDialog<
     return id ? this.#players()[id] : undefined;
   });
 
-  protected readonly form = form(this.draft, playerRules);
+  protected applyRules(path: SchemaPathTree<TPlayerForm>): void {
+    playerRules(path);
+  }
 
   constructor() {
     super();

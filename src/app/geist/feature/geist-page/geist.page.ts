@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   ElementRef,
   inject,
   signal,
@@ -29,14 +28,14 @@ import {
 } from 'ionicons/icons';
 import { TMarker } from '../../../@shared/model/app.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { LanguageModelService } from '../../../@shared/util/language-model.service';
 import {
   GEIST_DEFAULT_PERSONA,
   GEIST_LINK_LABELS,
+  GEIST_LINK_LED,
   GEIST_PERSONAS,
 } from '../../model/geist.consts';
-import { IGeistPersona, IGeistTurn, TGeistLink } from '../../model/geist.types';
-import { linkForAvailability, openingLinkFor } from '../../util/link.utils';
+import { IGeistPersona, IGeistTurn } from '../../model/geist.types';
+import { GeistSessionService } from '../../util/geist-session.service';
 import {
   appendAnswerChunk,
   isFollowingTail,
@@ -65,23 +64,23 @@ import {
     TranslatePipe,
     PageHeaderComponent,
   ],
+  // Page-scoped, so leaving the route destroys the session rather than holding
+  // the model's weights open for the tab's lifetime.
+  providers: [GeistSessionService],
 })
 export class GeistPage {
   readonly personas = GEIST_PERSONAS;
 
-  readonly link = signal<TGeistLink>('probing');
+  readonly #session = inject(GeistSessionService);
+  readonly link = this.#session.link;
+  readonly primedPercent = this.#session.primedPercent;
+  readonly contextPercent = this.#session.contextPercent;
+
   readonly linkLabel = computed(() => GEIST_LINK_LABELS[this.link()]);
+  readonly linkLed = computed(() => GEIST_LINK_LED[this.link()]);
   readonly persona = signal<IGeistPersona>(GEIST_DEFAULT_PERSONA);
   readonly turns = signal<readonly IGeistTurn[]>([]);
   readonly query = signal('');
-  readonly primedPercent = signal(0);
-
-  readonly #contextUsage = signal(0);
-  readonly #contextWindow = signal(0);
-  readonly contextPercent = computed(() => {
-    const window = this.#contextWindow();
-    return window === 0 ? 0 : Math.round((this.#contextUsage() / window) * 100);
-  });
 
   readonly isStreaming = computed(() =>
     this.turns().some((turn) => turn.streaming)
@@ -93,13 +92,9 @@ export class GeistPage {
       this.query().trim().length > 0
   );
 
-  readonly #languageModel = inject(LanguageModelService);
   // viewChild can't sit on an ES-private (#) field (NG1053); public readonly,
   // matching the item-list convention.
   readonly transcript = viewChild<ElementRef<HTMLElement>>('transcript');
-  #session: LanguageModel | null = null;
-  #inFlight: AbortController | null = null;
-  #priming: AbortController | null = null;
   #nextTurnId = 0;
 
   constructor() {
@@ -111,9 +106,8 @@ export class GeistPage {
       cloudDownloadOutline,
       arrowBackOutline,
     });
-    inject(DestroyRef).onDestroy(() => this.#teardown());
     afterRenderEffect(() => this.#followTranscriptTail());
-    void this.#probeLink();
+    void this.#session.probe(this.persona());
   }
 
   /**
@@ -132,7 +126,7 @@ export class GeistPage {
   }
 
   async prime(): Promise<void> {
-    await this.#openSession();
+    await this.#session.open(this.persona());
   }
 
   async selectPersona(persona: IGeistPersona): Promise<void> {
@@ -142,88 +136,24 @@ export class GeistPage {
     // new session — which also means the transcript before it no longer applies.
     // A session still being CREATED counts: it would otherwise arrive carrying
     // the register the user just moved away from.
-    if (this.#session || this.#priming) await this.purge();
+    if (this.#session.isEngaged) await this.purge();
   }
 
   async send(): Promise<void> {
     if (!this.canSend()) return;
     const turn = this.#openTurn(this.query().trim());
     this.query.set('');
-    await this.#streamAnswer(turn);
+    await this.#streamInto(turn);
   }
 
   abort(): void {
-    this.#inFlight?.abort();
+    this.#session.abort();
   }
 
   async purge(): Promise<void> {
     this.abort();
     this.turns.set([]);
-    await this.#openSession();
-  }
-
-  async #probeLink(): Promise<void> {
-    const link = linkForAvailability(await this.#languageModel.probe());
-    // `reforging` is the state opening a session runs in — the weights are
-    // already local, so jack in and let the user land on a ready prompt.
-    if (link === 'reforging') {
-      await this.#openSession();
-      return;
-    }
-    this.link.set(link);
-  }
-
-  async #openSession(): Promise<void> {
-    this.#closeSession();
-    this.primedPercent.set(0);
-    this.link.set(openingLinkFor(this.#languageModel.availability()));
-    const priming = (this.#priming = new AbortController());
-    try {
-      this.#adoptSession(
-        await this.#languageModel.createSession(
-          this.#sessionOptions(priming.signal),
-          (fraction) => this.primedPercent.set(Math.round(fraction * 100))
-        ),
-        priming
-      );
-    } catch {
-      // An abandoned priming was aborted on purpose; only the current one
-      // failing is news the user needs.
-      if (this.#isCurrentPriming(priming)) this.link.set('flatlined');
-    }
-  }
-
-  /**
-   * Creating the first session downloads multi-GB weights and can run for
-   * minutes — long enough for the user to navigate away or switch persona. Both
-   * abandon this priming, and both abort it; a session that still resolves (the
-   * abort landed a tick too late) belongs to nobody and is destroyed rather than
-   * adopted, or it would stay open for the tab's lifetime.
-   */
-  #adoptSession(session: LanguageModel, priming: AbortController): void {
-    if (!this.#isCurrentPriming(priming)) {
-      session.destroy();
-      return;
-    }
-    this.#priming = null;
-    this.#session = session;
-    this.#readContextGauge();
-    this.link.set('jacked-in');
-  }
-
-  #isCurrentPriming(priming: AbortController): boolean {
-    return this.#priming === priming;
-  }
-
-  #sessionOptions(signal: AbortSignal): LanguageModelCreateOptions {
-    return {
-      signal,
-      initialPrompts: [
-        { role: 'system', content: this.persona().systemPrompt },
-      ],
-      expectedInputs: [{ type: 'text', languages: ['de', 'en'] }],
-      expectedOutputs: [{ type: 'text', languages: ['de'] }],
-    };
+    await this.#session.open(this.persona());
   }
 
   #openTurn(query: string): IGeistTurn {
@@ -238,29 +168,16 @@ export class GeistPage {
     return turn;
   }
 
-  async #streamAnswer(turn: IGeistTurn): Promise<void> {
-    const session = this.#session;
-    if (!session) return;
-    this.#inFlight = new AbortController();
+  // The service owns the link; the transcript is the page's, so how a failed
+  // turn reads is decided here.
+  async #streamInto(turn: IGeistTurn): Promise<void> {
     try {
-      await this.#drainAnswer(session, turn, this.#inFlight.signal);
+      await this.#session.stream(turn.query, (chunk) =>
+        this.turns.update((turns) => appendAnswerChunk(turns, turn.id, chunk))
+      );
       this.#settleTurn(turn.id, null);
     } catch (error) {
       this.#settleTurn(turn.id, noteForStreamError(error));
-    } finally {
-      this.#inFlight = null;
-      this.#readContextGauge();
-    }
-  }
-
-  async #drainAnswer(
-    session: LanguageModel,
-    turn: IGeistTurn,
-    signal: AbortSignal
-  ): Promise<void> {
-    const stream = session.promptStreaming(turn.query, { signal });
-    for await (const chunk of stream) {
-      this.turns.update((turns) => appendAnswerChunk(turns, turn.id, chunk));
     }
   }
 
@@ -268,22 +185,5 @@ export class GeistPage {
     this.turns.update((turns) =>
       patchTurn(turns, id, { streaming: false, note })
     );
-  }
-
-  #readContextGauge(): void {
-    this.#contextUsage.set(this.#session?.contextUsage ?? 0);
-    this.#contextWindow.set(this.#session?.contextWindow ?? 0);
-  }
-
-  #closeSession(): void {
-    this.#priming?.abort();
-    this.#priming = null;
-    this.#session?.destroy();
-    this.#session = null;
-  }
-
-  #teardown(): void {
-    this.abort();
-    this.#closeSession();
   }
 }

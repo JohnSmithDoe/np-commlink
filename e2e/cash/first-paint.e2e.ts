@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { pageRoot } from '../helpers';
 
 /**
  * Wiring guard for the LAZY cash context (lazy-modules Phase D).
@@ -20,7 +21,7 @@ test.describe('cash first paint', () => {
   test('hydrates and paints the CREDSTICK scaffold', async ({ page }) => {
     await page.goto('/#/cash');
 
-    const scaffold = page.locator('#main-content app-page-cash');
+    const scaffold = pageRoot(page, 'app-page-cash');
     await expect(scaffold).toBeVisible({ timeout: 30_000 });
 
     // Fresh browser context → empty ledger hydrates to zero accounts. Seeing the

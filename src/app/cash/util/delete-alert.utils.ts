@@ -10,7 +10,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
  */
 export function deleteConfirmAlert(
   translate: TranslateService,
-  opts: {
+  options: {
     headerKey: string;
     messageKey: string;
     messageParams?: Record<string, unknown>;
@@ -18,14 +18,14 @@ export function deleteConfirmAlert(
   }
 ): AlertOptions {
   return {
-    header: translate.instant(opts.headerKey),
-    message: translate.instant(opts.messageKey, opts.messageParams),
+    header: translate.instant(options.headerKey),
+    message: translate.instant(options.messageKey, options.messageParams),
     buttons: [
       { text: translate.instant(marker('cash.action.cancel')), role: 'cancel' },
       {
         text: translate.instant(marker('cash.action.delete')),
         role: 'destructive',
-        handler: opts.onConfirm,
+        handler: options.onConfirm,
       },
     ],
   };

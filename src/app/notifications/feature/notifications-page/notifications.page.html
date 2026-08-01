@@ -5,7 +5,7 @@
 />
 
 <ion-content>
-  @let newItems = newNotifications();
+  @let openItems = openNotifications();
   @let doneItems = doneNotifications();
   @let collapsed = doneCollapsed();
 
@@ -14,12 +14,12 @@
       <ion-label>
         <h2>
           {{ 'notifications.section.new' | translate }}
-          <ion-note>({{ newItems?.length ?? 0 }})</ion-note>
+          <ion-note>({{ openItems?.length ?? 0 }})</ion-note>
         </h2>
       </ion-label>
     </ion-item>
 
-    @if (!newItems?.length) {
+    @if (!openItems?.length) {
       <ion-item lines="none" class="empty">
         <ion-icon
           slot="start"
@@ -32,7 +32,7 @@
       </ion-item>
     }
 
-    @for (n of newItems; track n.id) {
+    @for (n of openItems; track n.id) {
       <ion-item
         lines="full"
         class="notification new"

@@ -1,5 +1,6 @@
 import { Dayjs } from 'dayjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
+import { TMarker } from '../../@shared/model/app.types';
 
 // The `office-time` bounded context owns its model (DDD review #1 — the god
 // `@shared/types` file is being split so each context holds its own types). It
@@ -18,20 +19,7 @@ export type DashboardStats = {
   percentage: number;
 };
 
-marker('office-time.page.settings.dashboard.showDateCard');
-marker('office-time.page.settings.dashboard.showPercentageCard');
-marker('office-time.page.settings.dashboard.showOfficedaysCardList');
-marker('office-time.page.settings.dashboard.showOfficedaysCardEdit');
-marker('office-time.page.settings.dashboard.showFreedaysCardList');
-marker('office-time.page.settings.dashboard.showFreedaysCardEdit');
-marker('office-time.page.settings.dashboard.showHolidaysCard');
-marker('office-time.page.settings.dashboard.showStatsWeek');
-marker('office-time.page.settings.dashboard.showStatsMonth');
-marker('office-time.page.settings.dashboard.showStatsQuarter');
-marker('office-time.page.settings.dashboard.showStatsYear');
-marker('office-time.page.settings.dashboard.showWordclockCard');
-
-export type DashboardSettings = {
+type DashboardSettings = {
   showDateCard: boolean;
   showPercentageCard: boolean;
   showOfficedaysCardList: boolean;
@@ -47,6 +35,45 @@ export type DashboardSettings = {
 };
 
 export type DashboardSettingsType = keyof DashboardSettings;
+
+// Keyed by the flag union so a new dashboard flag cannot ship without a label.
+// Spelled out because the settings page reads them through a lookup — the
+// composed `'office-time.page.settings.dashboard.' + key` this replaces was
+// invisible to the extractor, so the keys needed a hand-maintained marker list
+// that nothing tied to `DashboardSettings`.
+export const DASHBOARD_SETTING_LABEL_KEYS: Record<
+  DashboardSettingsType,
+  TMarker
+> = {
+  showDateCard: marker('office-time.page.settings.dashboard.showDateCard'),
+  showPercentageCard: marker(
+    'office-time.page.settings.dashboard.showPercentageCard'
+  ),
+  showOfficedaysCardList: marker(
+    'office-time.page.settings.dashboard.showOfficedaysCardList'
+  ),
+  showOfficedaysCardEdit: marker(
+    'office-time.page.settings.dashboard.showOfficedaysCardEdit'
+  ),
+  showFreedaysCardList: marker(
+    'office-time.page.settings.dashboard.showFreedaysCardList'
+  ),
+  showFreedaysCardEdit: marker(
+    'office-time.page.settings.dashboard.showFreedaysCardEdit'
+  ),
+  showHolidaysCard: marker(
+    'office-time.page.settings.dashboard.showHolidaysCard'
+  ),
+  showStatsWeek: marker('office-time.page.settings.dashboard.showStatsWeek'),
+  showStatsMonth: marker('office-time.page.settings.dashboard.showStatsMonth'),
+  showStatsQuarter: marker(
+    'office-time.page.settings.dashboard.showStatsQuarter'
+  ),
+  showStatsYear: marker('office-time.page.settings.dashboard.showStatsYear'),
+  showWordclockCard: marker(
+    'office-time.page.settings.dashboard.showWordclockCard'
+  ),
+};
 
 /**
  * Every dashboard card, mapped to the settings flag that hides it — `button` maps
@@ -70,7 +97,7 @@ export const DASHBOARD_CARD_VISIBILITY = {
   holidays: 'showHolidaysCard',
 } as const satisfies Record<string, keyof DashboardSettings | null>;
 
-export type DashboardItemType = keyof typeof DASHBOARD_CARD_VISIBILITY;
+type DashboardItemType = keyof typeof DASHBOARD_CARD_VISIBILITY;
 
 export type DateTimeHighlight = {
   date: string;

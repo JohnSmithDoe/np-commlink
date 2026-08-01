@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { CATEGORIES_FACADE } from '../../@shared/util/categories/categories-page.facade';
+import { provideCategoryListFacade } from '../../@shared/util/categories/category-list.facade';
 import { groceriesContext, GroceryCategoriesPageFacade } from '../data';
 
 /**
@@ -16,7 +16,7 @@ export const groceriesRoutes: Routes = [
     children: [
       {
         path: 'list-settings',
-        data: { title: marker('page-title.groceries-list-settings') },
+        title: marker('page-title.groceries-list-settings'),
         loadComponent: () =>
           import('../feature/list-settings-page/list-settings.page').then(
             (m) => m.ListSettingsPage
@@ -24,7 +24,7 @@ export const groceriesRoutes: Routes = [
       },
       {
         path: 'shopping/:listId',
-        data: { title: marker('page-title.groceries-shopping') },
+        title: marker('page-title.groceries-shopping'),
         loadComponent: () =>
           import('../feature/shopping-page/shopping.page').then(
             (m) => m.ShoppingPage
@@ -32,7 +32,7 @@ export const groceriesRoutes: Routes = [
       },
       {
         path: 'storage/:listId',
-        data: { title: marker('page-title.groceries-storage') },
+        title: marker('page-title.groceries-storage'),
         loadComponent: () =>
           import('../feature/storage-page/storage.page').then(
             (m) => m.StoragePage
@@ -40,26 +40,22 @@ export const groceriesRoutes: Routes = [
       },
       {
         path: 'products/:listId',
-        data: { title: marker('page-title.groceries-products') },
+        title: marker('page-title.groceries-products'),
         loadComponent: () =>
           import('../feature/products-page/products.page').then(
             (m) => m.ProductsPage
           ),
       },
       {
-        // The shared, domain-blind EditCategoriesPage, bound to this domain's
-        // catalog by the route-level `CATEGORIES_FACADE`.
+        // The ONE grocery catalog on the shared list page. `:listId` no longer
+        // selects a catalog — there is only one — it names the list a drill
+        // returns to.
         path: 'categories/:listId',
-        data: { title: marker('page-title.categories') },
-        providers: [
-          {
-            provide: CATEGORIES_FACADE,
-            useExisting: GroceryCategoriesPageFacade,
-          },
-        ],
+        title: marker('page-title.categories'),
+        providers: provideCategoryListFacade(GroceryCategoriesPageFacade),
         loadComponent: () =>
-          import('../../@shared/feature/edit-categories-page/edit-categories.page').then(
-            (m) => m.EditCategoriesPage
+          import('../../@shared/feature/categories/category-list-page/category-list.page').then(
+            (m) => m.CategoryListPage
           ),
       },
     ],
@@ -75,7 +71,7 @@ export const groceriesRoutes: Routes = [
 export const recipesRoutes: Routes = [
   {
     path: '',
-    data: { title: marker('page-title.soykaf') },
+    title: marker('page-title.soykaf'),
     ...groceriesContext,
     loadComponent: () =>
       import('../feature/recipes-page/recipes.page').then((m) => m.RecipesPage),

@@ -27,6 +27,8 @@ import { ICategory } from '../../../model/category.types';
 import { revealedSideFromDrag } from '../../../util/app.utils';
 import { categoryNames } from '../../../util/categories/category.utils';
 
+export type TStartSwipeAction = { labelKey: string; icon: string };
+
 @Component({
   selector: 'app-list-item',
   templateUrl: './list-item.component.html',
@@ -60,18 +62,25 @@ export class ListItemComponent {
     transform: booleanAttribute,
   });
   /**
-   * The i18n key naming the start-swipe action, and the switch that shows it.
+   * The start-swipe affordance: its i18n key, its icon, and — by being present
+   * at all — the switch that shows it.
    *
-   * One input rather than a flag plus a label because the label cannot be
-   * defaulted here: the same swipe means "mark as bought" on the shopping list and
-   * "add to the shopping list" in storage, so the wording belongs to the domain
-   * mounting this row (docs/ionic-a11y-practices.md R2 — an icon-only
-   * `ion-item-option` renders a bare button with no name of its own). Tying the
-   * affordance to its name makes a nameless one impossible instead of silent.
+   * Neither half can be defaulted here. The same swipe means "mark as bought" on
+   * the shopping list, "add to the shopping list" in storage and "rename" on a
+   * catalog, so both the wording and the icon belong to the domain mounting this
+   * row (docs/ionic-a11y-practices.md R2 — an icon-only `ion-item-option`
+   * renders a bare button with no name of its own). One object rather than two
+   * inputs because a caller that set the label and forgot the icon used to get a
+   * shopping cart on its rename gesture; now the affordance either exists whole
+   * or not at all.
+   *
+   * Named for the gesture, not for one caller's meaning of it: as `cartItem` it
+   * put grocery vocabulary on a domain-blind component, and the catalog's rename
+   * would have had to bind `(cartItem)` to read the row's third affordance.
    */
-  readonly cartActionLabel = input('');
+  readonly startSwipeAction = input<TStartSwipeAction>();
 
-  readonly showCartAction = computed(() => !!this.cartActionLabel());
+  readonly hasStartSwipe = computed(() => !!this.startSwipeAction());
   readonly hasStatusBar = computed(() => !!this.statusColor());
   readonly categoryNote = computed(() =>
     categoryNames(this.item(), this.categories()).join(', ')
@@ -81,7 +90,7 @@ export class ListItemComponent {
   readonly decrement = output<void>();
   readonly selectItem = output<void>();
   readonly deleteItem = output<void>();
-  readonly cartItem = output<void>();
+  readonly startSwipe = output<void>();
 
   incrementQuantity(event: MouseEvent) {
     this.increment.emit();
@@ -99,8 +108,8 @@ export class ListItemComponent {
         return this.emitDeleteItem();
       }
       case 'start': {
-        if (this.showCartAction()) {
-          return this.emitCartItem();
+        if (this.hasStartSwipe()) {
+          return this.emitStartSwipe();
         }
         return;
       }
@@ -115,8 +124,8 @@ export class ListItemComponent {
     this.deleteItem.emit();
   }
 
-  async emitCartItem() {
+  async emitStartSwipe() {
     await this.ionList().closeSlidingItems();
-    this.cartItem.emit();
+    this.startSwipe.emit();
   }
 }

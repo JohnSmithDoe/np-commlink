@@ -66,10 +66,11 @@ const DEFAULT_ACCENT_SWATCHES: Record<TTheme, IAccentColors> = {
 };
 
 /**
- * App-global settings page — currently the UI theme picker. Reachable as a
- * first-class destination (side menu + commlink deck tile), not buried under
- * office-time. Changing the theme re-skins the whole app live
- * (SettingsEffects.applyTheme$ sets <html data-theme>).
+ * App-global settings page — the UI theme, its accent pair, and the language.
+ * Reachable as a first-class destination (side menu + commlink deck tile), not
+ * buried under office-time. Changing the theme re-skins the whole app live
+ * (SettingsEffects.applyTheme$ sets <html data-theme>); changing the language
+ * restarts it (SettingsEffects.restartOnLanguageChange$).
  */
 @Component({
   selector: 'app-page-settings',

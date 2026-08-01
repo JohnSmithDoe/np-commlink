@@ -1,4 +1,4 @@
-import { BANK_OPTIONS, BANK_PARSERS, parserForBank } from './bank-parsers';
+import { BANK_PARSERS, parserForBank } from './bank-parsers';
 
 // The registry only routes: each parser's own column handling is covered by
 // dkb.parser.spec / volksbank.parser.spec. What is asserted here is the
@@ -10,24 +10,6 @@ const DKB_CSV = [
 ].join('\n');
 
 describe('bank parser registry', () => {
-  it('offers a parser for every bank in the account picker', () => {
-    expect(Object.keys(BANK_PARSERS).toSorted()).toEqual(
-      BANK_OPTIONS.toSorted()
-    );
-  });
-
-  // A parser filed under the wrong key would silently import a foreign format.
-  it('files every parser under its own bank key', () => {
-    for (const [bank, parser] of Object.entries(BANK_PARSERS)) {
-      expect(parser.bank).toBe(bank);
-    }
-  });
-
-  it('selects the parser the account bank names', () => {
-    expect(parserForBank('dkb')?.label).toBe('DKB');
-    expect(parserForBank('volksbank')?.label).toBe('Volksbank');
-  });
-
   it('has no parser for a manual-only account', () => {
     expect(parserForBank(undefined)).toBeUndefined();
   });

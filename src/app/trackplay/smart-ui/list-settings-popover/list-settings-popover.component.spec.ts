@@ -4,9 +4,10 @@ import { Store } from '@ngrx/store';
 import { mockTrackplayState } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { TrackplayActions } from '../../data';
-import { TrackplayListSettingsPopoverComponent } from './list-settings-popover.component';
-
-type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
+import {
+  TrackplayListSettingsPopoverComponent,
+  TSettingsMode,
+} from './list-settings-popover.component';
 
 describe('TrackplayListSettingsPopoverComponent', () => {
   let component: TrackplayListSettingsPopoverComponent;
@@ -42,9 +43,9 @@ describe('TrackplayListSettingsPopoverComponent', () => {
       TrackplayActions.updateGamesConfig({ filter: 'rob' })
     );
 
-    component.setGamesDir('asc');
+    component.setGamesDirection('asc');
     expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.updateGamesConfig({ dir: 'asc' })
+      TrackplayActions.updateGamesConfig({ direction: 'asc' })
     );
 
     component.setGamesSort('name');
@@ -71,9 +72,9 @@ describe('TrackplayListSettingsPopoverComponent', () => {
       TrackplayActions.updatePlayersConfig({ filter: 'al' })
     );
 
-    component.setPlayersDir('desc');
+    component.setPlayersDirection('desc');
     expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.updatePlayersConfig({ dir: 'desc' })
+      TrackplayActions.updatePlayersConfig({ direction: 'desc' })
     );
 
     component.setPlayersSort('last');

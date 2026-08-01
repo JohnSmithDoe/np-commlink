@@ -3,9 +3,9 @@ import { MockStore } from '@ngrx/store/testing';
 import { mockTaskItem, mockTasksState } from '../../testing/tasks.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { mockCategory } from '../../../@shared/testing/test-data';
-import { ItemDialogService } from '../../../@shared/util/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
 import { createTaskItem } from '../../util/task.factory';
-import { TasksActions } from '../../data';
+import { TaskCategoriesActions, TasksActions } from '../../data';
 import { EditTaskItemDialogComponent } from './edit-task-item-dialog.component';
 
 describe('EditTaskItemDialogComponent', () => {
@@ -24,7 +24,7 @@ describe('EditTaskItemDialogComponent', () => {
       imports: [EditTaskItemDialogComponent],
       providers: [
         ...provideTestingProviders({
-          tasks: mockTasksState({ items: [sibling, seed] }),
+          tasks: mockTasksState({ list: { items: [sibling, seed] } }),
         }),
       ],
     }).compileComponents();
@@ -76,6 +76,8 @@ describe('EditTaskItemDialogComponent', () => {
   it('persists a brand-new category to the tasks slice', () => {
     const errands = mockCategory({ id: 'errands', name: 'Errands' });
     component.addCategory(errands);
-    expect(dispatch).toHaveBeenCalledWith(TasksActions.addCategory(errands));
+    expect(dispatch).toHaveBeenCalledWith(
+      TaskCategoriesActions.addItem(errands)
+    );
   });
 });

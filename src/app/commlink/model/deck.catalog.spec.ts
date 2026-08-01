@@ -88,3 +88,21 @@ describe('DECK_CATALOG', () => {
     expect(unused).toEqual([]);
   });
 });
+
+// Beside DECK_CATALOG rather than beside deck.utils, where these two used to
+// sit: the subject is the field list and the label block, both declared here.
+describe('DECK_CHROME_LABELS', () => {
+  // The point of a per-theme block: OK Boomer must not read "Rauschen" at a
+  // plain office desk.
+  it('gives the two themes distinct keys', () => {
+    expect(DECK_CHROME_LABELS['cyberpunk']['noise']).not.toBe(
+      DECK_CHROME_LABELS['boomer']['noise']
+    );
+  });
+
+  it('covers every declared chrome field', () => {
+    expect(Object.keys(DECK_CHROME_LABELS['boomer'])).toEqual([
+      ...DECK_CHROME_FIELDS,
+    ]);
+  });
+});

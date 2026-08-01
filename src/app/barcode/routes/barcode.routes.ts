@@ -10,7 +10,7 @@ import { barcodeContext } from '../data';
 export const barcodeRoutes: Routes = [
   {
     path: '',
-    data: { title: marker('page-title.barcode') },
+    title: marker('page-title.barcode'),
     ...barcodeContext,
     loadComponent: () =>
       import('../feature/barcode-page/barcode.page').then((m) => m.BarcodePage),

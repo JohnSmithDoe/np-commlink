@@ -1,20 +1,21 @@
 @use '../../../../theme/dashboard';
 :host {
-  @include dashboard.dashboard-item();
+  @include dashboard.dashboard-item;
   ion-card-content {
     justify-content: space-between;
   }
 }
-@include dashboard.dashboard-item-card();
+@include dashboard.dashboard-item-card;
 
 .week {
-  font-size: 4rem;
+  font-size: var(--fs-display);
   line-height: 1;
 }
+// Ionic's ion-card-content is 0.875rem; these two read as body copy.
 .day,
 .date {
-  font-size: 1rem;
+  font-size: var(--fs-body);
 }
 .time {
-  font-size: 2rem;
+  font-size: var(--fs-xxlarge);
 }

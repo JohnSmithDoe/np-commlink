@@ -1,19 +1,20 @@
-import { providePersistedContext } from '../../@shared/data/persisted-context.provider';
-import { createMetric } from '../../@shared/data/effects/persisted-slice.effects.factory';
-import { TrackingActions } from './actions/tracking.actions';
-import { trackingReducer } from './reducer/tracking.reducer';
-import { TrackingEffects } from './effects/tracking.effects';
-import { trackingListEffects } from './effects/tracking-list.effects';
-import { TrackingNotificationsEffects } from './effects/tracking-notifications.effects';
-import { TrackingMessageEffects } from './effects/tracking-message.effects';
+import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
+import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
+import { TrackingActions } from './tracking.actions';
+import { trackingReducer } from './tracking.reducer';
+import { TrackingEffects } from './tracking.effects';
+import { trackingListEffects } from './tracking-list.effects';
+import { TrackingNotificationsEffects } from './tracking-notifications.effects';
+import { TrackingMessageEffects } from './tracking-message.effects';
 import {
+  TRACKING_STATE_KEY,
   selectTrackingItemCount,
   selectTrackingState,
-} from './selectors/tracking.selector';
+} from './tracking.selector';
 
 /**
  * The `tracking` bounded context, registered on the two routes that read
- * `state.tracking` — `/tracking` (the tracker) and `/data/:listId` (the stats
+ * `state.tracking` — `/tracking` (the tracker) and `/data` (the stats
  * page). A single slice; the edit dialog carries no store state at all (the
  * open-command lives on the root `ItemDialogService`).
  *
@@ -28,7 +29,7 @@ import {
  * notifications sink), and the add/update/remove/save toasts.
  */
 export const trackingContext = providePersistedContext({
-  key: 'tracking',
+  key: TRACKING_STATE_KEY,
   reducer: trackingReducer,
   lifecycle: TrackingActions,
   select: selectTrackingState,

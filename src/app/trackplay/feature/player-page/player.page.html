@@ -55,7 +55,7 @@
       expand="block"
       fill="outline"
       class="ion-text-left ion-margin-horizontal"
-      (click)="newGame()"
+      (click)="createGame()"
     >
       <ion-icon slot="start" name="add-outline" aria-hidden="true" />
       {{ 'trackplay.action.new-game' | translate }}
@@ -69,7 +69,6 @@
         <app-trackplay-game-list-item
           [game]="game"
           [typeName]="typeName(game)"
-          [disabled]="game.players.length <= 0"
           [ionList]="list"
           (selectGame)="goToGame(game.id)"
           (editRequested)="openGameEdit(game)"

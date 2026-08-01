@@ -1,0 +1,48 @@
+// Self-hosted web font — the deck's monospace face (--sr-mono, _shadowrun.scss).
+// url()s are resolved by the bundler relative to THIS file (src/theme/), hence
+// '../assets/fonts/…', and it fingerprints them into media/ with a URL relative
+// to the emitted CSS. That is what makes them survive the Pages subpath. Neither
+// alternative works: root-absolute ('/fonts/…') passes through verbatim and 404s
+// under the /np-commlink/ base href, and a path into public/ cannot be written at
+// all — the bundler resolves url() at build time, so a public/ asset (copied, not
+// bundled) fails the build with "Could not resolve".
+//
+// All five shipped weights are declared even though the app's own CSS names only
+// 400/600/700: Ionic's shadow styles ask for 500 (and one 450), and an undeclared
+// weight is synthesised by the browser — faux-bold, visibly worse than the real
+// face. A declared face nobody matches costs nothing; it is never fetched.
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-latin-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-latin-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-latin-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('../assets/fonts/JetBrainsMono-latin-800.woff2') format('woff2');
+}

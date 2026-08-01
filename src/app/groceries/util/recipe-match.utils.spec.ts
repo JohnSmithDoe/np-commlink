@@ -31,6 +31,21 @@ describe('rankRecipesByMissing', () => {
     expect(match.missing).toEqual([]);
   });
 
+  // The stepper floors at zero rather than deleting the row, so an emptied
+  // pantry entry stays in the list — matching on presence alone ranked a recipe
+  // as fully cookable while the low-stock tile flagged the same item as out.
+  it('does not count a storage row that has run down to zero', () => {
+    const recipe = mockRecipe({ ingredients: [needs('p-milk')] });
+
+    const [match] = rankRecipesByMissing(
+      [recipe],
+      [milk],
+      [mockStorageItem({ name: 'Milk', productId: 'p-milk', quantity: 0 })]
+    );
+
+    expect(match.missing).toEqual(['Milk']);
+  });
+
   it('names the products that are not in storage', () => {
     const recipe = mockRecipe({
       ingredients: [needs('p-milk'), needs('p-flour')],

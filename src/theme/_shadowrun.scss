@@ -41,7 +41,35 @@
   --sr-red-rgb: 255, 59, 71; // rgb form of --sr-red (for rgba() glows/borders)
   --sr-red-deep: #c1121f; // AA-safe red for text backgrounds (badges, danger)
 
+  // ── Type scale ──────────────────────────────────────────────────────────
+  // Theme-INVARIANT (a theme flips the face and the case, not the ladder), so
+  // no [data-theme] block overrides these — but they are custom properties
+  // rather than Sass, so a third theme still could.
+  //
+  // Every step is a whole pixel at the 16px root. That is the point: the app
+  // had 24 distinct sizes, twelve of them between 0.6rem and 0.9rem, so a
+  // "0.72 vs 0.74rem" decision was a third of a pixel of nothing. Pick the
+  // nearest rung; if none fits, the scale is wrong and gains one HERE, rather
+  // than the call site inventing a value. The gate is the stylelint rule
+  // `commlink/font-size-uses-scale`, which reads these names off this block.
+  //
+  // Icon box sizes and the two fluid clamp() heads stay literals on purpose:
+  // an icon shares the property with type, not the meaning, and a clamp cannot
+  // be a rung on a fixed ladder. Each carries a stylelint-disable-next-line
+  // with its reason, rather than being allowlisted by path somewhere else.
+  --fs-xsmall: 0.6875rem; // 11px — badges, HUD eyebrows, telemetry (Ionic's own ion-note size)
+  --fs-small: 0.8125rem; // 13px — captions, tile copy, secondary body, fields
+  --fs-body: 1rem; // 16px — body copy; ALSO the page default, set on body below
+  --fs-large: 1.125rem; // 18px — card titles, emphasised figures
+  --fs-xlarge: 1.5rem; // 24px — the big readouts (timer, net worth, meter)
+  --fs-xxlarge: 2rem; // 32px — display figures
+  --fs-display: 4rem; // 64px — the dashboard's date hero
+
   // ── Font stacks — invariant; --sr-deck-font (below) picks one per theme. ────
+  // JetBrains Mono is SELF-HOSTED (theme/_fonts.scss declares the five weights);
+  // the rest of the stack still matters, because `font-display: swap` paints the
+  // fallback until the woff2 arrives. --sr-sans is deliberately system-only — the
+  // plain theme's whole point is to look like the OS, not like a brand.
   --sr-mono:
     'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
     monospace;
@@ -52,10 +80,17 @@
   // ═══ OK Boomer (plain, light) — THE BASE THEME ════════════════════════════
   // Terminal slate → office paper. A second theme overrides ONLY this group +
   // the variables.scss --ion-color-* group.
+
+  // Not a token: it tells the UA how to paint what we cannot style — scrollbars,
+  // the native date/select widgets, autofill. A declaration here follows
+  // data-theme for free, where the <meta> in index.html could only state the
+  // pre-stylesheet default.
+  color-scheme: light;
+
   --sr-bg: #f4f6f8; // app / content backdrop
-  --sr-panel: #ffffff; // cards, items
-  --sr-panel-2: #ffffff; // gradient floor (flat in plain)
-  --sr-toolbar: #ffffff; // toolbar chrome
+  --sr-panel: #fff; // cards, items
+  --sr-panel-2: #fff; // gradient floor (flat in plain)
+  --sr-toolbar: #fff; // toolbar chrome
   --sr-bg-hi: #f4f6f8; // content backdrop stops (flat in plain)
   --sr-bg-mid: #f4f6f8;
   --sr-bg-lo: #f4f6f8;
@@ -75,10 +110,18 @@
   --sr-radius: 6px; // panel / control corner radius
   --sr-glow: none; // text/box neon bloom (off in plain)
   --sr-glow-lg: none; // hero / page-title bloom (off in plain)
+
+  // Thin scrollbars. Declared here rather than on `*`: both properties inherit,
+  // and inheritance crosses shadow boundaries where a global `*` cannot — so
+  // this also reaches the scrollers inside Ionic's shadow roots.
+  scrollbar-width: thin;
+  scrollbar-color: var(--sr-line) transparent;
 }
 
 // ═══ Cyberpunk — the Shadowrun deck (default selection) ══════════════════════
 :root[data-theme='cyberpunk'] {
+  color-scheme: dark;
+
   --sr-bg: #0f141b;
   --sr-panel: #171d26;
   --sr-panel-2: #10141b;
@@ -117,7 +160,13 @@ ion-content {
   );
 }
 
-// ── typography (chrome + headings; body copy stays as-is) ────────────────────
+// ── typography (chrome + headings) ───────────────────────────────────────────
+// The page default. Everything that does not opt into a rung inherits this, so
+// a component only names a size when it means something OTHER than body copy.
+body {
+  font-size: var(--fs-body);
+}
+
 ion-title,
 ion-card-title,
 ion-card-subtitle,
@@ -169,11 +218,7 @@ ion-menu ion-item {
   outline-offset: 2px;
 }
 
-// ── thin scrollbars ─────────────────────────────────────────────────────────
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--sr-line) transparent;
-}
+// ── thin scrollbars (the standard properties ride :root, above) ─────────────
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -276,22 +321,17 @@ ion-menu ion-item {
 .sr-field-note {
   display: block;
   padding: 0.35rem 1rem 0;
-  font-size: 0.8rem;
+  font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
 }
 
 // Eyebrow / HUD label — mono uppercase in cyberpunk, plain sentence-case sans.
 .sr-hud {
-  font-family: var(--sr-deck-font);
-  text-transform: var(--sr-label-transform);
-  letter-spacing: var(--sr-label-tracking);
+  @include deck.hud-label;
   color: var(--sr-text-dim);
 }
 
-// Honour reduced-motion for the pulsing deck LEDs.
-@media (prefers-reduced-motion: reduce) {
-  .sr-led--on,
-  .sr-led--standby {
-    animation: none;
-  }
+// The colour bar down the leading edge of a list row.
+.sr-status-bar {
+  @include deck.status-bar;
 }

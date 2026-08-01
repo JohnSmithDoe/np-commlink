@@ -1,5 +1,7 @@
+import { ICategoryList } from '../../@shared/model/category.types';
 import { IGroceriesState } from '../model/groceries.types';
 import {
+  GROCERY_CATEGORIES_LIST_ID,
   IProduct,
   IProductsState,
   IShoppingItem,
@@ -29,7 +31,6 @@ export function mockListSettings(
   return {
     showQuickAdd: false,
     showQuickAddProduct: false,
-    showQuickAddCategory: false,
     showProductsInStorage: false,
     showShoppingInStorage: false,
     showProductsInShopping: false,
@@ -46,7 +47,6 @@ export function mockQuickAddState(
   return {
     canAddLocal: false,
     canAddProduct: false,
-    canAddCategory: false,
     searchQuery: undefined,
     ...overrides,
   };
@@ -96,8 +96,6 @@ export function mockStorageState(
   return {
     id: '_storage',
     items: [],
-    categories: [],
-    mode: 'alphabetical',
     ...overrides,
   };
 }
@@ -108,8 +106,6 @@ export function mockShoppingState(
   return {
     id: '_shopping',
     items: [],
-    categories: [],
-    mode: 'alphabetical',
     showActionSheet: false,
     ...overrides,
   };
@@ -121,8 +117,6 @@ export function mockProductsState(
   return {
     id: '_products',
     items: [],
-    categories: [],
-    mode: 'alphabetical',
     ...overrides,
   };
 }
@@ -158,10 +152,15 @@ export function mockRecipesState(
   return {
     id: RECIPES_LIST_ID,
     items: [],
-    categories: [],
-    mode: 'alphabetical',
     ...overrides,
   };
+}
+
+// The ONE catalog the three lists share.
+export function mockGroceryCategoryList(
+  overrides: Partial<ICategoryList> = {}
+): ICategoryList {
+  return { id: GROCERY_CATEGORIES_LIST_ID, items: [], ...overrides };
 }
 
 // The whole `groceries` slice — what the cross-list engine helpers
@@ -176,6 +175,7 @@ export function mockGroceriesState(
     shopping: mockShoppingState(),
     recipes: mockRecipesState(),
     listSettings: mockListSettings(),
+    categories: mockGroceryCategoryList(),
     ...overrides,
   };
 }

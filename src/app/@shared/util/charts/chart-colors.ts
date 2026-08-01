@@ -17,7 +17,7 @@
  * Each read has a hardcoded fallback matching the current theme value in case
  * the property is momentarily unset.
  */
-export interface ChartColors {
+interface ChartColors {
   /** Positive / income series → the theme's success green. */
   income: string;
   /** Negative / spend series → the theme's danger red. */

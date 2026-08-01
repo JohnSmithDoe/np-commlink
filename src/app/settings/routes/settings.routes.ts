@@ -9,7 +9,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 export const settingsRoutes: Routes = [
   {
     path: '',
-    data: { title: marker('page-title.settings') },
+    title: marker('page-title.settings'),
     loadComponent: () =>
       import('../feature/settings-page/settings.page').then(
         (m) => m.SettingsPage

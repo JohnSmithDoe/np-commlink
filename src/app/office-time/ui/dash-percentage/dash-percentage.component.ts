@@ -9,5 +9,5 @@ import { DashboardStats } from '../../model/office-time.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashPercentageComponent {
-  readonly stats = input<DashboardStats | null>();
+  readonly stats = input.required<DashboardStats>();
 }

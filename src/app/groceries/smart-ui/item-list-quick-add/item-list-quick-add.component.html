@@ -1,44 +1,29 @@
-@if (rxShowLocal()) {
+@if (canAddLocal()) {
   <app-text-item
-    [color]="rxState().color"
+    [color]="state().color"
     helper="{{
       'grocery.item-list.quickadd.add'
         | translate
           : {
-              value: rxState().searchQuery,
-              list: (rxState().listName ?? '' | translate),
+              value: state().searchQuery,
+              list: (state().listName ?? '' | translate),
             }
     }}"
-    [label]="rxState().searchQuery"
+    [label]="state().searchQuery"
     (selectItem)="quickAddItem.emit()"
   ></app-text-item>
 }
-@if (rxShowProduct() === true) {
+@if (canAddProduct()) {
   <app-text-item
     helper="{{
       'grocery.item-list.quickadd.add.product'
         | translate
           : {
-              value: rxState().searchQuery,
-              list: rxState().listName,
+              value: state().searchQuery,
+              list: state().listName,
             }
     }}"
-    [label]="rxState().searchQuery"
+    [label]="state().searchQuery"
     (selectItem)="quickCreateProduct.emit()"
-  ></app-text-item>
-}
-@if (rxShowCategoy() === true) {
-  <app-text-item
-    color="primary"
-    helper="{{
-      'grocery.item-list.quickadd.add.category'
-        | translate
-          : {
-              value: rxState().searchQuery,
-              list: rxState().listName,
-            }
-    }}"
-    [label]="rxState().searchQuery"
-    (selectItem)="quickCreateCategory.emit()"
   ></app-text-item>
 }

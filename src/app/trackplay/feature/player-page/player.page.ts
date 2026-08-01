@@ -25,10 +25,10 @@ import { IGame, TID } from '../../model/trackplay.types';
 import { gameTypeName } from '../../util/game-type.utils';
 import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
-import { TrackplayGameEditModalComponent } from '../game-edit-modal/game-edit-modal.component';
 import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
-import { TrackplayListSettingsPopoverComponent } from '../../smart-ui/list-settings-popover/list-settings-popover.component';
-import { presentModal } from '../../../@shared/util/present-modal';
+import { presentModal } from '../../../@shared/util/app.modal.utils';
+import { presentListSettings } from '../present-list-settings';
+import { presentGameDialog } from '../present-game-dialog';
 
 /**
  * Single-player detail: derived win/loss/open + total-play stats, a rename
@@ -101,32 +101,19 @@ export class TrackplayPlayerPage {
     );
   }
 
-  async newGame(): Promise<void> {
-    await this.#presentGameDialog({ presetPlayerIds: [this.id] });
+  async createGame(): Promise<void> {
+    await presentGameDialog(this.#modalCtrl, this.#translate, {
+      presetPlayerIds: [this.id],
+    });
   }
 
   async openGameEdit(game: IGame): Promise<void> {
-    await this.#presentGameDialog({ gameId: game.id });
-  }
-
-  async openSettings(event: Event): Promise<void> {
-    const popover = await this.#popoverCtrl.create({
-      component: TrackplayListSettingsPopoverComponent,
-      componentProps: { mode: 'gamesForPlayer' },
-      event: event,
+    await presentGameDialog(this.#modalCtrl, this.#translate, {
+      gameId: game.id,
     });
-    await popover.present();
   }
 
-  async #presentGameDialog(properties: {
-    gameId?: TID;
-    presetPlayerIds?: TID[];
-  }): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayGameEditModalComponent,
-      this.#translate.instant(marker('page-title.trackplay-game')),
-      properties
-    );
+  openSettings(event: Event): Promise<void> {
+    return presentListSettings(this.#popoverCtrl, 'gamesForPlayer', event);
   }
 }

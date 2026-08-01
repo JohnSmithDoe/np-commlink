@@ -1,0 +1,59 @@
+<app-page-header
+  [icon]="icon()"
+  [label]="pageHeader()"
+  [disabled]="!!facade.searchResult()?.exactMatch"
+  (addItem)="facade.showCreateDialog()"
+>
+  <app-item-list-searchbar
+    [query]="facade.state()?.searchQuery"
+    (queryChange)="facade.search($event)"
+    (hitEnter)="facade.addItemFromSearch()"
+  />
+  <app-item-list-toolbar (selectSortMode)="facade.setSortMode($event)">
+    <ng-content select="[toolbarActions]" />
+    <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd />
+    @if (hasCategories) {
+      <ion-button
+        toolbarActionsEnd
+        (click)="manageCategories()"
+        [attr.aria-label]="'categories.a11y.manage' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="pricetags-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    }
+  </app-item-list-toolbar>
+
+  <ng-content select="[headerEnd]" toolbar></ng-content>
+</app-page-header>
+
+<ion-content>
+  <ng-content select="[quickAdd]"></ng-content>
+
+  <app-item-list
+    [headerColor]="hasFilter() ? 'primary' : undefined"
+    [header]="
+      hasFilter()
+        ? ('item-list.header.category-filter'
+          | translate: { category: filterName() })
+        : listHeader()
+    "
+    [items]="facade.items()"
+    [catalog]="facade.catalog()"
+    [itemTemplate]="itemTemplate()"
+  >
+    <ng-content select="[listActions]"></ng-content>
+  </app-item-list>
+  <app-item-list-empty
+    [isEmptyList]="!facade.items()?.length"
+    [isSearching]="!!facade.searchResult()"
+    [searchTerm]="facade.searchResult()?.searchTerm"
+    (emptyList)="facade.showCreateDialog()"
+    (emptySearch)="facade.addItemFromSearch()"
+  />
+
+  <ng-content select="[searchExtras]"></ng-content>
+</ion-content>

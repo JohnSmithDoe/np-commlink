@@ -17,7 +17,7 @@ import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayGameTypeEditModalComponent } from '../game-type-edit-modal/game-type-edit-modal.component';
 import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item/game-type-list-item.component';
-import { presentModal } from '../../../@shared/util/present-modal';
+import { presentModal } from '../../../@shared/util/app.modal.utils';
 
 /** Game types (Spielarten) manager: list + create/edit dialog. */
 @Component({

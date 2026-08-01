@@ -1,3 +1,2 @@
-@use '../../../../theme/dashboard';
 @use '../../../../theme/charts';
-@include charts.circular-meter();
+@include charts.circular-meter;

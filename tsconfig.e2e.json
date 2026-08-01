@@ -1,0 +1,22 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/e2e",
+    // Playwright transpiles the specs with esbuild, which strips types without
+    // reading them — so without this project nothing type-checks `e2e/` at all.
+    // It went unnoticed because the two `tsc` gates are scoped to `src`, and no
+    // `no-unused-vars` is configured, which left `noUnusedLocals` — a compiler
+    // flag, and so project-scoped — as the only thing that could have spoken.
+    //
+    // Inherited `true`, off here for the same reason `tsconfig.spec.json` turns
+    // it off: a spec indexes a fixture it built three lines earlier, and an
+    // `undefined` there is a red test with a TypeError, not a silent fault.
+    "noUncheckedIndexedAccess": false
+  },
+  // The specs only. `playwright.config.ts` reads `process.env`, which needs
+  // `@types/node`, and no project here sets `types` — so installing it would
+  // inject Node's globals into the app build too, where `setTimeout` would stop
+  // returning a number. A config file is not worth that.
+  "include": ["e2e/**/*.ts"]
+}

@@ -1,4 +1,4 @@
-import { TMarker } from '../../@shared/model/app.types';
+import { TLanguage, TMarker } from '../../@shared/model/app.types';
 
 /**
  * The deck's view of the on-device model. `unsupported`, `flatlined` and the
@@ -17,17 +17,23 @@ export type TGeistLink =
   | 'jacked-in'
   | 'flatlined';
 
-export type TGeistPersonaId = 'fixer' | 'archivist' | 'mentor';
+type TGeistPersonaId = 'fixer' | 'archivist' | 'mentor';
 
 export type IGeistPersona = {
   id: TGeistPersonaId;
   codename: string;
   taglineKey: TMarker;
   /**
-   * Sent as the session's system message. Deliberately not an i18n key — it
-   * steers the model, so translating it would silently change answers.
+   * Sent as the session's system message, in the UI language.
+   *
+   * Deliberately NOT an i18n key, for the reason it always was: this steers the
+   * model rather than labelling anything, so an edit in a message bundle would
+   * silently change answers. A `Record` keeps both wordings in code, where they
+   * are reviewed as behaviour — and makes a third language a compile error at
+   * every persona instead of an English session answered in German, which is
+   * what a single string produced.
    */
-  systemPrompt: string;
+  systemPrompt: Record<TLanguage, string>;
 };
 
 export type IGeistTurn = {

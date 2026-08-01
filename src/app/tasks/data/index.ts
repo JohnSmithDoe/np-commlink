@@ -10,7 +10,7 @@
  * Named re-exports only (never `export *`) so the public surface is explicit
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
-export { TasksActions } from './actions/tasks.actions';
+export { TaskCategoriesActions, TasksActions } from './tasks.actions';
 export { TasksListPageFacade } from './tasks-list-page.facade';
-export { TasksCategoriesPageFacade } from './tasks-categories-page.facade';
+export { TaskCategoriesPageFacade } from './task-categories-page.facade';
 export { tasksContext } from './tasks.providers';

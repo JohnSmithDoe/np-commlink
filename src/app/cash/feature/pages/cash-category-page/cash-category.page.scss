@@ -1,0 +1,10 @@
+@use '../../../../../theme/cash';
+
+// One category's transactions across every account (the category→items drill).
+.cash-txn__amount {
+  @include cash.txn-amount(var(--fs-body));
+}
+
+.cash-empty {
+  @include cash.empty-state;
+}

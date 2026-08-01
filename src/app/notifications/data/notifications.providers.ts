@@ -2,18 +2,19 @@ import { inject, isDevMode, provideAppInitializer } from '@angular/core';
 import {
   mergeContexts,
   providePersistedContext,
-} from '../../@shared/data/persisted-context.provider';
-import { createMetric } from '../../@shared/data/effects/persisted-slice.effects.factory';
+} from '../../@shared/data/persisted-states/persisted-context.provider';
+import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationService } from '../util/notification.service';
-import { NotificationsInboxActions } from './actions/notifications.actions';
-import { notificationsReducer } from './reducer/notifications.reducer';
-import { NotificationsDebugEffects } from './effects/notifications-debug.effects';
-import { NotificationsToastEffects } from './effects/notifications-toast.effects';
+import { NotificationsInboxActions } from './notifications.actions';
+import { notificationsReducer } from './notifications.reducer';
+import { NotificationsDebugEffects } from './notifications-debug.effects';
+import { NotificationsToastEffects } from './notifications-toast.effects';
 import {
+  NOTIFICATIONS_STATE_KEY,
   selectNotificationsBadgeCount,
   selectNotificationsState,
-} from './selectors/notifications.selector';
+} from './notifications.selector';
 
 /**
  * The notifications inbox — EAGER, composed by `provideAppKernel()` into the
@@ -41,7 +42,7 @@ import {
  */
 export const notificationsContext = mergeContexts(
   providePersistedContext({
-    key: 'notifications',
+    key: NOTIFICATIONS_STATE_KEY,
     reducer: notificationsReducer,
     lifecycle: NotificationsInboxActions,
     select: selectNotificationsState,

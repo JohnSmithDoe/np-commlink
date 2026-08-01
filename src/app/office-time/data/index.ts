@@ -12,6 +12,6 @@
  * and a type-only consumer can't drag runtime providers into its chunk.
  */
 
-export { OfficeTimeActions } from './actions/office-time.actions';
+export { OfficeTimeActions } from './office-time.actions';
 export { OfficeTimeFacade } from './office-time.facade';
 export { officeTimeContext } from './office-time.providers';

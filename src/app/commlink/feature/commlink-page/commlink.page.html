@@ -5,7 +5,7 @@
       class="sr-brand__icon"
       aria-hidden="true"
     />
-    <span class="sr-brand__name">np-commlink</span>
+    <span class="sr-brand__name">{{ wordmark }}</span>
     <span class="cl-cursor">▊</span>
   </div>
 </app-page-header>
@@ -17,7 +17,7 @@
   <div class="cl sr-scanlines">
     <div class="cl-bar">
       <span class="cl-bar__seg">
-        <i class="sr-led sr-led--on"></i> SIN://np-commlink
+        <i class="sr-led sr-led--on"></i> SIN://{{ wordmark }}
       </span>
       <span class="cl-bar__seg"
         >{{ hud['grid'] | translate }}
@@ -48,32 +48,26 @@
     </header>
 
     <div class="cl-grid">
-      @for (p of programs(); track p.id; let slot = $index) {
-        @let nodeStatus = status(p);
-        @let dark = nodeStatus === 'offline';
+      @for (tile of tiles(); track tile.program.id; let slot = $index) {
         <!-- A dark tile is unreachable, not just un-clickable: the CSS drops
              pointer events, and these two take it out of the tab order and say
              why to a screen reader. -->
         <a
           class="cl-node sr-panel sr-corners"
-          [class.cl-node--standby]="nodeStatus === 'standby'"
-          [class.cl-node--offline]="dark"
-          [attr.aria-disabled]="dark ? 'true' : null"
-          [attr.tabindex]="dark ? '-1' : null"
-          [routerLink]="p.route"
+          [class.cl-node--standby]="tile.status === 'standby'"
+          [class.cl-node--offline]="tile.dark"
+          [attr.aria-disabled]="tile.dark ? 'true' : null"
+          [attr.tabindex]="tile.dark ? '-1' : null"
+          [routerLink]="tile.program.route"
           data-testid="deck-tile"
         >
           <span class="cl-node__scan"></span>
           <div class="cl-node__top">
             <span class="cl-node__hex">{{ slot | hex }}</span>
             <span class="cl-node__flags">
-              <!-- Live metric from the dashboard read-model. Only positive
-                   values badge: a 0 count is nothing to flag, and a
-                   non-positive balance (e.g. overdraft) is intentionally not
-                   surfaced as a glanceable count. -->
-              @let b = badge(p);
-              @if (b !== null && b > 0) {
-                @let badgeText = badgeLabel(p, b);
+              <!-- Live metric from the dashboard read-model; which values earn a
+                   badge is decided in `tiles`. -->
+              @if (tile.badgeText !== null) {
                 <!-- role="img": ARIA prohibits naming the implicit `generic`
                      role, so on a bare <span> the aria-label is not exposed at
                      all and a reader announces the raw digits instead of what
@@ -81,28 +75,35 @@
                 <span
                   class="cl-node__badge"
                   role="img"
-                  [class.cl-node__badge--currency]="p.currency"
+                  [class.cl-node__badge--currency]="tile.program.currency"
                   [attr.aria-label]="
-                    p.metricKey ?? '' | translate: { value: badgeText }
+                    tile.program.metricKey ?? ''
+                      | translate: { value: tile.badgeText }
                   "
                   data-testid="deck-tile-badge"
-                  >{{ badgeText }}</span
+                  >{{ tile.badgeText }}</span
                 >
               }
               <i
                 class="sr-led"
-                [class.sr-led--on]="nodeStatus === 'online'"
-                [class.sr-led--standby]="nodeStatus === 'standby'"
-                [class.sr-led--off]="nodeStatus === 'offline'"
+                [class.sr-led--on]="tile.status === 'online'"
+                [class.sr-led--standby]="tile.status === 'standby'"
+                [class.sr-led--off]="tile.dark"
               ></i>
             </span>
           </div>
-          <ion-icon class="cl-node__icon" [name]="p.icon" aria-hidden="true" />
-          <div class="cl-node__name">{{ p.nameKey | translate }}</div>
-          <div class="cl-node__desc">{{ p.descKey | translate }}</div>
-          <div class="cl-node__foot">
-            {{ nodeStatusKey(nodeStatus) | translate }}
+          <ion-icon
+            class="cl-node__icon"
+            [name]="tile.program.icon"
+            aria-hidden="true"
+          />
+          <div class="cl-node__name">
+            {{ tile.program.nameKey | translate }}
           </div>
+          <div class="cl-node__desc">
+            {{ tile.program.descKey | translate }}
+          </div>
+          <div class="cl-node__foot">{{ tile.statusKey | translate }}</div>
         </a>
       }
     </div>
