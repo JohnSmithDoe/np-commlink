@@ -80,8 +80,6 @@ describe('tasksReducer', () => {
     expect(state.list.items[0].categoryIds).toEqual(['c1']);
   });
 
-  // The cascade: the catalog and the task list are siblings, so deleting an entry
-  // has to reach across.
   it('deleting a catalog entry strips its id off every task', () => {
     const chores = mockCategory({ id: 'c1', name: 'Chores' });
     const start = mockTasksState({

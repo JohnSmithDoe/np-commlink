@@ -1,4 +1,4 @@
-import { IGeistTurn } from '../model/geist.types';
+import { GeistTurn } from '../model/geist.types';
 import {
   appendAnswerChunk,
   isFollowingTail,
@@ -6,7 +6,7 @@ import {
   patchTurn,
 } from './transcript.utils';
 
-const turn = (overrides: Partial<IGeistTurn> = {}): IGeistTurn => ({
+const turn = (overrides: Partial<GeistTurn> = {}): GeistTurn => ({
   id: 1,
   query: 'wer ist Mr. Johnson?',
   answer: '',

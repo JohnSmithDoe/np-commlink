@@ -1,3 +1,19 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R6 — docs/ionic-a11y-practices.md
+ *
+ * Ionic's own docs: "The ion-toast component has role='status' and
+ * aria-live='polite'… This causes screen readers to only announce the
+ * toast message and header, meaning buttons and icons will not be
+ * announced." So a toast carrying the only path to an action loses that
+ * path entirely for screen-reader users. A dismiss-only button is fine —
+ * what makes a button an affordance rather than chrome is a `handler`.
+ *
+ * The rule cannot verify that the action also exists somewhere persistent,
+ * so an intentional interactive toast (an undo that supersedes its
+ * predecessor) is a suppression naming that decision — which is the point:
+ * the exception becomes a recorded one instead of an unmarked one.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   hasProperty,
@@ -6,21 +22,6 @@ import {
   property,
 } from '../lib/overlay-options.ts';
 import type { CallExpression } from '../lib/overlay-options.ts';
-
-// R6 — docs/ionic-a11y-practices.md
-//
-// > "The ion-toast component has role='status' and aria-live='polite'… This
-// > causes screen readers to only announce the toast message and header, meaning
-// > buttons and icons will not be announced."
-//
-// So a toast that carries the only path to an action loses that path entirely for
-// screen-reader users. A dismiss-only button is fine — what makes a button an
-// affordance rather than chrome is a `handler`.
-//
-// The rule cannot verify that the action also exists somewhere persistent, so an
-// intentional interactive toast (an undo that supersedes its predecessor) is an
-// eslint-disable naming that decision — which is the point: the exception becomes
-// a recorded one instead of an unmarked one.
 
 export const rule: Rule.RuleModule = {
   meta: {

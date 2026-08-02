@@ -1,10 +1,10 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
-import { ITrackingItem } from '../../model/tracking.types';
+import { TrackingItem } from '../../model/tracking.types';
 import { TrackingItemComponent } from './tracking-item.component';
 
-const track = (state: ITrackingItem['state']): ITrackingItem => ({
+const track = (state: TrackingItem['state']): TrackingItem => ({
   id: '1',
   name: 'Task',
   createdAt: '2026-01-01',
@@ -19,8 +19,6 @@ describe('TrackingItemComponent', () => {
       imports: [TrackingItemComponent],
       providers: [provideTranslateService(), provideZonelessChangeDetection()],
     });
-    // No detectChanges: we exercise the mapping methods, not the template (the
-    // required `item`/`ionList` inputs are only read during rendering).
     component = TestBed.createComponent(
       TrackingItemComponent
     ).componentInstance;

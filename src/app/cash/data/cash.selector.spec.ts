@@ -40,7 +40,6 @@ describe('cash selectors', () => {
       const account = mockCashAccount({ id: 'a', openingBalanceCents: 0 });
       const txns = [
         mockCashTransaction({ id: 't1', accountId: 'a', amountCents: -1000 }),
-        // pending manual leg merged into t1 — must not be counted again
         mockCashTransaction({
           id: 't2',
           accountId: 'a',
@@ -174,7 +173,6 @@ describe('cash selectors', () => {
         }),
       ];
       const result = selectTransactionsForAccount('a').projector(txns);
-      // the hidden manual leg is excluded; the survivor carries its id
       expect(result.map((t) => t.id)).toEqual(['surv']);
       expect(result[0].reconciledManualId).toBe('manual');
     });
@@ -298,10 +296,6 @@ describe('cash selectors', () => {
       expect(result.map((t) => t.id)).toEqual(['t3', 't2', 't1']);
     });
   });
-  // The tile reads the SAME sum as the accounts list now, so its own spec is only
-  // about the cents→euros presentation. What each leg contributes to that sum
-  // (reconciled-away legs excluded, orphans skipped) is pinned on
-  // selectAccountBalances / selectNetWorthCents, not restated here.
   describe('selectCashBalanceEuros', () => {
     it('converts whole cents to whole euros', () => {
       expect(selectCashBalanceEuros.projector(6000)).toBe(60);
@@ -309,23 +303,14 @@ describe('cash selectors', () => {
     });
 
     it('rounds a non-round cents total to the nearest euro (half-up)', () => {
-      // 12399c -> 123.99 -> 124 (a truncating impl would wrongly give 123).
       expect(selectCashBalanceEuros.projector(12_399)).toBe(124);
-      // 12340c -> 123.40 -> 123 (rounds down).
       expect(selectCashBalanceEuros.projector(12_340)).toBe(123);
     });
 
     it('reports a negative balance for an overdrawn ledger', () => {
-      // The deck deliberately hides non-positive badges (the template's `b > 0`
-      // guard), so an overdraft shows no CREDSTICK badge — pinned here so that
-      // display choice stays a conscious, tested one.
       expect(selectCashBalanceEuros.projector(-5000)).toBe(-50);
     });
 
-    // The bug this selector's rewrite fixed: it used to sum the transaction list
-    // flat, so a txn whose account had been deleted counted toward the tile while
-    // the accounts list (a per-account sum) skipped it. Both now come from
-    // selectAccountBalances, so the tile cannot disagree with the list it links to.
     it('agrees with the accounts list when a transaction is orphaned', () => {
       const state = mockCashState({
         accounts: [mockCashAccount({ id: 'a', openingBalanceCents: 20_000 })],

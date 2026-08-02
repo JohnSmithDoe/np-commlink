@@ -14,16 +14,8 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
-import { ICategory, TCategoryId } from '../../../model/category.types';
+import { Category, CategoryId } from '../../../model/category.types';
 
-/**
- * Pure presentational (type:ui) category chips + "open picker" trigger — inputs
- * in (the item's selected categories, as resolved {id,name} objects), events out
- * (remove one by id / open the picker). Replaces the store-bound
- * `@shared/smart-ui/category-input`; the domain feature wrapper owns the
- * selection (resolving the draft's category ids → objects) and the picker's open
- * state.
- */
 @Component({
   selector: 'app-category-input',
   templateUrl: './category-input.component.html',
@@ -31,9 +23,9 @@ import { ICategory, TCategoryId } from '../../../model/category.types';
   imports: [IonItem, IonLabel, IonChip, IonButton, IonIcon, TranslatePipe],
 })
 export class CategoryInputComponent {
-  readonly categories = input<ICategory[]>();
+  readonly categories = input<Category[]>();
 
-  readonly removeCategory = output<TCategoryId>();
+  readonly removeCategory = output<CategoryId>();
   readonly openDialog = output<void>();
 
   constructor() {

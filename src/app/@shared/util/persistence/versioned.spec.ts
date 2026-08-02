@@ -44,7 +44,6 @@ describe('versioned', () => {
     });
 
     it('passes through a hop with no registered step', () => {
-      // ladder covers v1->v2 only; v2->v3 has no step
       expect(runMigrations(wrapVersioned(1, { a: 1 }), 3, [addB])).toEqual({
         a: 1,
         b: 2,

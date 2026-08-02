@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from 'dayjs';
-import { IDataItem, TTrackingViewId } from '../model/tracking.types';
+import { DataItem, TrackingViewId } from '../model/tracking.types';
 import { formatViewDate } from './tracking.utils';
 
 @Pipe({
@@ -8,7 +8,7 @@ import { formatViewDate } from './tracking.utils';
   standalone: true,
 })
 export class TimeFromDataItemPipe implements PipeTransform {
-  transform(item?: IDataItem, viewId?: TTrackingViewId): string {
+  transform(item?: DataItem, viewId?: TrackingViewId): string {
     if (!item?.startTime || !viewId) return '';
     if (!dayjs(item.startTime).isValid()) return '';
     return formatViewDate(item.startTime, viewId);

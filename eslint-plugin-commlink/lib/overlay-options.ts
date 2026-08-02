@@ -1,22 +1,31 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Readers over a `<controller>.create({ … })` call in TypeScript.
+ *
+ * Which overlay is being created is decided by the RECEIVER'S NAME rather
+ * than by its type: the check has to work in `@shared/util/present-modal.ts`,
+ * where the controller arrives as a parameter, and a name-based test needs
+ * no type information, so these rules stay usable on any config block. The
+ * cost is that a controller named something other than `<kind>Ctrl` /
+ * `<kind>Controller` is invisible to them — cheap to keep true, and it is
+ * already the app's convention.
+ *
+ * `ObjectExpression` is derived from an *argument* rather than from
+ * `Rule.Node` directly: that union member carries `& NodeParentExtension`,
+ * which a nested value like `htmlAttributes: { … }` does not have, so the
+ * parent-bearing alias rejects the very nodes these helpers are handed.
+ *
+ * A spread makes every absence unprovable, and an unreadable
+ * `htmlAttributes` counts as NAMED — a gate that reports what it cannot
+ * know trains people to disable it.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 
-// Readers over a `<controller>.create({ … })` call in TypeScript.
-//
-// Which overlay is being created is decided by the receiver's name rather than by
-// its type: the check has to work in `@shared/util/present-modal.ts`, where the
-// controller arrives as a parameter, and a name-based test needs no type
-// information, so these rules stay usable on any config block. The cost is that
-// a controller named something other than `<kind>Ctrl` / `<kind>Controller` is
-// invisible to them — cheap to keep true, and it is already the app's convention.
 const RECEIVER =
   /^(modal|alert|actionsheet|loading|toast|popover)(ctrl|controller)$/i;
 
 type Node = Rule.Node;
 export type CallExpression = Extract<Node, { type: 'CallExpression' }>;
-// Derived from an *argument* rather than from `Rule.Node` directly: the union
-// member carries `& NodeParentExtension`, which a nested value like
-// `htmlAttributes: { … }` does not have, so the parent-bearing alias rejects the
-// very nodes these helpers are handed.
 export type ObjectExpression = Extract<
   CallExpression['arguments'][number],
   { type: 'ObjectExpression' }
@@ -33,7 +42,6 @@ const receiverName = (node: unknown): string | undefined => {
   return undefined;
 };
 
-/** 'modal' | 'alert' | 'actionsheet' | 'loading' | 'toast' | 'popover' */
 export const overlayKind = (calleeObject: unknown): string | undefined => {
   const name = receiverName(calleeObject);
   return name ? RECEIVER.exec(name)?.[1]?.toLowerCase() : undefined;
@@ -65,16 +73,9 @@ export const hasProperty = (
   name: string
 ): boolean => property(objectExpression, name) !== undefined;
 
-/** A spread makes every absence unprovable — the name may well be in there. */
 export const isDecidable = (objectExpression: ObjectExpression): boolean =>
   objectExpression.properties.every(({ type }) => type === 'Property');
 
-/** Does `htmlAttributes: { 'aria-label': … }` set a name?
- *
- * `htmlAttributes` is the seam for *any* ARIA attribute on a
- * controller-presented overlay; a spread or a variable makes the answer
- * unknowable, and unknown counts as named so the rule cannot cry wolf.
- */
 export const setsAriaLabelViaHtmlAttributes = (
   options: ObjectExpression
 ): boolean => {

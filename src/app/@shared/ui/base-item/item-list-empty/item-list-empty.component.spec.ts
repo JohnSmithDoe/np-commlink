@@ -26,7 +26,6 @@ describe('ItemListEmptyComponent', () => {
 
     const textItem = fixture.nativeElement.querySelector('app-text-item');
     expect(textItem).toBeTruthy();
-    // The TranslatePipe has no translations loaded, so keys pass through.
     expect(fixture.nativeElement.textContent).toContain(
       'item-list.empty.isempty'
     );

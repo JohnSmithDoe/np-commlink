@@ -4,10 +4,10 @@ import { ThemeService } from '../../../@shared/util/theme/theme.service';
 import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
 import {
-  IDeckModuleConfig,
-  IDeckProgramConfig,
-  TAppModule,
-  TDeckEntryId,
+  DeckModuleConfig,
+  DeckProgramConfig,
+  AppModule,
+  DeckEntryId,
 } from '../../model/deck.types';
 import {
   orderEntries,
@@ -17,15 +17,6 @@ import {
 import { DeckActions } from './deck.actions';
 import { selectDeckState } from './deck.selector';
 
-/**
- * Facade over the eager `deck` slice — the user's navigation configuration,
- * resolved against the catalog and the active theme.
- *
- * The theme comes from `ThemeService`, not `SettingsFacade`: `commlink` may not
- * import another domain, and the applied theme is published in `@shared/util`
- * for exactly this kind of reader. Reading it as a signal is also what makes a
- * live theme switch re-label the deck.
- */
 @Injectable({ providedIn: 'root' })
 export class DeckFacade {
   readonly #store = inject(Store);
@@ -34,28 +25,20 @@ export class DeckFacade {
 
   readonly #labelled = computed(() => resolveLabels(this.#theme()));
 
-  /** What the side menu lists: everything the user shows, in their order. */
   readonly menuEntries = computed(() =>
     visibleEntries(DECK_CATALOG, this.#config()).map(this.#labelled())
   );
 
-  /** What the deck grid renders — the menu's entries minus the menu-only ones. */
   readonly programs = computed(() =>
     this.menuEntries().filter((entry) => entry.onDeck)
   );
 
-  /**
-   * Every program the grid has, hidden ones included. The status strip reports
-   * the grid rather than this user's view, so a hidden-but-online program still
-   * counts toward `N / 13`.
-   */
   readonly allPrograms = computed(() =>
     DECK_CATALOG.filter((entry) => entry.onDeck).map(this.#labelled())
   );
   readonly slotCount = DECK_SLOT_COUNT;
 
-  /** The config page's list: every entry in order, whatever its flags. */
-  readonly configuredEntries = computed<IDeckProgramConfig[]>(() => {
+  readonly configuredEntries = computed<DeckProgramConfig[]>(() => {
     const config = this.#config();
     return orderEntries(DECK_CATALOG, config.order)
       .map(this.#labelled())
@@ -66,7 +49,7 @@ export class DeckFacade {
       }));
   });
 
-  readonly configuredModules = computed<IDeckModuleConfig[]>(() => {
+  readonly configuredModules = computed<DeckModuleConfig[]>(() => {
     const hidden = this.#config().hiddenModules;
     return [...new Set(DECK_CATALOG.map((entry) => entry.module))].map(
       (module) => ({
@@ -84,15 +67,15 @@ export class DeckFacade {
     );
   });
 
-  reorder(order: TDeckEntryId[]): void {
+  reorder(order: DeckEntryId[]): void {
     this.#store.dispatch(DeckActions.reorder(order));
   }
 
-  toggleEntry(id: TDeckEntryId): void {
+  toggleEntry(id: DeckEntryId): void {
     this.#store.dispatch(DeckActions.toggleEntry(id));
   }
 
-  toggleModule(module: TAppModule): void {
+  toggleModule(module: AppModule): void {
     this.#store.dispatch(DeckActions.toggleModule(module));
   }
 

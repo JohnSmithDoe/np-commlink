@@ -1,11 +1,8 @@
-import { IOfficeTimeState } from '../model/office-time.types';
+import { OfficeTimeState } from '../model/office-time.types';
 
-// Deterministic office-time fixtures. Owned by the office-time context (DDD
-// review #1): they live here, not in the shared @shared/testing kit, because
-// that kit is domain:shared and may not reference domain:office-time types.
 export function mockOfficeTimeState(
-  overrides: Partial<IOfficeTimeState> = {}
-): IOfficeTimeState {
+  overrides: Partial<OfficeTimeState> = {}
+): OfficeTimeState {
   return {
     targetOfficeDaysPerWeek: 3,
     holidays: {},

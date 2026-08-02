@@ -13,16 +13,14 @@ import {
   IonListHeader,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { TColor } from '../../../model/app.types';
-import { IBaseItem } from '../../../model/base-item.types';
-import { ICategory } from '../../../model/category.types';
+import { IonColor } from '../../../model/app.types';
+import { BaseItem } from '../../../model/base-item.types';
+import { Category } from '../../../model/category.types';
 
 export type ItemListTemplateContext = {
-  $implicit: IBaseItem;
+  $implicit: BaseItem;
   ionList: IonList | undefined;
-  // The list's {id,name} catalog, so a projected row can resolve its item's
-  // category ids → names (e.g. `<app-list-item [categories]="categories">`).
-  categories: readonly ICategory[];
+  categories: readonly Category[];
 };
 
 @Component({
@@ -37,15 +35,13 @@ export class ItemListComponent {
 
   readonly itemTemplate =
     input.required<TemplateRef<ItemListTemplateContext>>();
-  readonly items = input.required<(Array<IBaseItem> | null) | undefined>();
+  readonly items = input.required<(Array<BaseItem> | null) | undefined>();
   readonly header = input<string>();
-  readonly headerColor = input<TColor>();
+  readonly headerColor = input<IonColor>();
   readonly listHeader = input<boolean, unknown>(false, {
     transform: booleanAttribute,
   });
-  // The catalog, threaded into each row's template context so a projected
-  // `<app-list-item>` can resolve its item's category ids → names.
-  readonly catalog = input<readonly ICategory[]>([]);
+  readonly catalog = input<readonly Category[]>([]);
 
   async closeSlidingItems() {
     await this.ionList()?.closeSlidingItems();

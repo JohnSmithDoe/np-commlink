@@ -33,17 +33,12 @@ import { add } from 'ionicons/icons';
 })
 export class PageHeaderComponent {
   readonly label = input('');
-  // ionicon name shown before the (lowercased) title — the deck brand look
-  // established on /commlink and /soykaf.
   readonly icon = input<string>();
   readonly hideButtons = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();
 
   constructor() {
-    // Only the icon this template renders itself. The `[icon]` input is a
-    // string from the page, and each page registers the icon it passes — a
-    // domain-blind header must not carry a roster of domain icons.
     addIcons({ add });
   }
 }

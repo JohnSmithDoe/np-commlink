@@ -7,7 +7,7 @@
 #   ./scripts/verify-all.sh            one card per gate, output only where it failed
 #   ./scripts/verify-all.sh --stream   every tool's output live, as it arrives
 #
-# A green gate's output is noise — thirteen of them scroll the one red card off the
+# A green gate's output is noise — fifteen of them scroll the one red card off the
 # screen, which is the opposite of what a checklist is for. So the body is quiet
 # by default and a FAILED gate replays its whole log into the card regardless.
 # That is what separates this from the old --quiet flag: that one hid the output
@@ -27,7 +27,7 @@
 # and buys knowing whether e2e broke too, which otherwise takes a second run.
 #
 # The gate list is owned by .claude/skills/np-verify-all/SKILL.md, with
-# docs/coding-conventions.md §Part 1 as its support. NOT by ci.yml: CI runs
+# docs/coding-conventions.md Part 1 as its support. NOT by ci.yml: CI runs
 # `pnpm run lint`, which chains three separate tools behind one exit code, so a
 # runner that mirrors CI step-for-step cannot show you which of them failed.
 #
@@ -77,6 +77,7 @@ LOG_DIR="${LOG_DIR%/}/np-commlink-verify"
 GATES=(
   "sheriff|module boundaries|sheriff|pnpm run verify"
   "testids|test-id contract|check-testids.mjs|pnpm run verify:testids"
+  "icons|icon registrations|check-icons.mjs|pnpm run verify:icons"
   "docpaths|doc paths|check-doc-paths.mjs|pnpm run verify:docs"
   "plugin|plugin types|tsc|pnpm run lint:plugin-types"
   "tsc-app|type-check (app)|tsc|./node_modules/.bin/tsc -p tsconfig.app.json --noEmit"
@@ -184,6 +185,7 @@ detail_for() {
   local id="$1" log="$2"
   case "$id" in
     testids) grep -Eo '[0-9]+ declared.*' "$log" | tail -1 ;;
+    icons) grep -Eo '[0-9]+ used.*' "$log" | tail -1 ;;
     exports) grep -Eo '[0-9]+ exports checked.*' "$log" | tail -1 ;;
     docpaths) grep -Eo '[0-9]+ paths checked.*' "$log" | tail -1 ;;
     unit) strip_ansi <"$log" | grep -E '^ *Tests +[0-9]' | tail -1 | tr -s ' ' | trim ;;

@@ -1,19 +1,15 @@
-import { IBaseItem } from '../../model/base-item.types';
-import { IListState } from '../../model/item-list.types';
+import { BaseItem } from '../../model/base-item.types';
+import { ListState } from '../../model/item-list.types';
 import {
   addListItem,
   removeListItem,
-  removeListItems,
   updatedSearchQuery,
   updateListItem,
   updateListSearch,
   updateListSort,
 } from './list.utils';
 
-// A neutral `IListState<IBaseItem>` probe: these helpers are the kernel every
-// list domain reducers through, so they are pinned against the generic shape
-// rather than any one domain's fixtures.
-const item = (over: Partial<IBaseItem> = {}): IBaseItem => ({
+const item = (over: Partial<BaseItem> = {}): BaseItem => ({
   id: 'a',
   name: 'Item',
   createdAt: '2026-01-01T00:00:00.000Z',
@@ -21,8 +17,8 @@ const item = (over: Partial<IBaseItem> = {}): IBaseItem => ({
 });
 
 const probeList = (
-  over: Partial<IListState<IBaseItem>> = {}
-): IListState<IBaseItem> => ({
+  over: Partial<ListState<BaseItem>> = {}
+): ListState<BaseItem> => ({
   id: '_probe',
   items: [],
   ...over,
@@ -45,22 +41,12 @@ describe('addListItem', () => {
   });
 });
 
-describe('removeListItem / removeListItems', () => {
+describe('removeListItem', () => {
   it('removes a single item by id', () => {
     const a = item({ id: 'a' });
     const b = item({ id: 'b' });
 
     expect(removeListItem(probeList({ items: [a, b] }), a).items).toEqual([b]);
-  });
-
-  it('removes multiple items by id', () => {
-    const a = item({ id: 'a' });
-    const b = item({ id: 'b' });
-    const c = item({ id: 'c' });
-
-    expect(
-      removeListItems(probeList({ items: [a, b, c] }), [a, c]).items
-    ).toEqual([b]);
   });
 });
 
@@ -74,10 +60,6 @@ describe('updateListItem', () => {
   });
 
   it('keeps the matched row‘s own id when the DTO only matched by name', () => {
-    // `matchesItemExactly` falls back from id to name, which is right for
-    // add-dedupe. Here it means a stale DTO — its row deleted or re-hydrated
-    // under a new id while the dialog stayed open — can land on a same-named
-    // row, and spreading the DTO's id would rewrite that row's identity.
     const state = probeList({ items: [item({ id: 'live', name: 'Milk' })] });
 
     const updated = updateListItem(state, item({ id: 'stale', name: 'Milk' }));
@@ -86,13 +68,6 @@ describe('updateListItem', () => {
   });
 
   it('returns the SAME state when the item is no longer in the list', () => {
-    // The row can be deleted (or the list re-hydrated) while its edit dialog is
-    // still open, so this is a legitimate no-op — and a no-op must not hand
-    // downstream selectors a new object to recompute from.
-    //
-    // NB the update must differ in BOTH id and name: matching falls back to an
-    // exact name match when the id misses, so a same-named row still counts as
-    // present.
     const state = probeList({ items: [item({ id: 'a', name: 'Milk' })] });
 
     expect(updateListItem(state, item({ id: 'gone', name: 'Bread' }))).toBe(

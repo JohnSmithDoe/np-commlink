@@ -1,23 +1,23 @@
 import { createReducer, on } from '@ngrx/store';
-import { IBarcodeState } from '../model/barcode.types';
+import { BarcodeState } from '../model/barcode.types';
 import { BarcodeActions } from './barcode.actions';
 
-export const initialBarcodeState: IBarcodeState = {};
+export const initialBarcodeState: BarcodeState = {};
 
 export const barcodeReducer = createReducer(
   initialBarcodeState,
-  on(BarcodeActions.saveBarcode, (_state, { dataUrl }): IBarcodeState => ({
+  on(BarcodeActions.saveBarcode, (_state, { dataUrl }): BarcodeState => ({
     dataUrl,
   })),
   on(
     BarcodeActions.rotateBarcodeSuccess,
-    (_state, { dataUrl }): IBarcodeState => ({ dataUrl })
+    (_state, { dataUrl }): BarcodeState => ({ dataUrl })
   ),
-  on(BarcodeActions.deleteBarcode, (): IBarcodeState => ({
+  on(BarcodeActions.deleteBarcode, (): BarcodeState => ({
     dataUrl: undefined,
   })),
   on(
     BarcodeActions.loaded,
-    (_state, { barcode }): IBarcodeState => barcode ?? _state
+    (_state, { barcode }): BarcodeState => barcode ?? _state
   )
 );

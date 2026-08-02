@@ -44,7 +44,7 @@ describe('CashRulesPage', () => {
       );
 
   it('files only the transactions the rules re-categorize and reports the count', () => {
-    const rewe = mockCashRule({ id: 'r1', categoryId: 'cat-groceries' });
+    const rewe = mockCashRule({ id: 'r1', categoryId: 'cat-stuff' });
     setup(
       mockCashState({
         rules: [rewe],
@@ -53,7 +53,7 @@ describe('CashRulesPage', () => {
           mockCashTransaction({
             id: 't-filed',
             description: 'REWE CITY',
-            categoryId: 'cat-groceries',
+            categoryId: 'cat-stuff',
           }),
           mockCashTransaction({
             id: 't-manual',
@@ -67,11 +67,9 @@ describe('CashRulesPage', () => {
 
     component.applyRules();
 
-    // One dispatch for the whole run — the ledger is rewritten (and persisted)
-    // once, not once per changed row.
     expect(recategorizations()).toEqual([
       CashActions.recategorizeTransactions([
-        { transactionId: 't-new', categoryId: 'cat-groceries' },
+        { transactionId: 't-new', categoryId: 'cat-stuff' },
       ]),
     ]);
     expect(reportRulesApplied).toHaveBeenCalledWith(1);
@@ -89,8 +87,6 @@ describe('CashRulesPage', () => {
 
     component.applyRules();
 
-    // Nothing to re-file must not dispatch at all: a `[Cash]` action would
-    // persist the unchanged ledger.
     expect(recategorizations()).toEqual([]);
     expect(reportRulesApplied).toHaveBeenCalledWith(0);
   });
@@ -101,14 +97,10 @@ describe('CashRulesPage', () => {
     const third = mockCashRule({ id: 'r3', order: 2 });
     setup(mockCashState({ rules: [third, first, second] }));
 
-    // `complete(false)` is what leaves the DOM to Angular; moving the node here
-    // too would apply the drop twice.
     const complete = vi.fn();
     component.reorder({ detail: { from: 2, to: 1, complete } } as never);
 
     expect(complete).toHaveBeenCalledWith(false);
-    // The reducer rebuilds the rule list FROM these ids, so the payload must be
-    // the complete order — an omitted id deletes that rule.
     expect(dispatch).toHaveBeenCalledWith(
       CashActions.reorderRules(['r1', 'r3', 'r2'])
     );
@@ -119,9 +111,6 @@ describe('CashRulesPage', () => {
 
     await component.openNewRule();
 
-    // `htmlAttributes` is the only seam a controller-presented overlay has for a
-    // name — `ion-modal` derives none — and the key is the dialog's own title, so
-    // the announced name cannot drift from the visible heading (a11y R4).
     expect(createModal).toHaveBeenCalledWith({
       component: CashRuleEditModalComponent,
       componentProps: undefined,

@@ -34,9 +34,6 @@ describe('OfficeTimeEffects', () => {
 
   describe('loadHolidays$', () => {
     it('computes the current year‘s Berlin holidays instead of fetching them', async () => {
-      // They used to come from `assets/holidays/<year>-BE.json`, an asset that
-      // was never shipped: every entry 404'd, and the failure branch cleared
-      // the map, which silently inflated every workday and target figure.
       const effects = setup();
       actions$ = of(OfficeTimeActions.loadHolidays());
 
@@ -60,8 +57,6 @@ describe('OfficeTimeEffects', () => {
 
   describe('saveOfficeTime$', () => {
     it('serializes the dayjs date collections before writing', async () => {
-      // The reason office-time opts out of the shared save effect: its state
-      // holds Dayjs objects that have to reach disk as ISO strings.
       const day = dayjs('2026-03-08');
       const effects = setup(
         mockOfficeTimeState({

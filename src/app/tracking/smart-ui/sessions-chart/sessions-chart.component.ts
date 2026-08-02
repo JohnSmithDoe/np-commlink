@@ -15,9 +15,6 @@ import { LanguageService } from '../../../@shared/util/theme/language.service';
 
 Chart.register(...registerables);
 
-// The remainder bucket's legend entry. It is named here, not in the selector
-// that computes it: a `createSelector` projector has no injector, so a label it
-// invents can only ever be in one hardcoded language.
 const REMAINDER_LABEL = marker('tracking.chart.other');
 
 @Component({
@@ -42,7 +39,6 @@ export class SessionsChartComponent {
     return {
       labels: days.map((d) => localizedDayMonth(d, this.#language())),
       datasets: series.map((s, index) => ({
-        // A nameless entry is the remainder bucket — see `DailySeries`.
         label: s.name ?? this.#translate.instant(REMAINDER_LABEL),
         data: s.hours,
         backgroundColor: this.#series[index % this.#series.length],

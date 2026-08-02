@@ -1,18 +1,19 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The write half of the lazy cash context, opposite `first-paint.e2e.ts`:
+ * create an account and a transaction through the real dialogs, then boot
+ * cold and read both back.
+ *
+ * What it guards is silent data loss, not a red screen. On re-entry the
+ * route registers the slice at empty `initialState` and the resolver
+ * dispatches `[Cash] load` — if the save effect does not exclude that
+ * action it writes the empty slice over the saved ledger before the load
+ * effect ever reads it. The same bug bit [Tasks] and [Trackplay], which
+ * is why each of those carries a reload spec too.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import { pageRoot, waitForPersisted } from '../helpers';
 
-/**
- * Mutate → reload persistence guard for the LAZY cash context (the parity guard
- * `e2e/cash/first-paint.e2e.ts` flagged as outstanding). It drives the full
- * CREDSTICK write path through the UI — create an account, add a manual
- * transaction — then does a cold reload and asserts both survive.
- *
- * This exercises CashSaveEffects end-to-end: a returning user re-entering
- * `/cash/:accountId` after a full boot must read back the account + transaction
- * from IndexedDB. The route's `[Cash] load` fires at empty initialState, so the
- * persist effect must ignore it (the data-loss bug that bit [Tasks]/[Cash]) and
- * the load effect must hydrate the real saved ledger before the page paints.
- */
 test.describe('cash persistence', () => {
   test('keeps a created account + transaction across a full reload', async ({
     page,
@@ -22,7 +23,6 @@ test.describe('cash persistence', () => {
     await expect(list).toBeVisible({ timeout: 30_000 });
     await expect(list.getByTestId('cash-accounts-empty')).toBeVisible(); // hydrated, empty
 
-    // --- create an account (name is the only required field) ---
     await list.getByTestId('page-header-add').click();
     const accountModal = page.locator('app-cash-account-edit-modal');
     await accountModal
@@ -53,7 +53,6 @@ test.describe('cash persistence', () => {
     });
     await waitForPersisted(page, 'cash', 'Soykaf refill');
 
-    // --- cold reload → fresh boot → re-enter the lazy account route ---
     await page.reload();
 
     const accountAfter = pageRoot(page, 'app-page-cash-account');

@@ -1,22 +1,22 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * A wiring guard for the lazy cash context. Its route registers the slice
+ * through `providers` and blocks activation on
+ * `moduleHydrationResolver(load, loaded)`, so dropping the load effect
+ * from that bundle fails silently: the resolver simply awaits `[Cash]
+ * loaded` forever and the page never paints.
+ *
+ * An empty ledger is enough to prove it, because the empty state is
+ * reachable only THROUGH hydration — the `@else` branch renders once
+ * `accounts()` is an empty array, not while it is absent. That is what
+ * makes "no accounts" and "never hydrated" distinguishable on screen.
+ *
+ * The write half — mutate, reload, read back, i.e. the save effect — is
+ * deliberately elsewhere, in `persistence.e2e.ts`.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import { pageRoot } from '../helpers';
 
-/**
- * Wiring guard for the LAZY cash context (lazy-modules Phase D).
- *
- * The /cash route registers the cash slice + effects via its route `providers`
- * (cash.providers.ts) and blocks activation on
- * `moduleHydrationResolver(CashActions.load, CashActions.loaded)`. If the load
- * effect (CashLoadEffects) were dropped from those providers — the exact
- * regression the Phase-D review flagged — the resolver would await
- * `[Cash] loaded` forever, the route would never activate, and the page would
- * never paint. Asserting the scaffold renders its hydrated account count proves
- * provideState + CashLoadEffects + the resolver are all wired end to end.
- *
- * NB: this only exercises the load/hydrate wiring on an empty ledger. The full
- * mutate → reload persistence guard (create account + transaction, reload, assert
- * both survive — covering CashSaveEffects) lives in `persistence.e2e.ts`.
- */
 test.describe('cash first paint', () => {
   test('hydrates and paints the CREDSTICK scaffold', async ({ page }) => {
     await page.goto('/#/cash');
@@ -24,11 +24,6 @@ test.describe('cash first paint', () => {
     const scaffold = pageRoot(page, 'app-page-cash');
     await expect(scaffold).toBeVisible({ timeout: 30_000 });
 
-    // Fresh browser context → empty ledger hydrates to zero accounts. Seeing the
-    // net-worth header plus the "no accounts" empty state means the resolver
-    // resolved (the load effect emitted `loaded`) and the page painted its
-    // hydrated content — the `@else` empty branch only renders once `accounts()`
-    // has hydrated to an empty array.
     await expect(scaffold.getByTestId('cash-networth')).toBeVisible();
     await expect(scaffold.getByTestId('cash-accounts-empty')).toBeVisible();
   });

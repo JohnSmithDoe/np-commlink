@@ -21,7 +21,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
-import { IDataItem, TTrackingViewId } from '../model/tracking.types';
+import { DataItem, TrackingViewId } from '../model/tracking.types';
 import {
   csvRow,
   formatSecondsAsClock,
@@ -61,8 +61,6 @@ export class TrackingEffects {
           this.#store.select(selectTrackingDataViewId)
         ),
         switchMap(([, sessions, viewId]) => {
-          // Grouped here rather than read off a selector: the `'today'` view
-          // needs to know what day it is, and that is an argument now.
           const data = groupSessionsByView(
             sessions,
             viewId,
@@ -75,18 +73,14 @@ export class TrackingEffects {
               text: csv,
               dialogTitle: this.#translate.instant(marker('share.csv.dialog')),
             })
-          ).pipe(
-            // Share.share rejects when the user dismisses the sheet —
-            // swallow so the effect stays alive for future shares.
-            catchError(() => EMPTY)
-          );
+          ).pipe(catchError(() => EMPTY));
         })
       );
     },
     { dispatch: false }
   );
 
-  #buildCsv(data: IDataItem[], viewId: TTrackingViewId): string {
+  #buildCsv(data: DataItem[], viewId: TrackingViewId): string {
     const header = csvRow([
       this.#translate.instant(marker('csv.header.name')),
       this.#translate.instant(marker('csv.header.start-time')),

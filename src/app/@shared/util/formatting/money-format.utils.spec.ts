@@ -1,7 +1,6 @@
 import { formatEur } from './money-format.utils';
 
 describe('formatEur', () => {
-  // ICU whitespace before the symbol varies by runtime; assert on the parts.
   it('formats cents as a EUR currency string', () => {
     const out = formatEur(1234);
     expect(out).toContain('12,34');

@@ -2,8 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { TimeWithUnitPipe } from './time-with-unit.pipe';
 
-// The pipe only calls translate.instant(key); a stub that echoes the key lets
-// us assert both the chosen unit and the formatted number without loading i18n.
 const translateStub = {
   instant: (key: string) => key,
 } as unknown as TranslateService;

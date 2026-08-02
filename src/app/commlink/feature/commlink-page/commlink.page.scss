@@ -1,17 +1,38 @@
-// np-commlink — cyberdeck / Matrix terminal. The shared deck pieces (panel
-// frame, corner brackets, status LEDs, brand row, scanlines) come from the
-// global .sr-* utility classes (see _deck.scss / _shadowrun.scss). Only the
-// commlink-signature bits live here: hero + glitch, hover sweep, alignment
-// grid, blinking caret, and the offline/standby recolors. The matrix backdrop
-// is the global ion-content gradient (no page-local override).
+// ─── why ────────────────────────────────────────────────────────
+// The deck. Frame, corner brackets, LEDs, brand row and scanlines are the
+// global .sr-* utilities; only what is commlink's own is here — hero + glitch,
+// hover sweep, alignment grid, caret, and the offline/standby recolours. The
+// matrix backdrop is the global ion-content gradient, not a page override.
+//
+// The two --cl-* tokens are local because this page is their only consumer and
+// both axes are pure deck decoration — a black wash behind the status strip, a
+// black lift under a hovered tile's amber bloom — which the plain theme must
+// not inherit.
+//
+// Muted copy is --sr-text-dim rather than a hand-rolled accent-at-0.8: in
+// cyberpunk the token IS amber at 0.85, but the plain accent is a corporate
+// blue, and blue-at-0.8 on this panel measured 3.96:1.
+//
+// The hover/focus response is spelled once under a `:not(.cl-node--offline)`
+// negation instead of eight times, and split because the two halves answer to
+// different input: the lift and the brackets react to keyboard focus too, the
+// sweep and the icon recolour are pointer-only.
+//
+// A badge's fill is --sr-red-deep, not the neon --sr-red: white numerals need
+// contrast against a filled pill, which neon red only clears as a dot, a border
+// or a large icon. Its --currency variant drops the alert styling altogether —
+// a money amount is not a tally, so the tight round pill relaxes into a
+// readable strip in a neutral accent.
+//
+// Under cyberpunk the hero takes back its wide tracking (the base uses the
+// tighter label tracking so the plain hero reads as an ordinary heading) and
+// the terminal glyphs are drawn in CSS rather than translated: they are
+// punctuation in the deck's voice, and plain would read them as noise.
+// ────────────────────────────────────────────────────────────────
 
 :host {
   --app-content-max-width: 100%;
 
-  // Two local flip tokens. Both axes are pure deck decoration — a black wash
-  // behind the status strip, a black lift under the amber bloom on a hovered
-  // tile — so the plain theme must not inherit them. They stay local rather
-  // than joining the --sr-* group because this page is the only consumer.
   --cl-bar-bg: var(--sr-panel);
   --cl-lift: 0 4px 12px rgba(15, 23, 42, 0.12);
 }
@@ -30,8 +51,6 @@
   color: var(--sr-text-dim);
 }
 
-// Faint alignment-grid overlay — cyberpunk only. Scanlines come from the shared
-// .sr-scanlines ::after (z-index 2); the grid rides ::before below content.
 :host-context([data-theme='cyberpunk']) .cl::before {
   content: '';
   position: absolute;
@@ -45,7 +64,6 @@
   mask-image: radial-gradient(circle at 50% 30%, #000 40%, transparent 92%);
 }
 
-// Lift real content above the overlays.
 .cl-bar,
 .cl-hero,
 .cl-grid,
@@ -54,7 +72,6 @@
   z-index: 3;
 }
 
-// Blinking caret in the brand row.
 .cl-cursor {
   color: var(--sr-cyan);
   animation: cl-blink 1.1s steps(1) infinite;
@@ -72,9 +89,6 @@
   font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
-  // The muted-label token rather than a hand-rolled amber-at-0.8: in cyberpunk
-  // it IS amber (at 0.85), but in plain the accent is a corporate blue, and
-  // blue-at-0.8 on the panel is 3.96:1 against this 0.72rem type.
   color: var(--sr-text-dim);
 
   b {
@@ -130,8 +144,6 @@
   margin-top: 1.5rem;
 }
 
-// Layout + interactions; the frame + corner brackets come from the
-// `sr-panel sr-corners` classes on the element.
 .cl-node {
   position: relative;
   display: flex;
@@ -149,7 +161,6 @@
     box-shadow 0.18s ease;
 }
 
-// Sweep highlight that runs down the tile on hover.
 .cl-node__scan {
   position: absolute;
   inset: 0;
@@ -163,10 +174,6 @@
   );
 }
 
-// The whole hover/focus response for a reachable tile. The negation is what
-// keeps an offline tile inert, and it is spelled once here rather than eight
-// times. The split is deliberate: the lift and the corner brackets answer to
-// keyboard focus too, while the sweep and the icon recolour are pointer-only.
 .cl-node:not(.cl-node--offline) {
   &:hover,
   &:focus-visible {
@@ -209,13 +216,10 @@
   align-items: center;
   gap: 0.45rem;
 }
-// Live "unread signals" tally on the COMMS tile.
 .cl-node__badge {
   min-width: 1.15rem;
   padding: 0.05rem 0.35rem;
   border-radius: 999px;
-  // AA-safe deep red: white numerals need contrast on the fill, and neon
-  // --sr-red only clears it as a dot/border/large icon, not as a text bg.
   background: var(--sr-red-deep);
   color: #fff;
   font-size: var(--fs-xsmall);
@@ -224,8 +228,6 @@
   text-align: center;
   box-shadow: 0 0 8px rgba(var(--sr-red-rgb), 0.6);
 }
-// A money amount isn't an alert tally — relax the tight round pill into a
-// readable strip and drop the alert-red styling for a neutral accent one.
 .cl-node__badge--currency {
   min-width: auto;
   padding: 0.05rem 0.5rem;
@@ -264,7 +266,6 @@
   color: var(--sr-cyan);
 }
 
-// Offline / not-yet-jacked-in program. Recolors the shared corner brackets.
 .cl-node--offline {
   pointer-events: none;
   opacity: 0.6;
@@ -281,8 +282,6 @@
   opacity: 0.5;
 }
 
-// Standby — wired but the program isn't merged in yet. Amber, dashed,
-// still navigable (to its placeholder mount point).
 .cl-node--standby {
   border-style: dashed;
 }
@@ -326,10 +325,6 @@
   }
 }
 
-// Restore the deck's signature hero tracking under cyberpunk (the base uses the
-// tighter --sr-label-tracking so the plain hero reads as a normal heading).
-// The terminal glyphs are punctuation in the deck's voice, not content, so they
-// are drawn here rather than translated — plain reads them as noise.
 :host-context([data-theme='cyberpunk']) {
   .cl-hero__kicker {
     letter-spacing: 0.35em;
@@ -344,7 +339,6 @@
   .cl-node__foot::before {
     content: '> ';
   }
-  // Tightens the signal-bar glyphs; plain fills that slot with a word.
   .cl-bar__seg--sig b {
     letter-spacing: -1px;
   }

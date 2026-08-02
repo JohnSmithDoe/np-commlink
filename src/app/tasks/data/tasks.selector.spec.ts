@@ -61,9 +61,6 @@ describe('tasks.selector', () => {
       ).toEqual(['Mop', 'Sweep']);
     });
 
-    // Relocated from grocery-list.selector.spec (DDD review #1): the task prio
-    // sort belongs in a tasks spec, not a groceries one. Exercises the shared
-    // list engine's structural `prio` comparator through the tasks selector.
     it('sorts task items by priority through the shared engine', () => {
       const state = mockTasksList({
         sort: { sortBy: 'prio', sortDirection: 'asc' },

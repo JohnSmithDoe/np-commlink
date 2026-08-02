@@ -4,7 +4,7 @@ const BADGE_URL = 'data:image/png;base64,BADGE';
 const PHOTO_URL = 'data:image/jpeg;base64,PHOTO';
 const ROTATED_URL = 'data:image/png;base64,ROTATED';
 
-type TFakeCanvas = {
+type FakeCanvas = {
   width: number;
   height: number;
   getContext: () => unknown;
@@ -21,13 +21,11 @@ const pickedFile = (name = 'badge.png') =>
   new File(['badge-bytes'], name, { type: 'image/png' });
 
 describe('barcode.utils', () => {
-  let canvas: TFakeCanvas;
+  let canvas: FakeCanvas;
   let context: ReturnType<typeof fake2dContext>;
   let requestedSource: string | undefined;
   let encodedAs: [string?, number?];
 
-  // jsdom neither fetches images nor rasterises a canvas, so the load outcome
-  // is driven by hand and the geometry is read off a stand-in canvas.
   const givenBadgeImage = (
     width: number,
     height: number,
@@ -116,8 +114,6 @@ describe('barcode.utils', () => {
       expect(requestedSource).toBe(BADGE_URL);
     });
 
-    // The old `'image/*'` is not a MIME type, so the canvas fell back to PNG and
-    // a rotated photo badge grew several-fold in the persisted document.
     it('re-encodes in the format the badge arrived in', async () => {
       givenBadgeImage(100, 40);
 
@@ -134,9 +130,6 @@ describe('barcode.utils', () => {
       expect(encodedAs[0]).toBe('image/png');
     });
 
-    // A badge that cannot be decoded escapes as the rejected error event rather
-    // than as `undefined`; `BarcodeEffects.rotateBarcode$` is the only thing that
-    // turns it into "commit nothing".
     it('rejects when the badge image cannot be loaded', async () => {
       givenBadgeImage(100, 40, 'error');
 
@@ -161,8 +154,6 @@ describe('barcode.utils', () => {
       expect(requestedSource).toBe(badge);
     });
 
-    // `accept="image/*"` filters the file dialog; it does not promise the bytes
-    // decode. Without this probe a renamed text file was stored and persisted.
     it('rejects a file the browser cannot decode', async () => {
       givenBadgeImage(0, 0, 'error');
 

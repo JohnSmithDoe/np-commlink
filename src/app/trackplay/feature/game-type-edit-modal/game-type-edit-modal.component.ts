@@ -23,17 +23,13 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
 import { requireText } from '../../../@shared/util/forms/form-rules';
-import { IGameType } from '../../model/trackplay.types';
+import { GameType } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
-type TGameTypeForm = { name: string; winHigh: boolean };
+type GameTypeForm = { name: string; winHigh: boolean };
 
-const gameTypeRules: SchemaFn<TGameTypeForm> = (path) => requireText(path.name);
+const gameTypeRules: SchemaFn<GameTypeForm> = (path) => requireText(path.name);
 
-/**
- * Game-type create/edit dialog (presented via ModalController). Port of the legacy
- * `game-type-edit` popover.
- */
 @Component({
   selector: 'app-trackplay-game-type-edit-modal',
   templateUrl: './game-type-edit-modal.component.html',
@@ -56,44 +52,39 @@ const gameTypeRules: SchemaFn<TGameTypeForm> = (path) => requireText(path.name);
   ],
 })
 export class TrackplayGameTypeEditModalComponent extends BaseModalDialog<
-  IGameType,
-  TGameTypeForm
+  GameType,
+  GameTypeForm
 > {
   readonly #facade = inject(TrackplayFacade);
   readonly #gameTypes = this.#facade.gameTypes;
 
-  /** Set imperatively via `componentProps`; undefined = create mode. */
   set gameTypeId(id: string | undefined) {
     this.editId.set(id);
   }
 
-  protected readonly existing = computed<IGameType | undefined>(() => {
+  protected readonly existing = computed<GameType | undefined>(() => {
     const id = this.editId();
     return id ? this.#gameTypes()[id] : undefined;
   });
 
-  protected applyRules(path: SchemaPathTree<TGameTypeForm>): void {
+  protected applyRules(path: SchemaPathTree<GameTypeForm>): void {
     gameTypeRules(path);
   }
 
   constructor() {
     super();
-    // `close-circle` is the icon ion-input renders for its clear button.
     addIcons({ closeCircle });
   }
 
-  protected blank(): TGameTypeForm {
+  protected blank(): GameTypeForm {
     return { name: '', winHigh: true };
   }
 
-  protected toForm(gameType: IGameType): TGameTypeForm {
+  protected toForm(gameType: GameType): GameTypeForm {
     return { name: gameType.name, winHigh: gameType.winHigh };
   }
 
-  protected persist(
-    draft: TGameTypeForm,
-    existing: IGameType | undefined
-  ): void {
+  protected persist(draft: GameTypeForm, existing: GameType | undefined): void {
     const name = draft.name.trim();
     if (existing) {
       this.#facade.updateGameType({

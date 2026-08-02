@@ -1,11 +1,17 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The three game types these tests find are the reducer's, not the
+ * spec's: a fresh context has no players and no games, but Standard,
+ * Rommé and Skat exist from `loaded` onwards.
+ *
+ * Standard is undeletable by domain rule, so its row renders no leading
+ * options at all. Rommé is asserted beside it as the positive control —
+ * without one, a locator that had simply stopped matching would read as a
+ * pass.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import { gotoTrackplay, headerTitle, mainContent, pageRoot } from './helpers';
 
-/**
- * Smoke tests that each trackplay route paints its page shell (German header
- * inside #main-content), that the game-types list seeds Standard / Rommé / Skat,
- * and that the built-in Standard type exposes no delete slide-option.
- */
 test.describe('trackplay first paint', () => {
   test('paints the games (Spiele) home page', async ({ page }) => {
     await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
@@ -56,11 +62,9 @@ test.describe('trackplay first paint', () => {
     const standardRow = rows.filter({ hasText: 'Standard' });
     const rommeeRow = rows.filter({ hasText: 'Rommé' });
 
-    // Standard is undeletable — its row renders no leading (delete) options…
     await expect(
       standardRow.getByTestId('game-type-delete-options')
     ).toHaveCount(0);
-    // …while a deletable type (Rommé) does.
     await expect(rommeeRow.getByTestId('game-type-delete-options')).toHaveCount(
       1
     );

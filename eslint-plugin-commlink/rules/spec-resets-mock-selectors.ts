@@ -1,22 +1,25 @@
-import type { Rule } from 'eslint';
+/* ─── why ─────────────────────────────────────────────────────────
+ * A spec that overrides a MockStore selector puts it back. Facades are
+ * `providedIn: 'root'` and spec files share a module registry, so an
+ * override outlives the file that set it. The failure mode is the
+ * expensive kind: the spec that set it passes, and some OTHER file — often
+ * one that never mentions the selector — fails, or worse passes for the
+ * wrong reason. Running the offending spec alone reproduces nothing.
+ *
+ * Same-file is the whole contract, which is what makes this decidable per
+ * file: `resetSelectors` is not called from `@shared/testing/` or any
+ * setup file, so there is no shared teardown a spec could be relying on
+ * instead. A reset may legitimately be written after the override, so the
+ * verdict is only knowable at `Program:exit`.
+ *
+ * The check is deliberately shallow — it asks whether the file mentions
+ * `resetSelectors` at all, not whether it is wired into a correct
+ * `afterEach`. Anything stricter starts guessing at test structure, and
+ * the residual case (a `resetSelectors` sitting somewhere that never runs)
+ * is visible in review while the absent one is not.
+ * ───────────────────────────────────────────────────────────────── */
 
-// A spec that overrides a MockStore selector puts it back.
-//
-// Facades are `providedIn: 'root'` and spec files share a module registry, so an
-// override outlives the file that set it. The failure mode is the expensive kind:
-// the spec that set it passes, and some *other* file — often one that never
-// mentions the selector — fails, or worse passes for the wrong reason. Running
-// the offending spec alone reproduces nothing.
-//
-// Same-file is the whole contract, which is what makes this decidable per file:
-// `resetSelectors` is not called from `@shared/testing/` or any setup file, so
-// there is no shared teardown a spec could be relying on instead.
-//
-// The check is deliberately shallow — it asks whether the file mentions
-// `resetSelectors` at all, not whether it is wired into a correct `afterEach`.
-// Anything stricter starts guessing at test structure, and the residual case (a
-// `resetSelectors` sitting somewhere that never runs) is visible in review while
-// the absent one is not.
+import type { Rule } from 'eslint';
 
 const OVERRIDE = 'overrideSelector';
 const RESET = 'resetSelectors';
@@ -44,8 +47,6 @@ export const rule: Rule.RuleModule = {
     },
   },
   create(context) {
-    // Collected rather than reported inline: the reset may legitimately appear
-    // after the override, so the verdict is only knowable at the end of the file.
     const overrides: Rule.Node[] = [];
     let resets = false;
 

@@ -1,35 +1,20 @@
 import dayjs from 'dayjs';
 
-/**
- * Per-bank CSV import (see docs/cash.md §7.3 (Import)). An account's `bank` selects one
- * of these parsers; each owns its bank's column layout and quirks. Parsers are
- * pure `text -> rows`, so a spec is a string in and rows out — each
- * `*.parser.spec.ts` carries its bank's sample rows inline. Turning rows into
- * `ICashTransaction`s (ids, dedup, categorization) is `plan-import.ts`, kept
- * separate so the parsers stay format-only.
- */
-
-export interface IParsedRow {
+export interface ParsedRow {
   dateISO: string;
   amountCents: number;
   description: string;
 }
 
-export interface IParseResult {
-  rows: IParsedRow[];
-  /**
-   * Data rows below the header that could not be read — an unparseable date or
-   * amount. Counted rather than silently dropped: a partial import that reports
-   * success leaves the balance wrong with nothing to notice it by.
-   */
+export interface ParseResult {
+  rows: ParsedRow[];
   rejected: number;
 }
 
-export interface IBankParser {
-  parse(text: string): IParseResult;
+export interface BankParser {
+  parse(text: string): ParseResult;
 }
 
-/** Non-empty, trimmed lines — tolerant of CRLF and a trailing newline. */
 export function splitLines(text: string): string[] {
   return text
     .split(/\r?\n/)
@@ -37,14 +22,6 @@ export function splitLines(text: string): string[] {
     .filter((line) => line.length > 0);
 }
 
-/**
- * A `;`-delimited row split into trimmed fields, RFC4180-style: a quoted field
- * may contain the delimiter, and `""` inside one is a literal quote.
- *
- * Both banks export quoted CSV when a field needs it, and a naive `split(';')`
- * turns one such row into a column shift — which surfaces as a *dropped* row
- * (unparseable amount), not as an error.
- */
 export function splitRow(line: string): string[] {
   const fields: string[] = [];
   let field = '';
@@ -67,15 +44,10 @@ export function splitRow(line: string): string[] {
   return fields;
 }
 
-/**
- * Index of the header row — the first whose first field equals `firstColumn` —
- * so a bank preamble above the table is skipped. -1 if not found.
- */
 export function findHeaderIndex(lines: string[], firstColumn: string): number {
   return lines.findIndex((line) => splitRow(line)[0] === firstColumn);
 }
 
-/** `DD.MM.YYYY` -> full local-midnight ISO, or null if malformed. */
 export function germanDateToISO(value: string): string | null {
   const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value.trim());
   if (!match) return null;
@@ -84,7 +56,6 @@ export function germanDateToISO(value: string): string | null {
   return date.isValid() ? date.format() : null;
 }
 
-/** `[counterparty, purpose]` joined for display / rule matching. */
 export function joinDescription(counterparty: string, purpose: string): string {
   return [counterparty, purpose].filter((part) => part.length > 0).join(' — ');
 }

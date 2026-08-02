@@ -1,9 +1,13 @@
+// ─── why ────────────────────────────────────────────────────────
+// Ionic's ion-card-content is 0.875rem; this grid is body copy, not a card
+// note, so it names a rung instead of inheriting it.
+// ────────────────────────────────────────────────────────────────
+
 @use '../../../../theme/dashboard';
 :host {
   @include dashboard.dashboard-item;
 }
 @include dashboard.dashboard-item-card;
-// Ionic's ion-card-content is 0.875rem; this grid is body copy, not card note.
 .dash-stats-grid {
   font-size: var(--fs-body);
   display: grid;

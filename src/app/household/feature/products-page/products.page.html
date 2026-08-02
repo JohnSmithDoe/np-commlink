@@ -1,0 +1,27 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="{{ 'page-title.household-products' | translate }}"
+  listHeader="{{ 'household.list-header.products' | translate }}"
+  [itemTemplate]="productItem"
+>
+  <app-item-list-quick-add quickAdd />
+  <app-household-search-panel searchExtras />
+</app-list-page>
+
+<ng-template
+  #productItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [categories]="categories"
+    (selectItem)="showEditDialog(item)"
+    (deleteItem)="removeItem(item)"
+  ></app-list-item>
+</ng-template>
+
+<app-edit-product-dialog></app-edit-product-dialog>

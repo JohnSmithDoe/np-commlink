@@ -1,0 +1,46 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="{{ 'page-title.household-shopping' | translate }}"
+  listHeader="{{ 'household.list-header.shopping' | translate }}"
+  [itemTemplate]="shoppingItem"
+>
+  <app-item-list-quick-add quickAdd />
+  <ion-buttons slot="end" listActions>
+    @if (state().items.length) {
+      <ion-button
+        (click)="openActionSheet()"
+        [attr.aria-label]="'household.a11y.actions' | translate"
+      >
+        <ion-icon name="bag-add" slot="icon-only" aria-hidden="true"></ion-icon>
+      </ion-button>
+    }
+  </ion-buttons>
+  <app-household-scan-button toolbarActions />
+  <app-household-search-panel searchExtras />
+</app-list-page>
+
+<ng-template
+  #shoppingItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
+  <app-list-item
+    [item]="item"
+    [title]="item.quantity + ' x ' + item.name"
+    [ionList]="ionList"
+    [categories]="categories"
+    [crossedOut]="item.state === 'bought'"
+    [showQuantityActions]="true"
+    [startSwipeAction]="startSwipeAction"
+    (selectItem)="showEditDialog(item)"
+    (deleteItem)="removeItem(item)"
+    (increment)="changeQuantity(item, +1)"
+    (decrement)="changeQuantity(item, -1)"
+    (startSwipe)="buyItem(item)"
+  ></app-list-item>
+</ng-template>
+
+<app-edit-shopping-item-dialog></app-edit-shopping-item-dialog>
+<app-edit-product-dialog></app-edit-product-dialog>
+<app-shopping-action-sheet></app-shopping-action-sheet>

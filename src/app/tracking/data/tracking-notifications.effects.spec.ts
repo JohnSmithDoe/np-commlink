@@ -13,17 +13,15 @@ import {
   mockTrackingItem,
   mockTrackingState,
 } from '../testing/tracking.test-data';
-import { ITrackingState } from '../model/tracking.types';
+import { TrackingState } from '../model/tracking.types';
 import { TrackingActions } from './tracking.actions';
 import { TrackingNotificationsEffects } from './tracking-notifications.effects';
 import { trackingStateNotificationId } from '../util/tracking-notifications.utils';
-import { TProjectedNotification } from '../../@shared/model/notifications.types';
+import { ProjectedNotification } from '../../@shared/model/notifications.types';
 
-// Every reconcile hands the inbox tracking's complete row set, so the assertions
-// are all about what that set contains.
 const projected = async (
   effect: Observable<Action>
-): Promise<TProjectedNotification[]> => {
+): Promise<ProjectedNotification[]> => {
   const emitted = (await firstValueFrom(effect)) as ReturnType<
     typeof NotificationsActions.project
   >;
@@ -35,7 +33,7 @@ const projected = async (
 describe('TrackingNotificationsEffects', () => {
   let effects: TrackingNotificationsEffects;
 
-  const setup = (actions$: Observable<Action>, tracking?: ITrackingState) => {
+  const setup = (actions$: Observable<Action>, tracking?: TrackingState) => {
     TestBed.configureTestingModule({
       providers: [
         TrackingNotificationsEffects,
@@ -77,15 +75,10 @@ describe('TrackingNotificationsEffects', () => {
       expect(rows[0].id).toBe(trackingStateNotificationId('t1'));
       expect(rows[0].icon).toBe('play-circle');
       expect(rows[0].action?.type).toBe('tracking.pause');
-      // The producer hands over the CTA's wording too, so the inbox never has to
-      // recognise the command to label the button.
       expect(rows[0].action?.labelKey).toBe('notifications.action.pause');
       expect(rows[0].variant).toBe('running');
     });
 
-    // Tracking claims a set, not a diff: an item it no longer reports on simply
-    // isn't in the projection, and the inbox retires the row. This is what a
-    // removed item and a reset one (its startTime wiped) have in common.
     it('projects nothing for items with no tracking to report', async () => {
       setup(
         of(TrackingActions.resetAllTracking()),
@@ -152,8 +145,6 @@ describe('TrackingNotificationsEffects', () => {
       expect(emitted.item.state).toBe('running');
     });
 
-    // Nothing to toggle means no reconcile, so the CTA re-projects instead — which
-    // is what retires the row the user just tapped.
     it('re-projects (no toggle) when the item is gone', async () => {
       setup(
         of(TrackingActions.applyNotificationCommand('tracking.start', 'ghost')),

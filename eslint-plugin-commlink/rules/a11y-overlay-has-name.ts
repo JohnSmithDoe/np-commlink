@@ -1,3 +1,20 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R4, declarative half — docs/ionic-a11y-practices.md
+ *
+ * Ionic assigns the overlay roles; the NAME is ours whenever there is no
+ * header or message for Ionic to derive one from. `ion-modal` never has
+ * one: it puts `role="dialog"` + `aria-modal="true"` on a shadow wrapper
+ * and derives no name at all.
+ *
+ * `ion-modal` takes `aria-label`, not `aria-labelledby`, and the second
+ * earns its own message because Ionic's docs suggest it while the
+ * installed version cannot honour it: `modal.js` declares
+ * `attributesToInherit = ['aria-label', 'role']`, so `aria-labelledby` is
+ * neither forwarded to the wrapper that holds the role, nor able to
+ * resolve an IDREF across the shadow boundary. It reads as a label and is
+ * inert.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   boundAttribute,
@@ -7,22 +24,8 @@ import {
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 
-// R4 — docs/ionic-a11y-practices.md
-//
-// Ionic assigns the overlay roles; the *name* is ours whenever there is no
-// header or message for Ionic to derive one from. `ion-modal` never has one:
-// it puts `role="dialog"` + `aria-modal="true"` on a shadow wrapper and derives
-// no name at all.
-//
-// **`ion-modal` takes `aria-label`, not `aria-labelledby`** — the second is worth
-// its own message because Ionic's docs suggest it and the installed version
-// cannot honour it: `modal.js` declares `attributesToInherit = ['aria-label',
-// 'role']`, so `aria-labelledby` is neither forwarded to the wrapper that holds
-// the role, nor able to resolve an IDREF across the shadow boundary. It reads as
-// a label and is inert.
 const REQUIRES_ARIA_LABEL = 'ion-modal';
 
-// Overlays that name themselves from content, when that content is set.
 const DERIVES_NAME_FROM: Record<string, string> = {
   'ion-action-sheet': 'header',
   'ion-loading': 'message',

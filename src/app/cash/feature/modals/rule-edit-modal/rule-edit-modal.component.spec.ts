@@ -15,8 +15,6 @@ describe('CashRuleEditModalComponent', () => {
     ));
   };
 
-  // What the `[formField]`-bound value input does when someone types into row
-  // `index` — the field tree writes straight back into the draft.
   const typeValue = (index: number, value: string) =>
     component.patch({
       conditions: component
@@ -50,7 +48,6 @@ describe('CashRuleEditModalComponent', () => {
     expect(component.canSave()).toBe(true);
   });
 
-  // Switching field must reset the op, or an amount field could keep a string op.
   it('resets the op to the first valid one when the field changes', () => {
     setup();
 
@@ -62,8 +59,6 @@ describe('CashRuleEditModalComponent', () => {
     });
   });
 
-  // `matchesAmountCondition` reads an unparseable threshold as "never matches",
-  // so such a rule would look armed in the list and silently never fire.
   it('refuses an amount threshold that does not parse, and flags that row', () => {
     setup();
 
@@ -83,7 +78,7 @@ describe('CashRuleEditModalComponent', () => {
   it('trims condition values and mints an ordered rule on create', () => {
     setup();
 
-    component.patch({ categoryId: 'cat-1', name: '  Groceries  ' });
+    component.patch({ categoryId: 'cat-1', name: '  Household  ' });
     typeValue(0, '  REWE  ');
     component.confirm();
 
@@ -91,7 +86,7 @@ describe('CashRuleEditModalComponent', () => {
       expect.objectContaining({
         type: CashActions.addRule.type,
         rule: expect.objectContaining({
-          name: 'Groceries',
+          name: 'Household',
           order: 0,
           categoryId: 'cat-1',
           conditions: [expect.objectContaining({ value: 'REWE' })],
@@ -101,8 +96,6 @@ describe('CashRuleEditModalComponent', () => {
     expect(dismiss).toHaveBeenCalled();
   });
 
-  // The amount matcher ignores it, so persisting it would store a flag that can
-  // never apply.
   it('drops case-sensitivity from a numeric condition', () => {
     setup();
 
@@ -120,8 +113,6 @@ describe('CashRuleEditModalComponent', () => {
     );
   });
 
-  // The componentProp writes into a signal, so the draft seeds reactively — and
-  // the conditions are COPIED, so a cancel can't mutate the stored rule.
   it('seeds a copy of the rule conditions and updates on confirm', () => {
     const stored = mockCashRule({
       id: 'r1',
@@ -157,9 +148,6 @@ describe('CashRuleEditModalComponent', () => {
     );
   });
 
-  // The field tree projects the draft signal instead of copying it, so a reseed
-  // has to reach validity too — reading canSave() first materialises the tree
-  // over the blank create-mode draft, which is what would freeze a copy.
   it('re-derives validity after the draft reseeds', () => {
     setup(
       mockCashState({

@@ -1,31 +1,22 @@
 import dayjs from 'dayjs';
-import { ICashTransaction } from '../model/transaction.types';
+import { CashTransaction } from '../model/transaction.types';
 
-/**
- * Reconciliation candidate matching (see docs/cash.md §7.3 → Reconciliation).
- * For a `pending` manual transaction, the imported transactions it could be the
- * same real spend as: same account, EQUAL signed cents, `dateISO` within ±3
- * days, and not already the survivor of another match. We only ever *propose* —
- * the user confirms, because an equal-amount coincidence (two identical fares)
- * would otherwise corrupt the ledger.
- */
 const WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
 export function findReconciliationCandidates(
-  pending: ICashTransaction,
-  all: readonly ICashTransaction[]
-): ICashTransaction[] {
+  pending: CashTransaction,
+  all: readonly CashTransaction[]
+): CashTransaction[] {
   if (pending.status !== 'pending' || pending.matchedTxnId) return [];
 
   const claimedSurvivorIds = new Set(
     all.map((txn) => txn.matchedTxnId).filter((id): id is string => !!id)
   );
   const pendingDate = dayjs(pending.dateISO);
-  // dayjs.diff() with no unit yields milliseconds — hence the name and WINDOW_MS.
-  const millisApart = (txn: ICashTransaction) =>
+  const millisApart = (txn: CashTransaction) =>
     Math.abs(dayjs(txn.dateISO).diff(pendingDate));
 
-  const couldBeSameSpend = (txn: ICashTransaction): boolean =>
+  const couldBeSameSpend = (txn: CashTransaction): boolean =>
     txn.source === 'imported' &&
     txn.id !== pending.id &&
     txn.accountId === pending.accountId &&

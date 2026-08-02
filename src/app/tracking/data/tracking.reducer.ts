@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { TTimestamp } from '../../@shared/model/app.types';
-import { ITrackingItem, ITrackingState } from '../model/tracking.types';
+import { Timestamp } from '../../@shared/model/app.types';
+import { TrackingItem, TrackingState } from '../model/tracking.types';
 import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';
 import {
@@ -10,37 +10,31 @@ import {
   updateListSort,
 } from '../../@shared/util/item-lists/list.utils';
 
-export const initialState: ITrackingState = {
+export const initialState: TrackingState = {
   items: [],
   sessions: [],
   sessionsViewId: 'all',
 };
 
-// Only one item tracks at a time, so starting one stops every other. A stopped
-// item keeps the moment it stopped as `breakTime`, which is what lets a later
-// resume fold the pause into `breakInSeconds`.
 const stopOtherItem = (
-  listItem: ITrackingItem,
-  now: TTimestamp
-): ITrackingItem => ({
+  listItem: TrackingItem,
+  now: Timestamp
+): TrackingItem => ({
   ...listItem,
   state: 'stopped',
   breakTime: listItem.state === 'running' ? now : listItem.breakTime,
 });
 
 const accruedBreakSeconds = (
-  listItem: ITrackingItem,
-  now: TTimestamp
+  listItem: TrackingItem,
+  now: Timestamp
 ): number => {
   const before = listItem.breakInSeconds ?? 0;
   if (!listItem.breakTime) return before;
   return before + dayjs(now).diff(dayjs(listItem.breakTime), 'seconds');
 };
 
-const resumeItem = (
-  listItem: ITrackingItem,
-  now: TTimestamp
-): ITrackingItem => ({
+const resumeItem = (listItem: TrackingItem, now: Timestamp): TrackingItem => ({
   ...listItem,
   state: 'running',
   startTime: listItem.startTime ?? now,
@@ -50,10 +44,10 @@ const resumeItem = (
 });
 
 const startTracking = (
-  state: ITrackingState,
-  item: ITrackingItem,
-  now: TTimestamp
-): ITrackingState => ({
+  state: TrackingState,
+  item: TrackingItem,
+  now: Timestamp
+): TrackingState => ({
   ...state,
   items: state.items.map((listItem) =>
     listItem.id === item.id
@@ -62,12 +56,12 @@ const startTracking = (
   ),
 });
 const resetTracking = (
-  state: ITrackingState,
-  item?: ITrackingItem
-): ITrackingState => {
+  state: TrackingState,
+  item?: TrackingItem
+): TrackingState => {
   return {
     ...state,
-    items: state.items.map((listItem): ITrackingItem => {
+    items: state.items.map((listItem): TrackingItem => {
       if (item && listItem.id !== item.id) {
         return listItem;
       }
@@ -84,11 +78,11 @@ const resetTracking = (
 };
 
 const pauseTracking = (
-  state: ITrackingState,
-  item: ITrackingItem,
-  now: TTimestamp
-): ITrackingState => {
-  return updateListItem<ITrackingState, ITrackingItem>(state, {
+  state: TrackingState,
+  item: TrackingItem,
+  now: Timestamp
+): TrackingState => {
+  return updateListItem<TrackingState, TrackingItem>(state, {
     ...item,
     state: 'paused',
     breakTime: now,
@@ -96,10 +90,10 @@ const pauseTracking = (
 };
 
 const updateTracking = (
-  state: ITrackingState,
-  item: ITrackingItem,
-  now: TTimestamp
-): ITrackingState => {
+  state: TrackingState,
+  item: TrackingItem,
+  now: Timestamp
+): TrackingState => {
   const original = state.items.find((candidate) => candidate.id === item.id);
   if (!original) return state;
   const start = dayjs(original.startTime);
@@ -107,33 +101,30 @@ const updateTracking = (
   const runningSince = dayjs(now).diff(start, 'seconds');
   const time = runningSince - (original.breakInSeconds ?? 0);
 
-  return updateListItem<ITrackingState, ITrackingItem>(state, {
+  return updateListItem<TrackingState, TrackingItem>(state, {
     ...original,
     trackedTimeInSeconds: time,
   });
 };
 
-const byStartTime = (a: ITrackingItem, b: ITrackingItem): number =>
+const byStartTime = (a: TrackingItem, b: TrackingItem): number =>
   dayjs(a.startTime).diff(b.startTime);
 
 const mergeSessions = (
-  state: ITrackingState,
-  sessions: ITrackingItem[]
-): ITrackingState => ({
+  state: TrackingState,
+  sessions: TrackingItem[]
+): TrackingState => ({
   ...state,
   sessions: [...state.sessions, ...sessions].toSorted(byStartTime),
 });
 
-// An archived session is "this activity, from that start moment", so its id is
-// derived from exactly that instead of minted: the arm stays a pure function of
-// (state, action), like every other one that takes its `now` from the payload.
-const archivedSessionId = (item: ITrackingItem): string =>
+const archivedSessionId = (item: TrackingItem): string =>
   `${item.id}@${item.startTime}`;
 
-const saveAndReset = (state: ITrackingState): ITrackingState => {
+const saveAndReset = (state: TrackingState): TrackingState => {
   const archived = state.items
     .filter((item) => !!item.startTime)
-    .map((item): ITrackingItem => ({
+    .map((item): TrackingItem => ({
       ...item,
       state: 'stopped',
       id: archivedSessionId(item),
@@ -143,51 +134,47 @@ const saveAndReset = (state: ITrackingState): ITrackingState => {
 
 export const trackingReducer = createReducer(
   initialState,
-  on(TrackingActions.addItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.addItem, (state, { item }): TrackingState =>
     addListItem(state, item)
   ),
-  on(TrackingActions.removeItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.removeItem, (state, { item }): TrackingState =>
     removeListItem(state, item)
   ),
-  on(TrackingActions.updateItem, (state, { item }): ITrackingState =>
+  on(TrackingActions.updateItem, (state, { item }): TrackingState =>
     updateListItem(state, item)
   ),
-  on(TrackingActions.updateSearch, (state, { searchQuery }): ITrackingState =>
+  on(TrackingActions.updateSearch, (state, { searchQuery }): TrackingState =>
     searchQuery === state.searchQuery ? state : { ...state, searchQuery }
   ),
   on(
     TrackingActions.toggleTrackingItem,
-    (state, { item, now }): ITrackingState => {
+    (state, { item, now }): TrackingState => {
       return item.state === 'running'
         ? pauseTracking(state, item, now)
         : startTracking(state, item, now);
     }
   ),
-  on(TrackingActions.resetTracking, (state, { item }): ITrackingState => {
+  on(TrackingActions.resetTracking, (state, { item }): TrackingState => {
     return resetTracking(state, item);
   }),
-  on(TrackingActions.resetAllTracking, (state): ITrackingState => {
+  on(TrackingActions.resetAllTracking, (state): TrackingState => {
     return resetTracking(state);
   }),
-  on(TrackingActions.saveAndResetTracking, (state): ITrackingState => {
+  on(TrackingActions.saveAndResetTracking, (state): TrackingState => {
     return saveAndReset(state);
   }),
-  on(
-    TrackingActions.seedDemoSessions,
-    (state, { sessions }): ITrackingState => {
-      return mergeSessions(state, sessions);
-    }
-  ),
-  on(TrackingActions.updateTracking, (state, { item, now }): ITrackingState => {
+  on(TrackingActions.seedDemoSessions, (state, { sessions }): TrackingState => {
+    return mergeSessions(state, sessions);
+  }),
+  on(TrackingActions.updateTracking, (state, { item, now }): TrackingState => {
     return updateTracking(state, item, now);
   }),
 
-  on(TrackingActions.changeDataView, (state, { viewId }): ITrackingState => {
+  on(TrackingActions.changeDataView, (state, { viewId }): TrackingState => {
     return { ...state, sessionsViewId: viewId };
   }),
 
-  // A stats row is a bucket of merged sessions, so it deletes the ones it lists.
-  on(TrackingActions.removeDataItem, (state, { item }): ITrackingState => {
+  on(TrackingActions.removeDataItem, (state, { item }): TrackingState => {
     const deleted = new Set(item.sessionIds);
     return {
       ...state,
@@ -197,13 +184,13 @@ export const trackingReducer = createReducer(
 
   on(
     TrackingActions.updateSort,
-    (state, { sortBy, sortDirection }): ITrackingState => ({
+    (state, { sortBy, sortDirection }): TrackingState => ({
       ...state,
       sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection),
     })
   ),
 
-  on(TrackingActions.loaded, (state, { tracking }): ITrackingState => {
+  on(TrackingActions.loaded, (state, { tracking }): TrackingState => {
     return {
       ...(tracking ?? state),
       items: (tracking?.items ?? state.items).map((trackingItem) => ({

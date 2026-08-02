@@ -1,0 +1,104 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <app-number-input
+    [value]="draft().servings"
+    (updateValue)="setServings($event)"
+  >
+    <div slot="label">{{ 'household.recipe.servings' | translate }}</div>
+  </app-number-input>
+
+  <app-number-input
+    [value]="draft().prepMinutes"
+    (updateValue)="setPrepMinutes($event)"
+  >
+    <div slot="label">{{ 'household.recipe.prep-minutes' | translate }}</div>
+  </app-number-input>
+
+  <ion-item lines="none">
+    <ion-label class="recipe-section">{{
+      'household.recipe.ingredients' | translate
+    }}</ion-label>
+  </ion-item>
+
+  @for (row of ingredientRows(); track row.line.id) {
+    <ion-item class="recipe-ingredient">
+      <ion-label class="ion-text-wrap">{{ row.name }}</ion-label>
+
+      <app-number-input
+        slot="end"
+        [value]="row.line.amount"
+        (updateValue)="setIngredientAmount(row.line.id, $event)"
+      >
+        <div slot="label">{{ 'household.recipe.amount' | translate }}</div>
+      </app-number-input>
+
+      <ion-select
+        slot="end"
+        labelPlacement="stacked"
+        interface="popover"
+        [label]="'household.recipe.unit' | translate"
+        [value]="row.line.unit"
+        (ionChange)="setIngredientUnit(row.line.id, $event)"
+      >
+        @for (unit of units; track unit) {
+          <ion-select-option [value]="unit">{{
+            unitLabelKeys[unit] | translate
+          }}</ion-select-option>
+        }
+      </ion-select>
+
+      <ion-button
+        slot="end"
+        fill="clear"
+        color="danger"
+        (click)="removeIngredient(row.line.id)"
+        [attr.aria-label]="'household.a11y.delete-ingredient' | translate"
+      >
+        <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
+      </ion-button>
+    </ion-item>
+  } @empty {
+    <ion-item lines="none">
+      <ion-label class="recipe-empty">{{
+        'household.recipe.no-ingredients' | translate
+      }}</ion-label>
+    </ion-item>
+  }
+
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      interface="popover"
+      [label]="'household.recipe.add-ingredient' | translate"
+      [value]="pickerValue()"
+      (ionChange)="addIngredient($event)"
+      data-testid="recipe-product-select"
+    >
+      @for (product of ingredientCatalog(); track product.id) {
+        <ion-select-option [value]="product.id">{{
+          product.name
+        }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-textarea
+      labelPlacement="stacked"
+      [autoGrow]="true"
+      [rows]="4"
+      [label]="'household.recipe.steps' | translate"
+      [value]="draft().steps"
+      (ionInput)="setSteps($event)"
+    ></ion-textarea>
+  </ion-item>
+</app-item-edit-modal>

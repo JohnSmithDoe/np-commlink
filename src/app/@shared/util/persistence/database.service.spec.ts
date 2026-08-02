@@ -75,7 +75,6 @@ describe('DatabaseService', () => {
         { source: 'notifications', metrics: { unread: 2 } },
         { source: 'office-time', metrics: { officedays: 12 } },
       ]);
-      // The point of selecting keys first: the big slice documents are never read.
       expect(mockStorage.get).not.toHaveBeenCalledWith('npc-tracking');
     });
 

@@ -4,7 +4,7 @@ import {
   mockCashTransaction,
 } from '../../testing/cash.test-data';
 import { CashActions } from '../../data';
-import { ICashTransaction } from '../../model/transaction.types';
+import { CashTransaction } from '../../model/transaction.types';
 import { CashReconcileModalComponent } from './reconcile-modal.component';
 
 const pendingManualEntry = mockCashTransaction({
@@ -16,7 +16,7 @@ const pendingManualEntry = mockCashTransaction({
   status: 'pending',
 });
 
-const importedTxn = (overrides: Partial<ICashTransaction> = {}) =>
+const importedTxn = (overrides: Partial<CashTransaction> = {}) =>
   mockCashTransaction({
     id: 'i1',
     accountId: 'a1',
@@ -31,14 +31,11 @@ describe('CashReconcileModalComponent', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
   let dismiss: ReturnType<typeof vi.spyOn>;
 
-  const setup = (transactions: ICashTransaction[]) => {
+  const setup = (transactions: CashTransaction[]) => {
     ({ component, dispatch, dismiss } = setupModalSpec(
       CashReconcileModalComponent,
       { cash: mockCashState({ transactions }) }
     ));
-    // `transaction` is a plain componentProp, not a signal, so `candidates()`
-    // captures whatever is set at its first read — Ionic writes componentProps
-    // before the first render, and this assignment stands in for that.
     component.transaction = pendingManualEntry;
   };
 
@@ -57,8 +54,6 @@ describe('CashReconcileModalComponent', () => {
 
     component.reconcileWith(component.candidates()[0]);
 
-    // The matchedTxnId this writes is what makes selectAccountBalances skip the
-    // manual leg — without the link the one real spend is counted twice.
     expect(dispatch).toHaveBeenCalledWith(
       CashActions.reconcileTransaction('m1', 'i1')
     );

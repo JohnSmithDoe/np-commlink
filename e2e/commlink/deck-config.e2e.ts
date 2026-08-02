@@ -1,22 +1,33 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * One stored choice has to reach two surfaces — the deck grid and the
+ * side menu — and survive a cold launch, so every assertion here is a
+ * cold read: `gotoFresh` reloads after each hash navigation, which is
+ * also what collapses the outlet back to a single mounted page.
+ *
+ * Both surfaces render the theme-resolved codename, never the page title,
+ * so `MARKET_PAGE_TITLE` is asserted ABSENT from the menu. That is the
+ * assertion that a row and its tile cannot disagree.
+ *
+ * `toggleAndPersist` keys its persistence wait on the hidden entry's id,
+ * never on the field name: `hiddenEntries` is in the doc from the first
+ * write onwards as `[]`, so waiting for the key would resolve before the
+ * write under test had landed.
+ *
+ * Hiding a program is a navigation choice, not an uninstall, so the
+ * status strip keeps reporting the grid's full complement. The `/13` is
+ * the whole assertion — the copy around it is i18n and theme-cased, and
+ * matching that would pin the translation instead.
+ *
+ * A module's flag cascades at read time and is never written into its
+ * entries, which is what the last test spends: switching HOUSEHOLD off
+ * and on again restores what the user configured underneath, so MARKET —
+ * hidden on its own — must stay hidden.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Page, test } from '@playwright/test';
 import { waitForPersisted } from '../helpers';
 
-/**
- * Acceptance test for the configurable deck: one stored choice has to reach two
- * surfaces — the deck grid and the side menu — and survive a cold launch.
- *
- * Every navigation here goes through `gotoFresh`, i.e. a real reload. Hash
- * routing makes `page.goto` a same-document navigation, and the outlet keeps
- * each page it has already shown mounted — so re-entering a route a second time
- * leaves TWO `app-page-deck-config` instances in the DOM and every row locator
- * becomes a strict-mode violation. Reloading also makes each assertion a cold
- * read of the persisted config rather than of the live store, which is the
- * stronger claim anyway.
- */
-
 const MARKET = 'MARKET';
-// The page title, which the menu deliberately no longer shows: both surfaces
-// render the theme-resolved codename, so a row and its tile cannot disagree.
 const MARKET_PAGE_TITLE = 'Einkaufsliste';
 const HOUSEHOLD_MODULE = 'Haushalt';
 
@@ -50,11 +61,6 @@ async function openDeck(page: Page): Promise<void> {
   await expect(deckTile(page, 'CHRONO')).toBeVisible({ timeout: 30_000 });
 }
 
-/**
- * The marker is the hidden *id*, not the field name: `hiddenEntries` is in the
- * doc from the first write onwards (as `[]`), so keying on it would resolve
- * before the write under test had landed.
- */
 async function toggleAndPersist(
   page: Page,
   label: string,
@@ -81,8 +87,6 @@ test.describe('deck configuration', () => {
     await expect(menuRow(page, MARKET)).toHaveCount(0);
   });
 
-  // Hiding is a navigation choice, not an uninstall, so the readout keeps
-  // reporting the grid's full complement rather than this user's view of it.
   test('keeps the full program denominator in the status strip', async ({
     page,
   }) => {
@@ -90,19 +94,15 @@ test.describe('deck configuration', () => {
     await toggleAndPersist(page, MARKET, 'shopping');
 
     await openDeck(page);
-    // The denominator is what this asserts — the surrounding copy is i18n and
-    // theme-cased, so matching it would pin the translation instead.
     await expect(
       page.locator('app-page-commlink').getByTestId('deck-status-strip')
     ).toContainText('/13');
   });
 
-  // The module flag cascades on read and is never written into its entries, so
-  // switching a module off and on again restores the per-entry configuration.
   test('cascades a module without flattening its entries', async ({ page }) => {
     await openDeckConfig(page);
     await toggleAndPersist(page, MARKET, 'shopping');
-    await toggleAndPersist(page, HOUSEHOLD_MODULE, 'groceries');
+    await toggleAndPersist(page, HOUSEHOLD_MODULE, 'household');
 
     await openDeck(page);
     await expect(deckTile(page, 'STASH')).toHaveCount(0);
@@ -113,7 +113,6 @@ test.describe('deck configuration', () => {
 
     await openDeck(page);
     await expect(deckTile(page, 'STASH')).toBeVisible();
-    // MARKET was hidden on its own, so the module coming back must not show it.
     await expect(deckTile(page, MARKET)).toHaveCount(0);
   });
 });

@@ -16,9 +16,6 @@ describe('TasksPage', () => {
       imports: [TasksPage],
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
-    // NOTE: no `detectChanges()` — the template embeds `ListPageComponent`,
-    // whose router-based selectors throw against the seeded (router-less) mock
-    // state. We test the component's methods directly against a dispatch spy.
     component = TestBed.createComponent(TasksPage).componentInstance;
     store = TestBed.inject(MockStore);
     dispatch = vi.spyOn(store, 'dispatch');

@@ -1,12 +1,8 @@
 # Patterns named
 
-> Part of the np-commlink compendium. Index and §-to-file map:
-> [project-summary.md](./project-summary.md). Section numbers are stable across the split.
->
-> **Here:** §14 — the transferable pattern behind each seam, and where it shows up in this repo.
-> Use it as a jump table: find the pattern, follow it to the section that explains the decision.
-
-## 14. Patterns named
+The transferable pattern behind each seam, and where it shows up here. A jump table: find the
+pattern, follow it to the file that explains the decision
+([project-summary.md](./project-summary.md) maps them).
 
 | Pattern                                         | Where it shows up here                                                        |
 | ----------------------------------------------- | ----------------------------------------------------------------------------- |
@@ -27,7 +23,7 @@
 | Pick the primitive by lifetime                  | dialog open-command as a signal, not a store slice                            |
 | Ship the upgrade mechanism before the upgrade   | the `SwUpdate` prompt has to be in v1 to be able to announce v2               |
 | One writer, many readers (no drift gate needed) | `package.json` version → esbuild `define` → web app + both Gradle fields      |
-| Invariant over remembered rule                  | one `groceries` slice retired the co-registration rule                        |
-| Fix the model before widening the abstraction   | groceries' bespoke load/save was four slices that were one context            |
+| Invariant over remembered rule                  | one `household` slice retired the co-registration rule                        |
+| Fix the model before widening the abstraction   | household's bespoke load/save was four slices that were one context           |
 | No global schema                                | `IAppState` deleted; ownership follows the slice                              |
 | Strangler Fig / Expand-Contract                 | the migration approach throughout (see git history)                           |

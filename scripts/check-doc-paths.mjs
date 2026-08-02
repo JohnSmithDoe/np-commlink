@@ -4,7 +4,7 @@
  *
  * The compendium describes the tree, so it decays every time the tree moves —
  * and it decays *silently*: markdown is outside prettier, eslint and tsc alike
- * (`docs/coding-conventions.md` §1.4), so a doc that names a deleted folder
+ * (`docs/coding-conventions.md`, Prettier), so a doc that names a deleted folder
  * reads exactly as well as one that does not. This is the only gate that can
  * see it.
  *
@@ -81,6 +81,11 @@ const entriesOf = (dir) => (existsSync(dir) ? readdirSync(dir) : []);
  * order rather than of the docs. Narrowed *after* it caught the README citing
  * `www/browser/3rdpartylicenses.txt` for a file the build writes to
  * `www/3rdpartylicenses.txt`, which is the loss this costs.
+ *
+ * `.keystore` is here for the neighbouring reason: it is machine-local and
+ * untracked, so the repo cannot know what a given machine put in it. Docs name
+ * `.keystore/alias` as a file the owner MAY create, and both a present and an
+ * absent one have to pass — an exemption would go stale the day it is created.
  */
 const GENERATED = new Set([
   'www',
@@ -89,6 +94,8 @@ const GENERATED = new Set([
   'node_modules',
   'dist',
   '.angular',
+  'releases',
+  '.keystore',
 ]);
 
 /**
@@ -119,7 +126,8 @@ const isRouteSegment = (segment) =>
   routeSegments.has(segment) ||
   segment.startsWith(':') ||
   /^_[a-z-]+$/.test(segment);
-const isRoutePath = (token) => token.split('/').every(isRouteSegment);
+const isRoutePath = (token) =>
+  token.split('/').every((segment) => isRouteSegment(segment));
 
 /** `commlink/font-size-uses-scale` is a rule id, and `commlink` is a domain. */
 const ruleIds = new Set(
@@ -171,8 +179,8 @@ const isCandidate = (token) =>
   !token.startsWith('/') &&
   !token.startsWith('./') &&
   !UNPATHLIKE.test(token) &&
-  FIRST_SEGMENTS.has(token.split('/')[0]) &&
-  !GENERATED.has(token.split('/')[0]) &&
+  FIRST_SEGMENTS.has(token.split('/', 1)[0]) &&
+  !GENERATED.has(token.split('/', 1)[0]) &&
   !isRoutePath(token) &&
   !ruleIds.has(token);
 
@@ -204,7 +212,7 @@ for (const file of files) {
   }
 
   for (const [, target] of source.matchAll(/\]\((\.[^)]+)\)/g)) {
-    const path = clean(target.split('#')[0]);
+    const path = clean(target.split('#', 1)[0]);
     checked++;
     if (existsSync(resolve(dirname(file), path))) continue;
     unresolved.push([file, target, 'link target']);
@@ -217,7 +225,7 @@ for (const [file, token, kind] of unresolved)
 // An exemption for a path that now exists is dead config, and dead config is
 // how an exemption list grows past what anyone can justify — the same direction
 // `verify:testids` checks for a declared id no spec references.
-const stale = [...KNOWN_ABSENT.keys()].filter(resolves);
+const stale = [...KNOWN_ABSENT.keys()].filter((token) => resolves(token));
 for (const token of stale)
   console.log(`stale exemption  ${token}  (it exists now — drop the entry)`);
 

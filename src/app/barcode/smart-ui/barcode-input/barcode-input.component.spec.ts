@@ -4,14 +4,9 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { BarcodeFacade } from '../../data';
 import { BarcodeInputComponent } from './barcode-input.component';
 
-// The template's `translate` pipe subscribes to TranslateService.get()/stream(),
-// so a partial stub isn't enough — provide the real, no-loader
-// TranslatePipe.forRoot() (matches kitchen-bot's shared test setup). The
-// file-read/save flow under test doesn't depend on it.
 const fileEvent = (files: File[]): Event =>
   ({ target: { files } }) as unknown as Event;
 
-// jsdom does not decode images, so the decode probe's outcome is driven by hand.
 const stubImageDecode = (outcome: 'load' | 'error') =>
   vi.stubGlobal(
     'Image',
@@ -63,8 +58,6 @@ describe('BarcodeInputComponent', () => {
     expect(facade.reportUploadFailure).not.toHaveBeenCalled();
   });
 
-  // Storing a file the browser cannot decode used to persist it and render a
-  // broken picture with no message.
   it('reports an undecodable file instead of storing it', async () => {
     stubImageDecode('error');
     const file = new File(['not-an-image'], 'code.png', { type: 'image/png' });

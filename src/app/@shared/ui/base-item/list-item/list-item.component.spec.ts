@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
-import { TIonDragEvent } from '../../../model/app.types';
+import { IonDragEvent } from '../../../model/app.types';
 import { getByTestId, queryByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { mockBaseItem, mockCategory } from '../../../testing/test-data';
 import { ListItemComponent } from './list-item.component';
 
-const dragEvent = (amount: number): TIonDragEvent =>
-  ({ detail: { amount, ratio: 0 } }) as unknown as TIonDragEvent;
+const dragEvent = (amount: number): IonDragEvent =>
+  ({ detail: { amount, ratio: 0 } }) as unknown as IonDragEvent;
 
 describe('ListItemComponent', () => {
   let fixture: ComponentFixture<ListItemComponent>;
@@ -39,7 +39,6 @@ describe('ListItemComponent', () => {
       'item',
       mockBaseItem({ categoryIds: ['c-bakery'] })
     );
-    // the list's catalog resolves the item's category id → 'Bakery'
     fixture.componentRef.setInput('categories', [
       mockCategory({ id: 'c-bakery', name: 'Bakery' }),
     ]);
@@ -134,9 +133,6 @@ describe('ListItemComponent', () => {
     expect(deleted).toHaveLength(1);
   });
 
-  // The cart affordance exists only where the host named it: the same swipe means
-  // "mark as bought" on the shopping list and "add to the shopping list" in
-  // storage, so an unnamed one would be a nameless button (a11y R2).
   it('routes start drag to cart only once the host has named the action', async () => {
     const carted: unknown[] = [];
     component.startSwipe.subscribe(() => carted.push(true));
@@ -145,7 +141,7 @@ describe('ListItemComponent', () => {
     expect(carted).toHaveLength(0);
 
     fixture.componentRef.setInput('startSwipeAction', {
-      labelKey: 'grocery.a11y.buy-item',
+      labelKey: 'household.a11y.buy-item',
       icon: 'cart',
     });
     await component.deleteOrCartOnSwipe(dragEvent(-200));

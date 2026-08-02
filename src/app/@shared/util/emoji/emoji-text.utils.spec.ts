@@ -6,8 +6,6 @@ describe('emoji text utils', () => {
       expect(extractEmoji('Milch')).toEqual([]);
     });
 
-    // The whole reason recents are recorded from the saved name: a cook is one
-    // emoji, and taking the base alone would remember a woman instead.
     it('takes a ZWJ sequence whole', () => {
       expect(extractEmoji('👩‍🍳 kocht')).toEqual(['👩‍🍳']);
     });

@@ -21,7 +21,7 @@ import {
   createOutline,
   optionsOutline,
 } from 'ionicons/icons';
-import { IGame, TID } from '../../model/trackplay.types';
+import { Game, TrackplayId } from '../../model/trackplay.types';
 import { gameTypeName } from '../../util/game-type.utils';
 import { TrackplayFacade } from '../../data';
 import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
@@ -30,12 +30,6 @@ import { presentModal } from '../../../@shared/util/app.modal.utils';
 import { presentListSettings } from '../present-list-settings';
 import { presentGameDialog } from '../present-game-dialog';
 
-/**
- * Single-player detail: derived win/loss/open + total-play stats, a rename
- * shortcut, "new game for this player" (opens the game dialog pre-selecting
- * them), and this player's games list (its own `gamesForPlayer` sort/filter
- * config). Back button returns to the players list.
- */
 @Component({
   selector: 'app-page-trackplay-player',
   templateUrl: './player.page.html',
@@ -64,8 +58,7 @@ export class TrackplayPlayerPage {
     marker('trackplay.label.unknown-type')
   );
 
-  // The route id is fixed for the lifetime of this page instance.
-  readonly id: TID = this.#route.snapshot.paramMap.get('id') ?? '';
+  readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
 
   readonly rxPlayer = this.#facade.playerById(this.id);
   readonly rxGames = this.#facade.gamesForPlayer(this.id);
@@ -76,7 +69,7 @@ export class TrackplayPlayerPage {
     addIcons({ addOutline, arrowBackOutline, createOutline, optionsOutline });
   }
 
-  typeName(game: IGame): string {
+  typeName(game: Game): string {
     return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
   }
 
@@ -84,11 +77,11 @@ export class TrackplayPlayerPage {
     void this.#router.navigate(['/trackplay/players']);
   }
 
-  goToGame(gameId: TID): void {
+  goToGame(gameId: TrackplayId): void {
     void this.#router.navigate(['/trackplay/game', gameId]);
   }
 
-  deleteGame(game: IGame): void {
+  deleteGame(game: Game): void {
     this.#facade.deleteGame(game);
   }
 
@@ -107,7 +100,7 @@ export class TrackplayPlayerPage {
     });
   }
 
-  async openGameEdit(game: IGame): Promise<void> {
+  async openGameEdit(game: Game): Promise<void> {
     await presentGameDialog(this.#modalCtrl, this.#translate, {
       gameId: game.id,
     });

@@ -15,8 +15,8 @@ import {
   IonNote,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { TIonDragEvent } from '../../../@shared/model/app.types';
-import { IDataItem, TTrackingViewId } from '../../model/tracking.types';
+import { IonDragEvent } from '../../../@shared/model/app.types';
+import { DataItem, TrackingViewId } from '../../model/tracking.types';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 import { TimeFromDataItemPipe } from '../../util/time-from-data-item.pipe';
 import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
@@ -39,13 +39,13 @@ import { revealedSideFromDrag } from '../../../@shared/util/app.utils';
   ],
 })
 export class StatsItemComponent {
-  readonly item = input.required<IDataItem>();
-  readonly view = input.required<TTrackingViewId>();
+  readonly item = input.required<DataItem>();
+  readonly view = input.required<TrackingViewId>();
   readonly ionList = input.required<IonList>();
 
   readonly deleteItem = output<void>();
 
-  async deleteOnSwipe(event: TIonDragEvent) {
+  async deleteOnSwipe(event: IonDragEvent) {
     switch (revealedSideFromDrag(event)) {
       case 'end': {
         return this.emitDeleteItem();

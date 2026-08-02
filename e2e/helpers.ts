@@ -1,95 +1,81 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Every trap encoded here was paid for once, by a spec that passed alone
+ * and reddened after an SPA navigation. They live in one place so no spec
+ * re-derives them; CLAUDE.md carries the general statement of each, so
+ * what follows is only what is not there.
+ *
+ * Playwright gives every test a fresh browser context, so each one boots
+ * against an empty IndexedDB and whatever a test seeds is the whole of
+ * its state.
+ *
+ * `presentedDialog` keys off `.show-modal` plus the title because every
+ * simpler scope was measured wrong: presenting MOVES the `ion-modal` to
+ * `ion-app` and leaves an `overlay-hidden` twin inside the wrapper, one
+ * list route mounts five of them, and Ionic sets no `role="dialog"` at
+ * all.
+ *
+ * `searchInput` filters on `:visible` because Ionic marks an inactive
+ * routed page `.ion-page-hidden` rather than unmounting it, so after one
+ * navigation two searchbars exist and the element name cannot say which
+ * is live.
+ *
+ * `listRow` matches the row element rather than its text:
+ * `getByText(/Milk/)` also matches every ancestor whose text contains it,
+ * and dropping that ambiguity is what removes the `.first()`.
+ *
+ * `openRowSwipe` calls the component's own `open()` because Ionic parks
+ * an `ion-item-sliding`'s options translated off-screen, where a
+ * synthesized swipe gesture never reaches them. It takes the sliding
+ * element rather than the row because the two are not always the same —
+ * `data-testid="list-row"` sits ON the `ion-item-sliding` in the shared
+ * list row, while trackplay's rows wrap theirs.
+ *
+ * `addViaSearch` waits twice against the searchbar's 250 ms debounce:
+ * once so the Enter handler reads the query just typed instead of the
+ * previous one, and once after clearing the box so the freshly added row
+ * is not still filtered out of view.
+ *
+ * `persistedDocument` opens the database only once `databases()` says it
+ * exists, so probing cannot win the race against the app's own
+ * localforage init by creating an empty one first. One store holds every
+ * `npc-*` doc — see `storageConfig` in `src/main.ts`.
+ *
+ * `waitForPersisted` exists because a slice's disk write emits no DOM
+ * signal whatsoever, so the store itself is the only honest condition a
+ * following reload can be synchronized on.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Locator, Page } from '@playwright/test';
 
-/**
- * Shared helpers for the np-commlink e2e suite.
- *
- * The app is a zoneless Ionic/NgRx app that hydrates its slices from Ionic
- * Storage (IndexedDB) on boot. Playwright gives every test a fresh browser
- * context, so each test starts from empty lists.
- *
- * Unlike the original kitchen-bot, the grocery features are independent
- * top-level routes reached by **hash URLs** (`withHashLocation()`); there is no
- * ion-tabs bottom shell — navigation is via the side menu or a direct URL.
- */
-
 export const ROUTE = {
-  shopping: 'groceries/shopping/_shopping',
-  storage: 'groceries/storage/_storage',
+  shopping: 'household/shopping/_shopping',
+  storage: 'household/storage/_storage',
   tasks: 'tasks/list',
-  products: 'groceries/products/_products',
+  products: 'household/products/_products',
 } as const;
 
-/**
- * The routed-page container. The side menu is a sibling list of the SAME
- * destinations, so any content assertion that is not scoped to this can match the
- * menu's copy instead of the page's.
- */
 export function mainContent(page: Page): Locator {
   return page.locator('#main-content');
 }
 
-/**
- * A single routed page component, scoped inside `#main-content`. Ionic's
- * router-outlet keeps previously-visited sibling pages mounted (and, for
- * URL/hash navigations, still visible) alongside the active one, so page-level
- * locators MUST be scoped to their own page component to stay unambiguous.
- */
 export function pageRoot(page: Page, selector: string): Locator {
   return mainContent(page).locator(selector);
 }
 
-/**
- * A **presented** `ion-modal`, identified by its title.
- *
- * Three DOM facts make every tempting scope wrong, and each was verified rather
- * than assumed: presenting **moves** the `ion-modal` to `ion-app` and leaves an
- * `overlay-hidden` twin inside the wrapper (so the wrapper element matches two),
- * a single list route mounts **five** `ion-modal`s (the item dialog, its category
- * picker, the date picker, …), and Ionic puts **no `role="dialog"`** on
- * `ion-modal`, so `getByRole('dialog')` matches nothing. `.show-modal` narrows to
- * what is presented; the title narrows to which one.
- *
- * Shared because that reasoning was encoded independently in two specs — and a
- * spec that rediscovers it is a spec that passes alone and reddens after an SPA
- * navigation.
- */
 export function presentedDialog(page: Page, title: string): Locator {
   return page.locator('ion-modal.show-modal').filter({ hasText: title });
 }
 
-/**
- * The native input inside the Ionic searchbar of the *currently visible* list
- * page. Ionic keeps inactive routed pages in the DOM (marked
- * `.ion-page-hidden`), so after a navigation more than one searchbar may exist —
- * scope to the visible one to avoid strict-mode violations.
- */
 export function searchInput(page: Page): Locator {
   return page
     .locator('app-item-list-searchbar ion-searchbar input:visible')
     .first();
 }
 
-/**
- * The list row whose title matches. Matching the row element rather than the
- * text avoids `.first()`: `getByText(/Milk/)` matches the heading *and* every
- * ancestor whose text contains it, while exactly one `list-row` does.
- */
 export function listRow(page: Page, text: string | RegExp): Locator {
   return page.getByTestId('list-row').filter({ hasText: text });
 }
 
-/**
- * Reveal an `ion-item-sliding`'s options.
- *
- * Ionic keeps them translated off-screen, so a synthesized swipe gesture does not
- * reach them — the component's own `open()` is the only reliable way in. Shared
- * because two specs had derived that independently, and a spec that re-derives it
- * is a spec that will rediscover the trap.
- *
- * Takes the sliding element rather than the row, because the two are not always
- * the same: `data-testid="list-row"` sits ON the `ion-item-sliding` in the shared
- * list row, while trackplay's rows wrap theirs.
- */
 export async function openRowSwipe(
   sliding: Locator,
   side: 'start' | 'end'
@@ -101,37 +87,23 @@ export async function openRowSwipe(
   );
 }
 
-/** Wait until the active grocery list page has booted (searchbar rendered). */
 export async function waitForListPage(page: Page): Promise<void> {
   await expect(searchInput(page)).toBeVisible({ timeout: 30_000 });
 }
 
-/**
- * Add an item to the currently visible list by typing into the searchbar and
- * pressing Enter. A short wait lets the searchbar's 250ms debounce push the
- * query into the store before the Enter handler reads it.
- */
 export async function addViaSearch(page: Page, name: string): Promise<void> {
   const input = searchInput(page);
   await input.click();
   await input.fill(name);
   await page.waitForTimeout(400); // > searchbar debounce (250ms)
   await input.press('Enter');
-  // clear the search so the freshly added item is not filtered out of view
   await input.fill('');
   await page.waitForTimeout(400);
 }
 
-// Ionic Storage (localforage) puts every `npc-*` doc of the app into this one
-// IndexedDB store — see `storageConfig` in src/main.ts.
 const DB_NAME = 'np-commlink';
 const STORE_NAME = 'npCommlink';
 
-/**
- * The persisted `npc-<key>` doc, serialized, or `null` while it is absent.
- * Opens the database only once it exists, so probing can never race the app's
- * own localforage init by creating an empty one first.
- */
 async function persistedDocument(
   page: Page,
   key: string
@@ -173,11 +145,6 @@ async function persistedDocument(
   );
 }
 
-/**
- * Wait until a slice's fire-and-forget disk write has landed — optionally until
- * the doc mentions `marker`. The write emits no DOM signal, so the store itself
- * is the only honest condition to synchronize a following reload on.
- */
 export async function waitForPersisted(
   page: Page,
   key: string,
@@ -200,7 +167,6 @@ export async function waitForPersisted(
     .toBe(true);
 }
 
-/** Navigate to a grocery feature via its hash URL and wait for it to boot. */
 export async function gotoFeature(
   page: Page,
   route: (typeof ROUTE)[keyof typeof ROUTE]

@@ -1,4 +1,4 @@
-import { ITrackplayState } from '../model/trackplay.types';
+import { TrackplayState } from '../model/trackplay.types';
 import { TrackplayActions } from './trackplay.actions';
 import { initialState, trackplayReducer } from './trackplay.reducer';
 import {
@@ -123,8 +123,6 @@ describe('trackplayReducer', () => {
   });
 
   it('returns the same state when a cell is blurred without changing', () => {
-    // Every blur dispatches. Without the guard the unchanged case still bumped
-    // `updated`/`lastPlayed` and re-persisted the whole slice.
     const round = mockRound({ id: 'r0', idx: 0, values: { p1: 20, p2: 0 } });
     const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
     const start = mockTrackplayState({
@@ -175,9 +173,6 @@ describe('trackplayReducer', () => {
     expect(state.games['g'].updated).toBeGreaterThan(TEST_EPOCH);
   });
 
-  // `now` rides on the action, so the reducer is a function of (state, action)
-  // alone — the same action replays to the same state, and the stamp is an exact
-  // assertion rather than a `toBeGreaterThan`.
   it('stamps the time the action carries, not the time it runs', () => {
     const now = 1_777_000_000_000;
     const start = mockTrackplayState({
@@ -332,8 +327,6 @@ describe('trackplayReducer', () => {
     expect(restored.lastDeleted).toBeNull();
   });
 
-  // Losing your last player kills an already-ended game — there is nothing left
-  // to show — but only empties a running one, so it stays open for new players.
   it('drops an ended game that loses its last player', () => {
     const start = mockTrackplayState({
       players: { p1: mockPlayer({ id: 'p1' }) },
@@ -404,8 +397,6 @@ describe('trackplayReducer', () => {
   });
 
   it('leaves list settings alone when undoing a delete', () => {
-    // The settings popover is one tap away during the 8s undo toast, so a
-    // whole-slice snapshot silently reverted a sort or filter change too.
     const start = mockTrackplayState({
       players: { p1: mockPlayer({ id: 'p1' }) },
     });
@@ -507,9 +498,6 @@ describe('trackplayReducer', () => {
   });
 
   it('refuses to delete the built-in type and leaves an earlier stash intact', () => {
-    // The undo toast re-presents on every new `lastDeleted` reference, so a
-    // refused delete must not mint one — it would offer to undo the *previous*
-    // deletion (pinned from the effect side in trackplay.effects.spec.ts).
     const stashed = trackplayReducer(
       mockTrackplayState({ players: { p1: mockPlayer({ id: 'p1' }) } }),
       TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
@@ -581,8 +569,6 @@ describe('trackplayReducer', () => {
     });
   });
 
-  // Both game lists can be filtered by type; a deleted type left selected would
-  // silently show an empty list.
   it('clears a deleted type off the filters that had it selected', () => {
     const custom = mockGameType({ id: 'custom', name: 'Custom' });
     const withType = mockTrackplayState({
@@ -660,14 +646,12 @@ describe('trackplayReducer', () => {
   });
 
   it('fills in what an older document never carried', () => {
-    // A doc from before the list config existed, and with an empty type catalog:
-    // both fall back to the seeds instead of hydrating undefined into the slice.
     const legacy = {
       players: { p1: mockPlayer({ id: 'p1' }) },
       games: {},
       rounds: {},
       gameTypes: {},
-    } as unknown as ITrackplayState;
+    } as unknown as TrackplayState;
 
     const state = trackplayReducer(
       initialState,
@@ -685,7 +669,7 @@ describe('trackplayReducer', () => {
       games: {},
       rounds: {},
       config: initialState.config,
-    } as unknown as ITrackplayState;
+    } as unknown as TrackplayState;
 
     const state = trackplayReducer(
       initialState,

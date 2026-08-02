@@ -1,26 +1,12 @@
 import dayjs from 'dayjs';
 import {
   DailySeries,
-  IDataItem,
-  ITrackingItem,
-  TTrackingViewId,
+  DataItem,
+  TrackingItem,
+  TrackingViewId,
 } from '../model/tracking.types';
 
-/**
- * The two session views that depend on what day it is — as pure functions taking
- * the day, rather than selectors reading the clock.
- *
- * They lived in `tracking/data/selectors` and called `dayjs()` inside their
- * projectors, which a `createSelector` cannot see: memoization is on the declared
- * inputs, so both froze at whatever "today" meant when they last recomputed. Here
- * the day is an argument, `data/` keeps no pure logic, and neither spec needs a
- * frozen clock to say what it means.
- */
-
-// The sortable stamp each view buckets sessions by. Machine-readable on purpose
-// — it is a grouping key, never displayed, so it stays locale-independent while
-// the row's caption goes through `formatViewDate`. `'all'` merges every date.
-const BUCKET_STAMPS: Record<TTrackingViewId, string> = {
+const BUCKET_STAMPS: Record<TrackingViewId, string> = {
   raw: 'YYYYMMDDHHmm',
   today: 'YYYYMMDD',
   daily: 'YYYYMMDD',
@@ -29,8 +15,8 @@ const BUCKET_STAMPS: Record<TTrackingViewId, string> = {
 };
 
 const bucketKeyFor = (
-  trackingItem: ITrackingItem,
-  viewId: TTrackingViewId
+  trackingItem: TrackingItem,
+  viewId: TrackingViewId
 ): string => {
   const stamp = BUCKET_STAMPS[viewId];
   const bucket = stamp ? dayjs(trackingItem.startTime).format(stamp) : '';
@@ -38,10 +24,10 @@ const bucketKeyFor = (
 };
 
 const mergedInto = (
-  row: IDataItem | undefined,
-  session: ITrackingItem,
+  row: DataItem | undefined,
+  session: TrackingItem,
   bucketKey: string
-): IDataItem => ({
+): DataItem => ({
   ...session,
   id: bucketKey,
   trackedTimeInSeconds:
@@ -49,17 +35,16 @@ const mergedInto = (
   sessionIds: [...(row?.sessionIds ?? []), session.id],
 });
 
-/** Merge sessions into the buckets `viewId` groups by; `'today'` keeps only `today`'s. */
 export const groupSessionsByView = (
-  data: ITrackingItem[],
-  viewId: TTrackingViewId,
+  data: TrackingItem[],
+  viewId: TrackingViewId,
   today: string
-): IDataItem[] => {
+): DataItem[] => {
   const sessions =
     viewId === 'today'
       ? data.filter((item) => dayjs(item.startTime).isSame(today, 'day'))
       : data;
-  const rows: Record<string, IDataItem> = {};
+  const rows: Record<string, DataItem> = {};
   for (const session of sessions) {
     const bucketKey = bucketKeyFor(session, viewId);
     rows[bucketKey] = mergedInto(rows[bucketKey], session, bucketKey);
@@ -71,10 +56,9 @@ export const groupSessionsByView = (
 const CHART_WINDOW_DAYS = 21;
 const CHART_TOP_N = 6;
 
-/** The stacked-bar source: hours per day per activity over the window ending `today`. */
 export const dailySeries = (
-  archived: ITrackingItem[],
-  live: ITrackingItem[],
+  archived: TrackingItem[],
+  live: TrackingItem[],
   today: string
 ): DailySeries => {
   const sessions = [...live, ...archived];
@@ -112,8 +96,6 @@ export const dailySeries = (
 
   const seriesMap = new Map<string, number[]>();
   for (const name of topNames) seriesMap.set(name, emptyWindow());
-  // Held beside the map rather than in it, keyed by nothing: a name is the only
-  // key a Map of activities has, and the remainder is not an activity.
   const otherHours =
     totalsByName.size > topNames.length ? emptyWindow() : undefined;
 

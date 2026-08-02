@@ -1,3 +1,15 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R1 — docs/ionic-a11y-practices.md
+ *
+ * `ion-icon` renders `role="img"` on its host unconditionally and derives
+ * no name from `name` (ionicons' icon.js: `h(Host, { role: 'img', … })`,
+ * and the only inherited attribute is `aria-label`). An icon with neither
+ * attribute is therefore an image role with no accessible name — axe-core's
+ * `role-img-alt` flags it and what a reader announces is
+ * implementation-defined. There is no third state, which is why
+ * `aria-hidden="true"` is the default rather than an optimisation.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   boundAttribute,
@@ -6,16 +18,6 @@ import {
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
-
-// R1 — docs/ionic-a11y-practices.md
-//
-// `ion-icon` renders `role="img"` on its host unconditionally and derives no
-// name from `name` (ionicons' icon.js: `h(Host, { role: 'img', … })`, and the
-// only inherited attribute is `aria-label`). An icon with neither attribute is
-// therefore an image role with no accessible name — axe-core's `role-img-alt`
-// flags it and what a reader announces is implementation-defined. There is no
-// third state, which is why `aria-hidden="true"` is the default rather than an
-// optimisation.
 
 const isHidden = (element: TemplateElement): boolean => {
   if (boundAttribute(element, 'aria-hidden')) return true;

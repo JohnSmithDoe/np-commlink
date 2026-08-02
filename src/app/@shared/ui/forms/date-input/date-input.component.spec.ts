@@ -18,9 +18,6 @@ describe('DateInputComponent', () => {
     expect(component.value()).toBe('2026-07-01');
   });
 
-  // `ion-datetime` reports a cleared calendar as a non-string and a range as an
-  // array. Both are "no date" here — letting `['a','b']` through would put an
-  // array where a bound field expects `string | null`.
   it('reads a cleared calendar and a range alike as no date', () => {
     component.value.set('2026-07-01');
     component.updateInputValue({ detail: { value: null } } as never);

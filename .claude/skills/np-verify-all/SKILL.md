@@ -37,12 +37,12 @@ Every gate's full log is written to `$TMPDIR/np-commlink-verify/<id>.log` whatev
 screen shows.
 
 **The body is quiet unless the gate failed** — a red card replays its whole log, a green
-one shows nothing. Thirteen green gates' output scrolls the one red card off the screen,
+one shows nothing. Fifteen green gates' output scrolls the one red card off the screen,
 which is the opposite of what a checklist is for. This is not the old `--quiet`: that one
 hid the output that explains a failure, and this shows only that output.
 
 ```
-┌─ 11/14  unit tests ───────────────────────────────────────── vitest ─┐
+┌─ 12/15  unit tests ───────────────────────────────────────── vitest ─┐
 │ $ pnpm run test:coverage                                             │
 │                                                                      │
 └─ 🦄 success · 13.7s · Tests 1240 passed (1240) ──────────────────────┘
@@ -79,21 +79,22 @@ The **Tool** column is what each card's header names — the script names (`veri
 | --- | ----------------- | --------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
 | 1   | Module boundaries | sheriff               | 1s         | over the entry graph — cannot see specs, which is why eslint runs it too                          |
 | 2   | Test-id contract  | check-testids.mjs     | 1s         | dead ids · locators that can never match                                                          |
-| 3   | Doc paths         | check-doc-paths.mjs   | 1s         | every path the compendium names exists — the only gate that reads markdown for meaning            |
-| 4   | Plugin types      | tsc                   | 1s         | `-p eslint-plugin-commlink` — turns a rule load-crash into a compile error                        |
-| 5   | Type-check (app)  | tsc                   | 1s         | what esbuild never checks                                                                         |
-| 6   | Type-check (spec) | tsc                   | 2s         |                                                                                                   |
-| 7   | Type-check (e2e)  | tsc                   | 1s         | Playwright transpiles with esbuild, so without this project nothing reads the specs' types        |
-| 8   | Styles            | stylelint             | 1s         | the one layer eslint provably cannot read                                                         |
-| 9   | Format            | prettier              | 3s         | markdown is deliberately outside it                                                               |
-| 10  | Export surface    | check-exports.mjs     | 8s         | an `export` with no reader outside its file — what `noUnusedLocals` structurally cannot see       |
-| 11  | ESLint            | eslint                | **30–85s** | the whole repo, not just `src/`; always cold                                                      |
-| 12  | Unit tests        | vitest                | 12–15s     | coverage, not a bare run: the thresholds only bind if something checks them                       |
-| 13  | E2E               | playwright            | 25–55s     | 63 specs, Playwright starts its own `ng serve`                                                    |
-| 14  | Production build  | esbuild               | 7s         | the **pages** base href, which is the one that can break on a subpath                             |
-| 15  | Pages subpath     | check-pages-build.mjs | 1s         | serves 14's output at `/np-commlink/` and requests it — the only gate that reads another's output |
+| 3   | Icon registrations| check-icons.mjs       | 1s         | an `ion-icon` name nothing registered — an invisible control, never an error                      |
+| 4   | Doc paths         | check-doc-paths.mjs   | 1s         | every path the compendium names exists — the only gate that reads markdown for meaning            |
+| 5   | Plugin types      | tsc                   | 1s         | `-p eslint-plugin-commlink` — turns a rule load-crash into a compile error                        |
+| 6   | Type-check (app)  | tsc                   | 1s         | what esbuild never checks                                                                         |
+| 7   | Type-check (spec) | tsc                   | 2s         |                                                                                                   |
+| 8   | Type-check (e2e)  | tsc                   | 1s         | Playwright transpiles with esbuild, so without this project nothing reads the specs' types        |
+| 9   | Styles            | stylelint             | 1s         | the one layer eslint provably cannot read                                                         |
+| 10  | Format            | prettier              | 3s         | markdown is deliberately outside it                                                               |
+| 11  | Export surface    | check-exports.mjs     | 8s         | an `export` with no reader outside its file — what `noUnusedLocals` structurally cannot see       |
+| 12  | ESLint            | eslint                | **30–85s** | the whole repo, not just `src/`; always cold                                                      |
+| 13  | Unit tests        | vitest                | 12–15s     | coverage, not a bare run: the thresholds only bind if something checks them                       |
+| 14  | E2E               | playwright            | 25–55s     | 63 specs, Playwright starts its own `ng serve`                                                    |
+| 15  | Production build  | esbuild               | 7s         | the **pages** base href, which is the one that can break on a subpath                             |
+| 16  | Pages subpath     | check-pages-build.mjs | 1s         | serves 15's output at `/np-commlink/` and requests it — the only gate that reads another's output |
 
-**~105–155s**, every time — there is no warm path any more, and gate 11 alone swings ~50s
+**~105–155s**, every time — there is no warm path any more, and gate 12 alone swings ~50s
 with machine load. Cheap enough that "run the whole thing" is always the right answer; do
 not offer a reduced subset unless asked, and if you do, say plainly which gates you
 skipped.
@@ -103,20 +104,20 @@ Playwright exits 0 and prints `1 flaky` above `62 passed`, and the footer report
 `1 flaky · 62 passed` is a pass worth mentioning rather than a count that mysteriously
 dropped by one.
 
-Gates 1, 4, 8 and 11 are all "lint" in CI's telling: CI runs Sheriff's CLI, then
+Gates 1, 5, 9 and 12 are all "lint" in CI's telling: CI runs Sheriff's CLI, then
 `pnpm run lint` = plugin `tsc` → eslint → stylelint. Splitting them is the whole point of
 the runner — one exit code across three tools is what hid stylelint.
 
-Gate 11 dominates and is 93.6% Sheriff's two eslint rules (every `commlink/*` rule
+Gate 12 dominates and is 93.6% Sheriff's two eslint rules (every `commlink/*` rule
 together is 22ms), so `TIMING=all` before optimising anything about lint. Its cost varies
 a lot with machine load — 32s and 84s are both real measurements of the same command.
 
-Gates 1–11 are read-only and independent, so they *could* run concurrently — the script
+Gates 1–12 are read-only and independent, so they *could* run concurrently — the script
 runs them sequentially anyway, because a few saved seconds is worth less than the
-one-card-at-a-time readout. **12–15 must never overlap**: e2e binds port 4321 and the
+one-card-at-a-time readout. **13–16 must never overlap**: e2e binds port 4321 and the
 build writes `www/`, and both saturate the CPU, which turns a slow spec into a flaky one.
-15 is ordered rather than merely serialised — it serves what 14 wrote, which is why a
-failed 14 skips it rather than letting it read whatever was left on disk.
+16 is ordered rather than merely serialised — it serves what 15 wrote, which is why a
+failed 15 skips it rather than letting it read whatever was left on disk.
 
 ## Traps that produce a wrong answer
 

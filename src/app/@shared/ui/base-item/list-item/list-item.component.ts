@@ -1,3 +1,9 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * This component registers the two icons its own template names
+ * (`add`/`remove`) and deliberately not the third. `startSwipeAction.icon`
+ * arrives bound, so the name is a string written by the host page — which
+ * is the half `verify:icons` holds the host to, not this file.
+ * ───────────────────────────────────────────────────────────────── */
 import {
   booleanAttribute,
   ChangeDetectionStrategy,
@@ -21,13 +27,15 @@ import {
   IonText,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { TColor, TIonDragEvent } from '../../../model/app.types';
-import { IBaseItem } from '../../../model/base-item.types';
-import { ICategory } from '../../../model/category.types';
+import { addIcons } from 'ionicons';
+import { add, remove } from 'ionicons/icons';
+import { IonColor, IonDragEvent } from '../../../model/app.types';
+import { BaseItem } from '../../../model/base-item.types';
+import { Category } from '../../../model/category.types';
 import { revealedSideFromDrag } from '../../../util/app.utils';
 import { categoryNames } from '../../../util/categories/category.utils';
 
-export type TStartSwipeAction = { labelKey: string; icon: string };
+export type StartSwipeAction = { labelKey: string; icon: string };
 
 @Component({
   selector: 'app-list-item',
@@ -50,35 +58,17 @@ export type TStartSwipeAction = { labelKey: string; icon: string };
   ],
 })
 export class ListItemComponent {
-  readonly item = input.required<IBaseItem>();
+  readonly item = input.required<BaseItem>();
   readonly title = input.required<string>();
   readonly ionList = input.required<IonList>();
-  // The list's {id,name} catalog, so the category note resolves ids → names.
-  readonly categories = input<readonly ICategory[]>([]);
+  readonly categories = input<readonly Category[]>([]);
 
-  readonly statusColor = input<TColor>();
+  readonly statusColor = input<IonColor>();
   readonly crossedOut = input(false, { transform: booleanAttribute });
   readonly showQuantityActions = input(false, {
     transform: booleanAttribute,
   });
-  /**
-   * The start-swipe affordance: its i18n key, its icon, and — by being present
-   * at all — the switch that shows it.
-   *
-   * Neither half can be defaulted here. The same swipe means "mark as bought" on
-   * the shopping list, "add to the shopping list" in storage and "rename" on a
-   * catalog, so both the wording and the icon belong to the domain mounting this
-   * row (docs/ionic-a11y-practices.md R2 — an icon-only `ion-item-option`
-   * renders a bare button with no name of its own). One object rather than two
-   * inputs because a caller that set the label and forgot the icon used to get a
-   * shopping cart on its rename gesture; now the affordance either exists whole
-   * or not at all.
-   *
-   * Named for the gesture, not for one caller's meaning of it: as `cartItem` it
-   * put grocery vocabulary on a domain-blind component, and the catalog's rename
-   * would have had to bind `(cartItem)` to read the row's third affordance.
-   */
-  readonly startSwipeAction = input<TStartSwipeAction>();
+  readonly startSwipeAction = input<StartSwipeAction>();
 
   readonly hasStartSwipe = computed(() => !!this.startSwipeAction());
   readonly hasStatusBar = computed(() => !!this.statusColor());
@@ -92,6 +82,10 @@ export class ListItemComponent {
   readonly deleteItem = output<void>();
   readonly startSwipe = output<void>();
 
+  constructor() {
+    addIcons({ add, remove });
+  }
+
   incrementQuantity(event: MouseEvent) {
     this.increment.emit();
     event.stopPropagation();
@@ -102,7 +96,7 @@ export class ListItemComponent {
     event.stopPropagation();
   }
 
-  async deleteOrCartOnSwipe(event: TIonDragEvent) {
+  async deleteOrCartOnSwipe(event: IonDragEvent) {
     switch (revealedSideFromDrag(event)) {
       case 'end': {
         return this.emitDeleteItem();

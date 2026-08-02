@@ -45,9 +45,6 @@ describe('TrackingPage', () => {
     expect(dispatch).toHaveBeenCalledWith(
       TrackingActions.applyNotificationCommand('tracking.pause', 't1')
     );
-    // Refresh/re-enter safety: the param MUST be cleared (replaceUrl) so a
-    // reload or a second ionViewWillEnter cannot re-fire the toggle and flip
-    // the tracking item back. This is the whole point of the param-clear.
     expect(navigate).toHaveBeenCalledWith(
       [],
       expect.objectContaining({ queryParams: {}, replaceUrl: true })
@@ -65,8 +62,6 @@ describe('TrackingPage', () => {
     expect(navigate).not.toHaveBeenCalled();
   });
 
-  // Half a link is no link: the command alone cannot be resolved without the item
-  // it targets, and firing it would toggle whatever the guard let through.
   it('no-ops the deep-link when ?target is absent', () => {
     setup({ cmd: 'tracking.pause' });
 

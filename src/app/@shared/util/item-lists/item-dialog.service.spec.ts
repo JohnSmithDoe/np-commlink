@@ -42,8 +42,6 @@ describe('ItemDialogService', () => {
     expect(host.request()).toBeNull();
   });
 
-  // The host is a root singleton and its wrappers stay mounted, so an abandoned
-  // request would re-present itself the next time the page is entered.
   it('expires the command when the app navigates away', async () => {
     openOnProbeList();
 

@@ -1,26 +1,19 @@
-import type { Rule } from 'eslint';
+/* ─── why ─────────────────────────────────────────────────────────
+ * Two of the five Ionic locator traps — the ones decidable from a string;
+ * the messages carry each one's explanation.
+ *
+ * Their value is not the violation count, which is zero and has been each
+ * time somebody fixed them. It is that these traps get REDISCOVERED: each
+ * costs a red spec and an hour of confusion, and neither failure names its
+ * own cause. A rule is the only thing that remembers.
+ *
+ * The other three are not string-decidable — scoping to `app-page-<x>`
+ * rather than `#main-content`, keying a presented overlay off its title,
+ * and the `goto` + `reload()` rule for re-entered routes all depend on
+ * what the spec is doing rather than on a literal it contains.
+ * ───────────────────────────────────────────────────────────────── */
 
-// Two of the five Ionic locator traps, the ones decidable from a string.
-//
-// Their value is not in the violation count — it is zero, and has been each time
-// somebody fixed them. It is that the traps get *rediscovered*: each costs a red
-// spec and an hour of confusion, and neither failure names its own cause. A rule
-// is the only thing that remembers.
-//
-// The other three traps are not string-decidable: scoping to `app-page-<x>`
-// rather than `#main-content`, keying a presented overlay off its title, and the
-// `goto` + `reload()` rule for re-entered routes all depend on what the spec is
-// doing rather than on a literal it contains.
-//
-//   1. `ion-toast` is never unique. The shell mounts the service-worker update
-//      prompt, and an inline overlay is in the DOM whether presented or not, so
-//      `page.locator('ion-toast')` matches two and every assertion on it is a
-//      strict-mode violation. `:not(.overlay-hidden)` narrows to the presented
-//      one — the same class as the `ion-modal` twin.
-//   2. `getByRole('dialog')` matches nothing. Ionic puts `role="dialog"` on a
-//      wrapper *inside* `ion-modal`'s shadow root, not on the host, so the query
-//      is silently dead — the worst kind of locator, because it fails as "not
-//      found" rather than as "wrong".
+import type { Rule } from 'eslint';
 
 const TOAST = 'ion-toast';
 const NARROWED = 'overlay-hidden';

@@ -39,7 +39,7 @@ import { CashFacade } from '../../../data';
 import { MoneyInputComponent } from '../../../ui/money-input/money-input.component';
 import { buildTransferLegs } from '../../../util/transfer.utils';
 
-type TTransferForm = {
+type TransferForm = {
   fromId: string;
   toId: string;
   amountCents: number | null;
@@ -50,10 +50,7 @@ type TTransferForm = {
 const SAME_ACCOUNT = { kind: 'sameAccount' } as const;
 const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
 
-// "Not into the account it came from" is a cross-field rule, and it belongs on
-// the target: `valueOf` reads the source field's live value, so the error lands
-// on the select the user would have to change.
-const transferRules: SchemaFn<TTransferForm> = (path) => {
+const transferRules: SchemaFn<TransferForm> = (path) => {
   requireText(path.fromId);
   requireText(path.toId);
   validate(path.toId, ({ value, valueOf }) =>
@@ -66,13 +63,6 @@ const transferRules: SchemaFn<TTransferForm> = (path) => {
   requireParseableDate(path.date);
 };
 
-/**
- * Book a transfer between two own accounts (via `ModalController`). Composes the
- * paired legs with `buildTransferLegs` and dispatches `Book Transfer`.
- *
- * Create-only: a transfer is a *pair* of new legs, not an editable entity, so
- * `existing` is always undefined and `toForm` is unreachable.
- */
 @Component({
   selector: 'app-cash-transfer-modal',
   templateUrl: './transfer-modal.component.html',
@@ -97,7 +87,7 @@ const transferRules: SchemaFn<TTransferForm> = (path) => {
 })
 export class CashTransferModalComponent extends BaseModalDialog<
   never,
-  TTransferForm
+  TransferForm
 > {
   readonly #facade = inject(CashFacade);
   readonly #translate = inject(TranslateService);
@@ -106,7 +96,7 @@ export class CashTransferModalComponent extends BaseModalDialog<
 
   protected readonly existing = signal<never | undefined>(undefined);
 
-  protected applyRules(path: SchemaPathTree<TTransferForm>): void {
+  protected applyRules(path: SchemaPathTree<TransferForm>): void {
     transferRules(path);
   }
 
@@ -116,8 +106,6 @@ export class CashTransferModalComponent extends BaseModalDialog<
       .errors()
       .some(({ kind }) => kind === SAME_ACCOUNT.kind)
   );
-  // An untouched amount leaves the save disabled without being flagged; a box
-  // holding something unusable says so.
   readonly amountInvalid = computed(() =>
     this.form
       .amountCents()
@@ -126,7 +114,7 @@ export class CashTransferModalComponent extends BaseModalDialog<
   );
   readonly dateInvalid = computed(() => this.form.date().invalid());
 
-  protected blank(): TTransferForm {
+  protected blank(): TransferForm {
     return {
       fromId: '',
       toId: '',
@@ -136,11 +124,11 @@ export class CashTransferModalComponent extends BaseModalDialog<
     };
   }
 
-  protected toForm(): TTransferForm {
+  protected toForm(): TransferForm {
     return this.blank();
   }
 
-  protected persist(draft: TTransferForm): void {
+  protected persist(draft: TransferForm): void {
     const description =
       draft.description.trim() ||
       this.#translate.instant(marker('cash.transfer.default-description'));

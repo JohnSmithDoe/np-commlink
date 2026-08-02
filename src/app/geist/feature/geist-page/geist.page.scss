@@ -1,6 +1,19 @@
-// GEIST console — shares the commlink terminal register. Frame, corner
-// brackets, status LEDs and the brand row come from the global .sr-* utilities
-// (see _deck.scss / _shadowrun.scss); only layout + the transcript live here.
+// ─── why ────────────────────────────────────────────────────────
+// GEIST shares the commlink terminal register: frame, corner brackets, LEDs and
+// the brand row come from the global .sr-* utilities, so only layout and the
+// transcript are here.
+//
+// The priming meter is driven by a --gs-primed scale factor rather than a width
+// percentage, because the model download reports progress continuously and
+// transform is the one axis a browser can animate without laying the element
+// out again on every frame.
+//
+// An answer renders in a <pre> so the model's newlines survive, but wrapped and
+// in the deck font rather than the browser's default monospace.
+//
+// .gs-back is nearly empty on purpose — it composes `gs-btn gs-btn--ghost` in
+// the template, and everything it used to re-declare comes from those two.
+// ────────────────────────────────────────────────────────────────
 
 :host {
   --app-content-max-width: 100%;
@@ -15,7 +28,6 @@
   font-family: var(--sr-deck-font);
 }
 
-// ── status strip ─────────────────────────────────────────────
 .gs-bar {
   display: flex;
   flex-wrap: wrap;
@@ -37,7 +49,6 @@
   color: var(--sr-cyan);
 }
 
-// ── one-state panels (unsupported / cold start / priming / flatline) ──
 .gs-panel {
   display: flex;
   flex-direction: column;
@@ -92,9 +103,6 @@
   background: rgba(var(--sr-amber-rgb), 0.15);
   border-radius: var(--sr-radius);
 }
-// Driven by --gs-primed (0..1) rather than a width percentage: the download
-// reports progress continuously, and transform is the one axis a browser can
-// animate without laying the element out again on every frame.
 .gs-meter__fill {
   display: block;
   width: 100%;
@@ -106,7 +114,6 @@
   transition: transform 0.3s ease;
 }
 
-// ── persona register picker ──────────────────────────────────
 .gs-personas {
   display: flex;
   flex-wrap: wrap;
@@ -150,7 +157,6 @@
   color: var(--sr-text-dim);
 }
 
-// ── transcript ───────────────────────────────────────────────
 .gs-console {
   display: flex;
   flex-direction: column;
@@ -177,8 +183,6 @@
   color: var(--sr-cyan);
 }
 
-// A <pre>, so its newlines survive — but wrapping, and in the deck font rather
-// than the browser's default monospace.
 .gs-turn__answer {
   margin: 0;
   font-family: var(--sr-deck-font);
@@ -201,7 +205,6 @@
   animation: gs-blink 1s steps(2, end) infinite;
 }
 
-// ── prompt row ───────────────────────────────────────────────
 .gs-input {
   display: flex;
   flex-direction: column;
@@ -261,7 +264,6 @@
   border-color: rgba(var(--sr-cyan-rgb), 0.4);
 }
 
-// ── footer telemetry ─────────────────────────────────────────
 .gs-tele {
   display: flex;
   flex-wrap: wrap;
@@ -275,8 +277,6 @@
   color: var(--sr-cyan);
 }
 
-// Composes `gs-btn gs-btn--ghost` in the template — everything it used to
-// re-declare (size, case, tracking, cyan, border, radius) comes from those two.
 .gs-back {
   margin-top: 0.75rem;
   text-decoration: none;

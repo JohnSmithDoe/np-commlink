@@ -15,15 +15,11 @@ const TIME_UNITS = [
 
 const SECONDS_KEY = 'time.unit.seconds';
 
-// One decimal, but a whole value renders without the ".0".
 const withoutTrailingZero = (value: number): string => {
   const fixed = value.toFixed(1);
   return fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
 };
 
-// The largest unit that reaches 1 once rounded — it is the ROUNDED value that
-// decides, so 59m36s reads "1 hour" rather than "0.99 hours". Under a minute the
-// raw remainder is shown instead of a fraction.
 const largestFittingUnit = (
   totalSeconds: number
 ): { key: string; value: string } => {

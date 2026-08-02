@@ -6,14 +6,14 @@ import { provideTestingProviders } from '../../../@shared/testing/test-providers
 import { TrackplayActions } from '../../data';
 import {
   TrackplayListSettingsPopoverComponent,
-  TSettingsMode,
+  SettingsMode,
 } from './list-settings-popover.component';
 
 describe('TrackplayListSettingsPopoverComponent', () => {
   let component: TrackplayListSettingsPopoverComponent;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const setup = (mode: TSettingsMode = 'games') => {
+  const setup = (mode: SettingsMode = 'games') => {
     TestBed.configureTestingModule({
       imports: [TrackplayListSettingsPopoverComponent],
       providers: [provideTestingProviders({ trackplay: mockTrackplayState() })],

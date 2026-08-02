@@ -48,15 +48,6 @@ export class DailySessionsComponent {
   readonly #today = inject(TodayService).today;
   readonly selectedDate = signal<Dayjs>(dayjs().startOf('day'));
 
-  /**
-   * Reads the day as a value, not off the clock — a `computed` memoizes on its
-   * declared dependencies, and `dayjs()` is not one.
-   *
-   * This one locked the user out rather than merely misreading: it also drives
-   * `[disabled]` on the next-day button and the early return in {@link nextDay}.
-   * Left open past midnight, the panel still called yesterday "today" and refused
-   * to advance to the day that had actually started.
-   */
   readonly isToday = computed(() =>
     this.selectedDate().isSame(this.#today(), 'day')
   );

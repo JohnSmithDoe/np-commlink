@@ -4,27 +4,23 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { mockKernelState } from '../../@shared/testing/test-data';
-import { ITrackplayDeleted } from '../model/trackplay.types';
+import { TrackplayDeleted } from '../model/trackplay.types';
 import { mockTrackplayState } from '../testing/trackplay.test-data';
 import { TrackplayActions } from './trackplay.actions';
 import { TrackplayEffects } from './trackplay.effects';
 
-type TToastButton = { text?: string; role?: string; handler?: () => void };
-type TPresentedToast = {
+type ToastButton = { text?: string; role?: string; handler?: () => void };
+type PresentedToast = {
   header: string;
   message: string;
-  buttons: TToastButton[];
+  buttons: ToastButton[];
 };
 
-// The effect only reads `name`, but the snapshot half is what the reducer
-// actually stashes — build the real shape so the fixture can't drift from it.
-const stashedDelete = (name: string): ITrackplayDeleted => {
+const stashedDelete = (name: string): TrackplayDeleted => {
   const { players, games, gameTypes, rounds } = mockTrackplayState();
   return { name, snapshot: { players, games, gameTypes, rounds } };
 };
 
-// The toast is presented from an async method, so a *negative* assertion has to
-// outlast the microtask queue the effect's tap kicks off.
 const settle = (): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -42,9 +38,7 @@ describe('TrackplayEffects', () => {
     dismiss: ReturnType<typeof vi.fn>;
   };
 
-  // The effect watches the slice, not the action bus, so a spec drives it the
-  // way the reducer does: by publishing what the delete stashed.
-  const stash = (lastDeleted: ITrackplayDeleted | null): void =>
+  const stash = (lastDeleted: TrackplayDeleted | null): void =>
     store.setState(
       mockKernelState({ trackplay: mockTrackplayState({ lastDeleted }) })
     );
@@ -79,8 +73,8 @@ describe('TrackplayEffects', () => {
 
   afterEach(() => subscription.unsubscribe());
 
-  const presentedToast = (index = 0): TPresentedToast =>
-    toastController.create.mock.calls[index][0] as TPresentedToast;
+  const presentedToast = (index = 0): PresentedToast =>
+    toastController.create.mock.calls[index][0] as PresentedToast;
 
   it('offers undo for the entity the reducer stashed', async () => {
     setup();
@@ -115,12 +109,6 @@ describe('TrackplayEffects', () => {
     );
   });
 
-  /**
-   * Single-level undo: a second delete must not leave a stale toast that would
-   * restore the older snapshot. It dismisses *its own* toast rather than every
-   * presented overlay — the controller sweep tore down other domains' toasts
-   * and could spin forever on one already mid-leave-animation.
-   */
   it('dismisses its own still-open undo toast before presenting the next one', async () => {
     setup();
 
@@ -135,9 +123,6 @@ describe('TrackplayEffects', () => {
     expect(toastController.dismiss).not.toHaveBeenCalled();
   });
 
-  // Deleting the built-in game type is refused by the reducer: the stash keeps
-  // its identity, and offering undo then meant offering to restore an unrelated
-  // earlier deletion.
   it('stays quiet when a refused delete leaves the stash untouched', async () => {
     setup();
     const stashed = stashedDelete('Alice');

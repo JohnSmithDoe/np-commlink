@@ -2,16 +2,14 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import {
   DashboardSettingsType,
-  IOfficeTimeStateStorage,
+  OfficeTimeStateStorage,
 } from '../model/office-time.types';
 
 export const OfficeTimeActions = createActionGroup({
   source: 'OfficeTime',
   events: {
-    // Own-data lazy load lifecycle. Payload is the persisted (ISO-string)
-    // shape; the reducer deserializes it.
     load: emptyProps(),
-    loaded: (officeTime: IOfficeTimeStateStorage | null) => ({ officeTime }),
+    loaded: (officeTime: OfficeTimeStateStorage | null) => ({ officeTime }),
 
     loadHolidays: emptyProps(),
     loadHolidaysSuccess: (holidays: Record<string, Dayjs>) => ({

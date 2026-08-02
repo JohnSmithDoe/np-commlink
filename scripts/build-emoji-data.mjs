@@ -31,7 +31,7 @@ const GROUP_BY_EMOJIBASE_ID = {
   8: 'symbols',
 };
 
-export const GROUP_IDS = Object.values(GROUP_BY_EMOJIBASE_ID);
+const GROUP_IDS = Object.values(GROUP_BY_EMOJIBASE_ID);
 
 const tokenize = (text) =>
   text
@@ -50,7 +50,7 @@ const tokenize = (text) =>
 const encodeEntry = ({ emoji, label, tags }) => ({
   glyph: emoji,
   label,
-  tags: [...new Set((tags ?? []).flatMap(tokenize))]
+  tags: [...new Set((tags ?? []).flatMap((tag) => tokenize(tag)))]
     .filter((tag) => !label.toLowerCase().includes(tag))
     .join(' '),
 });
@@ -58,7 +58,7 @@ const encodeEntry = ({ emoji, label, tags }) => ({
 const groupEntries = (data) => {
   const groups = Object.fromEntries(GROUP_IDS.map((id) => [id, []]));
 
-  for (const entry of [...data].sort((a, b) => a.order - b.order)) {
+  for (const entry of data.toSorted((a, b) => a.order - b.order)) {
     const groupId = GROUP_BY_EMOJIBASE_ID[entry.group];
     if (!groupId || !entry.emoji) continue;
     groups[groupId].push(encodeEntry(entry));

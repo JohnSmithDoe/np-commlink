@@ -1,32 +1,14 @@
-import { ICashFilterCondition, ICashRule } from '../model/rule.types';
-import { ICashTransaction } from '../model/transaction.types';
+import { CashFilterCondition, CashRule } from '../model/rule.types';
+import { CashTransaction } from '../model/transaction.types';
 import { eurToCents } from './money.utils';
 
-import { TCategoryId } from '../../@shared/model/category.types';
+import { CategoryId } from '../../@shared/model/category.types';
 
-/**
- * The cash categorization engine — pure, so it is trivially testable and shared
- * by P3 ("Apply rules") and P4 (auto-run on an import batch). See
- * docs/cash.md §7.3 → Categorization engine. Rules never touch a transaction the
- * user has flagged `categoryManual` — that shielding is the CALLER's job (this
- * module only decides which category a rule set would assign).
- */
-
-/**
- * A stored threshold is always read as German, whatever the UI language is.
- *
- * `ICashFilterCondition.value` is a persisted *string*, and the two conventions
- * are mutually ambiguous — `"1.234"` is 1234 € in German and 1.23 € in English —
- * so reading it in the current language would silently re-interpret every
- * existing rule the first time someone switched. German is therefore the
- * canonical storage form, and the rule editor normalizes onto it (see
- * `toCondition` in `rule-edit-modal`).
- */
 const STORED_THRESHOLD_LANGUAGE = 'de' as const;
 
 const matchesAmountCondition = (
   amountCents: number,
-  condition: ICashFilterCondition
+  condition: CashFilterCondition
 ): boolean => {
   const target = eurToCents(condition.value, STORED_THRESHOLD_LANGUAGE);
   if (target === null) return false; // unparseable threshold never matches
@@ -67,7 +49,7 @@ const matchesRegexSafely = (
 
 const matchesDescriptionCondition = (
   source: string,
-  condition: ICashFilterCondition
+  condition: CashFilterCondition
 ): boolean => {
   const caseSensitive = condition.caseSensitive ?? false;
   const haystack = caseSensitive ? source : source.toLowerCase();
@@ -97,30 +79,25 @@ const matchesDescriptionCondition = (
 };
 
 export function matchesCondition(
-  txn: ICashTransaction,
-  condition: ICashFilterCondition
+  txn: CashTransaction,
+  condition: CashFilterCondition
 ): boolean {
   return condition.field === 'amount'
     ? matchesAmountCondition(txn.amountCents, condition)
     : matchesDescriptionCondition(txn.description, condition);
 }
 
-/** Does a rule fire? `all` = every condition (AND), `any` = at least one (OR). */
-export function matchesRule(txn: ICashTransaction, rule: ICashRule): boolean {
+export function matchesRule(txn: CashTransaction, rule: CashRule): boolean {
   if (rule.conditions.length === 0) return false; // an empty rule never fires
   return rule.match === 'all'
     ? rule.conditions.every((condition) => matchesCondition(txn, condition))
     : rule.conditions.some((condition) => matchesCondition(txn, condition));
 }
 
-/**
- * The category id the first matching rule (by ascending `order`) would assign,
- * or `undefined` if none match. Does not mutate `rules`.
- */
 export function categorize(
-  txn: ICashTransaction,
-  rules: readonly ICashRule[]
-): TCategoryId | undefined {
+  txn: CashTransaction,
+  rules: readonly CashRule[]
+): CategoryId | undefined {
   const ordered = rules.toSorted((a, b) => a.order - b.order);
   for (const rule of ordered) {
     if (matchesRule(txn, rule)) return rule.categoryId;
@@ -128,22 +105,16 @@ export function categorize(
   return undefined;
 }
 
-export interface ICashRecategorization {
+export interface CashRecategorization {
   transactionId: string;
-  categoryId: TCategoryId | undefined;
+  categoryId: CategoryId | undefined;
 }
 
-/**
- * Which transactions the current rule set would re-file, and to what. The
- * `categoryManual` shielding lives here rather than in the calling page, so the
- * rule that "rules never touch a manual override" sits next to the engine it
- * constrains — and is covered by this module's spec.
- */
 export function recategorizations(
-  transactions: readonly ICashTransaction[],
-  rules: readonly ICashRule[]
-): ICashRecategorization[] {
-  const changes: ICashRecategorization[] = [];
+  transactions: readonly CashTransaction[],
+  rules: readonly CashRule[]
+): CashRecategorization[] {
+  const changes: CashRecategorization[] = [];
   for (const txn of transactions) {
     if (txn.categoryManual) continue;
     const categoryId = categorize(txn, rules);

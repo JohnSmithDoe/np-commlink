@@ -18,7 +18,6 @@ describe('CashTransactionEditModalComponent', () => {
     ));
   };
 
-  // The magnitude + direction form maps onto one signed amountCents.
   it('signs the amount negative for an expense', () => {
     setup();
     component.accountId = 'a1';
@@ -70,8 +69,6 @@ describe('CashTransactionEditModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // `app-money-input` reports an unparseable box itself, so the dialog only has
-  // to rule out zero and negative magnitudes — hence `min(path.amountCents, 1)`.
   it('rejects a non-positive amount, and leaves an empty one unflagged', () => {
     setup();
 
@@ -88,9 +85,6 @@ describe('CashTransactionEditModalComponent', () => {
   });
 
   it('refuses to save a cleared date rather than persisting "Invalid Date"', () => {
-    // `dayjs('').format()` returns the literal string 'Invalid Date', which
-    // used to reach `dateISO`: it sorts above every real date, buckets into a
-    // phantom month in the report, and can never be reconciled.
     setup();
 
     component.patch({ description: 'X', amountCents: 1000, date: '' });
@@ -144,8 +138,6 @@ describe('CashTransactionEditModalComponent', () => {
     );
   });
 
-  // The componentProp writes into a signal, so the draft seeds reactively — no
-  // ngOnInit to call (and none to forget).
   it('seeds the draft from an existing txn, splitting sign into direction', () => {
     setup(
       mockCashState({
@@ -184,9 +176,6 @@ describe('CashTransactionEditModalComponent', () => {
     );
   });
 
-  // The field tree projects the draft signal instead of copying it, so a reseed
-  // has to reach validity too — reading canSave() first materialises the tree
-  // over the blank create-mode draft, which is what would freeze a copy.
   it('re-derives validity after the draft reseeds', () => {
     setup(mockCashState({ transactions: [mockCashTransaction({ id: 't1' })] }));
 

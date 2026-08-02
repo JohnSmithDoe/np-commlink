@@ -46,6 +46,17 @@
     [itemTemplate]="itemTemplate()"
   >
     <ng-content select="[listActions]"></ng-content>
+    @if (hasFilter()) {
+      <ion-buttons slot="end">
+        <ion-button
+          data-testid="clear-category-filter"
+          (click)="clearFilter()"
+          [attr.aria-label]="'item-list.a11y.clear-filter' | translate"
+        >
+          <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+        </ion-button>
+      </ion-buttons>
+    }
   </app-item-list>
   <app-item-list-empty
     [isEmptyList]="!facade.items()?.length"

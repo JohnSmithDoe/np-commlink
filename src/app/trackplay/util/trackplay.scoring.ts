@@ -1,21 +1,18 @@
-import { IGame, IRound, ITrackplayState, TID } from '../model/trackplay.types';
+import {
+  Game,
+  Round,
+  TrackplayState,
+  TrackplayId,
+} from '../model/trackplay.types';
 import { createRound } from './trackplay.factory';
 
-/**
- * Writing a score, and the trailing blank round the scoring grid always shows.
- *
- * Pure state→state transforms, so they live here rather than in `data/`: they
- * import no `@ngrx`, and the reducer that calls them reads as its handler table
- * once they are out of it.
- */
-
-const isRoundBlank = (round?: IRound): boolean =>
+const isRoundBlank = (round?: Round): boolean =>
   !!round && Object.values(round.values).every((v) => !v);
 
 const appendBlankRound = (
-  state: ITrackplayState,
-  game: IGame
-): ITrackplayState => {
+  state: TrackplayState,
+  game: Game
+): TrackplayState => {
   const blank = createRound(game.rounds.length, game.players);
   return {
     ...state,
@@ -27,11 +24,10 @@ const appendBlankRound = (
   };
 };
 
-/** Guarantee the trailing blank round the scoring grid always shows. */
 export const ensureTrailingBlankRound = (
-  state: ITrackplayState,
-  gameId: TID
-): ITrackplayState => {
+  state: TrackplayState,
+  gameId: TrackplayId
+): TrackplayState => {
   const game = state.games[gameId];
   if (!game || game.ended) return state;
   const lastRoundId = game.rounds.at(-1);
@@ -41,11 +37,11 @@ export const ensureTrailingBlankRound = (
 };
 
 const withRoundValue = (
-  state: ITrackplayState,
-  round: IRound,
-  playerId: TID,
+  state: TrackplayState,
+  round: Round,
+  playerId: TrackplayId,
   value: number
-): ITrackplayState => ({
+): TrackplayState => ({
   ...state,
   rounds: {
     ...state.rounds,
@@ -53,22 +49,17 @@ const withRoundValue = (
   },
 });
 
-// Scoring the trailing round means the game continues, so a fresh blank row has
-// to appear below it. A zero is not a score — it is the blank's own value.
 const shouldAppendBlankRound = (
-  game: IGame,
-  roundId: TID,
+  game: Game,
+  roundId: TrackplayId,
   value: number
 ): boolean => game.rounds.at(-1) === roundId && value !== 0;
 
 const touchGameAndPlayers = (
-  state: ITrackplayState,
-  gameId: TID,
+  state: TrackplayState,
+  gameId: TrackplayId,
   now: number
-): ITrackplayState => {
-  // Re-read rather than take the caller's `game`: `appendBlankRound` may have
-  // replaced it in the state handed over, and stamping the stale copy would drop
-  // the round it just added.
+): TrackplayState => {
   const game = state.games[gameId];
   if (!game) return state;
   const players = { ...state.players };
@@ -84,21 +75,16 @@ const touchGameAndPlayers = (
 };
 
 export const setRoundValue = (
-  state: ITrackplayState,
-  gameId: TID,
-  roundId: TID,
-  playerId: TID,
+  state: TrackplayState,
+  gameId: TrackplayId,
+  roundId: TrackplayId,
+  playerId: TrackplayId,
   value: number,
   now: number
-): ITrackplayState => {
+): TrackplayState => {
   const game = state.games[gameId];
   const round = state.rounds[roundId];
   if (!game || !round) return state;
-  // Every cell blur dispatches, changed or not. Without this the unchanged case
-  // still bumped the game's `updated` and every participant's `lastPlayed` —
-  // and returning `state` itself, rather than an equal copy, is what also keeps
-  // the write off the disk: the save effect persists on a change of the slice
-  // reference, not on the action.
   if (round.values[playerId] === value) return state;
   const scored = withRoundValue(state, round, playerId, value);
   const grown = shouldAppendBlankRound(game, roundId, value)

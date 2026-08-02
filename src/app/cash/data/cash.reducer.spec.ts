@@ -72,7 +72,7 @@ describe('cashReducer', () => {
   });
 
   it('sets a transaction category id and flags it as manual', () => {
-    const txn = mockCashTransaction({ id: 't1', categoryId: 'groceries' });
+    const txn = mockCashTransaction({ id: 't1', categoryId: 'household' });
     const start = mockCashState({ transactions: [txn] });
     const state = cashReducer(
       start,
@@ -94,7 +94,7 @@ describe('cashReducer', () => {
     const state = cashReducer(
       start,
       CashActions.recategorizeTransactions([
-        { transactionId: 't1', categoryId: 'groceries' },
+        { transactionId: 't1', categoryId: 'household' },
         { transactionId: 't2', categoryId: undefined },
       ])
     );
@@ -102,9 +102,8 @@ describe('cashReducer', () => {
     expect(
       state.transactions.map((t) => [t.id, t.categoryId, t.categoryManual])
     ).toEqual([
-      ['t1', 'groceries', false],
+      ['t1', 'household', false],
       ['t2', undefined, false],
-      // A row the run did not name keeps its category AND its object identity.
       ['t3', 'rent', undefined],
     ]);
     expect(state.transactions[2]).toBe(start.transactions[2]);
@@ -131,7 +130,6 @@ describe('cashReducer', () => {
     );
     expect(booked.transactions.map((t) => t.id)).toEqual(['f', 't']);
 
-    // removing either leg removes the whole group
     const removed = cashReducer(booked, CashActions.removeTransaction('f'));
     expect(removed.transactions).toHaveLength(0);
   });
@@ -154,7 +152,6 @@ describe('cashReducer', () => {
     const index = state.transactions.find((t) => t.id === 'i1')!;
     expect(m.matchedTxnId).toBe('i1');
     expect(m.status).toBe('confirmed');
-    // the hand-set category id carried onto the survivor
     expect(index.categoryId).toBe('restaurant');
     expect(index.categoryManual).toBe(true);
   });
@@ -177,7 +174,6 @@ describe('cashReducer', () => {
   it('adds a pre-minted category once (dedupe by id/name) and removes it by id', () => {
     const rent = mockCategory({ id: 'rent', name: 'Rent' });
     const added = cashReducer(initialState, CashActions.addCategory(rent));
-    // re-adding the same id is a no-op (same state reference back)
     const again = cashReducer(added, CashActions.addCategory(rent));
     expect(again).toBe(added);
     expect(again.categories.items).toEqual([rent]);
@@ -204,16 +200,12 @@ describe('cashReducer', () => {
     const t1 = state.transactions.find((t) => t.id === 't1')!;
     expect(t1.categoryId).toBeUndefined();
     expect(t1.categoryManual).toBeUndefined();
-    // an unrelated transaction is untouched
     expect(state.transactions.find((t) => t.id === 't2')!.categoryId).toBe(
       'food'
     );
   });
 
   it('removing a category drops the rules that assigned it', () => {
-    // Otherwise "Regeln anwenden" re-stamps the dead id onto the very
-    // transactions this handler just cleared, and the orphan rule renders with
-    // a blank category so it cannot be repaired by hand.
     const rent = mockCategory({ id: 'rent', name: 'Rent' });
     const food = mockCategory({ id: 'food', name: 'Food' });
     const start = mockCashState({
@@ -230,7 +222,6 @@ describe('cashReducer', () => {
   });
 
   it('prunes rules orphaned by an older build when hydrating', () => {
-    // Self-heal: documents written before the delete cascaded still carry them.
     const food = mockCategory({ id: 'food', name: 'Food' });
     const stored = mockCashState({
       categories: mockCashCategoryList({ items: [food] }),
@@ -271,7 +262,6 @@ describe('cashReducer', () => {
       start,
       CashActions.updateCategory('rent', 'Housing')
     );
-    // only the catalog entry's name changes; the id ('rent') is stable
     expect(state.categories.items).toEqual([
       { id: 'rent', name: 'Housing' },
       food,
@@ -292,9 +282,7 @@ describe('cashReducer', () => {
       start,
       CashActions.updateCategory('rent', 'Food')
     );
-    // the renamed entry is dropped; only the survivor ('food') remains
     expect(state.categories.items).toEqual([food]);
-    // references are remapped from the dropped id onto the survivor id
     expect(state.transactions[0].categoryId).toBe('food');
     expect(state.rules[0].categoryId).toBe('food');
   });

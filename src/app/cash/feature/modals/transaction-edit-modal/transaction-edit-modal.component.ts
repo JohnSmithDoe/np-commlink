@@ -35,38 +35,28 @@ import {
   requireText,
 } from '../../../../@shared/util/forms/form-rules';
 import {
-  ICashTransaction,
-  TCashTxnStatus,
+  CashTransaction,
+  CashTransactionStatus,
 } from '../../../model/transaction.types';
 import { CashCategoryPickerComponent } from '../../../ui/cash-category-picker/cash-category-picker.component';
 import { CashFacade } from '../../../data';
 import { MoneyInputComponent } from '../../../ui/money-input/money-input.component';
-import {
-  ICategory,
-  TCategoryId,
-} from '../../../../@shared/model/category.types';
+import { Category, CategoryId } from '../../../../@shared/model/category.types';
 
-type TDirection = 'expense' | 'income';
+type Direction = 'expense' | 'income';
 
-// The signed `amountCents` is edited as a positive magnitude + a direction
-// segment, so the form is a view-model over ICashTransaction, not a copy.
-type TTransactionForm = {
+type TransactionForm = {
   description: string;
   amountCents: number | null;
-  direction: TDirection;
+  direction: Direction;
   date: string;
   pending: boolean;
-  // '' = no category.
-  categoryId: TCategoryId;
+  categoryId: CategoryId;
 };
 
 const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
 
-// The amount names its empty case itself, which is what lets the note below
-// exclude it: an *empty* amount earns no error note, anything unusable in the box
-// does. `min` is usable because `app-money-input` hands over cents — and it
-// reports the unparseable case by itself.
-const transactionRules: SchemaFn<TTransactionForm> = (path) => {
+const transactionRules: SchemaFn<TransactionForm> = (path) => {
   requireText(path.description);
   validate(path.amountCents, ({ value }) =>
     value() === null ? MISSING_AMOUNT : null
@@ -75,12 +65,6 @@ const transactionRules: SchemaFn<TTransactionForm> = (path) => {
   requireParseableDate(path.date);
 };
 
-/**
- * Create/edit a MANUAL transaction, presented via `ModalController`. Amount is
- * entered as a positive magnitude plus a direction segment; the signed
- * `amountCents` (< 0 = expense) is composed on save. A human-set category is
- * flagged `categoryManual` so P3 rule re-runs leave it alone.
- */
 @Component({
   selector: 'app-cash-transaction-edit-modal',
   templateUrl: './transaction-edit-modal.component.html',
@@ -107,33 +91,29 @@ const transactionRules: SchemaFn<TTransactionForm> = (path) => {
   ],
 })
 export class CashTransactionEditModalComponent extends BaseModalDialog<
-  ICashTransaction,
-  TTransactionForm
+  CashTransaction,
+  TransactionForm
 > {
   readonly #facade = inject(CashFacade);
   readonly #transactions = this.#facade.transactions;
   readonly categories = this.#facade.categories;
 
-  /** Create mode: the account the new txn belongs to. */
   accountId!: string;
-  /** Edit mode: set imperatively via `componentProps` (undefined = create). */
   set transactionId(id: string | undefined) {
     this.editId.set(id);
   }
 
-  protected readonly existing = computed<ICashTransaction | undefined>(() => {
+  protected readonly existing = computed<CashTransaction | undefined>(() => {
     const id = this.editId();
     return id
       ? this.#transactions().find((transaction) => transaction.id === id)
       : undefined;
   });
 
-  protected applyRules(path: SchemaPathTree<TTransactionForm>): void {
+  protected applyRules(path: SchemaPathTree<TransactionForm>): void {
     transactionRules(path);
   }
 
-  // Every error kind except "empty" earns the note — an unusable box says so,
-  // an untouched one just leaves the save disabled.
   readonly amountInvalid = computed(() =>
     this.form
       .amountCents()
@@ -142,7 +122,7 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
   );
   readonly dateInvalid = computed(() => this.form.date().invalid());
 
-  protected blank(): TTransactionForm {
+  protected blank(): TransactionForm {
     return {
       description: '',
       amountCents: null,
@@ -153,7 +133,7 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
     };
   }
 
-  protected toForm(transaction: ICashTransaction): TTransactionForm {
+  protected toForm(transaction: CashTransaction): TransactionForm {
     return {
       description: transaction.description,
       amountCents: Math.abs(transaction.amountCents),
@@ -165,20 +145,20 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
   }
 
   protected persist(
-    draft: TTransactionForm,
-    existing: ICashTransaction | undefined
+    draft: TransactionForm,
+    existing: CashTransaction | undefined
   ): void {
     const magnitude = draft.amountCents ?? 0;
     const categoryId = draft.categoryId.trim() || undefined;
-    const status: TCashTxnStatus = draft.pending ? 'pending' : 'confirmed';
+    const status: CashTransactionStatus = draft.pending
+      ? 'pending'
+      : 'confirmed';
     const fields = {
       dateISO: dayjs(draft.date).format(),
       amountCents: draft.direction === 'expense' ? -magnitude : magnitude,
       description: draft.description.trim(),
       status,
       categoryId,
-      // A human editing the txn owns the category — including clearing it —
-      // so it's shielded from P3 rules either way.
       categoryManual: true,
     };
     if (existing) {
@@ -193,16 +173,15 @@ export class CashTransactionEditModalComponent extends BaseModalDialog<
     }
   }
 
-  // Category CRUD forwarded to the facade; the picker owns selection state.
-  onAddCategory(category: ICategory): void {
+  onAddCategory(category: Category): void {
     this.#facade.addCategory(category);
   }
 
-  onDeleteCategory(id: TCategoryId): void {
+  onDeleteCategory(id: CategoryId): void {
     this.#facade.removeCategory(id);
   }
 
-  onRenameCategory({ id, to }: { id: TCategoryId; to: string }): void {
+  onRenameCategory({ id, to }: { id: CategoryId; to: string }): void {
     this.#facade.updateCategory(id, to);
   }
 }

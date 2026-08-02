@@ -1,11 +1,6 @@
 import { Dayjs } from 'dayjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TMarker } from '../../@shared/model/app.types';
-
-// The `office-time` bounded context owns its model (DDD review #1 — the god
-// `@shared/types` file is being split so each context holds its own types). It
-// is a single slice — `officeTime` (tracked days + stats + the office dashboard
-// config).
+import { Marker } from '../../@shared/model/app.types';
 
 export type DashboardStats = {
   workdays: number;
@@ -36,14 +31,9 @@ type DashboardSettings = {
 
 export type DashboardSettingsType = keyof DashboardSettings;
 
-// Keyed by the flag union so a new dashboard flag cannot ship without a label.
-// Spelled out because the settings page reads them through a lookup — the
-// composed `'office-time.page.settings.dashboard.' + key` this replaces was
-// invisible to the extractor, so the keys needed a hand-maintained marker list
-// that nothing tied to `DashboardSettings`.
 export const DASHBOARD_SETTING_LABEL_KEYS: Record<
   DashboardSettingsType,
-  TMarker
+  Marker
 > = {
   showDateCard: marker('office-time.page.settings.dashboard.showDateCard'),
   showPercentageCard: marker(
@@ -75,13 +65,6 @@ export const DASHBOARD_SETTING_LABEL_KEYS: Record<
   ),
 };
 
-/**
- * Every dashboard card, mapped to the settings flag that hides it — `button` maps
- * to none, because logging today is the page's reason to exist and is not
- * hideable. This object IS the card vocabulary (`DashboardItemType` is its
- * keys), so the two used to drift as a hand-kept list plus a switch in the page;
- * now a new card cannot be added without saying whether it is hideable.
- */
 export const DASHBOARD_CARD_VISIBILITY = {
   date: 'showDateCard',
   button: null,
@@ -106,7 +89,7 @@ export type DateTimeHighlight = {
   textColor: string;
 };
 
-export interface IOfficeTimeState {
+export interface OfficeTimeState {
   targetOfficeDaysPerWeek: number;
   holidays: Record<string, Dayjs>;
   officedays: Array<Dayjs>;
@@ -115,8 +98,8 @@ export interface IOfficeTimeState {
   dashboardItems: DashboardItemType[];
 }
 
-export type IOfficeTimeStateStorage = Omit<
-  IOfficeTimeState,
+export type OfficeTimeStateStorage = Omit<
+  OfficeTimeState,
   'holidays' | 'officedays' | 'freedays'
 > & {
   holidays?: Record<string, string>;

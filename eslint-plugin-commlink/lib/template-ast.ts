@@ -1,3 +1,25 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Shared readers over the `@angular-eslint/template-parser` AST. Every
+ * helper here exists because one AST detail is easy to get wrong, and the
+ * failure mode is a gate gone silently inert rather than loudly broken.
+ *
+ * A block (`@if`, `@for`, `@switch`, `@defer`) holds its children one
+ * level deeper than an element does, so a walk that only follows
+ * `children` stops at the first `@if` — and text inside one names its
+ * surrounding element just as well as text outside it.
+ *
+ * Whitespace does not count as text: an indented multi-line element always
+ * has Text children, so a bare "has a Text child" test exempts exactly the
+ * icon-only elements these rules exist to catch. Interpolation (a
+ * BoundText) does count — it is text we cannot read, not the absence of
+ * text.
+ *
+ * The parser-services guard turns "`undefined` is not a function" thrown
+ * from inside a rule into a message naming the parser that is missing,
+ * which is what a template rule configured onto a TypeScript-parsed file
+ * otherwise fails as.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import type {
   TemplateAttribute,
@@ -7,16 +29,8 @@ import type {
   TemplateParserServices,
 } from './template-ast.types.ts';
 
-// Shared readers over the `@angular-eslint/template-parser` AST.
-// Every helper exists because one AST detail is easy to get wrong.
-// The failure mode is a gate gone silently inert, not loudly broken.
-
 export const ACCESSIBLE_NAME_ATTRIBUTES = ['aria-label', 'aria-labelledby'];
 
-// A block (`@if`, `@for`, `@switch`, `@defer`) holds its children one level
-// deeper than an element does, so a walk that only follows `children` stops at
-// the first `@if` — and text inside one names its surrounding element just as
-// well as text outside it.
 const CHILD_KEYS = [
   'children',
   'branches',
@@ -27,7 +41,6 @@ const CHILD_KEYS = [
   'error',
 ];
 
-/** Every attribute name on an element, static and bound alike. */
 export const attributeNames = (element: TemplateElement): string[] => [
   ...element.attributes.map(({ name }) => name),
   ...element.inputs.map(({ name }) => name),
@@ -72,13 +85,6 @@ export const descendants = function* (
 const isElement = (node: TemplateNode): node is TemplateElement =>
   node.type === 'Element';
 
-/** Text of the element's own, anywhere inside it.
- *
- * Whitespace does not count: an indented multi-line element always has Text
- * children, so a bare "has a Text child" test exempts exactly the icon-only
- * elements these rules exist to catch. Interpolation (`{{ … }}`, a BoundText)
- * counts — it is text we cannot read, not the absence of text.
- */
 export const hasOwnText = (element: TemplateElement): boolean => {
   for (const node of descendants(element)) {
     if (node.type === 'BoundText') return true;
@@ -108,11 +114,6 @@ export const containsElement = (
   return false;
 };
 
-/** The parser services, or a message naming the parser that is missing.
- *
- * Without this, a template rule configured onto a file the TypeScript parser
- * owns fails with `undefined is not a function` from inside the rule.
- */
 export const templateParserServices = (
   context: Rule.RuleContext
 ): TemplateParserServices => {

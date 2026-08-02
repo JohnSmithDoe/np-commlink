@@ -1,37 +1,45 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// np-commlink — theme tokens + primitives (shared, app-wide)
-// ═══════════════════════════════════════════════════════════════════════════
-// TWO themes off ONE token group:
-//   • base `:root`                    → "OK Boomer": plain, light, serious,
-//                                        sans-serif, flat surfaces, NO neon.
-//   • `:root[data-theme='cyberpunk']` → the Shadowrun deck: dark slate, amber +
-//                                        teal neon, monospace, glow, HUD frame,
-//                                        scanlines, corner brackets, LED pulse.
-// The plain theme is the UN-decorated base by construction — every cyberpunk
-// flourish is *added* under the [data-theme='cyberpunk'] selector, so a new
-// surface reads plain unless it opts in. theme.service sets <html data-theme>
-// (default 'cyberpunk', the app's identity); the choice rides the eager
-// `settings` slice.
+// ─── why ────────────────────────────────────────────────────────
+// The --sr-* tokens and the global .sr-* primitives wrapping _deck.scss's
+// mixins. The layer as a whole is specified in global.scss, the one file that
+// @uses this one.
 //
-// This file is @use'd once from global.scss — do NOT @use it from a component
-// (it emits global CSS). Components consume the tokens / .sr-* classes below, or
-// @use 'theme/deck' for the mixins.
+// The accent duo aliases the Ionic brand colours, so a hue lives in exactly one
+// place and variables.scss does the per-theme flipping. Cyberpunk's are AA-
+// verified (amber/cyan ≥ 6:1, body ≥ 13:1 on slate) with muted amber held at
+// α 0.85 — which is why muted TEXT is --sr-text-dim and not the accent at an
+// alpha: the plain accent is a corporate blue on paper, where that idiom drops
+// under AA.
 //
-//   tokens     → --sr-* custom properties (palette + the "flip" tokens that turn
-//                case / tracking / font / glow / radius into per-theme values)
-//   primitives → ion-content / ion-card / ion-toolbar / titles / focus / …
-//   utilities  → .sr-panel/.sr-corners/.sr-led*/.sr-brand* + .sr-scanlines/
-//                .sr-glow/.sr-hud (deck pieces; decoration gated to cyberpunk)
+// The type scale is every whole pixel at the 16px root, and that IS the point:
+// the app had 24 distinct sizes, twelve between 0.6rem and 0.9rem, so a "0.72
+// vs 0.74rem" decision was a third of a pixel of nothing. Take the nearest
+// rung; if none fits, the ladder gains one HERE rather than a call site
+// inventing a value. `commlink/font-size-uses-scale` reads the rung names off
+// this block, so its message cannot drift from them. Icon boxes and the two
+// fluid clamp() heads stay literals — an icon shares the property with type but
+// not the meaning, and a clamp cannot be a rung — each carrying its own
+// disable-line reason instead of a path allowlist elsewhere. The ladder is
+// theme-INVARIANT (a theme flips the face and the case, not the steps) and
+// custom properties anyway, so a third theme could still override it.
 //
-// Cyberpunk colours are WCAG-AA verified (amber/cyan ≥6:1, body ≥13:1 on slate);
-// muted amber label text stays at alpha ≥ 0.85. The plain palette is AA on paper.
-// ═══════════════════════════════════════════════════════════════════════════
+// Two :root declarations are not about theming. `color-scheme` tells the UA how
+// to paint what we cannot style — scrollbars, native date/select widgets,
+// autofill — and here it follows data-theme for free, where index.html's <meta>
+// can only state the pre-stylesheet default. `scrollbar-width`/`-color` sit
+// here rather than on `*` because both inherit, and inheritance crosses shadow
+// boundaries a global `*` cannot, reaching the scrollers inside Ionic's roots.
+//
+// --sr-sans is deliberately system-only: the plain theme's point is to look
+// like the OS, not like a brand. @keyframes sr-pulse is declared here because
+// _deck.scss's led-glow references it and that file emits nothing. And
+// .sr-field-note is global because a dialog's validation note and a shared
+// control's must look identical while the control cannot reach the dialog's
+// stylesheet — five call sites each carried a copy.
+// ────────────────────────────────────────────────────────────────
 
 @use 'deck';
 
 :root {
-  // ── Accent duo — aliased to the Ionic brand colours so hue lives in one place
-  //    (variables.scss flips --ion-color-primary/secondary per theme). ─────────
   --sr-amber: var(--ion-color-primary);
   --sr-amber-rgb: var(--ion-color-primary-rgb);
   --sr-cyan: var(--ion-color-secondary);
@@ -41,23 +49,7 @@
   --sr-red-rgb: 255, 59, 71; // rgb form of --sr-red (for rgba() glows/borders)
   --sr-red-deep: #c1121f; // AA-safe red for text backgrounds (badges, danger)
 
-  // ── Type scale ──────────────────────────────────────────────────────────
-  // Theme-INVARIANT (a theme flips the face and the case, not the ladder), so
-  // no [data-theme] block overrides these — but they are custom properties
-  // rather than Sass, so a third theme still could.
-  //
-  // Every step is a whole pixel at the 16px root. That is the point: the app
-  // had 24 distinct sizes, twelve of them between 0.6rem and 0.9rem, so a
-  // "0.72 vs 0.74rem" decision was a third of a pixel of nothing. Pick the
-  // nearest rung; if none fits, the scale is wrong and gains one HERE, rather
-  // than the call site inventing a value. The gate is the stylelint rule
-  // `commlink/font-size-uses-scale`, which reads these names off this block.
-  //
-  // Icon box sizes and the two fluid clamp() heads stay literals on purpose:
-  // an icon shares the property with type, not the meaning, and a clamp cannot
-  // be a rung on a fixed ladder. Each carries a stylelint-disable-next-line
-  // with its reason, rather than being allowlisted by path somewhere else.
-  --fs-xsmall: 0.6875rem; // 11px — badges, HUD eyebrows, telemetry (Ionic's own ion-note size)
+  --fs-xsmall: 0.6875rem; // 11px — badges, HUD eyebrows, telemetry (ion-note)
   --fs-small: 0.8125rem; // 13px — captions, tile copy, secondary body, fields
   --fs-body: 1rem; // 16px — body copy; ALSO the page default, set on body below
   --fs-large: 1.125rem; // 18px — card titles, emphasised figures
@@ -65,11 +57,6 @@
   --fs-xxlarge: 2rem; // 32px — display figures
   --fs-display: 4rem; // 64px — the dashboard's date hero
 
-  // ── Font stacks — invariant; --sr-deck-font (below) picks one per theme. ────
-  // JetBrains Mono is SELF-HOSTED (theme/_fonts.scss declares the five weights);
-  // the rest of the stack still matters, because `font-display: swap` paints the
-  // fallback until the woff2 arrives. --sr-sans is deliberately system-only — the
-  // plain theme's whole point is to look like the OS, not like a brand.
   --sr-mono:
     'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
     monospace;
@@ -77,14 +64,6 @@
     system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial,
     sans-serif;
 
-  // ═══ OK Boomer (plain, light) — THE BASE THEME ════════════════════════════
-  // Terminal slate → office paper. A second theme overrides ONLY this group +
-  // the variables.scss --ion-color-* group.
-
-  // Not a token: it tells the UA how to paint what we cannot style — scrollbars,
-  // the native date/select widgets, autofill. A declaration here follows
-  // data-theme for free, where the <meta> in index.html could only state the
-  // pre-stylesheet default.
   color-scheme: light;
 
   --sr-bg: #f4f6f8; // app / content backdrop
@@ -98,8 +77,6 @@
   --sr-text: #1f2733; // body copy
   --sr-text-dim: #5b6472; // muted label (AA on paper)
 
-  // ── "Flip" tokens — structural axes as overridable values so component CSS
-  //    references a token instead of a hardcoded literal, and the theme flips it.
   --sr-deck-font: var(--sr-sans); // the app-wide UI font
   --sr-heading-transform: none; // ion-title / card titles case
   --sr-heading-tracking: normal;
@@ -111,14 +88,10 @@
   --sr-glow: none; // text/box neon bloom (off in plain)
   --sr-glow-lg: none; // hero / page-title bloom (off in plain)
 
-  // Thin scrollbars. Declared here rather than on `*`: both properties inherit,
-  // and inheritance crosses shadow boundaries where a global `*` cannot — so
-  // this also reaches the scrollers inside Ionic's shadow roots.
   scrollbar-width: thin;
   scrollbar-color: var(--sr-line) transparent;
 }
 
-// ═══ Cyberpunk — the Shadowrun deck (default selection) ══════════════════════
 :root[data-theme='cyberpunk'] {
   color-scheme: dark;
 
@@ -147,7 +120,6 @@
     0 0 40px rgba(var(--sr-amber-rgb), 0.22);
 }
 
-// ── content backdrop: flat in plain, deep matrix radial in cyberpunk ─────────
 ion-content {
   --background: var(--sr-bg);
 }
@@ -160,9 +132,6 @@ ion-content {
   );
 }
 
-// ── typography (chrome + headings) ───────────────────────────────────────────
-// The page default. Everything that does not opt into a rung inherits this, so
-// a component only names a size when it means something OTHER than body copy.
 body {
   font-size: var(--fs-body);
 }
@@ -180,9 +149,6 @@ ion-card-title {
   text-shadow: var(--sr-glow); // none in plain
 }
 
-// ── framed surfaces ─────────────────────────────────────────────────────────
-// Plain flat panel by default; the cyberpunk gradient + inset bevel is layered
-// on under the deck theme. ion-card paints through Ionic's --background var.
 ion-card {
   @include deck.panel-base(--background);
 }
@@ -198,13 +164,11 @@ ion-card {
   }
 }
 
-// A thin rule under every toolbar (an amber deck seam in cyberpunk).
 ion-toolbar {
   --border-color: var(--sr-line);
   --border-width: 0 0 1px 0;
 }
 
-// Side-menu items: body text in plain, amber deck contrast in cyberpunk.
 ion-menu ion-item {
   --color: var(--sr-text);
 }
@@ -212,13 +176,11 @@ ion-menu ion-item {
   --color: var(--sr-amber);
 }
 
-// ── accessible focus ring (keyboard) ────────────────────────────────────────
 :focus-visible {
   outline: 2px solid var(--sr-cyan);
   outline-offset: 2px;
 }
 
-// ── thin scrollbars (the standard properties ride :root, above) ─────────────
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -227,11 +189,6 @@ ion-menu ion-item {
   background: var(--sr-line);
 }
 
-// ═══ deck utilities — global classes wrapping the _deck.scss mixins ══════════
-// Emitted ONCE here; pages apply the class in HTML. Decoration (brackets,
-// scanlines, LED glow, brand drop-shadow) is gated to [data-theme='cyberpunk'].
-
-// HUD corner brackets — cyberpunk only.
 .sr-corners {
   position: relative;
 }
@@ -239,7 +196,6 @@ ion-menu ion-item {
   @include deck.hud-corners;
 }
 
-// Status LEDs — solid coloured dot in both themes; bloom + pulse in cyberpunk.
 .sr-led {
   @include deck.led-base;
 }
@@ -273,8 +229,6 @@ ion-menu ion-item {
   }
 }
 
-// Deck brand row (icon chip + name). Case/tracking flip per theme; the icon
-// drop-shadow glow is cyberpunk only.
 .sr-brand {
   @include deck.brand;
 }
@@ -288,9 +242,6 @@ ion-menu ion-item {
   filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.6));
 }
 
-// ═══ opt-in signature effects (cyberpunk only) ══════════════════════════════
-
-// Static CRT scanline wash — only painted under the deck theme.
 .sr-scanlines {
   position: relative;
 }
@@ -309,15 +260,10 @@ ion-menu ion-item {
   );
 }
 
-// Amber terminal glow on any text (none in plain via --sr-glow).
 .sr-glow {
   text-shadow: var(--sr-glow);
 }
 
-// A validation message under a form control. Global because a dialog's note and
-// a shared control's note must look identical, and the control cannot reach the
-// dialog's stylesheet: the five call sites each carried their own copy of these
-// four lines until the shared name input became the fifth.
 .sr-field-note {
   display: block;
   padding: 0.35rem 1rem 0;
@@ -325,13 +271,11 @@ ion-menu ion-item {
   letter-spacing: var(--sr-label-tracking);
 }
 
-// Eyebrow / HUD label — mono uppercase in cyberpunk, plain sentence-case sans.
 .sr-hud {
   @include deck.hud-label;
   color: var(--sr-text-dim);
 }
 
-// The colour bar down the leading edge of a list row.
 .sr-status-bar {
   @include deck.status-bar;
 }

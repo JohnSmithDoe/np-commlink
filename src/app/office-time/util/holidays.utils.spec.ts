@@ -24,10 +24,6 @@ const ruleBasedDates = (year: number): Record<string, string> =>
   );
 
 describe('berlinHolidaysFor', () => {
-  // Pinned against berlin.de's published lists rather than against a second run
-  // of the same Easter arithmetic — a formula agreeing with itself proves
-  // nothing. 2027 is the year that carries the month-boundary case for free:
-  // its Easter falls in March, so the offsets cross into April and May.
   it.each(PUBLISHED_YEARS)(
     'computes every date the %i list publishes, and no others',
     (year) => {
@@ -35,8 +31,6 @@ describe('berlinHolidaysFor', () => {
     }
   );
 
-  // An act of parliament, not a rule — so the omission has to read as a
-  // decision rather than as a gap someone will "fix" later.
   it('omits the one-off 80th-anniversary holiday of 2025', () => {
     expect(Object.keys(publishedBerlinHolidays(2025))).toContain(
       ONE_OFF_LIBERATION_DAY_2025
@@ -47,7 +41,6 @@ describe('berlinHolidaysFor', () => {
   });
 
   it('handles the latest possible Easter', () => {
-    // Easter Sunday 2038 is 25 April, the far end of the range.
     expect(on(2038, 'Ostermontag')).toBe('2038-04-26');
   });
 

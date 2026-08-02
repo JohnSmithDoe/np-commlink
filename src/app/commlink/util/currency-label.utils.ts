@@ -1,13 +1,8 @@
 import { formatEur } from '../../@shared/util/formatting/money-format.utils';
-import { TTheme } from '../../@shared/model/app.types';
+import { Theme } from '../../@shared/model/app.types';
 
-/**
- * A telemetry balance (whole euros) as the deck would read it: cyberpunk's
- * "nyen" flavor, or the real euro amount for the plain theme. Stays in
- * `commlink/util` rather than `@shared` — only this domain needs it.
- */
 export function currencyLabel(
-  theme: TTheme,
+  theme: Theme,
   euros: number,
   locale?: string
 ): string {

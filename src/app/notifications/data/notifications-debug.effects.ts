@@ -7,45 +7,24 @@ import { map } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationsInboxActions } from './notifications.actions';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { TMarker } from '../../@shared/model/app.types';
-import { INotification } from '../../@shared/model/notifications.types';
+import { Marker } from '../../@shared/model/app.types';
+import { InboxNotification } from '../../@shared/model/notifications.types';
 
-// Debug-only helper. It used to read a random real tracking item to build an
-// actionable notification, which coupled notifications → tracking. Now it is
-// self-contained: it fabricates a notification against a synthetic target id, so
-// the deck badge + the CTA deep-link flow (/tracking?cmd=…) can be exercised
-// end-to-end. Tapping the CTA opens tracking, which finds no matching item and
-// no-ops — the graceful stale-command path, and the branch worth covering here.
-// No tracking import, no tracking-state read.
-//
-// The commands below are the fixture's own tokens rather than a stub of
-// tracking's vocabulary: a command is opaque to the port, and the CTA's label
-// travels with it, so nothing has to recognise a command to label its button.
-// The commands as a value, so the random pick below reads the list itself rather
-// than recovering it from `Object.keys(DEBUG_PRESETS)` through a cast. The derived
-// union keeps the preset record exhaustive: a fourth command cannot be added
-// without its preset.
 const DEBUG_COMMANDS = ['debug.start', 'debug.stop', 'debug.pause'] as const;
-type TDebugCommand = (typeof DEBUG_COMMANDS)[number];
+type DebugCommand = (typeof DEBUG_COMMANDS)[number];
 
-// The fallback is unreachable — `Math.random()` never returns 1 — and is there
-// only because an index built at runtime is typed as possibly out of range.
-const randomDebugCommand = (): TDebugCommand =>
+const randomDebugCommand = (): DebugCommand =>
   DEBUG_COMMANDS[Math.floor(Math.random() * DEBUG_COMMANDS.length)] ??
   DEBUG_COMMANDS[0];
 type DebugPreset = {
   icon: string;
-  color: INotification['color'];
-  // Keys, not literals, for the same reason the real producer uses them: the
-  // inbox stores rendered text, so whoever publishes a row translates it. These
-  // were German strings, which meant the one producer that could not follow the
-  // convention was the fixture written to exercise it.
-  titleKey: TMarker;
-  bodyKey: TMarker;
-  labelKey: TMarker;
+  color: InboxNotification['color'];
+  titleKey: Marker;
+  bodyKey: Marker;
+  labelKey: Marker;
 };
 
-const DEBUG_PRESETS: Record<TDebugCommand, DebugPreset> = {
+const DEBUG_PRESETS: Record<DebugCommand, DebugPreset> = {
   'debug.start': {
     icon: 'play-circle',
     color: 'primary',
@@ -82,7 +61,7 @@ export class NotificationsDebugEffects {
         const preset = DEBUG_PRESETS[type];
         const now = dayjs().format();
         const targetId = uuidv4();
-        const notification: INotification = {
+        const notification: InboxNotification = {
           id: uuidv4(),
           name: this.#translate.instant(preset.titleKey),
           body: this.#translate.instant(preset.bodyKey),

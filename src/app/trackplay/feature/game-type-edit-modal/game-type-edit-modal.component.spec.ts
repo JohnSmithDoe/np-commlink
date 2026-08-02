@@ -39,8 +39,6 @@ describe('TrackplayGameTypeEditModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // The componentProp writes into a signal, so the draft seeds reactively — no
-  // ngOnInit to call (and none to forget).
   it('seeds the draft from the id alone and dispatches updateGameType', () => {
     setup(
       mockTrackplayState({

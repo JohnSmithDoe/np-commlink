@@ -39,9 +39,6 @@ describe('BarcodeFacade', () => {
     );
   });
 
-  // The upload input is a dumb component, so the facade owns the i18n key and
-  // raises the toast on the shared contract — that is what keeps TranslateService
-  // out of the component.
   it('reports an unreadable upload as a danger toast on the shared contract', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
 

@@ -1,19 +1,20 @@
-import type { Rule } from 'eslint';
+/* ─── why ─────────────────────────────────────────────────────────
+ * `createActionGroup` camelCases the key to build the creator either way,
+ * so `'Add Item'` and `addItem` produce the SAME creator name and the same
+ * call sites. What differs is the generated wire `type`: `[Source] Add
+ * Item` versus `[Source] addItem`. Writing the identifier makes those one
+ * token, so an action is greppable by the single name it has — search
+ * `addItem` and you find the definition, every dispatch, every effect, and
+ * any log line carrying the type.
+ *
+ * The quoted form is reported even where the string happens to be a valid
+ * identifier (`'addItem'`), because the hazard is the quoting itself: a
+ * quoted key invites a space, and the day it gains one nothing breaks
+ * loudly — the creator keeps its name while the wire string silently
+ * changes underneath anything that matched on it.
+ * ───────────────────────────────────────────────────────────────── */
 
-// `createActionGroup({ events })` keys are camelCase identifiers.
-//
-// `createActionGroup` camelCases the key to build the creator either way, so
-// `'Add Item'` and `addItem` produce the *same* creator name and the same call
-// sites. What differs is the generated wire `type`: `[Source] Add Item` versus
-// `[Source] addItem`. Writing the identifier makes those the same token, so an
-// action is greppable by the one name it has — search `addItem` and you find the
-// definition, every dispatch, every effect, and any log line carrying the type.
-//
-// The rule reports the quoted form even when the string happens to be a valid
-// identifier (`'addItem'`), because the hazard is the quoting itself: a quoted
-// key invites a space, and the day it gains one nothing breaks loudly — the
-// creator keeps its name while the wire string silently changes underneath
-// anything that matched on it.
+import type { Rule } from 'eslint';
 
 const FACTORY = 'createActionGroup';
 const EVENTS = 'events';
@@ -56,8 +57,6 @@ export const rule: Rule.RuleModule = {
 
           if (event.key.type === 'Literal') {
             const key = String(event.key.value);
-            // The camelCase createActionGroup would have derived, so the message
-            // can name the exact replacement rather than describe it.
             const suggestion = key
               .split(/[\s_-]+/)
               .map((word, index) =>

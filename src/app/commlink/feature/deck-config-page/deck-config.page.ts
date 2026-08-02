@@ -17,17 +17,9 @@ import { addIcons } from 'ionicons';
 import { settingsOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { DeckFacade } from '../../data';
-import { TAppModule, TDeckEntryId } from '../../model/deck.types';
+import { AppModule, DeckEntryId } from '../../model/deck.types';
 import { reorderedIds } from '../../../@shared/util/app.utils';
 
-/**
- * Where the user shapes their deck: which programs the grid and the side menu
- * carry, and in what order.
- *
- * It lives in `commlink` and is reached from `/settings` by a link rather than
- * living there, because `settings → commlink` is a domain violation — the page
- * that edits the deck belongs to the deck's owner.
- */
 @Component({
   selector: 'app-page-deck-config',
   templateUrl: './deck-config.page.html',
@@ -55,11 +47,11 @@ export class DeckConfigPage {
   readonly entries = this.#deck.configuredEntries;
   readonly hasCustomConfig = this.#deck.hasCustomConfig;
 
-  toggleModule(module: TAppModule): void {
+  toggleModule(module: AppModule): void {
     this.#deck.toggleModule(module);
   }
 
-  toggleEntry(id: TDeckEntryId): void {
+  toggleEntry(id: DeckEntryId): void {
     this.#deck.toggleEntry(id);
   }
 

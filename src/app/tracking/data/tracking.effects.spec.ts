@@ -16,7 +16,7 @@ import {
   mockKernelState,
   TEST_TIMESTAMP,
 } from '../../@shared/testing/test-data';
-import { ITrackingItem, ITrackingState } from '../model/tracking.types';
+import { TrackingItem, TrackingState } from '../model/tracking.types';
 import {
   mockTrackingItem,
   mockTrackingState,
@@ -46,10 +46,10 @@ describe('TrackingEffects', () => {
   const sharedCsvRows = (): string[] =>
     (share.mock.calls[0][0].text ?? '').split('\r\n');
 
-  const listNowHolds = (items: ITrackingItem[]) =>
+  const listNowHolds = (items: TrackingItem[]) =>
     store.setState(mockKernelState({ tracking: mockTrackingState({ items }) }));
 
-  const setup = (tracking: ITrackingState = mockTrackingState()) => {
+  const setup = (tracking: TrackingState = mockTrackingState()) => {
     TestBed.configureTestingModule({
       providers: [
         TrackingEffects,
@@ -114,8 +114,6 @@ describe('TrackingEffects', () => {
       expect(ticks).toEqual([tickAt(0), tickAt(1000), tickAt(2000)]);
     });
 
-    // A cold launch never toggles anything: hydration is what has to restart
-    // the clock for an item that was still running when the app was closed.
     it('starts ticking on hydrate, without a toggle', () => {
       const hydrated = mockTrackingState({ items: [running] });
       setup(hydrated);
@@ -139,8 +137,6 @@ describe('TrackingEffects', () => {
       vi.advanceTimersByTime(1000);
       expect(ticks).toHaveLength(2);
 
-      // takeWhile completed the interval — it is gone, not merely silenced, so
-      // a running item reappearing cannot revive it.
       listNowHolds([running]);
       vi.advanceTimersByTime(5000);
       expect(ticks).toHaveLength(2);
@@ -159,8 +155,6 @@ describe('TrackingEffects', () => {
       );
       vi.advanceTimersByTime(1000);
 
-      // 0ms, 1000ms, the restart at 1500ms, 2500ms — a stacked interval would
-      // have added a fifth tick at 2000ms.
       expect(ticks).toHaveLength(4);
     });
   });
@@ -180,9 +174,6 @@ describe('TrackingEffects', () => {
 
       await firstValueFrom(effects.shareData$);
 
-      // The date comes from the shared formatter, not a literal: this test is
-      // about the quoting rules, and pinning a locale shape here would make it
-      // fail for a reason it does not describe.
       const day = localizedDate(TEST_TIMESTAMP);
       expect(sharedCsvRows()).toEqual([
         'csv.header.name,csv.header.start-time,csv.header.tracked-seconds,csv.header.tracked-clock',
@@ -205,11 +196,6 @@ describe('TrackingEffects', () => {
       );
     });
 
-    // One start-time format per view: the bucket the view groups by is what the
-    // column may claim (a month row must not pretend to know the hour). The
-    // expectations come from the shared formatters rather than from literals,
-    // because the column follows the active locale — a hardcoded German shape
-    // here is exactly the bug that made these two tables drift apart.
     it.each([
       ['monthly' as const, localizedMonthYear(TEST_TIMESTAMP)],
       ['raw' as const, localizedDateTime(TEST_TIMESTAMP)],
@@ -231,8 +217,6 @@ describe('TrackingEffects', () => {
       }
     );
 
-    // The all-time view has no bucket to date-stamp, so the column is blank
-    // rather than carrying an arbitrary session's start.
     it('blanks the start-time column for the all-time view', async () => {
       setup(
         mockTrackingState({

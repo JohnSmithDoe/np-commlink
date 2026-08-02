@@ -1,0 +1,25 @@
+@if (canAddLocal()) {
+  <app-text-item
+    [color]="state().color"
+    helper="{{
+      'household.item-list.quick-add.add'
+        | translate
+          : {
+              value: state().searchQuery,
+              list: (state().listName ?? '' | translate),
+            }
+    }}"
+    [label]="state().searchQuery"
+    (selectItem)="addItem()"
+  ></app-text-item>
+}
+@if (canAddProduct()) {
+  <app-text-item
+    helper="{{
+      'household.item-list.quick-add.add.product'
+        | translate: { value: state().searchQuery }
+    }}"
+    [label]="state().searchQuery"
+    (selectItem)="createProduct()"
+  ></app-text-item>
+}

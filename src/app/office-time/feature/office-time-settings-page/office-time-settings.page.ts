@@ -74,9 +74,6 @@ export class OfficeTimeSettingsPage {
   readonly dashboardSettings = computed(() => {
     const settings = this.#dashboardSettings();
     if (!settings) return;
-    // `Object.keys` widens to string, so the flag union is restored once here;
-    // each row then carries its own label key from the exhaustive table rather
-    // than the template composing one.
     return (Object.keys(settings) as DashboardSettingsType[]).map((key) => ({
       key,
       value: settings[key],

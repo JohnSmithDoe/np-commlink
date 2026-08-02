@@ -1,20 +1,8 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TMarker } from '../../@shared/model/app.types';
-import { IDeckEntry } from './deck.types';
+import { Marker } from '../../@shared/model/app.types';
+import { DeckEntry } from './deck.types';
 
-/**
- * Every navigable destination in the app, in factory order — the single list
- * behind both the deck grid and the side menu.
- *
- * It lives in `commlink` because a domain owns the routes it *serves*, not its
- * own presentation in navigation: `groceries` has no opinion about being called
- * MARKET or sitting seventh. Per-domain manifests would also force the shell to
- * import all eleven domains eagerly, undoing the `loadChildren`-only seal.
- *
- * Order here is only the *default*; the user's `order` list overrides it, and a
- * new entry appended here lands at the end of an existing configuration.
- */
-export const DECK_CATALOG: readonly IDeckEntry[] = [
+export const DECK_CATALOG: readonly DeckEntry[] = [
   {
     id: 'commlink',
     module: 'commlink',
@@ -117,7 +105,7 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
   {
     id: 'soykaf',
-    module: 'groceries',
+    module: 'household',
     icon: 'restaurant-outline',
     route: '/soykaf',
     titleKey: marker('page-title.soykaf'),
@@ -138,10 +126,10 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
   {
     id: 'shopping',
-    module: 'groceries',
+    module: 'household',
     icon: 'cart-outline',
-    route: '/groceries/shopping/_shopping',
-    titleKey: marker('page-title.groceries-shopping'),
+    route: '/household/shopping/_shopping',
+    titleKey: marker('page-title.household-shopping'),
     labels: {
       cyberpunk: {
         nameKey: marker('deck.cyberpunk.shopping.name'),
@@ -159,10 +147,10 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
   {
     id: 'storage',
-    module: 'groceries',
+    module: 'household',
     icon: 'file-tray-stacked-outline',
-    route: '/groceries/storage/_storage',
-    titleKey: marker('page-title.groceries-storage'),
+    route: '/household/storage/_storage',
+    titleKey: marker('page-title.household-storage'),
     labels: {
       cyberpunk: {
         nameKey: marker('deck.cyberpunk.storage.name'),
@@ -201,10 +189,10 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
   {
     id: 'products',
-    module: 'groceries',
+    module: 'household',
     icon: 'pricetags-outline',
-    route: '/groceries/products/_products',
-    titleKey: marker('page-title.groceries-products'),
+    route: '/household/products/_products',
+    titleKey: marker('page-title.household-products'),
     labels: {
       cyberpunk: {
         nameKey: marker('deck.cyberpunk.products.name'),
@@ -222,10 +210,10 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
   {
     id: 'list-settings',
-    module: 'groceries',
+    module: 'household',
     icon: 'options-outline',
-    route: '/groceries/list-settings',
-    titleKey: marker('page-title.groceries-list-settings'),
+    route: '/household/list-settings',
+    titleKey: marker('page-title.household-list-settings'),
     labels: {
       cyberpunk: {
         nameKey: marker('deck.cyberpunk.list-settings.name'),
@@ -321,25 +309,10 @@ export const DECK_CATALOG: readonly IDeckEntry[] = [
   },
 ];
 
-/**
- * The grid's full complement, hidden tiles included — the deck's status strip
- * reports what the grid *has*, not what this user shows.
- */
 export const DECK_SLOT_COUNT = DECK_CATALOG.filter(
   (entry) => entry.onDeck
 ).length;
 
-/**
- * Every piece of deck chrome whose wording is *voiced* — the HUD readouts, the
- * hero kicker and the tile status words. Like the codenames, each is looked up
- * as `deck.<theme>.chrome.<field>`, so a theme brings its own register: where
- * the deck reads NOISE / ICE, a plain office tool names the same slots by what
- * they actually mean.
- *
- * A field names the *slot* in the deck's reference expression, not the word a
- * theme puts in it — a `-value` field is the stat's reading where that reading
- * is static text rather than a live number.
- */
 export const DECK_CHROME_FIELDS = [
   'grid',
   'grid-value',
@@ -362,7 +335,6 @@ export const DECK_CHROME_FIELDS = [
   'node-offline',
 ] as const;
 
-export type TDeckChromeField = (typeof DECK_CHROME_FIELDS)[number];
+export type DeckChromeField = (typeof DECK_CHROME_FIELDS)[number];
 
-/** The deck's chrome as translate keys, resolved against the active theme. */
-export type TDeckChrome = Record<TDeckChromeField, TMarker>;
+export type DeckChrome = Record<DeckChromeField, Marker>;

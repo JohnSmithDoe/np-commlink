@@ -1,9 +1,14 @@
+// ─── why ────────────────────────────────────────────────────────
+// This used to take 420px hard-right above 768px, on an edge nothing else in
+// the page shared: the sort toolbar below it and the list below that both centre
+// on --app-content-max-width. Three alignments stacked inside one ion-header
+// read as a layout bug rather than a hierarchy, so the searchbar follows the
+// same property as everything under it.
+// ────────────────────────────────────────────────────────────────
+
 :host {
   display: flex;
   flex-direction: column;
-
-  @media (min-width: 768px) {
-    max-width: 420px;
-    margin-inline-start: auto;
-  }
+  max-width: var(--app-content-max-width);
+  margin-inline: auto;
 }

@@ -1,5 +1,9 @@
+// ─── why ────────────────────────────────────────────────────────
+// display:contents, so the host introduces no box of its own: the chip has to
+// sit as a direct child of the form list, and the dialog around it is an
+// overlay.
+// ────────────────────────────────────────────────────────────────
+
 :host {
-  // Transparent wrapper: the chip must sit as a direct child of the form list
-  // and the dialog is an overlay, so the host must not introduce its own box.
   display: contents;
 }

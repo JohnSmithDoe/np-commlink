@@ -1,31 +1,31 @@
 import { InputCustomEvent } from '@ionic/angular/standalone';
-import { TIonDragEvent } from '../model/app.types';
-import { IBaseItem } from '../model/base-item.types';
+import { IonDragEvent } from '../model/app.types';
+import { BaseItem } from '../model/base-item.types';
 import {
+  matcherFor,
   matchesId,
   matchesItemExactly,
   matchesItemExactlyIndex as matchesItemExactlyIndex,
-  moveInList,
   matchesNameExactly,
   matchesSearch,
   matchesSearchExactly,
-  matcherFor,
   matchingTxt,
   matchingTxtIsNotEmpty,
+  moveInList,
   parseNumberInput,
   revealedSideFromDrag,
   uuidv4,
 } from './app.utils';
 
-const baseItem = (over: Partial<IBaseItem> = {}): IBaseItem => ({
+const baseItem = (over: Partial<BaseItem> = {}): BaseItem => ({
   id: 'id-1',
   name: 'Apple',
   createdAt: '2024-01-01',
   ...over,
 });
 
-const dragEvent = (amount: number): TIonDragEvent =>
-  ({ detail: { amount, ratio: 0 } }) as TIonDragEvent;
+const dragEvent = (amount: number): IonDragEvent =>
+  ({ detail: { amount, ratio: 0 } }) as IonDragEvent;
 
 const inputEvent = (value: string | null): InputCustomEvent =>
   ({ detail: { value } }) as InputCustomEvent;
@@ -124,9 +124,6 @@ describe('app.utils', () => {
       expect(matchesSearch('Banana')).toBe(true);
     });
 
-    // The curried form exists to normalize the needle once per filter pass
-    // instead of once per candidate, so it must agree with the direct form —
-    // including on the trimming, which is what `matchingTxt` adds.
     it('matcherFor agrees with matchesSearch, needle trimmed', () => {
       const matches = matcherFor('  BAN ');
       expect(matches('Banana')).toBe(true);

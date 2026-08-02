@@ -1,3 +1,18 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R3 — docs/ionic-a11y-practices.md
+ *
+ * An `ion-label` sitting next to a control inside an `ion-item` is a
+ * sibling, not an association: `ion-item` wires no `aria-labelledby`. A
+ * control's name comes from its own `label` property, its own slotted
+ * label, or its own `aria-label`, and from nothing else — so "it looks
+ * labelled" is not a measurement.
+ *
+ * The sanctioned sources differ per component, which is why this is a
+ * table rather than one predicate. `placeholder` is deliberately not among
+ * them: it is a last-resort accname fallback, not a label, and it
+ * disappears the moment the field has a value.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   hasAccessibleNameAttribute,
@@ -8,20 +23,6 @@ import {
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 
-// R3 — docs/ionic-a11y-practices.md
-//
-// An `ion-label` sitting next to a control inside an `ion-item` is a sibling, not
-// an association: `ion-item` wires no `aria-labelledby`. A control's name comes
-// from its own `label` property, its own slotted label, or its own `aria-label`,
-// and from nothing else — so "it looks labelled" is not a measurement.
-//
-// The sanctioned sources differ per component, which is why this is a table
-// rather than one predicate:
-//   - label     the `label` property (or a binding to it)
-//   - slot      a child in the `label` slot, for a label that needs markup
-//   - text      slotted text, which the component reflects into aria-labelledby
-// `placeholder` is deliberately not a source: it is a last-resort accname
-// fallback, not a label, and it disappears the moment the field has a value.
 const NAME_SOURCES: Record<string, string[]> = {
   'ion-input': ['label', 'slot'],
   'ion-textarea': ['label', 'slot'],

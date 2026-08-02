@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockKernelState, TMockState } from '../../@shared/testing/test-data';
+import { mockKernelState, MockState } from '../../@shared/testing/test-data';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import {
   mockTrackingItem,
@@ -16,7 +16,7 @@ import { trackingListEffects } from './tracking-list.effects';
 describe('trackingListEffects', () => {
   let actions$: Observable<Action>;
 
-  const setup = (state: TMockState = {}) => {
+  const setup = (state: MockState = {}) => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
@@ -81,8 +81,6 @@ describe('trackingListEffects', () => {
       await firstValueFrom(run(trackingListEffects.syncSearchOnRename$))
     ).toEqual(TrackingActions.updateSearch(updatedSearchQuery(item, 'Tic')));
   });
-  // Moved here from TrackingMessageEffects with the effect itself: it comes off
-  // the shared builder now, which yields a functional effect.
   it('addItemFailure$ toasts a duplicate-name notice', async () => {
     setup();
     const item = mockTrackingItem({ name: 'Ticket' });

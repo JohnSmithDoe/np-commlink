@@ -2,22 +2,21 @@ import {
   mockCashRule,
   mockCashTransaction,
 } from '../../testing/cash.test-data';
-import { IParsedRow, IParseResult } from './bank-parser';
+import { ParsedRow, ParseResult } from './bank-parser';
 import { planImport } from './plan-import';
 
-const row = (over: Partial<IParsedRow> = {}): IParsedRow => ({
+const row = (over: Partial<ParsedRow> = {}): ParsedRow => ({
   dateISO: '2026-01-06T00:00:00+01:00',
   amountCents: -4299,
   description: 'REWE',
   ...over,
 });
 
-const parsed = (rows: IParsedRow[], rejected = 0): IParseResult => ({
+const parsed = (rows: ParsedRow[], rejected = 0): ParseResult => ({
   rows,
   rejected,
 });
 
-// deterministic id factory
 const ids = () => {
   let n = 0;
   return () => `id-${++n}`;
@@ -59,8 +58,6 @@ describe('planImport', () => {
   });
 
   it('dedups a row re-imported after a timezone/DST change (keyed on the date, not the offset)', () => {
-    // dateISO is a local-midnight ISO whose offset shifts with the device tz;
-    // the same booking re-imported under a different offset must still match.
     const existing = mockCashTransaction({
       accountId: 'acc',
       dateISO: '2026-01-06T00:00:00+01:00',
@@ -95,7 +92,7 @@ describe('planImport', () => {
 
   it('auto-categorizes via the rules (manual override not set on imports)', () => {
     const rule = mockCashRule({
-      categoryId: 'groceries',
+      categoryId: 'stuff',
       match: 'any',
       conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
     });
@@ -107,7 +104,7 @@ describe('planImport', () => {
       'batch-4',
       ids()
     );
-    expect(plan.toImport[0].categoryId).toBe('groceries');
+    expect(plan.toImport[0].categoryId).toBe('stuff');
     expect(plan.toImport[0].categoryManual).toBeUndefined();
   });
 });

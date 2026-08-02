@@ -11,13 +11,11 @@ import {
   mockCashTransaction,
 } from '../../../testing/cash.test-data';
 import { CashActions } from '../../../data';
-import { ICashState } from '../../../model/cash.types';
-import { ICashTransaction } from '../../../model/transaction.types';
+import { CashState } from '../../../model/cash.types';
+import { CashTransaction } from '../../../model/transaction.types';
 import { CashImportPreviewModalComponent } from '../../../smart-ui/import-preview-modal/import-preview-modal.component';
 import { CashAccountPage } from './cash-account.page';
 
-// The id both cash factories default to, so a fixture only names the *other*
-// account explicitly.
 const ACCOUNT_ID = 'cash-account-1';
 
 const CSV_HEADER =
@@ -27,7 +25,6 @@ const REWE_ROW =
 const REWE_TEXT = 'REWE Markt GmbH — Einkauf';
 const SALARY_ROW =
   '11.01.2026;11.01.2026;Muster GmbH;Honorar;DE2;MARKDEF1;3.570,00;;;';
-// A bank footer line: the date column holds a label, so the parser rejects it.
 const UNREADABLE_ROW = 'Anfangssaldo;;;;;;1.000,00;;;';
 
 const csvFile = (...rows: string[]): File =>
@@ -36,15 +33,15 @@ const csvFile = (...rows: string[]): File =>
 const filePicked = (...files: File[]): Event =>
   ({ target: { files, value: 'umsaetze.csv' } }) as unknown as Event;
 
-const importState = (overrides: Partial<ICashState> = {}): ICashState =>
+const importState = (overrides: Partial<CashState> = {}): CashState =>
   mockCashState({
     accounts: [mockCashAccount({ bank: 'volksbank' })],
     rules: [mockCashRule()],
     ...overrides,
   });
 
-interface IPreviewProperties {
-  transactions: ICashTransaction[];
+interface PreviewProperties {
+  transactions: CashTransaction[];
   duplicates: number;
   rejected: number;
 }
@@ -54,14 +51,12 @@ describe('CashAccountPage', () => {
   let create: ReturnType<typeof vi.spyOn>;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const previewProperties = (): IPreviewProperties =>
+  const previewProperties = (): PreviewProperties =>
     (
-      create.mock.lastCall as unknown as [
-        { componentProps: IPreviewProperties },
-      ]
+      create.mock.lastCall as unknown as [{ componentProps: PreviewProperties }]
     )[0].componentProps;
 
-  const setup = (state: ICashState) => {
+  const setup = (state: CashState) => {
     TestBed.configureTestingModule({
       imports: [CashAccountPage],
       providers: [
@@ -159,18 +154,14 @@ describe('CashAccountPage', () => {
       }),
       expect.objectContaining({ amountCents: 357_000 }),
     ]);
-    // The account's rule set has to reach planImport, not just its rows.
     expect(transactions.map((txn) => txn.categoryId)).toEqual([
-      'cash-cat-groceries',
+      'cash-cat-stuff',
       undefined,
     ]);
     expect(duplicates).toBe(0);
     expect(rejected).toBe(0);
   });
 
-  // The batch id is minted once for the file (`uuidv4()`) while the row ids come
-  // from the factory (`uuidv4`) — pass the same shape twice and either every row
-  // shares one id or every row is its own batch, and both still look imported.
   it('stamps one batch id across the file and a distinct id per row', async () => {
     setup(importState());
 
@@ -204,8 +195,6 @@ describe('CashAccountPage', () => {
     expect(duplicates).toBe(1);
   });
 
-  // A short import reported as a complete one leaves the balance wrong with
-  // nothing to notice it by, so the count has to survive the whole composition.
   it('carries unreadable rows through to the preview as rejected', async () => {
     setup(importState());
 
@@ -216,8 +205,6 @@ describe('CashAccountPage', () => {
     expect(rejected).toBe(1);
   });
 
-  // A file input keeps its value, so without this the same file re-picked after
-  // a cancelled preview fires no change event and the retry looks ignored.
   it('clears the file input so the same file can be picked again', async () => {
     setup(importState());
     const event = filePicked(csvFile(REWE_ROW));

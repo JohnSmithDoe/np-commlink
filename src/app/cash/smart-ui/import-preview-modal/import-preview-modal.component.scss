@@ -1,6 +1,5 @@
 @use '../../../../theme/cash';
 
-// Reuses the ledger amount colours + the shared caption.
 .cash-import__summary {
   @include cash.hint(0 0.25rem 0.75rem);
   font-family: var(--sr-deck-font);

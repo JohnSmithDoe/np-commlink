@@ -18,12 +18,6 @@ import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-d
 import { MoneyEurPipe } from '../../../util/formatting/money.pipe';
 import { LocalizedDatePipe } from '../../../util/formatting/localized-date.pipe';
 
-/**
- * Category→items drill for cash: the (read-only) list of transactions carrying
- * a category, reached from the shared manage-categories page. Cash has no
- * `filterBy` list like grocery/tasks, so this is its equivalent filtered view.
- * Tap a row to jump to that transaction's account ledger.
- */
 @Component({
   selector: 'app-page-cash-category',
   templateUrl: './cash-category.page.html',

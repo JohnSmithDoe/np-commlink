@@ -1,3 +1,18 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R4, controller half — docs/ionic-a11y-practices.md
+ *
+ * The same rule as `a11y-overlay-has-name` for `ModalController.create(…)`
+ * & friends, where the seam is `htmlAttributes` rather than an attribute.
+ * Ionic derives a name from `header` (alert, action sheet) or `message`
+ * (loading) when one is set, and never for a modal — so only the modal
+ * case is unconditional.
+ *
+ * Only an object *literal* is decidable. Options built by a helper
+ * (`deleteConfirmAlert(...)`) or spread from a variable are passed over
+ * rather than guessed at: a gate that reports what it cannot know trains
+ * people to disable it.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   hasProperty,
@@ -8,18 +23,6 @@ import {
 } from '../lib/overlay-options.ts';
 import type { CallExpression } from '../lib/overlay-options.ts';
 
-// R4, controller half — docs/ionic-a11y-practices.md
-//
-// The declarative overlays are covered by `a11y-overlay-has-name`; this is the
-// same rule for `ModalController.create(…)` & friends, where the seam is
-// `htmlAttributes` rather than an attribute. Ionic derives a name from `header`
-// (alert, action sheet) or `message` (loading) when one is set, and never for a
-// modal — so only the modal case is unconditional.
-//
-// Only an object *literal* is decidable. Options built by a helper
-// (`deleteConfirmAlert(...)`) or spread from a variable are passed over rather
-// than guessed at: a gate that reports what it cannot know trains people to
-// disable it.
 const NAME_SOURCES: Record<string, string[]> = {
   modal: [],
   alert: ['header', 'subHeader', 'message'],

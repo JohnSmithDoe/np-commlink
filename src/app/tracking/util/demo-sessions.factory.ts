@@ -1,13 +1,6 @@
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { ITrackingItem } from '../model/tracking.types';
-
-/**
- * The dev-only "generate dummy data" affordance: three weeks of plausible,
- * randomly generated work sessions. It lives here rather than in the reducer
- * because it is random and clock-bound — the reducer only merges the sessions
- * the action hands it.
- */
+import { TrackingItem } from '../model/tracking.types';
 
 const DEMO_NAMES = [
   'Code review',
@@ -31,12 +24,10 @@ const DEMO_MINUTES_SPREAD = 165;
 
 const upTo = (spread: number): number => Math.floor(Math.random() * spread);
 
-// The `?? DEMO_NAMES[0]` is unreachable — `upTo` never reaches `length` — and is
-// there only because an index built at runtime is typed as possibly out of range.
 const randomDemoName = (): string =>
   DEMO_NAMES[upTo(DEMO_NAMES.length)] ?? DEMO_NAMES[0];
 
-const randomSession = (start: dayjs.Dayjs, minutes: number): ITrackingItem => ({
+const randomSession = (start: dayjs.Dayjs, minutes: number): TrackingItem => ({
   id: uuidv4(),
   name: randomDemoName(),
   createdAt: start.format(),
@@ -45,10 +36,8 @@ const randomSession = (start: dayjs.Dayjs, minutes: number): ITrackingItem => ({
   state: 'stopped',
 });
 
-// Walks the working day forward so the generated sessions never overlap, and
-// stops once it would run past the evening.
-const randomSessionsForDay = (day: dayjs.Dayjs): ITrackingItem[] => {
-  const sessions: ITrackingItem[] = [];
+const randomSessionsForDay = (day: dayjs.Dayjs): TrackingItem[] => {
+  const sessions: TrackingItem[] = [];
   const count = DEMO_SESSIONS_PER_DAY_MIN + upTo(DEMO_SESSIONS_PER_DAY_SPREAD);
   let hour = DEMO_FIRST_HOUR + upTo(DEMO_FIRST_HOUR_SPREAD);
   for (let index = 0; index < count; index++) {
@@ -61,8 +50,8 @@ const randomSessionsForDay = (day: dayjs.Dayjs): ITrackingItem[] => {
   return sessions;
 };
 
-export const createDemoSessions = (today = dayjs()): ITrackingItem[] => {
-  const generated: ITrackingItem[] = [];
+export const createDemoSessions = (today = dayjs()): TrackingItem[] => {
+  const generated: TrackingItem[] = [];
   for (let dayOffset = 0; dayOffset < DEMO_DAYS; dayOffset++) {
     generated.push(...randomSessionsForDay(today.subtract(dayOffset, 'day')));
   }

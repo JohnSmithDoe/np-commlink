@@ -19,10 +19,7 @@ export class NotificationService {
   async init(): Promise<void> {
     try {
       await this.#scheduleOfficeReminder();
-    } catch {
-      // Plugin not available (unsupported browser, permission API blocked) —
-      // fail silently. The app should work without notifications.
-    }
+    } catch {}
   }
 
   async fireTestNotification(): Promise<void> {
@@ -41,9 +38,6 @@ export class NotificationService {
       notifications: [{ id: NotificationService.OFFICE_REMINDER_ID }],
     });
 
-    // `get`, not `instant`: this runs on the eager boot path, where the
-    // translation bundle may not have loaded yet and `instant` would schedule a
-    // notification whose text is the raw key.
     const copy = await firstValueFrom(
       this.#translate.get([REMINDER_TITLE, REMINDER_BODY])
     );

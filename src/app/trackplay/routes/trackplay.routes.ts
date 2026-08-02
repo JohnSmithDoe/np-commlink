@@ -2,11 +2,6 @@ import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { trackplayContext } from '../data';
 
-/**
- * Trackplay (game-score tracker) — one sealed domain. The empty path is the
- * program home (games list); the rest are its sub-pages, and the context on the
- * componentless subtree root registers the slice once for all of them.
- */
 export const trackplayRoutes: Routes = [
   {
     path: '',

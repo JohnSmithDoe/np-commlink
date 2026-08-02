@@ -1,0 +1,48 @@
+@if (results()?.products?.length) {
+  <app-item-list
+    header="{{ 'household.list-header.product.search' | translate }}"
+    [listHeader]="true"
+    [items]="results()?.products ?? []"
+    [itemTemplate]="productItem"
+  ></app-item-list>
+  <ng-template #productItem let-item>
+    <app-text-item
+      [label]="item.name"
+      [note]="item | categories: catalog()"
+      [helper]="'household.item-helper.search' | translate"
+      (selectItem)="selectProduct.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}
+@if (results()?.shoppingItems?.length) {
+  <app-item-list
+    header="{{ 'household.list-header.shopping.search' | translate }}"
+    [listHeader]="true"
+    [items]="results()?.shoppingItems ?? []"
+    [itemTemplate]="shoppingItem"
+  ></app-item-list>
+  <ng-template #shoppingItem let-item>
+    <app-text-item
+      [label]="item.name"
+      [note]="item | categories: catalog()"
+      [helper]="'household.item-helper.search' | translate"
+      (selectItem)="selectShoppingItem.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}
+@if (results()?.storageItems?.length) {
+  <app-item-list
+    header="{{ 'household.list-header.storage.search' | translate }}"
+    [listHeader]="true"
+    [items]="results()?.storageItems ?? []"
+    [itemTemplate]="storageItem"
+  ></app-item-list>
+  <ng-template #storageItem let-item>
+    <app-text-item
+      [label]="item.name"
+      [note]="item | categories: catalog()"
+      [helper]="'household.item-helper.search' | translate"
+      (selectItem)="selectStorageItem.emit(item)"
+    ></app-text-item>
+  </ng-template>
+}

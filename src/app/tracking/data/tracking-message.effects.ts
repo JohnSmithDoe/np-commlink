@@ -5,18 +5,6 @@ import { filter, map } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { TrackingActions } from './tracking.actions';
 
-/**
- * Toast reactions to tracking mutations. Formerly the shell-level
- * `AppMessageEffects`; it only ever listened to `TrackingActions`, so it belongs
- * to the tracking bounded context and rides its lazy providers. Registering it
- * lazily with tracking is behaviourally identical to the old eager wiring —
- * `TrackingActions` cannot be dispatched before the tracking route is live.
- *
- * Each reaction now *dispatches* the published `toast` contract instead of
- * calling a UI service: the message is data (key + parameters + color) and the
- * notifications domain presents it, so tracking needs neither `ToastController`
- * nor `TranslateService`.
- */
 @Injectable()
 export class TrackingMessageEffects {
   readonly #actions$ = inject(Actions);

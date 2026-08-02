@@ -1,16 +1,13 @@
-import { ICategoryList } from '../../@shared/model/category.types';
-import { ICashAccount } from '../model/account.types';
-import { CASH_CATEGORIES_LIST_ID, ICashState } from '../model/cash.types';
-import { ICashRule } from '../model/rule.types';
-import { ICashTransaction } from '../model/transaction.types';
+import { CategoryList } from '../../@shared/model/category.types';
+import { CashAccount } from '../model/account.types';
+import { CASH_CATEGORIES_LIST_ID, CashState } from '../model/cash.types';
+import { CashRule } from '../model/rule.types';
+import { CashTransaction } from '../model/transaction.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
-// Deterministic cash fixtures. Owned by the cash context (DDD review #1): they
-// live here, not in the shared @shared/testing kit, because that kit is
-// domain:shared and may not reference domain:cash types (Sheriff-enforced).
 export function mockCashAccount(
-  overrides: Partial<ICashAccount> = {}
-): ICashAccount {
+  overrides: Partial<CashAccount> = {}
+): CashAccount {
   return {
     id: 'cash-account-1',
     name: 'Giro',
@@ -23,8 +20,8 @@ export function mockCashAccount(
 }
 
 export function mockCashTransaction(
-  overrides: Partial<ICashTransaction> = {}
-): ICashTransaction {
+  overrides: Partial<CashTransaction> = {}
+): CashTransaction {
   return {
     id: 'cash-txn-1',
     accountId: 'cash-account-1',
@@ -37,24 +34,24 @@ export function mockCashTransaction(
   };
 }
 
-export function mockCashRule(overrides: Partial<ICashRule> = {}): ICashRule {
+export function mockCashRule(overrides: Partial<CashRule> = {}): CashRule {
   return {
     id: 'cash-rule-1',
     order: 0,
     match: 'any',
     conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
-    categoryId: 'cash-cat-groceries',
+    categoryId: 'cash-cat-stuff',
     ...overrides,
   };
 }
 
 export function mockCashCategoryList(
-  overrides: Partial<ICategoryList> = {}
-): ICategoryList {
+  overrides: Partial<CategoryList> = {}
+): CategoryList {
   return { id: CASH_CATEGORIES_LIST_ID, items: [], ...overrides };
 }
 
-export function mockCashState(overrides: Partial<ICashState> = {}): ICashState {
+export function mockCashState(overrides: Partial<CashState> = {}): CashState {
   return {
     accounts: [],
     transactions: [],

@@ -1,18 +1,13 @@
-import { TTimestamp } from './app.types';
-import { TCategoryId } from './category.types';
+import { Timestamp } from './app.types';
+import { CategoryId } from './category.types';
 
-// `createdAt` is optional because nothing reads it — every factory stamps it,
-// but requiring it would make `ICategory extends IBaseItem` a lie about the
-// categories already persisted as bare `{id,name}`, and cost a migration hop to
-// backfill a field no selector, sort or template consumes.
-export type IBaseItem = {
+export type BaseItem = {
   id: string;
   name: string;
-  createdAt?: TTimestamp;
-  categoryIds?: TCategoryId[];
+  createdAt?: Timestamp;
+  categoryIds?: CategoryId[];
 };
 
-// `IBaseItem` already requires `id`, so a partial update always carries one.
-export type TUpdateDTO<T extends IBaseItem> = IBaseItem & Partial<T>;
+export type UpdateDTO<T extends BaseItem> = BaseItem & Partial<T>;
 
-export type TEditItemMode = 'update' | 'create';
+export type EditItemMode = 'update' | 'create';

@@ -27,9 +27,6 @@ const allDaysBetween = (start: Dayjs, end: Dayjs) => {
   const days: Dayjs[] = [];
   let current = start;
   while (current.isBefore(end) || current.isSame(end)) {
-    // dayjs is immutable — `add` already returns a fresh object and `current` is
-    // never mutated, so cloning here allocated a second Dayjs (and a second
-    // Date) per day, ~500 of them per dashboard rebuild.
     days.push(current);
     current = current.add(1, 'day');
   }
@@ -69,13 +66,6 @@ interface StatsKeys {
   targetOfficeDaysPerWeek: number;
 }
 
-/**
- * The day-key sets `calculateStats` reads, hoisted out of it so the four period
- * cards share ONE build. They are a pure function of the slice, not of the
- * period, but each period selector used to call `calculateStats` and pay for
- * them again — four `format()` passes over officedays + freedays + holidays per
- * state change where one suffices.
- */
 export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => ({
   officeKeys: dayKeys(inputs.officedays),
   freeKeys: dayKeys(inputs.freedays),
@@ -83,28 +73,6 @@ export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => ({
   targetOfficeDaysPerWeek: inputs.targetOfficeDaysPerWeek,
 });
 
-/**
- * One pass over the period, not seven.
- *
- * Each stat used to be its own `periodDaysMatching` call, so a single
- * `calculateStats` materialized every day of the window seven times — 366 Dayjs
- * clones apiece for the year card — and each predicate then scanned the
- * officedays/freedays/holidays arrays with `isSame`, making it O(days x entries).
- * The dashboard renders four periods, and the whole thing recomputes on every
- * slice change.
- *
- * Membership is day-granular (`DAY_FORMAT`), so a `Set` of `YYYY-MM-DD` keys is
- * an exact substitute for the `isSame(day)` scans. ISO keys also compare
- * lexicographically in date order, which is what makes the "from today" cut in
- * `remaining` a string comparison.
- *
- * `today` is a parameter rather than a `dayjs()` call in here, because the
- * result is a function of the clock as much as of the slice and a caller that
- * memoizes on the slice alone would never expire it. That is not hypothetical:
- * the four dashboard cards were memoized selectors over the day-key sets, so
- * they went on reporting the previous month until something else wrote to the
- * slice.
- */
 export const calculateStats = (
   period: TimePeriod,
   keys: StatsKeys,
@@ -137,7 +105,6 @@ export const calculateStats = (
 
     const workday = !weekend && !free && !holiday;
     if (workday) workdays++;
-    // `remaining` counts from today to the end of the same period.
     if (workday && key >= todayKey) remaining++;
   }
 
@@ -158,11 +125,6 @@ export const calculateStats = (
   };
 };
 
-// Calendar days are stored as YYYY-MM-DD (no time, no zone) so that values
-// roundtrip cleanly across timezones and DST boundaries. Parsing re-anchors
-// at local noon to keep downstream `isSame(..., 'day')` and HH:mm formatting
-// well-behaved. Legacy values written as full ISO strings still parse because
-// dayjs is lenient with the input format.
 const DAY_FORMAT = 'YYYY-MM-DD';
 export const dayjsToString = (day: Dayjs) => day.format(DAY_FORMAT);
 export const dayjsFromString = (date: string): Dayjs | null => {
@@ -230,7 +192,6 @@ const calendarHighlights = (
     border,
   }));
 
-// Unary by contract — both are passed as Angular `input({ transform })`.
 export const holidayHighlights = (days?: Dayjs[] | null): DateTimeHighlight[] =>
   calendarHighlights(days, HOLIDAY_HIGHLIGHT_BORDER);
 

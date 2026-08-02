@@ -19,19 +19,13 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
-import { ICashTransaction } from '../../model/transaction.types';
+import { CashTransaction } from '../../model/transaction.types';
 import { CashFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 
-import { TCategoryId } from '../../../@shared/model/category.types';
+import { CategoryId } from '../../../@shared/model/category.types';
 
-/**
- * Preview a parsed CSV import before committing (via `ModalController`). Fed the
- * already-planned `transactions` (deduped + auto-categorized by `planImport`)
- * and the `duplicates` count as imperative componentProps. Confirm dispatches a
- * single bulk `Import Transactions`; cancel discards.
- */
 @Component({
   selector: 'app-cash-import-preview-modal',
   templateUrl: './import-preview-modal.component.html',
@@ -61,13 +55,11 @@ export class CashImportPreviewModalComponent {
     categoryNameLookup(this.#categories())
   );
 
-  /** Imperative componentProps. */
-  transactions: ICashTransaction[] = [];
+  transactions: CashTransaction[] = [];
   duplicates = 0;
   rejected = 0;
 
-  /** Resolve an auto-assigned category id to its display name. */
-  categoryName(id: TCategoryId | undefined): string {
+  categoryName(id: CategoryId | undefined): string {
     return this.#categoryName()(id);
   }
 

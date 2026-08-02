@@ -1,3 +1,25 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The emoji picker is gated to `Platform.is('desktop')` — a phone
+ * keyboard already has one — so its trigger does not render on the Pixel
+ * 5 the rest of the suite emulates. `e2e/desktop/` is the only path the
+ * `desktop-chromium` project matches and the only one `mobile-chromium`
+ * ignores, which is why this one spec lives apart. Its mirror image, the
+ * trigger being ABSENT on a phone, is asserted from the mobile project in
+ * `e2e/household/storage.e2e.ts`.
+ *
+ * The picker is an `ion-modal` of its own presented over another, so it
+ * ends up a SIBLING of the edit dialog at the app root rather than a
+ * descendant of it. Both are therefore keyed off their own title.
+ *
+ * The two-glyph sequence is the point of the middle assertions: with
+ * `multiple` the picker stays up, and the second glyph must land AFTER
+ * the first. That is what the caret advance buys — a stale caret spells
+ * "🌾🥛".
+ *
+ * The last assertion is the recents store: saving records the glyphs, so
+ * the next open offers them with no search at all.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Locator, Page, test } from '@playwright/test';
 import {
   addViaSearch,
@@ -6,14 +28,6 @@ import {
   waitForListPage,
 } from '../helpers';
 
-/**
- * The emoji picker is gated to desktop (`Platform.is('desktop')`) — a mobile
- * keyboard already has one — so its trigger does not render on the Pixel 5 the
- * rest of the suite emulates. This file lives under `e2e/desktop/`, which is the
- * only path the `desktop-chromium` project matches and the only one
- * `mobile-chromium` ignores. Its mirror image (the trigger being ABSENT on a
- * phone) is asserted from the mobile project, in the storage spec.
- */
 function editDialog(page: Page): Locator {
   return presentedDialog(page, 'Eintrag bearbeiten');
 }
@@ -22,8 +36,6 @@ function nameBox(page: Page): Locator {
   return editDialog(page).getByRole('textbox', { name: 'Name' });
 }
 
-/** The picker is its own ion-modal, so it teleports to the app root and is NOT
- * inside `editDialog` — key it off its own title. */
 function picker(page: Page): Locator {
   return presentedDialog(page, 'Emoji auswählen');
 }
@@ -41,7 +53,7 @@ function emojiOption(page: Page, glyph: string): Locator {
 
 test.describe('emoji picker', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/groceries/storage/_storage');
+    await page.goto('/#/household/storage/_storage');
     await waitForListPage(page);
   });
 
@@ -57,9 +69,6 @@ test.describe('emoji picker', () => {
     await expect(emojiOption(page, '🥛')).toBeVisible({ timeout: 10_000 });
     await emojiOption(page, '🥛').click();
 
-    // `multiple`: the picker stays up, so a second glyph goes in without
-    // reopening — and lands AFTER the first, which is what the caret advance
-    // buys (a stale caret would spell "🌾🥛").
     await expect(picker(page)).toBeVisible();
     await searchPicker(page, 'reis');
     await expect(emojiOption(page, '🌾')).toBeVisible({ timeout: 10_000 });
@@ -72,7 +81,6 @@ test.describe('emoji picker', () => {
     await editDialog(page).getByRole('button', { name: 'Übernehmen' }).click();
     await expect(listRow(page, /🥛🌾/)).toBeVisible({ timeout: 10_000 });
 
-    // Saving records the glyphs, so the next open offers them without a search.
     await addViaSearch(page, 'Butter');
     await listRow(page, /Butter/).click();
     await editDialog(page).getByTestId('emoji-picker-trigger').click();

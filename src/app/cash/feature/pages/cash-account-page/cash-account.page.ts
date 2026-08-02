@@ -32,16 +32,16 @@ import {
   unlinkOutline,
 } from 'ionicons/icons';
 import { LocalizedDatePipe } from '../../../util/formatting/localized-date.pipe';
-import { ICashTransaction } from '../../../model/transaction.types';
+import { CashTransaction } from '../../../model/transaction.types';
 import { uuidv4 } from '../../../../@shared/util/app.utils';
-import { CashFacade, TAccountTxn } from '../../../data';
+import { CashFacade, AccountTransaction } from '../../../data';
 import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-detail-header.component';
 import { deleteConfirmAlert } from '../../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../../util/formatting/money.pipe';
 import { parserForBank } from '../../../util/import/bank-parsers';
-import { IBankParser } from '../../../util/import/bank-parser';
+import { BankParser } from '../../../util/import/bank-parser';
 import { decodeCsv } from '../../../util/import/read-csv';
-import { IImportPlan, planImport } from '../../../util/import/plan-import';
+import { ImportPlan, planImport } from '../../../util/import/plan-import';
 import { takePickedFile } from '../../../util/picked-file.utils';
 import { CashAccountEditModalComponent } from '../../modals/account-edit-modal/account-edit-modal.component';
 import { CashTransactionEditModalComponent } from '../../modals/transaction-edit-modal/transaction-edit-modal.component';
@@ -50,14 +50,8 @@ import { CashReconcileModalComponent } from '../../../smart-ui/reconcile-modal/r
 import { categoryNameLookup } from '../../../../@shared/util/categories/category.utils';
 import { presentModal } from '../../../../@shared/util/app.modal.utils';
 
-import { TCategoryId } from '../../../../@shared/model/category.types';
+import { CategoryId } from '../../../../@shared/model/category.types';
 
-/**
- * A single account's transaction ledger. Header carries back / edit-account /
- * add-transaction; a balance strip mirrors the overview; the list is newest
- * first with signed amounts, an optional category, and a pending marker. Tap a
- * row to edit, swipe to delete. The account id is fixed for the page lifetime.
- */
 @Component({
   selector: 'app-page-cash-account',
   templateUrl: './cash-account.page.html',
@@ -101,10 +95,9 @@ export class CashAccountPage {
   );
   readonly balanceCents = computed(() => this.#balances()[this.id] ?? 0);
 
-  categoryName(id: TCategoryId | undefined): string {
+  categoryName(id: CategoryId | undefined): string {
     return this.#categoryName()(id);
   }
-  // A CSV import is only available when the account's bank has a parser.
   readonly canImport = computed(() => !!parserForBank(this.account()?.bank));
 
   constructor() {
@@ -118,7 +111,7 @@ export class CashAccountPage {
     });
   }
 
-  async reconcile(txn: ICashTransaction): Promise<void> {
+  async reconcile(txn: CashTransaction): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       CashReconcileModalComponent,
@@ -127,9 +120,7 @@ export class CashAccountPage {
     );
   }
 
-  /** Reverse a reconciliation from the surviving txn: detach the manual leg it
-   *  absorbed and restore that leg to pending (visible + counted again). */
-  detachReconcile(txn: TAccountTxn): void {
+  detachReconcile(txn: AccountTransaction): void {
     if (!txn.reconciledManualId) return;
     this.#facade.unreconcileTransaction(txn.reconciledManualId);
   }
@@ -154,7 +145,7 @@ export class CashAccountPage {
     await this.#presentImportPreview(await this.#planImportFor(file, parser));
   }
 
-  async #planImportFor(file: File, parser: IBankParser): Promise<IImportPlan> {
+  async #planImportFor(file: File, parser: BankParser): Promise<ImportPlan> {
     const parsed = parser.parse(decodeCsv(await file.arrayBuffer()));
     return planImport(
       parsed,
@@ -166,7 +157,7 @@ export class CashAccountPage {
     );
   }
 
-  async #presentImportPreview(plan: IImportPlan): Promise<void> {
+  async #presentImportPreview(plan: ImportPlan): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       CashImportPreviewModalComponent,
@@ -188,7 +179,7 @@ export class CashAccountPage {
     );
   }
 
-  async editTransaction(txn: ICashTransaction): Promise<void> {
+  async editTransaction(txn: CashTransaction): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       CashTransactionEditModalComponent,
@@ -197,7 +188,7 @@ export class CashAccountPage {
     );
   }
 
-  async confirmDelete(txn: ICashTransaction): Promise<void> {
+  async confirmDelete(txn: CashTransaction): Promise<void> {
     const alert = await this.#alertCtrl.create(
       deleteConfirmAlert(this.#translate, {
         headerKey: marker('cash.txn.delete.header'),

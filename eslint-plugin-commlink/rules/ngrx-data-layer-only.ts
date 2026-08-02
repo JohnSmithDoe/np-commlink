@@ -1,16 +1,22 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * NgRx is a data-layer implementation detail: every component/shell
+ * dispatch and read goes through a per-domain facade, so `Store` is
+ * injected in exactly one place per domain.
+ *
+ * This was two `no-restricted-imports` blocks — the ban, and an `'off'`
+ * block re-enabling it for the sanctioned homes. The allowlist stays an
+ * `ignores:` glob list on the config block (configs.ts) because ESLint
+ * already does glob matching, and doing it in here would mean shipping a
+ * matcher.
+ *
+ * Bare `@ngrx` is deliberately not matched, mirroring the subpath-only
+ * patterns this replaces — there is no such package. A re-export is
+ * checked as well as an import: leaving it out would make an
+ * `export ... from '@ngrx/store'` the one legal way past the gate.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 
-// NgRx is a data-layer implementation detail.
-//
-// Every component/shell dispatch and read goes through a per-domain facade, so
-// `Store` is injected in exactly one place per domain. This was two
-// `no-restricted-imports` blocks — the ban and an `'off'` block re-enabling it
-// for the sanctioned homes. It is one rule now, and the allowlist stays an
-// `ignores:` glob list on the config block (configs.ts): ESLint already does glob
-// matching, and doing it in here would mean shipping a matcher.
-//
-// `@ngrx` bare is deliberately not matched, mirroring the `['@ngrx/*',
-// '@ngrx/*/**']` patterns this replaces — there is no such package.
 const NGRX_SUBPATH = /^@ngrx\/.+/;
 
 interface WithSource {
@@ -41,9 +47,6 @@ export const rule: Rule.RuleModule = {
       });
     };
 
-    // The three forms `no-restricted-imports` itself covers. A re-export is an
-    // import that also republishes, so leaving it out would make `export * from
-    // '@ngrx/store'` the one legal way past the gate.
     return {
       ImportDeclaration: check,
       ExportNamedDeclaration: check,

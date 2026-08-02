@@ -13,20 +13,17 @@ import { addIcons } from 'ionicons';
 import { documentsOutline, ellipse, square, triangle } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TMarker } from '../../../@shared/model/app.types';
+import { Marker } from '../../../@shared/model/app.types';
 import { SessionsChartComponent } from '../../smart-ui/sessions-chart/sessions-chart.component';
 import { TrackingFacade } from '../../data';
 import {
-  IDataItem,
+  DataItem,
   TRACKING_VIEW_IDS,
-  TTrackingViewId,
+  TrackingViewId,
 } from '../../model/tracking.types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
 
-// Keyed by the union so a new view cannot ship without a label, and spelled out
-// as `marker(...)` literals because the template reads them through a lookup — a
-// composed `'data.page.title.' + id` would be invisible to `i18n:extract --clean`.
-const VIEW_LABEL_KEYS: Record<TTrackingViewId, TMarker> = {
+const VIEW_LABEL_KEYS: Record<TrackingViewId, Marker> = {
   raw: marker('data.page.title.raw'),
   today: marker('data.page.title.today'),
   daily: marker('data.page.title.daily'),
@@ -67,11 +64,11 @@ export class StatsPage {
     this.#facade.shareCsv();
   }
 
-  deleteItem(item: IDataItem) {
+  deleteItem(item: DataItem) {
     this.#facade.removeDataItem(item);
   }
 
-  selectViewMode({ detail }: CustomEvent<{ value: TTrackingViewId }>) {
+  selectViewMode({ detail }: CustomEvent<{ value: TrackingViewId }>) {
     this.#facade.changeDataView(detail.value);
   }
 }

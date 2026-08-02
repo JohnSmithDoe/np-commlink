@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { ITrackingItem, ITrackingState } from '../model/tracking.types';
+import { TrackingItem, TrackingState } from '../model/tracking.types';
 import {
   selectLiveChartSessions,
   selectRunningTrackingItem,
@@ -7,7 +7,7 @@ import {
   selectTrackingTime,
 } from './tracking.selector';
 
-const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
   id: Math.random().toString(36).slice(2),
   name: 'Task',
   createdAt: '2026-01-01',
@@ -15,15 +15,13 @@ const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
   ...over,
 });
 
-const state = (over: Partial<ITrackingState> = {}): ITrackingState => ({
+const state = (over: Partial<TrackingState> = {}): TrackingState => ({
   items: [],
   sessions: [],
   sessionsViewId: 'all',
   ...over,
 });
 
-// One running item, at a given number of tracked seconds — the shape the 1 Hz
-// `updateTracking` tick produces.
 const stateAtSecond = (trackedTimeInSeconds: number) => ({
   tracking: state({
     sessions: [],
@@ -60,15 +58,6 @@ describe('tracking.selector', () => {
     expect(result).toBe('01:01:01');
   });
 
-  /**
-   * The running item's `updateTracking` tick fires once a second, and a stacked
-   * bar chart in hours cannot show that — so the chart must not be rebuilt for it.
-   * This selector is where that guarantee lives: `resultMemoize` returns the
-   * previous array REFERENCE unless a whole minute rolled over, which is what
-   * stops the signal reading it from notifying. The assembly it feeds moved to
-   * `util/sessions.utils`, but the tick absorption did not, so it is still tested
-   * here — on the selector that actually makes the promise.
-   */
   describe('selectLiveChartSessions and the per-second tick', () => {
     beforeEach(() => selectLiveChartSessions.release());
 
@@ -94,7 +83,7 @@ describe('selectTrackingItemCount', () => {
     expect(
       selectTrackingItemCount.projector({
         items: [track()],
-      } as ITrackingState)
+      } as TrackingState)
     ).toBe(1);
   });
 

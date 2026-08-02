@@ -1,10 +1,6 @@
 import { deriveIonicColorSet } from './ionic-color.utils';
 
 describe('deriveIonicColorSet', () => {
-  // Real hex → derived tuples, lifted verbatim from src/theme/variables.scss
-  // (boomer + cyberpunk × primary + secondary) plus Ionic's own well-known
-  // default primary — the derivation is verified against shipped values
-  // instead of an assumed formula.
   it.each([
     [
       'boomer primary',
@@ -67,9 +63,6 @@ describe('deriveIonicColorSet', () => {
   });
 
   it('picks black contrast for a mid-luminance color close to the threshold', () => {
-    // Cyberpunk secondary's YIQ (≈136) sits close enough to 128 that a wrong
-    // threshold (or a wrong direction) would flip the result — the shipped
-    // value is black.
     const { contrast } = deriveIonicColorSet('#32aea6');
     expect(contrast).toBe('#000000');
   });

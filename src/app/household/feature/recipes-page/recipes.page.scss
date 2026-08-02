@@ -1,0 +1,17 @@
+.recipe-ready,
+.recipe-missing {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+  font-size: var(--fs-small);
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.recipe-ready {
+  color: var(--sr-cyan);
+}
+
+.recipe-missing {
+  color: var(--sr-amber);
+}

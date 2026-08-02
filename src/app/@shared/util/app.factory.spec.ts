@@ -4,8 +4,8 @@ import { createBaseItem } from './app.factory';
 describe('app.factory', () => {
   describe('createBaseItem', () => {
     it('trims the name and stamps a valid createdAt', () => {
-      const item = createBaseItem('  Groceries  ');
-      expect(item.name).toBe('Groceries');
+      const item = createBaseItem('  Household  ');
+      expect(item.name).toBe('Household');
       expect(dayjs(item.createdAt).isValid()).toBe(true);
     });
 

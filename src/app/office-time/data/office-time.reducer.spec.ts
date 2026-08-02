@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
 import { OfficeTimeActions } from './office-time.actions';
 import {
-  IOfficeTimeState,
-  IOfficeTimeStateStorage,
+  OfficeTimeState,
+  OfficeTimeStateStorage,
 } from '../model/office-time.types';
 import { initialOfficeTime, officeTimeReducer } from './office-time.reducer';
 
 const persistedWithCards = (
-  dashboardItems: IOfficeTimeState['dashboardItems']
-): IOfficeTimeStateStorage => ({
+  dashboardItems: OfficeTimeState['dashboardItems']
+): OfficeTimeStateStorage => ({
   ...initialOfficeTime,
   holidays: {},
   officedays: [],
@@ -60,9 +60,6 @@ describe('officeTimeReducer', () => {
       );
     });
 
-    // The page's visibility filter is total over the current card vocabulary, so
-    // a card this build no longer ships must not survive hydration — it would
-    // render an empty grid slot.
     it('drops a card this build no longer ships', () => {
       const state = officeTimeReducer(
         initialOfficeTime,

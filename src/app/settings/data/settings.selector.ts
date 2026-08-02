@@ -1,11 +1,11 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import { ISettingsState } from '../model/settings.types';
+import { SettingsState } from '../model/settings.types';
 
 export const SETTINGS_STATE_KEY = 'settings';
 
 export const selectSettingsState =
-  createFeatureSelector<ISettingsState>(SETTINGS_STATE_KEY);
+  createFeatureSelector<SettingsState>(SETTINGS_STATE_KEY);
 
 export const selectTheme = createSelector(
   selectSettingsState,

@@ -5,11 +5,6 @@ import {
   toDashboardStatsMetrics,
 } from './office-time-stats.selector';
 
-// Anchored on `today` rather than a fixed date: this projector resolves "the
-// current year" from the clock, which is the one stats read allowed to. The
-// period arithmetic itself is spec'd against a pinned day in
-// `office-time.utils.spec.ts`, where `calculateStats` takes the day as an
-// argument.
 const today = dayjs();
 
 const keysFor = (officedays = [today]) =>

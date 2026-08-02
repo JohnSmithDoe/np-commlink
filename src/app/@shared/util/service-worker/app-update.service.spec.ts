@@ -43,9 +43,6 @@ describe('AppUpdateService', () => {
     expect(service.updateReady()).toBe(true);
   });
 
-  // Every other event type crosses the same stream (VERSION_DETECTED fires
-  // while the new assets are still downloading), and offering a reload then
-  // would serve a half-fetched version.
   it('ignores versions that are not ready yet', () => {
     const service = serviceWith(true);
 
@@ -57,8 +54,6 @@ describe('AppUpdateService', () => {
     expect(service.updateReady()).toBe(false);
   });
 
-  // `ng serve`, specs and the APK all report disabled. Subscribing there would
-  // be harmless, but `activateUpdate()` throws — so nothing may reach the shell.
   it('stays inert where no service worker runs', () => {
     const service = serviceWith(false);
 
@@ -78,7 +73,6 @@ describe('AppUpdateService', () => {
     expect(reload).toHaveBeenCalled();
   });
 
-  // A failed activation must not leave a prompt up that cannot work.
   it('withdraws the offer when activation fails', async () => {
     const service = serviceWith(true);
     activateUpdate.mockRejectedValueOnce(new Error('no worker'));

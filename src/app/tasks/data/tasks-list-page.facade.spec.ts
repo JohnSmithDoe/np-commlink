@@ -33,8 +33,6 @@ describe('TasksListPageFacade', () => {
   });
 
   it('maps the list commands onto the tasks slice actions', () => {
-    // The catalog has to hold the entry: the picker's delete resolves the id
-    // against it rather than fabricating a half-built category.
     setup({
       categoryList: { items: [mockCategory({ id: 'cat-1', name: 'Home' })] },
     });

@@ -1,7 +1,7 @@
-import { IDataItem } from '../model/tracking.types';
+import { DataItem } from '../model/tracking.types';
 import { TrackingTimePipe } from './tracking-time.pipe';
 
-const dataItem = (trackedTimeInSeconds?: number): IDataItem => ({
+const dataItem = (trackedTimeInSeconds?: number): DataItem => ({
   id: '1',
   name: 'task',
   trackedTimeInSeconds,

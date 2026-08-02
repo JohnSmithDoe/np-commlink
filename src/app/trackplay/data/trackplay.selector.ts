@@ -1,15 +1,15 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
-  IGame,
-  IGameConfig,
-  IGameType,
-  IPlayer,
-  IPlayerStats,
-  IRound,
-  ITrackplayConfig,
-  ITrackplayDeleted,
-  ITrackplayState,
-  TID,
+  Game,
+  GameConfig,
+  GameType,
+  Player,
+  PlayerStats,
+  Round,
+  TrackplayConfig,
+  TrackplayDeleted,
+  TrackplayState,
+  TrackplayId,
 } from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPE_ID,
@@ -20,51 +20,41 @@ import { matchesSearch } from '../../@shared/util/app.utils';
 export const TRACKPLAY_STATE_KEY = 'trackplay';
 
 const selectTrackplayState =
-  createFeatureSelector<ITrackplayState>(TRACKPLAY_STATE_KEY);
+  createFeatureSelector<TrackplayState>(TRACKPLAY_STATE_KEY);
 
-/**
- * What reaches disk. `lastDeleted` is a transient whole-slice undo snapshot that
- * only lives for the 8s of the toast, so persisting it duplicated players, games,
- * types and rounds inside the document from the first delete onward — and every
- * later write carried the copy again. The reducer already nulls it on hydration,
- * so dropping it changes nothing that survives a reload.
- */
 export const selectTrackplayPersisted = createSelector(
   selectTrackplayState,
-  (state): ITrackplayState => ({ ...state, lastDeleted: null })
+  (state): TrackplayState => ({ ...state, lastDeleted: null })
 );
 
-// ── map slices ───────────────────────────────────────────────────────────────
 export const selectPlayers = createSelector(
   selectTrackplayState,
-  (state): Record<TID, IPlayer> => state.players
+  (state): Record<TrackplayId, Player> => state.players
 );
 export const selectGames = createSelector(
   selectTrackplayState,
-  (state): Record<TID, IGame> => state.games
+  (state): Record<TrackplayId, Game> => state.games
 );
 export const selectGameTypes = createSelector(
   selectTrackplayState,
-  (state): Record<TID, IGameType> => state.gameTypes
+  (state): Record<TrackplayId, GameType> => state.gameTypes
 );
 const selectRounds = createSelector(
   selectTrackplayState,
-  (state): Record<TID, IRound> => state.rounds
+  (state): Record<TrackplayId, Round> => state.rounds
 );
 export const selectTrackplayConfig = createSelector(
   selectTrackplayState,
-  (state): ITrackplayConfig => state.config
+  (state): TrackplayConfig => state.config
 );
 export const selectLastDeleted = createSelector(
   selectTrackplayState,
-  (state): ITrackplayDeleted | null => state.lastDeleted
+  (state): TrackplayDeleted | null => state.lastDeleted
 );
 
-// ── sort / filter helpers (port of legacy data.service) ──────────────────────
-
 const byGameSort =
-  (config: IGameConfig) =>
-  (a: IGame, b: IGame): number => {
+  (config: GameConfig) =>
+  (a: Game, b: Game): number => {
     const [x, y] = config.direction === 'desc' ? [b, a] : [a, b];
     switch (config.sort) {
       case 'name': {
@@ -79,31 +69,27 @@ const byGameSort =
     }
   };
 
-// Ended games always sink to the bottom, regardless of the chosen sort.
-const endedLast = (a: IGame, b: IGame): number =>
+const endedLast = (a: Game, b: Game): number =>
   (a.ended ? 1 : 0) - (b.ended ? 1 : 0);
 
-const matchesGameConfig = (game: IGame, config: IGameConfig): boolean =>
+const matchesGameConfig = (game: Game, config: GameConfig): boolean =>
   matchesSearch(game.name, config.filter) &&
   (config.typeId === '' || game.type === config.typeId) &&
   (config.showEndedGames || !game.ended);
 
-// Filter BEFORE sorting: both sort keys are total orders over any subset, so the
-// result is identical while the two passes run over the survivors instead of over
-// every game ever recorded.
 const sortedAndFilteredGames = (
-  games: IGame[],
-  config: IGameConfig,
-  extraFilter: (game: IGame) => boolean = () => true
-): IGame[] =>
+  games: Game[],
+  config: GameConfig,
+  extraFilter: (game: Game) => boolean = () => true
+): Game[] =>
   games
     .filter((game) => matchesGameConfig(game, config) && extraFilter(game))
     .toSorted(byGameSort(config))
     .toSorted(endedLast); // stable, so the sort above survives inside each group
 
 const byPlayerSort =
-  (config: ITrackplayConfig['players']) =>
-  (a: IPlayer, b: IPlayer): number => {
+  (config: TrackplayConfig['players']) =>
+  (a: Player, b: Player): number => {
     const [x, y] = config.direction === 'desc' ? [b, a] : [a, b];
     switch (config.sort) {
       case 'name': {
@@ -119,19 +105,18 @@ const byPlayerSort =
   };
 
 const sortedAndFilteredPlayers = (
-  players: IPlayer[],
-  config: ITrackplayConfig['players']
-): IPlayer[] =>
+  players: Player[],
+  config: TrackplayConfig['players']
+): Player[] =>
   players
     .filter((player) => matchesSearch(player.name, config.filter))
     .toSorted(byPlayerSort(config));
 
-// Best first — which end that is depends on the game type's `winHigh`.
 const rankPlayersByScore = (
-  playerIds: TID[],
-  scores: Record<TID, number>,
+  playerIds: TrackplayId[],
+  scores: Record<TrackplayId, number>,
   winHigh: boolean
-): TID[] =>
+): TrackplayId[] =>
   playerIds.toSorted((a, b) =>
     winHigh
       ? (scores[b] ?? 0) - (scores[a] ?? 0)
@@ -139,10 +124,10 @@ const rankPlayersByScore = (
   );
 
 const computeScores = (
-  game: IGame,
-  rounds: Record<TID, IRound>
-): Record<TID, number> => {
-  const scores: Record<TID, number> = {};
+  game: Game,
+  rounds: Record<TrackplayId, Round>
+): Record<TrackplayId, number> => {
+  const scores: Record<TrackplayId, number> = {};
   for (const playerId of game.players) {
     let sum = 0;
     for (const roundId of game.rounds) {
@@ -153,25 +138,23 @@ const computeScores = (
   return scores;
 };
 
-// ── list selectors ───────────────────────────────────────────────────────────
 export const selectGameList = createSelector(
   selectGames,
   selectTrackplayConfig,
-  (games, config): IGame[] =>
+  (games, config): Game[] =>
     sortedAndFilteredGames(Object.values(games), config.games)
 );
 
 export const selectPlayerList = createSelector(
   selectPlayers,
   selectTrackplayConfig,
-  (players, config): IPlayer[] =>
+  (players, config): Player[] =>
     sortedAndFilteredPlayers(Object.values(players), config.players)
 );
 
-// Game types sorted with `default` first, then alphabetical.
 export const selectGameTypeList = createSelector(
   selectGameTypes,
-  (gameTypes): IGameType[] =>
+  (gameTypes): GameType[] =>
     Object.values(gameTypes).toSorted((a, b) => {
       if (a.id === DEFAULT_GAME_TYPE_ID) return -1;
       if (b.id === DEFAULT_GAME_TYPE_ID) return 1;
@@ -179,66 +162,54 @@ export const selectGameTypeList = createSelector(
     })
 );
 
-// ── parameterized selectors ───────────────────────────────────────────────────
-export const selectGameById = (gameId: TID) =>
-  createSelector(selectGames, (games): IGame | undefined => games[gameId]);
+export const selectGameById = (gameId: TrackplayId) =>
+  createSelector(selectGames, (games): Game | undefined => games[gameId]);
 
-export const selectPlayerById = (playerId: TID) =>
+export const selectPlayerById = (playerId: TrackplayId) =>
   createSelector(
     selectPlayers,
-    (players): IPlayer | undefined => players[playerId]
+    (players): Player | undefined => players[playerId]
   );
 
-export const selectRoundsByGame = (gameId: TID) =>
-  createSelector(selectGames, selectRounds, (games, rounds): IRound[] => {
+export const selectRoundsByGame = (gameId: TrackplayId) =>
+  createSelector(selectGames, selectRounds, (games, rounds): Round[] => {
     const game = games[gameId];
     if (!game) return [];
     return game.rounds
       .map((rId) => rounds[rId])
-      .filter((r): r is IRound => !!r)
+      .filter((r): r is Round => !!r)
       .toSorted((a, b) => a.idx - b.idx);
   });
 
-// selectScoresByGame(gameId) -> { playerId: totalPoints } (DERIVED, never stored).
-export const selectScoresByGame = (gameId: TID) =>
+export const selectScoresByGame = (gameId: TrackplayId) =>
   createSelector(
     selectGames,
     selectRounds,
-    (games, rounds): Record<TID, number> => {
+    (games, rounds): Record<TrackplayId, number> => {
       const game = games[gameId];
       return game ? computeScores(game, rounds) : {};
     }
   );
 
-// selectResultByGame(gameId) -> participants ranked by the game type's winHigh rule.
-export const selectResultByGame = (gameId: TID) =>
+export const selectResultByGame = (gameId: TrackplayId) =>
   createSelector(
     selectGames,
     selectPlayers,
     selectGameTypes,
     selectRounds,
-    (games, players, gameTypes, rounds): IPlayer[] => {
+    (games, players, gameTypes, rounds): Player[] => {
       const game = games[gameId];
       if (!game) return [];
       const scores = computeScores(game, rounds);
       const winHigh = gameTypes[game.type]?.winHigh ?? true;
       return rankPlayersByScore(game.players, scores, winHigh)
         .map((pid) => players[pid])
-        .filter((p): p is IPlayer => !!p);
+        .filter((p): p is Player => !!p);
     }
   );
 
-// There is deliberately no `selectWinnerByGame`: it called `selectResultByGame`
-// a second time, and a parameterised factory returns a NEW selector with its own
-// memo cache — so the game-play page, holding both, recomputed every score three
-// times per state change on the one surface where each cell edit IS a change.
-// The winner is `result()[0]`, derived where the result is already held.
-
-// selectGamesForPlayer(playerId) -> that player's games, per the gamesForPlayer config.
-export const selectGamesForPlayer = (playerId: TID) =>
-  createSelector(selectGames, selectTrackplayConfig, (games, config): IGame[] =>
-    // The player narrowing rides along in the same pass, so the two sorts see
-    // only that player's games rather than every game in the archive.
+export const selectGamesForPlayer = (playerId: TrackplayId) =>
+  createSelector(selectGames, selectTrackplayConfig, (games, config): Game[] =>
     sortedAndFilteredGames(
       Object.values(games),
       config.gamesForPlayer,
@@ -247,15 +218,15 @@ export const selectGamesForPlayer = (playerId: TID) =>
   );
 
 const zeroedStatsPerPlayer = (
-  players: Record<TID, IPlayer>
-): Record<TID, IPlayerStats> =>
+  players: Record<TrackplayId, Player>
+): Record<TrackplayId, PlayerStats> =>
   Object.fromEntries(
     Object.keys(players).map((playerId) => [playerId, { ...NO_PLAYER_STATS }])
   );
 
 const countParticipation = (
-  stats: Record<TID, IPlayerStats>,
-  game: IGame
+  stats: Record<TrackplayId, PlayerStats>,
+  game: Game
 ): void => {
   for (const playerId of game.players) {
     const playerStats = stats[playerId];
@@ -265,10 +236,9 @@ const countParticipation = (
   }
 };
 
-// Only rank 1 counts as a win; everyone else in an ended game took a loss.
 const awardWinAndLosses = (
-  stats: Record<TID, IPlayerStats>,
-  ranked: TID[]
+  stats: Record<TrackplayId, PlayerStats>,
+  ranked: TrackplayId[]
 ): void => {
   for (const [rank, playerId] of ranked.entries()) {
     const playerStats = stats[playerId];
@@ -278,13 +248,12 @@ const awardWinAndLosses = (
   }
 };
 
-// playerStats -> { playerId: {play, win, loss, open} } (DERIVED from games+rounds).
 export const selectPlayerStats = createSelector(
   selectPlayers,
   selectGames,
   selectGameTypes,
   selectRounds,
-  (players, games, gameTypes, rounds): Record<TID, IPlayerStats> => {
+  (players, games, gameTypes, rounds): Record<TrackplayId, PlayerStats> => {
     const stats = zeroedStatsPerPlayer(players);
     for (const game of Object.values(games)) {
       countParticipation(stats, game);
@@ -301,13 +270,12 @@ export const selectPlayerStats = createSelector(
   }
 );
 
-export const selectStatsForPlayer = (playerId: TID) =>
+export const selectStatsForPlayer = (playerId: TrackplayId) =>
   createSelector(
     selectPlayerStats,
-    (stats): IPlayerStats => stats[playerId] ?? { ...NO_PLAYER_STATS }
+    (stats): PlayerStats => stats[playerId] ?? { ...NO_PLAYER_STATS }
   );
 
-// Total number of games (all types, ended or not) on the deck's TRACKPLAY tile.
 export const selectGameCount = createSelector(
   selectGames,
   (games) => Object.keys(games ?? {}).length

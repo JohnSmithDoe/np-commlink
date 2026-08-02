@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { IGame } from '../../model/trackplay.types';
+import { Game } from '../../model/trackplay.types';
 import {
   mockGame,
   mockPlayer,
@@ -29,13 +29,11 @@ describe('TrackplayGameEditModalComponent', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
   let dismiss: ReturnType<typeof vi.spyOn>;
 
-  // The created games (the action carries a pre-minted entity, so the id and the
-  // timestamps are only knowable from the dispatch itself).
-  const created = (): IGame[] =>
-    (dispatch.mock.calls as Array<[{ type: string; game?: IGame }]>)
+  const created = (): Game[] =>
+    (dispatch.mock.calls as Array<[{ type: string; game?: Game }]>)
       .map((call) => call[0])
       .filter((action) => action.type === TrackplayActions.createGame.type)
-      .map((action) => action.game as IGame);
+      .map((action) => action.game as Game);
 
   const setup = (state = mockTrackplayState()) => {
     ({ component, dispatch, dismiss } = setupModalSpec(
@@ -72,8 +70,6 @@ describe('TrackplayGameEditModalComponent', () => {
     ]);
   });
 
-  // The chosen type rides along in the create action; it used to take a second
-  // dispatch, aimed at an id reverse-engineered from the games map.
   it('creates with the chosen type in a single dispatch', () => {
     setup();
 
@@ -99,10 +95,6 @@ describe('TrackplayGameEditModalComponent', () => {
     expect(dismiss).toHaveBeenCalled();
   });
 
-  // Unreachable via the UI (the OK button is `[disabled]="!canSave()"`), but the
-  // guard is uniform across all the modal dialogs now: confirm with an invalid
-  // draft is a no-op and leaves the dialog open. This dialog used to be the odd
-  // one out, dismissing anyway.
   it('neither creates nor dismisses without a name', () => {
     setup();
 
@@ -112,8 +104,6 @@ describe('TrackplayGameEditModalComponent', () => {
     expect(dismiss).not.toHaveBeenCalled();
   });
 
-  // The componentProps write into signals, so the draft seeds reactively — no
-  // ngOnInit to call (and none to forget).
   it('seeds the draft from the edited game', () => {
     setup(editState());
 
@@ -125,7 +115,6 @@ describe('TrackplayGameEditModalComponent', () => {
       typeId: 'default',
       playerIds: ['p1'],
     });
-    // The stable original selection drives the player-select display order.
     expect(component.initialPlayerIds()).toEqual(['p1']);
   });
 

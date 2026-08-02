@@ -1,4 +1,4 @@
-import { ICategoryList } from '../../model/category.types';
+import { CategoryList } from '../../model/category.types';
 import { mockBaseItem, mockCategory } from '../../testing/test-data';
 import {
   addToCatalog,
@@ -8,7 +8,7 @@ import {
   renameInCatalog,
 } from './category-list.utils';
 
-const catalog = (...names: [string, string][]): ICategoryList => ({
+const catalog = (...names: [string, string][]): CategoryList => ({
   id: '_probe-categories',
   items: names.map(([id, name]) => mockCategory({ id, name })),
 });
@@ -53,8 +53,6 @@ describe('renameInCatalog', () => {
     expect(mergedInto).toBeUndefined();
   });
 
-  // The survivor id is what the caller remaps its own references onto — the
-  // reason this reports a merge instead of silently performing one.
   it('merges onto an existing name: drops the entry and names the survivor', () => {
     const { catalog: next, mergedInto } = renameInCatalog(
       catalog(['fresh', 'Fresh'], ['dairy', 'Dairy']),

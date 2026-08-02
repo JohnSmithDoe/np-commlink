@@ -15,9 +15,6 @@ describe('DashButtonComponent', () => {
   let store: MockStore;
 
   const create = (todayIsOfficeDay: boolean): DashButtonComponent => {
-    // The facade is a root singleton, so its `todayIsOfficeDay` signal is
-    // created once — push the day list through the state stream so the existing
-    // computed recomputes.
     store.setState(officeTimeWith(todayIsOfficeDay ? [dayjs()] : []));
     return TestBed.createComponent(DashButtonComponent).componentInstance;
   };

@@ -5,11 +5,13 @@ import {
   selectOpenNotifications,
 } from './notifications.selector';
 import {
-  INotification,
-  INotificationsState,
+  NotificationsState,
+  InboxNotification,
 } from '../../@shared/model/notifications.types';
 
-const notification = (over: Partial<INotification> = {}): INotification => ({
+const notification = (
+  over: Partial<InboxNotification> = {}
+): InboxNotification => ({
   id: '1',
   name: 'Notification',
   createdAt: '2026-06-01T08:00:00.000Z',
@@ -21,9 +23,7 @@ const notification = (over: Partial<INotification> = {}): INotification => ({
   ...over,
 });
 
-const state = (
-  over: Partial<INotificationsState> = {}
-): INotificationsState => ({
+const state = (over: Partial<NotificationsState> = {}): NotificationsState => ({
   items: [],
   doneCollapsed: true,
   lastViewedAt: '2026-07-03T00:00:00.000Z',
@@ -68,7 +68,6 @@ describe('notifications.selector', () => {
   });
 
   it('counts only new notifications updated since the last view', () => {
-    // n1 (07-05) is after lastViewedAt (07-03); n2 (07-01) is not.
     expect(selectNotificationsBadgeCount.projector(state({ items }))).toBe(1);
   });
 });

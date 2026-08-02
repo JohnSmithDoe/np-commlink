@@ -95,8 +95,6 @@ describe('CashFacade', () => {
     expect(facade.transactionsForCategory('c2')()).toEqual([]);
   });
 
-  // One command per entity group: the risk in a 20-method pass-through facade is
-  // a method wired to the neighbouring action creator.
   it('dispatches one command per entity group', () => {
     setup(ledger);
 
@@ -115,8 +113,6 @@ describe('CashFacade', () => {
     );
   });
 
-  // Same-typed positional arguments: a swap would compile and silently reconcile
-  // the wrong way round.
   it('keeps the argument order of the multi-argument commands', () => {
     setup(ledger);
 

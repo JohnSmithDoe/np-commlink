@@ -1,7 +1,7 @@
 import { selectNotificationsUnread } from './dashboard.selector';
-import { IDashboardTelemetry } from '../../../@shared/model/dashboard.types';
+import { DashboardTelemetry } from '../../../@shared/model/dashboard.types';
 
-const notifications: IDashboardTelemetry = {
+const notifications: DashboardTelemetry = {
   source: 'notifications',
   metrics: { unread: 5 },
 };

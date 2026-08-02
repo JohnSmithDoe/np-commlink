@@ -1,11 +1,13 @@
 # np-commlink
 
-Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notifications, barcode/SIGIL) with `np-kitchen-bot` (shopping, storage, products, tasks) into a single Angular 21 / Ionic 8 / Capacitor 8 app.
+Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notifications, barcode/SIGIL) with `np-kitchen-bot` (shopping, storage, products, tasks) and np-trackplay (gameing list) into a single Angular 21 / Ionic 8 / Capacitor 8 app.
 
 ## Prerequisites
 
-- Node 22 (`.nvmrc`)
+- Trust in Claude... this is a vibe coding project, which i am not really convinced off...
+- Node ≥ 22.18 (`.nvmrc` pins the line; a `preinstall` gate enforces the floor and says why)
 - pnpm 11.18.x (`packageManager` in `package.json` pins the exact version)
+- For the APK only: JDK 21 and Android SDK 36 (Android Studio installs both)
 
 ## Common commands
 
@@ -18,12 +20,77 @@ pnpm test:watch     # vitest, watch
 pnpm e2e            # playwright
 pnpm lint           # eslint (flat config)
 pnpm i18n:extract   # ngx-translate-extract → public/i18n/{de,en}.json (--clean)
-pnpm build:android  # web build + cap sync android + scripts/android-postsync.sh
+pnpm apk:build  # web build + cap sync android + scripts/android-postsync.sh
 pnpm apk:debug      # …then gradlew assembleDebug  → android/app/build/outputs/apk/debug/
-pnpm open:android   # open the project in Android Studio
+pnpm apk:open   # open the project in Android Studio
 ```
 
-First time on a machine: `npx cap add android` once (the folder is git-ignored), then the above.
+## Build it yourself
+
+Nothing here needs a secret, an account, or a config file you have to be told about — the whole
+path is four commands from a fresh clone, and no step is gated on the maintainer:
+
+```sh
+pnpm install
+npx cap add android      # once per machine; android/ is git-ignored and regenerated
+pnpm apk:debug           # → android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+That APK is signed with your own local debug key, installs on any device with developer options on,
+and is functionally the release build. `pnpm apk:release` also works and produces
+`releases/np-commlink-unsigned.apk` — unsigned, and named so, because the release signing key is
+deliberately not in this repo (below).
+
+## Release signing — why the key is not in here
+
+Publishing the *source* is what AGPL is for, and it is complete: everything needed to build a
+byte-for-byte equivalent app is in this repository. Publishing the *signing key* would be a
+different thing entirely, and it would take a guarantee away from users rather than granting one.
+
+Android decides an APK may replace an installed one purely by comparing signatures. With the key
+public, anyone could fork this, add whatever they liked, sign it as the canonical build and hand out
+an APK that installs **over** a real one and silently inherits its data — every tracked session, the
+pantry, the ledger. Users would have no way to tell the two apart. So the key stays private, the
+same way F-Droid, Signal and every Linux distro keep a repository signing key private while shipping
+all of their source: openness is about being able to inspect and rebuild the artifact, not about
+shared custody of who is allowed to *be* the publisher. And unlike a leaked password it cannot be
+rotated away — a new key can never upgrade an install made with the old one.
+
+The wiring is public even though the key isn't. `scripts/android-postsync.sh` appends a
+`signingConfig` that reads four environment variables when Gradle configures, so no key material
+ever lands in a file, in `android/`, or in this repo:
+
+```sh
+export NPC_KEYSTORE_PATH=/absolute/path/to/release.jks
+export NPC_KEYSTORE_PASSWORD=…
+export NPC_KEY_ALIAS=…
+export NPC_KEY_PASSWORD=…
+pnpm apk:release          # → releases/np-commlink.apk, signed (v2 + v3), sha256 printed
+```
+
+Or let one command resolve all four — the keystore found in `.keystore/`, the passwords typed at an
+unechoed prompt and exported into that process only, stored nowhere:
+
+```sh
+pnpm apk:signed           # → releases/np-commlink.apk, signature and fingerprint printed
+```
+
+With none of them set there is no `signingConfig` at all and a clone builds unchanged; with only
+some set the build stops and names the missing ones. Fork-friendly by construction: your fork signs
+with your key by exporting your own four values, and nothing needs patching.
+
+## Verify a release APK
+
+If you take an APK from a release rather than building it, two checks are worth doing — both against
+values published with the release, not against anything the APK tells you about itself:
+
+```sh
+sha256sum np-commlink.apk               # must match the digest published with the tag
+apksigner verify --print-certs np-commlink.apk   # signer SHA-256 must match the fingerprint below
+```
+
+The signer fingerprint is stable for the life of the app, so pinning it once detects any later key
+swap. _(Published here with the first signed release.)_
 
 ## Deployment — Codeberg Pages
 
@@ -61,8 +128,9 @@ If the push in the deploy step is ever rejected, the automatic `forge.token` los
 create an access token with `write:repository`, store it as the repo secret `CODEBERG_TOKEN`, and
 use `${{ secrets.CODEBERG_TOKEN }}` in place of `${{ forge.token }}`.
 
-Android APKs are built locally (`pnpm apk:debug`) — release APKs are unsigned, so store publishing
-still needs a keystore.
+Android APKs are built locally (`pnpm apk:debug`, or `apk:release` with the four `NPC_*` variables
+exported) and attached to the release by hand — CI builds no APK, so no signing key is ever handed
+to a runner.
 
 ## Layout
 

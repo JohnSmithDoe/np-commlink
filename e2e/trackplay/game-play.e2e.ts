@@ -1,3 +1,25 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The signature flow, and the only place the scoring grid is driven as a
+ * grid rather than as a reducer.
+ *
+ * `.nth(index)` is right throughout: a column IS a player and a row IS a
+ * round. Both cell helpers skip a leading marker column — the `#` in the
+ * header, the `∑` in the footer — so index 0 is Alice because the
+ * player-select emits alphabetically and the game keeps that order, not
+ * because of where the DOM happens to start.
+ *
+ * A score commits on blur, so `enterScore` presses Enter: that is what
+ * raises `ionBlur` and dispatches. The grid answers by spawning a fresh
+ * trailing blank round, which is why every entry is followed by a row
+ * count.
+ *
+ * Skat is picked because it is win-HIGH, which makes Alice's 30 the
+ * winning total — the assertion would invert for a win-low type. The
+ * `not.toContainText('{{')` beside it catches an unfilled i18n
+ * placeholder leaking into the winner line, which every other assertion
+ * here would read as a pass.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Locator, Page, test } from '@playwright/test';
 import {
   addButton,
@@ -9,19 +31,10 @@ import {
   togglePlayerInSelect,
 } from './helpers';
 
-/**
- * The signature end-to-end flow: create two players, create a game (assigning
- * both players + a win-high type via the game-edit dialog), drive the scoring
- * grid across two rounds, verify the footer sums and the auto-spawned trailing
- * round, end the game (winner = higher total for win-high) and reopen it.
- */
-
-/** A player-column footer total cell (skips the leading ∑ marker column). */
 function footerCells(grid: Locator): Locator {
   return grid.getByTestId('score-total-cell');
 }
 
-/** A player-column header cell (skips the leading "#" marker column). */
 function headerCells(grid: Locator): Locator {
   return grid.getByTestId('score-header-cell');
 }
@@ -30,7 +43,6 @@ function dataRows(grid: Locator): Locator {
   return grid.getByTestId('score-row');
 }
 
-/** The numeric input of a scoring cell at (round row `r`, player column `c`). */
 function cellInput(grid: Locator, r: number, c: number): Locator {
   return dataRows(grid)
     .nth(r)
@@ -39,7 +51,6 @@ function cellInput(grid: Locator, r: number, c: number): Locator {
     .locator('input');
 }
 
-/** Type a score into a cell and commit it (Enter blurs → ionBlur → dispatch). */
 async function enterScore(
   grid: Locator,
   r: number,
@@ -64,7 +75,6 @@ test.describe('trackplay full game', () => {
   }) => {
     await createTwoPlayers(page);
 
-    // ── Create the game via the games-page dialog ────────────────────────
     await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
     await addButton(pageRoot(page, 'app-page-trackplay-games')).click();
 
@@ -75,7 +85,6 @@ test.describe('trackplay full game', () => {
       .getByTestId('game-name-input')
       .locator('input')
       .fill('Testspiel');
-    // Pick Skat (win-high) through the type select.
     await pickSelectOption(
       page,
       dialog.getByTestId('game-type-select'),
@@ -84,17 +93,14 @@ test.describe('trackplay full game', () => {
     await togglePlayerInSelect(dialog, 'Alice');
     await togglePlayerInSelect(dialog, 'Bob');
 
-    // "Weiter" resolves the freshly-created game id and navigates to its grid.
     await dialog.getByRole('button', { name: 'Weiter' }).click();
     await expect(page).toHaveURL(/#\/trackplay\/game\//);
     const grid = mainContent(page).locator('app-page-trackplay-game-play');
     await expect(grid).toBeVisible({ timeout: 30_000 });
 
-    // Column order is the game's player order (player-select emits alphabetical).
     await expect(headerCells(grid).nth(0)).toHaveText('Alice');
     await expect(headerCells(grid).nth(1)).toHaveText('Bob');
 
-    // ── Scoring grid: enter two rounds; trailing blank row auto-spawns ────
     await expect(dataRows(grid)).toHaveCount(1); // seeded blank round
 
     await enterScore(grid, 0, 0, 10); // Alice, round 0
@@ -105,25 +111,19 @@ test.describe('trackplay full game', () => {
     await expect(dataRows(grid)).toHaveCount(3); // spawned again
     await enterScore(grid, 1, 1, 15); // Bob, round 1
 
-    // Footer ∑ equals per-player totals.
     await expect(footerCells(grid).nth(0)).toHaveText('30'); // Alice 10+20
     await expect(footerCells(grid).nth(1)).toHaveText('20'); // Bob 5+15
 
-    // ── End the game ─────────────────────────────────────────────────────
     await grid.getByRole('button', { name: 'Beenden' }).click();
 
     await expect(grid.getByText('Das Spiel ist beendet.')).toBeVisible();
 
-    // Winner is the HIGHER total for a win-high type (Alice 30 > Bob 20).
     const winnerLine = grid.getByTestId('game-winner');
     await expect(winnerLine).toContainText('Alice');
     await expect(winnerLine).toContainText('hat gewonnen');
-    // No unfilled i18n placeholder should leak into the winner line.
     await expect(winnerLine).not.toContainText('{{');
-    // Pure-CSS victory HUD (replaced the old winner.gif).
     await expect(grid.getByTestId('game-victory-art')).toBeVisible();
 
-    // ── Reopen (Weiter) returns to the editable grid ─────────────────────
     await grid.getByRole('button', { name: 'Weiter' }).click();
     await expect(grid.getByTestId('score-total-row')).toBeVisible();
     await expect(footerCells(grid).nth(0)).toHaveText('30');

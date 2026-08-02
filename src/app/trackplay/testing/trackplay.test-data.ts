@@ -1,21 +1,18 @@
 import {
-  IGame,
-  IGameType,
-  IPlayer,
-  IRound,
-  ITrackplayState,
+  Game,
+  GameType,
+  Player,
+  Round,
+  TrackplayState,
 } from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPES,
   initialTrackplayConfig,
 } from '../util/trackplay.factory';
 
-// Deterministic trackplay fixtures. Owned by the trackplay context (DDD review
-// #1): they live here, not in the shared @shared/testing kit, because the shared
-// kit is domain:shared and may not reference domain:trackplay types.
 export const TEST_EPOCH = 1_704_110_400_000; // 2024-01-01T12:00:00.000Z
 
-export function mockPlayer(overrides: Partial<IPlayer> = {}): IPlayer {
+export function mockPlayer(overrides: Partial<Player> = {}): Player {
   return {
     id: 'player-1',
     name: 'Alice',
@@ -24,11 +21,11 @@ export function mockPlayer(overrides: Partial<IPlayer> = {}): IPlayer {
   };
 }
 
-export function mockGameType(overrides: Partial<IGameType> = {}): IGameType {
+export function mockGameType(overrides: Partial<GameType> = {}): GameType {
   return { id: 'default', name: 'Standard', winHigh: true, ...overrides };
 }
 
-export function mockGame(overrides: Partial<IGame> = {}): IGame {
+export function mockGame(overrides: Partial<Game> = {}): Game {
   return {
     id: 'game-1',
     name: 'Game',
@@ -42,7 +39,7 @@ export function mockGame(overrides: Partial<IGame> = {}): IGame {
   };
 }
 
-export function mockRound(overrides: Partial<IRound> = {}): IRound {
+export function mockRound(overrides: Partial<Round> = {}): Round {
   return {
     id: 'round-1',
     name: 'round 0',
@@ -54,11 +51,8 @@ export function mockRound(overrides: Partial<IRound> = {}): IRound {
 }
 
 export function mockTrackplayState(
-  overrides: Partial<ITrackplayState> = {}
-): ITrackplayState {
-  // Reuse the production seed constants so the fixtures can't drift from them;
-  // deep-clone so a test mutating the fixture can't leak into another (the
-  // runner is isolate:false — module-level state is shared across spec files).
+  overrides: Partial<TrackplayState> = {}
+): TrackplayState {
   return {
     players: {},
     games: {},

@@ -1,0 +1,62 @@
+<app-page-header
+  label="page-title.soykaf"
+  icon="restaurant-outline"
+  (addItem)="facade.showCreateDialog()"
+></app-page-header>
+
+<ion-content>
+  <p class="sr-hud ion-padding-horizontal">
+    {{ 'household.recipe.list-header' | translate }} ({{
+      facade.cookableCount()
+    }}
+    / {{ facade.matches().length }})
+  </p>
+
+  @for (match of facade.matches(); track match.recipe.id) {
+    <ion-item-sliding>
+      <ion-item [button]="true" lines="full" (click)="edit(match.recipe)">
+        <ion-label class="ion-text-wrap">
+          <h2>{{ match.recipe.name }}</h2>
+          <ion-note>{{
+            'household.recipe.meta'
+              | translate
+                : {
+                    servings: match.recipe.servings,
+                    minutes: match.recipe.prepMinutes,
+                  }
+          }}</ion-note>
+          @if (match.missing.length) {
+            <p class="recipe-missing">
+              {{
+                'household.recipe.missing'
+                  | translate: { names: match.missing.join(', ') }
+              }}
+            </p>
+          } @else {
+            <p class="recipe-ready">
+              <i class="sr-led sr-led--on"></i>
+              {{ 'household.recipe.cookable' | translate }}
+            </p>
+          }
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option
+          color="danger"
+          [expandable]="true"
+          (click)="remove(match.recipe)"
+        >
+          {{ 'item-list.action.delete' | translate }}
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  }
+
+  <app-item-list-empty
+    [isEmptyList]="!facade.matches().length"
+    (emptyList)="facade.showCreateDialog()"
+  />
+</ion-content>
+
+<app-edit-recipe-dialog></app-edit-recipe-dialog>

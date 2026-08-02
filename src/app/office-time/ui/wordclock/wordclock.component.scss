@@ -1,3 +1,9 @@
+// ─── why ────────────────────────────────────────────────────────
+// The seams between the glyph cells are deck decoration, and a blurred shadow
+// on each of the 110 cells is the most expensive thing this component paints —
+// so the plain theme, which wants a flat grid anyway, simply does not get it.
+// ────────────────────────────────────────────────────────────────
+
 :host {
   display: block;
   height: 100%;
@@ -63,9 +69,6 @@
   }
 }
 
-// The seams between the glyph cells are deck decoration, and a blurred shadow
-// on each of the 110 cells is the most expensive thing this component paints —
-// so the plain theme, which wants a flat grid anyway, simply does not get it.
 :host-context([data-theme='cyberpunk']) .char {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }

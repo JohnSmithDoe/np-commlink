@@ -1,4 +1,4 @@
-import { IDeckEntry, IDeckState } from '../model/deck.types';
+import { DeckEntry, DeckState } from '../model/deck.types';
 import {
   isEntryVisible,
   orderEntries,
@@ -7,7 +7,7 @@ import {
   visibleEntries,
 } from './deck.utils';
 
-const entry = (id: string, module: IDeckEntry['module']): IDeckEntry => ({
+const entry = (id: string, module: DeckEntry['module']): DeckEntry => ({
   id,
   module,
   icon: 'hardware-chip-outline',
@@ -20,13 +20,13 @@ const entry = (id: string, module: IDeckEntry['module']): IDeckEntry => ({
   onDeck: true,
 });
 
-const CATALOG: readonly IDeckEntry[] = [
-  entry('shopping', 'groceries'),
-  entry('storage', 'groceries'),
+const CATALOG: readonly DeckEntry[] = [
+  entry('shopping', 'household'),
+  entry('storage', 'household'),
   entry('cash', 'cash'),
 ];
 
-const state = (overrides: Partial<IDeckState> = {}): IDeckState => ({
+const state = (overrides: Partial<DeckState> = {}): DeckState => ({
   order: [],
   hiddenEntries: [],
   hiddenModules: [],
@@ -50,15 +50,12 @@ describe('orderEntries', () => {
     ).toEqual(['cash', 'storage', 'shopping']);
   });
 
-  // Absence means default, which is what lets the catalog grow between releases
-  // without a migration: an entry the config predates lands at the end.
   it('appends entries the configuration has never seen', () => {
     expect(
       orderEntries(CATALOG, ['cash']).map((ordered) => ordered.id)
     ).toEqual(['cash', 'shopping', 'storage']);
   });
 
-  // The other half of the same bargain: a released entry can be deleted.
   it('drops ids the catalog no longer carries', () => {
     expect(
       orderEntries(CATALOG, ['retired', 'cash']).map((ordered) => ordered.id)
@@ -73,16 +70,14 @@ describe('isEntryVisible', () => {
   });
 
   it('hides every entry of a switched-off module', () => {
-    const config = state({ hiddenModules: ['groceries'] });
-    expect(isEntryVisible(config, entry('storage', 'groceries'))).toBe(false);
+    const config = state({ hiddenModules: ['household'] });
+    expect(isEntryVisible(config, entry('storage', 'household'))).toBe(false);
   });
 
-  // The module flag cascades on read and is never written into the children, so
-  // re-enabling a module restores what the user had configured underneath.
   it('leaves a child’s own flag untouched while its module is off', () => {
-    const config = state({ hiddenModules: ['groceries'] });
+    const config = state({ hiddenModules: ['household'] });
     expect(config.hiddenEntries).toEqual([]);
-    expect(isEntryVisible(state(), entry('storage', 'groceries'))).toBe(true);
+    expect(isEntryVisible(state(), entry('storage', 'household'))).toBe(true);
   });
 });
 
@@ -99,7 +94,7 @@ describe('visibleEntries', () => {
 });
 
 describe('resolveLabels', () => {
-  const shopping = entry('shopping', 'groceries');
+  const shopping = entry('shopping', 'household');
 
   it('lifts the active theme’s pair onto the program', () => {
     expect(resolveLabels('cyberpunk')(shopping)).toMatchObject(

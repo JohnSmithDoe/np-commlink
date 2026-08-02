@@ -1,20 +1,19 @@
-// The TRACKPLAY surfaces' shared pieces. Side-effect-free: this file emits
-// nothing on its own, so a component `@use`s it and `@include`s what it needs —
-// the same seam as `theme/_cash.scss` and `theme/_dashboard.scss`.
+// ─── why ────────────────────────────────────────────────────────
+// The TRACKPLAY surfaces' shared pieces, side-effect-free like _cash and
+// _dashboard so a component @uses it and @includes only what it needs.
 //
 // Extracted because the game row and the player row are the same widget with
 // different content, and their two stylesheets were byte-identical copies.
+// label-secondary is one declaration and is here anyway: it was the whole
+// content of both of them.
+// ────────────────────────────────────────────────────────────────
 
-// The secondary line inside a list row's `ion-label`. One declaration, but it
-// is the whole content of two byte-identical stylesheets, so it lives here for
-// the same reason the second line does.
 @mixin label-secondary {
   ion-label p {
     color: var(--sr-text-dim);
   }
 }
 
-// The metadata line under a list row's title: label left, value right.
 @mixin list-row-second-line {
   .second-line {
     display: flex;

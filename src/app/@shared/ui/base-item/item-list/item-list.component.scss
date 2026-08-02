@@ -1,3 +1,17 @@
+// ─── why ────────────────────────────────────────────────────────
+// Above theme/layout's $wide the ion-list flows into columns, which is what a
+// desktop viewport should buy: more rows on screen, not longer ones. Same
+// auto-fit grid the deck and the office-time dashboard already use, so the
+// column count follows the width rather than a second breakpoint.
+//
+// The header has to span, or the grid treats it as the first cell and the list
+// gains a phantom column with one label in it. ion-item-sliding is the grid
+// child on the household lists and reads its own width, so the swipe gesture
+// stays inside its cell.
+// ────────────────────────────────────────────────────────────────
+
+@use 'theme/layout';
+
 :host {
   display: flex;
   flex-direction: column;
@@ -6,6 +20,20 @@
     padding-bottom: 0;
     ion-toolbar {
       --min-height: 3rem;
+    }
+
+    @include layout.wide {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(layout.$list-column-min, 1fr)
+      );
+      align-items: start;
+
+      ion-list-header,
+      ion-toolbar {
+        grid-column: 1 / -1;
+      }
     }
   }
 }

@@ -32,7 +32,7 @@ import {
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { NotificationService } from '../../util/notification.service';
 import { NotificationsFacade } from '../../data';
-import { INotification } from '../../../@shared/model/notifications.types';
+import { InboxNotification } from '../../../@shared/model/notifications.types';
 
 @Component({
   selector: 'app-page-notifications',
@@ -80,27 +80,20 @@ export class NotificationsPage implements ViewWillEnter {
     });
   }
 
-  triggerAction(n: INotification, event: Event) {
+  triggerAction(n: InboxNotification, event: Event) {
     event.stopPropagation();
     if (!n.action) return;
-    // The action targets the tracking aggregate, which is lazy and not
-    // registered here. Deep-link to /tracking; it activates (hydrates) and
-    // applies its own command (see TrackingNotificationsEffects
-    // .applyNotificationCommand$). Notifications stays dependency-free: a
-    // string route, no tracking import. The command travels in the link rather
-    // than the row's id, so the producer resolves it without reading the inbox
-    // back.
     void this.#router.navigate(['/tracking'], {
       queryParams: { cmd: n.action.type, target: n.action.targetId },
     });
   }
 
-  markDone(n: INotification, event: Event) {
+  markDone(n: InboxNotification, event: Event) {
     event.stopPropagation();
     this.#facade.dismiss(n.id);
   }
 
-  remove(n: INotification, event: Event) {
+  remove(n: InboxNotification, event: Event) {
     event.stopPropagation();
     this.#facade.remove(n.id);
   }

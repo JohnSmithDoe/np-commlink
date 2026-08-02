@@ -1,38 +1,35 @@
-/**
- * Shared helpers for the trackplay e2e suite.
+/* ─── why ─────────────────────────────────────────────────────────
+ * A fresh browser context starts trackplay with no players and no games,
+ * but NOT with no game types: the reducer seeds Standard, Rommé and Skat
+ * on `loaded`, so a spec may pick one without creating it.
  *
- * The app is a zoneless Ionic/NgRx app that hydrates its slices from Ionic
- * Storage (IndexedDB) on boot. Playwright gives every test a fresh browser
- * context, so each test starts from an empty trackplay slice — no players and no
- * games, but the reducer seeds the 3 default game types (Standard / Rommé /
- * Skat) on `loadedSuccessfully`.
+ * `mainContent`/`pageRoot` are re-exported rather than defined here.
+ * Every feature scopes to `#main-content`, not just trackplay, so they
+ * moved out to the suite-wide helpers while this suite's specs keep one
+ * import.
  *
- * Trackplay pages are top-level **hash routes** (`withHashLocation()`):
- *   /#/trackplay            games list (program home)
- *   /#/trackplay/players    players list
- *   /#/trackplay/player/:id single player
- *   /#/trackplay/game-types game types (Spielarten)
- *   /#/trackplay/game/:id   scoring grid
+ * `headerTitle` takes a page scope rather than the whole content area:
+ * every mounted page renders a title, so the unscoped locator needed a
+ * `.first()` that could just as easily read the stale page's.
  *
- * The side menu duplicates the "Spiele" page title, so ALL content assertions
- * are scoped to `#main-content` (the routed-page container), never the menu.
- * Dialogs / toasts / select-alerts are Ionic overlays rendered at the app root
- * (outside `#main-content`) — scope those to their own component / element.
- */
+ * `pickSelectOption` clicks the locator it is handed, so a caller must
+ * pass the `ion-select` HOST — its shadow `part="inner"` swallows a click
+ * aimed at the accessible button. It drives the default `alert`
+ * interface, which needs its own OK; a popover-interface select confirms
+ * on the tap instead.
+ *
+ * `createPlayer` assumes the players page is the active route.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Locator, Page } from '@playwright/test';
-// `mainContent`/`pageRoot` moved to the suite-wide helpers: every feature scopes
-// to `#main-content`, not just trackplay. Re-exported so this suite's specs keep
-// importing them from one place.
 import { mainContent, openRowSwipe, pageRoot } from '../helpers';
 
 export { mainContent, pageRoot };
 
-/** The page-header "+" add button within a given page-component scope. */
 export function addButton(scope: Locator): Locator {
   return scope.getByTestId('page-header-add');
 }
 
-/** Navigate to a trackplay hash route and wait for its routed page to attach. */
 export async function gotoTrackplay(
   page: Page,
   path: string,
@@ -44,20 +41,10 @@ export async function gotoTrackplay(
   });
 }
 
-/**
- * The page-header title of ONE routed page. It takes the page scope rather than
- * the whole content area on purpose: every mounted page renders a title, so an
- * unscoped locator needed a `.first()` that could just as easily have read the
- * stale page's title as the one under test.
- */
 export function headerTitle(scope: Locator): Locator {
   return scope.getByTestId('page-header-title');
 }
 
-/**
- * Create a player through the players-page add dialog. Assumes the players page
- * is the active route.
- */
 export async function createPlayer(page: Page, name: string): Promise<void> {
   const players = pageRoot(page, 'app-page-trackplay-players');
   await addButton(players).click();
@@ -71,10 +58,6 @@ export async function createPlayer(page: Page, name: string): Promise<void> {
   await expect(players.getByText(name, { exact: true })).toBeVisible();
 }
 
-/**
- * Pick an option from an Ionic `ion-select` (default `alert` interface): open
- * the overlay, choose the radio by its label, confirm with the alert's OK.
- */
 export async function pickSelectOption(
   page: Page,
   select: Locator,
@@ -88,7 +71,6 @@ export async function pickSelectOption(
   await expect(alert).toBeHidden();
 }
 
-/** Toggle a player checkbox inside the game-edit dialog's player-select. */
 export async function togglePlayerInSelect(
   dialog: Locator,
   name: string
@@ -97,7 +79,6 @@ export async function togglePlayerInSelect(
   await row.getByTestId('player-select-checkbox').click();
 }
 
-/** Reveal a trackplay row's leading options and click the delete one. */
 export async function slideDelete(row: Locator): Promise<void> {
   await openRowSwipe(row.locator('ion-item-sliding'), 'start');
   await row.getByTestId('row-delete').click();

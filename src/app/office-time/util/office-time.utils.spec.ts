@@ -34,9 +34,7 @@ describe('office-time.utils', () => {
 
   describe('getTargetPercentage', () => {
     it('is the ratio of office days to the pro-rated target', () => {
-      // target = 10 * 5/5 = 10 days; 2/10 = 20%
       expect(getTargetPercentage(10, 2, 5)).toBe(20);
-      // target = 10 * 2.5/5 = 5 days; 3/5 = 60%
       expect(getTargetPercentage(10, 3, 2.5)).toBe(60);
     });
 
@@ -86,9 +84,6 @@ describe('office-time.utils', () => {
     });
   });
 
-  // `today` is an argument, so these pin a real date instead of anchoring on the
-  // day the suite runs — which is also the property the four dashboard cards
-  // needed: the answer moves with the clock, so the clock has to be an input.
   describe('calculateStats', () => {
     const TODAY = dayjs('2026-08-01').hour(12); // a Saturday
     const keysFor = (
@@ -120,16 +115,12 @@ describe('office-time.utils', () => {
       expect(stats.officedays).toBe(3);
       expect(stats.freedays).toBe(0);
       expect(stats.holidays).toBe(0);
-      // no holidays/freedays -> every workday counts
       expect(stats.workdays).toBe(stats.workdaysTotal);
-      // targetdays is the pro-rated target, rounded to the nearest half day
       expect(stats.targetdays).toBe(
         Math.round(((stats.workdays * 2.5) / 5) * 2) / 2
       );
     });
 
-    // Every period contains today, so one office day today must surface in all
-    // four — which is what proves each call threads its own period through.
     it('counts an office day today in every period', () => {
       for (const period of ['year', 'quarter', 'month', 'week'] as const) {
         expect(calculateStats(period, keysFor(), TODAY).officedays).toBe(1);
@@ -171,8 +162,6 @@ describe('office-time.utils', () => {
       expect(reduced.workdays).toBe(plain.workdays - 1);
     });
 
-    // The regression the parameter exists for: same slice, later day, different
-    // answer. A memoized selector over the day-keys alone could not produce it.
     it('reports a different window when the day rolls into a new month', () => {
       const july = dayjs('2026-07-31').hour(12);
       const keys = keysFor([july]);

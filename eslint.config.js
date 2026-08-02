@@ -27,7 +27,6 @@ module.exports = defineConfig(
     'www/**',
   ]),
   sheriff.configs.all,
-  ...commlink.configs.all,
   {
     files: ['**/*.ts'],
     plugins: { unicorn, '@typescript-eslint': tseslint.plugin },
@@ -35,6 +34,7 @@ module.exports = defineConfig(
       ...angular.configs.tsRecommended,
       ...ngrx.configs.all,
       unicorn.configs.all,
+      ...commlink.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
     languageOptions: {
@@ -84,6 +84,36 @@ module.exports = defineConfig(
       ],
       'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
       'unicorn/prefer-export-from': ['error', { checkUsedVariables: false }],
+      // A published subpath is fine — `@angular/core/testing`, `dayjs/plugin/*`,
+      // `ionicons/icons` and `@ionic/angular/standalone` are the supported way
+      // in. A path into a package's BUILD OUTPUT is not, and neither resolution
+      // nor tsc will say so: `@ionic/core` declares no `exports` map at all, and
+      // rxjs publishes `./internal/*` deliberately, so both deep paths resolved
+      // silently. Two were here — `@ionic/core/dist/types/interface` (three
+      // sites, one of them backing `TColor`) and `rxjs/internal/observable/
+      // innerFrom` for a `fromPromise` the public `from()` already does.
+      //
+      // The denylist is segment names that mean "not an entry point" rather
+      // than an attempt to resolve each specifier: `lib` is deliberately absent,
+      // because plenty of packages publish `pkg/lib/x` as real API.
+      //
+      // Verified against all 15 deep specifiers in the repo: only those two are
+      // caught. Extending this to specs or e2e means EDITING THIS LIST, not
+      // adding the rule to a later block — flat config replaces a rule's options
+      // rather than merging them, so a second `no-restricted-imports` anywhere
+      // below would silently drop these patterns for the files it matches.
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/dist/**', '**/internal/**', '**/src/**', '**/esm/**'],
+              message:
+                "Import from the package root or a published subpath — a path into a package's build output is not an entry point and can move in a patch release.",
+            },
+          ],
+        },
+      ],
     },
   },
   {
@@ -114,15 +144,36 @@ module.exports = defineConfig(
     extends: [
       ...angular.configs.templateRecommended,
       ...angular.configs.templateAccessibility,
+      ...commlink.configs.templateRecommended,
     ],
   },
   {
-    files: ['**/*.js'],
+    files: ['**/*.{js,mjs,cjs}'],
     plugins: { unicorn },
     extends: ['unicorn/recommended'],
     rules: {
       'unicorn/prefer-module': 'off',
       'unicorn/no-null': 'off',
+      'unicorn/prevent-abbreviations': [
+        'error',
+        {
+          allowList: { utils: true, prod: true },
+          ignore: [
+            'e2e',
+            'isE2e',
+            'Ref',
+            'componentProps',
+            'dir',
+            'rel',
+            'doc',
+          ],
+        },
+      ],
+      'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
+      'unicorn/import-style': [
+        'error',
+        { styles: { 'node:path': { named: true } } },
+      ],
     },
   },
   {

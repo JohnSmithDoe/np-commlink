@@ -1,17 +1,24 @@
-// The CREDSTICK surfaces' shared pieces. Side-effect-free: this file emits
-// nothing on its own, so a component `@use`s it and `@include`s what it needs —
-// the same seam as `theme/_dashboard.scss` and `theme/_charts.scss`.
+// ─── why ────────────────────────────────────────────────────────
+// The CREDSTICK surfaces' shared pieces, side-effect-free like _dashboard and
+// _charts so a component @uses it and @includes only what it needs.
 //
-// Extracted because all three blocks below had been copy-pasted across the six
-// cash surfaces and had already drifted: `.cash-empty` six times,
-// `.cash-txn__amount` four (two carrying a font-size the other two omit) and the
-// net-worth strip twice with different padding, under a comment claiming reuse.
-// Values stay `var(--sr-*)`/`var(--ion-*)` so both themes keep flowing through.
+// Extracted because every block here had been copy-pasted across the six cash
+// surfaces and had already drifted: .cash-empty six times, .cash-txn__amount
+// four (two carrying a font-size the other two omit) and the net-worth strip
+// twice with different padding, under a comment claiming reuse.
+//
+// Each mixin therefore parameterises exactly the one thing that legitimately
+// differed and nothing else — the empty state's top offset (a page pushes it
+// further down than a modal), the caption's padding, the amount's opt-in
+// font-size (the pages set one, the modals inherit the list's). The net-worth
+// strip takes none: its spacing is what the two copies disagreed on, so each
+// caller keeps its own and only layout and typography are shared. hud-label's
+// colour and the caption's deck font stay out for the same reason — exactly one
+// call site paints them, and that difference is real.
+// ────────────────────────────────────────────────────────────────
 
 @use 'deck';
 
-// The empty-state caption. Only the top offset ever differed per surface — a page
-// pushes it further down than a modal — so that is the one parameter.
 @mixin empty-state($padding-top: 12vh) {
   padding-top: $padding-top;
   text-align: center;
@@ -19,9 +26,6 @@
   color: var(--sr-text-dim);
 }
 
-// The caption under a modal/page header. Only the padding ever differed per
-// surface, so that is the one parameter — the deck font is NOT included because
-// exactly one of the three call sites paints it, and that difference is real.
 @mixin hint($padding) {
   display: block;
   padding: $padding;
@@ -29,8 +33,6 @@
   color: var(--sr-text-dim);
 }
 
-// A signed ledger amount. `$font-size` is opt-in because the pages set 1rem while
-// the modals deliberately inherit the list's own size.
 @mixin txn-amount($font-size: null) {
   font-family: var(--sr-deck-font);
   @if $font-size {
@@ -46,10 +48,6 @@
   }
 }
 
-// The label/value strip above a ledger. Spacing is NOT included: the overview and
-// the per-account header genuinely space it differently, and that difference is
-// what the two copies disagreed on — so each caller keeps its own padding and only
-// the layout and typography are shared.
 @mixin networth-strip {
   display: flex;
   align-items: baseline;

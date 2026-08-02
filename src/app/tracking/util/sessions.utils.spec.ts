@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import { ITrackingItem } from '../model/tracking.types';
+import { TrackingItem } from '../model/tracking.types';
 import { dailySeries, groupSessionsByView } from './sessions.utils';
 
-const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
   id: Math.random().toString(36).slice(2),
   name: 'Task',
   createdAt: '2026-01-01',
@@ -10,11 +10,6 @@ const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
   ...over,
 });
 
-// These used to be selectors that read `dayjs()` inside their projectors, so a
-// spec could only ever say "relative to whenever this runs". The day is an
-// argument now, which is what lets every case below name an exact date — and it
-// is the same property the fix exists for: the day can change without the
-// sessions changing.
 const TODAY = '2026-07-21';
 const at = (day: string, hour = 10): string =>
   dayjs(`${day}T00:00:00`).hour(hour).format();
@@ -48,8 +43,6 @@ describe('groupSessionsByView', () => {
     expect(byName['B']).toBe(600);
   });
 
-  // The row used to inherit the id of the last session merged into it, which
-  // made "delete this row" delete exactly one of the sessions behind it.
   it('lists the sessions behind a merged row and keys the row by its bucket', () => {
     const sessions = [
       track({
@@ -72,12 +65,6 @@ describe('groupSessionsByView', () => {
     expect(row.id).toBe('202605A');
   });
 
-  /**
-   * The regression this whole change exists for. The same sessions, asked about
-   * on two consecutive days, must answer differently — as a memoized selector
-   * reading the clock they could not, so an app left open past midnight went on
-   * listing yesterday under "Heute".
-   */
   it('answers "today" for the day it is given, not the day it runs', () => {
     const sessions = [
       track({
@@ -125,12 +112,9 @@ describe('dailySeries', () => {
     expect(series.days.at(-1)).toBe(TODAY);
     const a = series.series.find((s) => s.name === 'A')!;
     expect(a.hours).toHaveLength(21);
-    // The given day is the last column in the window.
     expect(a.hours[20]).toBeCloseTo(1.5, 5);
   });
 
-  // The same regression on the chart: the window head is the day, so it has to
-  // move when the day does.
   it('moves the window with the day it is given', () => {
     const sessions = [
       track({
@@ -140,7 +124,6 @@ describe('dailySeries', () => {
       }),
     ];
 
-    // On the 21st, tomorrow's session is outside the window entirely.
     const before = dailySeries(sessions, [], '2026-07-21');
     expect(before.series).toEqual([]);
 
@@ -151,14 +134,10 @@ describe('dailySeries', () => {
     );
   });
 
-  // Past the top 6 everything pools into one bucket, and that bucket carries no
-  // name: it is not an activity, and only the render site can put the user's
-  // language on it. It used to arrive labelled 'Other', in English.
   it('pools everything past the top six into one nameless bucket', () => {
     const session = (name: string, seconds: number) =>
       track({ name, startTime: at(TODAY), trackedTimeInSeconds: seconds });
 
-    // Seven names, strictly descending — so the seventh, and only it, pools.
     const series = dailySeries(
       [
         session('a', 7000),

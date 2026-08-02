@@ -43,6 +43,12 @@ yarn-error.log
 # Capacitor / Android (regenerated via `cap add android`)
 /android
 
+# The collected release APK (scripts/collect-apk.sh). A build output, not a
+# source artifact: ~28 MB per build, and the published copy is the one attached
+# to the tag by hand — committing it would grow the repo by a full APK per
+# release for a file nobody clones the repo to get.
+/releases
+
 # IDEs and editors
 .idea/
 .project
@@ -97,3 +103,11 @@ docs/cash/*.csv
 
 # eslint --cache (per-file result cache; CI always runs cold)
 .eslintcache
+
+# APK signing identity — never committable. A key in git is not "removable":
+# anyone who ever had it can sign an upgrade Android installs over the real one,
+# so exposure means every user reinstalls from scratch. Keys live outside the
+# repo and reach Gradle as NPC_* env vars (scripts/android-postsync.sh patch 5).
+*.jks
+*.keystore
+keystore.properties

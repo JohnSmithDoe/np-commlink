@@ -17,7 +17,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline } from 'ionicons/icons';
-import { IPlayer, IPlayerStats, TID } from '../../model/trackplay.types';
+import { Player, PlayerStats, TrackplayId } from '../../model/trackplay.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { TrackplayPlayerListItemComponent } from '../../ui/player-list-item/player-list-item.component';
@@ -26,12 +26,6 @@ import { presentModal } from '../../../@shared/util/app.modal.utils';
 import { presentListSettings } from '../present-list-settings';
 import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
 
-/**
- * Players list. New-player (+) and the sort/filter settings popover in the
- * header; tap a player for their detail page, swipe to rename (player-edit
- * dialog) or delete (undo toast raised automatically). Win/loss/open + total
- * stats are derived per player and passed down to the dumb row.
- */
 @Component({
   selector: 'app-page-trackplay-players',
   templateUrl: './players.page.html',
@@ -57,7 +51,6 @@ export class TrackplayPlayersPage {
   readonly rxStats = this.#facade.playerStats;
   readonly #allPlayers = this.#facade.players;
 
-  // Header counter: how many rows survive the players filter vs. the total.
   readonly shown = computed(() => this.rxPlayers().length);
   readonly total = computed(() => Object.keys(this.#allPlayers()).length);
 
@@ -65,15 +58,15 @@ export class TrackplayPlayersPage {
     addIcons({ optionsOutline, peopleOutline });
   }
 
-  statsFor(player: IPlayer): IPlayerStats {
+  statsFor(player: Player): PlayerStats {
     return this.rxStats()[player.id] ?? NO_PLAYER_STATS;
   }
 
-  goToPlayer(id: TID): void {
+  goToPlayer(id: TrackplayId): void {
     void this.#router.navigate(['/trackplay/player', id]);
   }
 
-  deletePlayer(player: IPlayer): void {
+  deletePlayer(player: Player): void {
     this.#facade.deletePlayer(player);
   }
 
@@ -85,7 +78,7 @@ export class TrackplayPlayersPage {
     );
   }
 
-  async openPlayerEdit(player: IPlayer): Promise<void> {
+  async openPlayerEdit(player: Player): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       TrackplayPlayerEditModalComponent,

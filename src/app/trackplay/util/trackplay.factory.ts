@@ -1,32 +1,22 @@
 import {
-  IGame,
-  IGameType,
-  IPlayer,
-  IPlayerStats,
-  IRound,
-  ITrackplayConfig,
-  TID,
+  Game,
+  GameType,
+  Player,
+  PlayerStats,
+  Round,
+  TrackplayConfig,
+  TrackplayId,
 } from '../model/trackplay.types';
 import { uuidv4 } from '../../@shared/util/app.utils';
 
-/**
- * Production factories + seed data for the trackplay domain.
- *
- * Reuses the shared `uuidv4` id helper. Trackplay timestamps are epoch-ms
- * numbers (`Date.now()`), not the ISO strings the timetracker/grocery items
- * use, so there is no shared timestamp helper to reuse here.
- */
-
-// The row a player who has played nothing reads as. Spread it wherever the
-// copy is then counted into.
-export const NO_PLAYER_STATS: IPlayerStats = {
+export const NO_PLAYER_STATS: PlayerStats = {
   play: 0,
   win: 0,
   loss: 0,
   open: 0,
 };
 
-export function createPlayer(name: string): IPlayer {
+export function createPlayer(name: string): Player {
   return {
     id: uuidv4(),
     name: name.trim(),
@@ -36,9 +26,9 @@ export function createPlayer(name: string): IPlayer {
 
 export function createGame(
   name: string,
-  type: TID = 'default',
-  players: TID[] = []
-): IGame {
+  type: TrackplayId = 'default',
+  players: TrackplayId[] = []
+): Game {
   const now = Date.now();
   return {
     id: uuidv4(),
@@ -52,7 +42,7 @@ export function createGame(
   };
 }
 
-export function createGameType(name: string, winHigh: boolean): IGameType {
+export function createGameType(name: string, winHigh: boolean): GameType {
   return {
     id: uuidv4(),
     name: name.trim(),
@@ -60,9 +50,8 @@ export function createGameType(name: string, winHigh: boolean): IGameType {
   };
 }
 
-// A blank round: every current participant starts at 0 points.
-export function createRound(index: number, playerIds: TID[]): IRound {
-  const values: Record<TID, number> = {};
+export function createRound(index: number, playerIds: TrackplayId[]): Round {
+  const values: Record<TrackplayId, number> = {};
   for (const pid of playerIds) {
     values[pid] = 0;
   }
@@ -75,18 +64,15 @@ export function createRound(index: number, playerIds: TID[]): IRound {
   };
 }
 
-// The `default` type is UNDELETABLE (reducer/effects guard against it) and is
-// the fallback a game is reassigned to when its type is removed.
-export const DEFAULT_GAME_TYPE_ID: TID = 'default';
+export const DEFAULT_GAME_TYPE_ID: TrackplayId = 'default';
 
-// Seeded when a fresh datastore has no game types (see reducer hydration).
-export const DEFAULT_GAME_TYPES: Record<TID, IGameType> = {
+export const DEFAULT_GAME_TYPES: Record<TrackplayId, GameType> = {
   default: { id: 'default', name: 'Standard', winHigh: true },
   rommee: { id: 'rommee', name: 'Rommé', winHigh: false },
   skat: { id: 'skat', name: 'Skat', winHigh: true },
 };
 
-export const initialTrackplayConfig: ITrackplayConfig = {
+export const initialTrackplayConfig: TrackplayConfig = {
   games: {
     direction: 'desc',
     filter: '',

@@ -49,12 +49,6 @@ void bootstrapApplication(AppComponent, {
     provideRouter(routes, withHashLocation()),
     provideIonicAngular({ animated: true, mode: 'md' }),
     importProvidersFrom(IonicStorageModule.forRoot(storageConfig)),
-    // The store root + every eager domain's state, effects and boot load: the
-    // three slices needed before their own page is (dashboard read-model,
-    // settings/theme, notifications inbox). Every routed context — tracking,
-    // groceries, tasks, cash, trackplay, office-time, barcode — registers on its
-    // route via its own <domain>/data/<domain>.providers.ts bundle and hydrates
-    // via moduleHydrationResolver.
     provideAppKernel(),
     { provide: TitleStrategy, useClass: AppTitleStrategy },
     provideServiceWorker('ngsw-worker.js', {

@@ -1,0 +1,22 @@
+// ─── why ────────────────────────────────────────────────────────
+// An ingredient row packs a name, an amount, a unit and a delete into one item,
+// so on a narrow screen it wraps rather than squeezing four controls.
+// ────────────────────────────────────────────────────────────────
+
+@use '../../../../theme/deck';
+
+.recipe-ingredient {
+  --inner-padding-end: 0;
+  flex-wrap: wrap;
+}
+
+.recipe-section {
+  @include deck.hud-label;
+  font-size: var(--fs-small);
+  color: var(--sr-amber);
+}
+
+.recipe-empty {
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}

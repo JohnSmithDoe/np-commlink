@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { mockKernelState, TMockState } from '../../@shared/testing/test-data';
+import { mockKernelState, MockState } from '../../@shared/testing/test-data';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { TasksActions } from './tasks.actions';
@@ -12,7 +12,7 @@ import { tasksListEffects } from './tasks-list.effects';
 describe('tasksListEffects', () => {
   let actions$: Observable<Action>;
 
-  const setup = (state: TMockState = {}) => {
+  const setup = (state: MockState = {}) => {
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),

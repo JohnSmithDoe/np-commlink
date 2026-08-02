@@ -1,11 +1,11 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CheckboxCustomEvent } from '@ionic/angular/standalone';
-import { IPlayer, TID } from '../../model/trackplay.types';
+import { Player, TrackplayId } from '../../model/trackplay.types';
 import { mockPlayer } from '../../testing/trackplay.test-data';
 import { TrackplayPlayerSelectComponent } from './player-select.component';
 
-const players: IPlayer[] = [
+const players: Player[] = [
   mockPlayer({ id: 'a', name: 'Alice' }),
   mockPlayer({ id: 'b', name: 'Bob' }),
   mockPlayer({ id: 'c', name: 'Carol' }),
@@ -19,7 +19,7 @@ describe('TrackplayPlayerSelectComponent', () => {
   let fixture: ComponentFixture<TrackplayPlayerSelectComponent>;
   let component: TrackplayPlayerSelectComponent;
 
-  const setup = (selectedIds: TID[]) => {
+  const setup = (selectedIds: TrackplayId[]) => {
     fixture.componentRef.setInput('players', players);
     fixture.componentRef.setInput('selectedIds', selectedIds);
   };
@@ -54,10 +54,9 @@ describe('TrackplayPlayerSelectComponent', () => {
 
   it('emits the checked ids in display order when a player is checked on', () => {
     setup(['d', 'b']);
-    const emitted: TID[][] = [];
+    const emitted: TrackplayId[][] = [];
     component.selectionChange.subscribe((ids) => emitted.push(ids));
 
-    // Alice sits below the two selected rows, so she appends after them.
     component.onToggle('a', toggle(true));
 
     expect(emitted).toEqual([['d', 'b', 'a']]);
@@ -65,7 +64,7 @@ describe('TrackplayPlayerSelectComponent', () => {
 
   it('drops an id from the emitted selection when unchecked', () => {
     setup(['d', 'b']);
-    const emitted: TID[][] = [];
+    const emitted: TrackplayId[][] = [];
     component.selectionChange.subscribe((ids) => emitted.push(ids));
 
     component.onToggle('b', toggle(false));

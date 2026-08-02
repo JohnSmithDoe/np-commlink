@@ -2,9 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { LanguageService } from '../../@shared/util/theme/language.service';
 import { ScorePipe } from './score.pipe';
 
-// The pipe reads the active locale once, at construction, so it has to be built
-// in an injection context — and building one per language is what proves the
-// separators actually follow it.
 const pipeFor = (locale: string): ScorePipe => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({

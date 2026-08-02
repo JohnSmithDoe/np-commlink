@@ -12,11 +12,11 @@ import {
   BaseCategoryEditItemDialog,
   BaseEditItemDialog,
 } from './base-edit-item-dialog';
-import { IBaseItem } from '../../../model/base-item.types';
+import { BaseItem } from '../../../model/base-item.types';
 import {
-  ICategory,
-  ICategoryList,
-  TCategoryId,
+  Category,
+  CategoryId,
+  CategoryList,
 } from '../../../model/category.types';
 import {
   addToCatalog,
@@ -24,25 +24,19 @@ import {
   renameInCatalog,
 } from '../../../util/categories/category-list.utils';
 
-// A minimal concrete wrapper, so the base's behaviour is asserted ONCE here
-// instead of being re-tested in all six domain wrappers. It supplies only what
-// the base declares abstract — the name schema is the BASE's now, which is what
-// makes asserting it here cover the six real dialogs instead of a copy of them.
-class TestDialog extends BaseEditItemDialog<IBaseItem> {
+class TestDialog extends BaseEditItemDialog<BaseItem> {
   protected readonly listId = '_storage' as const;
-  readonly siblings = signal<IBaseItem[]>([]);
-  readonly saved: IBaseItem[] = [];
+  readonly siblings = signal<BaseItem[]>([]);
+  readonly saved: BaseItem[] = [];
 
-  protected save(item: IBaseItem): void {
+  protected save(item: BaseItem): void {
     this.saved.push(item);
   }
 
-  protected blank(): IBaseItem {
+  protected blank(): BaseItem {
     return createBaseItem('');
   }
 
-  // The name is bound through `form.name` in the template; a spec drives it the
-  // same way the control would.
   setName(name: string): void {
     this.form.name().value.set(name);
   }
@@ -54,9 +48,6 @@ describe('BaseEditItemDialog', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // The base reports used emoji on confirm. Stubbed rather than driven
-      // through a mock store: what this class owns is *which glyphs it reports*,
-      // and the action they become is the facade's own contract.
       providers: [
         provideZonelessChangeDetection(),
         { provide: EmojiRecentsFacade, useValue: { remember: vi.fn() } },
@@ -66,7 +57,6 @@ describe('BaseEditItemDialog', () => {
     dialog = TestBed.runInInjectionContext(() => new TestDialog());
   });
 
-  // Open, rename, confirm — and hand back the recents spy to assert against.
   const confirmName = (name: string) => {
     host.open({
       item: mockBaseItem({ id: 'x', name: 'Milk' }),
@@ -113,9 +103,6 @@ describe('BaseEditItemDialog', () => {
     expect(host.request()?.item.name).toBe('Milk');
   });
 
-  // The invariant that makes the linkedSignal draft correct: `open()` copies the
-  // item, so reopening the SAME object still produces a fresh reference and the
-  // draft recomputes. Without the copy an abandoned draft would come back.
   it('discards an abandoned draft when the same item is reopened', () => {
     const item = mockBaseItem({ id: 'x', name: 'Milk' });
     host.open({ item, listId: '_storage', editMode: 'update' });
@@ -142,8 +129,6 @@ describe('BaseEditItemDialog', () => {
     expect(host.request()).toBeNull();
   });
 
-  // Recents are recorded from the SAVED name rather than from the picker tap,
-  // which is what spares all six wrappers a pass-through output.
   describe('emoji recents', () => {
     it('reports every emoji the saved name carries', () => {
       expect(confirmName('🥛 Hafermilch 🌾')).toHaveBeenCalledWith([
@@ -156,8 +141,6 @@ describe('BaseEditItemDialog', () => {
       expect(confirmName('Hafermilch')).toHaveBeenCalledWith([]);
     });
 
-    // An invalid draft never reaches `save`, so it must not reach the recents
-    // either — a name that was rejected was not used.
     it('records nothing when the draft cannot be saved', () => {
       expect(confirmName(' ')).not.toHaveBeenCalled();
     });
@@ -172,9 +155,6 @@ describe('BaseEditItemDialog', () => {
     expect(host.request()).toBeNull();
   });
 
-  // The whole point of the Signal Forms conversion: the shell reads `canSave`
-  // instead of reaching into the name input for validity, so a rule the SCHEMA
-  // carries is what disables saving.
   describe('canSave', () => {
     it('refuses a blank name', () => {
       host.open({
@@ -184,9 +164,6 @@ describe('BaseEditItemDialog', () => {
       });
       expect(dialog.canSave()).toBe(true);
 
-      // Whitespace-only, which is exactly what `requireText` exists to catch —
-      // the built-in `required()` counts it as present while `save` would trim it
-      // to nothing.
       dialog.setName(' '.repeat(3));
 
       expect(dialog.canSave()).toBe(false);
@@ -206,8 +183,6 @@ describe('BaseEditItemDialog', () => {
       dialog.setName('Bread');
       expect(dialog.canSave()).toBe(false);
 
-      // Its own name is not a duplicate of itself — the rule excludes by id,
-      // which is what lets a capitalization-only rename save.
       dialog.setName('milk');
       expect(dialog.canSave()).toBe(true);
     });
@@ -223,40 +198,35 @@ describe('BaseEditItemDialog', () => {
       dialog.confirm();
 
       expect(dialog.saved).toEqual([]);
-      // Still open: a rejected confirm must not look like a successful save.
       expect(host.request()).not.toBeNull();
     });
   });
 });
 
-// The real wrappers route these three hooks to a domain facade, i.e. to a
-// reducer. Here they apply the very catalog helpers those reducers apply, so the
-// draft is asserted against the catalog a merge actually produces rather than
-// against a mock's idea of one.
-class TestCategoryDialog extends BaseCategoryEditItemDialog<IBaseItem> {
+class TestCategoryDialog extends BaseCategoryEditItemDialog<BaseItem> {
   protected readonly listId = '_storage' as const;
-  readonly siblings = signal<IBaseItem[]>([]);
-  readonly catalog = signal<ICategoryList>({ items: [] });
+  readonly siblings = signal<BaseItem[]>([]);
+  readonly catalog = signal<CategoryList>({ items: [] });
   readonly categories = computed(() => this.catalog().items);
-  readonly saved: IBaseItem[] = [];
+  readonly saved: BaseItem[] = [];
 
-  protected save(item: IBaseItem): void {
+  protected save(item: BaseItem): void {
     this.saved.push(item);
   }
 
-  protected blank(): IBaseItem {
+  protected blank(): BaseItem {
     return createBaseItem('');
   }
 
-  protected addCategoryToCatalog(category: ICategory): void {
+  protected addCategoryToCatalog(category: Category): void {
     this.catalog.update((catalog) => addToCatalog(catalog, category));
   }
 
-  protected removeCategoryFromCatalog(categoryId: TCategoryId): void {
+  protected removeCategoryFromCatalog(categoryId: CategoryId): void {
     this.catalog.update((catalog) => removeFromCatalog(catalog, categoryId));
   }
 
-  protected renameCategoryInCatalog(id: TCategoryId, to: string): void {
+  protected renameCategoryInCatalog(id: CategoryId, to: string): void {
     this.catalog.update((catalog) => renameInCatalog(catalog, id, to).catalog);
   }
 }
@@ -267,9 +237,6 @@ describe('BaseCategoryEditItemDialog', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // The base reports used emoji on confirm. Stubbed rather than driven
-      // through a mock store: what this class owns is *which glyphs it reports*,
-      // and the action they become is the facade's own contract.
       providers: [
         provideZonelessChangeDetection(),
         { provide: EmojiRecentsFacade, useValue: { remember: vi.fn() } },
@@ -285,7 +252,7 @@ describe('BaseCategoryEditItemDialog', () => {
     });
   });
 
-  const openWith = (categoryIds: TCategoryId[]) =>
+  const openWith = (categoryIds: CategoryId[]) =>
     host.open({
       item: mockBaseItem({ id: 'x', name: 'Milch', categoryIds }),
       listId: '_storage',
@@ -300,11 +267,6 @@ describe('BaseCategoryEditItemDialog', () => {
     expect(dialog.draft().categoryIds).toEqual(['obst']);
   });
 
-  // Renaming ONTO an existing name merges: the reducer drops the renamed entry
-  // and remaps every stored row onto the survivor. A draft still holding the
-  // retired id puts it straight back on save, leaving the item pointing at a
-  // category the catalog no longer has — invisible, and unreachable by the
-  // cascades, which only clean up ids the catalog still knows.
   it('follows the survivor when a rename merges', () => {
     openWith(['obst']);
 

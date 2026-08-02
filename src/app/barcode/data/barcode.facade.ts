@@ -5,13 +5,6 @@ import { NotificationsActions } from '../../@shared/data/actions/notifications.a
 import { BarcodeActions } from './barcode.actions';
 import { selectBarcodeDataUrl } from './barcode.selector';
 
-/**
- * The `barcode` (SIGIL) domain facade — the single NgRx surface for the barcode
- * page and its upload input. Holds the uploaded badge data-URL and the
- * rotate/delete/save commands. Injects `Store` so the components never do — the
- * unreadable-file message included, which is why the input needs no
- * `TranslateService` of its own.
- */
 @Injectable({ providedIn: 'root' })
 export class BarcodeFacade {
   readonly #store = inject(Store);

@@ -21,17 +21,13 @@ import { addIcons } from 'ionicons';
 import { closeCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
 import { requireText } from '../../../@shared/util/forms/form-rules';
-import { IPlayer } from '../../model/trackplay.types';
+import { Player } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
-type TPlayerForm = { name: string };
+type PlayerForm = { name: string };
 
-const playerRules: SchemaFn<TPlayerForm> = (path) => requireText(path.name);
+const playerRules: SchemaFn<PlayerForm> = (path) => requireText(path.name);
 
-/**
- * Player create/rename dialog (presented via ModalController). Port of the legacy
- * `player-edit` popover.
- */
 @Component({
   selector: 'app-trackplay-player-edit-modal',
   templateUrl: './player-edit-modal.component.html',
@@ -51,41 +47,39 @@ const playerRules: SchemaFn<TPlayerForm> = (path) => requireText(path.name);
   ],
 })
 export class TrackplayPlayerEditModalComponent extends BaseModalDialog<
-  IPlayer,
-  TPlayerForm
+  Player,
+  PlayerForm
 > {
   readonly #facade = inject(TrackplayFacade);
   readonly #players = this.#facade.players;
 
-  /** Set imperatively via `componentProps`; undefined = create mode. */
   set playerId(id: string | undefined) {
     this.editId.set(id);
   }
 
-  protected readonly existing = computed<IPlayer | undefined>(() => {
+  protected readonly existing = computed<Player | undefined>(() => {
     const id = this.editId();
     return id ? this.#players()[id] : undefined;
   });
 
-  protected applyRules(path: SchemaPathTree<TPlayerForm>): void {
+  protected applyRules(path: SchemaPathTree<PlayerForm>): void {
     playerRules(path);
   }
 
   constructor() {
     super();
-    // `close-circle` is the icon ion-input renders for its clear button.
     addIcons({ closeCircle });
   }
 
-  protected blank(): TPlayerForm {
+  protected blank(): PlayerForm {
     return { name: '' };
   }
 
-  protected toForm(player: IPlayer): TPlayerForm {
+  protected toForm(player: Player): PlayerForm {
     return { name: player.name };
   }
 
-  protected persist(draft: TPlayerForm, existing: IPlayer | undefined): void {
+  protected persist(draft: PlayerForm, existing: Player | undefined): void {
     const name = draft.name.trim();
     if (existing) {
       this.#facade.renamePlayer(existing.id, name);

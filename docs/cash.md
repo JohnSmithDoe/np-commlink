@@ -1,18 +1,10 @@
 # cash — CREDSTICK, an offline multi-account ledger
 
-> Part of the np-commlink compendium. Index and §-to-file map:
-> [project-summary.md](./project-summary.md). Section numbers are stable across the split.
-> Several `cash/util/*` source comments cite **§7.3**, which is this file.
->
-> **Here:** §7.3 — integer-cent money, the categorization engine, locale-explicit money parsing,
-> balances, reconciliation, transfers, per-bank CSV import, reporting, and the scope guards.
-> **See also:** the other features (§7) → [features.md](./features.md) · the modal dialogs cash
-> uses (§2.6) → [dialogs-and-forms.md](./dialogs-and-forms.md).
-
-## 7.3 cash — CREDSTICK, an offline multi-account ledger
+The other features → [features.md](./features.md) · the modal dialogs cash uses →
+[dialogs-and-forms.md](./dialogs-and-forms.md).
 
 An offline, EUR, multi-account personal-finance ledger. **Purpose-built** — it deliberately does not
-ride the grocery `IItemList` engine: signed money, opening balances, reconciliation and ordered
+ride the household `ItemList` engine: signed money, opening balances, reconciliation and ordered
 filter rules don't map onto a category-bucketed item list. **All phases P0–P5 are complete and on
 `main`** (accounts overview, transactions, categories + rules + categorization engine, per-bank CSV
 import + reconciliation, transfers + reporting).
@@ -25,10 +17,10 @@ category.
 
 | Type                   | Role                                                                                                                                                          |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ICashAccount`         | `giro`/`creditcard`/`savings`/`cash`; `openingBalanceCents` as of `openingDateISO`; optional `bank` (`TBank`) selecting the CSV import parser                  |
-| `ICashTransaction`     | signed `amountCents`; `source`; `status`; `categoryId` + `categoryManual`; `description` (the bank's counterparty + purpose joined — display text and rule-matching text in one, and what the import dedup key is built from); `matchedTxnId`, `isTransfer`, `transferGroupId`, `importBatchId` |
-| `ICashRule`            | email-style filter: ordered, `match` (`all`=AND / `any`=OR), `conditions[]`, assigns `categoryId`. First match wins                                            |
-| `ICashFilterCondition` | `field` (`description`/`amount`) · `op` · `value` · `caseSensitive?`                                                                                           |
+| `CashAccount`         | `giro`/`creditcard`/`savings`/`cash`; `openingBalanceCents` as of `openingDateISO`; optional `bank` (`Bank`) selecting the CSV import parser                  |
+| `CashTransaction`     | signed `amountCents`; `source`; `status`; `categoryId` + `categoryManual`; `description` (the bank's counterparty + purpose joined — display text and rule-matching text in one, and what the import dedup key is built from); `matchedTxnId`, `isTransfer`, `transferGroupId`, `importBatchId` |
+| `CashRule`            | email-style filter: ordered, `match` (`all`=AND / `any`=OR), `conditions[]`, assigns `categoryId`. First match wins                                            |
+| `CashFilterCondition` | `field` (`description`/`amount`) · `op` · `value` · `caseSensitive?`                                                                                           |
 
 **Categorization engine.** Rules sort by `order`; the **first** whose conditions match stamps its
 `categoryId`. A transaction with `categoryManual: true` is **shielded** — rule re-runs skip it, so a
@@ -72,10 +64,10 @@ Transfers stay in balances but are excluded from spend/income totals.
 
 **Import — per-bank parsers, not a generic column-mapper.** An account's `bank` **implicitly selects
 the parser**, which is simpler for the user and lets each parser own its bank's quirks.
-`cash/util/import/`: `bank-parser.ts` holds the contract `IBankParser { parse(text): IParseResult }`
+`cash/util/import/`: `bank-parser.ts` holds the contract `BankParser { parse(text): ParseResult }`
 plus the primitives every parser shares (`splitLines`, `splitRow`, `findHeaderIndex`,
 `germanDateToISO`, `joinDescription`); `bank-parsers.ts` is the **registry** —
-`BANK_PARSERS: Record<TBank, IBankParser>`, `BANK_OPTIONS` (its keys, so a parser cannot ship
+`BANK_PARSERS: Record<Bank, BankParser>`, `BANK_OPTIONS` (its keys, so a parser cannot ship
 unofferable), `parserForBank`, so a third bank is one
 entry there plus a new `*.parser.ts`. A parse returns `{ rows, rejected }`, not a bare array:
 `rejected` counts data rows below the header whose date or amount was unreadable, because a partial
@@ -83,7 +75,7 @@ import that reports success leaves the balance wrong with nothing to notice it b
 `volksbank.parser.ts`, `dkb.parser.ts` (keeps only `Gebucht` rows; counterparty = whichever of
 payer/payee is set). **Each parser's header comment is the format source** — the column layout it
 indexes, spelled out; both banks are `;`-delimited, `DD.MM.YYYY`, German amounts, header row first.
-(There are no fixture exports in the repo, deliberately — see §12.) Flow: pick
+(There are no fixture exports in the repo, deliberately — see [decisions.md](./decisions.md).) Flow: pick
 a `.csv` → `file.arrayBuffer()` → `read-csv.ts#decodeCsv` (strict UTF-8 first, **Windows-1252
 fallback** when the bytes aren't valid UTF-8 — real Volksbank exports often are CP1252) → parse →
 the pure `planImport(...)`, which **dedups** on the natural key

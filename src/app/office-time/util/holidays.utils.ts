@@ -1,13 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
 
-// Meeus/Jones/Butcher "anonymous Gregorian" algorithm.
-// Every movable German holiday is an offset from Easter Sunday.
-// Easter itself is a closed formula.
-// So the app knows its workdays offline, with no per-year asset to go stale.
-// `a`..`m` are the published algorithm's own variable names, and checking the
-// formula means reading it against the reference. The rule reaches exactly two
-// of the thirteen (`e`, `i`), so obeying it would leave eleven bare letters and
-// two expanded ones — less recognisable than either whole convention.
 /* eslint-disable unicorn/prevent-abbreviations */
 const easterSunday = (year: number): Dayjs => {
   const a = year % 19;
@@ -32,14 +24,6 @@ const easterSunday = (year: number): Dayjs => {
 const fixedDay = (year: number, month: number, day: number): Dayjs =>
   dayjs(new Date(year, month - 1, day));
 
-/**
- * Berlin's gesetzliche Feiertage for a calendar year, keyed by the name the
- * holidays card renders.
- *
- * `Internationaler Frauentag` is Berlin-only and has counted since 2019.
- * One-off commemorative days (8 May 2025, the 80th anniversary) are absent on
- * purpose: they are acts of parliament, not a rule a formula can carry.
- */
 export const berlinHolidaysFor = (year: number): Record<string, Dayjs> => {
   const easter = easterSunday(year);
   const holidays: Record<string, Dayjs> = {

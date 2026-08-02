@@ -1,35 +1,62 @@
+// ─── why ────────────────────────────────────────────────────────
+// The composition root of the style layer — it imports Ionic's CSS, @uses the
+// two partials that EMIT global rules, and holds what is app-wide. The role
+// app.providers.ts plays for the kernel.
+//
+// TWO themes off ONE token group: cyberpunk (the Shadowrun deck — slate, amber
+// and teal neon, monospace, glow; the default selection) and OK Boomer (plain,
+// light, sans, flat). So retheme the custom properties, never the components
+// one by one. `<html data-theme>` is the switch, written by theme.service off
+// the eager `settings` slice; that read is async, so the boot splash
+// (#app-splash in index.html on web, @capacitor/splash-screen on native) covers
+// boot and the theme lands before first paint instead of racing it.
+//
+// Plain is the UN-decorated base and every cyberpunk flourish is *added* under
+// [data-theme='cyberpunk'], so a new surface reads plain unless it opts in. The
+// inverse — cyberpunk as base, OK Boomer suppressing it — was less churn once
+// and a manual re-suppression for every flourish added afterwards.
+//
+// The @use graph follows from that: _fonts and _shadowrun emit CSS, so they are
+// @use'd HERE and nowhere else — a component @using shadowrun re-emits the
+// whole global sheet. The side-effect-free partials (deck, cash, trackplay,
+// dashboard, charts) are the ones a component may @use, spelling the bare
+// `theme/<x>` path, since stylePreprocessorOptions.includePaths carries `src`
+// and a relative `../../../../` breaks silently when the file moves.
+//
+// --app-content-max-width is a reading column, and the cap lands on
+// `ion-content > *` — every child, independently. So a page changes its width by
+// re-declaring the property on :host rather than by fighting the rule: commlink,
+// office-time and geist take 100%, and the shared list page takes
+// theme/layout's $content-wide. The header's projected rows read the same
+// property, which is what keeps searchbar, sort toolbar and list on one edge
+// once a viewport is wide enough for the difference to show.
+//
+// Three rules below are facts about behaviour outside this file. Android
+// WebView never populates env(safe-area-inset-*) — that is iOS/WKWebView only —
+// so --ion-safe-area-* reads Capacitor's injected --safe-area-inset-* first and
+// keeps env() as the fallback; without it ion-header and ion-tab-bar neither
+// pad nor paint into the system bars. html,body carry a background because
+// Android 16 draws edge to edge behind transparent bars and bare white would
+// show through. And body.scanner-active targets ion-content rather than body:
+// the mlkit preview renders behind the WebView, and shadowrun's
+// `ion-content { --background: radial-gradient(…) }` out-specifies any
+// body-level custom property — which is also why the width-capped content
+// wrapper stays transparent.
+// ────────────────────────────────────────────────────────────────
+
 @use 'theme/fonts'; // @font-face (self-hosted JetBrains Mono)
 @use 'theme/shadowrun';
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import '@ionic/angular/css/core.css';
-
-/* Basic CSS for apps built with Ionic */
 @import '@ionic/angular/css/normalize.css';
 @import '@ionic/angular/css/structure.css';
 @import '@ionic/angular/css/typography.css';
 @import '@ionic/angular/css/display.css';
-
-/* Optional CSS utils that can be commented out */
 @import '@ionic/angular/css/padding.css';
 @import '@ionic/angular/css/text-alignment.css';
-
-/* NP utils */
 @import 'theme/_flex-utils.css';
 
 :root {
   --app-content-max-width: 900px;
-  // Transparent so the Shadowrun matrix backdrop (ion-content) shows through.
   --app-content-bg: transparent;
 }
 
@@ -52,14 +79,6 @@ button.alert-button.alert-button-danger {
   color: var(--ion-color-danger-contrast);
 }
 
-/* --- kitchen-bot deltas (folded in step 17) --- */
-
-/* Android 16 edge-to-edge: map Ionic's safe-area variables to the inset values
-   Capacitor's SystemBars plugin injects on the WebView (--safe-area-inset-*).
-   Android WebView doesn't populate env(safe-area-inset-*) (iOS/WKWebView only),
-   so we read Capacitor's vars first and fall back to env() on iOS. Without this
-   ion-header / ion-tab-bar don't pad (or paint their background) into the
-   status/navigation bar areas. */
 :root {
   --ion-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top));
   --ion-safe-area-right: var(
@@ -73,8 +92,6 @@ button.alert-button.alert-button-danger {
   --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left));
 }
 
-/* Fill the area behind the (transparent) edge-to-edge system bars on Android 16
-   so no white shows through in this dark-themed app. */
 html,
 body {
   background-color: var(--ion-background-color);
@@ -84,10 +101,6 @@ body {
   display: none;
 }
 
-/* mlkit camera scanner: the kitchen barcode scanner renders the camera preview
-   behind the WebView, so the active content must go transparent. Targets
-   ion-content (not body) because shadowrun sets ion-content { --background:
-   radial-gradient(...) } at higher specificity than a body-level custom prop. */
 body.scanner-active ion-content {
   --background: transparent;
   --ion-background-color: transparent;

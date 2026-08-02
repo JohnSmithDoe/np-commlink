@@ -36,8 +36,8 @@ import {
 } from 'ionicons/icons';
 import {
   ACCOUNT_KIND_LABEL_KEYS,
-  ICashAccount,
-  TAccountKind,
+  AccountKind,
+  CashAccount,
 } from '../../../model/account.types';
 import { PageHeaderComponent } from '../../../../@shared/ui/page-header/page-header.component';
 import { CashFacade } from '../../../data';
@@ -47,19 +47,13 @@ import { CashAccountEditModalComponent } from '../../modals/account-edit-modal/a
 import { CashTransferModalComponent } from '../../modals/transfer-modal/transfer-modal.component';
 import { presentModal } from '../../../../@shared/util/app.modal.utils';
 
-const KIND_ICON: Record<TAccountKind, string> = {
+const KIND_ICON: Record<AccountKind, string> = {
   giro: 'wallet-outline',
   creditcard: 'card-outline',
   savings: 'trending-up-outline',
   cash: 'cash-outline',
 };
 
-/**
- * CREDSTICK — the cash ledger landing (accounts overview). Net-worth header +
- * one row per account (kind icon, name, running balance). Tap a row to edit,
- * swipe to delete (confirmed — the delete cascades the account's transactions).
- * Purpose-built domain: does NOT ride the grocery list engine.
- */
 @Component({
   selector: 'app-page-cash',
   templateUrl: './cash.page.html',
@@ -92,7 +86,6 @@ export class CashPage {
   readonly accounts = this.#facade.accountsWithBalances;
   readonly netWorthCents = this.#facade.netWorthCents;
   readonly kindLabelKeys = ACCOUNT_KIND_LABEL_KEYS;
-  // A transfer needs a source and a target.
   readonly canTransfer = computed(() => this.accounts().length >= 2);
 
   constructor() {
@@ -109,7 +102,7 @@ export class CashPage {
     });
   }
 
-  iconFor(kind: TAccountKind): string {
+  iconFor(kind: AccountKind): string {
     return KIND_ICON[kind];
   }
 
@@ -141,11 +134,11 @@ export class CashPage {
     );
   }
 
-  goToAccount(account: ICashAccount): void {
+  goToAccount(account: CashAccount): void {
     void this.#router.navigate(['/cash', account.id]);
   }
 
-  async confirmDelete(account: ICashAccount): Promise<void> {
+  async confirmDelete(account: CashAccount): Promise<void> {
     const alert = await this.#alertCtrl.create(
       deleteConfirmAlert(this.#translate, {
         headerKey: marker('cash.account.delete.header'),

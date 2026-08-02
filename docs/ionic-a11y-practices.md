@@ -5,13 +5,11 @@ rule nor re-implement a behaviour the framework ships. Every rule below is eithe
 Ionic API docs or verified against the installed source (`@ionic/angular 8.8.x` / `ionicons 7.2.x`);
 where the two disagree, the source wins and the discrepancy is called out.
 
-**Seven of the nine rules below are enforced**, by this project's own eslint plugin,
-`eslint-plugin-commlink/` — one `commlink/a11y-*` rule per R-number, enabled through the plugin's
-self-scoping `configs.all` (`docs/testing.md`). They have to be ours: `angular-eslint`'s
-`templateAccessibility` set keys off *native* elements and every control here is a custom element
-Ionic defines at runtime, so enabling that set alone
-reported a clean pass over three genuinely unlabelled toolbar buttons. **R5 is the exception and
-always will be** — see it for why.
+**Seven of the nine rules below are enforced** by this project's own `eslint-plugin-commlink/`
+(eight rules — R4 needs two). They have to be ours: `angular-eslint`'s `templateAccessibility` set
+keys off *native* elements while every control here is a custom element Ionic defines at runtime, so
+enabling that set alone reported a clean pass over three genuinely unlabelled toolbar buttons
+([testing.md](./testing.md)). **R5 and R9 are the exceptions and always will be** — see each for why.
 
 A rule's message names its R-number, so a lint failure lands you in the right section here.
 
@@ -28,7 +26,8 @@ Ionic controls are web components. Three consequences drive every rule below:
   attribute outside that list is inert, silently.
 - **The shadow DOM is not in our templates.** Grepping `src/**/*.html` cannot see what a component
   puts in its own shadow root — which is how a whole-app audit once "found" a missing live region
-  that Ionic had been rendering all along (§12). Read the component source, or read the a11y tree.
+  Ionic had been rendering all along ([decisions.md](./decisions.md)). Read the component source, or
+  the a11y tree.
 
 ---
 
@@ -123,11 +122,10 @@ const sheet = await this.#actionSheetCtrl.create({
 
 ## R5 — A gesture is never the only way
 
-**The one rule with no lint rule, and it cannot have one.** Deciding it means knowing whether a
-keyboard path to the *same* action exists somewhere in the app — an `ion-item-sliding` is perfectly
-fine when a kebab popover elsewhere in the template dispatches what the swipe dispatches. That is not a
-property of the template being linted, so a rule could only flag every swipe and be disabled everywhere.
-It stays a review matter.
+**Not decidable by a rule, ever.** Deciding it means knowing whether a keyboard path to the *same*
+action exists somewhere in the app — an `ion-item-sliding` is fine when a kebab popover elsewhere
+dispatches what the swipe does. That is not a property of the template being linted, so a rule could
+only flag every swipe and be disabled everywhere. It stays a review matter.
 
 Neither `ion-item-sliding` nor `ion-reorder-group` ships keyboard support: the sliding options are
 reachable only by a horizontal drag (and the `ion-reorder` handle is not focusable), so an action
@@ -170,8 +168,8 @@ English, and only some of them can be overridden.
 | `ion-input`/`ion-textarea` clear button | `"reset"` | no |
 | `ion-datetime` nav + columns | `"Previous month"`, `"Select a year"`, … | no |
 
-The overridable rows are worth doing; the rest are upstream and belong in a recorded decision, not in
-a workaround.
+The overridable rows are worth doing; the rest are upstream and belong in a recorded decision rather
+than a workaround.
 
 ## R8 — `aria-label` needs a role that permits a name
 
@@ -199,9 +197,9 @@ The trade-off accepted in exchange: the Android WebView will pinch-zoom the whol
 included, rather than only the content. A native app that wants content-only zoom has to opt in per
 surface — it is not something the viewport tag can express.
 
-**Not enforced by a rule.** `index.html` is not an Angular template, so the template parser the
-`commlink/a11y-*` rules read never sees it; there is exactly one viewport tag in the repo and a
-whole-repo gate for a single line is not worth its own rule.
+**Not enforced by a rule.** `index.html` is not an Angular template, so the parser the
+`commlink/a11y-*` rules read never sees it — and a whole-repo gate for the repo's single viewport tag
+is not worth its own rule.
 
 ## What Ionic already handles — do not re-implement
 
@@ -218,9 +216,9 @@ whole-repo gate for a single line is not worth its own rule.
 
 ## Review checklist
 
-The `commlink/a11y-*` rule that enforces each one, from `eslint-plugin-commlink/`. A rule reports what it can
-*decide*: where a fact is unknowable from the source — options built by a helper, a spread — it passes
-rather than guesses, because a gate that reports what it cannot know teaches people to disable it.
+A rule reports what it can *decide*: where a fact is unknowable from the source — options built by a
+helper, a spread — it passes rather than guesses, **because a gate that reports what it cannot know
+teaches people to disable it.**
 
 | # | Rule | Enforced by |
 |---|---|---|

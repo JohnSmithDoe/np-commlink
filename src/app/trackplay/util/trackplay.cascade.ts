@@ -1,37 +1,19 @@
 import {
-  IGame,
-  IGameType,
-  IPlayer,
-  IRound,
-  ITrackplayDeleted,
-  ITrackplayState,
-  TID,
+  Game,
+  GameType,
+  Player,
+  Round,
+  TrackplayDeleted,
+  TrackplayState,
+  TrackplayId,
 } from '../model/trackplay.types';
 import { DEFAULT_GAME_TYPE_ID } from './trackplay.factory';
 
-/**
- * What deleting a player, a game or a game type has to drag with it, plus the
- * single-level undo snapshot each one stashes.
- *
- * Pure state→state transforms, so they live here rather than in `data/`: they
- * import no `@ngrx`, and the reducer that calls them reads as its handler table
- * once they are out of it.
- */
-
-// ── snapshot / undo ──────────────────────────────────────────────────────────
-
-/**
- * The reducer never mutates a map in place — every change forks a new one — so
- * capturing the current references is a safe single-level undo snapshot.
- */
 export const snapshotFor = (
-  state: ITrackplayState,
+  state: TrackplayState,
   name: string
-): ITrackplayDeleted => ({
+): TrackplayDeleted => ({
   name,
-  // `config` is deliberately absent: it is list-view settings, not deleted
-  // data, and the settings popover is one tap away during the 8s toast — so
-  // including it meant "undo delete" silently reverted a sort or filter too.
   snapshot: {
     players: state.players,
     games: state.games,
@@ -40,19 +22,15 @@ export const snapshotFor = (
   },
 });
 
-// ── cascade deletes (mirror legacy data.service) ─────────────────────────────
-
-// Games and rounds have to move in lockstep through a cascade, because a game
-// owns its round ids — so the steps below rewrite one mutable pair.
 type GamesAndRounds = {
-  games: Record<TID, IGame>;
-  rounds: Record<TID, IRound>;
+  games: Record<TrackplayId, Game>;
+  rounds: Record<TrackplayId, Round>;
 };
 
 const dropPlayerScoresFromRounds = (
   { games, rounds }: GamesAndRounds,
-  game: IGame,
-  playerId: TID
+  game: Game,
+  playerId: TrackplayId
 ): void => {
   for (const roundId of game.rounds) {
     const round = rounds[roundId];
@@ -69,26 +47,21 @@ const dropPlayerScoresFromRounds = (
 
 const discardEndedEmptyGame = (
   { games, rounds }: GamesAndRounds,
-  game: IGame
+  game: Game
 ): void => {
   for (const roundId of game.rounds) delete rounds[roundId];
   delete games[game.id];
 };
 
-const emptyLiveGame = (
-  { games, rounds }: GamesAndRounds,
-  game: IGame
-): void => {
+const emptyLiveGame = ({ games, rounds }: GamesAndRounds, game: Game): void => {
   for (const roundId of game.rounds) delete rounds[roundId];
   games[game.id] = { ...game, players: [], rounds: [] };
 };
 
-// Losing your last player kills an already-ended game (nothing left to show) but
-// only empties a live one, so it stays open for new players.
 const detachPlayerFromGame = (
   target: GamesAndRounds,
-  game: IGame,
-  playerId: TID
+  game: Game,
+  playerId: TrackplayId
 ): void => {
   const remaining = game.players.filter((id) => id !== playerId);
   if (remaining.length > 0) dropPlayerScoresFromRounds(target, game, playerId);
@@ -97,9 +70,9 @@ const detachPlayerFromGame = (
 };
 
 export const deletePlayerCascade = (
-  state: ITrackplayState,
-  player: IPlayer
-): ITrackplayState => {
+  state: TrackplayState,
+  player: Player
+): TrackplayState => {
   const players = { ...state.players };
   delete players[player.id];
   const target: GamesAndRounds = {
@@ -114,9 +87,9 @@ export const deletePlayerCascade = (
 };
 
 export const deleteGameCascade = (
-  state: ITrackplayState,
-  game: IGame
-): ITrackplayState => {
+  state: TrackplayState,
+  game: Game
+): TrackplayState => {
   const games = { ...state.games };
   delete games[game.id];
   const rounds = { ...state.rounds };
@@ -125,9 +98,9 @@ export const deleteGameCascade = (
 };
 
 const reassignGamesToDefaultType = (
-  games: Record<TID, IGame>,
-  typeId: TID
-): Record<TID, IGame> =>
+  games: Record<TrackplayId, Game>,
+  typeId: TrackplayId
+): Record<TrackplayId, Game> =>
   Object.fromEntries(
     Object.entries(games).map(([id, game]) => [
       id,
@@ -135,12 +108,10 @@ const reassignGamesToDefaultType = (
     ])
   );
 
-// Both game lists can be filtered by type; a deleted type must not stay selected
-// in either, or the list silently shows nothing.
 const clearDeletedTypeFromFilters = (
-  config: ITrackplayState['config'],
-  typeId: TID
-): ITrackplayState['config'] => {
+  config: TrackplayState['config'],
+  typeId: TrackplayId
+): TrackplayState['config'] => {
   let next = config;
   for (const key of ['games', 'gamesForPlayer'] as const) {
     if (next[key].typeId !== typeId) continue;
@@ -150,9 +121,9 @@ const clearDeletedTypeFromFilters = (
 };
 
 export const deleteGameTypeCascade = (
-  state: ITrackplayState,
-  type: IGameType
-): ITrackplayState => {
+  state: TrackplayState,
+  type: GameType
+): TrackplayState => {
   const gameTypes = { ...state.gameTypes };
   delete gameTypes[type.id];
   return {

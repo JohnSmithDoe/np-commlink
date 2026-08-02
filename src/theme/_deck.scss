@@ -1,44 +1,41 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// np-commlink — deck primitives (Sass MIXINS ONLY — side-effect free).
-// ═══════════════════════════════════════════════════════════════════════════
-// The single source of truth for the /commlink cyberdeck's signature pieces
-// (HUD frame, corner brackets, status LEDs, brand row) plus the two recipes
-// that are the same in both themes because their tokens do the flipping
-// (`hud-label`, `status-bar`). This file emits NO CSS
-// when `@use`d, so — unlike _shadowrun.scss — a component MAY safely
-// `@use 'theme/deck'` and `@include` a mixin where a global class can't reach
-// (a `:host` or a pseudo-element). Everywhere else, prefer the `.sr-*` utility
-// classes in _shadowrun.scss (which wrap these mixins and are emitted once).
+// ─── why ────────────────────────────────────────────────────────
+// Sass MIXINS ONLY. Emitting nothing on @use is the point: a component may
+// safely `@use 'theme/deck'` and @include a recipe where a global class cannot
+// reach — a `:host`, a pseudo-element — which is never true of _shadowrun.scss.
+// Everywhere else prefer the .sr-* classes, which wrap these once.
 //
-// TWO-THEME SPLIT: surfaces + LEDs have a `*-base` mixin (the plain, always-on
-// look — flat panel, solid LED dot) and a `*-cyber` / glow mixin (the decorated
-// layer _shadowrun.scss emits only under `:root[data-theme='cyberpunk']`). The
-// plain "OK Boomer" theme is therefore the un-decorated base by construction.
+// Surfaces and LEDs come in pairs: a `*-base` mixin is the plain, always-on
+// look and a `*-cyber`/glow mixin is the decorated layer _shadowrun.scss emits
+// only under [data-theme='cyberpunk']. panel-base takes $bg-prop so an Ionic
+// host can paint through its --background var while a plain element uses the
+// real property.
 //
-// Consumers of the animation states below must ensure `@keyframes sr-pulse`
-// exists (declared once in _shadowrun.scss).
-// ═══════════════════════════════════════════════════════════════════════════
+// led-glow declares its pulse INSIDE `prefers-reduced-motion: no-preference`
+// rather than letting a later `reduce` block switch it off: a media query adds
+// no specificity, so a reduce opt-out cannot out-weigh
+// `:root[data-theme='cyberpunk'] .sr-led--on` and silently lost — every LED
+// pulsed regardless, one permanent animation per recipe row. Its @keyframes
+// sr-pulse lives in _shadowrun.scss, since this file emits nothing.
+//
+// hud-label exists as a mixin as well as the .sr-hud class because the colour
+// is NOT part of it: four surfaces re-typed the same three declarations while
+// painting their own, which a class alone could not serve. status-bar is shared
+// for the opposite reason — the shared list row and tracking's own render
+// byte-identical markup and had drifted to different widths, and the width IS
+// the widget.
+// ────────────────────────────────────────────────────────────────
 
-// Flat framed surface — plain slate panel + hairline + themed corner radius.
-// `$bg-prop` lets Ionic hosts paint through their `--background` var (e.g.
-// ion-card) while plain elements use the real `background` property.
 @mixin panel-base($bg-prop: background) {
   #{$bg-prop}: var(--sr-panel);
   border: 1px solid var(--sr-line);
   border-radius: var(--sr-radius);
 }
 
-// Cyberpunk overlay for a framed surface: the slate gradient + inset bevel.
-// Emitted only under [data-theme='cyberpunk']; border + radius come from
-// panel-base (their tokens flip per theme).
 @mixin panel-cyber($bg-prop: background) {
   #{$bg-prop}: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
-// Amber L-bracket corners (top-left + bottom-right) via ::before/::after.
-// Self-contained: sets position:relative so it works as a standalone class.
-// Cyberpunk-only (the plain theme keeps the corners bare).
 @mixin hud-corners($size: 14px) {
   position: relative;
 
@@ -66,8 +63,6 @@
   }
 }
 
-// Status LED — shared dot shape. The lit COLOUR is set by the `.sr-led--*`
-// classes (both themes); `led-glow()` adds the cyberpunk bloom + pulse.
 @mixin led-base {
   display: inline-block;
   width: 8px;
@@ -77,14 +72,6 @@
   vertical-align: middle;
 }
 
-// Cyberpunk LED bloom + pulse (colour already set by the .sr-led--* class).
-// `on`/`standby` pulse; `off` is steady. Emitted only under the cyber theme.
-//
-// The pulse is declared INSIDE `prefers-reduced-motion: no-preference` rather
-// than switched off by a later `reduce` block: a `reduce` opt-out would have to
-// out-specify `:root[data-theme='cyberpunk'] .sr-led--on`, and a media query
-// adds no specificity — so the escape silently lost and every LED pulsed
-// regardless. Declaring the animation only under `no-preference` cannot lose.
 @mixin led-glow($state) {
   @if $state == on {
     box-shadow:
@@ -107,20 +94,12 @@
   }
 }
 
-// Eyebrow / HUD label typography — mono uppercase wide in cyberpunk, plain
-// sentence-case sans otherwise. A mixin as well as the `.sr-hud` class because
-// the colour is NOT part of it: the four surfaces that re-typed these three
-// declarations (the cash net-worth strip, the two report captions, the recipe
-// section head) each paint their own, so the class alone could not serve them.
 @mixin hud-label {
   font-family: var(--sr-deck-font);
   text-transform: var(--sr-label-transform);
   letter-spacing: var(--sr-label-tracking);
 }
 
-// The colour bar down the leading edge of a list row. Global because the shared
-// list row and tracking's own row render byte-identical markup and had drifted
-// to different widths; the width IS the widget, so it lives in one place.
 @mixin status-bar {
   display: flex;
   width: 0.5rem;
@@ -133,8 +112,6 @@
   }
 }
 
-// Brand row (deck header): icon chip + name. Case + tracking flip per theme
-// (lowercase/wide in cyber, sentence-case/normal in plain).
 @mixin brand {
   display: flex;
   align-items: center;

@@ -17,14 +17,9 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, person, trash } from 'ionicons/icons';
-import { IPlayer, IPlayerStats } from '../../model/trackplay.types';
+import { Player, PlayerStats } from '../../model/trackplay.types';
 import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 
-/**
- * DUMB player row — a {@link BaseSwipeRow}; tap the body to open. Renders the
- * derived win/loss/open + total-play stats passed in — it never computes or
- * stores them. Mirrors the legacy `player-list` renderer.
- */
 @Component({
   selector: 'app-trackplay-player-list-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,8 +38,8 @@ import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
   ],
 })
 export class TrackplayPlayerListItemComponent extends BaseSwipeRow {
-  readonly player = input.required<IPlayer>();
-  readonly stats = input.required<IPlayerStats>();
+  readonly player = input.required<Player>();
+  readonly stats = input.required<PlayerStats>();
 
   readonly selectPlayer = output<void>();
 

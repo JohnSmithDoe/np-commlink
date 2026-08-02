@@ -1,20 +1,20 @@
-import { IDashboardSummary } from '../../model/dashboard.types';
+import { DashboardSummary } from '../../model/dashboard.types';
 import { DashboardActions } from '../../../@shared/data/actions/dashboard.actions';
 import { DashboardReadModelActions } from './dashboard.actions';
 import { dashboardReducer, initialDashboardState } from './dashboard.reducer';
-import { IDashboardTelemetry } from '../../../@shared/model/dashboard.types';
+import { DashboardTelemetry } from '../../../@shared/model/dashboard.types';
 
 const telemetry = (
-  overrides: Partial<IDashboardTelemetry> = {}
-): IDashboardTelemetry => ({
+  overrides: Partial<DashboardTelemetry> = {}
+): DashboardTelemetry => ({
   source: 'notifications',
   metrics: { unread: 3 },
   ...overrides,
 });
 
 const summary = (
-  overrides: Partial<IDashboardSummary> = {}
-): IDashboardSummary => ({
+  overrides: Partial<DashboardSummary> = {}
+): DashboardSummary => ({
   source: 'notifications',
   metrics: { unread: 3 },
   ...overrides,

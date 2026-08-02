@@ -1,3 +1,8 @@
+// ─── why ────────────────────────────────────────────────────────
+// Ionic's ion-card-content is 0.875rem; the day and the date read as body copy,
+// so they name a rung instead of inheriting it.
+// ────────────────────────────────────────────────────────────────
+
 @use '../../../../theme/dashboard';
 :host {
   @include dashboard.dashboard-item;
@@ -11,7 +16,6 @@
   font-size: var(--fs-display);
   line-height: 1;
 }
-// Ionic's ion-card-content is 0.875rem; these two read as body copy.
 .day,
 .date {
   font-size: var(--fs-body);

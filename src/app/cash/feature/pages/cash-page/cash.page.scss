@@ -1,10 +1,12 @@
+// ─── why ────────────────────────────────────────────────────────
+// The net-worth spacing is local because it is the one thing this page and the
+// per-account ledger ever disagreed on. It has to be declared BEFORE the
+// include: networth-strip ends in nested `&__` rules, so anything after it
+// would be emitted as a second .cash-networth block.
+// ────────────────────────────────────────────────────────────────
+
 @use '../../../../../theme/cash';
 
-// Accounts overview (P1). Consumes the shared shadowrun tokens via
-// var(--sr-*/--ion-*); the cash mixins carry the pieces the sibling surfaces
-// share.
-// Spacing before the include: the mixin ends in nested `&__` rules, so anything
-// after it would be emitted as a second `.cash-networth` block.
 .cash-networth {
   padding: 0.25rem 0.25rem 0.75rem;
   margin-bottom: 0.5rem;

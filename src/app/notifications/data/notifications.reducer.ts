@@ -8,11 +8,9 @@ import {
   removeNotificationById,
   upsertNotification,
 } from '../util/notifications.transforms';
-import { INotificationsState } from '../../@shared/model/notifications.types';
+import { NotificationsState } from '../../@shared/model/notifications.types';
 
-// Epoch lastViewedAt → any real notification counts as unread until the page is
-// first opened.
-export const initialNotificationsState: INotificationsState = {
+export const initialNotificationsState: NotificationsState = {
   items: [],
   doneCollapsed: true,
   lastViewedAt: '1970-01-01T00:00:00.000Z',
@@ -20,53 +18,48 @@ export const initialNotificationsState: INotificationsState = {
 
 export const notificationsReducer = createReducer(
   initialNotificationsState,
-  // The published producer contract (@shared) — dispatched from any route by any
-  // module, plus by the inbox page itself for the two ops it shares.
   on(
     NotificationsActions.notify,
-    (state, { notification }): INotificationsState => ({
+    (state, { notification }): NotificationsState => ({
       ...state,
       items: upsertNotification(state.items, notification),
     })
   ),
   on(
     NotificationsActions.project,
-    (state, { owner, notifications, at }): INotificationsState => ({
+    (state, { owner, notifications, at }): NotificationsState => ({
       ...state,
       items: projectOwnedNotifications(state.items, owner, notifications, at),
     })
   ),
-  on(
-    NotificationsActions.dismiss,
-    (state, { id, at }): INotificationsState => ({
-      ...state,
-      items: markNotificationDone(state.items, id, at),
-    })
-  ),
-  on(NotificationsActions.remove, (state, { id }): INotificationsState => ({
+  on(NotificationsActions.dismiss, (state, { id, at }): NotificationsState => ({
+    ...state,
+    items: markNotificationDone(state.items, id, at),
+  })),
+  on(NotificationsActions.remove, (state, { id }): NotificationsState => ({
     ...state,
     items: removeNotificationById(state.items, id),
   })),
-  on(NotificationsInboxActions.clearDone, (state): INotificationsState => ({
+  on(NotificationsInboxActions.clearDone, (state): NotificationsState => ({
     ...state,
     items: clearDoneNotifications(state.items),
   })),
   on(
     NotificationsInboxActions.toggleDoneSection,
-    (state): INotificationsState => ({
+    (state): NotificationsState => ({
       ...state,
       doneCollapsed: !state.doneCollapsed,
     })
   ),
   on(
     NotificationsInboxActions.markPageViewed,
-    (state, { at }): INotificationsState => ({
+    (state, { at }): NotificationsState => ({
       ...state,
       lastViewedAt: at,
     })
   ),
   on(
     NotificationsInboxActions.loaded,
-    (state, { notifications }): INotificationsState => notifications ?? state
+    (state, { notifications }): NotificationsState => notifications ?? state
   )
 );

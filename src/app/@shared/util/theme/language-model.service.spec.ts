@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { LanguageModelService } from './language-model.service';
 
-type TGlobalWithModel = typeof globalThis & { LanguageModel?: unknown };
+type GlobalWithModel = typeof globalThis & { LanguageModel?: unknown };
 
 const withLanguageModel = (stub: unknown): (() => void) => {
-  const target = globalThis as TGlobalWithModel;
+  const target = globalThis as GlobalWithModel;
   const had = 'LanguageModel' in target;
   const previous = target.LanguageModel;
   target.LanguageModel = stub;
@@ -35,9 +35,6 @@ describe('LanguageModelService', () => {
     expect(service.availability()).toBe('available');
   });
 
-  // The probe is memoized, so an escaping rejection would be cached forever:
-  // every reader stays on 'probing', the deck tile never resolves, and the
-  // constructor's fire-and-forget call becomes an unhandled rejection.
   it('reports unavailable when the experimental API throws', async () => {
     const service = serviceWith({
       availability: async () => {
@@ -55,13 +52,9 @@ describe('LanguageModelService', () => {
 
     await Promise.all([service.probe(), service.probe(), service.probe()]);
 
-    // One extra call is the constructor's own probe.
     expect(availability.mock.calls.length).toBeLessThanOrEqual(1);
   });
 
-  // A successful create is proof the model is on-device, even if the last
-  // probe reported 'downloadable' — shared readers (the deck tile) shouldn't
-  // keep reporting standby for the rest of the session.
   it('marks the model available once a session is created', async () => {
     const session = { destroy: vi.fn() };
     const service = serviceWith({

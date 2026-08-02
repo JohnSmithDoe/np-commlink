@@ -2,37 +2,39 @@ import { signal, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
-  IListPageFacade,
+  ListPageFacade,
   LIST_FACADE,
 } from '../../../util/item-lists/list-page.facade';
 import { ListPageComponent } from './list-page.component';
-import { IBaseItem } from '../../../model/base-item.types';
-import { ICategory } from '../../../model/category.types';
-import { IListState } from '../../../model/item-list.types';
+import { BaseItem } from '../../../model/base-item.types';
+import { Category, CategoryId } from '../../../model/category.types';
+import { ListState } from '../../../model/item-list.types';
 
 const mockListState = (
-  overrides: Partial<IListState<IBaseItem>> = {}
-): IListState<IBaseItem> => ({
+  overrides: Partial<ListState<BaseItem>> = {}
+): ListState<BaseItem> => ({
   items: [],
   ...overrides,
 });
 
-// Domain-blind stub of the facade contract: the generic page must be testable
-// without reaching into any concrete list domain (grocery/tasks).
 const fakeFacade = (
-  state: WritableSignal<IListState<IBaseItem> | undefined>
-): IListPageFacade & {
+  state: WritableSignal<ListState<BaseItem> | undefined>
+): ListPageFacade & {
   managed: number;
-  catalog: WritableSignal<ICategory[]>;
+  cleared: number;
+  catalog: WritableSignal<Category[]>;
 } => {
   const facade = {
     state,
     items: signal(undefined),
     searchResult: signal(undefined),
-    catalog: signal<ICategory[]>([]),
+    catalog: signal<Category[]>([]),
     search: () => {},
     setSortMode: () => {},
-    selectCategory: () => {},
+    cleared: 0,
+    selectCategory: (categoryId?: CategoryId) => {
+      if (!categoryId) facade.cleared += 1;
+    },
     addItemFromSearch: () => {},
     showCreateDialog: () => {},
     managed: 0,
@@ -46,11 +48,11 @@ const fakeFacade = (
 describe('ListPageComponent', () => {
   let fixture: ComponentFixture<ListPageComponent>;
   let component: ListPageComponent;
-  let state: WritableSignal<IListState<IBaseItem> | undefined>;
+  let state: WritableSignal<ListState<BaseItem> | undefined>;
   let facade: ReturnType<typeof fakeFacade>;
 
   beforeEach(async () => {
-    state = signal<IListState<IBaseItem> | undefined>(mockListState());
+    state = signal<ListState<BaseItem> | undefined>(mockListState());
     facade = fakeFacade(state);
     await TestBed.configureTestingModule({
       imports: [ListPageComponent],
@@ -75,8 +77,6 @@ describe('ListPageComponent', () => {
     expect(component.hasFilter()).toBe(true);
   });
 
-  // The catalog comes off the facade now, not out of the list state — a list no
-  // longer carries its own copy of it.
   it('resolves the active filter id to the catalog name the caption shows', () => {
     state.set(mockListState({ filterBy: 'cat-1' }));
     facade.catalog.set([{ id: 'cat-1', name: 'Dairy' }]);
@@ -84,8 +84,14 @@ describe('ListPageComponent', () => {
     expect(component.filterName()).toBe('Dairy');
   });
 
-  // `manageCategories` is optional on the contract — category-less lists
-  // (tracking) omit it — and template syntax cannot express an optional call.
+  it('clears the filter by selecting no category at all', () => {
+    state.set(mockListState({ filterBy: 'cat-1' }));
+
+    component.clearFilter();
+
+    expect(facade.cleared).toBe(1);
+  });
+
   it('delegates the catalog entry point to the domain when it offers one', () => {
     component.manageCategories();
 

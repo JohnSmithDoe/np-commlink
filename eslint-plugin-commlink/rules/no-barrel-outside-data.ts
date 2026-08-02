@@ -1,20 +1,21 @@
-import type { Rule } from 'eslint';
+/* ─── why ─────────────────────────────────────────────────────────
+ * An `index.ts` is a `<domain>/data/` facade barrel, or it should not
+ * exist. The layout is barrel-less by decision (`enableBarrelLess` in
+ * sheriff.config.ts) with exactly one exception: `<domain>/data/index.ts`
+ * publishes the domain's facade, and Sheriff enforces that outside code
+ * goes through it rather than deep-importing the reducer. Everywhere else
+ * a barrel costs the thing the barrel-less layout buys — an import line
+ * that names the concern it depends on (`…/model/recipe.types`) rather
+ * than the folder it lives in.
+ *
+ * Sheriff cannot catch a new one: `enableBarrelLess` governs how imports
+ * RESOLVE, not whether a file gets created, so a fresh `model/index.ts` is
+ * simply a new module Sheriff tags and permits. This rule is the creation
+ * half, which is why the finding is reported on `Program` — it is about
+ * the file's existence rather than anything in it.
+ * ───────────────────────────────────────────────────────────────── */
 
-// An `index.ts` is a `<domain>/data/` facade barrel, or it should not exist.
-//
-// The layout is barrel-less by decision (`enableBarrelLess` in sheriff.config.ts)
-// with exactly one exception: `<domain>/data/index.ts` publishes the domain's
-// facade, and Sheriff enforces that outside code goes through it rather than
-// deep-importing the reducer. Everywhere else a barrel costs the thing the
-// barrel-less layout buys — an import line that names the concern it depends on
-// (`…/model/recipe.types`) rather than the folder it lives in.
-//
-// Sheriff cannot catch a new one: `enableBarrelLess` governs how imports
-// *resolve*, not whether a file gets created, so a fresh `model/index.ts` is
-// simply a new module Sheriff tags and permits. This rule is the creation half.
-//
-// Reported on the Program node, since the finding is the file's existence rather
-// than anything in it.
+import type { Rule } from 'eslint';
 
 const DATA_BARREL = /(?:^|\/)src\/app\/[^/]+\/data\/index\.ts$/;
 const ANY_BARREL = /(?:^|\/)index\.ts$/;

@@ -1,0 +1,14 @@
+// ─── why ────────────────────────────────────────────────────────
+// One declaration, and it is the whole "wider on desktop" change: every list
+// page inherits it, and the property reaches both the header's projected rows
+// and ion-content's children because custom properties inherit through the
+// flattened DOM. Re-declaring on :host is the same opt-out commlink,
+// office-time and geist already use to take 100% — widening is the third case
+// of it, not a new mechanism.
+// ────────────────────────────────────────────────────────────────
+
+@use 'theme/layout';
+
+:host {
+  --app-content-max-width: #{layout.$content-wide};
+}

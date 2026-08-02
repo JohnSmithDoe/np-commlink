@@ -1,0 +1,29 @@
+// ─── why ────────────────────────────────────────────────────────
+// The wide-screen numbers, side-effect-free like _dashboard so a component may
+// @use it. They are one contract rather than three knobs: $content-wide is the
+// widest a column ever gets, $list-column-min is the narrowest an item may be,
+// and their ratio is therefore the column count — three at $content-wide, two
+// at $wide. Change one and the other two are no longer describing the same
+// layout.
+//
+// $wide sits well above the bare 2 × $list-column-min arithmetic on purpose. A
+// tablet in portrait fits two columns and still reads worse as two: the row is
+// the scanning unit on a touch list, and halving its length halves the payoff
+// of the sort toolbar above it. So the second column waits for a viewport that
+// is unambiguously a desktop one.
+//
+// Raising $content-wide WITHOUT the grid is the failure mode this replaces —
+// rows stretch instead of multiplying. That is also why the default
+// --app-content-max-width (900px, global.scss) stays a reading column for
+// everything that is not a list.
+// ────────────────────────────────────────────────────────────────
+
+$list-column-min: 380px;
+$content-wide: 1280px;
+$wide: 1024px;
+
+@mixin wide {
+  @media (min-width: $wide) {
+    @content;
+  }
+}

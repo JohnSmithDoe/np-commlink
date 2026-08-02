@@ -16,16 +16,16 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
-import { SegmentCustomEvent } from '@ionic/core/dist/types/interface';
+import type { SegmentCustomEvent } from '@ionic/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
-  IAccentColors,
+  AccentColors,
+  Language,
   LANGUAGES,
+  Marker,
+  Theme,
   THEMES,
-  TLanguage,
-  TMarker,
-  TTheme,
 } from '../../../@shared/model/app.types';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { APP_RELEASE, SOURCE_URL } from '../../../@shared/model/app.consts';
@@ -40,38 +40,21 @@ import {
   settingsOutline,
 } from 'ionicons/icons';
 
-// Keyed by TTheme so a new theme cannot be added without giving it a label, and
-// spelled out as `marker(...)` literals because the template reads them through a
-// lookup — a `'settings.theme.' + option` key would be invisible to
-// `i18n:extract --clean`, which would then prune the very keys it needs.
-const THEME_LABEL_KEYS: Record<TTheme, TMarker> = {
+const THEME_LABEL_KEYS: Record<Theme, Marker> = {
   cyberpunk: marker('settings.theme.cyberpunk'),
   boomer: marker('settings.theme.boomer'),
 };
 
-// Same arrangement for the language, and deliberately *not* translated: a
-// language is always named in itself, so someone who has landed in a language
-// they cannot read can still find their way out.
-const LANGUAGE_LABELS: Record<TLanguage, string> = {
+const LANGUAGE_LABELS: Record<Language, string> = {
   de: 'Deutsch',
   en: 'English',
 };
 
-// Each theme's built-in swatch — seeds the pickers when the user has no
-// override yet. Mirrors the values in src/theme/variables.scss (same kind of
-// SCSS↔TS duplication `THEME_COLOR` already accepts beside `ThemeService`).
-const DEFAULT_ACCENT_SWATCHES: Record<TTheme, IAccentColors> = {
+const DEFAULT_ACCENT_SWATCHES: Record<Theme, AccentColors> = {
   cyberpunk: { primary: '#de8b27', secondary: '#32aea6' },
   boomer: { primary: '#2f5bd0', secondary: '#4b6b7a' },
 };
 
-/**
- * App-global settings page — the UI theme, its accent pair, and the language.
- * Reachable as a first-class destination (side menu + commlink deck tile), not
- * buried under office-time. Changing the theme re-skins the whole app live
- * (SettingsEffects.applyTheme$ sets <html data-theme>); changing the language
- * restarts it (SettingsEffects.restartOnLanguageChange$).
- */
 @Component({
   selector: 'app-page-settings',
   templateUrl: 'settings.page.html',
@@ -103,7 +86,6 @@ export class SettingsPage {
   }
 
   readonly sourceUrl = SOURCE_URL;
-  // Reads `dev` under `ng serve` — the define only lands in a real build.
   readonly release = APP_RELEASE;
 
   readonly #settings = inject(SettingsFacade);
@@ -130,12 +112,11 @@ export class SettingsPage {
   );
 
   changeTheme(event: SegmentCustomEvent) {
-    this.#settings.setTheme(event.detail.value as TTheme);
+    this.#settings.setTheme(event.detail.value as Theme);
   }
 
-  // Restarts the app — see `SettingsEffects.restartOnLanguageChange$`.
   changeLanguage(event: SegmentCustomEvent) {
-    this.#settings.setLanguage(event.detail.value as TLanguage);
+    this.#settings.setLanguage(event.detail.value as Language);
   }
 
   changePrimaryAccent(hex: string) {
@@ -150,7 +131,7 @@ export class SettingsPage {
     this.#settings.resetAccentColors(this.theme());
   }
 
-  #setAccents(colors: IAccentColors) {
+  #setAccents(colors: AccentColors) {
     this.#settings.setAccentColors(this.theme(), colors);
   }
 }

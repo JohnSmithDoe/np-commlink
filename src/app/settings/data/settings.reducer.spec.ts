@@ -1,9 +1,9 @@
 import { EmojiActions } from '../../@shared/data/emoji/emoji.actions';
-import { ISettingsState } from '../model/settings.types';
+import { SettingsState } from '../model/settings.types';
 import { initialSettings, settingsReducer } from './settings.reducer';
 import { SettingsActions } from './settings.actions';
 
-const remember = (state: ISettingsState, ...glyphs: string[]) =>
+const remember = (state: SettingsState, ...glyphs: string[]) =>
   settingsReducer(state, EmojiActions.used(glyphs));
 
 describe('settingsReducer', () => {
@@ -20,9 +20,6 @@ describe('settingsReducer', () => {
     expect(state).toEqual({ theme: 'boomer', language: 'de' });
   });
 
-  // The blast radius per byte is what makes this worth pinning: an undefined
-  // theme reaches <html data-theme> under the boot splash, before any other
-  // code could notice and correct it.
   it('fills a persisted doc that is missing the theme from the defaults', () => {
     const state = settingsReducer(
       initialSettings,
@@ -148,10 +145,8 @@ describe('settingsReducer', () => {
       expect(state.recentEmojis?.[0]).toBe('e0');
     });
 
-    // The field is optional, so a doc written before it existed has to hydrate
-    // without a migration hop — which is what the merge-over-defaults buys.
     it('hydrates a stored doc that predates the field', () => {
-      const stored = { theme: 'boomer', language: 'en' } as ISettingsState;
+      const stored = { theme: 'boomer', language: 'en' } as SettingsState;
       const hydrated = settingsReducer(
         initialSettings,
         SettingsActions.loaded(stored)

@@ -2,8 +2,8 @@ import { createReducer, on } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import {
   DASHBOARD_CARD_VISIBILITY,
-  IOfficeTimeState,
-  IOfficeTimeStateStorage,
+  OfficeTimeState,
+  OfficeTimeStateStorage,
 } from '../model/office-time.types';
 import { OfficeTimeActions } from './office-time.actions';
 import {
@@ -12,7 +12,7 @@ import {
   validateFreedays,
 } from '../util/office-time.utils';
 
-export const initialOfficeTime: IOfficeTimeState = {
+export const initialOfficeTime: OfficeTimeState = {
   targetOfficeDaysPerWeek: 2.5,
   freedays: [],
   holidays: {},
@@ -47,8 +47,6 @@ export const initialOfficeTime: IOfficeTimeState = {
   ],
 };
 
-// The day lists are sets keyed by CALENDAR day, not by timestamp — so marking a
-// day that is already marked must leave the state reference untouched.
 const hasDay = (days: Dayjs[] | undefined, day: Dayjs): boolean =>
   !!days?.some((existing) => existing.isSame(day, 'day'));
 
@@ -57,13 +55,9 @@ const withDay = (days: Dayjs[] | undefined, day: Dayjs): Dayjs[] => [
   day,
 ];
 
-// Self-heal: append any dashboard card added since this user last persisted
-// (e.g. 'wordclock') and drop any this build no longer ships, preserving their
-// existing order. Dropping the unknown ones is what lets the page's visibility
-// filter be total — an unmapped card would otherwise render an empty grid slot.
 const withKnownDashboardItems = (
-  storedItems: IOfficeTimeState['dashboardItems'] | undefined
-): IOfficeTimeState['dashboardItems'] => {
+  storedItems: OfficeTimeState['dashboardItems'] | undefined
+): OfficeTimeState['dashboardItems'] => {
   const known = (storedItems ?? initialOfficeTime.dashboardItems).filter(
     (item) => item in DASHBOARD_CARD_VISIBILITY
   );
@@ -73,8 +67,7 @@ const withKnownDashboardItems = (
   return [...known, ...missing];
 };
 
-// Storage keeps calendar days as ISO strings; the state keeps Dayjs.
-const deserializedDayCollections = (stored: IOfficeTimeStateStorage) => ({
+const deserializedDayCollections = (stored: OfficeTimeStateStorage) => ({
   holidays: deserializeIsoStringMap(stored.holidays),
   officedays: deserializeIsoStrings(stored.officedays),
   freedays: deserializeIsoStrings(stored.freedays),
@@ -84,57 +77,52 @@ export const officeTimeReducer = createReducer(
   initialOfficeTime,
   on(
     OfficeTimeActions.loadHolidaysSuccess,
-    (state, { holidays }): IOfficeTimeState => ({
+    (state, { holidays }): OfficeTimeState => ({
       ...state,
       holidays: { ...holidays },
     })
   ),
-  on(OfficeTimeActions.addOfficeTime, (state, { today }): IOfficeTimeState =>
+  on(OfficeTimeActions.addOfficeTime, (state, { today }): OfficeTimeState =>
     hasDay(state.officedays, today)
       ? state
       : { ...state, officedays: withDay(state.officedays, today) }
   ),
   on(
     OfficeTimeActions.setOfficedays,
-    (state, { officedays }): IOfficeTimeState => ({
+    (state, { officedays }): OfficeTimeState => ({
       ...state,
       officedays: [...officedays],
     })
   ),
   on(
     OfficeTimeActions.saveTargetOfficeDaysPerWeek,
-    (state, { daysPerWeek }): IOfficeTimeState => ({
+    (state, { daysPerWeek }): OfficeTimeState => ({
       ...state,
       targetOfficeDaysPerWeek: daysPerWeek,
     })
   ),
-  on(OfficeTimeActions.resetData, (state): IOfficeTimeState => ({
+  on(OfficeTimeActions.resetData, (state): OfficeTimeState => ({
     ...initialOfficeTime,
     holidays: state.holidays,
   })),
-  on(OfficeTimeActions.addFreeday, (state, { freeday }): IOfficeTimeState =>
+  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState =>
     hasDay(state.freedays, freeday)
       ? state
       : { ...state, freedays: withDay(state.freedays, freeday) }
   ),
-  on(
-    OfficeTimeActions.setFreedays,
-    (state, { freedays }): IOfficeTimeState => ({
-      ...state,
-      freedays: [...validateFreedays(freedays, state.holidays)],
-    })
-  ),
+  on(OfficeTimeActions.setFreedays, (state, { freedays }): OfficeTimeState => ({
+    ...state,
+    freedays: [...validateFreedays(freedays, state.holidays)],
+  })),
   on(
     OfficeTimeActions.saveDashboardSettings,
-    (state, { key, active }): IOfficeTimeState => ({
+    (state, { key, active }): OfficeTimeState => ({
       ...state,
       dashboardSettings: { ...state.dashboardSettings, [key]: active },
     })
   ),
-  on(OfficeTimeActions.loaded, (state, { officeTime }): IOfficeTimeState => {
+  on(OfficeTimeActions.loaded, (state, { officeTime }): OfficeTimeState => {
     if (!officeTime) return state;
-    // Merge over initialOfficeTime so corrupted or partially-migrated storage
-    // can't leave required fields undefined.
     return {
       ...initialOfficeTime,
       ...officeTime,

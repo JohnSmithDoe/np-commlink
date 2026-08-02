@@ -1,10 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import {
-  IAccentColors,
-  TLanguage,
-  TTheme,
-} from '../../@shared/model/app.types';
+import { AccentColors, Language, Theme } from '../../@shared/model/app.types';
 import { SettingsActions } from './settings.actions';
 import {
   selectCustomAccents,
@@ -12,18 +8,6 @@ import {
   selectTheme,
 } from './settings.selector';
 
-/**
- * Facade over the eager, app-global `settings` slice: the selected UI `theme`
- * with its optional accent overrides, and the UI `language`. Components
- * read/set them through this instead of injecting `Store`; the settings effects
- * mirror each change onto the document (`<html data-theme>` / `<html lang>` plus
- * the translate bundle).
- *
- * The slice is eager because the theme must reach `<html data-theme>` while the
- * boot splash still covers the first paint. It holds no schema `version` — that
- * is `APP_VERSION` (`@shared/model/app.consts`), stamped into each doc's
- * envelope on save.
- */
 @Injectable({ providedIn: 'root' })
 export class SettingsFacade {
   readonly #store = inject(Store);
@@ -32,19 +16,19 @@ export class SettingsFacade {
   readonly language = this.#store.selectSignal(selectLanguage);
   readonly customAccents = this.#store.selectSignal(selectCustomAccents);
 
-  setTheme(theme: TTheme): void {
+  setTheme(theme: Theme): void {
     this.#store.dispatch(SettingsActions.setTheme(theme));
   }
 
-  setLanguage(language: TLanguage): void {
+  setLanguage(language: Language): void {
     this.#store.dispatch(SettingsActions.setLanguage(language));
   }
 
-  setAccentColors(theme: TTheme, colors: IAccentColors): void {
+  setAccentColors(theme: Theme, colors: AccentColors): void {
     this.#store.dispatch(SettingsActions.setAccentColors(theme, colors));
   }
 
-  resetAccentColors(theme: TTheme): void {
+  resetAccentColors(theme: Theme): void {
     this.#store.dispatch(SettingsActions.resetAccentColors(theme));
   }
 }

@@ -26,7 +26,7 @@ import {
   stopCircleOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { TMarker } from '../../../@shared/model/app.types';
+import { Marker } from '../../../@shared/model/app.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import {
   GEIST_DEFAULT_PERSONA,
@@ -34,7 +34,7 @@ import {
   GEIST_LINK_LED,
   GEIST_PERSONAS,
 } from '../../model/geist.consts';
-import { IGeistPersona, IGeistTurn } from '../../model/geist.types';
+import { GeistPersona, GeistTurn } from '../../model/geist.types';
 import { GeistSessionService } from '../../util/geist-session.service';
 import {
   appendAnswerChunk,
@@ -43,13 +43,6 @@ import {
   patchTurn,
 } from '../../util/transcript.utils';
 
-/**
- * GEIST — a console onto Chrome's built-in on-device model.
- *
- * Desktop-only by construction (see LanguageModelService): on the Android APK
- * the link probe lands on `unsupported` and the page explains why instead of
- * offering a control that cannot work.
- */
 @Component({
   selector: 'app-page-geist',
   templateUrl: './geist.page.html',
@@ -64,8 +57,6 @@ import {
     TranslatePipe,
     PageHeaderComponent,
   ],
-  // Page-scoped, so leaving the route destroys the session rather than holding
-  // the model's weights open for the tab's lifetime.
   providers: [GeistSessionService],
 })
 export class GeistPage {
@@ -78,8 +69,8 @@ export class GeistPage {
 
   readonly linkLabel = computed(() => GEIST_LINK_LABELS[this.link()]);
   readonly linkLed = computed(() => GEIST_LINK_LED[this.link()]);
-  readonly persona = signal<IGeistPersona>(GEIST_DEFAULT_PERSONA);
-  readonly turns = signal<readonly IGeistTurn[]>([]);
+  readonly persona = signal<GeistPersona>(GEIST_DEFAULT_PERSONA);
+  readonly turns = signal<readonly GeistTurn[]>([]);
   readonly query = signal('');
 
   readonly isStreaming = computed(() =>
@@ -92,8 +83,6 @@ export class GeistPage {
       this.query().trim().length > 0
   );
 
-  // viewChild can't sit on an ES-private (#) field (NG1053); public readonly,
-  // matching the item-list convention.
   readonly transcript = viewChild<ElementRef<HTMLElement>>('transcript');
   #nextTurnId = 0;
 
@@ -110,11 +99,6 @@ export class GeistPage {
     void this.#session.probe(this.persona());
   }
 
-  /**
-   * The transcript is a fixed-height scroller, so a streaming answer runs off
-   * below the fold unless the view follows it. `turns()` is read for its
-   * dependency, not its value: it is what re-runs this on every chunk.
-   */
   #followTranscriptTail(): void {
     this.turns();
     const view = this.transcript()?.nativeElement;
@@ -129,13 +113,9 @@ export class GeistPage {
     await this.#session.open(this.persona());
   }
 
-  async selectPersona(persona: IGeistPersona): Promise<void> {
+  async selectPersona(persona: GeistPersona): Promise<void> {
     if (persona.id === this.persona().id) return;
     this.persona.set(persona);
-    // The system message is baked in at create time, so a new register needs a
-    // new session — which also means the transcript before it no longer applies.
-    // A session still being CREATED counts: it would otherwise arrive carrying
-    // the register the user just moved away from.
     if (this.#session.isEngaged) await this.purge();
   }
 
@@ -156,8 +136,8 @@ export class GeistPage {
     await this.#session.open(this.persona());
   }
 
-  #openTurn(query: string): IGeistTurn {
-    const turn: IGeistTurn = {
+  #openTurn(query: string): GeistTurn {
+    const turn: GeistTurn = {
       id: this.#nextTurnId++,
       query,
       answer: '',
@@ -168,9 +148,7 @@ export class GeistPage {
     return turn;
   }
 
-  // The service owns the link; the transcript is the page's, so how a failed
-  // turn reads is decided here.
-  async #streamInto(turn: IGeistTurn): Promise<void> {
+  async #streamInto(turn: GeistTurn): Promise<void> {
     try {
       await this.#session.stream(turn.query, (chunk) =>
         this.turns.update((turns) => appendAnswerChunk(turns, turn.id, chunk))
@@ -181,7 +159,7 @@ export class GeistPage {
     }
   }
 
-  #settleTurn(id: number, note: TMarker | null): void {
+  #settleTurn(id: number, note: Marker | null): void {
     this.turns.update((turns) =>
       patchTurn(turns, id, { streaming: false, note })
     );

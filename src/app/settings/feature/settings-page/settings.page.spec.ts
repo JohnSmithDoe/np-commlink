@@ -3,14 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 
-import { SegmentCustomEvent } from '@ionic/core/dist/types/interface';
-import { IAccentColors, TTheme } from '../../../@shared/model/app.types';
+import type { SegmentCustomEvent } from '@ionic/core';
+import { AccentColors, Theme } from '../../../@shared/model/app.types';
 import { SettingsFacade } from '../../data';
 import { SettingsPage } from './settings.page';
 
 describe('SettingsPage', () => {
-  const theme = signal<TTheme>('cyberpunk');
-  const customAccents = signal<Partial<Record<TTheme, IAccentColors>>>({});
+  const theme = signal<Theme>('cyberpunk');
+  const customAccents = signal<Partial<Record<Theme, AccentColors>>>({});
   const settings = {
     theme,
     customAccents,

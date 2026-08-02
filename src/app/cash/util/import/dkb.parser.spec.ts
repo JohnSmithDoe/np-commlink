@@ -10,7 +10,6 @@ const CSV = [
 describe('dkbParser', () => {
   it('reads the last-column amount and the filled counterparty (payer or payee)', () => {
     const { rows } = dkbParser.parse(CSV);
-    // the Vorgemerkt (pending) row is skipped -> 2 booked rows
     expect(rows).toHaveLength(2);
     expect(rows[0].amountCents).toBe(250_000);
     expect(rows[0].description).toBe(

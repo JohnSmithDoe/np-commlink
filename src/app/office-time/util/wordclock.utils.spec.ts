@@ -3,19 +3,19 @@ import {
   ActiveWord,
   computeFace,
   isWordActive,
-  TSettings,
+  WordclockSettings,
 } from './wordclock.utils';
 
 const at = (time: string) => dayjs(`2026-01-05T${time}:00`); // Mon, arbitrary day
 
-const base: TSettings = {
+const base: WordclockSettings = {
   showCorners: false,
   deZwanzigNach: false,
   deZwanzigVor: false,
   deDreiviertel: false,
 };
 
-const words = (config: TSettings | undefined, time: string): string[] =>
+const words = (config: WordclockSettings | undefined, time: string): string[] =>
   computeFace(at(time), config).activeWords.map((w) => w.word);
 
 describe('wordclock.utils', () => {
@@ -40,8 +40,6 @@ describe('wordclock.utils', () => {
       expect(words(base, '13:05')).toContain('EINS');
     });
 
-    // Every hour word has its own grid slot (three of them share letters with a
-    // minute word), so the whole dial is walked rather than sampled.
     it.each([
       ['00:00', 'ZWÖLF'],
       ['01:00', 'EIN'],
@@ -62,7 +60,6 @@ describe('wordclock.utils', () => {
 
   describe('computeFace — the five-minute steps', () => {
     it('rounds to the nearest five minutes', () => {
-      // 09:07 rounds down to 09:05 -> "fünf nach neun"
       expect(words(base, '09:07')).toEqual([
         'ES',
         'IST',
@@ -73,7 +70,6 @@ describe('wordclock.utils', () => {
     });
 
     it('rolls the hour forward from half past onward', () => {
-      // half past nine -> "halb zehn"
       expect(words(base, '09:30')).toEqual(['ES', 'IST', 'HALB', 'ZEHN']);
     });
 
@@ -94,8 +90,6 @@ describe('wordclock.utils', () => {
       ]);
     });
 
-    // The whole hour, step by step: which side of half past a step falls on is
-    // what decides whether the phrase names this hour or the next one.
     it.each([
       ['09:00', ['UHR', 'NEUN']],
       ['09:05', ['FÜNF', 'NACH', 'NEUN']],
@@ -113,8 +107,6 @@ describe('wordclock.utils', () => {
       expect(words(base, time)).toEqual(['ES', 'IST', ...phrase]);
     });
 
-    // Rounding up out of the hour is the one path where the spoken hour comes
-    // from the dial position rather than from the minute phrase.
     it('rounds :58 up into the next full hour', () => {
       expect(words(base, '09:58')).toEqual(['ES', 'IST', 'UHR', 'ZEHN']);
     });
@@ -156,14 +148,12 @@ describe('wordclock.utils', () => {
   describe('computeFace — corner minute dots', () => {
     it('lights corners cumulatively for minutes past the five-step', () => {
       const cfg = { ...base, showCorners: true };
-      // 09:03 -> 3 minutes past 09:00 -> three corners lit (bottom-left off)
       expect(computeFace(at('09:03'), cfg).corners).toEqual({
         topLeft: true,
         topRight: true,
         botRight: true,
         botLeft: false,
       });
-      // 09:04 -> all four
       expect(computeFace(at('09:04'), cfg).corners).toEqual({
         topLeft: true,
         topRight: true,

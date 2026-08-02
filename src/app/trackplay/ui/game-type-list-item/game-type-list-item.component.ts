@@ -15,14 +15,9 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, dice, trash } from 'ionicons/icons';
-import { IGameType } from '../../model/trackplay.types';
+import { GameType } from '../../model/trackplay.types';
 import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 
-/**
- * DUMB game-type row — a {@link BaseSwipeRow} whose delete side is gated by the
- * inherited `canDelete` (the built-in 'default' type is undeletable); tap the
- * body to select. Mirrors the legacy `game-type-list` renderer.
- */
 @Component({
   selector: 'app-trackplay-game-type-list-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,7 +34,7 @@ import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
   ],
 })
 export class TrackplayGameTypeListItemComponent extends BaseSwipeRow {
-  readonly gameType = input.required<IGameType>();
+  readonly gameType = input.required<GameType>();
 
   readonly selectType = output<void>();
 

@@ -14,6 +14,7 @@
 #   2. POST_NOTIFICATIONS permission          — Android 13+ local notifications
 #   3. mlkit barcode_ui install meta-data     — bundles the scanner UI module
 #   4. versionName / versionCode              — release identity, from package.json
+#   5. release signingConfig                  — reads NPC_* env vars, opt-in
 #
 set -euo pipefail
 
@@ -64,4 +65,64 @@ VERSION_CODE="$(node -p "
 perl -pi -e "s{versionName \"[^\"]*\"}{versionName \"$VERSION_NAME\"};" "$GRADLE"
 perl -pi -e "s{versionCode \\d+}{versionCode $VERSION_CODE};" "$GRADLE"
 
-echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit) and build.gradle ($VERSION_NAME / $VERSION_CODE)."
+# 5. release signing — appended once, and it contains NO key material.
+#
+#    The four values are read from the environment when Gradle configures, so
+#    the signing identity never lands in a file this script writes, in android/,
+#    or in a shell history. Consequences by design:
+#
+#      none of the four set  -> no signingConfig exists at all, and
+#                               `apk:release` yields app-release-unsigned.apk.
+#                               A fresh clone therefore builds with zero setup —
+#                               that is the FOSS contract: anyone can build it,
+#                               nobody but the owner can sign AS the owner.
+#      some set              -> a GradleException naming the missing variables,
+#                               rather than an obscure apksigner failure or —
+#                               worse — a silently unsigned "release".
+#
+#    Why the key stays out of the repo at all: it is the only thing Android
+#    compares to decide an APK may replace an installed one. A published key
+#    lets anyone ship a modified build that upgrades over the real install and
+#    inherits its data, indistinguishably. AGPL obliges publishing the source,
+#    never the identity — and it cannot be rotated, only abandoned.
+#    Replaced rather than skipped-if-present: the block is always last, so it is
+#    cut back to the marker and re-appended every run. An append-if-absent guard
+#    would make this script's own copy authoritative only on a freshly generated
+#    android/ — every edit here would silently miss the machine it was written on.
+perl -0pi -e 's{\n*// --- np-commlink release signing.*\z}{\n}s' "$GRADLE"
+cat >> "$GRADLE" <<'GRADLE_SIGNING'
+
+// --- np-commlink release signing (scripts/android-postsync.sh, patch 5) ---
+def npcSigningVars = ['NPC_KEYSTORE_PATH', 'NPC_KEYSTORE_PASSWORD', 'NPC_KEY_ALIAS', 'NPC_KEY_PASSWORD']
+def npcSigning = npcSigningVars.collectEntries { [it, System.getenv(it)?.trim()] }
+
+if (npcSigning.any { it.value }) {
+    def npcMissing = npcSigning.findAll { !it.value }.keySet()
+    if (npcMissing) {
+        throw new GradleException(
+            "np-commlink: release signing needs all of ${npcSigningVars}; unset: ${npcMissing.join(', ')}"
+        )
+    }
+
+    def npcStoreFile = file(npcSigning.NPC_KEYSTORE_PATH)
+    if (!npcStoreFile.isFile()) {
+        throw new GradleException("np-commlink: keystore not found at ${npcStoreFile} (NPC_KEYSTORE_PATH)")
+    }
+
+    android.signingConfigs.create('release') {
+        storeFile npcStoreFile
+        storePassword npcSigning.NPC_KEYSTORE_PASSWORD
+        keyAlias npcSigning.NPC_KEY_ALIAS
+        keyPassword npcSigning.NPC_KEY_PASSWORD
+        // v3 carries a proof-of-rotation lineage, so it is the ONLY thing that
+        // can ever make this key replaceable (SDK 28+; rotation still has to be
+        // signed by the old key, so it is no substitute for backing it up). AGP
+        // defaults it off at minSdk 24 and an APK published without it can never
+        // be rotated afterwards — hence on from the first release, not later.
+        enableV3Signing = true
+    }
+    android.buildTypes.release.signingConfig = android.signingConfigs.release
+}
+GRADLE_SIGNING
+
+echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit) and build.gradle ($VERSION_NAME / $VERSION_CODE + release signing hook)."

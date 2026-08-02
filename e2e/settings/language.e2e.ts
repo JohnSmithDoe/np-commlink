@@ -1,15 +1,28 @@
-import { expect, Page, test } from '@playwright/test';
-
-/**
- * Acceptance test for the language switch — the one thing about it that unit
- * tests structurally cannot show.
+/* ─── why ─────────────────────────────────────────────────────────
+ * Switching the language RESTARTS the app — money, score and date render
+ * through pure pipes that cache on input identity, and `LOCALE_ID` is a
+ * provider that cannot be re-resolved — so the one thing worth proving is
+ * that the choice survives a reload it triggers itself: the settings
+ * write must win the race against that reload, and the `localStorage`
+ * mirror `LOCALE_ID` reads at boot must already hold the new value. jsdom
+ * has neither a reload nor a real IndexedDB, so none of it is observable
+ * in a unit spec.
  *
- * Switching restarts the app (pure pipes cache their formatted output, and
- * `LOCALE_ID` is a provider), so the choice has to survive a reload it triggers
- * itself: the doc write must win the race against the reload, and the mirror
- * `LOCALE_ID` reads at boot must already hold the new value. In jsdom none of
- * that is observable — there is no reload and no real IndexedDB.
- */
+ * There is deliberately no `page.reload()` after the switch: the English
+ * heading is reachable ONLY through the restart the app performs itself.
+ * The explicit reload that follows is a second, colder read — off disk
+ * rather than out of the live store.
+ *
+ * German is the default, so a German heading is this file's "booted"
+ * signal.
+ *
+ * The options are located by id because the page carries two segments,
+ * theme and language, that `ion-segment-button` cannot tell apart. The
+ * label still says WHICH option — a language's own name is deliberately
+ * untranslated, so it is stable in either bundle.
+ * ───────────────────────────────────────────────────────────────── */
+
+import { expect, Page, test } from '@playwright/test';
 
 const settingsPage = (page: Page) => page.locator('app-page-settings');
 
@@ -19,14 +32,10 @@ const heading = (page: Page, text: string) =>
 async function openSettings(page: Page): Promise<void> {
   await page.goto('/#/settings');
   await page.reload();
-  // German is the default, so the German heading is the "booted" signal.
   await expect(heading(page, 'Darstellung')).toBeVisible({ timeout: 30_000 });
 }
 
 async function pickLanguage(page: Page, label: string): Promise<void> {
-  // The id, not `ion-segment-button`: this page carries two segments (theme and
-  // language) and only the label told them apart. The label stays as *which*
-  // option — a language's own name is deliberately untranslated.
   await settingsPage(page)
     .getByTestId('language-option')
     .filter({ hasText: label })
@@ -41,13 +50,10 @@ test.describe('language switch', () => {
 
     await pickLanguage(page, 'English');
 
-    // No explicit reload here: the app restarts itself, and the English heading
-    // is only reachable through that restart plus a persisted read.
     await expect(heading(page, 'Appearance')).toBeVisible({ timeout: 30_000 });
     await expect(heading(page, 'Language')).toBeVisible();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
-    // A cold read: the choice came off disk, not out of the live store.
     await page.reload();
     await expect(heading(page, 'Appearance')).toBeVisible({ timeout: 30_000 });
   });

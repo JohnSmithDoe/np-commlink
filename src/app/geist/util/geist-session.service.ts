@@ -1,26 +1,12 @@
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { LanguageModelService } from '../../@shared/util/theme/language-model.service';
 import { LanguageService } from '../../@shared/util/theme/language.service';
-import { IGeistPersona, TGeistLink } from '../model/geist.types';
+import { GeistPersona, GeistLink } from '../model/geist.types';
 import { linkForAvailability, openingLinkFor } from './link.utils';
 
-/**
- * The live link to Chrome's on-device model: the session, the two abort
- * controllers guarding it, and the three gauges the console reads.
- *
- * A service rather than more private fields on `GeistPage`, because this is the
- * only genuinely stateful thing GEIST has — and it is mutable, imperative state
- * with a destroy contract, which is a different kind of thing from the page's
- * transcript signals. The domain has no `data/` layer (the session lives in the
- * browser, not in our store), so it belongs beside its pure helpers here, the
- * same arrangement `LanguageModelService` already has in `@shared/util`.
- *
- * NOT `providedIn: 'root'`: the page provides it, so leaving the route destroys
- * the session instead of holding multi-GB weights open for the tab's lifetime.
- */
 @Injectable()
 export class GeistSessionService {
-  readonly link = signal<TGeistLink>('probing');
+  readonly link = signal<GeistLink>('probing');
   readonly primedPercent = signal(0);
   readonly contextPercent = signal(0);
 
@@ -34,15 +20,12 @@ export class GeistSessionService {
     inject(DestroyRef).onDestroy(() => this.destroy());
   }
 
-  /** Open, or opening — the two states a persona switch has to tear down. */
   get isEngaged(): boolean {
     return !!this.#session || !!this.#priming;
   }
 
-  async probe(persona: IGeistPersona): Promise<void> {
+  async probe(persona: GeistPersona): Promise<void> {
     const link = linkForAvailability(await this.#languageModel.probe());
-    // `reforging` is the state opening a session runs in — the weights are
-    // already local, so jack in and let the user land on a ready prompt.
     if (link === 'reforging') {
       await this.open(persona);
       return;
@@ -50,7 +33,7 @@ export class GeistSessionService {
     this.link.set(link);
   }
 
-  async open(persona: IGeistPersona): Promise<void> {
+  async open(persona: GeistPersona): Promise<void> {
     this.#close();
     this.primedPercent.set(0);
     this.link.set(openingLinkFor(this.#languageModel.availability()));
@@ -64,17 +47,10 @@ export class GeistSessionService {
         priming
       );
     } catch {
-      // An abandoned priming was aborted on purpose; only the current one
-      // failing is news the user needs.
       if (this.#isCurrentPriming(priming)) this.link.set('flatlined');
     }
   }
 
-  /**
-   * Stream one answer, handing each chunk to the caller. Throws what the model
-   * throws — the caller owns how a failed turn reads, since that is transcript
-   * vocabulary rather than link state.
-   */
   async stream(query: string, onChunk: (chunk: string) => void): Promise<void> {
     const session = this.#session;
     if (!session) return;
@@ -106,13 +82,6 @@ export class GeistSessionService {
     this.#close();
   }
 
-  /**
-   * Creating the first session downloads multi-GB weights and can run for
-   * minutes — long enough for the user to navigate away or switch persona. Both
-   * abandon this priming, and both abort it; a session that still resolves (the
-   * abort landed a tick too late) belongs to nobody and is destroyed rather than
-   * adopted, or it would stay open for the tab's lifetime.
-   */
   #adopt(session: LanguageModel, priming: AbortController): void {
     if (!this.#isCurrentPriming(priming)) {
       session.destroy();
@@ -128,11 +97,8 @@ export class GeistSessionService {
     return this.#priming === priming;
   }
 
-  // The register AND the language are baked in at create time, so a language
-  // switch would need a new session — which is moot here, because switching the
-  // language restarts the app.
   #options(
-    persona: IGeistPersona,
+    persona: GeistPersona,
     signal: AbortSignal
   ): LanguageModelCreateOptions {
     const language = this.#language();

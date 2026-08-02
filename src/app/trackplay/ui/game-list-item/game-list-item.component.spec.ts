@@ -5,9 +5,6 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { mockGame } from '../../testing/trackplay.test-data';
 import { TrackplayGameListItemComponent } from './game-list-item.component';
 
-// Smoke-level on purpose: the swipe mechanics belong to BaseSwipeRow and are
-// spec'd once in base-swipe-row.spec.ts. What is this row's own is that its
-// template compiles and binds to the inherited request outputs.
 const fakeIonList = () =>
   ({ closeSlidingItems: vi.fn().mockResolvedValue(undefined) }) as unknown as {
     closeSlidingItems: () => Promise<void>;

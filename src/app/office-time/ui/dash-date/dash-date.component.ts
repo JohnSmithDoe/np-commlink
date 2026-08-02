@@ -29,8 +29,6 @@ dayjs.extend(weekOfYear);
 
 const isPageVisible = () => document.visibilityState === 'visible';
 
-// `defer` so the initial visibility is read when the card subscribes, not when
-// this module happens to be loaded.
 const pageVisibility$ = defer(() =>
   fromEvent(document, 'visibilitychange').pipe(
     map(isPageVisible),
@@ -38,9 +36,6 @@ const pageVisibility$ = defer(() =>
   )
 );
 
-// One ticking source for the whole card: a clock that only ticks while its tab is
-// on screen, so a backgrounded card costs nothing and still shows the current
-// day the moment it comes back.
 const currentTime$ = pageVisibility$.pipe(
   switchMap((visible) => (visible ? interval(1000).pipe(startWith(0)) : EMPTY)),
   map(() => dayjs())
@@ -64,10 +59,6 @@ export class DashDateComponent {
 
   readonly #now = toSignal(currentTime$, { initialValue: dayjs() });
 
-  // A `computed` dedups by value, so keying the calendar fields on the day
-  // *string* recomputes them once at midnight rather than once a second — which
-  // is also what makes the date roll over at all: it used to be snapshotted at
-  // construction and stayed on yesterday for the rest of the session.
   readonly #day = computed(() => this.#now().format('YYYY-MM-DD'));
 
   readonly data = computed(() => {

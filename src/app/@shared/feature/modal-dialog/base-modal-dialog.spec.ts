@@ -9,43 +9,39 @@ import { provideIonicAngular } from '@ionic/angular/standalone';
 import { requireText } from '../../util/forms/form-rules';
 import { BaseModalDialog } from './base-modal-dialog';
 
-interface ITestEntity {
+interface TestEntity {
   id: string;
   name: string;
 }
-interface ITestForm {
+interface TestForm {
   name: string;
 }
 
-// A minimal concrete modal, so the base's behaviour is asserted ONCE here rather
-// than in all seven presented dialogs. `entities` stands in for the slice the
-// real subclasses resolve `existing` out of.
-class TestModal extends BaseModalDialog<ITestEntity, ITestForm> {
-  readonly entities = signal<ITestEntity[]>([]);
+class TestModal extends BaseModalDialog<TestEntity, TestForm> {
+  readonly entities = signal<TestEntity[]>([]);
 
-  protected readonly existing = computed<ITestEntity | undefined>(() =>
+  protected readonly existing = computed<TestEntity | undefined>(() =>
     this.entities().find((entity) => entity.id === this.editId())
   );
 
-  readonly persisted: ITestForm[] = [];
+  readonly persisted: TestForm[] = [];
 
-  protected blank(): ITestForm {
+  protected blank(): TestForm {
     return { name: '' };
   }
 
-  protected toForm(entity: ITestEntity): ITestForm {
+  protected toForm(entity: TestEntity): TestForm {
     return { name: entity.name };
   }
 
-  protected persist(draft: ITestForm): void {
+  protected persist(draft: TestForm): void {
     this.persisted.push(draft);
   }
 
-  protected applyRules(path: SchemaPathTree<ITestForm>): void {
+  protected applyRules(path: SchemaPathTree<TestForm>): void {
     requireText(path.name);
   }
 
-  // The real subclasses expose this as a domain-named `componentProps` setter.
   edit(id: string | undefined): void {
     this.editId.set(id);
   }
@@ -56,7 +52,6 @@ describe('BaseModalDialog', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // Ionic only for `ModalController`, which the base injects to dismiss.
       providers: [provideZonelessChangeDetection(), provideIonicAngular()],
     });
     modal = TestBed.runInInjectionContext(() => new TestModal());
@@ -88,10 +83,6 @@ describe('BaseModalDialog', () => {
     expect(modal.draft()).toEqual({ name: 'Miete' });
   });
 
-  // The regression: `existing` is a live computed over the slice, so a reducer
-  // write that rewrote the edited row used to reseed the draft and throw the
-  // user's edits away. The cash category cascades do exactly that to every row
-  // carrying the category, and both cash modals host the picker.
   it('keeps an in-progress draft when the store rewrites the same entity', () => {
     modal.edit('a');
     modal.patch({ name: 'half typed' });
@@ -105,9 +96,6 @@ describe('BaseModalDialog', () => {
     expect(modal.draft()).toEqual({ name: 'half typed' });
   });
 
-  // The rule modal's version of the same bug: deleting a category deletes every
-  // rule using it, so `existing()` went undefined and the dialog reseeded to
-  // `blank()` — turning a half-edited rule into a create form mid-edit.
   it('keeps the draft and does not fall back to create mode when the entity is deleted', () => {
     modal.edit('a');
     modal.patch({ name: 'half typed' });

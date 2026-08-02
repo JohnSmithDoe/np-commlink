@@ -1,3 +1,18 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * R2 — docs/ionic-a11y-practices.md
+ *
+ * The name goes on the interactive parent (R1), and these three are the
+ * ones Ionic does not name for us: `ion-item-option` renders a bare
+ * `<button>` (item-option.js) with no default name at all, and
+ * `ion-fab-button` is called out by Ionic's own docs because FABs are
+ * usually icon-only.
+ *
+ * Descendant tests on both halves are deliberate: text inside a nested
+ * `ion-label` names the control just as well, while an `aria-label` on the
+ * inner `ion-icon` does not — that names the icon — so this case still
+ * reports.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import {
   containsElement,
@@ -6,17 +21,6 @@ import {
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
-
-// R2 — docs/ionic-a11y-practices.md
-//
-// The name goes on the interactive parent (R1), and these three elements are the
-// ones Ionic does not name for us: `ion-item-option` renders a bare <button>
-// (item-option.js) with no default name at all, and `ion-fab-button` is
-// explicitly called out by Ionic's own docs because FABs are usually icon-only.
-//
-// `:has()`-style descendant tests are deliberate on both halves: text inside a
-// nested `ion-label` names the control just as well, while an `aria-label` on the
-// inner `ion-icon` does not — it names the icon — so that case still reports.
 
 const DEFAULT_ELEMENTS = ['ion-button', 'ion-fab-button', 'ion-item-option'];
 

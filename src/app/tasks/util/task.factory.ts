@@ -1,18 +1,13 @@
 import { createBaseItem } from '../../@shared/util/app.factory';
-import { ITaskItem } from '../model/task.types';
+import { TaskItem } from '../model/task.types';
 
-import { TCategoryId } from '../../@shared/model/category.types';
+import { CategoryId } from '../../@shared/model/category.types';
 
-/**
- * Production factory for the `tasks` item type. Moved out of
- * `@shared/util/item.factory` in the tasks phase of the god-file split
- * (DDD review #1); reuses the shared-kernel `createBaseItem` seed.
- */
 export function createTaskItem(
   name: string,
-  categoryIds?: TCategoryId | TCategoryId[],
+  categoryIds?: CategoryId | CategoryId[],
   prio?: number
-): ITaskItem {
+): TaskItem {
   const base = createBaseItem(name, categoryIds);
   return { ...base, prio };
 }

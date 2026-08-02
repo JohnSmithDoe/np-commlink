@@ -71,9 +71,6 @@ describe('money util', () => {
     });
   });
 
-  // The two conventions are mutually ambiguous — `1.234` is 1234 € in German and
-  // 1.23 € in English — which is why the language is a parameter rather than a
-  // guess, and why a stored threshold is always read as German.
   describe('the language flip', () => {
     it('reads the English convention when asked to', () => {
       expect(eurToCents('12.34', 'en')).toBe(1234);
@@ -81,11 +78,6 @@ describe('money util', () => {
       expect(eurToCents('1,234', 'en')).toBe(123_400);
     });
 
-    // The dangerous half, and the reason `language` is a required decision rather
-    // than a default: neither string is *invalid* in the other convention, so
-    // nothing can be rejected. `12,34` read as English is 1234 € — a hundredfold
-    // error, silently. This is what makes a canonical storage language for
-    // persisted thresholds mandatory rather than tidy.
     it('reads the other language’s decimal as ITS OWN grouping, not as an error', () => {
       expect(eurToCents('12,34', 'en')).toBe(123_400);
       expect(eurToCents('12.34', 'de')).toBe(123_400);
@@ -97,8 +89,6 @@ describe('money util', () => {
       expect(eurToCents(centsToInput(-123_456, 'de'), 'de')).toBe(-123_456);
     });
 
-    // A `.` is a regex metacharacter: an unescaped decimal separator would make
-    // the "is this a plain amount" test match any character at all.
     it('does not let junk through as an English decimal', () => {
       expect(eurToCents('1x23', 'en')).toBeNull();
       expect(eurToCents('12.3.4', 'en')).toBeNull();

@@ -1,21 +1,5 @@
 import { Routes } from '@angular/router';
 
-/**
- * The composition root's URL table: each path names the domain that owns it and
- * nothing else. A domain's state, hydration resolvers, facade bindings and page
- * components are named inside its own `routes/<domain>.routes.ts`, which carries
- * `domain:<domain>` + `type:routes` — so Sheriff seals a domain's routing to that
- * domain, where the shell (tagged only `type:shell`) could reach anything.
- *
- * These `loadChildren` edges are also the only import from the shell into a
- * domain, which is what keeps eleven data layers out of the initial chunk: the
- * eager kernel (`provideAppKernel()`) is the sole eager composition site.
- *
- * Every path is a domain prefix, so there is no cross-domain ordering left to
- * arbitrate here — a domain orders its own pages inside its manifest. `**` stays
- * last. The two paths that don't read as their folder are deliberate: `/soykaf`
- * and `/data` are product surfaces (deck programs), not structure.
- */
 export const routes: Routes = [
   {
     path: 'commlink',
@@ -66,15 +50,15 @@ export const routes: Routes = [
   {
     path: 'soykaf',
     loadChildren: () =>
-      import('./groceries/routes/groceries.routes').then(
+      import('./household/routes/household.routes').then(
         (m) => m.recipesRoutes
       ),
   },
   {
-    path: 'groceries',
+    path: 'household',
     loadChildren: () =>
-      import('./groceries/routes/groceries.routes').then(
-        (m) => m.groceriesRoutes
+      import('./household/routes/household.routes').then(
+        (m) => m.householdRoutes
       ),
   },
   {

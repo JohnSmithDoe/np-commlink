@@ -3,17 +3,15 @@ import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
-  TLanguageModelAvailability,
+  LanguageModelAvailability,
 } from '../../../@shared/util/theme/language-model.service';
 import { ThemeService } from '../../../@shared/util/theme/theme.service';
-import { TTheme } from '../../../@shared/model/app.types';
+import { Theme } from '../../../@shared/model/app.types';
 import { DashboardFacade, DeckFacade } from '../../data';
 import { DECK_CATALOG } from '../../model/deck.catalog';
 import { resolveLabels } from '../../util/deck.utils';
 import { CommlinkPage } from './commlink.page';
 
-// The real catalog, resolved as an unconfigured deck would resolve it — the
-// page's own logic is under test, not the facade's projections.
 const catalogPrograms = DECK_CATALOG.filter((entry) => entry.onDeck).map(
   resolveLabels('cyberpunk')
 );
@@ -22,8 +20,8 @@ const programOf = (page: CommlinkPage, id: string) =>
   page.programs().find((program) => program.id === id)!;
 
 describe('CommlinkPage', () => {
-  const availability = signal<TLanguageModelAvailability>('probing');
-  const theme = signal<TTheme>('cyberpunk');
+  const availability = signal<LanguageModelAvailability>('probing');
+  const theme = signal<Theme>('cyberpunk');
   const bySource = signal<
     Record<
       string,
@@ -64,14 +62,10 @@ describe('CommlinkPage', () => {
 
   describe('status', () => {
     it('reports a source-less program’s declared status', () => {
-      // SIGIL, SYSOP and GEIST have no data domain, so the literal is all there
-      // is to go on.
       const page = setup();
       expect(page.status(programOf(page, 'barcode'))).toBe('online');
     });
 
-    // The tiles used to hardcode `status: 'online'`, so a cold launch where
-    // nothing had reported still read "13/13 PROGRAMS LOADED".
     it('reports standby for a telemetry-backed program whose source is silent', () => {
       const page = setup();
       expect(page.status(programOf(page, 'tracking'))).toBe('standby');
@@ -91,8 +85,6 @@ describe('CommlinkPage', () => {
       expect(page.onlineCount()).toBe(3);
     });
 
-    // GEIST is the only capability-gated tile: Chrome's on-device model exists
-    // on desktop only, so the deck must never advertise it as running on the APK.
     it.each([
       ['available', 'online'],
       ['downloadable', 'standby'],
@@ -154,8 +146,6 @@ describe('CommlinkPage', () => {
   });
 
   describe('the HUD chrome', () => {
-    // The deck's own copy is voiced, so it is keyed by theme exactly as the
-    // codenames are — OK Boomer must not read "Rauschen" at a plain office desk.
     it('follows the active theme', () => {
       const page = setup();
       expect(page.chrome()['noise']).toBe('deck.cyberpunk.chrome.noise');
@@ -180,9 +170,6 @@ describe('CommlinkPage', () => {
   describe('the deck clock', () => {
     afterEach(() => vi.restoreAllMocks());
 
-    // Ionic keeps a visited route mounted for the whole session, so a 1 Hz
-    // interval left running would mark this subtree dirty from behind whatever
-    // page the user navigated to.
     it('runs an interval only while the deck is the visible page', () => {
       const page = setup();
       const start = vi.spyOn(globalThis, 'setInterval');
@@ -191,8 +178,6 @@ describe('CommlinkPage', () => {
       page.ionViewWillEnter();
       expect(start).toHaveBeenCalledTimes(1);
 
-      // Ionic re-enters a page it never destroyed; a second interval would then
-      // tick alongside the first for the rest of the session.
       page.ionViewWillEnter();
       expect(start).toHaveBeenCalledTimes(1);
 
@@ -236,7 +221,6 @@ describe('CommlinkPage', () => {
 
       expect(page.noise()).toBe(3);
       expect(page.nuyenLabel()).toBe('¥ 42 nyen');
-      // Half the year's office-day target reads as 3.0 of a 0–6 resonance scale.
       expect(page.resonanceRating()).toBe('3.0');
     });
 

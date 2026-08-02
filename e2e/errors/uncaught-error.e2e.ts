@@ -1,25 +1,26 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * What this proves is the CHAIN, which no unit spec can reach:
+ * `window.onerror` → `provideBrowserGlobalErrorListeners()` →
+ * `GlobalErrorHandler` → `AlertController`. Before it existed the throw
+ * went nowhere at all, which on the APK is a silent dead screen.
+ *
+ * The throw is raised from a `setTimeout` on purpose. That is exactly the
+ * half Angular's own `ErrorHandler` cannot see, so removing
+ * `provideBrowserGlobalErrorListeners()` reddens this spec where a throw
+ * from inside Angular would still be caught.
+ *
+ * Waiting for the deck first is what separates "the app reported an
+ * error" from "the app failed to boot".
+ *
+ * The suite's `:not(.overlay-hidden)` narrowing applies to `ion-alert`
+ * too, and the title is what picks THIS alert out of any other the app
+ * might present.
+ *
+ * Its own file, because the alert's only action reloads the app.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Page, test } from '@playwright/test';
 
-/**
- * Acceptance test for the global error handler. The value is the *chain*, which
- * no unit spec can reach: a genuinely uncaught error thrown outside Angular has
- * to travel `window.onerror` → `provideBrowserGlobalErrorListeners()` →
- * `GlobalErrorHandler` → `AlertController`. Before this existed the throw went
- * nowhere at all, which on the APK is a silent dead screen.
- *
- * The throw is deliberately raised from a `setTimeout`, not from Angular code:
- * that is the half Angular's own `ErrorHandler` cannot see on its own, so a
- * missing `provideBrowserGlobalErrorListeners()` would make this spec red.
- *
- * Lives in its own file because the alert's only action reloads the app.
- */
-
-/**
- * The presented alert. Ionic teleports overlays to the app root and leaves an
- * `overlay-hidden` twin behind, so `.show-modal`-style narrowing applies here
- * too — an `ion-alert` matched by element name alone can match a hidden one
- * (§10). Keying off the title is what picks *this* alert.
- */
 function alert(page: Page) {
   return page
     .locator('ion-alert:not(.overlay-hidden)')
@@ -31,8 +32,6 @@ test.describe('uncaught errors', () => {
     page,
   }) => {
     await page.goto('/#/commlink');
-    // The deck is up before the throw, so the alert cannot be mistaken for a
-    // boot failure.
     await expect(page.locator('app-page-commlink')).toBeVisible();
 
     await page.evaluate(() =>
@@ -42,7 +41,6 @@ test.describe('uncaught errors', () => {
     );
 
     await expect(alert(page)).toBeVisible();
-    // The reason is carried into the message — the "report" half of the contract.
     await expect(alert(page)).toContainText('boom from outside angular');
     await expect(alert(page).locator('button')).toHaveCount(1);
     await expect(alert(page).locator('button')).toHaveText(/Neu laden/);

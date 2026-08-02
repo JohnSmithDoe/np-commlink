@@ -45,9 +45,6 @@ describe('CashAccountEditModalComponent', () => {
     expect(component.canSave()).toBe(true);
   });
 
-  // A negative balance is a credit card, not an error — the only thing that can
-  // be wrong with the box is text that is not an amount, and `app-money-input`
-  // reports that itself (covered in `e2e/cash/amount-input.e2e.ts`).
   it('accepts a negative opening balance', () => {
     setup();
 
@@ -57,8 +54,6 @@ describe('CashAccountEditModalComponent', () => {
     expect(component.canSave()).toBe(true);
   });
 
-  // Same trap as the transaction dialog: a cleared date used to reach
-  // `openingDateISO` as the string 'Invalid Date'.
   it('blocks saving on a cleared opening date', () => {
     setup();
 
@@ -71,8 +66,6 @@ describe('CashAccountEditModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // The componentProp writes into a signal, so the draft seeds reactively — no
-  // ngOnInit to call (and none to forget).
   it('seeds the draft from the account and updates it, mapping cents back out', () => {
     setup(
       mockCashState({

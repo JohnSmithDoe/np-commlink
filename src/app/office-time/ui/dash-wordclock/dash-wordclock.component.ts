@@ -6,7 +6,7 @@ import {
   IonCardTitle,
 } from '@ionic/angular/standalone';
 import { WordclockComponent } from '../wordclock/wordclock.component';
-import { TSettings } from '../../util/wordclock.utils';
+import { WordclockSettings } from '../../util/wordclock.utils';
 
 @Component({
   selector: 'app-dash-wordclock',
@@ -24,8 +24,7 @@ import { TSettings } from '../../util/wordclock.utils';
 export class DashWordclockComponent {
   readonly title = input<string | undefined>();
 
-  // Minutes 1–4 past the nearest 5 are shown as dots in the four corners.
-  readonly wordclockConfig: TSettings = {
+  readonly wordclockConfig: WordclockSettings = {
     showCorners: true,
     deZwanzigNach: false,
     deZwanzigVor: false,

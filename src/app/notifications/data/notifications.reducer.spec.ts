@@ -5,11 +5,13 @@ import {
   notificationsReducer,
 } from './notifications.reducer';
 import {
-  INotification,
-  TProjectedNotification,
+  InboxNotification,
+  ProjectedNotification,
 } from '../../@shared/model/notifications.types';
 
-const notification = (over: Partial<INotification> = {}): INotification => ({
+const notification = (
+  over: Partial<InboxNotification> = {}
+): InboxNotification => ({
   id: '1',
   name: 'Notification',
   createdAt: '2026-06-01T08:00:00.000Z',
@@ -21,16 +23,14 @@ const notification = (over: Partial<INotification> = {}): INotification => ({
   ...over,
 });
 
-const withItems = (items: INotification[]) => ({
+const withItems = (items: InboxNotification[]) => ({
   ...initialNotificationsState,
   items,
 });
 
-// A projected row carries content and its variant — the inbox owns the owner and
-// both timestamps.
 const projected = (
-  over: Partial<TProjectedNotification> = {}
-): TProjectedNotification => ({
+  over: Partial<ProjectedNotification> = {}
+): ProjectedNotification => ({
   id: '1',
   name: 'Notification',
   body: 'body',
@@ -95,9 +95,6 @@ describe('notificationsReducer', () => {
       expect(next.items.map((n) => n.id)).toEqual(['debug-1', 'b']);
     });
 
-    // Re-projecting an unchanged row must not reorder the inbox: the list is
-    // sorted by updatedAt, so bumping it would drag a producer's whole cascade to
-    // the top on every unrelated write.
     it('keeps updatedAt and createdAt while the variant is unchanged', () => {
       const state = withItems([
         notification({
@@ -157,9 +154,6 @@ describe('notificationsReducer', () => {
       expect(next.items[0].updatedAt).toBe('NOW');
     });
 
-    // Dismissal is the reader's act, not the producer's. Tracking re-projects
-    // its complete set on every mutation, so a producer-owned `status` meant
-    // "Erledigt" was undone by the next unrelated toggle.
     it('keeps a dismissed row done when the same variant is re-projected', () => {
       const state = withItems([
         notification({
@@ -198,8 +192,6 @@ describe('notificationsReducer', () => {
       expect(next.items[0].status).toBe('open');
     });
 
-    // A row persisted before owners existed carries no origin, so the owner sweep
-    // cannot see it — projecting its id has to replace it rather than duplicate it.
     it('replaces a same-id row that carries no origin', () => {
       const state = withItems([notification({ id: 'a', origin: undefined })]);
 
@@ -219,10 +211,6 @@ describe('notificationsReducer', () => {
     expect(done.items[0].status).toBe('done');
   });
 
-  // The three time-stamping events carry the moment in the payload, so the
-  // reducer is a function of (state, action) alone: the same action replays to
-  // the same state, and an assertion can name the value instead of settling for
-  // "not the old one".
   it('stamps the time the action carries, not the time it runs', () => {
     const at = '2026-08-01T12:00:00.000Z';
     const state = withItems([notification({ id: 'a', status: 'open' })]);

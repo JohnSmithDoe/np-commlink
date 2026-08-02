@@ -28,11 +28,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { addOutline, closeOutline } from 'ionicons/icons';
 import {
-  ICashRule,
+  CashRule,
+  FilterField,
+  FilterOperation,
   OP_LABEL_KEYS,
-  TFilterField,
-  TFilterOp,
-  TRuleForm,
+  RuleForm,
 } from '../../../model/rule.types';
 import { uuidv4 } from '../../../../@shared/util/app.utils';
 import { CashCategoryPickerComponent } from '../../../ui/cash-category-picker/cash-category-picker.component';
@@ -48,16 +48,8 @@ import {
   UNPARSEABLE_AMOUNT,
 } from '../../../util/rule-form.utils';
 import { LanguageService } from '../../../../@shared/util/theme/language.service';
-import {
-  ICategory,
-  TCategoryId,
-} from '../../../../@shared/model/category.types';
+import { Category, CategoryId } from '../../../../@shared/model/category.types';
 
-/**
- * Create/edit an email-style categorization rule (via `ModalController`). The
- * condition builder mirrors the model: each row is field · op (op set depends on
- * field) · value · (description-only) case-sensitivity. `match` chooses AND vs OR.
- */
 @Component({
   selector: 'app-cash-rule-edit-modal',
   templateUrl: './rule-edit-modal.component.html',
@@ -87,30 +79,28 @@ import {
   ],
 })
 export class CashRuleEditModalComponent extends BaseModalDialog<
-  ICashRule,
-  TRuleForm
+  CashRule,
+  RuleForm
 > {
   readonly #facade = inject(CashFacade);
   readonly #rules = this.#facade.rules;
   readonly categories = this.#facade.categories;
 
-  /** Set imperatively via `componentProps`; undefined = create mode. */
   set ruleId(id: string | undefined) {
     this.editId.set(id);
   }
 
-  protected readonly existing = computed<ICashRule | undefined>(() => {
+  protected readonly existing = computed<CashRule | undefined>(() => {
     const id = this.editId();
     return id ? this.#rules().find((rule) => rule.id === id) : undefined;
   });
 
   readonly #language = inject(LanguageService).language;
 
-  protected applyRules(path: SchemaPathTree<TRuleForm>): void {
+  protected applyRules(path: SchemaPathTree<RuleForm>): void {
     ruleRulesFor(() => this.#language())(path);
   }
 
-  /** Per condition row, so the note sits under the row that earned it. */
   readonly amountInvalidRows = computed(() =>
     [...this.form.conditions].map((condition) =>
       condition
@@ -125,7 +115,7 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
     addIcons({ addOutline, closeOutline });
   }
 
-  protected blank(): TRuleForm {
+  protected blank(): RuleForm {
     return {
       name: '',
       match: 'all',
@@ -134,7 +124,7 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
     };
   }
 
-  protected toForm(rule: ICashRule): TRuleForm {
+  protected toForm(rule: CashRule): RuleForm {
     return {
       name: rule.name ?? '',
       match: rule.match,
@@ -145,7 +135,7 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
     };
   }
 
-  protected persist(draft: TRuleForm, existing: ICashRule | undefined): void {
+  protected persist(draft: RuleForm, existing: CashRule | undefined): void {
     const fields = {
       name: draft.name.trim() || undefined,
       match: draft.match,
@@ -159,9 +149,6 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
     } else {
       this.#facade.addRule({
         id: uuidv4(),
-        // Past the highest, not the count: after any delete the count collides
-        // with an order still in use, and two rules claiming one position leave
-        // the tie to `toSorted`'s stability rather than to the user's arrangement.
         order: Math.max(-1, ...this.#rules().map((rule) => rule.order)) + 1,
         ...fields,
       });
@@ -170,20 +157,17 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
 
   readonly opLabelKeys = OP_LABEL_KEYS;
 
-  // Exposed for the template, not re-implemented: a method wrapping the import
-  // of the same name would shadow it in every reader's head.
-  readonly opsFor: (field: TFilterField) => readonly TFilterOp[] = opsFor;
+  readonly opsFor: (field: FilterField) => readonly FilterOperation[] = opsFor;
 
-  // Category CRUD forwarded to the facade; the picker owns selection state.
-  onAddCategory(category: ICategory): void {
+  onAddCategory(category: Category): void {
     this.#facade.addCategory(category);
   }
 
-  onDeleteCategory(id: TCategoryId): void {
+  onDeleteCategory(id: CategoryId): void {
     this.#facade.removeCategory(id);
   }
 
-  onRenameCategory({ id, to }: { id: TCategoryId; to: string }): void {
+  onRenameCategory({ id, to }: { id: CategoryId; to: string }): void {
     this.#facade.updateCategory(id, to);
   }
 
@@ -199,12 +183,7 @@ export class CashRuleEditModalComponent extends BaseModalDialog<
     });
   }
 
-  /**
-   * The field select drives two fields: switching to `amount` must reset the op
-   * to a numeric one, or a string op would stay on a numeric field and could
-   * never match. That write is why this one control stays off `[formField]`.
-   */
-  onField(index: number, field: TFilterField): void {
+  onField(index: number, field: FilterField): void {
     this.patch({
       conditions: this.draft().conditions.map((condition, at) =>
         at === index

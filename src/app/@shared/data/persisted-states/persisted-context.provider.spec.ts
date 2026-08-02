@@ -13,16 +13,16 @@ import { PersistedReadRegistry } from '../../util/persistence/persisted-read-reg
 import {
   mergeContexts,
   providePersistedContext,
-  TContextBundle,
+  ContextBundle,
 } from './persisted-context.provider';
 
-type TProbeState = { items: string[] };
+type ProbeState = { items: string[] };
 
 const ProbeActions = createActionGroup({
   source: 'Probe',
   events: {
     load: emptyProps(),
-    loaded: (probe: TProbeState | null) => ({ probe }),
+    loaded: (probe: ProbeState | null) => ({ probe }),
     addItem: (name: string) => ({ name }),
   },
 });
@@ -31,17 +31,15 @@ const SiblingActions = createActionGroup({
   source: 'Sibling',
   events: {
     load: emptyProps(),
-    loaded: (sibling: TProbeState | null) => ({ sibling }),
+    loaded: (sibling: ProbeState | null) => ({ sibling }),
   },
 });
 
-const probeReducer = createReducer<TProbeState>({ items: [] });
-const selectProbe = createFeatureSelector<TProbeState>('probe');
-const selectSibling = createFeatureSelector<TProbeState>('sibling');
+const probeReducer = createReducer<ProbeState>({ items: [] });
+const selectProbe = createFeatureSelector<ProbeState>('probe');
+const selectSibling = createFeatureSelector<ProbeState>('sibling');
 
-// The bundle exposes its resolver as an opaque `ResolveFn`, so a spec runs it the
-// way the router would: inside an injection context.
-const runResolver = (bundle: TContextBundle): Promise<unknown> => {
+const runResolver = (bundle: ContextBundle): Promise<unknown> => {
   const resolver = Object.values(bundle.resolve)[0] as () => unknown;
   return Promise.resolve(TestBed.runInInjectionContext(() => resolver()));
 };
@@ -69,10 +67,7 @@ describe('providePersistedContext', () => {
     save: ReturnType<typeof vi.fn>;
   };
 
-  // The bundle's providers are opaque, so what it registered is only observable
-  // through a store that has them: a live slice under `key` and, when the
-  // descriptor declares one, a save effect that writes that key.
-  const storeWith = (bundle: TContextBundle): Store => {
+  const storeWith = (bundle: ContextBundle): Store => {
     database = {
       load: vi.fn().mockResolvedValue(null),
       save: vi.fn().mockResolvedValue(undefined),
@@ -91,11 +86,6 @@ describe('providePersistedContext', () => {
     expect(Object.keys(probeContext().resolve)).toEqual(['probe']);
   });
 
-  // Route injectors and their state are never torn down, and the save effect is
-  // the doc's only writer, so a slice that hydrated once is already current. The
-  // resolver must therefore read on the FIRST entry and skip on every re-entry —
-  // otherwise leaving a subtree and coming back pays a blocking read of the whole
-  // doc and swaps the slice object, recomputing every selector under it.
   describe('the route resolver', () => {
     it('reads on first entry and skips once the key has hydrated', async () => {
       const bundle = probeContext();
@@ -108,8 +98,6 @@ describe('providePersistedContext', () => {
       expect(database.load).toHaveBeenCalledTimes(1);
     });
 
-    // A rejected read never records the key, so the retry is what stops a context
-    // whose first load failed from sitting on initialState for the whole session.
     it('retries when the first read rejected', async () => {
       const bundle = probeContext();
       storeWith(bundle);

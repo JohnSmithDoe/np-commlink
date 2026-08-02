@@ -18,15 +18,9 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { create, playCircle, trash } from 'ionicons/icons';
-import { IGame } from '../../model/trackplay.types';
+import { Game } from '../../model/trackplay.types';
 import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
 
-/**
- * DUMB game row for the games list. A {@link BaseSwipeRow} whose body shows the
- * game's name, type and timestamps; tap it to open. Mirrors the legacy
- * npTrackplay `game-list` renderer in the modern, shadowrun-styled idiom. Holds
- * no store — inputs in, outputs out.
- */
 @Component({
   selector: 'app-trackplay-game-list-item',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,13 +39,11 @@ import { BaseSwipeRow } from '../swipe-row/base-swipe-row';
   ],
 })
 export class TrackplayGameListItemComponent extends BaseSwipeRow {
-  readonly game = input.required<IGame>();
+  readonly game = input.required<Game>();
   readonly typeName = input('');
 
   readonly selectGame = output<void>();
 
-  // A game with no players cannot be opened — the rule belongs to the row that
-  // owns the affordance, not to each of the three lists that render it.
   protected readonly disabled = computed(
     () => this.game().players.length === 0
   );

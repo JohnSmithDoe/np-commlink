@@ -31,15 +31,20 @@
  * (`sheriff.config.ts` lets `*.spec.ts` reach any tag). A spec in a DIFFERENT
  * directory reaching for an internal is reported: the remedy is to move the
  * assertion beside its subject, not to widen the export. Four of those were
- * real, including a `groceries/data` spec unit-testing a `@shared/util` internal.
+ * real, including a `household/data` spec unit-testing a `@shared/util` internal.
  *
  * What it deliberately does not decide: whether an export with several real
  * readers is at the right *altitude* — a `@shared/util` symbol two domains
  * import might still belong in one of them. Sheriff answers the legality of the
  * edge, not its wisdom, and neither does this.
+ *
+ * One trap in the walk below: `ts.forEachChild` reads a truthy callback return
+ * as "stop", so `moduleSpecifiersOf` must be invoked for its side effect and
+ * never handed straight to it — returning the accumulator ends the descent at
+ * each node's first child, which silently drops 798 exports to 181.
  */
 import { existsSync, globSync, readFileSync } from 'node:fs';
-import path from 'node:path';
+import { join, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
 const ROOT = process.cwd();
@@ -55,7 +60,7 @@ const files = [
   ...globSync('src/**/*.ts', { cwd: ROOT }),
   ...globSync('e2e/**/*.ts', { cwd: ROOT }),
 ]
-  .map((file) => path.join(ROOT, file))
+  .map((file) => join(ROOT, file))
   .filter((file) => existsSync(file));
 
 /**
@@ -70,10 +75,10 @@ const EXEMPT_MODULES = new Map([
 ]);
 
 const isSpec = (file) => file.endsWith('.spec.ts');
-const isE2e = (file) => path.relative(ROOT, file).startsWith('e2e' + path.sep);
-const isTestKit = (file) => file.includes(`${path.sep}testing${path.sep}`);
+const isE2e = (file) => relative(ROOT, file).startsWith('e2e' + sep);
+const isTestKit = (file) => file.includes(`${sep}testing${sep}`);
 const siblingSpecOf = (file) => file.replace(/\.ts$/, '.spec.ts');
-const rel = (file) => path.relative(ROOT, file);
+const rel = (file) => relative(ROOT, file);
 
 // `strict` is off and `types` empty: nothing here reads a diagnostic, only the
 // binder's symbol resolution, and a full type-check would cost seconds for an
@@ -151,6 +156,26 @@ function exportedDeclarations(source) {
   return found;
 }
 
+const moduleSpecifiersOf = (node, into = []) => {
+  if (
+    (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+    node.moduleSpecifier &&
+    ts.isStringLiteral(node.moduleSpecifier)
+  )
+    into.push(node.moduleSpecifier.text);
+  if (
+    ts.isCallExpression(node) &&
+    node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+    node.arguments[0] &&
+    ts.isStringLiteral(node.arguments[0])
+  )
+    into.push(node.arguments[0].text);
+  ts.forEachChild(node, (child) => {
+    moduleSpecifiersOf(child, into);
+  });
+  return into;
+};
+
 /**
  * Who imports whom, specs excluded as importers — which is what separates "dead"
  * from "only its own spec keeps it alive". Dynamic `import()` counts: it is the
@@ -163,30 +188,11 @@ for (const file of files) {
   const source = program.getSourceFile(file);
   if (!source) continue;
 
-  const specifiers = [];
-  const collect = (node) => {
-    if (
-      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
-      node.moduleSpecifier &&
-      ts.isStringLiteral(node.moduleSpecifier)
-    )
-      specifiers.push(node.moduleSpecifier.text);
-    if (
-      ts.isCallExpression(node) &&
-      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
-      node.arguments[0] &&
-      ts.isStringLiteral(node.arguments[0])
-    )
-      specifiers.push(node.arguments[0].text);
-    ts.forEachChild(node, collect);
-  };
-  collect(source);
-
-  for (const specifier of specifiers) {
+  for (const specifier of moduleSpecifiersOf(source)) {
     const resolved = ts.resolveModuleName(specifier, file, options, ts.sys)
       .resolvedModule?.resolvedFileName;
     if (resolved && !resolved.includes('node_modules'))
-      importedByProduction.add(path.resolve(resolved));
+      importedByProduction.add(resolve(resolved));
   }
 }
 
@@ -273,7 +279,7 @@ for (const file of files) {
     findings.push([
       'spec-reaches-across',
       where,
-      `only specs read it, and ${strays.map(rel).join(', ')} is not its sibling — move the assertion beside its subject`,
+      `only specs read it, and ${strays.map((stray) => rel(stray)).join(', ')} is not its sibling — move the assertion beside its subject`,
     ]);
   }
 }
@@ -282,7 +288,7 @@ for (const file of files) {
 // config — the same direction `verify:testids` checks for a declared id no spec
 // references.
 for (const [file, reason] of EXEMPT_MODULES) {
-  const absolute = path.join(ROOT, file);
+  const absolute = join(ROOT, file);
   if (!existsSync(absolute))
     findings.push([
       'stale exemption',

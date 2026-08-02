@@ -1,12 +1,20 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The shared category picker in SINGLE-select mode, which is what a cash
+ * transaction takes: tapping the "create" row selects, confirms and
+ * closes in one step, where the multi mode the household specs drive needs
+ * a separate "Auswählen".
+ *
+ * The picker's searchbar is located unscoped because a cash page has no
+ * searchbar of its own, so the picker's — teleported to the app root — is
+ * the only one in the document.
+ *
+ * The create row appearing IS the searchbar debounce having landed, so
+ * waiting for it replaces a fixed timeout.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import { pageRoot } from '../helpers';
 
-/**
- * Drives the shared category picker in **single-select** mode (Stage 2): a cash
- * transaction has exactly one category. Create an account + transaction, assign
- * a category through the picker (tap the "create" row → single mode confirms and
- * closes at once), save, and assert the category lands on the transaction row.
- */
 test.describe('cash transaction category', () => {
   test('assigns a category to a transaction via the single-select picker', async ({
     page,
@@ -38,16 +46,12 @@ test.describe('cash transaction category', () => {
       .fill('Soykaf refill');
     await txnModal.getByRole('textbox', { name: 'Betrag' }).fill('12,34');
 
-    // assign a category via the picker — cash pages have no other searchbar, so
-    // the picker's (teleported to the app root) is the only one on the page.
     await txnModal.getByTestId('category-input-trigger').click();
     const pickerSearch = page
       .getByTestId('category-picker-search')
       .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Kaffee');
-    // single mode: tapping "create" selects + confirms + closes in one step.
-    // Its appearance is the searchbar debounce having landed.
     const createKaffee = page.getByText('Kaffee erstellen');
     await expect(createKaffee).toBeVisible({ timeout: 10_000 });
     await createKaffee.click();

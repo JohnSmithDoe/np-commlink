@@ -1,10 +1,18 @@
+// ─── why ────────────────────────────────────────────────────────
+// The circular meter, side-effect-free like _cash and _trackplay. The deficit
+// arc takes --sr-red-deep, the AA-safe red, not the neon --sr-red, which the
+// palette reserves for dots, borders and large icons.
+//
+// The hole is punched with an ::after painted --sr-panel: it has to match the
+// surface the meter sits ON, which is a card, not the page behind it.
+// ────────────────────────────────────────────────────────────────
+
 $thickness: 12px;
-// Achieved arc = success green; deficit arc = the deck's AA-safe deep red.
 $bar: var(--ion-color-success);
 $track: var(--sr-red-deep);
 @mixin circular-meter {
   .circular-meter {
-    --p: 0; /* percentage 0..100 */
+    --p: 0; // percentage 0..100
     width: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
@@ -20,7 +28,6 @@ $track: var(--sr-red-deep);
     content: '';
     position: absolute;
     inset: $thickness;
-    // The meter's hole must match the surface it sits on, not the page.
     background: var(--sr-panel);
     border-radius: 50%;
   }

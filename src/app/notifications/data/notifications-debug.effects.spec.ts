@@ -15,8 +15,6 @@ describe('NotificationsDebugEffects', () => {
       providers: [
         NotificationsDebugEffects,
         provideMockActions(() => actions$),
-        // The fixture translates its own title/body, like every other producer:
-        // the inbox stores rendered text, not keys.
         provideTranslateService(),
       ],
     });
@@ -33,17 +31,11 @@ describe('NotificationsDebugEffects', () => {
       typeof NotificationsActions.notify
     >;
     expect(notification.status).toBe('open');
-    // Synthetic (not from tracking state) but carries a target id, so the
-    // deep-link CTA flow is exercisable end-to-end.
     expect(notification.action?.targetId).toBeTruthy();
     expect(['debug.start', 'debug.stop', 'debug.pause']).toContain(
       notification.action?.type
     );
-    // The label rides on the action: the inbox renders the CTA without knowing
-    // what the command means.
     expect(notification.action?.labelKey).toMatch(/^notifications\.action\./);
-    // Title and body are rendered by the producer, so they arrive as text —
-    // here the raw key, since the spec loads no bundle.
     expect(notification.name).toMatch(/^notifications\.debug\./);
     expect(notification.body).toMatch(/^notifications\.debug\./);
   });

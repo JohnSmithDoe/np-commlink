@@ -13,16 +13,8 @@ import {
   IonLabel,
   IonList,
 } from '@ionic/angular/standalone';
-import { IPlayer, TID } from '../../model/trackplay.types';
+import { Player, TrackplayId } from '../../model/trackplay.types';
 
-/**
- * DUMB multi-select for the game-edit dialog. Renders one checkbox per player.
- * Selected players float to the top in their existing selection order, the rest
- * follow alphabetically (the display order is frozen off the initial
- * `selectedIds`, so rows never jump while toggling). Emits the checked ids in
- * that display order, preserving selection order — a port of the legacy
- * `player-select` refresh()/onAccept ordering. Holds no store.
- */
 @Component({
   selector: 'app-trackplay-player-select',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,24 +23,20 @@ import { IPlayer, TID } from '../../model/trackplay.types';
   imports: [IonList, IonItem, IonCheckbox, IonLabel],
 })
 export class TrackplayPlayerSelectComponent {
-  readonly players = input.required<IPlayer[]>();
-  readonly selectedIds = input.required<TID[]>();
+  readonly players = input.required<Player[]>();
+  readonly selectedIds = input.required<TrackplayId[]>();
 
-  readonly selectionChange = output<TID[]>();
+  readonly selectionChange = output<TrackplayId[]>();
 
-  // Local checked map, seeded from `selectedIds` and re-seeded if it changes.
-  readonly #checked = linkedSignal<Record<TID, boolean>>(() => {
-    const map: Record<TID, boolean> = {};
+  readonly #checked = linkedSignal<Record<TrackplayId, boolean>>(() => {
+    const map: Record<TrackplayId, boolean> = {};
     for (const id of this.selectedIds()) {
       map[id] = true;
     }
     return map;
   });
 
-  // Display order: initially-selected first (in selectedIds order), then the
-  // unselected sorted by name. Depends on the (stable) inputs, not the local
-  // checked map, so rows keep their place while the user toggles.
-  readonly orderedPlayers = computed<IPlayer[]>(() => {
+  readonly orderedPlayers = computed<Player[]>(() => {
     const selected = this.selectedIds();
     const selectedSet = new Set(selected);
     return this.players().toSorted((a, b) => {
@@ -63,11 +51,11 @@ export class TrackplayPlayerSelectComponent {
     });
   });
 
-  isChecked(id: TID): boolean {
+  isChecked(id: TrackplayId): boolean {
     return !!this.#checked()[id];
   }
 
-  onToggle(id: TID, event: CheckboxCustomEvent): void {
+  onToggle(id: TrackplayId, event: CheckboxCustomEvent): void {
     this.#checked.update((map) => ({ ...map, [id]: event.detail.checked }));
     this.emitSelection();
   }

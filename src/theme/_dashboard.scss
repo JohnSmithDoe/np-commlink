@@ -1,3 +1,10 @@
+// ─── why ────────────────────────────────────────────────────────
+// The office-time dashboard tile, side-effect-free like _cash and _charts. A
+// tile is a fixed-height card whose content region scrolls, which is the whole
+// reason the card is forced into a flex column here rather than left to Ionic:
+// ion-card-content has to be the flex child that gives up its intrinsic height.
+// ────────────────────────────────────────────────────────────────
+
 $item-height-min-height: 264px;
 $item-height-max-height: 320px;
 $sm-item-width: 250px;
@@ -10,7 +17,6 @@ $lg-item-width: $sm-item-width * 4;
   --ion-background-color: var(--sr-panel);
 }
 @mixin dashboard-item-card {
-  /* Ensure the card is a flex column so content can take the remaining height */
   ion-card {
     display: flex;
     flex-direction: column;
@@ -25,7 +31,7 @@ $lg-item-width: $sm-item-width * 4;
 
     ion-card-content {
       flex: 1 1 auto;
-      min-height: 0; /* important to allow children to overflow/scroll */
+      min-height: 0; // lets the scrolling child overflow
       display: flex;
       flex-direction: column;
       padding: 0;

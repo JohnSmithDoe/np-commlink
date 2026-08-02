@@ -21,15 +21,15 @@ import {
   mockTrackplayState,
 } from '../testing/trackplay.test-data';
 import {
-  IGameConfig,
-  ITrackplayConfig,
-  ITrackplayState,
+  GameConfig,
+  TrackplayConfig,
+  TrackplayState,
 } from '../model/trackplay.types';
 import { initialTrackplayConfig } from '../util/trackplay.factory';
 
 const withConfig = (
-  state: Partial<ITrackplayState>,
-  config: Partial<ITrackplayConfig>
+  state: Partial<TrackplayState>,
+  config: Partial<TrackplayConfig>
 ) =>
   mockKernelState({
     trackplay: mockTrackplayState({
@@ -38,14 +38,14 @@ const withConfig = (
     }),
   });
 
-const gamesConfig = (overrides: Partial<IGameConfig>): IGameConfig => ({
+const gamesConfig = (overrides: Partial<GameConfig>): GameConfig => ({
   ...initialTrackplayConfig.games,
   ...overrides,
 });
 
 const playersConfig = (
-  overrides: Partial<ITrackplayConfig['players']>
-): ITrackplayConfig['players'] => ({
+  overrides: Partial<TrackplayConfig['players']>
+): TrackplayConfig['players'] => ({
   ...initialTrackplayConfig.players,
   ...overrides,
 });
@@ -108,9 +108,6 @@ describe('trackplay.selector', () => {
         games: { gh: highGame, gl: lowGame },
       }),
     });
-    // p1=15, p2=23 → high wins p2, low wins p1
-    // The winner IS the head of the ranking — the page derives it that way now,
-    // so it is asserted that way rather than through a second selector.
     expect(selectResultByGame('gh')(state)[0]?.id).toBe('p2');
     expect(selectResultByGame('gl')(state)[0]?.id).toBe('p1');
     expect(selectResultByGame('gh')(state).map((p) => p.id)).toEqual([
@@ -144,9 +141,7 @@ describe('trackplay.selector', () => {
       }),
     });
     const stats = selectPlayerStats(state);
-    // p1: plays 2, open 1 (g2), and in ended g1 loses (p2 higher) → loss 1
     expect(stats['p1']).toEqual({ play: 2, win: 0, loss: 1, open: 1 });
-    // p2: plays 1 (g1 ended), wins it
     expect(stats['p2']).toEqual({ play: 1, win: 1, loss: 0, open: 0 });
   });
 
@@ -281,8 +276,6 @@ describe('selectPlayerList — sort and filter', () => {
     expect(selectPlayerList(state).map((p) => p.id)).toEqual(expected);
   });
 
-  // `lastPlayed` is optional — a player who never played must sort as 0 rather
-  // than poisoning the comparison with undefined.
   it('treats a player who never played as least-recent', () => {
     const state = withConfig(
       {
@@ -325,8 +318,6 @@ describe('trackplay.selector — lookups by id', () => {
     expect(selectPlayerById('nope')(state)).toBeUndefined();
   });
 
-  // A round id can outlive its round (delete + undo), so the list has to drop
-  // the dangling reference rather than emit a hole.
   it('orders a game rounds by index and skips dangling ids', () => {
     expect(selectRoundsByGame('g')(state).map((r) => r.id)).toEqual([
       'r0',
@@ -343,8 +334,6 @@ describe('trackplay.selector — lookups by id', () => {
 });
 
 describe('trackplay.selector — scoring gaps', () => {
-  // Every gap here is reachable in production: a round can be deleted, a round
-  // can predate a player joining, and a game type can be removed under a game.
   it('counts a missing round or a player with no entry as zero', () => {
     const state = mockKernelState({
       trackplay: mockTrackplayState({
@@ -396,7 +385,6 @@ describe('trackplay.selector — scoring gaps', () => {
     });
   });
 
-  // A deleted player leaves their id behind on the games they played.
   it('ignores game participants who are no longer on the roster', () => {
     const state = mockKernelState({
       trackplay: mockTrackplayState({
@@ -449,8 +437,6 @@ describe('selectGameCount', () => {
 
 describe('selectTrackplayPersisted', () => {
   it('drops the transient undo snapshot on the way to disk', () => {
-    // It is a whole-slice copy that lives for the 8s of the undo toast, so
-    // persisting it duplicated the entire slice inside its own document.
     const state = mockTrackplayState({
       players: { p1: mockPlayer({ id: 'p1' }) },
       lastDeleted: {

@@ -27,25 +27,15 @@ import { addIcons } from 'ionicons';
 import { closeCircle, playCircle } from 'ionicons/icons';
 import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
 import { requireText } from '../../../@shared/util/forms/form-rules';
-import { IGame, TID } from '../../model/trackplay.types';
+import { Game, TrackplayId } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
 import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-select.component';
 
-type TGameForm = { name: string; typeId: TID; playerIds: TID[] };
+type GameForm = { name: string; typeId: TrackplayId; playerIds: TrackplayId[] };
 
-const gameRules: SchemaFn<TGameForm> = (path) => requireText(path.name);
+const gameRules: SchemaFn<GameForm> = (path) => requireText(path.name);
 
-/**
- * Game create/edit dialog (presented via ModalController). In create mode an
- * optional `presetPlayerIds` pre-selects participants (used by "new game for this
- * player").
- *
- * Confirm commits every changed field via its own store action; "go to game"
- * commits first, then navigates to the (existing or freshly-created) game — which
- * is why it needs the resolved id and both paths share `#commit`. Port of the
- * legacy `game-edit` popover.
- */
 @Component({
   selector: 'app-trackplay-game-edit-modal',
   templateUrl: './game-edit-modal.component.html',
@@ -71,8 +61,8 @@ const gameRules: SchemaFn<TGameForm> = (path) => requireText(path.name);
   ],
 })
 export class TrackplayGameEditModalComponent extends BaseModalDialog<
-  IGame,
-  TGameForm
+  Game,
+  GameForm
 > {
   readonly #facade = inject(TrackplayFacade);
   readonly #router = inject(Router);
@@ -80,38 +70,32 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
   readonly #games = this.#facade.games;
   readonly #playersMap = this.#facade.players;
   readonly rxGameTypes = this.#facade.gameTypeList;
-  // Full roster (unaffected by the players-list filter) sorted by name, so any
-  // player can always be (de)selected here.
   readonly rxPlayers = computed(() =>
     Object.values(this.#playersMap()).toSorted((a, b) =>
       a.name.localeCompare(b.name)
     )
   );
 
-  readonly #presetPlayerIds = signal<TID[] | undefined>(undefined);
+  readonly #presetPlayerIds = signal<TrackplayId[] | undefined>(undefined);
 
-  /** Set imperatively via `componentProps`; undefined = create mode. */
   set gameId(id: string | undefined) {
     this.editId.set(id);
   }
 
-  /** Optional create-mode pre-selection. */
-  set presetPlayerIds(ids: TID[] | undefined) {
+  set presetPlayerIds(ids: TrackplayId[] | undefined) {
     this.#presetPlayerIds.set(ids);
   }
 
-  protected readonly existing = computed<IGame | undefined>(() => {
+  protected readonly existing = computed<Game | undefined>(() => {
     const id = this.editId();
     return id ? this.#games()[id] : undefined;
   });
 
-  // The ORIGINAL selection (stable) drives the player-select display order, so it
-  // deliberately isn't part of the mutable draft.
-  readonly initialPlayerIds = computed<TID[]>(
+  readonly initialPlayerIds = computed<TrackplayId[]>(
     () => this.existing()?.players ?? this.#presetPlayerIds() ?? []
   );
 
-  protected applyRules(path: SchemaPathTree<TGameForm>): void {
+  protected applyRules(path: SchemaPathTree<GameForm>): void {
     gameRules(path);
   }
 
@@ -124,7 +108,7 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     addIcons({ closeCircle, playCircle });
   }
 
-  protected blank(): TGameForm {
+  protected blank(): GameForm {
     return {
       name: '',
       typeId: DEFAULT_GAME_TYPE_ID,
@@ -132,11 +116,11 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     };
   }
 
-  protected toForm(game: IGame): TGameForm {
+  protected toForm(game: Game): GameForm {
     return { name: game.name, typeId: game.type, playerIds: game.players };
   }
 
-  protected persist(draft: TGameForm, existing: IGame | undefined): void {
+  protected persist(draft: GameForm, existing: Game | undefined): void {
     this.#commit(draft, existing);
   }
 
@@ -148,9 +132,7 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     this.dismiss();
   }
 
-  // Apply every changed field and return the game id under edit (existing, or the
-  // one the facade minted for the new game).
-  #commit(draft: TGameForm, existing: IGame | undefined): TID | null {
+  #commit(draft: GameForm, existing: Game | undefined): TrackplayId | null {
     const name = draft.name.trim();
     const { typeId, playerIds } = draft;
 
@@ -173,7 +155,7 @@ export class TrackplayGameEditModalComponent extends BaseModalDialog<
     return this.#facade.createGame(name, typeId, playerIds);
   }
 
-  #hasSameIds(a: TID[], b: TID[]): boolean {
+  #hasSameIds(a: TrackplayId[], b: TrackplayId[]): boolean {
     return a.length === b.length && a.every((id, index) => id === b[index]);
   }
 }

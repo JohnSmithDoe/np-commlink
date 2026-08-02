@@ -24,12 +24,6 @@ import { chartColors } from '../../../../@shared/util/charts/chart-colors';
 
 Chart.register(...registerables);
 
-/**
- * CREDSTICK reporting (P5): total income / spend / net, income-vs-spend per
- * month, and spend by category. Transfers and reconciled-away legs are excluded
- * upstream by the reporting selectors. Charts via ng2-charts (precedent:
- * tracking/smart-ui/sessions-chart). Reached from the accounts overview header.
- */
 @Component({
   selector: 'app-page-cash-report',
   templateUrl: './cash-report.page.html',

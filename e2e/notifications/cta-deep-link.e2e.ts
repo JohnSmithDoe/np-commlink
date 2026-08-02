@@ -1,3 +1,16 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The CTA is a ROUTE contract, not an import: the inbox deep-links
+ * `/tracking?cmd=<command>&target=<itemId>` carrying the command it
+ * already holds, and tracking resolves it against its own items — it has
+ * no way to read the inbox back. Unit tests can only check the two halves
+ * separately, so the URL between them is what is left to cover, in both
+ * directions: the CTA acts, and the re-projected row comes back changed.
+ *
+ * Tracking strips the params once it has applied the command, so a reload
+ * cannot re-fire the toggle — which is why the assertion is on a bare
+ * `/#/tracking`.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import {
   addViaSearch,
@@ -6,13 +19,6 @@ import {
   waitForPersisted,
 } from '../helpers';
 
-/**
- * Acceptance for the notification CTA round-trip, which is a *route* contract
- * rather than an import: the inbox deep-links `/tracking?cmd=<command>&target=
- * <itemId>` with the command it already holds, and tracking resolves it against
- * its own items — it cannot read the inbox back. Two halves that unit tests can
- * only check separately, so the URL between them is what this covers.
- */
 test.describe('notifications — CTA deep-link back into a producer', () => {
   test('tapping "Pausieren" pauses the tracker and re-projects the row', async ({
     page,
@@ -38,8 +44,6 @@ test.describe('notifications — CTA deep-link back into a producer', () => {
 
     await row.getByRole('button', { name: 'Pausieren' }).click();
 
-    // The link lands on /tracking, which applies the command and strips the
-    // params so a reload cannot re-fire the toggle.
     await expect(page).toHaveURL(/#\/tracking$/);
     await waitForPersisted(page, 'notifications', 'pausiert');
 

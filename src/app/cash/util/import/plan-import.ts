@@ -1,24 +1,14 @@
-import { ICashRule } from '../../model/rule.types';
-import { ICashTransaction } from '../../model/transaction.types';
+import { CashRule } from '../../model/rule.types';
+import { CashTransaction } from '../../model/transaction.types';
 import { categorize } from '../categorize.utils';
-import { IParsedRow, IParseResult } from './bank-parser';
+import { ParsedRow, ParseResult } from './bank-parser';
 
-export interface IImportPlan {
-  /** Fresh transactions to add (auto-categorized, unique). */
-  toImport: ICashTransaction[];
-  /** How many rows were skipped as already-imported duplicates. */
+export interface ImportPlan {
+  toImport: CashTransaction[];
   duplicates: number;
-  /** How many rows the parser could not read at all — carried through so the
-   * preview can say so instead of reporting a short import as a complete one. */
   rejected: number;
 }
 
-/**
- * Natural key for idempotent re-import — see docs/cash.md §7.3 (Import). The date is
- * keyed on its `YYYY-MM-DD` prefix only: `dateISO` is a local-midnight ISO whose
- * offset (`+01:00`/`+02:00`) shifts with the device timezone, so keying on the
- * full string would defeat dedup after a DST/timezone change.
- */
 const naturalKey = (
   accountId: string,
   dateISO: string,
@@ -28,7 +18,7 @@ const naturalKey = (
   `${accountId}|${dateISO.slice(0, 10)}|${amountCents}|${description}`;
 
 const importedNaturalKeys = (
-  existing: readonly ICashTransaction[]
+  existing: readonly CashTransaction[]
 ): Set<string> =>
   new Set(
     existing
@@ -38,15 +28,15 @@ const importedNaturalKeys = (
       )
   );
 
-const rowNaturalKey = (accountId: string, row: IParsedRow): string =>
+const rowNaturalKey = (accountId: string, row: ParsedRow): string =>
   naturalKey(accountId, row.dateISO, row.amountCents, row.description);
 
 const transactionFromRow = (
-  row: IParsedRow,
+  row: ParsedRow,
   accountId: string,
   importBatchId: string,
   id: string
-): ICashTransaction => ({
+): CashTransaction => ({
   id,
   accountId,
   dateISO: row.dateISO,
@@ -58,30 +48,24 @@ const transactionFromRow = (
 });
 
 const autoCategorized = (
-  txn: ICashTransaction,
-  rules: readonly ICashRule[]
-): ICashTransaction => {
+  txn: CashTransaction,
+  rules: readonly CashRule[]
+): CashTransaction => {
   const categoryId = categorize(txn, rules);
   return categoryId === undefined ? txn : { ...txn, categoryId };
 };
 
-/**
- * Turn parsed rows into transactions to import: assign ids, drop rows already
- * imported (natural-key dedup against existing imported txns AND within the
- * batch), auto-categorize via the P3 rules. Pure — `makeId` is injected so it is
- * deterministic under test.
- */
 export function planImport(
-  parsed: IParseResult,
+  parsed: ParseResult,
   accountId: string,
-  rules: readonly ICashRule[],
-  existing: readonly ICashTransaction[],
+  rules: readonly CashRule[],
+  existing: readonly CashTransaction[],
   importBatchId: string,
   makeId: () => string
-): IImportPlan {
+): ImportPlan {
   const alreadyImportedKeys = importedNaturalKeys(existing);
   const rows = parsed.rows;
-  const toImport: ICashTransaction[] = [];
+  const toImport: CashTransaction[] = [];
   let duplicates = 0;
   for (const row of rows) {
     const key = rowNaturalKey(accountId, row);

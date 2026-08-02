@@ -14,9 +14,6 @@ import { TrackplayGamePlayPage } from './game-play.page';
 const inputEvent = (value: string): Event =>
   ({ target: { value } }) as unknown as Event;
 
-// The two parse assertions name the fields rather than rebuilding the action:
-// `setRoundValue` stamps `now` from the clock by default, and a second
-// construction in the expectation would read it a tick later.
 const scored = (value: number) =>
   expect.objectContaining({
     type: TrackplayActions.setRoundValue.type,

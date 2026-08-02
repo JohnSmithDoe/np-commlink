@@ -17,21 +17,14 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
-  IGameConfig,
-  IPlayersConfig,
-  ITrackplayConfig,
+  GameConfig,
+  PlayersConfig,
+  TrackplayConfig,
 } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 
-export type TSettingsMode = 'games' | 'players' | 'gamesForPlayer';
+export type SettingsMode = 'games' | 'players' | 'gamesForPlayer';
 
-/**
- * Sort / filter settings, presented via PopoverController. `mode` (an imperative
- * componentProp) picks which list config to edit: the games list, a player's
- * games list, or the players list. Each control dispatches a partial config
- * update straight to the store — no local mirror, no explicit save. Port of the
- * legacy `game-settings` popover.
- */
 @Component({
   selector: 'app-trackplay-list-settings-popover',
   templateUrl: './list-settings-popover.component.html',
@@ -53,25 +46,24 @@ export class TrackplayListSettingsPopoverComponent {
   readonly #config = this.#facade.config;
   readonly rxGameTypes = this.#facade.gameTypeList;
 
-  readonly #mode = signal<TSettingsMode>('games');
+  readonly #mode = signal<SettingsMode>('games');
 
-  /** Set imperatively via `componentProps`. */
-  set mode(value: TSettingsMode) {
+  set mode(value: SettingsMode) {
     this.#mode.set(value);
   }
 
   readonly isGames = computed(() => this.#mode() === 'games');
   readonly isPlayers = computed(() => this.#mode() === 'players');
-  readonly gamesConfig = computed<IGameConfig>(() =>
+  readonly gamesConfig = computed<GameConfig>(() =>
     this.#mode() === 'gamesForPlayer'
       ? this.#config().gamesForPlayer
       : this.#config().games
   );
-  readonly playersConfig = computed<ITrackplayConfig['players']>(
+  readonly playersConfig = computed<TrackplayConfig['players']>(
     () => this.#config().players
   );
 
-  #dispatch(config: Partial<IGameConfig>): void {
+  #dispatch(config: Partial<GameConfig>): void {
     if (this.#mode() === 'gamesForPlayer') {
       this.#facade.updateGamesForPlayerConfig(config);
     } else {
@@ -95,7 +87,7 @@ export class TrackplayListSettingsPopoverComponent {
     this.#dispatch({ direction: value });
   }
 
-  setGamesSort(value: IGameConfig['sort']): void {
+  setGamesSort(value: GameConfig['sort']): void {
     this.#dispatch({ sort: value });
   }
 
@@ -103,11 +95,11 @@ export class TrackplayListSettingsPopoverComponent {
     this.#facade.updatePlayersConfig({ filter: value });
   }
 
-  setPlayersDirection(value: IPlayersConfig['direction']): void {
+  setPlayersDirection(value: PlayersConfig['direction']): void {
     this.#facade.updatePlayersConfig({ direction: value });
   }
 
-  setPlayersSort(value: IPlayersConfig['sort']): void {
+  setPlayersSort(value: PlayersConfig['sort']): void {
     this.#facade.updatePlayersConfig({ sort: value });
   }
 }

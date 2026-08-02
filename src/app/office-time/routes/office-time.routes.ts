@@ -16,10 +16,6 @@ export const officeTimeRoutes: Routes = [
           ),
       },
       {
-        // Office-time's OWN config (dashboard-card visibility, weekly target,
-        // data reset) — split out of the old shared `/settings` page, which now
-        // holds only the app-global theme. Reached from the office-time page's
-        // gear.
         path: 'settings',
         title: marker('page-title.office-time-settings'),
         loadComponent: () =>

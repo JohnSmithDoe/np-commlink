@@ -3,12 +3,6 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import dayjs from 'dayjs';
 import { dayKey, TodayService } from './today.service';
 
-/**
- * The midnight timeout is not exercised here. What a spec can honestly assert is
- * that the service publishes the current day and re-reads it on the trigger that
- * actually fires in the failing scenario — coming back to a backgrounded app,
- * where the timeout is exactly the mechanism that cannot be relied on.
- */
 describe('TodayService', () => {
   let service: TodayService;
 
@@ -33,8 +27,6 @@ describe('TodayService', () => {
     expect(service.today()).toBe(dayKey());
   });
 
-  // The signal is set unconditionally, so it is `signal`'s own equality that
-  // keeps a same-day refresh from waking every reader.
   it('does not notify when the day has not changed', () => {
     const before = service.today();
 

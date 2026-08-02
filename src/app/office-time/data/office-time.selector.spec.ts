@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { mockKernelState } from '../../@shared/testing/test-data';
 import { mockOfficeTimeState } from '../testing/office-time.test-data';
-import { IOfficeTimeState } from '../model/office-time.types';
+import { OfficeTimeState } from '../model/office-time.types';
 import {
   selectDashboardItems,
   selectDashboardSettings,
@@ -13,14 +13,12 @@ import {
   selectTargetOfficeDaysPerWeek,
 } from './office-time.selector';
 
-// The persisted doc predates several of these fields, so a hydrated slice can
-// arrive without them — which is what the `?? []` / `?? {}` defaults absorb.
 const withoutDayLists = () =>
   mockOfficeTimeState({
     officedays: undefined as never,
     freedays: undefined as never,
     holidays: undefined as never,
-  }) as IOfficeTimeState;
+  }) as OfficeTimeState;
 
 describe('office-time.selector', () => {
   it('selects the officeTime feature slice', () => {

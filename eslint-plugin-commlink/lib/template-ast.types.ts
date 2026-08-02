@@ -1,11 +1,25 @@
-import type { AST, Rule } from 'eslint';
+/* ─── why ─────────────────────────────────────────────────────────
+ * Hand-written because @angular-eslint/template-parser ships no node
+ * types: its nodes are Angular *compiler* nodes decorated with
+ * `type`/`loc`/`parent`, and the parser services arrive untyped off
+ * `context.sourceCode.parserServices`. The old CommonJS rule set papered
+ * over that with a `jsconfig.json` that turned checking off entirely;
+ * these declarations are the narrow alternative — only the fields the
+ * rules actually read.
+ *
+ * The parser strips an `attr.` prefix, so `[attr.aria-label]` arrives as a
+ * bound attribute named plain `aria-label`: a check written against the
+ * prefixed form matches nothing and passes everything.
+ *
+ * `TemplateNode` is deliberately open-ended — the descendant walk also
+ * meets the block nodes (`@if`, `@for`, …), which hold their children one
+ * level deeper than an element does.
+ *
+ * A quoted i18n key parses to a `Literal` in TypeScript and a
+ * `LiteralPrimitive` in a template — same leak, two ASTs.
+ * ───────────────────────────────────────────────────────────────── */
 
-// Hand-written because @angular-eslint/template-parser ships no node types: its
-// nodes are Angular *compiler* nodes decorated with `type`/`loc`/`parent`, and
-// the parser services arrive untyped off `context.sourceCode.parserServices`.
-// The old CommonJS rule set papered over that with a `jsconfig.json` that turned
-// checking off entirely; these declarations are the narrow alternative — only
-// the fields the rules actually read.
+import type { AST, Rule } from 'eslint';
 
 export interface TemplateAttribute {
   name: string;
@@ -13,16 +27,11 @@ export interface TemplateAttribute {
   loc: AST.SourceLocation;
 }
 
-/** `[foo]="bar"`. The parser strips an `attr.` prefix, so `[attr.aria-label]`
- * arrives here named plain `aria-label` — a check written against the prefixed
- * form matches nothing and passes everything. */
 export interface TemplateBoundAttribute {
   name: string;
   loc: AST.SourceLocation;
 }
 
-/** Anything the descendant walk may encounter — elements, text, and the block
- * nodes (`@if`, `@for`, …) that hold their children one level deeper. */
 export interface TemplateNode {
   type: string;
   [key: string]: unknown;
@@ -35,8 +44,6 @@ export interface TemplateElement extends TemplateNode {
   inputs: TemplateBoundAttribute[];
 }
 
-/** A quoted i18n key parses to a `Literal` in TypeScript and a
- * `LiteralPrimitive` in an Angular template — same leak, two ASTs. */
 export interface TemplateLiteralPrimitive extends TemplateNode {
   type: 'LiteralPrimitive';
   value: unknown;

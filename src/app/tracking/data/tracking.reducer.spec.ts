@@ -1,8 +1,8 @@
-import { ITrackingItem } from '../model/tracking.types';
+import { TrackingItem } from '../model/tracking.types';
 import { TrackingActions } from './tracking.actions';
 import { initialState, trackingReducer } from './tracking.reducer';
 
-const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
   id: '1',
   name: 'Task',
   createdAt: '2026-01-01',
@@ -10,7 +10,7 @@ const track = (over: Partial<ITrackingItem> = {}): ITrackingItem => ({
   ...over,
 });
 
-const withItems = (items: ITrackingItem[]) => ({ ...initialState, items });
+const withItems = (items: TrackingItem[]) => ({ ...initialState, items });
 
 describe('trackingReducer', () => {
   it('adds, updates, removes and searches list items', () => {
@@ -95,7 +95,6 @@ describe('trackingReducer', () => {
       state,
       TrackingActions.updateTracking(track({ id: 'a' }), '2026-06-01T10:00:00')
     );
-    // 3600s running - 600s break = 3000s
     expect(next.items[0].trackedTimeInSeconds).toBe(3000);
   });
 
@@ -159,8 +158,6 @@ describe('trackingReducer', () => {
       ).toBe(true);
     });
 
-    // The arm used to mint a uuid, which made the reducer's output depend on
-    // something other than (state, action).
     it('derives the archived id from the run it archives, so it is reproducible', () => {
       const once = trackingReducer(
         started,
@@ -203,8 +200,6 @@ describe('trackingReducer', () => {
     expect(view.sessionsViewId).toBe('monthly');
   });
 
-  // A stats row is a bucket of merged sessions, so deleting it has to take all
-  // of them — keying the delete off the row's own id deleted exactly one.
   it('removes every session an aggregated data item lists', () => {
     const withData = {
       ...initialState,

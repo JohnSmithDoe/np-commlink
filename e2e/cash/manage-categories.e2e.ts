@@ -1,3 +1,19 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Cash on the shared catalog-list page. The catalog IS a list, which is
+ * the whole claim: the suite's add-via-searchbar helper drives it
+ * unchanged, where the page it replaced carried a bespoke input row.
+ *
+ * The drill from a category into its items is a ROUTE here
+ * (`/cash/category/:id`) rather than the `?filter=` query the household and
+ * task lists use, because cash's own list has no `filterBy`.
+ *
+ * A category row's note is its transaction count, so the `0` and the `1`
+ * are what assert the join is live rather than the label static.
+ *
+ * The picker's create row appearing IS the searchbar debounce having
+ * landed, so waiting for it replaces a fixed timeout.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
@@ -7,11 +23,6 @@ import {
   waitForPersisted,
 } from '../helpers';
 
-/**
- * Cash adoption of the shared CATALOG LIST page + the cash category→items drill
- * (a category's transactions — cash's equivalent of the grocery/tasks `?filter`
- * list, since cash has no filterBy).
- */
 async function openOverview(page: Page) {
   await page.goto('/#/cash');
   await expect(pageRoot(page, 'app-page-cash')).toBeVisible({
@@ -24,19 +35,15 @@ test.describe('cash manage categories', () => {
     page,
   }) => {
     await openOverview(page);
-    // Toolbar shortcut → the shared catalog list page (cash CATEGORY_LIST_FACADE).
     await page.getByRole('button', { name: 'Kategorien' }).first().click();
     await expect(page).toHaveURL(/cash\/categories/);
 
-    // The catalog is a list, so the shared add-via-searchbar helper works on it.
     await waitForListPage(page);
     await addViaSearch(page, 'Miete');
 
     await expect(listRow(page, 'Miete')).toBeVisible({ timeout: 10_000 });
-    // No transactions yet → count 0.
     await expect(listRow(page, 'Miete')).toContainText('0');
 
-    // Back → the cash overview (listHref).
     await page.getByRole('link', { name: 'Zurück' }).first().click();
     await expect(page).toHaveURL(/#\/cash$/);
   });
@@ -72,7 +79,6 @@ test.describe('cash manage categories', () => {
       .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Miete');
-    // The "create" row appearing is the searchbar debounce having landed.
     const createMiete = page.getByText('Miete erstellen');
     await expect(createMiete).toBeVisible({ timeout: 10_000 });
     await createMiete.click();
@@ -82,9 +88,6 @@ test.describe('cash manage categories', () => {
     });
     await waitForPersisted(page, 'cash', 'Wohnung Miete');
 
-    // Manage page shows the category with count 1; tapping drills to its txns.
-    // Scope to the manage-page component — the (hidden) account page still has a
-    // "Wohnung Miete" txn row that would otherwise also match.
     await page.goto('/#/cash/categories');
     await expect(listRow(page, 'Miete')).toContainText('1', {
       timeout: 10_000,

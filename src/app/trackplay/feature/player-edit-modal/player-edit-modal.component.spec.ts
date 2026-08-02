@@ -41,8 +41,6 @@ describe('TrackplayPlayerEditModalComponent', () => {
         players: { 'player-1': mockPlayer({ id: 'player-1', name: 'Alice' }) },
       })
     );
-    // The componentProp writes into a signal, so the draft seeds reactively —
-    // no ngOnInit to call (and none to forget).
     component.playerId = 'player-1';
 
     expect(component.isEdit()).toBe(true);

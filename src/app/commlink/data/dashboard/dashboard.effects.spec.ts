@@ -5,7 +5,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { DatabaseService } from '../../../@shared/util/persistence/database.service';
-import { IDashboardSummary } from '../../model/dashboard.types';
+import { DashboardSummary } from '../../model/dashboard.types';
 import { DashboardActions } from '../../../@shared/data/actions/dashboard.actions';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { DashboardReadModelActions } from './dashboard.actions';
@@ -39,7 +39,7 @@ describe('DashboardEffects', () => {
   describe('load$', () => {
     it('hydrates the read-model from the persisted summaries', async () => {
       setup();
-      const summaries: IDashboardSummary[] = [
+      const summaries: DashboardSummary[] = [
         { source: 'notifications', metrics: { unread: 2 } },
       ];
       database.loadPrefixed.mockResolvedValue(summaries);
@@ -48,14 +48,10 @@ describe('DashboardEffects', () => {
       expect(await firstValueFrom(effects.load$)).toEqual(
         DashboardReadModelActions.hydrate(summaries)
       );
-      // The port is asked for a key FAMILY, not for "summaries" — it stays
-      // domain-blind; this context owns the prefix.
       expect(database.loadPrefixed).toHaveBeenCalledWith('summary-');
     });
 
     it('still reads the bare docs written before summaries were versioned', async () => {
-      // Existing installs have raw summary docs on disk. `runMigrations` treats a
-      // document with no envelope as version 1, so they must keep loading.
       setup();
       const bare = { source: 'notifications', metrics: { unread: 2 } };
       database.loadPrefixed.mockResolvedValue([bare]);
@@ -104,8 +100,6 @@ describe('DashboardEffects', () => {
 
       await firstValueFrom(effects.persistSummary$);
 
-      // `status` is deliberately dropped on the way to disk, and the doc now
-      // carries the same `{v, data}` envelope as every other persisted document.
       expect(database.save).toHaveBeenCalledWith(
         'summary-office-time',
         wrapVersioned(APP_VERSION, {
@@ -116,12 +110,6 @@ describe('DashboardEffects', () => {
     });
 
     it('persists a report that arrives before this boot read resolves', async () => {
-      // A report is only ever raised once the REPORTING slice has hydrated
-      // (`createTelemetrySliceEffect` waits for its `loaded`), so it always
-      // carries a real number — even when that context hydrated before the
-      // summary family came back. This effect used to `skipUntil(hydrate)` to
-      // fend off pre-hydration zeros, which only covered the boot window and let
-      // a lazy context's registration-time zero through.
       setup();
       actions$ = of(
         DashboardActions.report({

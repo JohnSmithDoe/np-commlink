@@ -3,9 +3,9 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { categoryById } from '../../@shared/util/categories/category.utils';
 import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
-import { ITaskItem, TASKS_LIST_ID } from '../model/task.types';
+import { TaskItem, TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
-import { IListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
+import { ListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import {
   selectTaskItems,
@@ -14,18 +14,11 @@ import {
   selectTasksListItems,
   selectTasksListSearchResult,
 } from './tasks.selector';
-import { ICategory, TCategoryId } from '../../@shared/model/category.types';
-import { TItemListSortType } from '../../@shared/model/item-list.types';
+import { Category, CategoryId } from '../../@shared/model/category.types';
+import { ItemListSortType } from '../../@shared/model/item-list.types';
 
-/**
- * {@link IListPageFacade} implementation for the single `_tasks` list. It reads
- * the tasks slice through the tasks-domain selectors and dispatches only
- * `TasksActions` — never the grocery multi-list engine. This is what seals
- * `tasks` off the grocery domain: the generic `ListPageComponent` drives it
- * entirely through this contract.
- */
 @Injectable({ providedIn: 'root' })
-export class TasksListPageFacade implements IListPageFacade {
+export class TasksListPageFacade implements ListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
@@ -35,9 +28,6 @@ export class TasksListPageFacade implements IListPageFacade {
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
   readonly catalog = this.#store.selectSignal(selectTasksCategories);
 
-  // The edit dialog's sibling set is the whole aggregate — NOT `items`, which is
-  // this page's filtered view, so the duplicate-name rule would stop seeing a
-  // sibling the moment a search term or category filter hid it.
   readonly allItems = this.#store.selectSignal(selectTaskItems);
 
   search(term?: string): void {
@@ -48,16 +38,14 @@ export class TasksListPageFacade implements IListPageFacade {
     this.#store.dispatch(TasksActions.addItemFromSearch());
   }
 
-  setSortMode(type: TItemListSortType): void {
+  setSortMode(type: ItemListSortType): void {
     this.#store.dispatch(TasksActions.updateSort(type, 'toggle'));
   }
 
-  selectCategory(categoryId: TCategoryId): void {
+  selectCategory(categoryId?: CategoryId): void {
     this.#store.dispatch(TasksActions.updateFilter(categoryId));
   }
 
-  // Create seeded from the searchbar. (The categories-mode variant is the shell's
-  // own `saveCategory` path — it never reaches here.)
   showCreateDialog(): void {
     const state = this.state();
     this.#dialogs.open({
@@ -71,31 +59,27 @@ export class TasksListPageFacade implements IListPageFacade {
     void this.#router.navigate(['/tasks/categories']);
   }
 
-  // ── Tasks-page commands (beyond the shared list contract) ────────────────
-  removeItem(item: ITaskItem): void {
+  removeItem(item: TaskItem): void {
     this.#store.dispatch(TasksActions.removeItem(item));
   }
 
-  showEditDialog(item: ITaskItem): void {
+  showEditDialog(item: TaskItem): void {
     this.#dialogs.open({ item, listId: TASKS_LIST_ID, editMode: 'update' });
   }
 
-  saveItem(item: ITaskItem): void {
+  saveItem(item: TaskItem): void {
     this.#store.dispatch(TasksActions.addOrUpdateItem(item));
   }
 
-  // Catalog commands for the edit dialog's picker, dispatched onto the CATALOG
-  // list — the picker edits the same list the catalog page does.
-  addCategory(category: ICategory): void {
+  addCategory(category: Category): void {
     this.#store.dispatch(TaskCategoriesActions.addItem(category));
   }
 
-  // A rename is a partial update, which `TUpdateDTO` is exactly.
-  renameCategory(id: TCategoryId, to: string): void {
+  renameCategory(id: CategoryId, to: string): void {
     this.#store.dispatch(TaskCategoriesActions.updateItem({ id, name: to }));
   }
 
-  removeCategory(id: TCategoryId): void {
+  removeCategory(id: CategoryId): void {
     const category = categoryById(this.catalog(), id);
     if (!category) return;
     this.#store.dispatch(TaskCategoriesActions.removeItem(category));

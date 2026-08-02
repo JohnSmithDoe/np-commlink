@@ -21,13 +21,13 @@ import {
   createTelemetrySliceEffect,
 } from './persisted-slice.effects.factory';
 
-type TProbeState = { items: string[] };
+type ProbeState = { items: string[] };
 
 const ProbeActions = createActionGroup({
   source: 'Probe',
   events: {
     load: emptyProps(),
-    loaded: (probe: TProbeState | null) => ({ probe }),
+    loaded: (probe: ProbeState | null) => ({ probe }),
     addItem: (name: string) => ({ name }),
     Tick: emptyProps(),
   },
@@ -38,13 +38,10 @@ const OtherActions = createActionGroup({
   events: { 'Do Thing': emptyProps() },
 });
 
-const selectProbe = createFeatureSelector<TProbeState>('probe');
+const selectProbe = createFeatureSelector<ProbeState>('probe');
 
-const probeState: TProbeState = { items: ['a'] };
+const probeState: ProbeState = { items: ['a'] };
 
-// The save effect is muted until the key has been read back once, so a spec
-// driving it standalone has to stand in for the load effect that normally ran
-// first.
 const markProbeRead = () =>
   TestBed.inject(PersistedReadRegistry).recordRead('probe');
 
@@ -120,9 +117,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('unwraps the versioned envelope through the ladder', async () => {
-      // Step *application* is versioned.spec's job (it can pass an explicit
-      // target version); at APP_VERSION 1 no hop exists, so what is observable
-      // here is the envelope unwrap and that the ladder is threaded at all.
       setup();
       database.load.mockResolvedValue(wrapVersioned(APP_VERSION, probeState));
       const untouched: MigrationStep[] = [
@@ -180,9 +174,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('does NOT persist on the load/loaded hydration lifecycle', async () => {
-      // The recurring lazy-cutover invariant: hydration dispatches `[X] load`
-      // while the slice is still at empty initialState, so persisting on it
-      // would clobber the saved doc.
       setup();
       actions$ = of(ProbeActions.load(), ProbeActions.loaded(probeState));
 
@@ -211,8 +202,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('persists only the listed actions when given an explicit trigger list', async () => {
-      // The high-frequency-action case (tracking's per-second tick): an explicit
-      // `on` list opts out of the source-prefix sweep entirely.
       setup();
       markProbeRead();
       actions$ = of(ProbeActions.tick(), ProbeActions.addItem('b'));
@@ -232,7 +221,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('persists on a foreign action listed in `on` alongside its own source', async () => {
-      // The cascade case (recipes persisting on `[Products] removeItem`).
       setup();
       markProbeRead();
       actions$ = of(OtherActions.doThing());
@@ -254,9 +242,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('does NOT persist twice when the mutation left the slice unchanged', async () => {
-      // The reducers return the state object itself on a no-op (a blank add, a
-      // keystroke landing on the same query, a re-entered game page), and this
-      // is what makes that reach the disk instead of stopping at the store.
       setup();
       markProbeRead();
       actions$ = of(ProbeActions.addItem('b'), ProbeActions.addItem('b'));
@@ -272,9 +257,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('does NOT persist before the key has been read back', async () => {
-      // The data-loss case the registry exists for: a mutation that lands
-      // before the read resolves would write initialState over the bytes on
-      // disk. Applies to the eager boot window and to a read that rejected.
       setup();
       actions$ = of(ProbeActions.addItem('b'));
 
@@ -307,8 +289,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('persists once a successful read has opened the gate', async () => {
-      // An absent key is a successful read — a fresh install must be able to
-      // write its first mutation.
       setup();
       database.load.mockResolvedValue(null);
       actions$ = of(ProbeActions.load());
@@ -342,9 +322,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('stays silent until its own slice has hydrated', async () => {
-      // The deck-clobbering case: `store.select` hands out initialState on
-      // subscription, and reporting that zero both mis-lights the tile and
-      // overwrites the previous session's summary doc.
       setup({ probe: { items: [] } });
       markProbeRead();
       actions$ = of(ProbeActions.load(), ProbeActions.addItem('x'));
@@ -355,9 +332,6 @@ describe('persisted-slice effects', () => {
     });
 
     it('never reports when the slice read rejected, so the tile keeps its persisted summary', async () => {
-      // `loaded(null)` after a rejected read is indistinguishable from an absent
-      // key in the payload — the registry is what tells them apart, and it
-      // withheld the key.
       setup({ probe: { items: [] } });
       actions$ = of(ProbeActions.loaded(null));
 

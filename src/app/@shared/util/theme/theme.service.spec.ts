@@ -58,7 +58,6 @@ describe('ThemeService', () => {
     it('leaves an un-overridden accent with no inline var (falls back to SCSS)', () => {
       const theme = setup();
       theme.apply('cyberpunk', { primary: '#3880ff', secondary: '#32aea6' });
-      // Reapply with only primary overridden.
       theme.apply('cyberpunk', { primary: '#3880ff' } as never);
 
       expect(

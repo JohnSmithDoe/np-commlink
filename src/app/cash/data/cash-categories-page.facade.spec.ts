@@ -29,8 +29,6 @@ describe('CashCategoriesPageFacade', () => {
     facade = TestBed.inject(CashCategoriesPageFacade);
   };
 
-  // The catalog is a list, so its page view sorts through the shared engine
-  // instead of the facade decorating and ordering it.
   it('serves the catalog as an ordinary sorted list', () => {
     setup(
       mockCashState({
@@ -50,7 +48,6 @@ describe('CashCategoriesPageFacade', () => {
     ]);
   });
 
-  // The count is a lookup the row reads, not a shape the catalog is wrapped in.
   it('counts only live transactions per category', () => {
     setup(
       mockCashState({
@@ -86,8 +83,6 @@ describe('CashCategoriesPageFacade', () => {
     expect(request?.item.name).toBe('Lebensmittel');
   });
 
-  // One save command, two cash events: cash's add and rename carry different
-  // cascades, so the facade has to decide which this is.
   it('routes a save to add for a new entry and to rename for a known one', () => {
     const food = mockCategory({ id: 'c1', name: 'Lebensmittel' });
     setup(
@@ -112,7 +107,6 @@ describe('CashCategoriesPageFacade', () => {
     expect(dispatch).toHaveBeenCalledWith(CashActions.removeCategory('c2'));
   });
 
-  // Cash's answer to the grocery/tasks `?filter` drill: its own category page.
   it('drills into the category → transactions view', () => {
     setup();
 

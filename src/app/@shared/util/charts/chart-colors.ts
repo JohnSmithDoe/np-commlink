@@ -1,29 +1,6 @@
-/**
- * Chart (canvas) colours read from the live Shadowrun theme.
- *
- * chart.js paints on a `<canvas>`, where CSS custom properties do NOT resolve —
- * a `'var(--x)'` fill renders as transparent. So instead of hardcoding
- * Ionic-default hexes we snapshot the computed theme tokens from `:root`, which
- * keeps the charts on the deck palette and lets the Phase-6 palette seam
- * recolour them for free.
- *
- * Read the **leaf** tokens (`--ion-color-*`, `--sr-red`) that hold real hex
- * values — `getComputedStyle().getPropertyValue()` returns a custom property's
- * *specified* value, so an alias like `--sr-amber: var(--ion-color-primary)`
- * would come back as the literal string `"var(--ion-color-primary)"`.
- *
- * Call from a component field/`computed` (i.e. after bootstrap, once the theme
- * is applied to `:root`) — never at module top-level, where styles aren't ready.
- * Each read has a hardcoded fallback matching the current theme value in case
- * the property is momentarily unset.
- */
 interface ChartColors {
-  /** Positive / income series → the theme's success green. */
   income: string;
-  /** Negative / spend series → the theme's danger red. */
   spend: string;
-  /** Categorical ramp: leads with the deck neons + theme semantics, then two
-   *  fixed accents so longer category/series lists stay distinguishable. */
   series: string[];
 }
 

@@ -1,3 +1,10 @@
+// ─── why ────────────────────────────────────────────────────────
+// A grid of 1644 glyphs re-laid on every keystroke is the one place this dialog
+// can feel slow, so the cell is one thumb-sized track definition and nothing
+// per-cell. The glyph IS the content, which is why the cell opts out of the
+// deck's letter-spacing.
+// ────────────────────────────────────────────────────────────────
+
 @use '../../../../theme/deck';
 
 .emoji-picker__heading {
@@ -7,9 +14,6 @@
   margin: 0.75rem 1rem 0.25rem;
 }
 
-// Fixed columns rather than auto-fill: a grid of 1644 glyphs reflowing per
-// keystroke is the one place this dialog can feel slow, and the cell is sized
-// for a thumb either way.
 .emoji-picker__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
@@ -23,7 +27,6 @@
   border: none;
   border-radius: var(--sr-radius);
   font-size: var(--fs-xlarge);
-  // The glyph is the content, so it must not inherit the deck's letter-spacing.
   letter-spacing: normal;
   line-height: 1;
 

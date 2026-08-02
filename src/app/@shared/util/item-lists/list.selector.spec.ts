@@ -1,28 +1,26 @@
 import { mockBaseItem } from '../../testing/test-data';
-import { IBaseItem } from '../../model/base-item.types';
-import { IListState } from '../../model/item-list.types';
+import { BaseItem } from '../../model/base-item.types';
+import { ListState } from '../../model/item-list.types';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
-  itemCountByCategory,
   itemComparator,
+  itemCountByCategory,
 } from './list.selector';
 
 const mockListState = (
-  overrides: Partial<IListState<IBaseItem>> = {}
-): IListState<IBaseItem> => ({
+  overrides: Partial<ListState<BaseItem>> = {}
+): ListState<BaseItem> => ({
   items: [],
   ...overrides,
 });
 
-// `prio`/`bestBefore`/`dueAt` are domain fields no shared type declares — the
-// engine reads them structurally, which is exactly what these specs pin down.
 const named = (
   name: string,
   extra: Record<string, unknown> = {}
-): IBaseItem => ({ ...mockBaseItem({ id: name, name }), ...extra });
+): BaseItem => ({ ...mockBaseItem({ id: name, name }), ...extra });
 
-const sortedNames = (items: IBaseItem[], sort: IListState<IBaseItem>['sort']) =>
+const sortedNames = (items: BaseItem[], sort: ListState<BaseItem>['sort']) =>
   [...items].sort(itemComparator(sort)).map((item) => item.name);
 
 describe('itemComparator', () => {
@@ -42,8 +40,6 @@ describe('itemComparator', () => {
     ).toEqual(['Zulu', 'Mike', 'Alpha']);
   });
 
-  // The sentinel pair (MAXPRIO/MINPRIO, MAXDATE/MINDATE) exists so an unset
-  // field loses in EITHER direction rather than flipping to the front on desc.
   describe('items missing the sorted field', () => {
     it('sorts them last when sorting by an optional number', () => {
       const items = [named('unset'), named('low', { prio: 1 })];
@@ -81,9 +77,6 @@ describe('itemComparator', () => {
       ).toEqual(['Zulu', 'Alpha']);
     });
 
-    // A zero is a value, not an absence — so it beats an unset field in either
-    // direction like any other number. Read as falsy it tied with `undefined`
-    // instead, which is the one pair where the sentinel above did not hold.
     it('sorts an unset field last against a zero', () => {
       const items = [named('unset'), named('zeroed', { prio: 0 })];
 
@@ -95,10 +88,6 @@ describe('itemComparator', () => {
       ).toEqual(['zeroed', 'unset']);
     });
 
-    // Equal values say nothing to order by, so the tie breaks on the name
-    // rather than on whatever order the input happened to arrive in — the same
-    // rule the blank-text case below follows, and what keeps a row's position
-    // stable across two different filters that both contain it.
     it('falls back to the name when the values are equal', () => {
       expect(
         sortedNames([named('Zulu', { prio: 0 }), named('Alpha', { prio: 0 })], {
@@ -115,8 +104,6 @@ describe('itemComparator', () => {
     });
   });
 
-  // A string field that isn't a date sorts as text. The engine picks the
-  // comparison from the *value*, so this needs no field name in @shared.
   describe('an optional text field', () => {
     it('sorts it in both directions', () => {
       const items = [
@@ -132,10 +119,6 @@ describe('itemComparator', () => {
       ).toEqual(['second', 'first']);
     });
 
-    // Text now holds the same rule as number and date. It used to read a
-    // missing field as `''`, which won ascending — an asymmetry this spec
-    // pinned as-is rather than as intended. Still latent (no domain sorts by a
-    // text field yet), but `sortBy` is an open string precisely so one can.
     it('sorts a missing field last in either direction', () => {
       const items = [named('unset'), named('texted', { note: 'alpha' })];
 
@@ -147,8 +130,6 @@ describe('itemComparator', () => {
       ).toEqual(['texted', 'unset']);
     });
 
-    // An empty string is a value, not an absence — the distinction the `''`
-    // substitution destroyed.
     it('treats an empty string as a value that sorts before other text', () => {
       const items = [
         named('texted', { note: 'alpha' }),
@@ -160,13 +141,6 @@ describe('itemComparator', () => {
       ).toEqual(['blank', 'texted']);
     });
 
-    /**
-     * The comparator is chosen from the first non-empty value, and it used to ask
-     * `dayjs(sample).isValid()` — which V8's `Date` answers yes to for `'2'`
-     * (1 Feb 2001). A short text value therefore pinned the DATE comparator for
-     * the whole sort, so these three ordered as 2001-02-01 / 2001-10-01 / invalid
-     * instead of as text.
-     */
     it('sorts short text as text, not as a date V8 would accept', () => {
       const items = [
         named('two', { note: '2' }),
@@ -190,8 +164,6 @@ describe('itemComparator', () => {
       ).toEqual(['earlier', 'later']);
     });
 
-    // An empty string is present but says nothing to order by, so the tie
-    // breaks on the name rather than silently keeping the input order.
     it('falls back to the name when the field is blank on both', () => {
       const items = [named('Zulu', { note: '' }), named('Alpha', { note: '' })];
 

@@ -19,8 +19,6 @@ describe('TrackingListPageFacade', () => {
       providers: [provideZonelessChangeDetection(), provideMockStore()],
     });
     store = TestBed.inject(MockStore);
-    // Seed the tracking selectors the facade reads so its signal fields resolve
-    // without a real reducer state.
     store.overrideSelector(selectTrackingState, {
       items: [],
       categories: [],
@@ -56,8 +54,6 @@ describe('TrackingListPageFacade', () => {
     expect(request?.editMode).toBe('create');
   });
 
-  // createByTicket used to round-trip through TrackingActions.showCreateByTicket
-  // and an effect purely to build a seed item; it opens the host directly now.
   it('opens a create dialog seeded with a fresh ticket', () => {
     facade.createByTicket();
     const request = TestBed.inject(ItemDialogService).request();

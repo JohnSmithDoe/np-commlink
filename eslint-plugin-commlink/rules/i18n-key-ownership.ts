@@ -1,28 +1,29 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * A domain's i18n vocabulary belongs to the domain that owns the wording.
+ *
+ * Sheriff is structurally blind to this class: it checks import edges, and
+ * a leak like `'household.a11y.back' | translate` inside a page that tasks
+ * and cash also mount is a *string*, not an edge. It stays functionally
+ * harmless — the key resolves — right up until a second domain reads the
+ * first one's wording, which is the boundary the DDD re-domaining existed
+ * to draw. One layer out it is a domain speaking another's vocabulary:
+ * `barcode` shipped every user-visible string under
+ * `officetime.page.settings.barcode.*` long after that settings page was
+ * gone, and nothing caught it.
+ *
+ * One rule rather than the twelve generated `no-restricted-syntax` blocks
+ * it replaces (one for @shared, one per domain), because a rule resolves
+ * the owning folder from the filename itself — which also retires the
+ * option-bag shadowing a per-domain block was exposed to.
+ *
+ * Both ASTs are visited: a quoted key is a `Literal` in TypeScript and a
+ * `LiteralPrimitive` in an Angular template, and most of this class lived
+ * in templates, so a `.ts`-only gate would never have fired.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import { ALL_DOMAIN_PREFIXES, keyOwnershipFor } from '../i18n-owners.ts';
 import type { TemplateLiteralPrimitive } from '../lib/template-ast.types.ts';
-
-// A domain's i18n vocabulary belongs to the domain that owns the wording.
-//
-// Sheriff is structurally blind to this class: it checks import edges, and a leak
-// like `'grocery.a11y.back' | translate` inside a page that tasks and cash also
-// mount is a *string*, not an edge. It stays functionally harmless (the key
-// resolves) right up until a second domain reads the first one's wording, which
-// is the boundary the DDD re-domaining existed to draw. The same leak one layer
-// out is a domain speaking another's vocabulary: `barcode` shipped every
-// user-visible string under `officetime.page.settings.barcode.*` long after that
-// settings page was gone, and nothing caught it.
-//
-// This is one rule rather than the twelve generated `no-restricted-syntax` blocks
-// it replaces (one for @shared, one per domain), because a rule resolves the
-// owning folder from the filename itself. That also retires a live footgun: flat
-// config *replaces* a rule's options rather than merging them, so a selector
-// added to one block was silently dropped wherever a later block set the same
-// rule. A rule **id** cannot be shadowed that way.
-//
-// Which files this runs over is still the config's call — see configs.ts. A file
-// outside `src/app/<known-folder>/` is a no-op, which is what keeps
-// `app.component.ts` and `app.routes.ts` ungated exactly as before.
 
 const NEUTRAL_NAMESPACES =
   'categories.*, item-list.*, list-header.*, toast.*, a11y.*';
@@ -65,9 +66,6 @@ export const rule: Rule.RuleModule = {
     };
 
     return {
-      // The two ASTs the same leak parses to: a quoted key is a `Literal` in
-      // TypeScript and a `LiteralPrimitive` in an Angular template. Most of this
-      // class lived in templates, so a `.ts`-only gate would never have fired.
       Literal: check,
       LiteralPrimitive: (node: TemplateLiteralPrimitive) => check(node),
     };

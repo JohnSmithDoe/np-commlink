@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, output } from '@angular/core';
 import { IonButton, IonButtons, IonToolbar } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { TItemListSortType } from '../../../model/item-list.types';
+import { ItemListSortType } from '../../../model/item-list.types';
 
 @Component({
   selector: 'app-item-list-toolbar',
@@ -11,5 +11,5 @@ import { TItemListSortType } from '../../../model/item-list.types';
   imports: [IonToolbar, IonButtons, IonButton, TranslatePipe],
 })
 export class ItemListToolbarComponent {
-  readonly selectSortMode = output<TItemListSortType>();
+  readonly selectSortMode = output<ItemListSortType>();
 }

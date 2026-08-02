@@ -5,15 +5,16 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
-import { TColor } from '../../../@shared/model/app.types';
-import { TItemListSortType } from '../../../@shared/model/item-list.types';
-import { ITaskItem } from '../../model/task.types';
+import { IonColor } from '../../../@shared/model/app.types';
+import { ItemListSortType } from '../../../@shared/model/item-list.types';
+import { TaskItem } from '../../model/task.types';
 import { dueStatusColor } from '../../util/task.utils';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { TasksListPageFacade } from '../../data';
 import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-item-dialog.component';
+import { applyCategoryFilterFromRoute } from '../../../@shared/util/item-lists/category-filter.route';
 
 @Component({
   selector: 'app-page-tasks',
@@ -39,24 +40,22 @@ export class TasksPage implements ViewWillEnter {
   }
 
   ionViewWillEnter(): void {
-    // Category→items drill (see shopping.page for the timing rationale).
-    const filter = this.#route.snapshot.queryParamMap.get('filter');
-    if (filter) this.#facade.selectCategory(filter);
+    applyCategoryFilterFromRoute(this.#route, this.#facade);
   }
 
-  removeItem(item: ITaskItem) {
+  removeItem(item: TaskItem) {
     this.#facade.removeItem(item);
   }
 
-  showEditDialog(item: ITaskItem) {
+  showEditDialog(item: TaskItem) {
     this.#facade.showEditDialog(item);
   }
 
-  setSortMode(type: TItemListSortType) {
+  setSortMode(type: ItemListSortType) {
     this.#facade.setSortMode(type);
   }
 
-  statusColor(item: ITaskItem): TColor {
+  statusColor(item: TaskItem): IonColor {
     return dueStatusColor(item);
   }
 }

@@ -1,16 +1,25 @@
-// Self-hosted web font — the deck's monospace face (--sr-mono, _shadowrun.scss).
-// url()s are resolved by the bundler relative to THIS file (src/theme/), hence
-// '../assets/fonts/…', and it fingerprints them into media/ with a URL relative
-// to the emitted CSS. That is what makes them survive the Pages subpath. Neither
-// alternative works: root-absolute ('/fonts/…') passes through verbatim and 404s
-// under the /np-commlink/ base href, and a path into public/ cannot be written at
-// all — the bundler resolves url() at build time, so a public/ asset (copied, not
-// bundled) fails the build with "Could not resolve".
+// ─── why ────────────────────────────────────────────────────────
+// JetBrains Mono, self-hosted: five latin-subset weights in src/assets/fonts/,
+// the first entry of --sr-mono and therefore the whole cyberpunk theme's face.
+// It was named in that stack and loaded nowhere for a long time, so the default
+// theme rendered in ui-monospace for anyone without the font installed locally
+// — which developers usually have, which is exactly why it went unnoticed.
 //
-// All five shipped weights are declared even though the app's own CSS names only
-// 400/600/700: Ionic's shadow styles ask for 500 (and one 450), and an undeclared
-// weight is synthesised by the browser — faux-bold, visibly worse than the real
-// face. A declared face nobody matches costs nothing; it is never fetched.
+// The files are NOT in public/, and that is load-bearing. The bundler resolves
+// url() relative to THIS file (hence '../assets/fonts/…') and fingerprints each
+// into media/ with a URL relative to the emitted CSS, which is what makes them
+// survive the Pages subpath. Neither alternative works: root-absolute
+// ('/fonts/…') passes through verbatim and 404s under the /np-commlink/ base
+// href, and a public/ path fails the build outright — url() is resolved at
+// build time and a public/ asset is copied, not bundled.
+//
+// All five weights are declared though the app's own CSS names only 400/600/700
+// — Ionic's shadow styles ask for 500 (and one 450), and an undeclared weight is
+// synthesised by the browser, faux-bold and visibly worse than the real face. A
+// declared face nobody matches is never fetched, so the extra two cost nothing.
+// font-display: swap is why the rest of the --sr-mono stack still matters: it is
+// what paints until the woff2 arrives, not dead weight behind a name.
+// ────────────────────────────────────────────────────────────────
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;

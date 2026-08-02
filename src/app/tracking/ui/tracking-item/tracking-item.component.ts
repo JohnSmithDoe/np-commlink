@@ -18,10 +18,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TColor } from '../../../@shared/model/app.types';
+import { IonColor } from '../../../@shared/model/app.types';
 import {
-  ITrackingItem,
   TRACKING_STATE_LABEL_KEYS,
+  TrackingItem,
 } from '../../model/tracking.types';
 import { MinutesFromSecondsPipe } from '../../util/minutes-from-seconds.pipe';
 import { addIcons } from 'ionicons';
@@ -67,7 +67,7 @@ marker('tracking.item.action.pause');
 export class TrackingItemComponent {
   readonly stateLabelKeys = TRACKING_STATE_LABEL_KEYS;
 
-  readonly item = input.required<ITrackingItem>();
+  readonly item = input.required<TrackingItem>();
   readonly ionList = input.required<IonList>();
 
   readonly selectItem = output<void>();
@@ -101,7 +101,7 @@ export class TrackingItemComponent {
     this.editItem.emit();
   }
 
-  getColor(item: ITrackingItem): TColor {
+  getColor(item: TrackingItem): IonColor {
     switch (item.state) {
       case 'running': {
         return 'success';
@@ -119,7 +119,7 @@ export class TrackingItemComponent {
     this.resetItem.emit();
   }
 
-  protected getIcon(item: ITrackingItem) {
+  protected getIcon(item: TrackingItem) {
     return item.state === 'running' ? 'pause-outline' : 'play-outline';
   }
 }

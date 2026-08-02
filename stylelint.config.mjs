@@ -14,10 +14,12 @@
 export default {
   extends: ['stylelint-config-standard-scss'],
   plugins: [
+    './stylelint/comments-header-only.mjs',
     './stylelint/font-size-uses-scale.mjs',
     './stylelint/muted-text-uses-token.mjs',
   ],
   rules: {
+    'commlink/comments-header-only': true,
     'commlink/font-size-uses-scale': true,
     'commlink/muted-text-uses-token': true,
 
@@ -56,7 +58,9 @@ export default {
     // `(width >= 768px)` against the Android System WebView the APK ships into.
     'media-feature-range-notation': null,
 
-    // A bare `//` is a paragraph break in this project's doc blocks.
+    // A bare `//` is the paragraph break inside a `why` banner, which
+    // `commlink/comments-header-only` requires to be one contiguous `//` run —
+    // so this rule and that one cannot both be on.
     'scss/comment-no-empty': null,
   },
 };

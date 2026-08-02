@@ -1,11 +1,11 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ICategory, TCategoryId } from '../../@shared/model/category.types';
-import { TItemListSortType } from '../../@shared/model/item-list.types';
+import { Category, CategoryId } from '../../@shared/model/category.types';
+import { ItemListSortType } from '../../@shared/model/item-list.types';
 import { createCategory } from '../../@shared/util/app.factory';
 import {
-  ICategoryListPageFacade,
+  CategoryListPageFacade,
   NO_CATALOG,
   openCategoryCreate,
   openCategoryEdit,
@@ -21,20 +21,8 @@ import {
   selectCashCountByCategory,
 } from './cash.selector';
 
-/**
- * {@link ICategoryListPageFacade} for the single cash catalog, rendered by the
- * shared list page like every other catalog.
- *
- * Cash keeps its own category events rather than the generic list ones: deleting a
- * category here also drops the RULES that assigned it, and a merge remaps a scalar
- * `categoryId` on transactions — cascades that are cash's alone, so they stay named
- * for what they do (`removeCategory`, not `removeItem`).
- *
- * `drillTo` goes to the cash category→transactions view, cash's answer to the
- * grocery/tasks `?filter` drill, since cash has no `filterBy` list.
- */
 @Injectable({ providedIn: 'root' })
-export class CashCategoriesPageFacade implements ICategoryListPageFacade {
+export class CashCategoriesPageFacade implements CategoryListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
@@ -62,7 +50,7 @@ export class CashCategoriesPageFacade implements ICategoryListPageFacade {
     this.#store.dispatch(CashActions.updateCategorySearch(''));
   }
 
-  setSortMode(type: TItemListSortType): void {
+  setSortMode(type: ItemListSortType): void {
     this.#store.dispatch(CashActions.updateCategorySort(type, 'toggle'));
   }
 
@@ -76,13 +64,11 @@ export class CashCategoriesPageFacade implements ICategoryListPageFacade {
     );
   }
 
-  showEditDialog(category: ICategory): void {
+  showEditDialog(category: Category): void {
     openCategoryEdit(this.#dialogs, this.catalogListId, category);
   }
 
-  // Add-or-rename resolved here rather than by a reducer: cash's two category
-  // events carry different cascades, so which one this is has to be decided.
-  saveCategory(category: ICategory): void {
+  saveCategory(category: Category): void {
     const exists = this.categories().some((entry) => entry.id === category.id);
     this.#store.dispatch(
       exists
@@ -91,11 +77,11 @@ export class CashCategoriesPageFacade implements ICategoryListPageFacade {
     );
   }
 
-  removeCategory(category: ICategory): void {
+  removeCategory(category: Category): void {
     this.#store.dispatch(CashActions.removeCategory(category.id));
   }
 
-  drillTo(id: TCategoryId): void {
+  drillTo(id: CategoryId): void {
     void this.#router.navigate(['/cash/category', id]);
   }
 }

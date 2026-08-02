@@ -2,8 +2,6 @@ import { linkForAvailability, openingLinkFor } from './link.utils';
 
 describe('geist link utils', () => {
   describe('linkForAvailability', () => {
-    // The APK case: the Android WebView will never expose the Prompt API, so the
-    // page owes the user an explanation rather than a dead download button.
     it('reads an unavailable model as permanently unsupported', () => {
       expect(linkForAvailability('unavailable')).toBe('unsupported');
     });
@@ -21,8 +19,6 @@ describe('geist link utils', () => {
   });
 
   describe('openingLinkFor', () => {
-    // The flash this exists to stop: switching persona re-creates the session,
-    // and the download panel has no business appearing for that.
     it('keeps the console up when the model is already downloaded', () => {
       expect(openingLinkFor('available')).toBe('reforging');
     });

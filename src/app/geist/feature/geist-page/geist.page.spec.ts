@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
-  TLanguageModelAvailability,
+  LanguageModelAvailability,
 } from '../../../@shared/util/theme/language-model.service';
 import { GEIST_PERSONAS } from '../../model/geist.consts';
 import { GeistPage } from './geist.page';
@@ -18,17 +18,12 @@ const fakeSession = (
   ...gauge,
 });
 
-/** The page's async boot (`probe()` → maybe `createSession()`) is microtasks. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-/** A `create()` that stays pending — the multi-GB download still running. */
-const stillDownloading = () =>
-  new Promise<never>(() => {
-    // deliberately never settled
-  });
+const stillDownloading = () => new Promise<never>(() => {});
 
 describe('GeistPage', () => {
-  const availability = signal<TLanguageModelAvailability>('probing');
+  const availability = signal<LanguageModelAvailability>('probing');
   let probe: ReturnType<typeof vi.fn>;
   let createSession: ReturnType<typeof vi.fn>;
 
@@ -43,8 +38,6 @@ describe('GeistPage', () => {
       providers: [
         provideTranslateService(),
         provideZonelessChangeDetection(),
-        // The fixture auto-detects, so the template renders after the test body
-        // returns — and its NO-RESONANCE panel links back to the deck.
         provideRouter([]),
         {
           provide: LanguageModelService,
@@ -56,8 +49,6 @@ describe('GeistPage', () => {
   };
 
   describe('the link state machine', () => {
-    // The APK target: the Prompt API cannot exist there, so the page must land on
-    // its explainer rather than offer a control that can never work.
     it('lands on unsupported where the platform has no model', async () => {
       const page = setup('unavailable').componentInstance;
 
@@ -95,8 +86,6 @@ describe('GeistPage', () => {
       expect(page.link()).toBe('flatlined');
     });
 
-    // CR-092: `priming` used to cover both waits, so re-creating a session
-    // against local weights flashed the multi-GB download panel.
     it('re-creates a cached session without showing the download panel', () => {
       const page = setup('available').componentInstance;
       createSession.mockImplementation(stillDownloading);
@@ -126,8 +115,6 @@ describe('GeistPage', () => {
   });
 
   describe('session lifetime', () => {
-    // Creating the first session can run for minutes; navigating away must not
-    // leave the download running, nor a live session nobody can reach.
     it('aborts an in-flight creation when the page is destroyed', () => {
       const fixture = setup('downloadable');
       createSession.mockImplementation(stillDownloading);

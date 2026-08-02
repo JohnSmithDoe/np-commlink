@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SearchbarCustomEvent } from '@ionic/angular/standalone';
-import { ICategory, TCategoryId } from '../../../model/category.types';
+import { Category, CategoryId } from '../../../model/category.types';
 import { mockCategory } from '../../../testing/test-data';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { CategoriesDialogComponent } from './categories-dialog.component';
@@ -26,8 +26,8 @@ describe('CategoriesDialogComponent', () => {
 
   const open = (
     options: {
-      categories?: ICategory[];
-      selection?: TCategoryId[];
+      categories?: Category[];
+      selection?: CategoryId[];
       multiple?: boolean;
     } = {}
   ) => {
@@ -46,7 +46,7 @@ describe('CategoriesDialogComponent', () => {
   describe('multi-select', () => {
     it('toggles a tapped row in and out of the pending selection without emitting', () => {
       open({ selection: ['cat-dairy'] });
-      const confirmed: TCategoryId[][] = [];
+      const confirmed: CategoryId[][] = [];
       component.confirmed.subscribe((ids) => confirmed.push(ids));
 
       component.rowClick(BAKERY);
@@ -60,7 +60,7 @@ describe('CategoriesDialogComponent', () => {
 
     it('commits the whole pending selection on confirm, newest first', () => {
       open({ selection: ['cat-dairy'] });
-      const confirmed: TCategoryId[][] = [];
+      const confirmed: CategoryId[][] = [];
       component.confirmed.subscribe((ids) => confirmed.push(ids));
 
       component.rowClick(BAKERY);
@@ -69,8 +69,6 @@ describe('CategoriesDialogComponent', () => {
       expect(confirmed).toEqual([['cat-bakery', 'cat-dairy']]);
     });
 
-    // The wrapper leaves the picker mounted, so a cancelled edit would otherwise
-    // still be sitting there the next time it opens.
     it('discards uncommitted toggles when the picker reopens', () => {
       open({ selection: ['cat-dairy'] });
       component.rowClick(BAKERY);
@@ -94,7 +92,7 @@ describe('CategoriesDialogComponent', () => {
   describe('single-select', () => {
     it('picks and confirms in one tap', () => {
       open({ selection: ['cat-dairy'], multiple: false });
-      const confirmed: TCategoryId[][] = [];
+      const confirmed: CategoryId[][] = [];
       component.confirmed.subscribe((ids) => confirmed.push(ids));
 
       component.rowClick(BAKERY);
@@ -106,7 +104,7 @@ describe('CategoriesDialogComponent', () => {
   describe('addNewCategory', () => {
     it('mints a category for a new name and selects the id it just published', () => {
       open();
-      const added: ICategory[] = [];
+      const added: Category[] = [];
       component.addNew.subscribe((category) => added.push(category));
 
       type('Frozen');
@@ -118,12 +116,9 @@ describe('CategoriesDialogComponent', () => {
       expect(component.searchQuery()).toBe('');
     });
 
-    // Minting a second id for a name the catalog already has would be dropped by
-    // the domain's name-dedupe, leaving the item pointing at a category that
-    // never gets persisted.
     it('selects the existing category instead of minting a duplicate', () => {
       open();
-      const added: ICategory[] = [];
+      const added: Category[] = [];
       component.addNew.subscribe((category) => added.push(category));
 
       type('  dAiRy ');
@@ -135,7 +130,7 @@ describe('CategoriesDialogComponent', () => {
 
     it('does not select an existing category twice', () => {
       open({ selection: ['cat-dairy'] });
-      const added: ICategory[] = [];
+      const added: Category[] = [];
       component.addNew.subscribe((category) => added.push(category));
 
       type('Dairy');
@@ -147,8 +142,8 @@ describe('CategoriesDialogComponent', () => {
 
     it('does nothing for a blank query', () => {
       open();
-      const added: ICategory[] = [];
-      const confirmed: TCategoryId[][] = [];
+      const added: Category[] = [];
+      const confirmed: CategoryId[][] = [];
       component.addNew.subscribe((category) => added.push(category));
       component.confirmed.subscribe((ids) => confirmed.push(ids));
 
@@ -162,8 +157,8 @@ describe('CategoriesDialogComponent', () => {
 
     it('confirms the minted id right away in single-select mode', () => {
       open({ multiple: false });
-      const added: ICategory[] = [];
-      const confirmed: TCategoryId[][] = [];
+      const added: Category[] = [];
+      const confirmed: CategoryId[][] = [];
       component.addNew.subscribe((category) => added.push(category));
       component.confirmed.subscribe((ids) => confirmed.push(ids));
 
@@ -207,7 +202,7 @@ describe('CategoriesDialogComponent', () => {
   describe('inline rename', () => {
     it('opens the editor on the current name and emits the trimmed one', async () => {
       open();
-      const renamed: { id: TCategoryId; to: string }[] = [];
+      const renamed: { id: CategoryId; to: string }[] = [];
       component.renamed.subscribe((rename) => renamed.push(rename));
 
       await component.startEdit(DAIRY);
@@ -241,8 +236,6 @@ describe('CategoriesDialogComponent', () => {
       await component.startEdit(DAIRY);
       component.renameText.set('Fridge');
       component.cancelEdit();
-      // Escape closes the editor, then ion-input's blur still fires commitEdit —
-      // with nothing in edit mode it has to stay silent.
       component.commitEdit();
 
       expect(renamed).toEqual([]);
@@ -251,7 +244,7 @@ describe('CategoriesDialogComponent', () => {
 
   it('emits the delete and drops the category from the pending selection', async () => {
     open({ selection: ['cat-dairy', 'cat-bakery'] });
-    const deleted: TCategoryId[] = [];
+    const deleted: CategoryId[] = [];
     component.deleted.subscribe((id) => deleted.push(id));
 
     await component.deleteCategory(DAIRY);

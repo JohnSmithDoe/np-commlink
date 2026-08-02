@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  * The suite drives the web build of the Ionic app via `ng serve` (dev
  * configuration). A single Chromium project with a mobile viewport mirrors the
  * primary Capacitor/Android target. Routes are reached by hash URLs
- * (`withHashLocation()`), e.g. `/#/groceries/storage/_storage`.
+ * (`withHashLocation()`), e.g. `/#/household/storage/_storage`.
  */
 export default defineConfig({
   testDir: './e2e',

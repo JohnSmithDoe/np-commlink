@@ -1,13 +1,24 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `app-money-input` is a Signal Forms control over integer cents: the
+ * dialog holds `amountCents` and the control alone knows about the de-DE
+ * text in the box. Two of its behaviours only a real browser shows.
+ *
+ * It must not reformat while someone is still typing — halfway through
+ * `12,` the model is already 1200, and writing that back would move the
+ * caret on every keystroke.
+ *
+ * It must reformat when the draft reseeds, which is the only moment it
+ * writes the box at all: reopening a stored expense turns -1234 into the
+ * magnitude `12,34`, the sign being the dialog's business rather than the
+ * control's.
+ *
+ * The two rejections in between are different rules wearing one message:
+ * `12,3x` does not parse, while `0` parses and is then refused by
+ * `min(path.amountCents, 1)`.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, Locator, Page, test } from '@playwright/test';
 import { pageRoot } from '../helpers';
-
-/**
- * `app-money-input` is a Signal Forms control over integer **cents**: the dialog
- * holds `amountCents`, and the control alone knows about the de-DE text in the
- * box. Two behaviours only a real browser shows — the box must NOT reformat
- * itself while someone is still typing, and it MUST reformat from cents when the
- * draft reseeds (reopening a stored transaction).
- */
 
 function accounts(page: Page): Locator {
   return pageRoot(page, 'app-page-cash');
@@ -51,18 +62,14 @@ test.describe('cash money input', () => {
     const save = txnModal(page).getByRole('button', { name: 'Speichern' });
     const note = txnModal(page).getByText('Ungültiger Betrag');
 
-    // Halfway through "12," the model is already 1200 — the box must still read
-    // what was typed, or the caret would jump on every keystroke.
     await amountBox(page).fill('12,');
     await expect(amountBox(page)).toHaveValue('12,');
     await expect(save).toBeEnabled();
 
-    // Junk keeps the last amount that parsed, and says so.
     await amountBox(page).fill('12,3x');
     await expect(note).toBeVisible({ timeout: 10_000 });
     await expect(save).toBeDisabled();
 
-    // Zero is not junk, but `min(path.amountCents, 1)` rejects it all the same.
     await amountBox(page).fill('0');
     await expect(note).toBeVisible();
     await expect(save).toBeDisabled();
@@ -74,8 +81,6 @@ test.describe('cash money input', () => {
       timeout: 10_000,
     });
 
-    // Reopening reseeds the draft from stored cents, which IS the moment the
-    // control formats: -1234 → the magnitude '12,34'.
     await account(page).getByText('Soykaf refill').click();
     await expect(txnModal(page)).toBeVisible({ timeout: 10_000 });
     await expect(amountBox(page)).toHaveValue('12,34');

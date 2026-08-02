@@ -20,7 +20,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { optionsOutline, peopleOutline, diceOutline } from 'ionicons/icons';
-import { IGame, TID } from '../../model/trackplay.types';
+import { Game, TrackplayId } from '../../model/trackplay.types';
 import { gameTypeName } from '../../util/game-type.utils';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
@@ -28,14 +28,6 @@ import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-lis
 import { presentGameDialog } from '../present-game-dialog';
 import { presentListSettings } from '../present-list-settings';
 
-/**
- * TRACKPLAY program home — the games list. Header: new-game (+), a jump to the
- * players / game-types sub-pages, and the sort/filter settings popover (which
- * lights up while the list is filtered). The list is split into "running" and
- * "ended" sections (ended games already sink to the bottom). Tapping a game
- * opens its scoring grid; swipe to edit (game-edit dialog) or delete (the undo
- * toast is raised automatically by the effect).
- */
 @Component({
   selector: 'app-page-trackplay-games',
   templateUrl: './games.page.html',
@@ -69,7 +61,6 @@ export class TrackplayGamesPage {
   readonly #gamesMap = this.#facade.games;
   readonly #config = this.#facade.config;
 
-  // The (already ended-sunk) list, split for the two section dividers.
   readonly runningGames = computed(() =>
     this.rxGames().filter((game) => !game.ended)
   );
@@ -80,8 +71,6 @@ export class TrackplayGamesPage {
   readonly shownCount = computed(() => this.rxGames().length);
   readonly totalCount = computed(() => Object.keys(this.#gamesMap()).length);
 
-  // Filter/sort button lights up whenever the list is not showing everything —
-  // a port of the legacy `all.length === games.length` warning state.
   readonly settingsActive = computed(() => {
     const games = this.#config().games;
     return games.filter !== '' || games.typeId !== '' || !games.showEndedGames;
@@ -91,15 +80,15 @@ export class TrackplayGamesPage {
     addIcons({ optionsOutline, peopleOutline, diceOutline });
   }
 
-  typeName(game: IGame): string {
+  typeName(game: Game): string {
     return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
   }
 
-  goToGame(id: TID): void {
+  goToGame(id: TrackplayId): void {
     void this.#router.navigate(['/trackplay/game', id]);
   }
 
-  deleteGame(game: IGame): void {
+  deleteGame(game: Game): void {
     this.#facade.deleteGame(game);
   }
 
@@ -107,7 +96,7 @@ export class TrackplayGamesPage {
     await presentGameDialog(this.#modalCtrl, this.#translate, {});
   }
 
-  async openGameEdit(game: IGame): Promise<void> {
+  async openGameEdit(game: Game): Promise<void> {
     await presentGameDialog(this.#modalCtrl, this.#translate, {
       gameId: game.id,
     });

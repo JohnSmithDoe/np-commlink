@@ -5,7 +5,7 @@ import {
   output,
 } from '@angular/core';
 import { IonItem, IonLabel, IonNote } from '@ionic/angular/standalone';
-import { TColor } from '../../../model/app.types';
+import { IonColor } from '../../../model/app.types';
 
 @Component({
   selector: 'app-text-item',
@@ -16,7 +16,7 @@ import { TColor } from '../../../model/app.types';
 })
 export class TextItemComponent {
   readonly label = input<string | null>();
-  readonly color = input<TColor>();
+  readonly color = input<IonColor>();
   readonly helper = input<string>();
   readonly time = input<string>();
   readonly note = input<string | null>();

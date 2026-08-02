@@ -8,12 +8,6 @@ import {
   selectCashState,
 } from './cash.selector';
 
-/**
- * The `cash` bounded context, registered on every `/cash*` route.
- *
- * Cash is fully self-contained — no other route reads or dispatches `[Cash]` —
- * so it registers on its own, and each sibling route re-registers it.
- */
 export const cashContext = providePersistedContext({
   key: CASH_STATE_KEY,
   reducer: cashReducer,

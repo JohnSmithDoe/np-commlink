@@ -90,7 +90,6 @@ try {
     // build, which resolves wrong under a subpath without a trailing slash.
     if (!body.includes(`<base href="${BASE}">`))
       return `index.html does not carry <base href="${BASE}">`;
-    return undefined;
   });
 
   // Fetched at the URL the app itself will resolve `./i18n/de.json` to from a
@@ -103,7 +102,6 @@ try {
     } catch {
       return 'bundle is not valid JSON';
     }
-    return undefined;
   });
 
   // The regression itself: an ABSOLUTE /i18n/ must NOT resolve, because that is

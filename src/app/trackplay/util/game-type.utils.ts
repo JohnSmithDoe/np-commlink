@@ -1,7 +1,7 @@
-import { IGame, IGameType, TID } from '../model/trackplay.types';
+import { Game, GameType, TrackplayId } from '../model/trackplay.types';
 
 export const gameTypeName = (
-  game: IGame,
-  gameTypes: Record<TID, IGameType>,
+  game: Game,
+  gameTypes: Record<TrackplayId, GameType>,
   fallback: string
 ): string => gameTypes[game.type]?.name ?? fallback;

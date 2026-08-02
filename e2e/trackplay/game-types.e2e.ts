@@ -1,10 +1,13 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The two tests differ by a single click, because the toggle's DEFAULT is
+ * win-high: the win-low case flips it, the win-high case deliberately
+ * touches nothing. A default cannot be read off a spec that always sets
+ * the value, which is what the untouched case is for.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { expect, test } from '@playwright/test';
 import { gotoTrackplay, mainContent } from './helpers';
 
-/**
- * Create a new game type through its dialog (name + win-high toggle) and verify
- * it lands in the list with the correct win-high / win-low label.
- */
 test.describe('trackplay game types', () => {
   test('creates a win-low game type via the dialog', async ({ page }) => {
     await gotoTrackplay(
@@ -24,7 +27,6 @@ test.describe('trackplay game types', () => {
       .getByTestId('game-type-name-input')
       .locator('input')
       .fill('Doppelkopf');
-    // Default toggle is win-high (checked); flip it to make a win-low type.
     await dialog.getByTestId('win-high-toggle').click();
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();
@@ -54,7 +56,6 @@ test.describe('trackplay game types', () => {
       .getByTestId('game-type-name-input')
       .locator('input')
       .fill('Canasta');
-    // Leave the toggle in its default (win-high) state.
     await dialog.getByRole('button', { name: 'OK' }).click();
     await expect(dialog).toBeHidden();
 

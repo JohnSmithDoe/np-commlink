@@ -11,8 +11,6 @@ const BADGE_URL = 'data:image/png;base64,BADGE';
 const ROTATED_URL = 'data:image/png;base64,ROTATED';
 const ROTATED_TWICE_URL = 'data:image/png;base64,ROTATEDTWICE';
 
-// jsdom neither fetches images nor rasterises a canvas, so the real
-// `rotateBase64` runs against stand-ins for both.
 const stubBadgeImage = (outcome: 'load' | 'error'): string[] => {
   const requested: string[] = [];
   vi.stubGlobal(
@@ -96,8 +94,6 @@ describe('BarcodeEffects', () => {
     );
   });
 
-  // Double-tapping rotate has to turn the badge 180°: the second tap may neither
-  // be dropped nor rotate the pre-rotation badge a second time.
   it('queues a second tap and rotates the result of the first', async () => {
     setup(BADGE_URL);
     const loaded = stubBadgeImage('load');

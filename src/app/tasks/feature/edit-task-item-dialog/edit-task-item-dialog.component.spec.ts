@@ -15,8 +15,6 @@ describe('EditTaskItemDialogComponent', () => {
   let host: ItemDialogService;
 
   const seed = createTaskItem('Buy stamps', [], 1);
-  // A real sibling, so the duplicate-name rule below has something to catch — an
-  // `items: []` slice would make that branch unreachable while looking seeded.
   const sibling = mockTaskItem({ id: 'other', name: 'Post letters' });
 
   beforeEach(async () => {
@@ -52,9 +50,6 @@ describe('EditTaskItemDialogComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // The rule is the BASE's schema now; which list it compares against is this
-  // wrapper's wiring, and that is the half that can silently go wrong (the tasks
-  // PAGE's view would drop a sibling its search box is hiding).
   it('refuses a name a sibling task already has', () => {
     expect(component.canSave()).toBe(true);
 

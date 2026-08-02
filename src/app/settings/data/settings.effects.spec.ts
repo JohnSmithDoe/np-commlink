@@ -135,10 +135,6 @@ describe('SettingsEffects', () => {
       expect(splash.reveal).not.toHaveBeenCalled();
     });
 
-    // The ordering is what the splash exists for: it covers the first paint so
-    // nobody sees the wrong theme, which only holds if the theme is applied
-    // before the reveal. Folding both into one tap is what makes that structural
-    // rather than a matter of which effect was declared first.
     it('applies the theme before lifting', async () => {
       const order: string[] = [];
       const effects = setup();
@@ -154,12 +150,6 @@ describe('SettingsEffects', () => {
     });
   });
 
-  // `loaded(null)` means "absent key" *or* "read failed" — the load effect
-  // cannot tell them apart. A seed effect used to answer it by writing
-  // `initialSettings` straight to disk, so one transient read rejection lost
-  // the user's theme permanently. Nothing read that seeded doc: `bootstrap()`
-  // reads nothing, `runMigrations` reads each doc's own envelope, and settings
-  // declares no ladder.
   it('writes nothing on a null load — the descriptor owns the only save path', async () => {
     const effects = setup();
     actions$ = of(SettingsActions.loaded(null));
@@ -192,8 +182,6 @@ describe('SettingsEffects', () => {
   });
 
   describe('restartOnLanguageChange$', () => {
-    // The reload is irreversible, so it must not overtake the descriptor's save
-    // effect — reloading first would drop the choice the restart exists to apply.
     it('waits for the pending write before restarting', async () => {
       const order: string[] = [];
       const effects = setup({ theme: 'cyberpunk', language: 'en' });
@@ -208,7 +196,6 @@ describe('SettingsEffects', () => {
       expect(order).toEqual(['settled', 'reload']);
     });
 
-    // Picking a theme is a live change; only the language needs a restart.
     it('does not restart for any other settings change', async () => {
       const effects = setup();
       actions$ = of(SettingsActions.setTheme('boomer'));
@@ -219,8 +206,6 @@ describe('SettingsEffects', () => {
     });
   });
 
-  // The emoji picker is @shared/ui and may reach neither this slice nor
-  // type:data at all, so this mirror is its only route to the recents.
   describe('publishRecentEmojis$', () => {
     it('republishes the persisted list', async () => {
       const effects = setup(mockSettingsState({ recentEmojis: ['🥛', '🍞'] }));

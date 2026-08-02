@@ -1,16 +1,9 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TMarker } from '../../@shared/model/app.types';
-import { IGeistPersona, TGeistLink } from './geist.types';
+import { Marker } from '../../@shared/model/app.types';
+import { GeistPersona, GeistLink } from './geist.types';
 
-/**
- * Which of the three HUD LED states each link state lights, `null` for none.
- *
- * A `Record` for the same reason as the labels below: the template used to do six
- * comparisons across three `[class.sr-led--*]` bindings, `'probing'` fell through
- * all three to no class, and an eighth link state would silently have lit nothing.
- */
 export const GEIST_LINK_LED: Record<
-  TGeistLink,
+  GeistLink,
   'on' | 'standby' | 'off' | null
 > = {
   probing: null,
@@ -22,8 +15,7 @@ export const GEIST_LINK_LED: Record<
   flatlined: 'off',
 };
 
-/** Keyed rather than concatenated in the template so the extractor sees them all. */
-export const GEIST_LINK_LABELS: Record<TGeistLink, TMarker> = {
+export const GEIST_LINK_LABELS: Record<GeistLink, Marker> = {
   probing: marker('geist.link.probing'),
   unsupported: marker('geist.link.unsupported'),
   dormant: marker('geist.link.dormant'),
@@ -33,16 +25,7 @@ export const GEIST_LINK_LABELS: Record<TGeistLink, TMarker> = {
   flatlined: marker('geist.link.flatlined'),
 };
 
-/**
- * Three registers of the same model, switched purely by system message — the
- * sampling knobs (`temperature`/`topK`) are extension-only, so the prompt is
- * the only lever the web gets.
- *
- * Gemini Nano is small: the prompts push hard on brevity and structure, because
- * left alone it rambles far past what a deck panel can show.
- */
-/** The register a fresh session opens in. */
-export const GEIST_DEFAULT_PERSONA: IGeistPersona = {
+export const GEIST_DEFAULT_PERSONA: GeistPersona = {
   id: 'fixer',
   codename: 'FIXER',
   taglineKey: marker('geist.persona.fixer'),
@@ -60,7 +43,7 @@ export const GEIST_DEFAULT_PERSONA: IGeistPersona = {
   },
 };
 
-export const GEIST_PERSONAS: readonly IGeistPersona[] = [
+export const GEIST_PERSONAS: readonly GeistPersona[] = [
   GEIST_DEFAULT_PERSONA,
   {
     id: 'archivist',

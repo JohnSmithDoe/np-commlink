@@ -1,32 +1,37 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * A `data-testid` is never composed at the call site. This is the
+ * invariant `scripts/check-testids.mjs` rests on and cannot check itself:
+ * it decides "declared but never referenced" and "referenced but never
+ * declared" by matching a STATIC LITERAL on both sides, so a composed id
+ * (`data-testid="row-{{ item.id }}"`, `'row-' + id`) drops the declaration
+ * out of the set and the dead-id half stops seeing it — a gate that
+ * quietly narrows is worse than one that is absent. Composition also costs
+ * the greppability the contract exists for: `'row-' + id` in a template
+ * and `getByTestId('row-milk')` in a spec share no literal.
+ *
+ * The set differences themselves stay in that script rather than becoming
+ * rules here. Both are whole-repo comparisons, the one shape a per-file
+ * linter is worst at: answering them in a rule means a module-level cached
+ * index, and with `cache: true` on the lint target a cross-file verdict
+ * cached per file goes stale exactly when it matters.
+ *
+ * WHICH NAME a composed id arrives under was measured, not assumed,
+ * because the first cut of this rule silently passed the most likely form.
+ * Any composed form is a BoundAttribute and only a static one stays in
+ * `attributes`; `[data-testid]`, `[attr.data-testid]` and
+ * `attr.data-testid="{{…}}"` all arrive as `data-testid`, but plain
+ * interpolation — `data-testid="row-{{ id }}"`, the one someone actually
+ * writes — arrives as `testid`, because Angular strips the `data-` prefix
+ * on that path alone. Matching one name catches half.
+ * ───────────────────────────────────────────────────────────────── */
+
 import type { Rule } from 'eslint';
 import { boundAttribute, templateParserServices } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 import type { ObjectExpression } from '../lib/overlay-options.ts';
 import { property } from '../lib/overlay-options.ts';
 
-// A `data-testid` is never composed at the call site.
-//
-// This is the invariant `scripts/check-testids.mjs` rests on and cannot check
-// itself: it decides "declared but never referenced" and "referenced but never
-// declared" by matching a *static literal* on both sides. A composed id
-// (`data-testid="row-{{ item.id }}"`, `'row-' + id`) is invisible to it, so the
-// declaration silently drops out of the set and the dead-id half stops seeing it
-// — a gate that quietly narrows is worse than one that is absent.
-//
-// The set differences themselves stay in that script rather than becoming rules
-// here. Both are whole-repo comparisons, which is the one shape a per-file linter
-// is worst at: answering them in a rule means a module-level cached index, and
-// with `cache: true` on the lint target a cross-file verdict cached per file goes
-// stale exactly when it matters. The script is 60ms and runs in CI.
-//
-// Composition also costs the greppability the contract exists for: `'row-' + id`
-// in a template and `getByTestId('row-milk')` in a spec share no literal, so
-// neither half answers "which elements do tests depend on". A repeated row
-// carries a static id and the spec picks *which* row by user-visible content.
-
 const TESTID = 'data-testid';
-// Angular strips `data-` when a plain attribute carries an interpolation, so the
-// same id arrives under a second name. Verified against the installed parser.
 const INTERPOLATED_TESTID = 'testid';
 
 const isStaticString = (node: { type: string }): boolean =>
@@ -48,20 +53,10 @@ export const rule: Rule.RuleModule = {
     },
   },
   create(context) {
-    // One rule, two languages: the template half runs on *.html, the TS half on
-    // the imperatively-created overlays that set their id through htmlAttributes.
     if (context.filename.endsWith('.html')) {
       const services = templateParserServices(context);
       return {
         Element(element: TemplateElement) {
-          // Any composed form is a BoundAttribute; only a static one stays in
-          // `attributes`. Which *name* it lands under was measured rather than
-          // assumed, because the first cut of this rule silently passed the most
-          // likely form: `[data-testid]`, `[attr.data-testid]` and
-          // `attr.data-testid="{{…}}"` all arrive as `data-testid`, but plain
-          // interpolation — `data-testid="row-{{ id }}"`, the one someone
-          // actually writes — arrives as **`testid`**, because Angular strips the
-          // `data-` prefix on that path alone. Matching one name catches half.
           const offender =
             boundAttribute(element, TESTID) ??
             boundAttribute(element, INTERPOLATED_TESTID);

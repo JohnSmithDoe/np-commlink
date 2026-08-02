@@ -11,7 +11,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
-import { IGameType } from '../../model/trackplay.types';
+import { GameType } from '../../model/trackplay.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { TrackplayFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
@@ -19,7 +19,6 @@ import { TrackplayGameTypeEditModalComponent } from '../game-type-edit-modal/gam
 import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item/game-type-list-item.component';
 import { presentModal } from '../../../@shared/util/app.modal.utils';
 
-/** Game types (Spielarten) manager: list + create/edit dialog. */
 @Component({
   selector: 'app-page-trackplay-game-types',
   templateUrl: './game-types.page.html',
@@ -51,11 +50,11 @@ export class TrackplayGameTypesPage {
     void this.#openDialog();
   }
 
-  openEdit(type: IGameType): void {
+  openEdit(type: GameType): void {
     void this.#openDialog(type.id);
   }
 
-  deleteType(type: IGameType): void {
+  deleteType(type: GameType): void {
     this.#facade.deleteGameType(type);
   }
 

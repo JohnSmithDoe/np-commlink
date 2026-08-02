@@ -56,8 +56,6 @@ describe('CashTransferModalComponent', () => {
       amountCents: 5000,
       isTransfer: true,
     });
-    // The shared group id is what lets deleting one leg take the other with it;
-    // distinct ids are what keep the pair two rows in two ledgers.
     expect(action.fromLeg.transferGroupId).toBe(action.toLeg.transferGroupId);
     expect(action.fromLeg.id).not.toBe(action.toLeg.id);
     expect(dismiss).toHaveBeenCalled();
@@ -75,8 +73,6 @@ describe('CashTransferModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // `app-money-input` reports an unparseable box itself, so what is left here is
-  // `min(path.amountCents, 1)`: a transfer of nothing is not a transfer.
   it('refuses a zero amount', () => {
     setup();
 
@@ -88,8 +84,6 @@ describe('CashTransferModalComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  // Same trap as the transaction dialog: the cleared date used to reach BOTH
-  // legs as the string 'Invalid Date'.
   it('refuses a cleared date', () => {
     setup();
 
@@ -127,8 +121,6 @@ describe('CashTransferModalComponent', () => {
     });
     component.confirm();
 
-    // With no translations loaded, `instant` echoes the key back — so the key is
-    // the label here.
     expect(bookedTransfer().fromLeg.description).toBe(
       'cash.transfer.default-description'
     );

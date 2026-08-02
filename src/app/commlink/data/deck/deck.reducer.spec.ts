@@ -1,8 +1,8 @@
-import { IDeckState } from '../../model/deck.types';
+import { DeckState } from '../../model/deck.types';
 import { DeckActions } from './deck.actions';
 import { deckReducer, initialDeck } from './deck.reducer';
 
-const stored: IDeckState = {
+const stored: DeckState = {
   order: ['cash', 'shopping'],
   hiddenEntries: ['storage'],
   hiddenModules: ['trackplay'],
@@ -16,8 +16,6 @@ describe('deckReducer', () => {
       );
     });
 
-    // A fresh install has no doc, and the factory deck is the empty config —
-    // catalog order, nothing hidden.
     it('keeps the factory deck when there is nothing on disk', () => {
       expect(deckReducer(initialDeck, DeckActions.loaded(null))).toBe(
         initialDeck
@@ -50,16 +48,14 @@ describe('deckReducer', () => {
 
   describe('toggleModule', () => {
     it('hides a module without touching its entries', () => {
-      const next = deckReducer(stored, DeckActions.toggleModule('groceries'));
-      expect(next.hiddenModules).toEqual(['trackplay', 'groceries']);
+      const next = deckReducer(stored, DeckActions.toggleModule('household'));
+      expect(next.hiddenModules).toEqual(['trackplay', 'household']);
       expect(next.hiddenEntries).toEqual(stored.hiddenEntries);
     });
 
-    // The cascade is a read-time rule, so re-enabling restores exactly what the
-    // user had configured underneath rather than everything.
     it('restores the per-entry choices when it is switched back on', () => {
-      const off = deckReducer(stored, DeckActions.toggleModule('groceries'));
-      const on = deckReducer(off, DeckActions.toggleModule('groceries'));
+      const off = deckReducer(stored, DeckActions.toggleModule('household'));
+      const on = deckReducer(off, DeckActions.toggleModule('household'));
       expect(on).toEqual(stored);
     });
   });

@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { uuidv4 } from './app.utils';
-import { IBaseItem } from '../model/base-item.types';
-import { ICategory, TCategoryId } from '../model/category.types';
+import { BaseItem } from '../model/base-item.types';
+import { Category, CategoryId } from '../model/category.types';
 
 export function createBaseItem(
   name: string,
-  categories?: TCategoryId | TCategoryId[]
-): IBaseItem {
+  categories?: CategoryId | CategoryId[]
+): BaseItem {
   let categoryIds = undefined;
   if (undefined !== categories) {
     categoryIds = Array.isArray(categories) ? categories : [categories];
@@ -20,8 +20,6 @@ export function createBaseItem(
   };
 }
 
-// The one place a category's shape is decided, so every mint site — the reducer,
-// the edit dialog's blank draft, the grocery fan-out — agrees on it.
-export function createCategory(name: string): ICategory {
+export function createCategory(name: string): Category {
   return createBaseItem(name);
 }

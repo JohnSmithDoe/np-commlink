@@ -1,12 +1,12 @@
 import { inject, Injectable, Signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { ICategory, TCategoryId } from '../../@shared/model/category.types';
+import { Category, CategoryId } from '../../@shared/model/category.types';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { ICashAccount } from '../model/account.types';
-import { ICashRule } from '../model/rule.types';
-import { ICashTransaction } from '../model/transaction.types';
-import { ICashRecategorization } from '../util/categorize.utils';
+import { CashAccount } from '../model/account.types';
+import { CashRule } from '../model/rule.types';
+import { CashTransaction } from '../model/transaction.types';
+import { CashRecategorization } from '../util/categorize.utils';
 import { CashActions } from './cash.actions';
 import {
   selectAccountBalances,
@@ -22,17 +22,9 @@ import {
   selectSpendByCategory,
   selectTransactionsForAccount,
   selectTransactionsForCategory,
-  TAccountTxn,
+  AccountTransaction,
 } from './cash.selector';
 
-/**
- * The `cash` (CREDSTICK) domain facade — the single NgRx surface for every cash
- * component (accounts overview, account ledger, category drill, report, rules,
- * and the six edit/import/reconcile/transfer modals). Injects `Store` so the
- * components never do. Route-scoped reads (an account's ledger, a category's
- * transactions) are exposed as factory methods returning a signal, since they
- * depend on a runtime id.
- */
 @Injectable({ providedIn: 'root' })
 export class CashFacade {
   readonly #store = inject(Store);
@@ -50,25 +42,23 @@ export class CashFacade {
   readonly reportTotals = this.#store.selectSignal(selectReportTotals);
   readonly spendByCategory = this.#store.selectSignal(selectSpendByCategory);
 
-  // Route-parameterised reads (called once from a component field initializer).
-  accountById(id: string): Signal<ICashAccount | undefined> {
+  accountById(id: string): Signal<CashAccount | undefined> {
     return this.#store.selectSignal(selectAccountById(id));
   }
 
-  transactionsForAccount(id: string): Signal<TAccountTxn[]> {
+  transactionsForAccount(id: string): Signal<AccountTransaction[]> {
     return this.#store.selectSignal(selectTransactionsForAccount(id));
   }
 
-  transactionsForCategory(id: string): Signal<ICashTransaction[]> {
+  transactionsForCategory(id: string): Signal<CashTransaction[]> {
     return this.#store.selectSignal(selectTransactionsForCategory(id));
   }
 
-  // ── Accounts ─────────────────────────────────────────────────────────────
-  addAccount(account: ICashAccount): void {
+  addAccount(account: CashAccount): void {
     this.#store.dispatch(CashActions.addAccount(account));
   }
 
-  updateAccount(account: ICashAccount): void {
+  updateAccount(account: CashAccount): void {
     this.#store.dispatch(CashActions.updateAccount(account));
   }
 
@@ -76,12 +66,11 @@ export class CashFacade {
     this.#store.dispatch(CashActions.removeAccount(id));
   }
 
-  // ── Transactions ─────────────────────────────────────────────────────────
-  addTransaction(transaction: ICashTransaction): void {
+  addTransaction(transaction: CashTransaction): void {
     this.#store.dispatch(CashActions.addTransaction(transaction));
   }
 
-  updateTransaction(transaction: ICashTransaction): void {
+  updateTransaction(transaction: CashTransaction): void {
     this.#store.dispatch(CashActions.updateTransaction(transaction));
   }
 
@@ -89,17 +78,17 @@ export class CashFacade {
     this.#store.dispatch(CashActions.removeTransaction(id));
   }
 
-  importTransactions(transactions: ICashTransaction[]): void {
+  importTransactions(transactions: CashTransaction[]): void {
     this.#store.dispatch(CashActions.importTransactions(transactions));
   }
 
-  bookTransfer(fromLeg: ICashTransaction, toLeg: ICashTransaction): void {
+  bookTransfer(fromLeg: CashTransaction, toLeg: CashTransaction): void {
     this.#store.dispatch(CashActions.bookTransfer(fromLeg, toLeg));
   }
 
   setTransactionCategory(
     id: string,
-    categoryId: TCategoryId | undefined,
+    categoryId: CategoryId | undefined,
     manual: boolean
   ): void {
     this.#store.dispatch(
@@ -107,7 +96,7 @@ export class CashFacade {
     );
   }
 
-  recategorizeTransactions(changes: ICashRecategorization[]): void {
+  recategorizeTransactions(changes: CashRecategorization[]): void {
     this.#store.dispatch(CashActions.recategorizeTransactions(changes));
   }
 
@@ -121,25 +110,23 @@ export class CashFacade {
     this.#store.dispatch(CashActions.unreconcileTransaction(manualId));
   }
 
-  // ── Categories ───────────────────────────────────────────────────────────
-  addCategory(category: ICategory): void {
+  addCategory(category: Category): void {
     this.#store.dispatch(CashActions.addCategory(category));
   }
 
-  removeCategory(id: TCategoryId): void {
+  removeCategory(id: CategoryId): void {
     this.#store.dispatch(CashActions.removeCategory(id));
   }
 
-  updateCategory(id: TCategoryId, name: string): void {
+  updateCategory(id: CategoryId, name: string): void {
     this.#store.dispatch(CashActions.updateCategory(id, name));
   }
 
-  // ── Rules ────────────────────────────────────────────────────────────────
-  addRule(rule: ICashRule): void {
+  addRule(rule: CashRule): void {
     this.#store.dispatch(CashActions.addRule(rule));
   }
 
-  updateRule(rule: ICashRule): void {
+  updateRule(rule: CashRule): void {
     this.#store.dispatch(CashActions.updateRule(rule));
   }
 

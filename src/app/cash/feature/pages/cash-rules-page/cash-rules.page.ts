@@ -33,7 +33,7 @@ import {
   pricetagsOutline,
   trashOutline,
 } from 'ionicons/icons';
-import { ICashRule } from '../../../model/rule.types';
+import { CashRule } from '../../../model/rule.types';
 import { CashFacade } from '../../../data';
 import { deleteConfirmAlert } from '../../../util/delete-alert.utils';
 import { recategorizations } from '../../../util/categorize.utils';
@@ -43,15 +43,8 @@ import { categoryNameLookup } from '../../../../@shared/util/categories/category
 import { reorderedIds } from '../../../../@shared/util/app.utils';
 import { presentModal } from '../../../../@shared/util/app.modal.utils';
 
-import { TCategoryId } from '../../../../@shared/model/category.types';
+import { CategoryId } from '../../../../@shared/model/category.types';
 
-/**
- * Categories + categorization rules. The category palette (add/remove) feeds the
- * rule editor's category picker. Rules are shown in priority order, dragged to
- * re-prioritise (→ `reorderRules`), tap-to-edit, swipe-to-delete. "Apply rules" runs
- * the pure `categorize` engine over every non-manual transaction and reports how
- * many changed. Reached from the accounts overview header.
- */
 @Component({
   selector: 'app-page-cash-rules',
   templateUrl: './cash-rules.page.html',
@@ -87,7 +80,6 @@ export class CashRulesPage {
   readonly #rules = this.#facade.rules;
   readonly #transactions = this.#facade.transactions;
 
-  // id → name lookup so rule rows can render their assigned category's name.
   readonly #categoryName = computed(() =>
     categoryNameLookup(this.categories())
   );
@@ -96,7 +88,7 @@ export class CashRulesPage {
     this.#rules().toSorted((a, b) => a.order - b.order)
   );
 
-  categoryName(id: TCategoryId): string {
+  categoryName(id: CategoryId): string {
     return this.#categoryName()(id);
   }
 
@@ -117,7 +109,7 @@ export class CashRulesPage {
     void this.#router.navigate(['/cash/categories']);
   }
 
-  conditionSummaryLabel(rule: ICashRule): string {
+  conditionSummaryLabel(rule: CashRule): string {
     const key =
       rule.match === 'all'
         ? marker('cash.rule.summary-all')
@@ -137,7 +129,7 @@ export class CashRulesPage {
     );
   }
 
-  async openEditRule(rule: ICashRule): Promise<void> {
+  async openEditRule(rule: CashRule): Promise<void> {
     await presentModal(
       this.#modalCtrl,
       CashRuleEditModalComponent,
@@ -146,7 +138,7 @@ export class CashRulesPage {
     );
   }
 
-  async confirmDeleteRule(rule: ICashRule): Promise<void> {
+  async confirmDeleteRule(rule: CashRule): Promise<void> {
     const alert = await this.#alertCtrl.create(
       deleteConfirmAlert(this.#translate, {
         headerKey: marker('cash.rule.delete.header'),

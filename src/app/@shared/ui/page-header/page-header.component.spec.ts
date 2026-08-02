@@ -32,8 +32,6 @@ describe('PageHeaderComponent', () => {
     fixture.detectChanges();
     expect(queryByTestId(fixture, 'page-header-add')).not.toBeNull();
 
-    // OnPush + zoneless: mutate the input through setInput so the view is
-    // marked dirty (and the booleanAttribute transform runs).
     fixture.componentRef.setInput('hideButtons', true);
     fixture.detectChanges();
     expect(queryByTestId(fixture, 'page-header-add')).toBeNull();

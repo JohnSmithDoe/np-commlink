@@ -1,0 +1,54 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="{{ 'page-title.household-storage' | translate }}"
+  listHeader="{{ 'household.list-header.storage' | translate }}"
+  [itemTemplate]="storageItem"
+>
+  <app-item-list-quick-add quickAdd />
+  <ion-button (click)="facade.setSortMode('bestBefore')" toolbarActions>{{
+    'household.list-toolbar.mhd' | translate
+  }}</ion-button>
+  <app-household-scan-button toolbarActions />
+  <app-household-search-panel searchExtras />
+</app-list-page>
+
+<ng-template
+  #storageItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
+  <app-list-item
+    [item]="item"
+    [title]="item.quantity + ' x ' + item.name"
+    [ionList]="ionList"
+    [categories]="categories"
+    [statusColor]="statusColor(item)"
+    [showQuantityActions]="true"
+    [startSwipeAction]="startSwipeAction"
+    (selectItem)="showEditDialog(item)"
+    (deleteItem)="removeItem(item)"
+    (increment)="changeQuantity(item, +1)"
+    (decrement)="changeQuantity(item, -1)"
+    (startSwipe)="copyToShoppingList(item)"
+  >
+    @if (item.bestBefore) {
+      <ng-container itemDetails>
+        <ion-note>
+          {{ 'household.item.best-before.note' | translate }}:
+          {{ item.bestBefore | date }}
+        </ion-note>
+        <br />
+      </ng-container>
+    }
+
+    @if (item.minAmount) {
+      <ion-note itemDetails>
+        {{ 'household.item.min-amount' | translate }}: {{ item.minAmount }}
+      </ion-note>
+    }
+  </app-list-item>
+</ng-template>
+
+<app-edit-storage-item-dialog></app-edit-storage-item-dialog>
+<app-edit-product-dialog></app-edit-product-dialog>

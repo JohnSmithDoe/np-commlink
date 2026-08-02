@@ -1,0 +1,66 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-item>
+    <ion-select
+      [label]="'household.item.best-before' | translate"
+      interface="popover"
+      [value]="draft().bestBeforeTimespan"
+      (ionChange)="setBestBeforeTimespan($event)"
+    >
+      @for (timespan of timespans; track timespan) {
+        <ion-select-option [value]="timespan">{{
+          timespanLabelKeys[timespan] | translate
+        }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+  <app-number-input
+    [disabled]="draft().bestBeforeTimespan === 'forever'"
+    [value]="draft().bestBeforeTimevalue"
+    (updateValue)="setBestBeforeTimevalue($event)"
+  >
+    <div slot="label">
+      {{ 'household.item.best-before' | translate }}
+      <ion-text
+        ><small>{{
+          'household.item.best-before.count' | translate
+        }}</small></ion-text
+      >
+    </div>
+  </app-number-input>
+  <ion-item>
+    <ion-toggle
+      labelPlacement="start"
+      [checked]="!!draft().alwaysOnHand"
+      (ionChange)="setAlwaysOnHand($event)"
+      >{{ 'household.product.always-on-hand' | translate }}</ion-toggle
+    >
+  </ion-item>
+
+  <app-category-input
+    [categories]="selectedCategories()"
+    (removeCategory)="removeCategory($event)"
+    (openDialog)="openCategoriesDialog()"
+  ></app-category-input>
+
+  <app-categories-dialog
+    [isOpen]="categoriesDialogOpen()"
+    [categories]="categories()"
+    [selection]="draft().categoryIds ?? []"
+    (confirmed)="confirmCategories($event)"
+    (cancelled)="cancelCategories()"
+    (dismissed)="cancelCategories()"
+    (addNew)="addCategory($event)"
+    (deleted)="deleteCategory($event)"
+    (renamed)="renameCategory($event)"
+  ></app-categories-dialog>
+</app-item-edit-modal>

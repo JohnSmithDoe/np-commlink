@@ -22,8 +22,6 @@ describe('rule-form.utils', () => {
       expect(opsFor('description')).toBe(DESCRIPTION_OPS);
     });
 
-    // A field switch resets the op, so the default has to be in the set the
-    // field admits — otherwise the rule sits armed and can never match.
     it('defaults each field to an op that field admits', () => {
       expect(opsFor('description')).toContain(DEFAULT_OP_BY_FIELD.description);
       expect(opsFor('amount')).toContain(DEFAULT_OP_BY_FIELD.amount);
@@ -67,26 +65,18 @@ describe('rule-form.utils', () => {
       });
     });
 
-    // The amount matcher ignores case, so a numeric condition must not carry a
-    // flag that can never apply.
     it('drops the case flag from an amount condition', () => {
       expect(toCondition(amount('12,34'), 'de')).not.toHaveProperty(
         'caseSensitive'
       );
     });
 
-    // The invariant this extraction exists to make testable: a threshold is
-    // stored in German whatever the user typed it in, because the matcher reads
-    // it as German by construction and the two conventions are ambiguous — so a
-    // language switch must not re-interpret a rule that already exists.
     it('normalizes the threshold onto German, whichever language it was typed in', () => {
       expect(toCondition(amount('12,34'), 'de').value).toBe('12,34');
       expect(toCondition(amount('12.34'), 'en').value).toBe('12,34');
       expect(toCondition(amount('1234.56'), 'en').value).toBe('1234,56');
     });
 
-    // An unparseable threshold is kept verbatim rather than coerced: the schema
-    // refuses to save it, so this path only matters if one ever slips past.
     it('keeps an unparseable threshold as typed', () => {
       expect(toCondition(amount('  abc '), 'de').value).toBe('abc');
     });

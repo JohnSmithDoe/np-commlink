@@ -1,9 +1,9 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { IOfficeTimeState } from '../model/office-time.types';
+import { OfficeTimeState } from '../model/office-time.types';
 
 export const OFFICE_TIME_STATE_KEY = 'officeTime';
 
-export const selectOfficeTimeState = createFeatureSelector<IOfficeTimeState>(
+export const selectOfficeTimeState = createFeatureSelector<OfficeTimeState>(
   OFFICE_TIME_STATE_KEY
 );
 

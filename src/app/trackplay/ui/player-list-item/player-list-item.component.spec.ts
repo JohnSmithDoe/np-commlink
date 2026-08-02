@@ -2,19 +2,16 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
 import { provideTranslateService } from '@ngx-translate/core';
-import { IPlayerStats } from '../../model/trackplay.types';
+import { PlayerStats } from '../../model/trackplay.types';
 import { mockPlayer } from '../../testing/trackplay.test-data';
 import { TrackplayPlayerListItemComponent } from './player-list-item.component';
 
-// Smoke-level on purpose: the swipe mechanics belong to BaseSwipeRow and are
-// spec'd once in base-swipe-row.spec.ts. What is this row's own is that its
-// template compiles and binds to the inherited request outputs.
 const fakeIonList = () =>
   ({ closeSlidingItems: vi.fn().mockResolvedValue(undefined) }) as unknown as {
     closeSlidingItems: () => Promise<void>;
   } & IonList;
 
-const stats: IPlayerStats = { play: 3, win: 1, loss: 1, open: 1 };
+const stats: PlayerStats = { play: 3, win: 1, loss: 1, open: 1 };
 
 describe('TrackplayPlayerListItemComponent', () => {
   it('closes the sliding items and asks for an edit', async () => {

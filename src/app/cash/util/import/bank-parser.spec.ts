@@ -8,9 +8,6 @@ describe('splitRow', () => {
   });
 
   it('keeps a delimiter that sits inside a quoted field', () => {
-    // The failure this exists for: a `;` in a Verwendungszweck used to shift
-    // every column right, so the amount column held a BIC and the row was
-    // dropped as unparseable.
     expect(splitRow('03.01.2026;"Rechnung 12; Rest 34";-67,89')).toEqual([
       '03.01.2026',
       'Rechnung 12; Rest 34',
@@ -36,10 +33,6 @@ describe('splitRow', () => {
 });
 
 describe('quoted exports', () => {
-  // A fully quoted export is what both banks produce once a field needs
-  // escaping. Before quote-awareness the header lookup failed, `parse` returned
-  // nothing, and the preview said "Keine neuen Buchungen" — reporting a
-  // perfectly readable file as an empty one.
   it('finds the header and the amounts in a quoted volksbank export', () => {
     const csv = [
       '"Buchungstag";"Valuta";"Auftraggeber/Beguenstigter";"Verwendungszweck";"IBAN";"BIC";"Betrag"',

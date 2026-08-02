@@ -1,24 +1,17 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular/standalone';
-import { TIonDragEvent } from '../../../@shared/model/app.types';
+import { IonDragEvent } from '../../../@shared/model/app.types';
 import { BaseSwipeRow } from './base-swipe-row';
 
-// A fake sliding-list handle: the emit helpers only await closeSlidingItems().
 const fakeIonList = () =>
   ({ closeSlidingItems: vi.fn().mockResolvedValue(undefined) }) as unknown as {
     closeSlidingItems: () => Promise<void>;
   } & IonList;
 
-const dragEvent = (amount: number): TIonDragEvent =>
-  ({ detail: { amount, ratio: 0 } }) as TIonDragEvent;
+const dragEvent = (amount: number): IonDragEvent =>
+  ({ detail: { amount, ratio: 0 } }) as IonDragEvent;
 
-/**
- * The base is abstract and selectorless, so it is exercised through a bare host:
- * the three real rows (game, player, game type) add only their own body markup
- * and a `select*` output, which is why the swipe mechanics are spec'd once here
- * instead of three times over.
- */
 @Component({ selector: 'app-swipe-row-probe', template: '' })
 class SwipeRowProbeComponent extends BaseSwipeRow {}
 
@@ -80,8 +73,6 @@ describe('BaseSwipeRow', () => {
     expect(edit).not.toHaveBeenCalled();
   });
 
-  // The game-types list binds `canDelete` off the built-in type: that row must
-  // stay swipe-editable while refusing the delete side.
   it('deletes on a start-side drag only when deletion is allowed', () => {
     const del = vi.spyOn(component, 'emitDelete').mockResolvedValue(undefined);
     const edit = vi.spyOn(component, 'emitEdit').mockResolvedValue(undefined);

@@ -96,8 +96,6 @@ describe('TrackingFacade', () => {
     );
   });
 
-  // The generator is random and clock-bound, so it runs here and the reducer
-  // only merges what the action carries.
   it('generates the demo sessions before dispatching them', () => {
     facade.seedDemoSessions();
 

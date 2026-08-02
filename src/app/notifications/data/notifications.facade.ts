@@ -8,12 +8,6 @@ import {
   selectOpenNotifications,
 } from './notifications.selector';
 
-/**
- * The `notifications` domain facade — the single NgRx surface for the inbox
- * page. It dispatches the published write contract for the two ops it shares
- * with producers (`dismiss`/`remove`) and its own group for the view state, so
- * the page sees neither. Injects `Store` so the page never does.
- */
 @Injectable({ providedIn: 'root' })
 export class NotificationsFacade {
   readonly #store = inject(Store);

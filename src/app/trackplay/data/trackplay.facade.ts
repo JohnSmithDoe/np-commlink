@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
-  IGame,
-  IGameConfig,
-  IGameType,
-  IPlayer,
-  IPlayersConfig,
-  TID,
+  Game,
+  GameConfig,
+  GameType,
+  Player,
+  PlayersConfig,
+  TrackplayId,
 } from '../model/trackplay.types';
 import { createGame as buildGame } from '../util/trackplay.factory';
 import { TrackplayActions } from './trackplay.actions';
@@ -28,14 +28,6 @@ import {
   selectTrackplayConfig,
 } from './trackplay.selector';
 
-/**
- * The `trackplay` (TRACKPLAY) domain facade — the single NgRx surface for every
- * trackplay component (games/players/player/game-types lists, the scoring grid,
- * and the game/player/type edit dialogs + settings popover). Injects `Store` so
- * the components never do. Route-scoped reads (a game's rounds, a player's
- * stats) are factory methods returning a signal, since they depend on a runtime
- * id.
- */
 @Injectable({ providedIn: 'root' })
 export class TrackplayFacade {
   readonly #store = inject(Store);
@@ -49,98 +41,95 @@ export class TrackplayFacade {
   readonly gameTypeList = this.#store.selectSignal(selectGameTypeList);
   readonly playerStats = this.#store.selectSignal(selectPlayerStats);
 
-  // Route-parameterised reads (called once from a component field initializer).
-  gameById(id: TID) {
+  gameById(id: TrackplayId) {
     return this.#store.selectSignal(selectGameById(id));
   }
-  playerById(id: TID) {
+  playerById(id: TrackplayId) {
     return this.#store.selectSignal(selectPlayerById(id));
   }
-  roundsByGame(id: TID) {
+  roundsByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectRoundsByGame(id));
   }
-  scoresByGame(id: TID) {
+  scoresByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectScoresByGame(id));
   }
-  resultByGame(id: TID) {
+  resultByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectResultByGame(id));
   }
-  gamesForPlayer(id: TID) {
+  gamesForPlayer(id: TrackplayId) {
     return this.#store.selectSignal(selectGamesForPlayer(id));
   }
-  statsForPlayer(id: TID) {
+  statsForPlayer(id: TrackplayId) {
     return this.#store.selectSignal(selectStatsForPlayer(id));
   }
 
-  // ── Page entry ───────────────────────────────────────────────────────────
-  enterGamePage(gameId: TID): void {
+  enterGamePage(gameId: TrackplayId): void {
     this.#store.dispatch(TrackplayActions.enterGamePage(gameId));
   }
 
-  // ── Players ──────────────────────────────────────────────────────────────
   createPlayer(name: string): void {
     this.#store.dispatch(TrackplayActions.createPlayer(name));
   }
-  renamePlayer(playerId: TID, name: string): void {
+  renamePlayer(playerId: TrackplayId, name: string): void {
     this.#store.dispatch(TrackplayActions.renamePlayer(playerId, name));
   }
-  deletePlayer(player: IPlayer): void {
+  deletePlayer(player: Player): void {
     this.#store.dispatch(TrackplayActions.deletePlayer(player));
   }
 
-  // ── Games ────────────────────────────────────────────────────────────────
-  /**
-   * Returns the new game's id, because the game dialog's "go to game" navigates
-   * to what it just created — minting here is what lets it, and what lets the
-   * chosen type ride along instead of needing a follow-up `changeGameType`.
-   */
-  createGame(name: string, typeId: TID, players: TID[]): TID {
+  createGame(
+    name: string,
+    typeId: TrackplayId,
+    players: TrackplayId[]
+  ): TrackplayId {
     const game = buildGame(name, typeId, players);
     this.#store.dispatch(TrackplayActions.createGame(game));
     return game.id;
   }
-  renameGame(gameId: TID, name: string): void {
+  renameGame(gameId: TrackplayId, name: string): void {
     this.#store.dispatch(TrackplayActions.renameGame(gameId, name));
   }
-  changeGameType(gameId: TID, typeId: TID): void {
+  changeGameType(gameId: TrackplayId, typeId: TrackplayId): void {
     this.#store.dispatch(TrackplayActions.changeGameType(gameId, typeId));
   }
-  setGamePlayers(gameId: TID, players: TID[]): void {
+  setGamePlayers(gameId: TrackplayId, players: TrackplayId[]): void {
     this.#store.dispatch(TrackplayActions.setGamePlayers(gameId, players));
   }
-  toggleGameEnded(gameId: TID): void {
+  toggleGameEnded(gameId: TrackplayId): void {
     this.#store.dispatch(TrackplayActions.toggleGameEnded(gameId));
   }
-  deleteGame(game: IGame): void {
+  deleteGame(game: Game): void {
     this.#store.dispatch(TrackplayActions.deleteGame(game));
   }
 
-  // ── Game types ───────────────────────────────────────────────────────────
   createGameType(name: string, winHigh: boolean): void {
     this.#store.dispatch(TrackplayActions.createGameType(name, winHigh));
   }
-  updateGameType(gameType: IGameType): void {
+  updateGameType(gameType: GameType): void {
     this.#store.dispatch(TrackplayActions.updateGameType(gameType));
   }
-  deleteGameType(gameType: IGameType): void {
+  deleteGameType(gameType: GameType): void {
     this.#store.dispatch(TrackplayActions.deleteGameType(gameType));
   }
 
-  // ── Rounds / scoring ─────────────────────────────────────────────────────
-  setRoundValue(gameId: TID, roundId: TID, playerId: TID, value: number): void {
+  setRoundValue(
+    gameId: TrackplayId,
+    roundId: TrackplayId,
+    playerId: TrackplayId,
+    value: number
+  ): void {
     this.#store.dispatch(
       TrackplayActions.setRoundValue(gameId, roundId, playerId, value)
     );
   }
 
-  // ── Per-list sort/filter config ──────────────────────────────────────────
-  updateGamesConfig(config: Partial<IGameConfig>): void {
+  updateGamesConfig(config: Partial<GameConfig>): void {
     this.#store.dispatch(TrackplayActions.updateGamesConfig(config));
   }
-  updateGamesForPlayerConfig(config: Partial<IGameConfig>): void {
+  updateGamesForPlayerConfig(config: Partial<GameConfig>): void {
     this.#store.dispatch(TrackplayActions.updateGamesForPlayerConfig(config));
   }
-  updatePlayersConfig(config: Partial<IPlayersConfig>): void {
+  updatePlayersConfig(config: Partial<PlayersConfig>): void {
     this.#store.dispatch(TrackplayActions.updatePlayersConfig(config));
   }
 }

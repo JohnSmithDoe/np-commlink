@@ -1,6 +1,6 @@
 import { Dayjs } from 'dayjs';
 
-export type TSettings = {
+export type WordclockSettings = {
   showCorners: boolean; // Minuten werden in den Ecken angezeigt
   deZwanzigNach: boolean; // ZWANZIG NACH ... ZEHN VOR HALB
   deZwanzigVor: boolean; // ZWANZIG VOR ... ZEHN NACH HALB
@@ -40,9 +40,6 @@ const W_SIEBEN = 'SIEBEN';
 const W_ZWOELF = 'ZWÖLF';
 const W_UHR = 'UHR';
 
-// FÜNF, ZEHN and DREI each appear twice in the grid — the minute phrase means
-// the upper occurrence, the hour word the lower one, so those words must pin
-// their row (see `isWordActive`).
 const ROW_FUENF_TOP = 0;
 const ROW_FUENF_BOTTOM = 4;
 const ROW_ZEHN_TOP = 1;
@@ -51,7 +48,6 @@ const ROW_DREI_TOP = 2;
 const ROW_DREI_BOTTOM = 6;
 const ROW_VIER = 6;
 
-// The physical letter grid — one string per row, read left-to-right.
 export const GRID: readonly string[] = [
   'ESKISTAFÜNF',
   'ZEHNZWANZIG',
@@ -65,8 +61,6 @@ export const GRID: readonly string[] = [
   'ZEHNEUNKUHR',
 ];
 
-// The clock only changes every five minutes, but ticking twice a minute
-// keeps the corner dots and the 5-minute rollover promptly in sync.
 export const TICK_MS = 30_000;
 
 type DialPosition = { hour: number; minute: number; corners: Corners };
@@ -90,10 +84,10 @@ const cornerDotsFor = (minute: number): Corners => {
   };
 };
 
-// Corner mode floors to the last five-minute step and shows the remainder as
-// dots; without corners the face rounds to the nearest step instead, which at
-// :58/:59 tips into the next hour.
-const readDialPosition = (now: Dayjs, config?: TSettings): DialPosition => {
+const readDialPosition = (
+  now: Dayjs,
+  config?: WordclockSettings
+): DialPosition => {
   const hour = now.hour() % 12;
   const minute = now.minute();
   if (config?.showCorners) {
@@ -111,14 +105,14 @@ const readDialPosition = (now: Dayjs, config?: TSettings): DialPosition => {
   };
 };
 
-// From 20 past, German names the hour it is heading towards ("zehn vor halb
-// neun" is 20:20) — except the "zwanzig nach" variant, which still names the
-// current one.
-const namesTheNextHour = (minute: number, config?: TSettings): boolean =>
+const namesTheNextHour = (
+  minute: number,
+  config?: WordclockSettings
+): boolean =>
   minute >= 20 && minute <= 55 && !(minute === 20 && config?.deZwanzigNach);
 
 // prettier-ignore
-const minuteWords = (minute: number, config?: TSettings): ActiveWord[] => {
+const minuteWords = (minute: number, config?: WordclockSettings): ActiveWord[] => {
   switch (minute) {
     case 0: { return [activeWord(W_UHR)]; }
     case 5: { return [activeWord(W_FUENF, ROW_FUENF_TOP), activeWord(W_NACH)]; }
@@ -161,14 +155,9 @@ const hourWords = (hour: number, minute: number): ActiveWord[] => {
   }
 };
 
-/**
- * Which words light up (and which corner dots) for a given wall-clock time.
- * Pure: same time + settings → same face, so it slots straight into a
- * computed signal without touching component state.
- */
 export function computeFace(
   now: Dayjs,
-  config: TSettings | undefined
+  config: WordclockSettings | undefined
 ): ClockFace {
   const { hour, minute, corners } = readDialPosition(now, config);
   const spokenHour = (hour + (namesTheNextHour(minute, config) ? 1 : 0)) % 12;
@@ -183,12 +172,6 @@ export function computeFace(
   };
 }
 
-/**
- * Whether the letter at (rowIdx, colIdx) belongs to one of the currently
- * active words. Pure counterpart of the component's `isActive` template hook:
- * a word matches only inside its span on the row, and — when it pins a row
- * (`row >= 0`) — only on that row (the grid repeats words like FÜNF/ZEHN).
- */
 export function isWordActive(
   activeWords: ActiveWord[],
   row: string[],

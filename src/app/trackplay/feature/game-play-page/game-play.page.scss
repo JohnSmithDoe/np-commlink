@@ -1,5 +1,17 @@
-// Scoring spreadsheet — shadowrun port of the legacy npTrackplay game grid.
-// Greys swapped for the shared --sr-* tokens; monospace HUD numerals.
+// ─── why ────────────────────────────────────────────────────────
+// The scoring grid is three regions that must read as one table: the body
+// scrolls both axes, the header and footer scroll horizontally, and JS keeps
+// their offsets in sync. That only holds if the native scrollbars are hidden on
+// all three, and if a data row never scrolls on its own. The round-marker
+// column stays pinned while the player columns move under it.
+//
+// The victory HUD replaces a winner.gif and is pure deck decoration: the plain
+// theme shows the flat trophy above the ranked list and nothing moves. Sparks
+// start at nth-child(4) because __rays and __ring are the first two children.
+// The reduced-motion block at the end has to match the deck rule's specificity
+// AND come after it, or the confetti keeps running for a visitor who asked it
+// not to.
+// ────────────────────────────────────────────────────────────────
 $header-height: 56px;
 $row-height: 56px;
 $footer-height: 56px;
@@ -14,14 +26,12 @@ $round-width: 3rem;
   color: var(--sr-text);
 }
 
-// shared horizontal-scroll rows (header + footer scroll in sync with body)
 .tp-row,
 .tp-body {
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
 
-  // hide the native scrollbars — the three regions scroll as one
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
@@ -34,8 +44,6 @@ $round-width: 3rem;
   border-bottom: 1px solid var(--sr-line);
 }
 
-// The body scrolls both axes; the header + footer scroll horizontally and are
-// kept in sync with the body via JS. Data rows never scroll on their own.
 .tp-body {
   flex: 1 1 auto;
   flex-direction: column;
@@ -96,7 +104,6 @@ $round-width: 3rem;
   }
 }
 
-// sticky round marker column — stays pinned while player columns scroll
 .tp-cell--round {
   flex: 0 0 $round-width;
   position: sticky;
@@ -112,7 +119,6 @@ $round-width: 3rem;
   background: var(--sr-panel);
 }
 
-// ── ended result screen ──────────────────────────────────────────────
 .tp-result {
   color: var(--sr-text);
 }
@@ -146,7 +152,6 @@ $round-width: 3rem;
   margin: 1rem 0;
 }
 
-// ── pure-CSS victory HUD (replaces the old winner.gif) ───────────────────
 .tp-victory {
   position: relative;
   width: 220px;
@@ -155,14 +160,11 @@ $round-width: 3rem;
   place-items: center;
   overflow: hidden;
 
-  // every direct child stacks in the same centred grid cell
   > * {
     grid-area: 1 / 1;
   }
 }
 
-// The beams, the reticle and the confetti are pure deck decoration: the plain
-// theme shows the flat trophy above the ranked list and nothing else moves.
 .tp-victory__rays,
 .tp-victory__ring,
 .tp-victory__spark {
@@ -180,9 +182,7 @@ $round-width: 3rem;
   }
 }
 
-// ── deck-only victory neon ───────────────────────────────────────────────────
 :host-context([data-theme='cyberpunk']) {
-  // rotating "victory beams" — evenly spaced amber wedges, edges faded out
   .tp-victory__rays {
     display: block;
     width: 150%;
@@ -202,7 +202,6 @@ $round-width: 3rem;
     animation: tp-rays 14s linear infinite;
   }
 
-  // pulsing cyan reticle ring
   .tp-victory__ring {
     display: block;
     width: 130px;
@@ -215,7 +214,6 @@ $round-width: 3rem;
     animation: tp-ring 2.6s ease-out infinite;
   }
 
-  // the trophy sigil bobs and glows here; it stays flat in the plain theme
   .tp-victory__trophy {
     animation: tp-bob 2.6s ease-in-out infinite;
 
@@ -224,7 +222,6 @@ $round-width: 3rem;
     }
   }
 
-  // neon confetti — alternating amber/cyan sparks raining down the tile
   .tp-victory__spark {
     display: block;
     position: absolute;
@@ -241,8 +238,6 @@ $round-width: 3rem;
       box-shadow: 0 0 6px rgba(var(--sr-cyan-rgb), 0.7);
     }
 
-    // spread the 14 sparks across the tile with staggered timing (the first
-    // two children are __rays and __ring, so sparks start at nth-child 4)
     @for $i from 1 through 14 {
       &:nth-child(#{$i + 3}) {
         left: (2% + ($i - 1) * 7%);
@@ -255,8 +250,6 @@ $round-width: 3rem;
   }
 }
 
-// Animations run only when the visitor is fine with motion; reduced-motion
-// users see the static composed HUD (beams, ring, trophy, no confetti).
 @media (prefers-reduced-motion: no-preference) {
   @keyframes tp-rays {
     to {
@@ -307,8 +300,6 @@ $round-width: 3rem;
   }
 }
 
-// Matches the deck rule's specificity and comes after it, so the sparks stay
-// hidden for a reduced-motion visitor even on the deck theme.
 @media (prefers-reduced-motion: reduce) {
   :host-context([data-theme='cyberpunk']) .tp-victory__spark {
     display: none;

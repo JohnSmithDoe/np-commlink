@@ -7,44 +7,35 @@ import {
   createLoadSliceEffect,
   createSaveSliceEffect,
   createTelemetrySliceEffect,
-  TSaveTrigger,
-  TSliceLifecycle,
-  TTelemetrySpec,
+  SaveTrigger,
+  SliceLifecycle,
+  TelemetrySpec,
 } from './persisted-slice.effects.factory';
 import { bootHydrationProvider } from './boot-hydration.provider';
 import { moduleHydrationResolver } from './module-hydration.resolver';
 
-// `TState` is the shape the store holds; `TStored` is the shape on disk, which
-// is usually the same but need not be — office-time persists its dayjs date maps
-// as serialized strings, so its `loaded` payload is the storage shape while its
-// reducer and selectors work in the runtime one. `S` is whatever the telemetry
-// selector derives, independent of both (cash a scalar, office-time a stats
-// projection).
-type TPersistedContext<TState, TStored, S> = {
+type PersistedContext<TState, TStored, S> = {
   key: string;
   reducer: ActionReducer<TState>;
-  lifecycle: TSliceLifecycle<TStored>;
+  lifecycle: SliceLifecycle<TStored>;
   select: MemoizedSelector<object, TState>;
-  save?: TSaveTrigger;
-  // A list because one context can supply several deck tiles: the combined
-  // `groceries` slice reports a product count, an active-shopping count, a
-  // low-stock count and a recipe count, one tile each.
-  telemetry?: TTelemetrySpec<S>[];
+  save?: SaveTrigger;
+  telemetry?: TelemetrySpec<S>[];
   ladder?: MigrationStep[];
   hydrate?: 'route' | 'boot';
-  effects?: TEffectSource[];
+  effects?: EffectSource[];
 };
 
-type TEffectSource = Type<unknown> | Record<string, FunctionalEffect>;
+type EffectSource = Type<unknown> | Record<string, FunctionalEffect>;
 
-export type TContextBundle = {
+export type ContextBundle = {
   providers: Array<Provider | EnvironmentProviders>;
   resolve: ResolveData;
 };
 
 export function providePersistedContext<TState, TStored = TState, S = never>(
-  context: TPersistedContext<TState, TStored, S>
-): TContextBundle {
+  context: PersistedContext<TState, TStored, S>
+): ContextBundle {
   const {
     key,
     reducer,
@@ -91,9 +82,7 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
   };
 }
 
-export const mergeContexts = (
-  ...bundles: TContextBundle[]
-): TContextBundle => ({
+export const mergeContexts = (...bundles: ContextBundle[]): ContextBundle => ({
   providers: bundles.flatMap((bundle) => bundle.providers),
   resolve: Object.assign({}, ...bundles.map((bundle) => bundle.resolve)),
 });

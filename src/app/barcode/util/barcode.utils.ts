@@ -1,14 +1,6 @@
-// Canvas work on the SIGIL badge image. Relocated from office-time.utils when the badge got its own bounded context, so barcode no longer bridges into office-time.
-// Self-contained: uses only File/FileReader/Image/canvas — no domain dependencies.
 const RADIANS_PER_DEGREE = Math.PI / 180;
 
-// `toDataURL('image/*')` is not a MIME type at all, so the canvas silently fell
-// back to lossless PNG: rotating a photographed badge re-encoded a JPEG as PNG
-// and multiplied the size of the persisted document. Round-trip the format the
-// badge arrived in instead.
 const FALLBACK_MIME_TYPE = 'image/png';
-// Ignored for lossless formats; named rather than left to the browser default so
-// a lossy re-encode is a stated choice.
 const LOSSY_QUALITY = 0.92;
 
 const loadImage = async (source: string): Promise<HTMLImageElement> => {
@@ -44,12 +36,6 @@ const rotatedFrame = (img: HTMLImageElement, radians: number) => {
   };
 };
 
-/**
- * The picked file as a data URL, or `undefined` when it is not an image this
- * browser can decode — `accept="image/*"` is a file-dialog filter, not a
- * guarantee, so without the decode probe a renamed or truncated file is stored,
- * persisted and rendered as a broken picture.
- */
 export const readBadgeImage = async (
   file: File
 ): Promise<string | undefined> => {

@@ -1,19 +1,9 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TMarker, TTheme } from '../../@shared/model/app.types';
-import { TDeckChrome } from './deck.catalog';
-import { TAppModule } from './deck.types';
+import { Marker, Theme } from '../../@shared/model/app.types';
+import { DeckChrome } from './deck.catalog';
+import { AppModule } from './deck.types';
 
-/**
- * The deck's chrome, voiced per theme — where the deck reads NOISE / ICE, a
- * plain office tool names the same slots by what they actually mean.
- *
- * The keys are spelled out rather than composed from theme + field because a
- * composed key is invisible to `i18n:extract`, which would then prune all 38 of
- * them. The one map here that nests does so on a *real* axis: the outer level is
- * the theme, and being a `Record<TTheme, TDeckChrome>` is what turns a new theme
- * into a compile error instead of raw keys in the HUD.
- */
-export const DECK_CHROME_LABELS: Record<TTheme, TDeckChrome> = {
+export const DECK_CHROME_LABELS: Record<Theme, DeckChrome> = {
   cyberpunk: {
     grid: marker('deck.cyberpunk.chrome.grid'),
     'grid-value': marker('deck.cyberpunk.chrome.grid-value'),
@@ -58,14 +48,13 @@ export const DECK_CHROME_LABELS: Record<TTheme, TDeckChrome> = {
   },
 };
 
-/** The coarse module toggles on the deck config page. */
-export const DECK_MODULE_LABELS: Record<TAppModule, TMarker> = {
+export const DECK_MODULE_LABELS: Record<AppModule, Marker> = {
   commlink: marker('deck.module.commlink'),
   tracking: marker('deck.module.tracking'),
   'office-time': marker('deck.module.office-time'),
   notifications: marker('deck.module.notifications'),
   barcode: marker('deck.module.barcode'),
-  groceries: marker('deck.module.groceries'),
+  household: marker('deck.module.household'),
   tasks: marker('deck.module.tasks'),
   cash: marker('deck.module.cash'),
   trackplay: marker('deck.module.trackplay'),

@@ -80,7 +80,7 @@ the blast radius a diff-only reading cannot see.
   here, and the one a generic reviewer misses entirely:
   - **`listId` guards.** A lazy route's injector, effects and state persist for the
     session, so two lazy effects on the same action both fire. Any effect reacting to a
-    shared action must guard on its list (grocery ∈ `{_storage,_products,_shopping}`,
+    shared action must guard on its list (household ∈ `{_storage,_products,_shopping}`,
     tasks `=== '_tasks'`, tracking `=== '_tracking'`).
   - **No composed i18n keys.** A key built from a template string is invisible to
     `i18n:extract --clean` and gets pruned. Every key is a `marker(...)` literal.
@@ -88,7 +88,7 @@ the blast radius a diff-only reading cannot see.
     `select*ListItems` shrinks with the search box, and a duplicate saves.
   - **Nothing matches on an action `type` string.** Use the creator
     (`ofType(X.y)`, `case X.y.type:`). Parsing the source prefix is fine.
-  - **`Record<TTheme, …>` completeness** — a catalog `labels` entry and a
+  - **`Record<Theme, …>` completeness** — a catalog `labels` entry and a
     `DECK_CHROME_LABELS` block per theme, in code *and* in both message bundles.
   - **Layering by hand:** no `@ngrx` outside `data/` (+ the eslint allowlist); no pure
     logic in `data/` (it is `util/`); `smart-ui` is a strict leaf; a `<domain>/data`

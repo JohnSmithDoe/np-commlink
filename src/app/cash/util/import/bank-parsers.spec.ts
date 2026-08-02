@@ -1,9 +1,5 @@
 import { BANK_PARSERS, parserForBank } from './bank-parsers';
 
-// The registry only routes: each parser's own column handling is covered by
-// dkb.parser.spec / volksbank.parser.spec. What is asserted here is the
-// selection — an account's `bank` reaching the parser that understands it.
-
 const DKB_CSV = [
   'Buchungsdatum;Wertstellung;Status;Zahlungspflichtige*r;Zahlungsempfänger*in;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;IBAN;Betrag (€)',
   '03.01.2026;03.01.2026;Gebucht;Muster GmbH;;Honorar;;;DE98;2.500,00',
