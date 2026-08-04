@@ -26,8 +26,8 @@
 # no longer skips the expensive ones. That costs ~40s on an already-broken tree
 # and buys knowing whether e2e broke too, which otherwise takes a second run.
 #
-# The gate list is owned by .claude/skills/np-verify-all/SKILL.md, with
-# docs/coding-conventions.md Part 1 as its support. NOT by ci.yml: CI runs
+# The gate list is owned by .claude/skills/np-verify-all/SKILL.md, and by the
+# GATES=( array below. NOT by ci.yml: CI runs
 # `pnpm run lint`, which chains three separate tools behind one exit code, so a
 # runner that mirrors CI step-for-step cannot show you which of them failed.
 #

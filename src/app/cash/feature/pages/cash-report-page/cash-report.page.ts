@@ -4,7 +4,6 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   IonContent,
   IonItem,
@@ -18,7 +17,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
 import { CashFacade } from '../../../data';
-import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-detail-header.component';
+import { PageHeaderComponent } from '../../../../@shared/ui/page-header/page-header.component';
 import { MoneyEurPipe } from '../../../util/formatting/money.pipe';
 import { chartColors } from '../../../../@shared/util/charts/chart-colors';
 
@@ -30,7 +29,7 @@ Chart.register(...registerables);
   styleUrls: ['./cash-report.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CashDetailHeaderComponent,
+    PageHeaderComponent,
     IonContent,
     IonList,
     IonItem,
@@ -43,7 +42,6 @@ Chart.register(...registerables);
 })
 export class CashReportPage {
   readonly #facade = inject(CashFacade);
-  readonly #router = inject(Router);
   readonly #translate = inject(TranslateService);
   readonly #colors = chartColors();
 
@@ -115,8 +113,4 @@ export class CashReportPage {
       legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
     },
   };
-
-  goBack(): void {
-    void this.#router.navigate(['/cash']);
-  }
 }

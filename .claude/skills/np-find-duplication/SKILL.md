@@ -80,7 +80,7 @@ Rank order from the helper is a *starting* heuristic (instances × size). For th
    cheaper than the coupling. Call it out so the user isn't surprised it's excluded.
 
 For every **genuine** candidate, propose a concrete abstraction and — respecting the
-architecture in `docs/architecture.md` and `sheriff.config.ts` — **where it must live**:
+architecture in `sheriff.config.ts` and `CLAUDE.md` — **where it must live**:
 
 - **Intra-domain group** → a helper in that domain at the right layer:
   pure logic → `<domain>/util/`, dumb rendering → `<domain>/ui/`, store wiring →

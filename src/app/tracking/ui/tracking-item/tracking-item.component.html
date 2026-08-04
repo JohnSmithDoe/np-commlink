@@ -1,7 +1,3 @@
-<!-- The row itself carries the primary action: `ion-item[button]` renders a real
-     button, so Enter/Space reach it — a click bound to the inner label would be
-     mouse-only. Trailing controls and the inline popover stop propagation so
-     their own actions don't also toggle the item. -->
 <ion-item [button]="true" lines="full" (click)="selectItem.emit()">
   <div class="sr-status-bar">
     <ion-text [color]="getColor(item())"></ion-text>

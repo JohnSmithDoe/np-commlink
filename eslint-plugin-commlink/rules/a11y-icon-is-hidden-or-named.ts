@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R1 — docs/ionic-a11y-practices.md
+ * R1 — docs/footguns.md
  *
  * `ion-icon` renders `role="img"` on its host unconditionally and derives
  * no name from `name` (ionicons' icon.js: `h(Host, { role: 'img', … })`,
@@ -35,7 +35,7 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       iconNeedsHiddenOrName:
-        '<ion-icon> renders role="img" with no name of its own. Add aria-hidden="true" when the icon is decorative (the usual case — the interactive parent carries the name), or an aria-label when the icon *is* the content. See docs/ionic-a11y-practices.md R1.',
+        '<ion-icon> renders role="img" with no name of its own. Add aria-hidden="true" when the icon is decorative (the usual case — the interactive parent carries the name), or an aria-label when the icon *is* the content. See docs/footguns.md R1.',
     },
   },
   create(context) {

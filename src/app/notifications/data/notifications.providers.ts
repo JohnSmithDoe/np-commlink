@@ -5,7 +5,7 @@ import {
 } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { NotificationService } from '../util/notification.service';
+import { NotificationService } from './notification.service';
 import { NotificationsInboxActions } from './notifications.actions';
 import { notificationsReducer } from './notifications.reducer';
 import { NotificationsDebugEffects } from './notifications-debug.effects';

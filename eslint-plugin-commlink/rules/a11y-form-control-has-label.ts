@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R3 — docs/ionic-a11y-practices.md
+ * R3 — docs/footguns.md
  *
  * An `ion-label` sitting next to a control inside an `ion-item` is a
  * sibling, not an association: `ion-item` wires no `aria-labelledby`. A
@@ -55,7 +55,7 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       controlNeedsName:
-        '<{{element}}> has no accessible name of its own. A neighbouring <ion-label> does not name it — `ion-item` wires no aria-labelledby. Give it {{sources}}, or an aria-label when no visible label is wanted. See docs/ionic-a11y-practices.md R3.',
+        '<{{element}}> has no accessible name of its own. A neighbouring <ion-label> does not name it — `ion-item` wires no aria-labelledby. Give it {{sources}}, or an aria-label when no visible label is wanted. See docs/footguns.md R3.',
     },
   },
   create(context) {

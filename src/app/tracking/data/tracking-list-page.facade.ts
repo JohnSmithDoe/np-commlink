@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { ListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
 import { TRACKING_LIST_ID, TrackingItem } from '../model/tracking.types';
 import { createTrackingItem } from '../util/tracking.factory';

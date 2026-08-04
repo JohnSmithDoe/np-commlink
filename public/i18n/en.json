@@ -20,7 +20,6 @@
   "barcode.upload.button": "Choose barcode image...",
   "barcode.upload.error": "Couldn't read the barcode",
   "cash.a11y.add-transaction": "Add transaction",
-  "cash.a11y.back": "Back",
   "cash.a11y.categories": "Categories",
   "cash.a11y.delete-account": "Delete account",
   "cash.a11y.delete-rule": "Delete rule",

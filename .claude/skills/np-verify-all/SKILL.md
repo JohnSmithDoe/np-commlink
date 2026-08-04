@@ -9,12 +9,13 @@ description: >-
 
 # np-verify-all
 
-Enforces `docs/coding-conventions.md`.
+Enforces the hard-rules table in `CLAUDE.md`.
 This skill runs the guards against the working tree — not against `HEAD`, because the
 question is almost always "is what I have right now green".
 
-**This file owns the gate list**, with `docs/coding-conventions.md` §Part 1 as its
-support. If a guard exists there and not in `scripts/verify-all.sh`, the script is wrong.
+**`GATES=(` in `scripts/verify-all.sh` owns the gate list** — this file drives the runner, and
+each guard's own file banner argues why it is a script, a rule, or run twice.
+Neither restates the list: it drifted twice while it was kept in prose as well.
 
 **Not `ci.yml`.** CI runs `pnpm run lint`, which chains three separate tools — the plugin
 type-check, eslint and **stylelint** — behind one exit code, so a runner that mirrors CI

@@ -1,9 +1,29 @@
 <!doctype html>
-<!-- data-theme defaults to the cyberpunk deck and lang to German — each the
-     default its owning service seeds (theme.service, bootLanguage) — so the
-     shell paints and reads correctly before Angular boots; both are overwritten
-     once `settings` hydrates (a boomer user's brief flash is covered by the boot
-     splash — theming.md). -->
+<!-- ─── why ─────────────────────────────────────────────────────────
+     Everything below that could be argued is argued in docs/footguns.md
+     — the splash and its `reveal()`, the `<noscript>` gate that hides it
+     when nothing will ever call that, and the np mark drawn here as well
+     as in public/np-logo.svg. What is left is three hand-kept mirrors,
+     and a mirror is the one thing this document cannot enforce:
+
+     · `lang` and `data-theme` copy the defaults their services seed
+       (bootLanguage, theme.service), so the shell paints and reads
+       correctly before Angular boots; `settings` overwrites both on
+       hydrate.
+     · `theme-color` and the two `#app-splash` background/colour pairs
+       are literal copies of a theme's `--sr-bg`/`--sr-text`
+       (_shadowrun.scss) — one pair per theme, chosen off the OS
+       preference because that is a guess at the theme and the only
+       signal this early. Measured, not assumed: the builder inlines
+       only the base `:root` as critical CSS, so before the async
+       stylesheet lands `var(--sr-bg)` is the PLAIN backdrop and
+       `Canvas` is white — both wrong for the cyberpunk default, which
+       is the flash the splash exists to prevent. Neither derivation
+       works; these stay in sync by hand.
+     · the German `description` is the one string no bundle can serve: a
+       crawler and the install prompt read it before any app code runs.
+       manifest.webmanifest carries the same copy, for the same reason.
+     ───────────────────────────────────────────────────────────────── -->
 <html lang="de" data-theme="cyberpunk">
   <head>
     <meta charset="utf-8" />
@@ -11,23 +31,13 @@
 
     <base href="/" />
 
-    <!-- Governs only the canvas before the stylesheet arrives — the same window
-         `data-theme` above bets on the deck for. Once _shadowrun.scss loads, its
-         own `color-scheme` declaration wins and follows the theme. -->
     <meta name="color-scheme" content="dark" />
-    <!-- Intentional literal mirrors of --sr-bg/--sr-text (_shadowrun.scss): this
-         value, and the two bg/text pairs in the #app-splash block below — one per
-         theme. Neither a static <meta> nor a splash painted before the stylesheet
-         loads can read a custom property, so keep them in sync by hand. -->
     <meta name="theme-color" content="#0f141b" />
     <meta
       name="viewport"
       content="viewport-fit=cover, width=device-width, initial-scale=1.0"
     />
     <meta name="format-detection" content="telephone=no" />
-    <!-- German because <html lang> is: this is the one string neither bundle can
-         serve, since a crawler and an install prompt read it before any app code
-         runs. Mirrored in manifest.webmanifest, which has no access to it. -->
     <meta
       name="description"
       content="Persönliches Cyberdeck: Zeiterfassung, Vorräte, Einkaufslisten, Rezepte, Aufgaben, Finanzen und Spielstände in einer App."
@@ -40,23 +50,11 @@
       href="icons/icon-192x192.png"
     />
 
-    <!-- add to homescreen — the standard hint, plus Apple's older pair -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <link rel="manifest" href="manifest.webmanifest" />
 
-    <!-- Boot splash (web/PWA/desktop). Painted before Angular loads and removed
-         by SplashService.reveal() once `settings` hydrates + <html data-theme> is
-         applied underneath — so a boomer user never sees the cyberpunk shell
-         flash on reload. On native the @capacitor/splash-screen launch screen
-         covers boot instead (launchAutoHide:false); reveal() hides both.
-         Deliberately self-contained and theme-neutral: it cannot read a token
-         (no stylesheet yet) and cannot know the theme (no settings yet), so it
-         renders no text at all — a wordmark would need a font this document
-         cannot have loaded, and every string here was a second source of truth.
-         An inline SVG on the OS's colour preference is the most a document can
-         honestly commit to before either answer arrives. -->
     <style>
       #app-splash {
         position: fixed;
@@ -69,18 +67,12 @@
         color: #dfe4ea;
         transition: opacity 300ms ease;
       }
-      /* The OS preference is a guess at the theme, not a read of it — but it is
-         the only signal available this early, and it beats always handing a light
-         theme a dark screen. Each pair is one theme's own --sr-bg/--sr-text. */
       @media (prefers-color-scheme: light) {
         #app-splash {
           background: #f4f6f8;
           color: #1f2733;
         }
       }
-      /* pointer-events, because opacity alone still hit-tests: the invisible
-         overlay would swallow the first tap on the revealed app for the whole
-         fade (SplashService.reveal removes the element only afterwards). */
       #app-splash.app-splash--hidden {
         opacity: 0;
         pointer-events: none;
@@ -105,11 +97,6 @@
       }
     </style>
 
-    <!-- Without scripting nothing ever calls reveal(), so the splash would cover
-         the <noscript> message below it forever — an opaque fixed overlay at
-         z-index 99999 against in-flow static text. This is the one condition
-         under which the splash has no owner, which is exactly what <noscript>
-         states. -->
     <noscript>
       <style>
         #app-splash {
@@ -121,13 +108,6 @@
 
   <body>
     <app-root></app-root>
-    <!-- The np mark — the same shapes as public/np-logo.svg, which is the reusable
-         copy and carries the design notes. Inlined rather than referenced, because
-         an <img src> would leave the splash blank for exactly the window it exists
-         to cover; that is the whole reason the duplication is accepted, so a change
-         to either copy belongs in both. Every stroke is currentColor so the mark
-         inverts with the backdrop above, and the letters are *drawn*, so the one
-         thing this document cannot have yet — a font — is not involved. -->
     <div id="app-splash" aria-hidden="true">
       <svg class="app-splash__logo" viewBox="0 0 64 64" fill="none">
         <path

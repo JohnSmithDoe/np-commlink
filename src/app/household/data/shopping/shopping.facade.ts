@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import {
   SHOPPING_LIST_ID,
   ShoppingItem,

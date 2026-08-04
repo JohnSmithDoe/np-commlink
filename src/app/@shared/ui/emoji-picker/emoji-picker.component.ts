@@ -35,7 +35,7 @@ import {
   EmojiEntry,
   EmojiGroupId,
 } from '../../util/emoji/emoji.catalog';
-import { LanguageService } from '../../util/theme/language.service';
+import { APP_LANGUAGE } from '../../util/theme/language.boot';
 
 type EmojiPickerMode = 'single' | 'multiple';
 
@@ -72,7 +72,7 @@ const GROUP_LABELS: Readonly<Record<EmojiGroupId, Marker>> = {
   ],
 })
 export class EmojiPickerComponent {
-  readonly #language = inject(LanguageService);
+  readonly #language = inject(APP_LANGUAGE);
 
   readonly isOpen = input<boolean>(false);
   readonly recent = input<readonly string[]>([]);
@@ -92,7 +92,7 @@ export class EmojiPickerComponent {
   protected readonly activeGroup = signal<EmojiGroupId>('smileys');
 
   readonly #catalog = resource({
-    params: () => (this.isOpen() ? this.#language.language() : undefined),
+    params: () => (this.isOpen() ? this.#language : undefined),
     loader: ({ params }) => loadEmojiCatalog(params),
     defaultValue: [],
   });

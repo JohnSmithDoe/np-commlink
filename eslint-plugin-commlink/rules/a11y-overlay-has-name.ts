@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R4, declarative half — docs/ionic-a11y-practices.md
+ * R4, declarative half — docs/footguns.md
  *
  * Ionic assigns the overlay roles; the NAME is ours whenever there is no
  * header or message for Ionic to derive one from. `ion-modal` never has
@@ -42,11 +42,11 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       modalNeedsAriaLabel:
-        '<ion-modal> is role="dialog" with no name — Ionic derives none. Add aria-label (keep it in sync with the visible ion-title: one translated key read by both). See docs/ionic-a11y-practices.md R4.',
+        '<ion-modal> is role="dialog" with no name — Ionic derives none. Add aria-label (keep it in sync with the visible ion-title: one translated key read by both). See docs/footguns.md R4.',
       ariaLabelledbyIsInert:
-        'aria-labelledby on <ion-modal> is inert: modal.js inherits only aria-label and role, and an IDREF cannot cross the shadow boundary to the wrapper that holds role="dialog". Use aria-label. See docs/ionic-a11y-practices.md R4.',
+        'aria-labelledby on <ion-modal> is inert: modal.js inherits only aria-label and role, and an IDREF cannot cross the shadow boundary to the wrapper that holds role="dialog". Use aria-label. See docs/footguns.md R4.',
       overlayNeedsNameSource:
-        '<{{element}}> has no `{{source}}` for Ionic to derive a name from, and no aria-label of its own. See docs/ionic-a11y-practices.md R4.',
+        '<{{element}}> has no `{{source}}` for Ionic to derive a name from, and no aria-label of its own. See docs/footguns.md R4.',
     },
   },
   create(context) {

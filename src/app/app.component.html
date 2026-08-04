@@ -3,9 +3,6 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>{{ wordmark }}</ion-title>
-        <!-- Permanent, and deliberately not one of the entries below: SYSOP is
-             hideable like everything else, so without this the user could hide
-             the only door back to the page that un-hides it. -->
         <ion-buttons slot="end">
           <ion-menu-toggle>
             <ion-button
@@ -23,7 +20,7 @@
       </ion-toolbar>
     </ion-header>
     <ion-content>
-      <main>
+      <nav>
         <ion-list>
           @for (entry of menuEntries(); track entry.id) {
             <ion-menu-toggle>
@@ -43,15 +40,12 @@
             </ion-menu-toggle>
           }
         </ion-list>
-      </main>
+      </nav>
     </ion-content>
   </ion-menu>
   <div class="ion-page" id="main-content">
     <ion-router-outlet></ion-router-outlet>
   </div>
-  <!-- Shell chrome, deliberately not on the NotificationsActions.toast
-       contract: this is an interactive affordance rather than a message, so it
-       carries no `toast.*` key and needs no presenter. -->
   <ion-toast
     [isOpen]="updateReady()"
     [message]="'app.update.ready' | translate"

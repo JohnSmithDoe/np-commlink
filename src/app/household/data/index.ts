@@ -13,6 +13,7 @@ export { StorageActions } from './storage/storage.actions';
 export { ProductsActions } from './products/products.actions';
 export { HouseholdCategoriesActions } from './categories/household-categories.actions';
 export { ListSettingsActions } from './list-settings/list-settings.actions';
+export { RecipesActions } from './recipes/recipes.actions';
 
 export { HouseholdListPageFacade } from './list/household-list-page.facade';
 export { HouseholdCategoriesPageFacade } from './categories/household-categories-page.facade';

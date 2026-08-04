@@ -1,4 +1,4 @@
-<app-cash-detail-header [heading]="account()?.name ?? ''" (back)="goBack()">
+<app-page-header [heading]="account()?.name ?? ''" backHref="/cash" hideButtons>
   <ion-buttons slot="end" toolbar>
     @if (canImport()) {
       <ion-button
@@ -25,7 +25,7 @@
       <ion-icon slot="icon-only" name="add-outline" aria-hidden="true" />
     </ion-button>
   </ion-buttons>
-</app-cash-detail-header>
+</app-page-header>
 
 <input
   #csv

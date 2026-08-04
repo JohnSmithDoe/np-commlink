@@ -4,10 +4,9 @@ import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
   LanguageModelAvailability,
-} from '../../../@shared/util/theme/language-model.service';
-import { ThemeService } from '../../../@shared/util/theme/theme.service';
+} from '../../../@shared/data/theme/language-model.service';
 import { Theme } from '../../../@shared/model/app.types';
-import { DashboardFacade, DeckFacade } from '../../data';
+import { DashboardFacade, DeckFacade, ThemeService } from '../../data';
 import { DECK_CATALOG } from '../../model/deck.catalog';
 import { resolveLabels } from '../../util/deck.utils';
 import { CommlinkPage } from './commlink.page';

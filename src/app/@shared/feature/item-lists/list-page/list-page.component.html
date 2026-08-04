@@ -1,6 +1,7 @@
 <app-page-header
   [icon]="icon()"
   [label]="pageHeader()"
+  [backHref]="backHref()"
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="facade.showCreateDialog()"
 >

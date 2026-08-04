@@ -10,7 +10,7 @@ import {
   switchMap,
   withLatestFrom,
 } from 'rxjs';
-import { DatabaseService } from '../../@shared/util/persistence/database.service';
+import { DatabaseService } from '../../@shared/data/persistence/database.service';
 import { OfficeTimeActions } from './office-time.actions';
 import { Store } from '@ngrx/store';
 import { selectHolidays, selectOfficeTimeState } from './office-time.selector';

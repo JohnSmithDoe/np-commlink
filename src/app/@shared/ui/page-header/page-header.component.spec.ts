@@ -28,6 +28,29 @@ describe('PageHeaderComponent', () => {
     expect(title.textContent).toContain('page-title.storage');
   });
 
+  it('renders a heading verbatim — it is a name from state, not a key', () => {
+    fixture.componentRef.setInput('heading', 'Girokonto');
+    fixture.detectChanges();
+
+    expect(getByTestId(fixture, 'page-header-title').textContent).toContain(
+      'Girokonto'
+    );
+  });
+
+  it('swaps the menu button for a back button, and the page names only the fallback', () => {
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('ion-menu-button')
+    ).not.toBeNull();
+
+    fixture.componentRef.setInput('backHref', '/cash');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('ion-menu-button')).toBeNull();
+    const back = fixture.nativeElement.querySelector('ion-back-button');
+    expect(back['defaultHref']).toBe('/cash');
+  });
+
   it('shows the add button by default and hides it when hideButtons is set', () => {
     fixture.detectChanges();
     expect(queryByTestId(fixture, 'page-header-add')).not.toBeNull();

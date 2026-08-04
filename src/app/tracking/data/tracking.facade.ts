@@ -8,7 +8,7 @@ import {
 } from '../model/tracking.types';
 import { createDemoSessions } from '../util/demo-sessions.factory';
 import { dailySeries, groupSessionsByView } from '../util/sessions.utils';
-import { TodayService } from '../util/today.service';
+import { TodayService } from './today.service';
 import { TrackingActions } from './tracking.actions';
 import {
   selectAllTrackingSessions,

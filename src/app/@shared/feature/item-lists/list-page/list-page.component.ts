@@ -54,6 +54,7 @@ export class ListPageComponent {
   icon = input<string>();
   listHeader = input.required<string>();
   pageHeader = input.required<string>();
+  backHref = input('');
 
   readonly hasCategories = !!this.facade.manageCategories;
 

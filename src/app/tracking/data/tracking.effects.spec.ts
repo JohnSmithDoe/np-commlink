@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ShareOptions } from '@capacitor/share';
-import { ShareService } from '../../@shared/util/services/share.service';
+import { ShareService } from '../../@shared/data/services/share.service';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';

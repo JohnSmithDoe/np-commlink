@@ -41,8 +41,8 @@ the diff did not touch is out of scope (see false positives).
 A Haiku agent returns the **paths** of the guidance that applies — not the contents:
 the four `CLAUDE.md` layers that are already in context (`~/.claude/CLAUDE.md`,
 `~/Projects/CLAUDE.md`, this repo's `CLAUDE.md`, `.claude/CLAUDE.md`), plus
-`docs/project-summary.md` (the compendium index — pull the one section file a touched
-area maps to) and any `CLAUDE.md` under a touched directory.
+`docs/decisions.md` and `docs/footguns.md` (pull whichever bears on the touched
+area) and any `CLAUDE.md` under a touched directory.
 
 ## Step 3 — Summarize
 
@@ -67,7 +67,7 @@ the blast radius a diff-only reading cannot see.
   *bodies*. **This repo's decision log lives in commit messages** — subjects read as
   claims ("a renamed product no longer un-cooks the recipes that use it"), so a diff
   that quietly undoes a deliberate earlier fix is visible here and nowhere else.
-- **#4 — Documented decisions.** `docs/open-tasks.md` (§12/§13, open + deferred + declined
+- **#4 — Documented decisions.** `docs/decisions.md` (settled questions) and `docs/state.md` (open, deferred, declined
   work) plus past commit bodies touching these files. Does the change contradict a
   recorded decision, or re-introduce something a commit says was removed on purpose? If
   it supersedes a decision deliberately, that is not a finding — but the doc is now

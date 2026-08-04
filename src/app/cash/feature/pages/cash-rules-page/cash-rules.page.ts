@@ -37,7 +37,7 @@ import { CashRule } from '../../../model/rule.types';
 import { CashFacade } from '../../../data';
 import { deleteConfirmAlert } from '../../../util/delete-alert.utils';
 import { recategorizations } from '../../../util/categorize.utils';
-import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-detail-header.component';
+import { PageHeaderComponent } from '../../../../@shared/ui/page-header/page-header.component';
 import { CashRuleEditModalComponent } from '../../modals/rule-edit-modal/rule-edit-modal.component';
 import { categoryNameLookup } from '../../../../@shared/util/categories/category.utils';
 import { reorderedIds } from '../../../../@shared/util/app.utils';
@@ -51,7 +51,7 @@ import { CategoryId } from '../../../../@shared/model/category.types';
   styleUrls: ['./cash-rules.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CashDetailHeaderComponent,
+    PageHeaderComponent,
     IonButtons,
     IonButton,
     IonContent,
@@ -99,10 +99,6 @@ export class CashRulesPage {
       playOutline,
       pricetagsOutline,
     });
-  }
-
-  goBack(): void {
-    void this.#router.navigate(['/cash']);
   }
 
   goToCategories(): void {

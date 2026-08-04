@@ -14,7 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CashFacade } from '../../../data';
-import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-detail-header.component';
+import { PageHeaderComponent } from '../../../../@shared/ui/page-header/page-header.component';
 import { MoneyEurPipe } from '../../../util/formatting/money.pipe';
 import { LocalizedDatePipe } from '../../../util/formatting/localized-date.pipe';
 
@@ -24,7 +24,7 @@ import { LocalizedDatePipe } from '../../../util/formatting/localized-date.pipe'
   styleUrls: ['./cash-category.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CashDetailHeaderComponent,
+    PageHeaderComponent,
     IonContent,
     IonList,
     IonItem,
@@ -54,10 +54,6 @@ export class CashCategoryPage {
 
   accountName(accountId: string): string {
     return this.#accountNameById().get(accountId) ?? '';
-  }
-
-  goBack(): void {
-    void this.#router.navigate(['/cash/categories']);
   }
 
   openAccount(accountId: string): void {

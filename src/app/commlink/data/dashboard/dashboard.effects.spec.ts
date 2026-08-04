@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
-import { DatabaseService } from '../../../@shared/util/persistence/database.service';
+import { DatabaseService } from '../../../@shared/data/persistence/database.service';
 import { DashboardSummary } from '../../model/dashboard.types';
 import { DashboardActions } from '../../../@shared/data/actions/dashboard.actions';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';

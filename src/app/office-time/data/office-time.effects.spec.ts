@@ -5,7 +5,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { APP_VERSION } from '../../@shared/model/app.consts';
-import { DatabaseService } from '../../@shared/util/persistence/database.service';
+import { DatabaseService } from '../../@shared/data/persistence/database.service';
 import { wrapVersioned } from '../../@shared/util/persistence/versioned';
 import { mockOfficeTimeState } from '../testing/office-time.test-data';
 import { OfficeTimeActions } from './office-time.actions';

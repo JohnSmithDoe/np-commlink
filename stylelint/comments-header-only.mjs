@@ -1,6 +1,6 @@
 // np-commlink — where a comment may sit in a stylesheet. The SCSS half of
 // `commlink/comments-header-only`, whose TypeScript half is an eslint rule; the
-// convention is one, stated once in docs/coding-conventions.md.
+// convention is one, stated once in CLAUDE.md.
 //
 // Shape and placement, never presence — same argument as the TS rule. No gate
 // can tell a stylesheet whose decisions are non-derivable from one whose

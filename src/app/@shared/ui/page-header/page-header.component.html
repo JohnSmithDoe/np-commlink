@@ -1,15 +1,22 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button [attr.aria-label]="'a11y.menu' | translate" />
+      @if (backHref()) {
+        <ion-back-button
+          [defaultHref]="backHref()"
+          [attr.aria-label]="'a11y.back' | translate"
+        />
+      } @else {
+        <ion-menu-button [attr.aria-label]="'a11y.menu' | translate" />
+      }
     </ion-buttons>
-    @if (label()) {
+    @if (label() || heading()) {
       <div class="sr-brand">
         @if (icon()) {
           <ion-icon [name]="icon()" class="sr-brand__icon" aria-hidden="true" />
         }
         <span class="sr-brand__name" data-testid="page-header-title">{{
-          label() | translate
+          label() ? (label() | translate) : heading()
         }}</span>
       </div>
     }

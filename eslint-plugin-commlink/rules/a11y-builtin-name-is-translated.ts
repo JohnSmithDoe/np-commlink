@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R7 — docs/ionic-a11y-practices.md
+ * R7 — docs/footguns.md
  *
  * Ionic hardcodes accessible names in English, which for a bilingual app
  * is a real gap rather than a curiosity. These two are the OVERRIDABLE
@@ -38,9 +38,9 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       builtinNameNeedsOverride:
-        '<{{element}}> announces the hardcoded English "{{name}}". Override it: [attr.aria-label]="\'<domain>.a11y.{{name}}\' | translate". See docs/ionic-a11y-practices.md R7.',
+        '<{{element}}> announces the hardcoded English "{{name}}". Override it: [attr.aria-label]="\'<domain>.a11y.{{name}}\' | translate". See docs/footguns.md R7.',
       builtinNameNotTranslated:
-        'aria-label on <{{element}}> is a hardcoded string, so it is wrong in the other language. Bind it through the translate pipe. See docs/ionic-a11y-practices.md R7.',
+        'aria-label on <{{element}}> is a hardcoded string, so it is wrong in the other language. Bind it through the translate pipe. See docs/footguns.md R7.',
     },
   },
   create(context) {

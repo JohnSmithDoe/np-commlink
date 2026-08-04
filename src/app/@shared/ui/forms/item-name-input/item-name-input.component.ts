@@ -24,7 +24,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { happyOutline } from 'ionicons/icons';
 import { Marker } from '../../../model/app.types';
-import { EmojiRecentsService } from '../../../util/emoji/emoji-recents.service';
+import { RECENT_EMOJIS } from '../../../util/emoji/recent-emojis.token';
 import { insertAt } from '../../../util/emoji/emoji-text.utils';
 import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/forms/form-rules';
 import { EmojiPickerComponent } from '../../emoji-picker/emoji-picker.component';
@@ -49,12 +49,10 @@ const ERROR_TEXT: Readonly<Partial<Record<string, Marker>>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemNameInputComponent implements FormValueControl<string> {
-  readonly #emojiRecents = inject(EmojiRecentsService);
-
   readonly value = model<string>('');
   readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
 
-  protected readonly recentEmojis = this.#emojiRecents.recent;
+  protected readonly recentEmojis = inject(RECENT_EMOJIS);
   protected readonly pickerOpen = signal(false);
 
   protected readonly offersEmojiPicker = inject(Platform).is('desktop');

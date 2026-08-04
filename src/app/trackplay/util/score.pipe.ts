@@ -1,9 +1,8 @@
-import { inject, Pipe, PipeTransform } from '@angular/core';
-import { LanguageService } from '../../@shared/util/theme/language.service';
+import { inject, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({ name: 'score' })
 export class ScorePipe implements PipeTransform {
-  readonly #formatter = new Intl.NumberFormat(inject(LanguageService).locale());
+  readonly #formatter = new Intl.NumberFormat(inject(LOCALE_ID));
 
   transform(value: number | null | undefined): string {
     if (!value || !Number.isFinite(value)) {

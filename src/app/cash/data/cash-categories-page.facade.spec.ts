@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { mockCategory } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { CASH_CATEGORIES_LIST_ID } from '../model/cash.types';
 import {
   mockCashCategoryList,

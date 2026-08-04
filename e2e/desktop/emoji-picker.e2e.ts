@@ -11,10 +11,13 @@
  * ends up a SIBLING of the edit dialog at the app root rather than a
  * descendant of it. Both are therefore keyed off their own title.
  *
- * The two-glyph sequence is the point of the middle assertions: with
- * `multiple` the picker stays up, and the second glyph must land AFTER
- * the first. That is what the caret advance buys — a stale caret spells
- * "🌾🥛".
+ * The host leaves `mode` at its `single` default, so a pick closes the
+ * picker itself — no header button involved. The two-glyph sequence
+ * therefore costs two opens, and it is kept at that price because it is
+ * the only place the caret survives a real dismiss-and-refocus cycle:
+ * `insertEmoji` advances the selection while the modal still owns focus,
+ * `didDismiss` hands focus back, and the second glyph must land AFTER
+ * the first. A caret re-read as the pre-glyph position spells "🌾🥛".
  *
  * The last assertion is the recents store: saving records the glyphs, so
  * the next open offers them with no search at all.
@@ -68,13 +71,13 @@ test.describe('emoji picker', () => {
     await searchPicker(page, 'milch');
     await expect(emojiOption(page, '🥛')).toBeVisible({ timeout: 10_000 });
     await emojiOption(page, '🥛').click();
+    await expect(picker(page)).toBeHidden({ timeout: 10_000 });
 
-    await expect(picker(page)).toBeVisible();
+    await editDialog(page).getByTestId('emoji-picker-trigger').click();
+    await expect(picker(page)).toBeVisible({ timeout: 10_000 });
     await searchPicker(page, 'reis');
     await expect(emojiOption(page, '🌾')).toBeVisible({ timeout: 10_000 });
     await emojiOption(page, '🌾').click();
-
-    await picker(page).getByRole('button', { name: 'Schließen' }).click();
     await expect(picker(page)).toBeHidden({ timeout: 10_000 });
 
     await expect(nameBox(page)).toHaveValue(/🥛🌾/, { timeout: 10_000 });

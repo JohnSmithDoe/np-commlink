@@ -8,8 +8,8 @@ import {
   Store,
 } from '@ngrx/store';
 import { firstValueFrom } from 'rxjs';
-import { DatabaseService } from '../../util/persistence/database.service';
-import { PersistedReadRegistry } from '../../util/persistence/persisted-read-registry';
+import { DatabaseService } from '../persistence/database.service';
+import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
 import {
   mergeContexts,
   providePersistedContext,

@@ -1,6 +1,3 @@
-<!-- The button is the only trigger — the input itself is visually hidden, so it
-     needs no label of its own (a `<label for>` here would fire the file dialog a
-     second time, which is what the old click/preventDefault pair suppressed). -->
 <ion-button color="secondary" expand="block" (click)="fileInput.click()">
   {{ 'barcode.upload.button' | translate }}
 </ion-button>

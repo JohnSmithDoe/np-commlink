@@ -1,13 +1,11 @@
+import { LOCALE_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { LanguageService } from '../../@shared/util/theme/language.service';
 import { ScorePipe } from './score.pipe';
 
 const pipeFor = (locale: string): ScorePipe => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
-    providers: [
-      { provide: LanguageService, useValue: { locale: () => locale } },
-    ],
+    providers: [{ provide: LOCALE_ID, useValue: locale }],
   });
   return TestBed.runInInjectionContext(() => new ScorePipe());
 };

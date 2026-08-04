@@ -24,6 +24,7 @@ type PersistedContext<TState, TStored, S> = {
   ladder?: MigrationStep[];
   hydrate?: 'route' | 'boot';
   effects?: EffectSource[];
+  publishes?: Array<Provider | EnvironmentProviders>;
 };
 
 type EffectSource = Type<unknown> | Record<string, FunctionalEffect>;
@@ -45,6 +46,7 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
     telemetry,
     ladder,
     effects,
+    publishes,
     hydrate = 'route',
   } = context;
 
@@ -68,6 +70,7 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
       provideEffects(sliceEffects),
       ...(effects?.length ? [provideEffects(...effects)] : []),
       ...(hydrate === 'boot' ? [bootHydrationProvider(lifecycle.load)] : []),
+      ...(publishes ?? []),
     ],
     resolve:
       hydrate === 'route'

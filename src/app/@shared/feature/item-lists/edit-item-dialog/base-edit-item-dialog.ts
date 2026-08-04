@@ -18,7 +18,7 @@ import { requireUniqueName } from '../../../util/forms/form-rules';
 import {
   ItemDialogService,
   ItemDialogRequest,
-} from '../../../util/item-lists/item-dialog.service';
+} from '../../../data/item-lists/item-dialog.service';
 
 const DIALOG_TITLE: Readonly<Record<EditItemMode, Marker>> = {
   update: marker('edit.item.dialog.title.update'),

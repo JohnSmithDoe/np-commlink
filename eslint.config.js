@@ -134,6 +134,31 @@ module.exports = defineConfig(
     },
   },
   {
+    // `util/` is the pure layer, and `type:ui` may reach it. That combination is
+    // only sound while `util/` holds no state: the moment a signal lives behind
+    // an `@Injectable` there, a dumb component can read store-derived state
+    // through a channel Sheriff cannot see — it sees `data -> util` and
+    // `ui -> util` as two unrelated legal edges, never the channel between them.
+    // Hahnekamp's `type:data` is "state management AND the services that hold
+    // it"; his `util` is pure functions. This is that line, enforced.
+    //
+    // A `@Pipe` is deliberately still legal: a pure pipe IS a pure function with
+    // a decorator. Module-level side effects are legal too — `marker(...)` and
+    // `dayjs.extend(...)` are both idiomatic here, and a rule needing two
+    // carve-outs to catch one real case is not worth the carve-outs.
+    files: ['src/app/*/util/**/*.ts', 'src/app/@shared/util/**/*.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Decorator[expression.callee.name="Injectable"]',
+          message:
+            'util/ holds no injectable service — a service that holds state or reaches a platform API belongs in data/. See CLAUDE.md.',
+        },
+      ],
+    },
+  },
+  {
     files: ['e2e/**/*.ts'],
     rules: {
       'unicorn/prefer-add-event-listener': 'off',

@@ -10,7 +10,7 @@
  * Neither half can see the other: the name is a string in a template, the
  * registration is an object literal in a sibling `.ts`. Sheriff checks import
  * edges, ESLint sees one file at a time — so this is a whole-repo script, the
- * third resort in the ladder `docs/coding-conventions.md` lays out.
+ * third resort in the ladder `CLAUDE.md` lays out.
  *
  * Checked in one direction only. An unused *registration* is not reported: it
  * costs a few bytes, and the icon a component registers for a child it embeds

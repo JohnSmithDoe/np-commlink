@@ -20,10 +20,9 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
 import {
   LanguageModelService,
   LanguageModelAvailability,
-} from '../../../@shared/util/theme/language-model.service';
-import { LanguageService } from '../../../@shared/util/theme/language.service';
-import { ThemeService } from '../../../@shared/util/theme/theme.service';
-import { DashboardFacade, DeckFacade } from '../../data';
+} from '../../../@shared/data/theme/language-model.service';
+import { LanguageService } from '../../../@shared/data/theme/language.service';
+import { DashboardFacade, DeckFacade, ThemeService } from '../../data';
 import { DeckChromeField } from '../../model/deck.catalog';
 import { DECK_CHROME_LABELS } from '../../model/deck.labels';
 import { DECK_ICONS } from '../../model/deck.icons';

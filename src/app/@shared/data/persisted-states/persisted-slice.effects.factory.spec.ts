@@ -9,8 +9,8 @@ import {
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { APP_VERSION } from '../../model/app.consts';
-import { DatabaseService } from '../../util/persistence/database.service';
-import { PersistedReadRegistry } from '../../util/persistence/persisted-read-registry';
+import { DatabaseService } from '../persistence/database.service';
+import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
 import { MigrationStep, wrapVersioned } from '../../util/persistence/versioned';
 import { DashboardActions } from '../actions/dashboard.actions';
 import { NotificationsActions } from '../actions/notifications.actions';

@@ -12,10 +12,9 @@ import {
 import {
   CategoryListPageFacade,
   NO_CATALOG,
-  openCategoryCreate,
-  openCategoryEdit,
 } from '../../util/categories/category-list.facade';
-import { ItemDialogService } from '../../util/item-lists/item-dialog.service';
+import { openCategoryCreate, openCategoryEdit } from './category-dialogs';
+import { ItemDialogService } from '../item-lists/item-dialog.service';
 import { categoryFilterQueryParameters } from '../../util/item-lists/category-filter.route';
 
 interface CategoryListActions {

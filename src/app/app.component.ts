@@ -23,7 +23,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { APP_WORDMARK } from './@shared/model/app.consts';
-import { AppUpdateService } from './@shared/util/service-worker/app-update.service';
+import { AppUpdateService } from './@shared/data/service-worker/app-update.service';
 import { DashboardFacade, DeckFacade } from './commlink/data';
 import { DECK_ICONS } from './commlink/model/deck.icons';
 import { DeckProgram } from './commlink/model/deck.types';

@@ -3,7 +3,7 @@ import { ResolveFn } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, Store } from '@ngrx/store';
 import { firstValueFrom, take } from 'rxjs';
-import { PersistedReadRegistry } from '../../util/persistence/persisted-read-registry';
+import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
 
 export function moduleHydrationResolver(
   key: string,

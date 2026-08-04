@@ -13,7 +13,7 @@ import {
 } from '@angular/forms/signals';
 import { InputCustomEvent, IonInput, IonItem } from '@ionic/angular/standalone';
 import { Language } from '../../../@shared/model/app.types';
-import { LanguageService } from '../../../@shared/util/theme/language.service';
+import { APP_LANGUAGE } from '../../../@shared/util/theme/language.boot';
 import { centsToInput, eurToCents } from '../../util/money.utils';
 
 export const NOT_AN_AMOUNT = { kind: 'notAnAmount' } as const;
@@ -39,12 +39,12 @@ export class MoneyInputComponent implements FormValueControl<number | null> {
 
   readonly touchedChange = output<boolean>();
 
-  readonly #language = inject(LanguageService).language;
+  readonly #language = inject(APP_LANGUAGE);
 
   protected readonly raw = transformedValue(this.value, {
-    parse: (raw: string) => parseAmount(raw, this.#language()),
+    parse: (raw: string) => parseAmount(raw, this.#language),
     format: (cents: number | null) =>
-      cents === null ? '' : centsToInput(cents, this.#language()),
+      cents === null ? '' : centsToInput(cents, this.#language),
   });
 
   protected onInput(event: InputCustomEvent): void {

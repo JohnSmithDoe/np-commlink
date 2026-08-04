@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { IonButton, IonIcon, IonNote } from '@ionic/angular/standalone';
+import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, createOutline } from 'ionicons/icons';
+import { createOutline } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Category, CategoryId } from '../../../model/category.types';
 import { CATEGORY_LIST_FACADE } from '../../../util/categories/category-list.facade';
@@ -19,10 +18,7 @@ import { ListPageComponent } from '../../item-lists/list-page/list-page.componen
   templateUrl: './category-list.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonButton,
-    IonIcon,
     IonNote,
-    RouterLink,
     TranslatePipe,
     ListPageComponent,
     ListItemComponent,
@@ -38,7 +34,7 @@ export class CategoryListPage {
   };
 
   constructor() {
-    addIcons({ arrowBackOutline, createOutline });
+    addIcons({ createOutline });
   }
 
   count(categoryId: CategoryId): number {

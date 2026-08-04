@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { categoryById } from '../../@shared/util/categories/category.utils';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { TaskItem, TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
 import { ListPageFacade } from '../../@shared/util/item-lists/list-page.facade';

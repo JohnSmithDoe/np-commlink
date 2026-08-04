@@ -6,7 +6,7 @@ import {
   mockShoppingState,
 } from '../../testing/household.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { mockCategory } from '../../../@shared/testing/test-data';
 import { createShoppingItem } from '../../util/household.factory';
 import { HouseholdCategoriesActions, ShoppingActions } from '../../data';

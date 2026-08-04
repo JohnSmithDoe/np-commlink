@@ -3,14 +3,8 @@
   pageHeader="{{ 'page-title.categories' | translate }}"
   listHeader="{{ 'page-title.categories' | translate }}"
   [itemTemplate]="categoryItem"
+  [backHref]="facade.listHref()"
 >
-  <ion-button
-    toolbarActions
-    [routerLink]="facade.listHref()"
-    [attr.aria-label]="'a11y.back' | translate"
-  >
-    <ion-icon slot="icon-only" name="arrow-back-outline" aria-hidden="true" />
-  </ion-button>
 </app-list-page>
 
 <ng-template #categoryItem let-item let-ionList="ionList">

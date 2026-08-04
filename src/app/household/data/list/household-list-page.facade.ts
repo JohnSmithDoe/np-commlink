@@ -10,8 +10,8 @@ import {
   ShoppingItem,
   StorageItem,
 } from '../../model/household-list.types';
-import { BarcodeScannerService } from '../../util/barcode-scanner.service';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { BarcodeScannerService } from '../barcode-scanner.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { ListPageFacade } from '../../../@shared/util/item-lists/list-page.facade';
 import {
   createHouseholdItem,

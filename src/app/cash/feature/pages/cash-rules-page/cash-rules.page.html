@@ -1,7 +1,4 @@
-<app-cash-detail-header
-  [heading]="'page-title.cash-rules' | translate"
-  (back)="goBack()"
->
+<app-page-header label="page-title.cash-rules" backHref="/cash" hideButtons>
   <ion-buttons slot="end" toolbar>
     <ion-button
       (click)="goToCategories()"
@@ -10,7 +7,7 @@
       <ion-icon slot="icon-only" name="pricetags-outline" aria-hidden="true" />
     </ion-button>
   </ion-buttons>
-</app-cash-detail-header>
+</app-page-header>
 
 <ion-content class="ion-padding">
   <ion-list-header>{{ 'cash.section.rules' | translate }}</ion-list-header>

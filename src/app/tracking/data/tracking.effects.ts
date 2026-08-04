@@ -1,4 +1,4 @@
-import { ShareService } from '../../@shared/util/services/share.service';
+import { ShareService } from '../../@shared/data/services/share.service';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -28,7 +28,7 @@ import {
   formatViewDate,
 } from '../util/tracking.utils';
 import { groupSessionsByView } from '../util/sessions.utils';
-import { TodayService } from '../util/today.service';
+import { TodayService } from './today.service';
 
 @Injectable({ providedIn: 'root' })
 export class TrackingEffects {

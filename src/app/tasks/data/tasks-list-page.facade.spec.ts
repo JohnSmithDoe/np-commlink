@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { MockStore } from '@ngrx/store/testing';
 import { mockCategory } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import { TasksListPageFacade } from './tasks-list-page.facade';

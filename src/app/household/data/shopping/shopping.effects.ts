@@ -1,4 +1,4 @@
-import { ShareService } from '../../../@shared/util/services/share.service';
+import { ShareService } from '../../../@shared/data/services/share.service';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';

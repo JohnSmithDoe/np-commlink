@@ -6,7 +6,7 @@ import {
 import { TestBed } from '@angular/core/testing';
 import { EmojiRecentsFacade } from '../../../data/emoji/emoji-recents.facade';
 import { createBaseItem } from '../../../util/app.factory';
-import { ItemDialogService } from '../../../util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../data/item-lists/item-dialog.service';
 import { mockBaseItem, mockCategory } from '../../../testing/test-data';
 import {
   BaseCategoryEditItemDialog,

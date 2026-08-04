@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { TrackingActions } from './tracking.actions';
 import {
   selectTrackingListItems,

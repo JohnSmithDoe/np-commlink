@@ -4,7 +4,7 @@ import {
   computed,
   inject,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   AlertController,
   IonButton,
@@ -35,7 +35,7 @@ import { LocalizedDatePipe } from '../../../util/formatting/localized-date.pipe'
 import { CashTransaction } from '../../../model/transaction.types';
 import { uuidv4 } from '../../../../@shared/util/app.utils';
 import { CashFacade, AccountTransaction } from '../../../data';
-import { CashDetailHeaderComponent } from '../../../ui/cash-detail-header/cash-detail-header.component';
+import { PageHeaderComponent } from '../../../../@shared/ui/page-header/page-header.component';
 import { deleteConfirmAlert } from '../../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../../util/formatting/money.pipe';
 import { parserForBank } from '../../../util/import/bank-parsers';
@@ -58,7 +58,7 @@ import { CategoryId } from '../../../../@shared/model/category.types';
   styleUrls: ['./cash-account.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CashDetailHeaderComponent,
+    PageHeaderComponent,
     IonButtons,
     IonButton,
     IonContent,
@@ -77,7 +77,6 @@ import { CategoryId } from '../../../../@shared/model/category.types';
 })
 export class CashAccountPage {
   readonly #facade = inject(CashFacade);
-  readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
@@ -123,10 +122,6 @@ export class CashAccountPage {
   detachReconcile(txn: AccountTransaction): void {
     if (!txn.reconciledManualId) return;
     this.#facade.unreconcileTransaction(txn.reconciledManualId);
-  }
-
-  goBack(): void {
-    void this.#router.navigate(['/cash']);
   }
 
   async editAccount(): Promise<void> {

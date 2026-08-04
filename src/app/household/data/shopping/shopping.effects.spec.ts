@@ -5,7 +5,7 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { ShareService } from '../../../@shared/util/services/share.service';
+import { ShareService } from '../../../@shared/data/services/share.service';
 import { mockKernelState } from '../../../@shared/testing/test-data';
 import { ShoppingState } from '../../model/household-list.types';
 import {

@@ -7,24 +7,22 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   IonButton,
   IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonInput,
-  IonTitle,
-  IonToolbar,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, play, square } from 'ionicons/icons';
+import { play, square } from 'ionicons/icons';
 import { Round, TrackplayId } from '../../model/trackplay.types';
 import { TrackplayFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
+import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({
   selector: 'app-page-trackplay-game-play',
@@ -32,12 +30,10 @@ import { ScorePipe } from '../../util/score.pipe';
   styleUrls: ['./game-play.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
+    PageHeaderComponent,
     IonButtons,
     IonButton,
     IonIcon,
-    IonTitle,
     IonContent,
     IonInput,
     TranslatePipe,
@@ -46,7 +42,6 @@ import { ScorePipe } from '../../util/score.pipe';
 })
 export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly #facade = inject(TrackplayFacade);
-  readonly #router = inject(Router);
   readonly #route = inject(ActivatedRoute);
 
   readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
@@ -72,7 +67,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   #prevRoundCount = 0;
 
   constructor() {
-    addIcons({ arrowBackOutline, play, square });
+    addIcons({ play, square });
 
     effect(() => {
       const count = this.rounds().length;
@@ -127,10 +122,6 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
 
   toggleEnded(): void {
     this.#facade.toggleGameEnded(this.id);
-  }
-
-  goBack(): void {
-    void this.#router.navigate(['/trackplay']);
   }
 
   #scrollBodyToBottom(): void {

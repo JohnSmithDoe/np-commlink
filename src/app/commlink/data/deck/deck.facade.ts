@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ThemeService } from '../../../@shared/util/theme/theme.service';
+import { ThemeService } from '../theme.service';
 import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
 import {

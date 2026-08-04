@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R8 — docs/ionic-a11y-practices.md
+ * R8 — docs/footguns.md
  *
  * `aria-label` on an element whose role prohibits naming is not merely
  * ignored — it is prohibited by ARIA and flagged by axe-core's
@@ -49,7 +49,7 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       ariaLabelNeedsRole:
-        'aria-label on <{{element}}> is prohibited by ARIA{{because}}, so the name is never exposed. Add a role that permits naming (role="img" for a glyph or count, role="status" for a live value), or use real text in a visually-hidden span. See docs/ionic-a11y-practices.md R8.',
+        'aria-label on <{{element}}> is prohibited by ARIA{{because}}, so the name is never exposed. Add a role that permits naming (role="img" for a glyph or count, role="status" for a live value), or use real text in a visually-hidden span. See docs/footguns.md R8.',
     },
   },
   create(context) {

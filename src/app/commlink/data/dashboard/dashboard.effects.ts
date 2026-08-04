@@ -3,7 +3,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, from, map, of, switchMap, tap } from 'rxjs';
 import { APP_VERSION } from '../../../@shared/model/app.consts';
-import { DatabaseService } from '../../../@shared/util/persistence/database.service';
+import { DatabaseService } from '../../../@shared/data/persistence/database.service';
 import {
   runMigrations,
   wrapVersioned,

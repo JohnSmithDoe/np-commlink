@@ -16,8 +16,8 @@ import {
 } from 'rxjs';
 import { APP_VERSION } from '../../model/app.consts';
 import { DashboardTelemetry } from '../../model/dashboard.types';
-import { DatabaseService } from '../../util/persistence/database.service';
-import { PersistedReadRegistry } from '../../util/persistence/persisted-read-registry';
+import { DatabaseService } from '../persistence/database.service';
+import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
 import {
   MigrationStep,
   runMigrations,

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { STORAGE_LIST_ID, StorageItem } from '../../model/household-list.types';
 import { withQuantityChangedBy } from '../../util/household.factory';
 import { StorageActions } from './storage.actions';

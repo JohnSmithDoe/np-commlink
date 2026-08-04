@@ -15,6 +15,8 @@
 // the template, and everything it used to re-declare comes from those two.
 // ────────────────────────────────────────────────────────────────
 
+@use '../../../../theme/deck';
+
 :host {
   --app-content-max-width: 100%;
 }
@@ -29,12 +31,11 @@
 }
 
 .gs-bar {
+  @include deck.hud-label;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 1.1rem;
   font-size: var(--fs-xsmall);
-  letter-spacing: var(--sr-label-tracking);
-  text-transform: var(--sr-label-transform);
   color: var(--sr-text-dim);
 }
 .gs-bar__seg {
@@ -226,14 +227,12 @@
 }
 
 .gs-btn {
+  @include deck.hud-label;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.55rem 1rem;
-  font-family: inherit;
   font-size: var(--fs-small);
-  letter-spacing: var(--sr-label-tracking);
-  text-transform: var(--sr-label-transform);
   cursor: pointer;
   color: var(--sr-amber);
   background: rgba(var(--sr-amber-rgb), 0.08);
@@ -265,12 +264,11 @@
 }
 
 .gs-tele {
+  @include deck.hud-label;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 1.1rem;
   font-size: var(--fs-xsmall);
-  letter-spacing: var(--sr-label-tracking);
-  text-transform: var(--sr-label-transform);
   color: var(--sr-text-dim);
 }
 .gs-tele b {

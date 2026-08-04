@@ -1,4 +1,8 @@
-<app-cash-detail-header [heading]="categoryName()" (back)="goBack()" />
+<app-page-header
+  [heading]="categoryName()"
+  backHref="/cash/categories"
+  hideButtons
+/>
 
 <ion-content>
   @if (transactions().length) {

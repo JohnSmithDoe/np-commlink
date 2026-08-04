@@ -30,8 +30,7 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { NotificationService } from '../../util/notification.service';
-import { NotificationsFacade } from '../../data';
+import { NotificationService, NotificationsFacade } from '../../data';
 import { InboxNotification } from '../../../@shared/model/notifications.types';
 
 @Component({

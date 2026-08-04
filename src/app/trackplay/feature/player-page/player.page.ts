@@ -4,23 +4,15 @@ import {
   IonButton,
   IonButtons,
   IonContent,
-  IonHeader,
   IonIcon,
   IonList,
-  IonTitle,
-  IonToolbar,
   ModalController,
   PopoverController,
 } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import {
-  addOutline,
-  arrowBackOutline,
-  createOutline,
-  optionsOutline,
-} from 'ionicons/icons';
+import { addOutline, createOutline, optionsOutline } from 'ionicons/icons';
 import { Game, TrackplayId } from '../../model/trackplay.types';
 import { gameTypeName } from '../../util/game-type.utils';
 import { TrackplayFacade } from '../../data';
@@ -29,18 +21,17 @@ import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-e
 import { presentModal } from '../../../@shared/util/app.modal.utils';
 import { presentListSettings } from '../present-list-settings';
 import { presentGameDialog } from '../present-game-dialog';
+import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({
   selector: 'app-page-trackplay-player',
   templateUrl: './player.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonHeader,
-    IonToolbar,
+    PageHeaderComponent,
     IonButtons,
     IonButton,
     IonIcon,
-    IonTitle,
     IonContent,
     IonList,
     TranslatePipe,
@@ -66,15 +57,11 @@ export class TrackplayPlayerPage {
   readonly rxGameTypes = this.#facade.gameTypes;
 
   constructor() {
-    addIcons({ addOutline, arrowBackOutline, createOutline, optionsOutline });
+    addIcons({ addOutline, createOutline, optionsOutline });
   }
 
   typeName(game: Game): string {
     return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
-  }
-
-  goBack(): void {
-    void this.#router.navigate(['/trackplay/players']);
   }
 
   goToGame(gameId: TrackplayId): void {

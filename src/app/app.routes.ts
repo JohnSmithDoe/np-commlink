@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'settings',
     loadChildren: () =>
-      import('./settings/routes/settings.routes').then((m) => m.settingsRoutes),
+      import('./commlink/routes/commlink.routes').then((m) => m.settingsRoutes),
   },
   {
     path: 'office-time',

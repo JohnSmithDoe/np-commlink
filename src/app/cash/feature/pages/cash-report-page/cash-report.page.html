@@ -1,7 +1,4 @@
-<app-cash-detail-header
-  [heading]="'page-title.cash-report' | translate"
-  (back)="goBack()"
-/>
+<app-page-header label="page-title.cash-report" backHref="/cash" hideButtons />
 
 <ion-content class="ion-padding">
   @if (hasData()) {

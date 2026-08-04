@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { Recipe, RECIPES_LIST_ID } from '../../model/recipe.types';
 import { createRecipe } from '../../util/household.factory';
 import { RecipesActions } from './recipes.actions';

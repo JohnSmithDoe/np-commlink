@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R6 — docs/ionic-a11y-practices.md
+ * R6 — docs/footguns.md
  *
  * Ionic's own docs: "The ion-toast component has role='status' and
  * aria-live='polite'… This causes screen readers to only announce the
@@ -33,7 +33,7 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       toastButtonIsUnannounced:
-        'This toast button is not announced: ion-toast is role="status" + aria-live="polite", which reads only the header and message. An action reachable *only* here is unreachable for a screen-reader user — duplicate it somewhere persistent, or use an alert. If the toast is deliberately an interactive affordance, disable this rule on the line and say why. See docs/ionic-a11y-practices.md R6.',
+        'This toast button is not announced: ion-toast is role="status" + aria-live="polite", which reads only the header and message. An action reachable *only* here is unreachable for a screen-reader user — duplicate it somewhere persistent, or use an alert. If the toast is deliberately an interactive affordance, disable this rule on the line and say why. See docs/footguns.md R6.',
     },
   },
   create(context) {

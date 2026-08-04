@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { mockKernelState } from '../../../@shared/testing/test-data';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import {
   mockTrackingItem,
   mockTrackingState,

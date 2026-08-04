@@ -47,7 +47,11 @@ void bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes, withHashLocation()),
-    provideIonicAngular({ animated: true, mode: 'md' }),
+    provideIonicAngular({
+      animated: true,
+      mode: 'md',
+      focusManagerPriority: ['heading', 'banner'],
+    }),
     importProvidersFrom(IonicStorageModule.forRoot(storageConfig)),
     provideAppKernel(),
     { provide: TitleStrategy, useClass: AppTitleStrategy },

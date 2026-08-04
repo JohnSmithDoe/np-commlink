@@ -35,7 +35,7 @@ import {
   GEIST_PERSONAS,
 } from '../../model/geist.consts';
 import { GeistPersona, GeistTurn } from '../../model/geist.types';
-import { GeistSessionService } from '../../util/geist-session.service';
+import { GeistSessionService } from '../../data/geist-session.service';
 import {
   appendAnswerChunk,
   isFollowingTail,

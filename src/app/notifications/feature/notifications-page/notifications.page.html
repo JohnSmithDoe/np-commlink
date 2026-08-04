@@ -48,9 +48,6 @@
           <h3>{{ n.name }}</h3>
           <p>{{ n.body }}</p>
           <div class="actions">
-            <!-- Keyed off the label, not off `action`: a row persisted before the
-                 label joined the port carries a command with no wording, and an
-                 unlabeled button is worse than no button. -->
             @if (n.action?.labelKey; as labelKey) {
               <ion-button
                 size="small"

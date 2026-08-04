@@ -7,10 +7,12 @@ import { createCategory } from '../../@shared/util/app.factory';
 import {
   CategoryListPageFacade,
   NO_CATALOG,
+} from '../../@shared/util/categories/category-list.facade';
+import {
   openCategoryCreate,
   openCategoryEdit,
-} from '../../@shared/util/categories/category-list.facade';
-import { ItemDialogService } from '../../@shared/util/item-lists/item-dialog.service';
+} from '../../@shared/data/categories/category-dialogs';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { CASH_CATEGORIES_LIST_ID } from '../model/cash.types';
 import { CashActions } from './cash.actions';
 import {

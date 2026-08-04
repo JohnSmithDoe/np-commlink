@@ -12,6 +12,7 @@ import { DashboardEffects } from './dashboard/dashboard.effects';
 import { dashboardReducer } from './dashboard/dashboard.reducer';
 import { deckReducer } from './deck/deck.reducer';
 import { DASHBOARD_STATE_KEY } from './dashboard/dashboard.selector';
+import { settingsContext } from './settings/settings.providers';
 import { DECK_STATE_KEY, selectDeckState } from './deck/deck.selector';
 
 const dashboardContext: ContextBundle = {
@@ -34,5 +35,6 @@ const deckContext = providePersistedContext({
 
 export const commlinkContext: ContextBundle = mergeContexts(
   dashboardContext,
-  deckContext
+  deckContext,
+  settingsContext
 );

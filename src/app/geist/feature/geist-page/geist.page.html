@@ -164,9 +164,6 @@
           @for (turn of turns(); track turn.id) {
             <div class="gs-turn">
               <p class="gs-turn__query">&gt; {{ turn.query }}</p>
-              <!-- <pre> because the model's newlines are meaningful (ARCHIVAR
-                   answers in dash-prefixed lines) and it is the one element
-                   whose whitespace the formatter will not reflow. -->
               <pre
                 class="gs-turn__answer">{{ turn.answer }}@if (turn.streaming) {<span class="gs-cursor" aria-hidden="true">▊</span>}</pre>
               @if (turn.note) {

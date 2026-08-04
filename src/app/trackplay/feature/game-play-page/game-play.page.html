@@ -1,40 +1,27 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button
-        (click)="goBack()"
-        [attr.aria-label]="'a11y.back' | translate"
-      >
-        <ion-icon
-          slot="icon-only"
-          name="arrow-back-outline"
-          aria-hidden="true"
-        />
-      </ion-button>
-    </ion-buttons>
-    <ion-title>{{ game()?.name }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="toggleEnded()" color="primary">
-        <ion-icon
-          slot="start"
-          [name]="ended() ? 'play' : 'square'"
-          aria-hidden="true"
-        />
-        {{
-          (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
-            | translate
-        }}
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<app-page-header
+  [heading]="game()?.name ?? ''"
+  backHref="/trackplay"
+  hideButtons
+>
+  <ion-buttons slot="end" toolbar>
+    <ion-button (click)="toggleEnded()" color="primary">
+      <ion-icon
+        slot="start"
+        [name]="ended() ? 'play' : 'square'"
+        aria-hidden="true"
+      />
+      {{
+        (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
+          | translate
+      }}
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
 
 <ion-content>
   @if (game(); as game) {
     @if (!ended()) {
-      <!-- ── ACTIVE: the scoring spreadsheet ─────────────────────────── -->
       <div class="tp-grid sr-scanlines">
-        <!-- header: round marker + one cell per player -->
         <div
           class="tp-row tp-row--header"
           #headerRow
@@ -48,7 +35,6 @@
           }
         </div>
 
-        <!-- body: one row per round, editable numeric cells -->
         <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
           @for (round of rounds(); track round.id) {
             <div class="tp-row tp-row--data" data-testid="score-row">
@@ -73,7 +59,6 @@
           }
         </div>
 
-        <!-- footer: sum marker + per-player totals -->
         <div
           class="tp-row tp-row--footer"
           data-testid="score-total-row"
@@ -89,7 +74,6 @@
         </div>
       </div>
     } @else {
-      <!-- ── ENDED: ranked result screen ─────────────────────────────── -->
       <div class="tp-result ion-padding">
         <p class="sr-hud">{{ 'trackplay.game.ended' | translate }}</p>
 
@@ -106,10 +90,6 @@
             </span>
           </p>
 
-          <!-- Pure-CSS victory HUD: a trophy sigil, plus the deck theme's
-               rotating beams, reticle and confetti (see the SCSS — the plain
-               theme shows the flat trophy alone). Decorative — the winner is
-               already announced by the text above. -->
           <div class="tp-result__image" aria-hidden="true">
             <div class="tp-victory" data-testid="game-victory-art">
               <div class="tp-victory__rays"></div>

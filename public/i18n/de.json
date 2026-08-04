@@ -20,7 +20,6 @@
   "barcode.upload.button": "Barcode Bild auswählen...",
   "barcode.upload.error": "Barcode konnte nicht eingelesen werden",
   "cash.a11y.add-transaction": "Transaktion hinzufügen",
-  "cash.a11y.back": "Zurück",
   "cash.a11y.categories": "Kategorien",
   "cash.a11y.delete-account": "Konto löschen",
   "cash.a11y.delete-rule": "Regel löschen",

@@ -17,7 +17,7 @@
  * `no-restricted-syntax` *selector* being dropped by a later block setting
  * the same rule — an argument about shared option bags, not about rule
  * ids, which cannot be shadowed that way. Nothing here should exist at all
- * if an upstream rule expresses the same check; docs/coding-conventions.md
+ * if an upstream rule expresses the same check; CLAUDE.md
  * has the order to try, under Enforced > ESLint.
  *
  * Why each scope is drawn where it is:

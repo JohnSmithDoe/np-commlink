@@ -75,7 +75,7 @@ test.describe('manage categories', () => {
 
     await expect(catalogRow(page, 'Arbeit')).toContainText('0');
 
-    await page.getByRole('link', { name: 'Zurück' }).first().click();
+    await page.getByRole('button', { name: 'Zurück' }).first().click();
     await expect(page).toHaveURL(/tasks\/list$/);
   });
 

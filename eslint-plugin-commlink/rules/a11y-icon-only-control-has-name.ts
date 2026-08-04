@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R2 — docs/ionic-a11y-practices.md
+ * R2 — docs/footguns.md
  *
  * The name goes on the interactive parent (R1), and these three are the
  * ones Ionic does not name for us: `ion-item-option` renders a bare
@@ -50,7 +50,7 @@ export const rule: Rule.RuleModule = {
     ],
     messages: {
       iconOnlyControlNeedsName:
-        'Icon-only <{{element}}> with no accessible name. A screen reader announces it as just "button". Add [attr.aria-label]="\'<domain>.a11y.<action>\' | translate" — the icon stays decorative with aria-hidden. See docs/ionic-a11y-practices.md R2.',
+        'Icon-only <{{element}}> with no accessible name. A screen reader announces it as just "button". Add [attr.aria-label]="\'<domain>.a11y.<action>\' | translate" — the icon stays decorative with aria-hidden. See docs/footguns.md R2.',
     },
   },
   create(context) {

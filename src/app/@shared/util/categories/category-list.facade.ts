@@ -1,8 +1,6 @@
 import { InjectionToken, Provider, signal, Signal, Type } from '@angular/core';
 import { Category, CategoryId } from '../../model/category.types';
 import { ItemListId } from '../../model/item-list.types';
-import { createCategory } from '../app.factory';
-import { ItemDialogService } from '../item-lists/item-dialog.service';
 import { ListPageFacade, LIST_FACADE } from '../item-lists/list-page.facade';
 
 export interface CategoryListPageFacade extends ListPageFacade {
@@ -31,20 +29,3 @@ export const provideCategoryListFacade = (
 export const NO_CATALOG: Signal<readonly Category[]> = signal<
   readonly Category[]
 >([]).asReadonly();
-
-export const openCategoryCreate = (
-  dialogs: ItemDialogService,
-  listId: ItemListId,
-  searchQuery?: string
-): void =>
-  dialogs.open({
-    item: createCategory(searchQuery ?? ''),
-    listId,
-    editMode: 'create',
-  });
-
-export const openCategoryEdit = (
-  dialogs: ItemDialogService,
-  listId: ItemListId,
-  category: Category
-): void => dialogs.open({ item: category, listId, editMode: 'update' });

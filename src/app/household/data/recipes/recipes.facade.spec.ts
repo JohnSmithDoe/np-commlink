@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { RecipeMatch, RECIPES_LIST_ID } from '../../model/recipe.types';
 import { mockRecipe } from '../../testing/household.test-data';
 import { RecipesActions } from './recipes.actions';

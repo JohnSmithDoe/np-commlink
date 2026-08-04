@@ -5,7 +5,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import {
   LanguageModelService,
   LanguageModelAvailability,
-} from '../../../@shared/util/theme/language-model.service';
+} from '../../../@shared/data/theme/language-model.service';
 import { GEIST_PERSONAS } from '../../model/geist.consts';
 import { GeistPage } from './geist.page';
 

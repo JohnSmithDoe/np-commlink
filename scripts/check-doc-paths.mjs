@@ -4,7 +4,7 @@
  *
  * The compendium describes the tree, so it decays every time the tree moves —
  * and it decays *silently*: markdown is outside prettier, eslint and tsc alike
- * (`docs/coding-conventions.md`, Prettier), so a doc that names a deleted folder
+ * (`docs/footguns.md`, Prettier), so a doc that names a deleted folder
  * reads exactly as well as one that does not. This is the only gate that can
  * see it.
  *
@@ -48,22 +48,11 @@ const EXTENSIONS = [
  * Named in order to say they do NOT exist — the one case where prose is right
  * about a path the tree lacks. Each needs its reason here, so the entry cannot
  * outlive it.
+ *
+ * Empty since the 2026-08-04 doc cut: all three entries existed to serve prose
+ * that cited a path as deleted, and that prose went with the compendium.
  */
-const KNOWN_ABSENT = new Map([
-  [
-    '@shared/data/selectors',
-    'cited as the folder the kernel does not have: it would name a domain store key',
-  ],
-  [
-    'theme/palettes/_example.scss',
-    'deleted with the .ion-palette seam; cited as the approach data-theme superseded',
-  ],
-  ['model/index.ts', 'the model barrels are gone; cited as what was removed'],
-  [
-    'commlink/testing',
-    'the dashboard read-model has no fixture folder; cited to say so, since two docs and a comment once claimed it did',
-  ],
-]);
+const KNOWN_ABSENT = new Map([]);
 
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {

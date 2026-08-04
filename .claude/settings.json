@@ -1,8 +1,39 @@
 {
   "permissions": {
-    "allow": ["mcp__codegraph__*"]
+    "allow": ["mcp__codegraph__*"],
+    "deny": [
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git clean -fd*)",
+      "Bash(git clean -df*)",
+      "Bash(git clean -xdf*)",
+      "Bash(git clean -fdx*)",
+      "Bash(git checkout -- .*)",
+      "Bash(git checkout .*)",
+      "Bash(git checkout -f*)",
+      "Bash(git restore .*)",
+      "Bash(git add -A*)",
+      "Bash(git add --all*)",
+      "Bash(git add -u*)",
+      "Bash(git add .*)",
+      "Bash(git commit -a*)",
+      "Bash(git push*)"
+    ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-whole-tree-git.sh\"",
+            "timeout": 10,
+            "statusMessage": "Checking git scope"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",

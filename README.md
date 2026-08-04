@@ -134,7 +134,7 @@ to a runner.
 
 ## Layout
 
-DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `CLAUDE.md` for the authoritative developer guide and `docs/project-summary.md` for everything else — it indexes the architecture compendium: how the parts talk to each other, the per-feature design decisions, and what is still open. The merge decision log and refactor history live in the git commit log.
+DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` with module boundaries enforced by Sheriff (`sheriff.config.ts`). See `CLAUDE.md` for the authoritative developer guide; beside it, `docs/decisions.md` records settled questions, `docs/footguns.md` the failures that do not reproduce from a read, and `docs/state.md` what is still open. The design history lives in the git commit log.
 
 ## License
 

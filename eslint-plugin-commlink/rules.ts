@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The a11y rules are the mechanical half of docs/ionic-a11y-practices.md,
+ * The a11y rules are the mechanical half of docs/footguns.md,
  * verified against the installed Ionic source; the trailing label on each
  * line is the R-number it keys to, and the rest of its rationale is in its
  * own file's banner.

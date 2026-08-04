@@ -3,7 +3,7 @@ import { MockStore } from '@ngrx/store/testing';
 import { mockTaskItem, mockTasksState } from '../../testing/tasks.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { mockCategory } from '../../../@shared/testing/test-data';
-import { ItemDialogService } from '../../../@shared/util/item-lists/item-dialog.service';
+import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { createTaskItem } from '../../util/task.factory';
 import { TaskCategoriesActions, TasksActions } from '../../data';
 import { EditTaskItemDialogComponent } from './edit-task-item-dialog.component';

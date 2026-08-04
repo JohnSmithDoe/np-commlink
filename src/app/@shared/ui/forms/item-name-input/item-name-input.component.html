@@ -25,14 +25,8 @@
     {{ message | translate }}
   </ion-note>
 }
-<!-- Behind the same gate as its trigger, not just hidden: an always-mounted
-     ion-modal makes every element-name locator for that overlay ambiguous
-     app-wide, and on mobile this one could never be opened anyway.
-     `multiple`: a name is often built from more than one glyph ("🥛 Milch 🌾"),
-     and reopening the picker per emoji is three taps for the second one. -->
 @if (offersEmojiPicker) {
   <app-emoji-picker
-    mode="multiple"
     [isOpen]="pickerOpen()"
     [recent]="recentEmojis()"
     (picked)="insertEmoji($event)"

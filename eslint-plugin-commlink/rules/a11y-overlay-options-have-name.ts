@@ -1,5 +1,5 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * R4, controller half — docs/ionic-a11y-practices.md
+ * R4, controller half — docs/footguns.md
  *
  * The same rule as `a11y-overlay-has-name` for `ModalController.create(…)`
  * & friends, where the seam is `htmlAttributes` rather than an attribute.
@@ -40,7 +40,7 @@ export const rule: Rule.RuleModule = {
     schema: [],
     messages: {
       overlayOptionsNeedName:
-        '{{kind}} overlay with no accessible name.{{alternatives}} Name it through the htmlAttributes seam: htmlAttributes: {{"{"}} \'aria-label\': this.#translate.instant(marker(\'<domain>.a11y.<what>\')) {{"}"}}. See docs/ionic-a11y-practices.md R4.',
+        '{{kind}} overlay with no accessible name.{{alternatives}} Name it through the htmlAttributes seam: htmlAttributes: {{"{"}} \'aria-label\': this.#translate.instant(marker(\'<domain>.a11y.<what>\')) {{"}"}}. See docs/footguns.md R4.',
     },
   },
   create(context) {

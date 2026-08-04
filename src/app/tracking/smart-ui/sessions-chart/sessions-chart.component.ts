@@ -11,7 +11,7 @@ import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import { TrackingFacade } from '../../data';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
 import { localizedDayMonth } from '../../../@shared/util/formatting/date-format.utils';
-import { LanguageService } from '../../../@shared/util/theme/language.service';
+import { LanguageService } from '../../../@shared/data/theme/language.service';
 
 Chart.register(...registerables);
 

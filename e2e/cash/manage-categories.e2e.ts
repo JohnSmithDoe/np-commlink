@@ -44,7 +44,7 @@ test.describe('cash manage categories', () => {
     await expect(listRow(page, 'Miete')).toBeVisible({ timeout: 10_000 });
     await expect(listRow(page, 'Miete')).toContainText('0');
 
-    await page.getByRole('link', { name: 'Zurück' }).first().click();
+    await page.getByRole('button', { name: 'Zurück' }).first().click();
     await expect(page).toHaveURL(/#\/cash$/);
   });
 

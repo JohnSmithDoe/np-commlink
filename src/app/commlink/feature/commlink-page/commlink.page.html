@@ -49,9 +49,6 @@
 
     <div class="cl-grid">
       @for (tile of tiles(); track tile.program.id; let slot = $index) {
-        <!-- A dark tile is unreachable, not just un-clickable: the CSS drops
-             pointer events, and these two take it out of the tab order and say
-             why to a screen reader. -->
         <a
           class="cl-node sr-panel sr-corners"
           [class.cl-node--standby]="tile.status === 'standby'"
@@ -65,13 +62,7 @@
           <div class="cl-node__top">
             <span class="cl-node__hex">{{ slot | hex }}</span>
             <span class="cl-node__flags">
-              <!-- Live metric from the dashboard read-model; which values earn a
-                   badge is decided in `tiles`. -->
               @if (tile.badgeText !== null) {
-                <!-- role="img": ARIA prohibits naming the implicit `generic`
-                     role, so on a bare <span> the aria-label is not exposed at
-                     all and a reader announces the raw digits instead of what
-                     they count (R8). -->
                 <span
                   class="cl-node__badge"
                   role="img"

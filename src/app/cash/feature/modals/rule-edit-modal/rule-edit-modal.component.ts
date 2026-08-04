@@ -47,7 +47,7 @@ import {
   toConditionForm,
   UNPARSEABLE_AMOUNT,
 } from '../../../util/rule-form.utils';
-import { LanguageService } from '../../../../@shared/util/theme/language.service';
+import { LanguageService } from '../../../../@shared/data/theme/language.service';
 import { Category, CategoryId } from '../../../../@shared/model/category.types';
 
 @Component({

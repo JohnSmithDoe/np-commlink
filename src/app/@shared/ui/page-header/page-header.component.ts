@@ -6,6 +6,7 @@ import {
   output,
 } from '@angular/core';
 import {
+  IonBackButton,
   IonButton,
   IonButtons,
   IonHeader,
@@ -22,6 +23,7 @@ import { add } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './page-header.component.html',
   imports: [
+    IonBackButton,
     IonToolbar,
     IonHeader,
     IonButtons,
@@ -33,8 +35,10 @@ import { add } from 'ionicons/icons';
 })
 export class PageHeaderComponent {
   readonly label = input('');
+  readonly heading = input('');
   readonly icon = input<string>();
   readonly hideButtons = input(false, { transform: booleanAttribute });
+  readonly backHref = input('');
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();
 
