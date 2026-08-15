@@ -8,15 +8,11 @@
 @use '../../../../theme/cash';
 
 .cash-networth {
-  padding-top: 0.5rem;
-  padding-bottom: 0.75rem;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
   @include cash.networth-strip;
 }
 
 .cash-txn__amount {
   @include cash.txn-amount(var(--fs-body));
-}
-
-.cash-empty {
-  @include cash.empty-state;
 }

@@ -1,28 +1,12 @@
 // ─── why ────────────────────────────────────────────────────────
-// The leave animation is defined outside the motion query and only
-// shortened inside the reduce one. `animationend` is what dispatches the
-// completion, so an animation that is removed rather than shortened would
-// leave the card on screen and the day open.
+// The leave animation is SHORTENED under reduced motion, never removed:
+// `animationend` is what dispatches the completion, so removing it would leave
+// the card on screen and the day open. It sits on the .ritual-offer wrapper so
+// the card and its two actions leave as one group, and so the event fires once.
 //
-// It sits on .ritual-offer, the wrapper, so the card and the two quiet
-// actions leave as one group — and because the wrapper is then the only
-// animated node, the event that bubbles up to it fires exactly once.
-//
-// The card hangs at a golden cut rather than the middle. The empty ::before is
-// the mechanism: a lone flexible item whose grow factor is BELOW 1 takes that
-// share of the FREE space — container minus content — and leaves the rest. So
-// what gets cut is the WHITESPACE, not the container, and no unit is involved.
-//
-// The rung is $gc-4, not $gc-2, because the eye reads where the CARD CENTRE
-// lands, not where the space above ends, and a tall card eats a cut of the
-// whitespace: $gc-2 put the centre at 42% of the container, eight points off
-// dead centre and still reading as centred. $gc-4 is the rung that clears it.
-//
-// The width cap is deliberately NOT a golden cut. One sentence over one button
-// at the 900px default stops being a card and reads as a banner, and what
-// fixes that is a comfortable measure — a typographic length, not a
-// proportion. Re-declaring --app-content-max-width is the opt-out global.scss
-// documents, the one commlink, office-time and geist already take.
+// The cut is $gc-4, not $gc-2, because the eye reads where the card CENTRE
+// lands and a tall card eats a share of the whitespace — $gc-2 measured 42% of
+// the container, eight points off dead centre and still reading as centred.
 // ────────────────────────────────────────────────────────────────
 
 @use 'theme/consts';
@@ -32,36 +16,28 @@
 }
 
 .ritual {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 100%;
+  @include consts.vertical-cut;
   color: var(--sr-text);
-}
-
-.ritual::before {
-  content: '';
-  flex-grow: consts.$gc-4;
 }
 
 .ritual-offer {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .ritual-offer__actions {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .ritual-card {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-3);
   width: 100%;
-  padding: 2rem 1.5rem;
+  padding: var(--space-5) var(--space-5);
   border: 1px solid var(--sr-line);
   border-radius: 4px;
   background: var(--sr-panel);
@@ -85,14 +61,14 @@
 }
 
 .ritual-card__action {
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
 }
 
 .ritual-done {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
   text-align: center;
 }
 
@@ -121,7 +97,7 @@
 .ritual-done__count {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-3);
   margin: 0;
 
   strong {
@@ -140,7 +116,7 @@
 
 .ritual-dots {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .ritual-dots__dot {

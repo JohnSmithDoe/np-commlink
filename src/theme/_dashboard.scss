@@ -7,9 +7,6 @@
 
 $item-height-min-height: 264px;
 $item-height-max-height: 320px;
-$sm-item-width: 250px;
-$md-item-width: $sm-item-width * 2;
-$lg-item-width: $sm-item-width * 4;
 
 @mixin dashboard-item {
   display: block;
@@ -23,10 +20,10 @@ $lg-item-width: $sm-item-width * 4;
     height: 100%;
     width: 100%;
     margin: 0;
-    padding: 1rem;
+    padding: var(--space-4);
 
     ion-card-header {
-      padding: 0 0 1rem;
+      padding: 0 0 var(--space-4);
     }
 
     ion-card-content {

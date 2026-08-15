@@ -3,7 +3,3 @@
 .cash-txn__amount {
   @include cash.txn-amount(var(--fs-body));
 }
-
-.cash-empty {
-  @include cash.empty-state;
-}

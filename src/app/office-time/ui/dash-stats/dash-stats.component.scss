@@ -12,7 +12,7 @@
   font-size: var(--fs-body);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 1rem;
+  gap: 0 var(--space-4);
   padding: 0;
 
   & > *:nth-child(odd) {
@@ -27,5 +27,5 @@
 
 app-dash-percentage {
   width: 120px;
-  margin: 0 auto 1rem;
+  margin: 0 auto var(--space-4);
 }

@@ -1,7 +1,7 @@
 @use '../../../../theme/cash';
 
 .cash-hint {
-  @include cash.hint(0.5rem 1rem);
+  @include cash.hint(var(--space-3) var(--space-4));
 }
 
 ion-buttons[slot='start'] ion-button {

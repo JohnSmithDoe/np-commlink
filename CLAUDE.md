@@ -9,7 +9,8 @@ No backend — all state is local (NgRx in memory, `@ionic/storage` on disk). Sh
 Android APK.
 
 **Trunk-based: work on `main`.** If you must isolate, prefer a worktree over a branch. Commit messages
-explain the *why* — the git log is the decision record.
+explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
+that has to outlive its commit belongs in one of the three documents below.
 
 ## Three documents, and the rule that keeps them small
 
@@ -19,20 +20,13 @@ explain the *why* — the git log is the decision record.
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, what waits on upstream |
 
-**Update a doc only when a decision, a footgun, or a one-way door changes — never as a follow-up to a
-code change.** An inventory that mirrors the tree has to be rewritten every time the tree moves, so
-this repo keeps none: the gate list is `GATES=(` in `scripts/verify-all.sh`, the boundaries are
-`sheriff.config.ts`, the compiler flags are `tsconfig.json`, the budgets and coverage floors are
-`angular.json`, the CI steps are `.forgejo/workflows/ci.yml`, the style layer's contract is
-`src/global.scss`'s own banner, and each lint rule's rationale is its own file's banner. None of those
-can drift from itself.
-
-A prose compendium of thirteen further files was deleted on 2026-08-04 as unread overhead. Every
-measurement it carried is either in the three files above or one command away:
-`git show HEAD~1:docs/<name>.md` — `architecture`, `testing`, `lifecycle-and-persistence`,
-`coding-conventions`, `cross-feature-communication`, `i18n`, `build-and-deploy`, `theming`,
-`dialogs-and-forms`, `features`, `cash`, `deck-catalog`, `ionic-a11y-practices`, `project-summary`,
-`patterns`, `open-tasks`.
+**These three are the whole set, and a doc is updated only when a decision, a footgun, or a one-way
+door changes — never as a follow-up to a code change.** An inventory that mirrors the tree needs
+rewriting every time the tree moves, so this repo keeps none; each fact lives where it cannot drift
+from itself: gates in `scripts/verify-all.sh` (`GATES=(`), boundaries in `sheriff.config.ts`, compiler
+flags in `tsconfig.json`, budgets and coverage floors in `angular.json`, CI steps in
+`.forgejo/workflows/ci.yml`, the style layer's contract in `src/global.scss`'s banner, each lint
+rule's rationale in its own.
 
 ## Commands
 
@@ -45,8 +39,8 @@ measurement it carried is either in the three files above or one command away:
 | `pnpm run test:plugin` | Vitest over `eslint-plugin-commlink/`'s RuleTester specs — its own config, because the builder's tsconfig reaches only under `src` |
 | `pnpm run e2e` | Playwright (`e2e/`, port 4321) |
 | `pnpm run lint` | plugin types → eslint → stylelint, whole repo |
-| `pnpm run verify:all` | every gate, as seventeen reported cards; `--cold` purges eslint's cache |
-| `pnpm run verify:testids` · `:icons` · `:docs` · `:exports` · `:pages` | the five whole-repo scripts |
+| `pnpm run verify:all` | every gate, one reported card each; `--cold` purges eslint's cache |
+| `pnpm run verify:testids` · `:icons` · `:docs` · `:exports` · `:pages` | the whole-repo scripts |
 | `pnpm exec sheriff verify src/main.ts` | module boundaries |
 | `pnpm run i18n:extract` | rewrite both bundles from the `marker(...)` literals, `--clean` included |
 | `pnpm run emoji:build` | regenerate the emoji catalog from CLDR (output is committed; not in CI) |
@@ -54,18 +48,17 @@ measurement it carried is either in the three files above or one command away:
 | `pnpm run apk:debug` / `apk:release` / `apk:open` | Gradle assemble (release collects to `releases/`) / Android Studio |
 | `pnpm run apk:signed` | `apk:release` with the signing identity resolved — keystore found, passwords prompted |
 
-**`verify:all` is a pre-commit gate, not a per-edit check.** It is seventeen gates including a
-production build and the whole Playwright run, so it costs ~90 s where the answer usually costs
-four: match the check to the blast radius — `pnpm test` for a spec or logic edit, `pnpm run lint`
-for a lint-shaped one, `pnpm run build` for anything a template or AOT would catch. Run the full
-suite once, before committing.
+**`verify:all` is a pre-commit gate, not a per-edit check** — it includes a production build and the
+whole Playwright run, ~90 s where the answer usually costs four. Match the check to the blast radius:
+`pnpm test` for a spec or logic edit, `pnpm run lint` for a lint-shaped one, `pnpm run build` for
+anything a template or AOT catches.
 
 `android/` is git-ignored and regenerated: `npx cap add android` once per machine.
 
 ## Hard rules
 
-**A rule with a gate needs no vigilance — the gate is the documentation.** When one fires, its own file
-banner says why. The ones without a gate are the ones to hold in your head.
+**A rule with a gate needs no vigilance — the gate is the documentation**, and the rule's own file
+banner says why it fires. Hold the ungated ones in your head.
 
 | Rule | Enforced by |
 | --- | --- |
@@ -78,9 +71,10 @@ banner says why. The ones without a gate are the ones to hold in your head.
 | Never compose a `data-testid`; an `app-*` element is already a contract | `commlink/testid-is-static`, `no-testid-on-component-element`, `verify:testids` |
 | Action-group event keys are camelCase identifiers, and nothing matches on the type string | `commlink/action-event-keys-are-identifiers`, `no-action-type-literal` |
 | At most one comment per file — a `why` banner above the first code token | `commlink/comments-header-only` |
+| **A banner is the exception, not the header** — write none unless the code cannot say it, then a few lines, never a dozen | review |
 | Every `ion-icon`, icon-only control, form control and overlay carries its own name (R1–R9) | eight `commlink/a11y-*` rules |
 | Every `ion-icon` name is registered with `addIcons` by the component that renders it — an unregistered name is an invisible control, not an error | `verify:icons` |
-| `@shared` uses no domain-owned **i18n key** — it owns no wording (this is about keys, not code; see below) | `commlink/i18n-key-ownership` |
+| `@shared` uses no domain-owned **i18n key** — it owns no wording | `commlink/i18n-key-ownership` |
 | Muted text is `var(--sr-text-dim)`, never the accent at an alpha | `commlink/muted-text-uses-token` |
 | A spec calling `overrideSelector` also calls `resetSelectors` | `commlink/spec-resets-mock-selectors` |
 | **Speaking code, not comments** — extract the block instead of explaining it | review |
@@ -89,23 +83,24 @@ banner says why. The ones without a gate are the ones to hold in your head.
 | **Lean tests, not exhaustive** — no 100% target, no branded-type machinery | review |
 | **R5 and R9 can never be gated** — a gesture is never the only way; the viewport never locks zoom | review |
 
-**`@shared` does hold domain-named code, and that is the design.** The rule above is about *wording*:
-`@shared` may not reach for a domain's i18n key, because that is the boundary the re-domaining drew.
-It says nothing about types or actions — `@shared/data/actions/` carries `NotificationsActions` and
-`DashboardActions`, and `@shared/model/` the types they move. Those are the **cross-domain event bus**,
-and they are what makes sealed domains workable at all: `tracking` tells the inbox a timer is running
-by dispatching a `@shared` action, never by importing `notifications`. Sheriff has no opinion here —
-`domain:* → domain:@shared` is legal for every domain — so the discipline is: a contract two domains
-must agree on goes in `@shared`; a fact one domain owns does not.
+**`@shared` does hold domain-named code, and that is the design.** The rule above governs *wording*
+only. `@shared/data/actions/` carries `NotificationsActions` and `DashboardActions`, `@shared/model/`
+the types they move: that is the **cross-domain event bus**, and it is what makes sealed domains
+workable — `tracking` tells the inbox a timer is running by dispatching a `@shared` action, never by
+importing `notifications`. Sheriff permits `domain:* → domain:@shared` for every domain, so the
+discipline is yours: a contract two domains must agree on goes in `@shared`; a fact one domain owns
+does not.
 
 Adding a gate, in order: **an upstream rule configured**, then **a rule in `eslint-plugin-commlink/`**,
-then **a script** — the last only for what ESLint structurally cannot see (a whole-repo set difference,
-or a question about the filesystem rather than a file's bytes). Read
-[footguns.md](docs/footguns.md) first: several ways a new gate goes silently inert are recorded there.
+then **a script** — the last only for what ESLint cannot see (a whole-repo set difference, or a
+question about the filesystem rather than a file's bytes). Read [footguns.md](docs/footguns.md) first:
+it records several ways a new gate goes silently inert.
 
 ## Testing shape
 
-Three layers, lean by design. The traps in each are in [footguns.md](docs/footguns.md).
+Three layers, lean by design. The traps in each are in [footguns.md](docs/footguns.md). Shared infra
+is `src/app/@shared/testing/` (Sheriff `type:testing`, reachable only from `*.spec.ts`); effects stay
+RxJS.
 
 - **Vitest, pure logic** (`*.spec.ts`) — utils, pipes, reducers, selectors via `.projector(...)`. No
   `TestBed` where a plain call suffices.
@@ -114,15 +109,3 @@ Three layers, lean by design. The traps in each are in [footguns.md](docs/footgu
   depends on what the template embeds.
 - **Playwright e2e** — real-browser behaviour. Two projects partitioned by path, not a matrix:
   `mobile-chromium` (an emulated Pixel 5) runs everything except `e2e/desktop/**`.
-
-Shared test infra is `src/app/@shared/testing/` (Sheriff `type:testing`, reachable only from
-`*.spec.ts`). Effects stay RxJS.
-
-## Never read secrets
-
-Never open the contents of any credential, key, certificate, or otherwise secret-bearing file — no
-`Read`, `cat`, grep-with-content, or inclusion in a diff. A filename alone is not proof a file is
-safe. To learn which keys exist, **read the loading code, not the file.**
-
-`docs/cash/*.csv` is gitignored for this reason: the two files that lived there were real giro
-exports and were purged from all 347 commits carrying them ([decisions.md](docs/decisions.md)).

@@ -7,13 +7,8 @@
 // download progress is continuous, and transform is the one axis a browser
 // animates without re-laying out every frame.
 //
-// An answer renders in a <pre> so the model's newlines survive, wrapped and in
-// the deck font. .gs-back is nearly empty because it composes `gs-btn
-// gs-btn--ghost` in the template.
-//
 // .gs-btn carries its own :active and :focus-visible because these are native
-// <button>s and inherit no press or focus treatment. Hover answers nothing on
-// touch, which is where this page is used.
+// <button>s and inherit no press or focus treatment.
 // ────────────────────────────────────────────────────────────────
 
 @use '../../../../theme/deck';
@@ -25,19 +20,19 @@
 .gs {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
   min-height: 100%;
-  padding: 1rem 1.25rem 2rem;
+  padding: var(--space-4) var(--space-4) var(--space-5);
   font-family: var(--sr-deck-font);
 }
 
 .gs-bar {
-  @include deck.hud-strip(var(--fs-xsmall), 1.1rem);
+  @include deck.hud-strip(var(--fs-xsmall), var(--space-4));
 }
 .gs-bar__seg {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 .gs-bar__seg b {
   color: var(--sr-amber);
@@ -50,10 +45,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--space-3);
   width: min(520px, 100%);
   margin: auto;
-  padding: 2.25rem 1.75rem;
+  padding: var(--space-6) var(--space-5);
   text-align: center;
 }
 
@@ -114,15 +109,15 @@
 .gs-personas {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .gs-persona {
   display: flex;
   flex: 1 1 8rem;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.5rem 0.75rem;
+  gap: var(--space-0);
+  padding: var(--space-3) var(--space-3);
   font-family: inherit;
   text-align: left;
   cursor: pointer;
@@ -157,11 +152,11 @@
 .gs-console {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
   min-height: 12rem;
   max-height: 58vh;
   overflow-y: auto;
-  padding: 1.1rem 1.25rem;
+  padding: var(--space-4) var(--space-4);
 }
 
 .gs-console__idle {
@@ -173,7 +168,7 @@
 }
 
 .gs-turn__query {
-  margin: 0 0 0.4rem;
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-small);
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
@@ -191,7 +186,7 @@
 }
 
 .gs-turn__note {
-  margin: 0.35rem 0 0;
+  margin: var(--space-2) 0 0;
   font-size: var(--fs-xsmall);
   letter-spacing: var(--sr-label-tracking);
   color: var(--ion-color-danger);
@@ -200,7 +195,7 @@
 .gs-input {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--space-3);
 }
 
 .gs-input__field {
@@ -214,15 +209,15 @@
 .gs-input__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .gs-btn {
   @include deck.hud-label;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 1rem;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   font-size: var(--fs-small);
   cursor: pointer;
   color: var(--sr-amber);
@@ -263,14 +258,14 @@
 }
 
 .gs-tele {
-  @include deck.hud-strip(var(--fs-xsmall), 1.1rem);
+  @include deck.hud-strip(var(--fs-xsmall), var(--space-4));
 }
 .gs-tele b {
   color: var(--sr-cyan);
 }
 
 .gs-back {
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
   text-decoration: none;
 }
 

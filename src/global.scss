@@ -3,31 +3,25 @@
 // EMIT, and what is app-wide. What app.providers.ts is to the kernel.
 //
 // TWO themes off ONE token group, so retheme the custom properties, never the
-// components. `<html data-theme>` is the switch, written by theme.service off
-// the async `settings` read — the boot splash covers that race.
-//
-// Plain is the UN-decorated base and every cyberpunk flourish is ADDED under
-// [data-theme='cyberpunk'], so a new surface reads plain unless it opts in.
-// The inverse cost a manual re-suppression per flourish, forever.
+// components. Plain is the UN-decorated base and every cyberpunk flourish is
+// ADDED under [data-theme='cyberpunk'], so a new surface reads plain unless it
+// opts in; the inverse cost a manual re-suppression per flourish, forever.
 //
 // Hence the @use graph: _fonts and _shadowrun emit, so they are @use'd HERE and
 // nowhere else — a component @using shadowrun re-emits the whole sheet. The
-// side-effect-free partials are the ones a component may @use, spelled
-// `theme/<x>` off includePaths, since a relative path breaks silently on move.
+// side-effect-free partials are spelled `theme/<x>` off includePaths, since a
+// relative path breaks silently on move.
 //
 // --app-content-max-width caps `ion-content > *`, every child independently, so
-// a page changes width by re-declaring the property on :host rather than
-// fighting the rule. The header's projected rows read the same property.
+// a page changes width by re-declaring the property on :host.
 //
-// Three rules below are facts about behaviour outside this file: Android
-// WebView never populates env(safe-area-inset-*), so --ion-safe-area-* reads
-// Capacitor's injection first; html,body carry a background because Android 16
-// draws behind transparent bars; and body.scanner-active targets ion-content,
-// because shadowrun's `ion-content { --background: … }` out-specifies anything
-// set on body — which is why the capped wrapper stays transparent.
+// The last three rules answer to Android, not to this file: the WebView never
+// populates env(safe-area-inset-*), Android 16 draws behind transparent bars,
+// and shadowrun's `ion-content { --background }` out-specifies body.
 // ────────────────────────────────────────────────────────────────
 
 @use 'theme/fonts'; // @font-face (self-hosted JetBrains Mono)
+@use 'theme/layout';
 @use 'theme/shadowrun';
 @import '@ionic/angular/css/core.css';
 @import '@ionic/angular/css/normalize.css';
@@ -39,7 +33,7 @@
 @import 'theme/_flex-utils.css';
 
 :root {
-  --app-content-max-width: 900px;
+  --app-content-max-width: #{layout.$content-default};
   --app-content-bg: transparent;
 }
 

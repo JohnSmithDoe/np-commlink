@@ -1,17 +1,17 @@
 .cash-rule-dialog__match {
-  margin: 0.75rem 0;
+  margin: var(--space-3) 0;
 }
 
 .cash-condition {
   border-bottom: 1px solid var(--sr-line);
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-3);
 
   &__row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0.5rem 0;
+    gap: var(--space-3);
+    padding: var(--space-1) var(--space-3) 0;
 
     ion-select {
       flex: 1;

@@ -3,20 +3,10 @@
 // `@use 'theme/deck'` and @include a recipe where a global class cannot reach —
 // a `:host`, a pseudo-element. Everywhere else prefer the .sr-* classes.
 //
-// Surfaces and LEDs come in pairs: `*-base` is the plain always-on look,
-// `*-cyber`/glow the layer _shadowrun.scss emits only under cyberpunk.
-// panel-base takes $bg-prop so an Ionic host can paint through --background.
-//
 // led-glow declares its pulse INSIDE `prefers-reduced-motion: no-preference`
 // rather than switching it off in a later `reduce` block: a media query adds no
 // specificity, so the opt-out lost to `:root[data-theme] .sr-led--on` and every
 // LED pulsed anyway, one permanent animation per row.
-//
-// hud-label is a mixin as well as a class because the COLOUR is not part of it,
-// which a class alone could not serve; hud-strip is the same four surfaces one
-// step on, parameterised by the only two things that differed. status-bar is
-// shared for the opposite reason — two renders of byte-identical markup had
-// drifted to different widths, and the width IS the widget.
 // ────────────────────────────────────────────────────────────────
 
 @mixin panel-base($bg-prop: background) {
@@ -98,7 +88,7 @@
   @include hud-label;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem $column-gap;
+  gap: var(--space-2) $column-gap;
   font-size: $font-size;
   color: var(--sr-text-dim);
 }
@@ -107,7 +97,7 @@
   display: flex;
   width: 0.5rem;
   height: 100%;
-  margin-right: 1rem;
+  margin-right: var(--space-4);
 
   ion-text {
     flex: 1;
@@ -118,7 +108,7 @@
 @mixin brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-3);
   font-family: var(--sr-deck-font);
   letter-spacing: var(--sr-brand-tracking);
 }

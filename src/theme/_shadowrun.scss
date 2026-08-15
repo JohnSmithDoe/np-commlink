@@ -1,29 +1,17 @@
 // ─── why ────────────────────────────────────────────────────────
 // The --sr-* tokens and the .sr-* primitives wrapping _deck.scss's mixins.
-// global.scss specifies the layer and is the one file that @uses this one.
 //
 // The accent duo aliases the Ionic brand colours, so a hue lives in one place
 // and variables.scss flips it per theme. Muted TEXT is --sr-text-dim, never the
-// accent at an alpha: the plain accent is a corporate blue, which drops under
-// AA that way.
+// accent at an alpha — the plain accent is a blue that drops under AA that way.
 //
-// The type scale is every whole pixel at the 16px root — the app had 24 sizes,
-// twelve of them between 0.6 and 0.9rem. Take the nearest rung; if none fits,
-// the ladder gains one HERE rather than a call site inventing a value.
-// `commlink/font-size-uses-scale` reads the rung names off this block. Icon
-// boxes and the clamp() heads stay literals: an icon shares the property with
-// type but not the meaning, and a clamp cannot be a rung.
+// Take the nearest type rung; if none fits, the ladder gains one HERE rather
+// than a call site inventing a value. Icon boxes and clamp() heads stay
+// literals. --space-* is the same ladder times 1rem, anchored on --ion-padding.
 //
-// Two :root declarations are not theming. `color-scheme` paints what we cannot
-// style (scrollbars, native pickers, autofill) and follows data-theme, where
-// index.html's <meta> can only state the pre-stylesheet default. The scrollbar
-// pair sits here rather than on `*` because it INHERITS, and inheritance
-// crosses the shadow boundaries a global `*` cannot.
-//
-// --sr-sans is system-only on purpose: plain should look like the OS. Keyframes
-// sr-pulse lives here because _deck.scss references it and emits nothing, and
-// .sr-field-note is global because a dialog's note and a shared control's must
-// match while the control cannot reach the dialog's stylesheet.
+// `color-scheme` follows data-theme to paint what we cannot style — scrollbars,
+// native pickers, autofill. The scrollbar pair is on :root, not `*`, because it
+// INHERITS, and inheritance crosses the shadow boundaries `*` cannot.
 // ────────────────────────────────────────────────────────────────
 
 @use 'deck';
@@ -45,6 +33,14 @@
   --fs-xlarge: 1.5rem; // 24px — the big readouts (timer, net worth, meter)
   --fs-xxlarge: 2rem; // 32px — display figures
   --fs-display: 4rem; // 64px — the dashboard's date hero
+
+  --space-0: 0.146rem; //  2.3px — φ⁻⁴, the hairline
+  --space-1: 0.236rem; //  3.8px — φ⁻³
+  --space-2: 0.382rem; //  6.1px — φ⁻²
+  --space-3: 0.618rem; //  9.9px — φ⁻¹
+  --space-4: 1rem; // 16.0px — the anchor, === --ion-padding
+  --space-5: 1.618rem; // 25.9px — φ¹
+  --space-6: 2.618rem; // 41.9px — φ²
 
   --sr-mono:
     'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
@@ -253,7 +249,7 @@ ion-menu ion-item {
 
 .sr-field-note {
   display: block;
-  padding: 0.35rem 1rem 0;
+  padding: var(--space-2) var(--space-4) 0;
   font-size: var(--fs-small);
   letter-spacing: var(--sr-label-tracking);
 }

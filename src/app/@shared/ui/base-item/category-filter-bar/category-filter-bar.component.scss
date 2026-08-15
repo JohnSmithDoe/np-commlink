@@ -1,20 +1,17 @@
 // ─── why ────────────────────────────────────────────────────────
-// `--min-height: 2.75rem` is the 44px target, and it HAS to be declared:
-// Ionic's default `ion-button` is 36px in MD, so a filter row left alone
-// ships one more below-target control per category.
-//
-// The row scrolls rather than wraps: a wrapping row changes the header's
-// height as categories are added, and the list under a sticky header
-// would jump with it.
+// `--min-height: 2.75rem` is the 44px target, and it HAS to be declared —
+// Ionic's default `ion-button` is 36px in MD. The row scrolls rather than
+// wraps, because a wrapping row changes the sticky header's height as
+// categories are added, and the list under it jumps.
 // ────────────────────────────────────────────────────────────────
 
 .filter-bar {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.25rem;
+  gap: var(--space-1);
   align-items: center;
-  padding-inline: 0.5rem;
-  padding-block: 0.25rem;
+  padding-inline: var(--space-3);
+  padding-block: var(--space-1);
   overflow-x: auto;
   scrollbar-width: none;
   max-width: var(--app-content-max-width);

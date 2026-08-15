@@ -1,22 +1,26 @@
 // ─── why ────────────────────────────────────────────────────────
-// The golden cut, named, so a layout that means it can say so. A bare 0.382 in
-// a stylesheet reads as a number someone nudged until it looked right; $gc-2
-// says the proportion was chosen, and makes it recognisable the next time it
-// is wanted somewhere else.
+// The bare axis of the app's one ladder — φ powers around 1rem. A bare 0.382
+// reads as a number someone nudged; $gc-2 says the proportion was chosen. Take
+// the nearest rung, or add one HERE. docs/decisions.md has why the ladder is φ.
 //
-// The name IS the power, so the rungs visibly compose: $gc-2 is $gc-1 cut
-// again, and a $gc-1 block over a $gc-2 one is the same cut as the whole over
-// the block. Take the nearest rung; if none fits, the ladder gains one HERE
-// rather than a call site inventing a value.
-//
-// Unitless, because a ratio has no unit and the bare form is the one that
-// needs no arithmetic — flex-grow, flex-shrink, a calc multiplier take it as
-// written. A length site wraps it in `math.percentage()`, which is Sass's own
-// name for the conversion, so no second ladder of pre-divided numbers exists
-// to drift from this one.
+// vertical-cut belongs to the same ladder because the cut is NOT a length: a
+// grow factor below 1 takes that share of the FREE space, which is what places
+// a focal element at an unknown height. See docs/footguns.md for the mechanics.
 // ────────────────────────────────────────────────────────────────
 
 $gc-1: 0.618; // φ⁻¹
 $gc-2: 0.382; // φ⁻²
 $gc-3: 0.236; // φ⁻³
 $gc-4: 0.146; // φ⁻⁴
+
+@mixin vertical-cut($rung: $gc-4) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100%;
+
+  &::before {
+    content: '';
+    flex-grow: $rung;
+  }
+}

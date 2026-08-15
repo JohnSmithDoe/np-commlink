@@ -1,4 +1,17 @@
+// ─── why ────────────────────────────────────────────────────────
+// The cut sits on .empty, INSIDE the @if, not on :host. The host is a sibling
+// of app-item-list, so a min-height there would put a viewport of blank space
+// below every non-empty list, and `:host:empty` would depend on what Angular's
+// @if leaves behind for an anchor.
+// ────────────────────────────────────────────────────────────────
+
+@use 'theme/consts';
+
 :host {
   display: flex;
   flex-direction: column;
+}
+
+.empty {
+  @include consts.vertical-cut;
 }

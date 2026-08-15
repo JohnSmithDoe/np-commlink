@@ -8,16 +8,12 @@
 @use '../../../../theme/cash';
 
 .cash-networth {
-  padding: 0.25rem 0.25rem 0.75rem;
-  margin-bottom: 0.5rem;
+  padding: var(--space-1) var(--space-1) var(--space-3);
+  margin-bottom: var(--space-3);
   @include cash.networth-strip;
 }
 
 .cash-account__balance {
   font-family: var(--sr-deck-font);
   font-size: var(--fs-body);
-}
-
-.cash-empty {
-  @include cash.empty-state;
 }

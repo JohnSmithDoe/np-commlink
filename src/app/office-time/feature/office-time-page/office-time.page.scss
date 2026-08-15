@@ -1,22 +1,24 @@
-@use '../../../../theme/dashboard' as dashboard;
+// ─── why ────────────────────────────────────────────────────────
+// The breakpoint is spelled from the track, not typed — the width at which two
+// tiles plus three gutters fit, so it cannot fall out of step with the track.
+// It stays in Sass because a media query cannot read a custom property.
+// ────────────────────────────────────────────────────────────────
+
+@use '../../../../theme/layout';
 
 :host {
   --app-content-max-width: 100%;
 }
 
-$padding: 16px;
 .dash-grid {
-  padding: $padding;
+  padding: var(--space-4);
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(dashboard.$sm-item-width, 1fr)
-  );
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(layout.$tile-data, 1fr));
+  gap: var(--space-4);
   align-items: stretch;
   grid-auto-flow: dense;
 
-  @media (min-width: #{dashboard.$sm-item-width * 2 + $padding * 3}) {
+  @media (min-width: #{layout.$tile-data * 2 + 3rem}) {
     app-dash-officedays-edit,
     app-dash-freedays-edit,
     app-dash-holidays,

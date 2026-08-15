@@ -16,6 +16,6 @@
 .exact-match-note {
   max-width: var(--app-content-max-width);
   margin-inline: auto;
-  padding-bottom: 0.35rem;
+  padding-bottom: var(--space-2);
   color: var(--sr-text-dim);
 }

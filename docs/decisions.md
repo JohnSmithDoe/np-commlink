@@ -25,7 +25,7 @@ a claim, a verdict, and what decided it. Live work is in [state.md](./state.md).
   rejected: branding needs an `as` at every mint point **including every read out of IndexedDB**,
   adding unchecked casts at the least trustworthy boundary in an app carrying zero `any`) and a
   *wrong-action* dispatch with an identical payload, which nothing types. It would not have caught the
-  one time this bug shipped (`8eee87a`). Revisit only if a mis-wire actually ships.
+  one time this bug shipped. Revisit only if a mis-wire actually ships.
   **`DeckFacade` is the exception** (0% functions): `configuredEntries` derives `hidden` and
   `moduleHidden` from two lists that are **both `string[]`**, so swapping them compiles and silently
   breaks the module cascade. If any facade ever earns a spec, it is this one.
@@ -197,14 +197,18 @@ unwritten, and only the owner can say which — ask before deleting a coherent f
 ## The bank fixtures were real, and are gone from history
 
 Settled 2026-07-30. `docs/cash/example.csv` and `example2.csv` were real giro exports — real IBANs,
-real counterparties — purged from all 347 commits that carried them; `docs/cash/*.csv` is now
-gitignored. **Timing was the point:** `git ls-remote` still returned zero refs, so the rewrite cost
-nothing; one push would have made those blobs public irrevocably. Two things made it clean: no spec
-ever read a `.csv` (parser specs carry inline rows), and each parser's header comment already spelled
-out its column layout, which is now the cited format source. Two traps a naive purge springs — the
-blobs had lived at **two** paths (`docs/example*.csv` before `1e63058`), and the commit that added
+real counterparties — purged from every commit that carried them; `docs/cash/*.csv` is now gitignored.
+**Timing was the point:** `git ls-remote` still returned zero refs, so the rewrite cost nothing; one
+push would have made those blobs public irrevocably. Two things made it clean: no spec ever read a
+`.csv` (parser specs carry inline rows), and each parser's header comment already spelled out its
+column layout, which is now the cited format source. Two traps a naive purge springs — the blobs had
+lived at **two** paths (under `docs/` before they moved to `docs/cash/`), and the commit that added
 them *described* them as "the two real exports", which `filter-branch` leaves untouched without
 `--msg-filter`. Verify with `git rev-list --objects --all`, not with a clean working tree.
+
+**A purge invalidates every SHA it walks, including the ones your own docs cite.** This entry and the
+facade entry above each named a commit; both pointers were dead the day this ran, and nothing noticed
+for two weeks. It is why no entry here cites a SHA any more: a claim has to carry its own evidence.
 
 ## Two lessons from fixed defects
 
@@ -421,7 +425,7 @@ them should be re-proposed as work before a tag exists:
   undone at v2, so they keep their place and their silence.
 
 What was NOT declined is the pair of defects the same review found: a page with no entrance, and a
-control with no effect. Both are fixed in the commits carrying this entry. The principle they share is
+control with no effect. Both are fixed. The principle they share is
 worth stating once, because it is cheaper than either fix: **a control the user can operate must change
 something the user can observe, and a page the user can reach must be reachable without a URL bar.**
 
@@ -601,3 +605,52 @@ It is undoable while the toast is up and final after.
 it would announce *"Trink ein großes Glas Wasser, button"* and never say what pressing does — and the
 largest target on screen would commit the day.
 
+
+## The layout ladder is φ, and three alternatives were declined (2026-08-15)
+
+**One ladder, three axes: φⁿ anchored at `1rem`.** Bare, the rungs are proportion (`$gc-*`); times
+`1rem` they are the `--space-*` rhythm; times `--fs-body` they are the display end of the type scale.
+The anchor is the whole argument — `1rem` is 16px is Ionic's `--ion-padding`, the one spacing number
+Ionic ships, so the system agrees with the framework at φ⁰ and every rung is a power from it. Ionic
+has no type scale and no spacing scale, which is why `--fs-*` and `--space-*` have to exist at all.
+
+**A fully golden system was declined.** φ cannot tile, provably: its continued fraction is `[1;1,1,1,…]`,
+the slowest-converging of any irrational, which makes it the hardest number to approximate by a
+fraction — precisely why it reads as non-repetitive, and precisely why it will never divide a container
+into countable parts that sum to a whole. Rational fractions answer "split this into three"; φ answers
+"place this one thing off-centre". The immediate corollary: a φ ladder cannot hold both `0.5rem` and
+`1rem`, since they differ by 2× and 2 is not a power of φ. `1rem` stayed, being the anchor.
+
+**The type scale is golden above body and hand-set below it, deliberately.** The large end is
+expressive, where a coarse ratio is an asset; the small end is functional, where legibility floors, AA
+contrast and 44px targets rule and a ratio must yield. Anything else is φ overriding a hard minimum,
+which is what every real critique of golden-ratio design describes.
+
+**Van de Graaf was declined as a literal canon.** It is a *spread* canon — its asymmetric `1/9` inner
+and `2/9` outer margins need a gutter and recto/verso, which a screen has neither of; its vertical half
+needs a known page height, and screens scroll; and its margins are book-generous (a symmetric `1/9` is
+43px a side on a 390px phone, against Ionic's 16px). Tschichold reached the same place in 1953 — he
+based his own "Golden Canon" on a **2:3** page and wrote that the pure-φ construction "would hardly be
+useful today". What survives is Bringhurst's principle that the content block is proportioned to its own
+content, which is `$content-measure`.
+
+**Open Props was declined.** It is well built and it is Ionic-safe — measured: 603 property names
+against the 168 non-`--ion-*` names Ionic reads, empty intersection, everything declared under
+`:where(html)` at zero specificity. Declined anyway as a dependency, for a ladder that is seven lines,
+beside three token vocabularies (`--sr-*`, `--fs-*`, `--ion-*`) that already exist. Its scale would also
+have fit badly: only 95 of the app's 166 spacing literals had an Open Props rung, and `0.75rem` — then
+the third most common, 19 uses — has none, since `--size-*` jumps `.5rem → 1rem`. Worth keeping the
+shape of its answer, though: its 79 size props are a hand-tuned additive scale, **not** ratio-based, and
+φ appears exactly once, as `--ratio-golden`, one of six aspect ratios.
+
+**The ladder is not defended on aesthetics research, and must not be.** The evidence that people prefer
+golden proportions is weak — Fechner's 76% spans three ratios rather than one, Markowsky (1992) takes
+the claim apart, Godkewitsch (1974) and Stieger & Swami (2015) found no preference. None of that matters
+here, because the argument was never innate beauty: seven rungs beat twenty-one ad-hoc values whatever
+ratio generates them, and a scale its author enjoys is a scale that gets maintained.
+
+The sources behind all of the above — Tim Brown's *More Meaningful Typography* (whose published golden
+ladder, 10/16/26/42/68, this one reproduces), Bringhurst, Tschichold, Markowsky — were written out in
+full in commit `ca1b804`, which added a fourth document and is the only place they now live. That
+fourth file lasted exactly one commit: everything mechanical in it was already in a `why` banner or in
+footguns, and what was left is the six paragraphs above. Three documents remains the rule.

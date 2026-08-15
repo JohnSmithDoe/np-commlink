@@ -1,16 +1,8 @@
 // ─── why ────────────────────────────────────────────────────────
-// ion-header paints nothing of its own — only an ion-toolbar does — and a bare
-// ion-searchbar paints only its inner input, so a projected row sat on a
-// transparent band and an outgoing page showed through mid-transition.
-//
-// The band is painted on the HEADER, not the rows: every projected row caps
-// itself at --app-content-max-width and centres, so painting those leaves the
-// gutters see-through past the cap, which is where the artefact showed.
-//
-// That token IS the separation from the content below, which is why the
-// template carries `ion-no-border` — md's default shadow read as heavy in the
-// plain theme, and a colour step says the same thing more quietly. Removing it
-// is Ionic's own switch, not an override.
+// ion-header paints nothing of its own — only an ion-toolbar does — so a
+// projected row sat on a transparent band and an outgoing page showed through
+// mid-transition. The band goes on the HEADER, not the rows: a row caps itself
+// at --app-content-max-width, leaving the gutters see-through past the cap.
 // ────────────────────────────────────────────────────────────────
 
 ion-header {

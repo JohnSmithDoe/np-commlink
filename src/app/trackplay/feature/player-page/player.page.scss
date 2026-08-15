@@ -9,5 +9,5 @@
 @include trackplay.list-row-second-line;
 
 .tp-player-stats p {
-  margin: 0.25rem 0;
+  margin: var(--space-1) 0;
 }

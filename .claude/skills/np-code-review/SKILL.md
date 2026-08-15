@@ -64,14 +64,17 @@ the blast radius a diff-only reading cannot see.
 - **#2 — Shallow bug scan.** Read the diff and little else. Large bugs only. Skip
   nitpicks. Skip anything you cannot state as input → wrong output.
 - **#3 — Git history of the touched lines.** `git log -L`, `git blame`, and the commit
-  *bodies*. **This repo's decision log lives in commit messages** — subjects read as
-  claims ("a renamed product no longer un-cooks the recipes that use it"), so a diff
-  that quietly undoes a deliberate earlier fix is visible here and nowhere else.
+  *bodies*. Recent subjects read as claims ("a renamed product no longer un-cooks the
+  recipes that use it"), so a diff that quietly undoes a deliberate earlier fix can be
+  visible here. **The history is squashed into chapters periodically**, so this source
+  is strong for the current chapter and goes coarse behind it — blame on an older line
+  reaches a chapter commit that answers *when*, not *why*. Treat a miss here as no
+  evidence rather than as evidence of nothing, and fall back on #4.
 - **#4 — Documented decisions.** `docs/decisions.md` (settled questions) and `docs/state.md` (open, deferred, declined
-  work) plus past commit bodies touching these files. Does the change contradict a
-  recorded decision, or re-introduce something a commit says was removed on purpose? If
-  it supersedes a decision deliberately, that is not a finding — but the doc is now
-  stale, which is.
+  work). **These are the record, not the log** — anything meant to outlive its commit is
+  here. Does the change contradict a recorded decision, or re-introduce something the doc
+  says was removed on purpose? If it supersedes a decision deliberately, that is not a
+  finding — but the doc is now stale, which is.
 - **#5 — Comments.** Two directions, because this repo bans comments except
   non-derivable *why*: does the change still honor the rationale of a comment that
   survives near it, **and** did the change add a comment that restates the code (or a

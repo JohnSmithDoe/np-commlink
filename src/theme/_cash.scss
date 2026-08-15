@@ -2,22 +2,15 @@
 // The CREDSTICK surfaces' shared pieces, side-effect-free so a component @uses
 // it and @includes only what it needs.
 //
-// Extracted because every block here had been copy-pasted across six surfaces
-// and had already drifted — .cash-empty six times, the amount four with two
-// carrying a font-size the others omit, the net-worth strip twice with
-// different padding, under a comment claiming reuse.
-//
-// So each mixin parameterises exactly what legitimately differed and nothing
-// else. The net-worth strip takes no parameters at all: spacing is what the two
-// copies disagreed on, so callers keep their own and only layout and typography
-// are shared. hud-label's colour stays out for the same reason — one call site
-// paints it, and that difference is real.
+// Each mixin parameterises what legitimately differed between the copies it
+// replaced, and nothing else — every extra knob is a licence to drift apart
+// again. empty-state takes no position for that reason: it says how an empty
+// state READS, and where it sits depends on what shares its container.
 // ────────────────────────────────────────────────────────────────
 
 @use 'deck';
 
-@mixin empty-state($padding-top: 12vh) {
-  padding-top: $padding-top;
+@mixin empty-state {
   text-align: center;
   letter-spacing: var(--sr-label-tracking);
   color: var(--sr-text-dim);
@@ -49,7 +42,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   border-bottom: 1px solid var(--sr-line);
 
   &__label {

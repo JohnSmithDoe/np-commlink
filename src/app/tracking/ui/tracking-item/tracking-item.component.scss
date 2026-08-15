@@ -5,7 +5,7 @@
 .tracking-item-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-3);
 }
 
 .tracking-item-badge {
@@ -15,7 +15,7 @@
   font-weight: 700;
   letter-spacing: var(--sr-label-tracking);
   text-transform: var(--sr-label-transform);
-  padding: 0.15rem 0.4rem;
+  padding: var(--space-0) var(--space-2);
   border-radius: var(--sr-radius);
 }
 .tracking-item-badge-running {

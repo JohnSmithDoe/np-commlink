@@ -1,21 +1,14 @@
 // ─── why ────────────────────────────────────────────────────────
 // Ionic's --ion-* chrome, wired to consume the raw --sr-* palette so one token
-// group reskins both. The aliases are theme-invariant; the values flip.
-//
-// The two accent swatches are the exception, since --sr-amber/--sr-cyan alias
-// THEM. Success stays one green in both — it reads on slate and on paper — and
-// the greyscale is the one ramp authored twice, running bg→text each way.
+// group reskins both. The aliases are theme-invariant; the values flip. The two
+// accent swatches are the exception, since --sr-amber/--sr-cyan alias THEM.
 //
 // --ion-color-accent is a third family, read only by toasts: it aliases success
 // on plain and primary under cyberpunk, so a toast follows the user's swatch
 // while success keeps encoding a value's SIGN in the charts and cash amounts.
-// Ionic resolves color="accent" only through the .ion-color-accent class below,
-// and that class must stay global — a toast is teleported out to ion-app.
-//
-// Each accent is spelled as the whole --ion-color-<key>{,-rgb,-contrast,…}
-// family because different Ionic components read different members.
-// DEFAULT_ACCENT_SWATCHES in settings.page.ts duplicates the two base hexes,
-// because a colour input must be seeded and cannot read a var().
+// Its .ion-color-accent class must stay global — a toast is teleported to
+// ion-app — and each accent is spelled as the whole --ion-color-<key>-* family
+// because different Ionic components read different members.
 // ────────────────────────────────────────────────────────────────
 
 :root {

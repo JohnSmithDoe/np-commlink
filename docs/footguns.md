@@ -4,10 +4,7 @@ Empirical failures that do **not** reproduce from a read of the source. Each cos
 data-loss bug, or an unbuildable artifact at least once. Nothing here is derivable — that is the
 entry criterion.
 
-Fuller arguments for every line were deleted on 2026-08-04; recover with
-`git show HEAD~1:docs/<file>.md` (`testing`, `lifecycle-and-persistence`, `coding-conventions`,
-`i18n`, `build-and-deploy`, `theming`, `architecture`, `cross-feature-communication`,
-`dialogs-and-forms`, `features`, `cash`, `deck-catalog`, `ionic-a11y-practices`).
+Every line is the whole argument. A line too terse to act on gets widened here.
 
 ## Lifecycle
 
@@ -273,6 +270,24 @@ green for a structural reason is worth less than no gate**, because it converts 
 - **`@angular/forms` writes every control binding onto a same-named directive input**, and
   `FieldState.pattern` defaults to a shared `computed(() => [])`, so a bound `ion-input` gets
   `pattern=""` — permanently `:invalid`. Harmless here; latent anywhere reading native validity.
+
+## Layout units that lie
+
+- **`vh` is not the height you can see, and it moves.** Mobile browsers resolve `vh` against the
+  *largest* viewport — the one with the URL bar retracted — so a `vh` offset is already wrong on
+  first paint and then changes as the chrome collapses under a scroll. It is also blind to content:
+  `padding-top: 12vh` pushes a three-line empty state exactly as far as a one-line one. Both are why
+  `cash.empty-state` lost its `$padding-top` in favour of `consts.vertical-cut`, whose `::before`
+  takes a share of the **free** space (container minus content) and therefore accounts for both.
+- **A `flex-grow` below 1 distributes only that fraction of the free space** — CSS Flexbox §9.7, and
+  the whole mechanism behind `vertical-cut`. Two consequences that are not obvious: the container
+  must have free space for it to do anything (it collapses to `0` and overflows nothing when content
+  fills the page, which is the desirable failure), and `justify-content` must be `flex-start` —
+  `center` splits the *remaining* fraction across both ends and halves the offset.
+- **A measure must not be expressed in `ch`.** `1ch` is the advance width of `0` in the element's
+  current font, and `--sr-deck-font` flips between a proportional sans (plain) and JetBrains Mono
+  (cyberpunk) — so a `ch` width silently changes when the user toggles the theme. `theme/_layout.scss`
+  keeps `$content-measure` in `rem` for that reason, with the character count in a comment.
 
 ## Build
 

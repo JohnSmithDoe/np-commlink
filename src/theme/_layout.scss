@@ -1,11 +1,16 @@
 // ─── why ────────────────────────────────────────────────────────
-// One number, side-effect-free so a component may @use it: how wide a list
-// page's reading column may get. Everything else keeps the narrower
-// --app-content-max-width default from global.scss.
+// The named widths and tile tracks, side-effect-free so a component may @use
+// them. global.scss declares the default on --app-content-max-width and a page
+// opts out by re-declaring it — that is the only mechanism, not one of several.
 //
-// A list row stays one row per line at every width. The auto-fit grid that
-// used to live here is reverted — rows differ in height, so it left ragged
-// gaps and nothing lined up. decisions.md carries that argument.
+// TWO tile tracks, because the difference is CONTENT: a nav node holds an icon
+// over two lines, a dashboard widget a scrolling list or a whole calendar. One
+// track for both puts six columns on a 1280px screen where four is tight.
 // ────────────────────────────────────────────────────────────────
 
-$content-wide: 1280px;
+$content-measure: 30rem; // ≈ 60 characters — prose, focal surfaces
+$content-default: 900px; // ordinary pages; global.scss declares it
+$content-wide: 1280px; // lists
+
+$tile-nav: 12rem; // 192px — an icon over two lines
+$tile-data: 15.5rem; // 248px — a scrolling list, or a calendar

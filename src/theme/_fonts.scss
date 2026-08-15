@@ -1,18 +1,11 @@
 // ─── why ────────────────────────────────────────────────────────
 // JetBrains Mono, self-hosted: the first entry of --sr-mono, and therefore the
-// cyberpunk face. It was named in that stack and loaded nowhere for a long
-// time, so the theme fell back to ui-monospace for anyone without the font
-// installed — which developers have, which is why nobody saw it.
-//
-// The files are in src/assets/, NOT public/, and that is load-bearing: only a
-// CSS-relative url() is fingerprinted into media/ and survives the Pages
-// subpath. See docs/footguns.md for the two ways it fails.
+// cyberpunk face. The files live in src/assets/, NOT public/, which is
+// load-bearing — see docs/footguns.md for the two ways that fails.
 //
 // All five weights are declared though our CSS names three: Ionic's shadow
 // styles ask for 500, and an undeclared weight is synthesised faux-bold. A
 // declared face nobody matches is never fetched, so the extras are free.
-// font-display: swap is why the rest of the --sr-mono stack still matters —
-// it paints until the woff2 lands.
 // ────────────────────────────────────────────────────────────────
 @font-face {
   font-family: 'JetBrains Mono';

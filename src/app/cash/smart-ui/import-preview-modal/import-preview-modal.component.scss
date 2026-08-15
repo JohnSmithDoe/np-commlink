@@ -1,7 +1,7 @@
 @use '../../../../theme/cash';
 
 .cash-import__summary {
-  @include cash.hint(0 0.25rem 0.75rem);
+  @include cash.hint(0 var(--space-1) var(--space-3));
   font-family: var(--sr-deck-font);
 }
 
@@ -10,5 +10,6 @@
 }
 
 .cash-empty {
-  @include cash.empty-state(10vh);
+  @include cash.empty-state;
+  padding-top: var(--space-6);
 }
