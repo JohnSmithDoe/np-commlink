@@ -38,13 +38,19 @@ test.describe('household navigation', () => {
 
     await gotoFeature(page, ROUTE.storage);
 
-    await page.getByTestId('list-switcher-shopping').click();
+    await pageRoot(page, 'app-page-storage')
+      .getByTestId('list-switcher-shopping')
+      .click();
     await switched(ROUTE.shopping);
 
-    await page.getByTestId('list-switcher-products').click();
+    await pageRoot(page, 'app-page-shopping')
+      .getByTestId('list-switcher-products')
+      .click();
     await switched(ROUTE.products);
 
-    await page.getByTestId('list-switcher-storage').click();
+    await pageRoot(page, 'app-page-products')
+      .getByTestId('list-switcher-storage')
+      .click();
     await switched(ROUTE.storage);
   });
 
