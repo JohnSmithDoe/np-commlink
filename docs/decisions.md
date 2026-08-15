@@ -297,7 +297,7 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 - **A written-down lesson does not apply itself to the code underneath it.** The office-time stat cards
   froze because `calculateStats` read `dayjs()` inside projectors memoized on the slice — three lines
   below a facade comment documenting that exact trap.
-- **`docs/cash` CSVs were real giro exports and are gitignored.** Purged from history before the first
+- **The cash import CSVs were real giro exports and are gitignored.** Purged from history before the first
   push, which is what made it free. Two traps a naive purge springs: the blobs had lived at two paths, and
   the commit message *described* them (`filter-branch` leaves it without `--msg-filter`). Verify with
   `git rev-list --objects --all`, not a clean tree. No spec reads a `.csv` — each parser's header comment
