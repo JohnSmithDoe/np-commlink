@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">np-commlink</string>
+    <string name="title_activity_main">np-commlink</string>
+    <string name="package_name">np.afterwork.commlink</string>
+    <string name="custom_url_scheme">np.afterwork.commlink</string>
+</resources>

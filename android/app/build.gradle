@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace = "np.afterwork.commlink"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "np.afterwork.commlink"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 10000
+        versionName "1.0.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+
+// --- np-commlink release signing (scripts/android-postsync.sh, patch 5) ---
+def npcSigningVars = ['NPC_KEYSTORE_PATH', 'NPC_KEYSTORE_PASSWORD', 'NPC_KEY_ALIAS', 'NPC_KEY_PASSWORD']
+def npcSigning = npcSigningVars.collectEntries { [it, System.getenv(it)?.trim()] }
+
+if (npcSigning.any { it.value }) {
+    def npcMissing = npcSigning.findAll { !it.value }.keySet()
+    if (npcMissing) {
+        throw new GradleException(
+            "np-commlink: release signing needs all of ${npcSigningVars}; unset: ${npcMissing.join(', ')}"
+        )
+    }
+
+    def npcStoreFile = file(npcSigning.NPC_KEYSTORE_PATH)
+    if (!npcStoreFile.isFile()) {
+        throw new GradleException("np-commlink: keystore not found at ${npcStoreFile} (NPC_KEYSTORE_PATH)")
+    }
+
+    android.signingConfigs.create('release') {
+        storeFile npcStoreFile
+        storePassword npcSigning.NPC_KEYSTORE_PASSWORD
+        keyAlias npcSigning.NPC_KEY_ALIAS
+        keyPassword npcSigning.NPC_KEY_PASSWORD
+        // v3 carries a proof-of-rotation lineage, so it is the ONLY thing that
+        // can ever make this key replaceable (SDK 28+; rotation still has to be
+        // signed by the old key, so it is no substitute for backing it up). AGP
+        // defaults it off at minSdk 24 and an APK published without it can never
+        // be rotated afterwards — hence on from the first release, not later.
+        enableV3Signing = true
+    }
+    android.buildTypes.release.signingConfig = android.signingConfigs.release
+}

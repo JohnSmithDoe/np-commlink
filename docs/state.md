@@ -3,40 +3,36 @@
 **Check before proposing work.** Nothing here is merely undone: each needs a secret, an upstream release,
 a human reading the result, or a product decision. Settled questions are in [decisions.md](./decisions.md).
 
-## One-way doors — the window closes at first publish
+## One-way doors — closed at v1.0.0
 
-Each field below is one a distribution channel compares to decide _same app or different app_. **Nothing
-has been published** (`git ls-remote origin` returns zero refs, no tags, CI has never run), so all are
-still free.
+Each field below is one a distribution channel compares to decide _same app or different app_. **v1.0.0 is
+published**: the tag, the PWA, and a signed APK attached to the release. None of them is free any more —
+changing one does not migrate an install, it stands up a second app that cannot reach the first one's data.
 
-- **The signing key does not exist yet, and custody is the whole task.** The `signingConfig` is postsync
-  patch 5, reading four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. Verified with
-  a throwaway key: none set → unsigned and a clone still builds, some set → a named `GradleException`, all
-  four → `app-release.apk` verifying v2 + v3. **Back the keystore up in two places before the first signed
-  build**, 25+ year validity — an expired cert cannot sign upgrades, and an APK signed with a different key
-  can **never** upgrade one signed with the old, at any version; the only way in is an uninstall that wipes
-  every tracked session, the pantry and the ledger. Deliberately **not** in the repo despite AGPL:
-  publishing the source is the licence's demand, publishing the identity would let anyone ship a build that
-  upgrades over a real install and inherits its data.
-- **`enableV3Signing = true` must be on from the first release** — set explicitly against AGP's default at
-  `minSdk 24`. v3 carries the proof-of-rotation lineage; without it from the start, rotation is impossible.
-- **`manifest.id` is `"np-commlink"`**, parsed as a URL against the **origin** — a leading or trailing slash
-  is a _different_ identity, giving the browser a second app with its own IndexedDB and no route to the
-  first one's data. Write once, never touch.
-- **Renaming a persisted key or a deck entry id is free only until the first release**
-  ([decisions.md](./decisions.md)); after it, either needs a ladder step.
+- **The signing key exists, has signed v1.0.0, and custody is now the whole task.** The `signingConfig` is
+  postsync patch 5, reading four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The
+  shipped APK verifies v2 + v3 and its signer SHA-256 is pinned in the README. **Back the keystore up in two
+  places**, 25+ year validity — an expired cert cannot sign upgrades, and an APK signed with a different key
+  can **never** upgrade one signed with this one, at any version; the only way in is an uninstall that wipes
+  every tracked session, the pantry and the ledger. Losing the keystore therefore ends the APK line, and no
+  amount of source access undoes it. Deliberately **not** in the repo despite AGPL: publishing the source is
+  the licence's demand, publishing the identity would let anyone ship a build that upgrades over a real
+  install and inherits its data.
+- **`enableV3Signing = true` shipped on** — set explicitly against AGP's default at `minSdk 24`, and
+  confirmed on the released APK. v3 carries the proof-of-rotation lineage, so rotation is still reachable;
+  had it been off for this release it never would have been.
+- **`manifest.id` shipped as `"np-commlink"`**, parsed as a URL against the **origin** — a leading or
+  trailing slash is a _different_ identity, giving the browser a second app with its own IndexedDB and no
+  route to the first one's data. Never touch.
+- **Renaming a persisted key or a deck entry id now costs a ladder rung** — the free window closed with the
+  tag, and [decisions.md](./decisions.md) says what a rung owes.
 
 ## Blocked — needs something only the owner can supply
 
-- **The first push, CI run and tag wait only on repo settings now.** The keystore exists and
-  `pnpm apk:signed` produces an APK verifying under v2 + v3; the fingerprint is pinned in the README. Web
-  and APK ship together, not the PWA alone. Two prerequisites live in repo settings, not git: _Settings →
-  Pages → Source_ set to **GitHub Actions**, and _Settings → Environments → github-pages → Deployment
-  branches and tags_ given a rule with **Ref type: Tag**, pattern `v*`. The environment is auto-created
-  protected to the default branch and a branch rule does not cover tags, so without the second the deploy
-  job fails on the first release with `Branch "v1.0.0" is not allowed to deploy to github-pages`. The APK is
-  attached by hand — CI builds none, so the signing key never reaches a runner.
-- **One follow-up remains at first release:** publish the APK's `sha256sum` with the tag.
+- **Every release attaches its APK by hand.** CI builds none — the signing key never reaches a runner — so
+  the tag run gates, deploys Pages and drafts the release, and `pnpm apk:signed` plus an upload finishes it.
+  The two GitHub settings the deploy depends on are in the README, not here: they are configuration, not a
+  decision anyone still has to make.
 - **A DKB import driven live** — the parser is unit-tested against inline rows; only Volksbank has been
   driven end-to-end in-app.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical

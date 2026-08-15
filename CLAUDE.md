@@ -53,7 +53,9 @@ whole Playwright run, ~90 s where the answer usually costs four. Match the check
 `pnpm test` for a spec or logic edit, `pnpm run lint` for a lint-shaped one, `pnpm run build` for
 anything a template or AOT catches.
 
-`android/` is git-ignored and regenerated: `npx cap add android` once per machine.
+`android/` is **committed** — `cap add` is not reproducible across Capacitor versions, so the native
+project is source. `android/.gitignore` (shipped by Capacitor) excludes the generated half. Never
+hand-edit what `scripts/android-postsync.sh` writes; add a patch there instead.
 
 ## Hard rules
 

@@ -303,6 +303,27 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   `git rev-list --objects --all`, not a clean tree. No spec reads a `.csv` — each parser's header comment
   is the format source.
 
+## The native project
+
+- **`android/` is committed, and that reverses an earlier call.** It was git-ignored on the reasoning that
+  `cap add android` regenerates it. It does not regenerate it *identically*: a newer `@capacitor/cli`
+  scaffolds a different tree, and `android-postsync.sh` only pins the values it was told about — wrapper
+  version, AGP, `variables.gradle` SDK levels and manifest defaults all drift silently between machines.
+  Committing turns that into a reviewable diff. 53 files, 0.3 MB; the 240 MB is `app/build` and `.gradle`,
+  both excluded by the `android/.gitignore` Capacitor ships **because it expects the project to be
+  versioned**.
+- **`android-postsync.sh` stays, and its patches split in two.** 4 (versionName/versionCode from
+  `package.json`) and 5 (the signing hook) are *derived per build* and must keep running; both are
+  idempotent, so between version bumps they leave no diff. 1, 2, 3 and 6 are now also committed file
+  state — kept because they cost nothing and keep a from-scratch `cap add` correct.
+- **`.gitattributes` exists only for the Gradle wrapper.** `gradlew.bat` is parsed line by line by
+  `cmd.exe` and needs CRLF; git normalises to LF on check-in, which would break the Windows half of a
+  wrapper whose whole point is that it works everywhere.
+- **The launcher label is `appName` in `capacitor.config.ts`, applied by postsync patch 6.** Capacitor
+  writes it into `strings.xml` when it *scaffolds* and never again, so editing the config alone does not
+  reach an existing `android/`. It is cosmetic — identity is `applicationId` + signature — so it is free
+  to change across releases. `np-` is deliberate: it groups the author's apps in an app drawer.
+
 ## CI and deployment
 
 - **No Codeberg fallback workflow is kept.** The Forgejo file was deleted rather than parked beside the

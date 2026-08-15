@@ -2,7 +2,7 @@
 
 Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notifications, barcode/SIGIL) with `np-kitchen-bot` (shopping, storage, products, tasks) and np-trackplay (gameing list) into a single Angular 21 / Ionic 8 / Capacitor 8 app.
 
-**Live:** <https://johnsmithdoe.github.io/np-commlink/> _(published with the first release tag.)_
+**Live:** <https://johnsmithdoe.github.io/np-commlink/> · **Android:** [latest release](https://github.com/JohnSmithDoe/np-commlink/releases/latest)
 
 ## Prerequisites
 
@@ -30,13 +30,15 @@ pnpm apk:open   # open the project in Android Studio
 ## Build it yourself
 
 Nothing here needs a secret, an account, or a config file you have to be told about — the whole
-path is four commands from a fresh clone, and no step is gated on the maintainer:
+path is two commands from a fresh clone, and no step is gated on the maintainer:
 
 ```sh
 pnpm install
-npx cap add android      # once per machine; android/ is git-ignored and regenerated
 pnpm apk:debug           # → android/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+`android/` is committed, so there is no `cap add` step and no scaffolding to reproduce. You need
+JDK 21 and Android SDK 36; `local.properties` is generated locally and stays out of git.
 
 That APK is signed with your own local debug key, installs on any device with developer options on,
 and is functionally the release build. `pnpm apk:release` also works and produces

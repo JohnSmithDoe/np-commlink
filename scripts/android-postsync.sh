@@ -15,12 +15,14 @@
 #   3. mlkit barcode_ui install meta-data     — bundles the scanner UI module
 #   4. versionName / versionCode              — release identity, from package.json
 #   5. release signingConfig                  — reads NPC_* env vars, opt-in
+#   6. launcher label                         — appName, from capacitor.config.ts
 #
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MANIFEST="$ROOT/android/app/src/main/AndroidManifest.xml"
 GRADLE="$ROOT/android/app/build.gradle"
+STRINGS="$ROOT/android/app/src/main/res/values/strings.xml"
 
 if [ ! -f "$MANIFEST" ]; then
   echo "error: $MANIFEST not found — run 'npx cap add android' first." >&2
@@ -125,4 +127,23 @@ if (npcSigning.any { it.value }) {
 }
 GRADLE_SIGNING
 
-echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit) and build.gradle ($VERSION_NAME / $VERSION_CODE + release signing hook)."
+# 6. launcher label — Capacitor writes appName into strings.xml when it
+#    SCAFFOLDS the project and never again, so editing capacitor.config.ts does
+#    not reach an android/ that already exists. Without this the label is
+#    whatever `cap add` happened to see, and differs between machines.
+#
+#    Cosmetic, not identity: Android decides an APK may replace an install from
+#    applicationId + signature, so this is free to change across releases.
+APP_NAME="$(node -p "
+  const source = require('fs').readFileSync('$ROOT/capacitor.config.ts', 'utf8');
+  (source.match(/appName:\s*'([^']*)'/) || [])[1] || '';
+")"
+
+if [ -z "$APP_NAME" ]; then
+  echo "error: no appName found in capacitor.config.ts" >&2
+  exit 1
+fi
+
+perl -pi -e "s{(<string name=\"(?:app_name|title_activity_main)\">)[^<]*(</string>)}{\$1$APP_NAME\$2}g" "$STRINGS"
+
+echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit), build.gradle ($VERSION_NAME / $VERSION_CODE + release signing hook) and strings.xml (label '$APP_NAME')."

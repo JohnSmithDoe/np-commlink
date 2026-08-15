@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'np.afterwork.commlink',
-  appName: 'commlink',
+  appName: 'np-commlink',
   webDir: 'www/browser',
   server: {
     androidScheme: 'https',

@@ -1,0 +1,6 @@
+# Line endings for the committed Gradle wrapper. A .bat is parsed line by line
+# by cmd.exe and needs CRLF; gradlew is read by sh and needs LF. Git normalises
+# to LF on check-in by default, which would break the Windows half.
+*.bat           text eol=crlf
+gradlew         text eol=lf
+*.jar           binary

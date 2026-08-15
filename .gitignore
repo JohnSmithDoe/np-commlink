@@ -40,8 +40,11 @@ yarn-error.log
 .env
 .env.*
 
-# Capacitor / Android (regenerated via `cap add android`)
-/android
+# Capacitor / Android — the native project IS committed. `cap add android`
+# is not reproducible: a newer @capacitor/cli scaffolds a different tree, and
+# android-postsync.sh only pins the values it was told about. android/.gitignore
+# ships with Capacitor and excludes the generated half (build output, the copied
+# web assets, local.properties).
 
 # The collected release APK (scripts/collect-apk.sh). A build output, not a
 # source artifact: ~28 MB per build, and the published copy is the one attached
