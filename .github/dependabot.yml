@@ -4,6 +4,15 @@
 # same way. Every PR here runs the full suite via the pull_request trigger, so a
 # group that cannot go green says so in one place instead of fifteen.
 #
+# Framework majors are ignored, not held: a group is a batching rule, not an
+# atomicity constraint — Dependabot bumps whatever has a release and leaves the
+# pinned member behind — and state.md wants the Angular major via `ng update`, in
+# its own commit. `@angular*` covers @angular-devkit and @angular-eslint too.
+# `tooling` then excludes every name the two trains own, because its dev-type
+# catch-all was claiming their dev-side members — @angular/build away from
+# @angular/core, @capacitor/cli away from @capacitor/core — and half a train
+# builds no better than none.
+#
 # One entry covers the tree: eslint-plugin-commlink/package.json declares no
 # dependencies, and pnpm-workspace.yaml has no `packages:` key.
 version: 2
@@ -14,11 +23,18 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '@angular*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'angular-eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
     groups:
       angular:
         patterns:
-          - '@angular/*'
-          - '@angular-devkit/*'
+          - '@angular*'
+          - 'angular-eslint'
           - '@ngrx/*'
           - 'ng-packagr'
           - 'rxjs'
@@ -30,6 +46,17 @@ updates:
           - 'ionicons'
       tooling:
         dependency-type: development
+        patterns: ['*']
+        exclude-patterns:
+          - '@angular*'
+          - 'angular-eslint'
+          - '@ngrx/*'
+          - 'ng-packagr'
+          - 'rxjs'
+          - 'typescript'
+          - '@ionic/*'
+          - '@capacitor/*'
+          - 'ionicons'
 
   - package-ecosystem: github-actions
     directory: /
