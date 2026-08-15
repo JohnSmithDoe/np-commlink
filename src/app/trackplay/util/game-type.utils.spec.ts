@@ -1,15 +1,24 @@
-import { mockGame, mockGameType } from '../testing/trackplay.test-data';
-import { gameTypeName } from './game-type.utils';
+import { mockGame } from '../testing/trackplay.test-data';
+import { gameTypeIdOf, withGameTypeId } from './game-type.utils';
 
-describe('gameTypeName', () => {
-  it('resolves the type name from the catalog', () => {
-    const type = mockGameType({ id: 't1', name: 'Standard' });
-    const game = mockGame({ type: 't1' });
-    expect(gameTypeName(game, { t1: type }, 'Unknown')).toBe('Standard');
+describe('gameTypeIdOf', () => {
+  it('reads the single type off the inherited category array', () => {
+    expect(gameTypeIdOf(mockGame({ categoryIds: ['skat'] }))).toBe('skat');
   });
 
-  it('falls back when the type is not in the catalog', () => {
-    const game = mockGame({ type: 'nope' });
-    expect(gameTypeName(game, {}, 'Unknown')).toBe('Unknown');
+  it('answers the default type where the array says nothing', () => {
+    expect(gameTypeIdOf(mockGame({ categoryIds: [] }))).toBe('default');
+    expect(gameTypeIdOf(mockGame({ categoryIds: undefined }))).toBe('default');
+  });
+});
+
+describe('withGameTypeId', () => {
+  it('replaces the type rather than appending a second one', () => {
+    const retyped = withGameTypeId(
+      mockGame({ categoryIds: ['skat'] }),
+      'romme'
+    );
+
+    expect(retyped.categoryIds).toEqual(['romme']);
   });
 });

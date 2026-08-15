@@ -23,6 +23,7 @@
 import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
+  enableDeckProgram,
   gotoFeature,
   mainContent,
   presentedDialog,
@@ -125,9 +126,7 @@ test.describe('soykaf recipe book', () => {
     await gotoFeature(page, ROUTE.storage);
     await searchInput(page).fill('Milk');
     const fromCatalog = page
-      .locator('app-page-storage app-item-list', {
-        hasText: 'Aus den dauerhaften Einträgen',
-      })
+      .locator('app-page-storage app-household-search-panel')
       .locator('app-text-item', { hasText: 'Milk' });
     await expect(fromCatalog).toBeVisible({ timeout: 10_000 });
     await fromCatalog.click();
@@ -168,6 +167,7 @@ test.describe('soykaf recipe book', () => {
     await createRecipe(page, 'Pancakes');
     await waitForPersisted(page, 'summary-recipes');
 
+    await enableDeckProgram(page, 'SOYKAF', 'soykaf');
     await page.goto('/#/commlink');
 
     await expect(

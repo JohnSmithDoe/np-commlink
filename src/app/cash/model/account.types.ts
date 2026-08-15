@@ -1,5 +1,6 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker, Timestamp } from '../../@shared/model/app.types';
+import { BaseItem } from '../../@shared/model/base-item.types';
 
 export type AccountKind = 'giro' | 'creditcard' | 'savings' | 'cash';
 export type Bank = 'volksbank' | 'dkb';
@@ -16,9 +17,7 @@ export const BANK_LABEL_KEYS: Record<Bank, Marker> = {
   dkb: marker('cash.bank.dkb'),
 };
 
-export interface CashAccount {
-  id: string;
-  name: string;
+export interface CashAccount extends BaseItem {
   kind: AccountKind;
   bank?: Bank;
   openingBalanceCents: number;

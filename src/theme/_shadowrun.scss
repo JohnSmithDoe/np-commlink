@@ -1,40 +1,29 @@
 // ─── why ────────────────────────────────────────────────────────
-// The --sr-* tokens and the global .sr-* primitives wrapping _deck.scss's
-// mixins. The layer as a whole is specified in global.scss, the one file that
-// @uses this one.
+// The --sr-* tokens and the .sr-* primitives wrapping _deck.scss's mixins.
+// global.scss specifies the layer and is the one file that @uses this one.
 //
-// The accent duo aliases the Ionic brand colours, so a hue lives in exactly one
-// place and variables.scss does the per-theme flipping. Cyberpunk's are AA-
-// verified (amber/cyan ≥ 6:1, body ≥ 13:1 on slate) with muted amber held at
-// α 0.85 — which is why muted TEXT is --sr-text-dim and not the accent at an
-// alpha: the plain accent is a corporate blue on paper, where that idiom drops
-// under AA.
+// The accent duo aliases the Ionic brand colours, so a hue lives in one place
+// and variables.scss flips it per theme. Muted TEXT is --sr-text-dim, never the
+// accent at an alpha: the plain accent is a corporate blue, which drops under
+// AA that way.
 //
-// The type scale is every whole pixel at the 16px root, and that IS the point:
-// the app had 24 distinct sizes, twelve between 0.6rem and 0.9rem, so a "0.72
-// vs 0.74rem" decision was a third of a pixel of nothing. Take the nearest
-// rung; if none fits, the ladder gains one HERE rather than a call site
-// inventing a value. `commlink/font-size-uses-scale` reads the rung names off
-// this block, so its message cannot drift from them. Icon boxes and the two
-// fluid clamp() heads stay literals — an icon shares the property with type but
-// not the meaning, and a clamp cannot be a rung — each carrying its own
-// disable-line reason instead of a path allowlist elsewhere. The ladder is
-// theme-INVARIANT (a theme flips the face and the case, not the steps) and
-// custom properties anyway, so a third theme could still override it.
+// The type scale is every whole pixel at the 16px root — the app had 24 sizes,
+// twelve of them between 0.6 and 0.9rem. Take the nearest rung; if none fits,
+// the ladder gains one HERE rather than a call site inventing a value.
+// `commlink/font-size-uses-scale` reads the rung names off this block. Icon
+// boxes and the clamp() heads stay literals: an icon shares the property with
+// type but not the meaning, and a clamp cannot be a rung.
 //
-// Two :root declarations are not about theming. `color-scheme` tells the UA how
-// to paint what we cannot style — scrollbars, native date/select widgets,
-// autofill — and here it follows data-theme for free, where index.html's <meta>
-// can only state the pre-stylesheet default. `scrollbar-width`/`-color` sit
-// here rather than on `*` because both inherit, and inheritance crosses shadow
-// boundaries a global `*` cannot, reaching the scrollers inside Ionic's roots.
+// Two :root declarations are not theming. `color-scheme` paints what we cannot
+// style (scrollbars, native pickers, autofill) and follows data-theme, where
+// index.html's <meta> can only state the pre-stylesheet default. The scrollbar
+// pair sits here rather than on `*` because it INHERITS, and inheritance
+// crosses the shadow boundaries a global `*` cannot.
 //
-// --sr-sans is deliberately system-only: the plain theme's point is to look
-// like the OS, not like a brand. @keyframes sr-pulse is declared here because
-// _deck.scss's led-glow references it and that file emits nothing. And
-// .sr-field-note is global because a dialog's validation note and a shared
-// control's must look identical while the control cannot reach the dialog's
-// stylesheet — five call sites each carried a copy.
+// --sr-sans is system-only on purpose: plain should look like the OS. Keyframes
+// sr-pulse lives here because _deck.scss references it and emits nothing, and
+// .sr-field-note is global because a dialog's note and a shared control's must
+// match while the control cannot reach the dialog's stylesheet.
 // ────────────────────────────────────────────────────────────────
 
 @use 'deck';
@@ -82,7 +71,6 @@
   --sr-heading-tracking: normal;
   --sr-label-transform: none; // .sr-hud / eyebrow labels case
   --sr-label-tracking: 0.02em;
-  --sr-brand-transform: none; // .sr-brand row case
   --sr-brand-tracking: normal;
   --sr-radius: 6px; // panel / control corner radius
   --sr-glow: none; // text/box neon bloom (off in plain)
@@ -111,7 +99,6 @@
   --sr-heading-tracking: 0.1em;
   --sr-label-transform: uppercase;
   --sr-label-tracking: 0.14em;
-  --sr-brand-transform: lowercase;
   --sr-brand-tracking: 0.18em;
   --sr-radius: 2px;
   --sr-glow: 0 0 12px rgba(var(--sr-amber-rgb), 0.45);
@@ -274,6 +261,25 @@ ion-menu ion-item {
 .sr-hud {
   @include deck.hud-label;
   color: var(--sr-text-dim);
+}
+
+.sr-caret {
+  color: var(--sr-cyan);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sr-caret {
+    animation: sr-caret-blink 1s steps(2, end) infinite;
+  }
+}
+@keyframes sr-caret-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .sr-status-bar {

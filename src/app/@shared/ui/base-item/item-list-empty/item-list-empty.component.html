@@ -4,6 +4,12 @@
     [note]="'item-list.empty.notfound.note' | translate"
     (selectItem)="emptySearch.emit()"
   />
+} @else if (isEmptyList() && isFiltered()) {
+  <app-text-item
+    [label]="'item-list.empty.filtered' | translate"
+    [note]="'item-list.empty.filtered.note' | translate"
+    (selectItem)="clearFilter.emit()"
+  />
 } @else if (isEmptyList()) {
   <app-text-item
     [label]="'item-list.empty.isempty' | translate"

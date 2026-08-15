@@ -43,11 +43,44 @@ describe('officeTimeReducer', () => {
       once,
       OfficeTimeActions.addFreeday(dayjs('2026-07-01'))
     );
-    expect(once.freedays).toHaveLength(1);
-    expect(twice.freedays).toHaveLength(1);
+    expect(Object.keys(once.freedays)).toEqual(['2026-07-01']);
+    expect(Object.keys(twice.freedays)).toEqual(['2026-07-01']);
+  });
+
+  it('does not add the same officeday twice', () => {
+    const once = officeTimeReducer(
+      initialOfficeTime,
+      OfficeTimeActions.addOfficeTime(dayjs('2026-07-01'))
+    );
+    const twice = officeTimeReducer(
+      once,
+      OfficeTimeActions.addOfficeTime(dayjs('2026-07-01'))
+    );
+    expect(Object.keys(once.officedays)).toEqual(['2026-07-01']);
+    expect(Object.keys(twice.officedays)).toEqual(['2026-07-01']);
+  });
+
+  it('collapses two spellings of one day the picker replaced wholesale', () => {
+    const state = officeTimeReducer(
+      initialOfficeTime,
+      OfficeTimeActions.setOfficedays(['2026-07-01', '2026-07-01T18:00:00'])
+    );
+    expect(Object.keys(state.officedays)).toEqual(['2026-07-01']);
   });
 
   describe('loaded', () => {
+    it('collapses a duplicate a build before the keyed shape had persisted', () => {
+      const state = officeTimeReducer(
+        initialOfficeTime,
+        OfficeTimeActions.loaded({
+          ...persistedWithCards(['date']),
+          officedays: ['2026-07-01', '2026-07-01'],
+        })
+      );
+
+      expect(Object.keys(state.officedays)).toEqual(['2026-07-01']);
+    });
+
     it('appends cards added since the user last persisted, keeping their order', () => {
       const state = officeTimeReducer(
         initialOfficeTime,

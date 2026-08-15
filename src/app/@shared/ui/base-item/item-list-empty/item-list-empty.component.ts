@@ -18,8 +18,10 @@ import { TextItemComponent } from '../text-item/text-item.component';
 export class ItemListEmptyComponent {
   readonly isEmptyList = input(true, { transform: booleanAttribute });
   readonly isSearching = input(false, { transform: booleanAttribute });
+  readonly isFiltered = input(false, { transform: booleanAttribute });
   readonly searchTerm = input<string>();
 
   readonly emptyList = output<void>();
   readonly emptySearch = output<void>();
+  readonly clearFilter = output<void>();
 }

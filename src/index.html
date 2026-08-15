@@ -1,28 +1,11 @@
 <!doctype html>
 <!-- ─── why ─────────────────────────────────────────────────────────
-     Everything below that could be argued is argued in docs/footguns.md
-     — the splash and its `reveal()`, the `<noscript>` gate that hides it
-     when nothing will ever call that, and the np mark drawn here as well
-     as in public/np-logo.svg. What is left is three hand-kept mirrors,
-     and a mirror is the one thing this document cannot enforce:
-
-     · `lang` and `data-theme` copy the defaults their services seed
-       (bootLanguage, theme.service), so the shell paints and reads
-       correctly before Angular boots; `settings` overwrites both on
-       hydrate.
-     · `theme-color` and the two `#app-splash` background/colour pairs
-       are literal copies of a theme's `--sr-bg`/`--sr-text`
-       (_shadowrun.scss) — one pair per theme, chosen off the OS
-       preference because that is a guess at the theme and the only
-       signal this early. Measured, not assumed: the builder inlines
-       only the base `:root` as critical CSS, so before the async
-       stylesheet lands `var(--sr-bg)` is the PLAIN backdrop and
-       `Canvas` is white — both wrong for the cyberpunk default, which
-       is the flash the splash exists to prevent. Neither derivation
-       works; these stay in sync by hand.
-     · the German `description` is the one string no bundle can serve: a
-       crawler and the install prompt read it before any app code runs.
-       manifest.webmanifest carries the same copy, for the same reason.
+     Three hand-kept mirrors, and a mirror is the one thing this document
+     cannot enforce: `lang`/`data-theme` copy what bootLanguage and
+     theme.service seed, `theme-color` and the `#app-splash` pairs copy a
+     theme's `--sr-bg`/`--sr-text` off the OS preference, and the German
+     `description` is repeated in manifest.webmanifest. Why none of the
+     three can be derived: docs/footguns.md.
      ───────────────────────────────────────────────────────────────── -->
 <html lang="de" data-theme="cyberpunk">
   <head>

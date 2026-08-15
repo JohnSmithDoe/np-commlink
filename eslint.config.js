@@ -20,6 +20,8 @@ module.exports = defineConfig(
     '**/.*/',
     'android/**',
     'coverage/**',
+    // Gitignored scratch docs — transient by the `current-` prefix.
+    'current-*.md',
     'dist/**',
     'out-tsc/**',
     'playwright-report/**',

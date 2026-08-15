@@ -1,19 +1,17 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * This is the cross-list half of household search: typing "milk" in the
- * pantry can also offer the catalog product and the shopping row, and
- * `listSettings` decides which of the six directions are open. It rode in
- * `household-list.selector.ts` and imports no `@ngrx` — which is the line
- * architecture.md draws for `data/`, so it belongs here beside
- * `stateByListId`, the sibling switch it already leans on.
+ * The cross-list half of household search: typing "milk" in the pantry can
+ * also offer the catalog product and the shopping row, with `listSettings`
+ * deciding which of the six directions are open. It imports no `@ngrx`, so
+ * it belongs in `util/` beside the sibling switch it leans on.
  *
- * `alreadyShown` is the reason the two calls per branch are ordered rather
- * than independent: the second list must not re-offer a row the first one
- * already offered, so it is passed the first one's result.
+ * `alreadyShown` is why the two calls per branch are ordered rather than
+ * independent: the second list must not re-offer a row the first already
+ * did, so it is passed the first one's result.
  * ───────────────────────────────────────────────────────────────── */
 
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { Category } from '../../@shared/model/category.types';
-import { ListState } from '../../@shared/model/item-list.types';
+import { ItemList } from '../../@shared/model/item-list.types';
 import { matcherFor, matchingTxt } from '../../@shared/util/app.utils';
 import {
   anyCategoryNameMatches,
@@ -52,11 +50,11 @@ const crossListMatchesFor = <R extends BaseItem, T extends BaseItem>(
   return [...matchedByName, ...matchedByCategory];
 };
 
-export const filterBySearchQuery = <T extends ListState<R>, R extends BaseItem>(
+export const filterBySearchQuery = <R extends BaseItem>(
   state: HouseholdState,
-  listState: T
+  listState: ItemList<R>
 ): HouseholdSearchResult<R> | undefined => {
-  const base = filterListBySearchQuery<T, R>(listState);
+  const base = filterListBySearchQuery(listState);
   if (!base) return undefined;
   const result: HouseholdSearchResult<R> = { ...base };
   const searchQuery = result.searchTerm;

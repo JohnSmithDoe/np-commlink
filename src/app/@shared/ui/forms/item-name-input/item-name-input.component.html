@@ -29,8 +29,9 @@
   <app-emoji-picker
     [isOpen]="pickerOpen()"
     [recent]="recentEmojis()"
-    (picked)="insertEmoji($event)"
+    [field]="input()"
+    (changed)="value.set($event)"
     (closed)="pickerOpen.set(false)"
-    (dismissed)="onPickerDismissed()"
+    (dismissed)="pickerOpen.set(false)"
   />
 }

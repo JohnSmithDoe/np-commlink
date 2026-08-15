@@ -1,54 +1,67 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * A game's type lives in the inherited `categoryIds`, not a `typeId`,
+ * because `GameType` already IS a `Category` structurally — which buys the
+ * chip bar, `matcherForFilter`, `?filter=` and the row's category note
+ * with no trackplay code at all.
+ *
+ * What the array cannot say is that there is exactly one, always. That is
+ * held by `gameTypeIdOf` and by `deleteGameTypeCascade`, which reassigns
+ * to the default rather than leaving a game uncategorised the way the
+ * shared cascade would: `winHigh` decides who won, so a game with no type
+ * has no result.
+ *
+ * `showEndedGames` is a field, not a `filterBy` token, because the list
+ * filters on two independent axes and `filterBy` is one opaque string.
+ * `gamesForPlayer` is a second VIEW over the same games, so it carries
+ * config and no items of its own.
+ * ───────────────────────────────────────────────────────────────── */
+
+import { Timestamp } from '../../@shared/model/app.types';
+import { BaseItem } from '../../@shared/model/base-item.types';
+import { ItemList } from '../../@shared/model/item-list.types';
+
 export type TrackplayId = string;
-type EpochMillis = number; // epoch ms (Date.now())
 
-interface TrackplayEntity {
+export const PLAYERS_LIST_ID = '_trackplay-players';
+export const GAMES_LIST_ID = '_trackplay-games';
+export const GAME_TYPES_LIST_ID = '_trackplay-game-types';
+
+export interface Round {
   id: TrackplayId;
-  name: string;
-  created: EpochMillis;
-}
-
-export interface Round extends TrackplayEntity {
-  idx: number;
   values: Record<TrackplayId, number>;
 }
 
-export interface Player extends TrackplayEntity {
-  lastPlayed?: EpochMillis;
+export interface Player extends BaseItem {
+  createdAt: Timestamp;
+  lastPlayedAt?: Timestamp;
 }
 
-export interface GameType {
-  id: TrackplayId;
-  name: string;
+export interface GameType extends BaseItem {
   winHigh: boolean;
 }
 
-export interface Game extends TrackplayEntity {
-  type: TrackplayId; // -> GameType.id
-  players: TrackplayId[]; // -> Player.id[]
-  rounds: TrackplayId[]; // -> Round.id[] (ordered)
+export interface Game extends BaseItem {
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  playerIds: TrackplayId[];
+  rounds: Round[]; // ordered; position is the round number
   ended: boolean;
-  updated: EpochMillis;
 }
 
-export interface GameConfig {
-  sort: 'name' | 'date' | 'updated';
-  direction: 'asc' | 'desc';
-  filter: string;
-  typeId: TrackplayId; // '' = no type filter
-  showEndedGames: boolean;
-}
+export type GamesView = Pick<
+  ItemList<Game>,
+  'searchQuery' | 'sort' | 'filterBy'
+> & { showEndedGames: boolean };
 
-export interface PlayersConfig {
-  sort: 'name' | 'date' | 'last';
-  direction: 'asc' | 'desc';
-  filter: string;
-}
-
-export interface TrackplayConfig {
-  games: GameConfig;
-  gamesForPlayer: GameConfig;
-  players: PlayersConfig;
-}
+export type PlayersState = Readonly<
+  ItemList<Player> & { id: typeof PLAYERS_LIST_ID }
+>;
+export type GamesState = Readonly<
+  ItemList<Game> & { id: typeof GAMES_LIST_ID } & GamesView
+>;
+export type GameTypesState = Readonly<
+  ItemList<GameType> & { id: typeof GAME_TYPES_LIST_ID }
+>;
 
 export interface PlayerStats {
   play: number;
@@ -58,10 +71,9 @@ export interface PlayerStats {
 }
 
 interface TrackplaySnapshot {
-  players: Record<TrackplayId, Player>;
-  games: Record<TrackplayId, Game>;
-  gameTypes: Record<TrackplayId, GameType>;
-  rounds: Record<TrackplayId, Round>;
+  players: Player[];
+  games: Game[];
+  gameTypes: GameType[];
 }
 
 export interface TrackplayDeleted {
@@ -70,10 +82,9 @@ export interface TrackplayDeleted {
 }
 
 export interface TrackplayState {
-  players: Record<TrackplayId, Player>;
-  games: Record<TrackplayId, Game>;
-  gameTypes: Record<TrackplayId, GameType>;
-  rounds: Record<TrackplayId, Round>;
-  config: TrackplayConfig;
+  players: PlayersState;
+  games: GamesState;
+  gamesForPlayer: GamesView;
+  gameTypes: GameTypesState;
   lastDeleted: TrackplayDeleted | null;
 }

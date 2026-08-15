@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { provideCategoryListFacade } from '../../@shared/util/categories/category-list.facade';
+import { provideCatalogFacade } from '../../@shared/util/categories/category-list.facade';
 import { TaskCategoriesPageFacade, tasksContext } from '../data';
 
 export const tasksRoutes: Routes = [
@@ -9,9 +9,14 @@ export const tasksRoutes: Routes = [
     ...tasksContext,
     children: [
       {
+        path: '',
+        redirectTo: 'list',
+        pathMatch: 'full',
+      },
+      {
         path: 'categories',
         title: marker('page-title.categories'),
-        providers: provideCategoryListFacade(TaskCategoriesPageFacade),
+        providers: provideCatalogFacade(TaskCategoriesPageFacade),
         loadComponent: () =>
           import('../../@shared/feature/categories/category-list-page/category-list.page').then(
             (m) => m.CategoryListPage

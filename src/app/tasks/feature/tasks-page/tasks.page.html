@@ -1,17 +1,9 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'page-title.tasks' | translate }}"
-  listHeader="{{ 'list-header.tasks' | translate }}"
+  pageHeader="page-title.tasks"
+  icon="checkbox-outline"
   [itemTemplate]="taskItem"
 >
-  <ng-container toolbarActions>
-    <ion-button (click)="setSortMode('prio')">{{
-      'tasks.list-toolbar.prio' | translate
-    }}</ion-button>
-    <ion-button (click)="setSortMode('dueAt')">{{
-      'tasks.list-toolbar.due' | translate
-    }}</ion-button>
-  </ng-container>
 </app-list-page>
 
 <ng-template

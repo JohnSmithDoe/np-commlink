@@ -1,25 +1,28 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * What is left here is the part that is genuinely multi-list: a page
- * addresses `:listId` and the engine has to name the slice. The list
- * FLOW — build from search, add-or-update, clear search, follow a rename
- * — is not multi-list at all and now comes from `createItemListEffects`
- * three times, once per slice, exactly as tasks and the catalog do it.
+ * What is left is genuinely multi-list: a page addresses `:listId` and the
+ * engine has to name the slice. The list FLOW is not multi-list at all,
+ * and comes from `createItemListEffects` once per slice.
  *
- * That was also the last reason the domain needed `<never>`. The
- * hand-rolled versions fanned out over a union of three action groups, so
- * nothing could type the item they carried; a per-slice invocation is
- * typed from `T`, and the three casts went with the fan-out.
- * `createHouseholdItem` stays, because the one caller left is genuinely
- * list-agnostic: the facade seeds a create-dialog knowing only `:listId`.
+ * That was the last reason the domain needed `<never>`: the hand-rolled
+ * versions fanned out over a union of three action groups, so nothing
+ * could type the item they carried. `createHouseholdItem` stays because
+ * its one remaining caller is genuinely list-agnostic.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { map, withLatestFrom } from 'rxjs';
 import {
   clearSearchAfter,
   createItemListEffects,
 } from '../../../@shared/data/item-lists/item-list.effects.factory';
+import { categoryFilterFromRoute } from '../../../@shared/data/item-lists/category-filter.effects';
+import { ItemListRouteActions } from '../../../@shared/data/actions/item-list-route.actions';
+import {
+  selectActiveHouseholdListId,
+  selectDrilledCategory,
+} from './household-list.selector';
 import {
   createProduct,
   createProductFrom,
@@ -146,11 +149,35 @@ export class HouseholdListEffects {
   });
 }
 
+export const householdRouteFilterEffects = {
+  drilledFilter$: categoryFilterFromRoute(
+    selectDrilledCategory,
+    ({ listId, categoryId }) =>
+      categoryId
+        ? HouseholdListActions.updateFilter(listId, categoryId)
+        : undefined
+  ),
+
+  clearFilter$: createEffect(
+    (actions$ = inject(Actions), store = inject(Store)) => {
+      return actions$.pipe(
+        ofType(ItemListRouteActions.clearCategoryFilter),
+        withLatestFrom(store.select(selectActiveHouseholdListId)),
+        map(([, listId]) =>
+          HouseholdListActions.updateFilter(listId, undefined)
+        )
+      );
+    },
+    { functional: true }
+  ),
+};
+
 export const shoppingListEffects = {
   ...createItemListEffects({
     actions: ShoppingActions,
     select: selectShoppingState,
     create: (name, filterBy) => createShoppingItem(name, filterBy),
+    undoableDelete: ShoppingActions.removeItem,
   }),
 
   clearSearch$: clearSearchAfter(ShoppingActions.updateSearch, [
@@ -164,6 +191,7 @@ export const storageListEffects = {
     actions: StorageActions,
     select: selectStorageState,
     create: (name, filterBy) => createStorageItem(name, filterBy),
+    undoableDelete: StorageActions.removeItem,
   }),
 
   clearSearch$: clearSearchAfter(StorageActions.updateSearch, [
@@ -177,6 +205,7 @@ export const productsListEffects = {
     actions: ProductsActions,
     select: selectProductsState,
     create: (name, filterBy) => createProduct(name, filterBy),
+    undoableDelete: ProductsActions.removeItem,
   }),
 
   clearSearch$: clearSearchAfter(ProductsActions.updateSearch, [

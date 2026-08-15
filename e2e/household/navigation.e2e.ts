@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { gotoFeature, ROUTE } from '../helpers';
+import {
+  enableDeckProgram,
+  gotoFeature,
+  pageRoot,
+  ROUTE,
+  waitForListPage,
+} from '../helpers';
+
+const FLAGS = 'FLAGS';
+const MENU_BUTTON = 'Menü';
 
 test.describe('household navigation', () => {
   test('redirects the root url to the commlink deck', async ({ page }) => {
@@ -17,8 +26,54 @@ test.describe('household navigation', () => {
     await gotoFeature(page, ROUTE.products);
   });
 
+  test('switches between the three lists from the header segment', async ({
+    page,
+  }) => {
+    const switched = async (route: (typeof ROUTE)[keyof typeof ROUTE]) => {
+      await expect(page).toHaveURL(
+        new RegExp(route.replace('/', String.raw`\/`))
+      );
+      await waitForListPage(page);
+    };
+
+    await gotoFeature(page, ROUTE.storage);
+
+    await page.getByTestId('list-switcher-shopping').click();
+    await switched(ROUTE.shopping);
+
+    await page.getByTestId('list-switcher-products').click();
+    await switched(ROUTE.products);
+
+    await page.getByTestId('list-switcher-storage').click();
+    await switched(ROUTE.storage);
+  });
+
   test('opens the list-settings page', async ({ page }) => {
     await page.goto('/#/household/list-settings');
+    await expect(
+      page.getByTestId('list-settings-flag-show-quick-add')
+    ).toBeVisible({ timeout: 30_000 });
+  });
+
+  test('reaches list-settings from the drawer, not just by url', async ({
+    page,
+  }) => {
+    await enableDeckProgram(page, FLAGS, 'list-settings');
+    await gotoFeature(page, ROUTE.storage);
+
+    const row = page
+      .locator('ion-menu')
+      .getByTestId('menu-row')
+      .filter({ hasText: FLAGS });
+    await expect(row).toHaveCount(1);
+
+    await pageRoot(page, 'app-page-storage')
+      .getByLabel(MENU_BUTTON)
+      .first()
+      .click();
+    await row.click();
+
+    await expect(page).toHaveURL(/list-settings/);
     await expect(
       page.getByTestId('list-settings-flag-show-quick-add')
     ).toBeVisible({ timeout: 30_000 });

@@ -8,24 +8,43 @@
  * so `MARKET_PAGE_TITLE` is asserted ABSENT from the menu. That is the
  * assertion that a row and its tile cannot disagree.
  *
- * `toggleAndPersist` keys its persistence wait on the hidden entry's id,
- * never on the field name: `hiddenEntries` is in the doc from the first
- * write onwards as `[]`, so waiting for the key would resolve before the
- * write under test had landed.
+ * A cold deck ships EMPTY, so every test that needs a tile switches its
+ * program on first, and the two waits are not interchangeable:
+ * `switchOn` waits for the id to LEAVE the stored document and `switchOff`
+ * for it to arrive. Waiting on the field name would resolve against a
+ * previous write — `hiddenEntries` is in the doc from the first one
+ * onwards — so the id is the only honest signal in either direction.
+ *
+ * `openDeck` anchors on the status strip rather than on any tile: it is
+ * the one element the grid renders whatever the configuration says, so it
+ * cannot wait for something a previous step just hid.
  *
  * Hiding a program is a navigation choice, not an uninstall, so the
- * status strip keeps reporting the grid's full complement. The `/13` is
- * the whole assertion — the copy around it is i18n and theme-cased, and
- * matching that would pin the translation instead.
+ * status strip keeps reporting the grid's full complement. The
+ * denominator is the whole assertion — the copy around it is i18n and
+ * theme-cased, and matching that would pin the translation instead. It
+ * counts `onDeck` entries in the catalog rather than visible ones, which
+ * is why an empty deck still reports fourteen; the literal here is the one
+ * number that has to be re-read when the catalog gains an entry.
  *
  * A module's flag cascades at read time and is never written into its
  * entries, which is what the last test spends: switching HOUSEHOLD off
  * and on again restores what the user configured underneath, so MARKET —
- * hidden on its own — must stay hidden.
+ * hidden on its own — must stay hidden. Its three entries are switched on
+ * BEFORE the module goes off, because a hidden module disables its
+ * entries' toggles.
+ *
+ * The empty node is asserted CLICKABLE, not just present: it is the only
+ * route out of the PAGE, and on an empty-by-default deck it is also the
+ * first thing a new install shows, so a decorative empty state would
+ * leave the home screen with nothing on it to act on. Nothing is ever
+ * stranded — the drawer's `/settings` row is static, outside the `@for`
+ * over `menuEntries` — but that is a fallback, not this surface's own
+ * answer.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
+import { waitForPersisted, waitForPersistedWithout } from '../helpers';
 
 const MARKET = 'MARKET';
 const MARKET_PAGE_TITLE = 'Einkaufsliste';
@@ -43,6 +62,9 @@ const deckTile = (page: Page, codename: string) =>
     .getByTestId('deck-tile')
     .filter({ hasText: codename });
 
+const statusStrip = (page: Page) =>
+  page.locator('app-page-commlink').getByTestId('deck-status-strip');
+
 const menuRow = (page: Page, label: string) =>
   page.locator('ion-menu').getByTestId('menu-row').filter({ hasText: label });
 
@@ -58,10 +80,19 @@ async function openDeckConfig(page: Page): Promise<void> {
 
 async function openDeck(page: Page): Promise<void> {
   await gotoFresh(page, 'commlink');
-  await expect(deckTile(page, 'CHRONO')).toBeVisible({ timeout: 30_000 });
+  await expect(statusStrip(page)).toBeVisible({ timeout: 30_000 });
 }
 
-async function toggleAndPersist(
+async function switchOn(
+  page: Page,
+  label: string,
+  marker: string
+): Promise<void> {
+  await configRow(page, label).getByTestId('deck-config-row-toggle').click();
+  await waitForPersistedWithout(page, 'deck', marker);
+}
+
+async function switchOff(
   page: Page,
   label: string,
   marker: string
@@ -71,16 +102,31 @@ async function toggleAndPersist(
 }
 
 test.describe('deck configuration', () => {
-  test('hiding a program removes it from the grid and the side menu', async ({
+  test('ships an empty deck that offers its own way in', async ({ page }) => {
+    await gotoFresh(page, 'commlink');
+    const deck = page.locator('app-page-commlink');
+    await expect(deck.getByTestId('deck-empty')).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(deck.getByTestId('deck-tile')).toHaveCount(0);
+
+    await deck.getByTestId('deck-empty').click();
+    await expect(configRow(page, MARKET)).toBeVisible();
+  });
+
+  test('switching a program on reaches the grid and the side menu', async ({
     page,
   }) => {
+    await openDeckConfig(page);
+    await switchOn(page, MARKET, '"shopping"');
+
     await openDeck(page);
     await expect(deckTile(page, MARKET)).toBeVisible();
     await expect(menuRow(page, MARKET)).toHaveCount(1);
     await expect(menuRow(page, MARKET_PAGE_TITLE)).toHaveCount(0);
 
     await openDeckConfig(page);
-    await toggleAndPersist(page, MARKET, 'shopping');
+    await switchOff(page, MARKET, '"shopping"');
 
     await openDeck(page);
     await expect(deckTile(page, MARKET)).toHaveCount(0);
@@ -90,26 +136,31 @@ test.describe('deck configuration', () => {
   test('keeps the full program denominator in the status strip', async ({
     page,
   }) => {
+    await openDeck(page);
+    await expect(statusStrip(page)).toContainText('/14');
+
     await openDeckConfig(page);
-    await toggleAndPersist(page, MARKET, 'shopping');
+    await switchOn(page, MARKET, '"shopping"');
 
     await openDeck(page);
-    await expect(
-      page.locator('app-page-commlink').getByTestId('deck-status-strip')
-    ).toContainText('/13');
+    await expect(statusStrip(page)).toContainText('/14');
   });
 
   test('cascades a module without flattening its entries', async ({ page }) => {
     await openDeckConfig(page);
-    await toggleAndPersist(page, MARKET, 'shopping');
-    await toggleAndPersist(page, HOUSEHOLD_MODULE, 'household');
+    await switchOn(page, MARKET, '"shopping"');
+    await switchOn(page, 'STASH', '"storage"');
+    await switchOn(page, 'CATALOG', '"products"');
+
+    await switchOff(page, MARKET, '"shopping"');
+    await switchOff(page, HOUSEHOLD_MODULE, '"household"');
 
     await openDeck(page);
     await expect(deckTile(page, 'STASH')).toHaveCount(0);
     await expect(deckTile(page, 'CATALOG')).toHaveCount(0);
 
     await openDeckConfig(page);
-    await toggleAndPersist(page, HOUSEHOLD_MODULE, '"hiddenModules":[]');
+    await switchOn(page, HOUSEHOLD_MODULE, '"household"');
 
     await openDeck(page);
     await expect(deckTile(page, 'STASH')).toBeVisible();

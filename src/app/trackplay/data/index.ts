@@ -1,3 +1,15 @@
 export { TrackplayActions } from './trackplay.actions';
-export { TrackplayFacade } from './trackplay.facade';
+export { PlayersActions } from './players/players.actions';
+export { PlayersFacade } from './players/players.facade';
+export { PlayersPageFacade } from './players/players-page.facade';
+export { GamesActions } from './games/games.actions';
+export { GamesForPlayerActions } from './games/games-for-player.actions';
+export { GamesFacade } from './games/games.facade';
+export { GamesPageFacade } from './games/games-page.facade';
+export { GamesForPlayerFacade } from './games/games-for-player.facade';
+export { GamesForPlayerPageFacade } from './games/games-for-player-page.facade';
+export { GamePlayFacade } from './games/game-play.facade';
+export { GameTypesActions } from './game-types/game-types.actions';
+export { GameTypesFacade } from './game-types/game-types.facade';
+export { GameTypesPageFacade } from './game-types/game-types-page.facade';
 export { trackplayContext } from './trackplay.providers';

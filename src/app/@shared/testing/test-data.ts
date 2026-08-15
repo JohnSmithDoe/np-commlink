@@ -4,22 +4,36 @@ import { Category } from '../model/category.types';
 
 export const TEST_TIMESTAMP = '2024-01-01T12:00:00.000Z';
 
-function mockRouterState(): RouterReducerState {
+type MockRoute = {
+  url?: string;
+  parameters?: Record<string, string>;
+  data?: Record<string, unknown>;
+  queryParameters?: Record<string, string | string[]>;
+};
+
+export function mockRouterState({
+  url = '/',
+  parameters = {},
+  data = {},
+  queryParameters = {},
+}: MockRoute = {}): RouterReducerState {
+  const node = {
+    params: {},
+    data: {},
+    url: [],
+    outlet: 'primary',
+    routeConfig: null,
+    queryParams: queryParameters,
+    fragment: null,
+    firstChild: undefined,
+    children: [],
+    title: undefined,
+  };
+
   return {
     state: {
-      url: '/',
-      root: {
-        parameters: {},
-        data: {},
-        url: [],
-        outlet: 'primary',
-        routeConfig: null,
-        queryParams: {},
-        fragment: null,
-        firstChild: undefined,
-        children: [],
-        title: undefined,
-      },
+      url,
+      root: { ...node, firstChild: { ...node, params: parameters, data } },
     },
     navigationId: 1,
   } as unknown as RouterReducerState;

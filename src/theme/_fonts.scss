@@ -1,24 +1,18 @@
 // ─── why ────────────────────────────────────────────────────────
-// JetBrains Mono, self-hosted: five latin-subset weights in src/assets/fonts/,
-// the first entry of --sr-mono and therefore the whole cyberpunk theme's face.
-// It was named in that stack and loaded nowhere for a long time, so the default
-// theme rendered in ui-monospace for anyone without the font installed locally
-// — which developers usually have, which is exactly why it went unnoticed.
+// JetBrains Mono, self-hosted: the first entry of --sr-mono, and therefore the
+// cyberpunk face. It was named in that stack and loaded nowhere for a long
+// time, so the theme fell back to ui-monospace for anyone without the font
+// installed — which developers have, which is why nobody saw it.
 //
-// The files are NOT in public/, and that is load-bearing. The bundler resolves
-// url() relative to THIS file (hence '../assets/fonts/…') and fingerprints each
-// into media/ with a URL relative to the emitted CSS, which is what makes them
-// survive the Pages subpath. Neither alternative works: root-absolute
-// ('/fonts/…') passes through verbatim and 404s under the /np-commlink/ base
-// href, and a public/ path fails the build outright — url() is resolved at
-// build time and a public/ asset is copied, not bundled.
+// The files are in src/assets/, NOT public/, and that is load-bearing: only a
+// CSS-relative url() is fingerprinted into media/ and survives the Pages
+// subpath. See docs/footguns.md for the two ways it fails.
 //
-// All five weights are declared though the app's own CSS names only 400/600/700
-// — Ionic's shadow styles ask for 500 (and one 450), and an undeclared weight is
-// synthesised by the browser, faux-bold and visibly worse than the real face. A
-// declared face nobody matches is never fetched, so the extra two cost nothing.
-// font-display: swap is why the rest of the --sr-mono stack still matters: it is
-// what paints until the woff2 arrives, not dead weight behind a name.
+// All five weights are declared though our CSS names three: Ionic's shadow
+// styles ask for 500, and an undeclared weight is synthesised faux-bold. A
+// declared face nobody matches is never fetched, so the extras are free.
+// font-display: swap is why the rest of the --sr-mono stack still matters —
+// it paints until the woff2 lands.
 // ────────────────────────────────────────────────────────────────
 @font-face {
   font-family: 'JetBrains Mono';

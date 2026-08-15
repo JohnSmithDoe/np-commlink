@@ -20,8 +20,9 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { play, square } from 'ionicons/icons';
 import { Round, TrackplayId } from '../../model/trackplay.types';
-import { TrackplayFacade } from '../../data';
+import { GamePlayFacade, GamesFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
+import { ConfettiComponent } from '../../../@shared/ui/confetti/confetti.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({
@@ -30,6 +31,7 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   styleUrls: ['./game-play.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ConfettiComponent,
     PageHeaderComponent,
     IonButtons,
     IonButton,
@@ -41,12 +43,11 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   ],
 })
 export class TrackplayGamePlayPage implements ViewWillEnter {
-  readonly #facade = inject(TrackplayFacade);
+  readonly #facade = inject(GamePlayFacade);
+  readonly #games = inject(GamesFacade);
   readonly #route = inject(ActivatedRoute);
 
   readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
-
-  readonly victoryConfetti = Array.from({ length: 14 });
 
   readonly game = this.#facade.gameById(this.id);
   readonly players = this.#facade.players;
@@ -56,7 +57,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly winner = computed(() => this.result()[0]);
 
   readonly playerIds = computed<TrackplayId[]>(
-    () => this.game()?.players ?? []
+    () => this.game()?.playerIds ?? []
   );
   readonly ended = computed<boolean>(() => !!this.game()?.ended);
 
@@ -84,7 +85,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   playerName(pid: TrackplayId): string {
-    return this.players()[pid]?.name ?? '';
+    return this.players().find((player) => player.id === pid)?.name ?? '';
   }
 
   valueFor(round: Round, pid: TrackplayId): number {
@@ -121,7 +122,8 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   toggleEnded(): void {
-    this.#facade.toggleGameEnded(this.id);
+    const game = this.game();
+    if (game) this.#games.toggleEnded(game);
   }
 
   #scrollBodyToBottom(): void {

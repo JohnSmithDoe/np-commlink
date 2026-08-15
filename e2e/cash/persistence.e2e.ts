@@ -12,7 +12,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { pageRoot, waitForPersisted } from '../helpers';
+import { pageRoot, waitForPersisted, presentedDialog } from '../helpers';
 
 test.describe('cash persistence', () => {
   test('keeps a created account + transaction across a full reload', async ({
@@ -21,14 +21,16 @@ test.describe('cash persistence', () => {
     await page.goto('/#/cash');
     const list = pageRoot(page, 'app-page-cash');
     await expect(list).toBeVisible({ timeout: 30_000 });
-    await expect(list.getByTestId('cash-accounts-empty')).toBeVisible(); // hydrated, empty
+    await expect(
+      list.locator('app-item-list-empty app-text-item')
+    ).toBeVisible(); // hydrated, empty
 
     await list.getByTestId('page-header-add').click();
-    const accountModal = page.locator('app-cash-account-edit-modal');
+    const accountModal = presentedDialog(page, 'Neuen Eintrag anlegen');
     await accountModal
       .getByRole('textbox', { name: 'Name' })
       .fill('CREDSTICK-01');
-    await accountModal.getByRole('button', { name: 'Speichern' }).click();
+    await accountModal.getByRole('button', { name: 'Anlegen' }).click();
 
     await expect(list.getByText('CREDSTICK-01')).toBeVisible({
       timeout: 10_000,
@@ -38,15 +40,11 @@ test.describe('cash persistence', () => {
     const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
 
-    await account
-      .getByRole('button', { name: 'Transaktion hinzufügen' })
-      .click();
-    const txnModal = page.locator('app-cash-transaction-edit-modal');
-    await txnModal
-      .getByRole('textbox', { name: 'Beschreibung' })
-      .fill('Soykaf refill');
+    await account.getByTestId('page-header-add').click();
+    const txnModal = presentedDialog(page, 'Neuen Eintrag anlegen');
+    await txnModal.getByRole('textbox', { name: 'Name' }).fill('Soykaf refill');
     await txnModal.getByRole('textbox', { name: 'Betrag' }).fill('12,34');
-    await txnModal.getByRole('button', { name: 'Speichern' }).click();
+    await txnModal.getByRole('button', { name: 'Anlegen' }).click();
 
     await expect(account.getByText('Soykaf refill')).toBeVisible({
       timeout: 10_000,

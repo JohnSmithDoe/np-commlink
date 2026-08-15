@@ -1,11 +1,13 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'page-title.household-shopping' | translate }}"
-  listHeader="{{ 'household.list-header.shopping' | translate }}"
+  pageHeader="page-title.household-shopping"
+  icon="cart-outline"
   [itemTemplate]="shoppingItem"
 >
-  <app-item-list-quick-add quickAdd />
-  <ion-buttons slot="end" listActions>
+  <app-household-list-switcher listSwitcher />
+  <app-item-list-quick-add beforeList />
+  <app-household-search-panel beforeList />
+  <ng-container toolbarActionsEnd>
     @if (state().items.length) {
       <ion-button
         (click)="openActionSheet()"
@@ -14,9 +16,8 @@
         <ion-icon name="bag-add" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     }
-  </ion-buttons>
+  </ng-container>
   <app-household-scan-button toolbarActions />
-  <app-household-search-panel searchExtras />
 </app-list-page>
 
 <ng-template

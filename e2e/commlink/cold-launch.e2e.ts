@@ -10,11 +10,17 @@
  * module IS opened, its live report supersedes the cold summary, and
  * returning to the deck by SPA navigation keeps the read-model instead of
  * re-reading disk.
+ *
+ * MARKET is switched on explicitly because a cold deck ships empty, and
+ * that switch has to reach disk before the reload — which is exactly the
+ * path under test, so `enableDeckProgram` waiting on the store is not
+ * belt-and-braces here, it is the same guarantee twice.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
+  enableDeckProgram,
   gotoFeature,
   mainContent,
   ROUTE,
@@ -37,6 +43,7 @@ test.describe('commlink cold launch', () => {
     await addViaSearch(page, 'Bread');
     await waitForPersisted(page, 'summary-shopping');
 
+    await enableDeckProgram(page, 'MARKET', 'shopping');
     await page.goto('/#/commlink');
     await page.reload();
 
@@ -53,6 +60,7 @@ test.describe('commlink cold launch', () => {
     await addViaSearch(page, 'Bread');
     await waitForPersisted(page, 'summary-shopping');
 
+    await enableDeckProgram(page, 'MARKET', 'shopping');
     await page.goto('/#/commlink');
     await page.reload();
     await expect(

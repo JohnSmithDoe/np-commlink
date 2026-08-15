@@ -4,6 +4,7 @@ import {
   Component,
   input,
   output,
+  OutputEmitterRef,
 } from '@angular/core';
 import {
   IonButton,
@@ -18,9 +19,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IonColor } from '../../../@shared/model/app.types';
 import {
+  TRACKING_STATE_COLOR,
   TRACKING_STATE_LABEL_KEYS,
+  TRACKING_TOGGLE_ICON,
   TrackingItem,
 } from '../../model/tracking.types';
 import { MinutesFromSecondsPipe } from '../../util/minutes-from-seconds.pipe';
@@ -66,6 +68,8 @@ marker('tracking.item.action.pause');
 })
 export class TrackingItemComponent {
   readonly stateLabelKeys = TRACKING_STATE_LABEL_KEYS;
+  readonly stateColor = TRACKING_STATE_COLOR;
+  readonly toggleIcon = TRACKING_TOGGLE_ICON;
 
   readonly item = input.required<TrackingItem>();
   readonly ionList = input.required<IonList>();
@@ -91,35 +95,8 @@ export class TrackingItemComponent {
     });
   }
 
-  async emitDeleteItem() {
+  async closeAndEmit(action: OutputEmitterRef<void>) {
     await this.ionList().closeSlidingItems();
-    this.deleteItem.emit();
-  }
-
-  async emitEditItem() {
-    await this.ionList().closeSlidingItems();
-    this.editItem.emit();
-  }
-
-  getColor(item: TrackingItem): IonColor {
-    switch (item.state) {
-      case 'running': {
-        return 'success';
-      }
-      case 'stopped': {
-        return 'medium';
-      }
-      case 'paused': {
-        return 'warning';
-      }
-    }
-  }
-  async emitResetItem() {
-    await this.ionList().closeSlidingItems();
-    this.resetItem.emit();
-  }
-
-  protected getIcon(item: TrackingItem) {
-    return item.state === 'running' ? 'pause-outline' : 'play-outline';
+    action.emit();
   }
 }

@@ -1,16 +1,14 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { statsKeysFrom } from '../util/office-time.utils';
-import {
-  selectDashboardStatsYear,
-  toDashboardStatsMetrics,
-} from './office-time-stats.selector';
+import { dayMap } from '../testing/office-time.test-data';
+import { selectDashboardStatsYear } from './office-time-stats.selector';
 
 const today = dayjs();
 
-const keysFor = (officedays = [today]) =>
+const keysFor = (officedays: Dayjs[] = [today], freedays: Dayjs[] = []) =>
   statsKeysFrom({
-    officedays,
-    freedays: [],
+    officedays: dayMap(...officedays),
+    freedays: dayMap(...freedays),
     holidays: {},
     targetOfficeDaysPerWeek: 3,
   });
@@ -28,17 +26,22 @@ describe('office-time-stats.selector', () => {
         selectDashboardStatsYear.projector(keysFor(lastYear)).officedays
       ).toBe(0);
     });
-  });
 
-  describe('toDashboardStatsMetrics', () => {
-    it('narrows the stats to the two fields the dashboard read-model stores', () => {
+    it('reads free days off their own collection, not the office one', () => {
+      const stats = selectDashboardStatsYear.projector(keysFor([], [today]));
+
+      expect(stats.officedays).toBe(0);
+      expect(stats.freedays).toBe(1);
+    });
+
+    it('counts a free day whether or not it lands on a weekend', () => {
+      const saturday = today.startOf('year').day(6);
+      const monday = saturday.add(2, 'day');
+
       expect(
-        toDashboardStatsMetrics({
-          officedays: 7,
-          percentage: 42,
-          workdays: 20,
-        } as never)
-      ).toEqual({ officedays: 7, percentage: 42 });
+        selectDashboardStatsYear.projector(keysFor([], [saturday, monday]))
+          .freedays
+      ).toBe(2);
     });
   });
 });

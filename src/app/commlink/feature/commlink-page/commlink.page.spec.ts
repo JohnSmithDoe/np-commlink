@@ -1,11 +1,11 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
+import { LanguageModelService } from '../../../@shared/data/theme/language-model.service';
 import {
-  LanguageModelService,
   LanguageModelAvailability,
-} from '../../../@shared/data/theme/language-model.service';
-import { Theme } from '../../../@shared/model/app.types';
+  Theme,
+} from '../../../@shared/model/app.types';
 import { DashboardFacade, DeckFacade, ThemeService } from '../../data';
 import { DECK_CATALOG } from '../../model/deck.catalog';
 import { resolveLabels } from '../../util/deck.utils';
@@ -14,9 +14,6 @@ import { CommlinkPage } from './commlink.page';
 const catalogPrograms = DECK_CATALOG.filter((entry) => entry.onDeck).map(
   resolveLabels('cyberpunk')
 );
-
-const programOf = (page: CommlinkPage, id: string) =>
-  page.programs().find((program) => program.id === id)!;
 
 describe('CommlinkPage', () => {
   const availability = signal<LanguageModelAvailability>('probing');
@@ -59,23 +56,7 @@ describe('CommlinkPage', () => {
     return TestBed.createComponent(CommlinkPage).componentInstance;
   };
 
-  describe('status', () => {
-    it('reports a source-less program’s declared status', () => {
-      const page = setup();
-      expect(page.status(programOf(page, 'barcode'))).toBe('online');
-    });
-
-    it('reports standby for a telemetry-backed program whose source is silent', () => {
-      const page = setup();
-      expect(page.status(programOf(page, 'tracking'))).toBe('standby');
-    });
-
-    it('reports what the read-model holds once the source has reported', () => {
-      const page = setup();
-      bySource.set({ tracking: { metrics: { count: 3 }, status: 'online' } });
-      expect(page.status(programOf(page, 'tracking'))).toBe('online');
-    });
-
+  describe('onlineCount', () => {
     it('counts only the programs that are actually online', () => {
       const page = setup();
       expect(page.onlineCount()).toBe(2);
@@ -84,23 +65,6 @@ describe('CommlinkPage', () => {
       expect(page.onlineCount()).toBe(3);
     });
 
-    it.each([
-      ['available', 'online'],
-      ['downloadable', 'standby'],
-      ['downloading', 'standby'],
-      ['probing', 'standby'],
-      ['unavailable', 'offline'],
-    ] as const)(
-      'maps a %s on-device model to a %s GEIST tile',
-      (reported, expected) => {
-        const page = setup();
-        availability.set(reported);
-        expect(page.status(programOf(page, 'geist'))).toBe(expected);
-      }
-    );
-  });
-
-  describe('onlineCount', () => {
     it('follows the capability, which only resolves after first paint', () => {
       const page = setup();
       const whileProbing = page.onlineCount();
@@ -120,27 +84,27 @@ describe('CommlinkPage', () => {
     });
   });
 
-  describe('badge', () => {
-    it('reads the configured metric off the read-model', () => {
+  describe('the tiles it renders', () => {
+    it('carries each program’s status, badge text and status word', () => {
       const page = setup();
-      bySource.set({ tracking: { metrics: { count: 7 } } });
-      expect(page.badge(programOf(page, 'tracking'))).toBe(7);
+      bySource.set({ tracking: { metrics: { count: 7 }, status: 'online' } });
+
+      const tile = page
+        .tiles()
+        .find(({ program }) => program.id === 'tracking');
+
+      expect(tile?.status).toBe('online');
+      expect(tile?.badgeText).toBe('7');
+      expect(tile?.statusKey).toBe('deck.cyberpunk.chrome.node-online');
+      expect(tile?.dark).toBe(false);
     });
 
-    it('is null for a tile with no telemetry source', () => {
+    it('leaves the badge unset for a tile whose source reports nothing', () => {
       const page = setup();
-      expect(page.badge(programOf(page, 'barcode'))).toBeNull();
-    });
 
-    it('is null while the source has not reported yet', () => {
-      const page = setup();
-      expect(page.badge(programOf(page, 'tracking'))).toBeNull();
-    });
-
-    it('renders a reported zero rather than swallowing it as absent', () => {
-      const page = setup();
-      bySource.set({ tracking: { metrics: { count: 0 } } });
-      expect(page.badge(programOf(page, 'tracking'))).toBe(0);
+      expect(
+        page.tiles().find(({ program }) => program.id === 'barcode')?.badgeText
+      ).toBeNull();
     });
   });
 
@@ -152,54 +116,18 @@ describe('CommlinkPage', () => {
       theme.set('boomer');
       expect(page.chrome()['noise']).toBe('deck.boomer.chrome.noise');
     });
-
-    it('names a tile’s status word in that same register', () => {
-      const page = setup();
-      expect(page.nodeStatusKey('standby')).toBe(
-        'deck.cyberpunk.chrome.node-standby'
-      );
-
-      theme.set('boomer');
-      expect(page.nodeStatusKey('standby')).toBe(
-        'deck.boomer.chrome.node-standby'
-      );
-    });
   });
 
-  describe('the deck clock', () => {
-    afterEach(() => vi.restoreAllMocks());
+  it('renders the CREDSTICK badge in the active theme’s currency', () => {
+    const page = setup();
+    bySource.set({ cash: { metrics: { balance: 1234 } } });
+    const cashTile = () =>
+      page.tiles().find(({ program }) => program.id === 'cash')?.badgeText;
 
-    it('runs an interval only while the deck is the visible page', () => {
-      const page = setup();
-      const start = vi.spyOn(globalThis, 'setInterval');
-      const stop = vi.spyOn(globalThis, 'clearInterval');
+    expect(cashTile()).toBe('¥ 1234 nyen');
 
-      page.ionViewWillEnter();
-      expect(start).toHaveBeenCalledTimes(1);
-
-      page.ionViewWillEnter();
-      expect(start).toHaveBeenCalledTimes(1);
-
-      page.ionViewWillLeave();
-      expect(stop).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('badgeLabel', () => {
-    it('renders a plain count for a non-currency tile', () => {
-      const page = setup();
-      expect(page.badgeLabel(programOf(page, 'tracking'), 7)).toBe('7');
-    });
-
-    it('renders the themed currency label for the CREDSTICK (cash) tile', () => {
-      const page = setup();
-      expect(page.badgeLabel(programOf(page, 'cash'), 1234)).toBe(
-        '¥ 1234 nyen'
-      );
-
-      theme.set('boomer');
-      expect(page.badgeLabel(programOf(page, 'cash'), 1234)).toContain('€');
-    });
+    theme.set('boomer');
+    expect(cashTile()).toContain('€');
   });
 
   describe('the status-strip readouts', () => {

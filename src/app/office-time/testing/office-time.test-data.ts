@@ -1,4 +1,9 @@
-import { OfficeTimeState } from '../model/office-time.types';
+import { Dayjs } from 'dayjs';
+import { DayMap, OfficeTimeState } from '../model/office-time.types';
+import { dayMapFrom, dayjsToString } from '../util/office-time.utils';
+
+export const dayMap = (...days: Dayjs[]): DayMap =>
+  dayMapFrom(days.map((day) => dayjsToString(day)));
 
 export function mockOfficeTimeState(
   overrides: Partial<OfficeTimeState> = {}
@@ -6,8 +11,8 @@ export function mockOfficeTimeState(
   return {
     targetOfficeDaysPerWeek: 3,
     holidays: {},
-    officedays: [],
-    freedays: [],
+    officedays: {},
+    freedays: {},
     dashboardSettings: {
       showDateCard: false,
       showPercentageCard: false,

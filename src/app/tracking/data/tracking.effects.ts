@@ -28,7 +28,7 @@ import {
   formatViewDate,
 } from '../util/tracking.utils';
 import { groupSessionsByView } from '../util/sessions.utils';
-import { TodayService } from './today.service';
+import { TodayService } from '../../@shared/data/services/today.service';
 
 @Injectable({ providedIn: 'root' })
 export class TrackingEffects {

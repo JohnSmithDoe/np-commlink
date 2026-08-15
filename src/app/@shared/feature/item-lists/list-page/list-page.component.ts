@@ -1,3 +1,16 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `isKnownEmpty` exists because a list has THREE states and the empty
+ * shell answers for one: `items()` is `undefined` while the answer is
+ * unknown and `[]` once it is known to hold nothing. `!items()?.length`
+ * collapsed the two, so "tap here to add something" rendered over data
+ * that had not arrived yet.
+ *
+ * `extraFilters` reads `state().items` for the same reason reversed:
+ * `items()` is the list after filtering, so asking it whether anything
+ * lacks a category answers "no" the moment any filter is armed — the
+ * uncategorized chip vanished under the tap that armed it.
+ * ───────────────────────────────────────────────────────────────── */
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,18 +19,19 @@ import {
   input,
   TemplateRef,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonButton,
-  IonButtons,
   IonContent,
   IonIcon,
+  IonNote,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, closeOutline, pricetagsOutline, remove } from 'ionicons/icons';
-import { categoryName } from '../../../util/categories/category.utils';
+import { add, pricetagsOutline, remove } from 'ionicons/icons';
+import { CategoryFilterFacade } from '../../../data/item-lists/category-filter.facade';
 import { LIST_FACADE } from '../../../util/item-lists/list-page.facade';
+import { ITEM_FILTERS } from '../../../util/item-lists/list-filter';
+import { CategoryFilterBarComponent } from '../../../ui/base-item/category-filter-bar/category-filter-bar.component';
 import { ItemListEmptyComponent } from '../../../ui/base-item/item-list-empty/item-list-empty.component';
 import { ItemListSearchbarComponent } from '../../../ui/base-item/item-list-searchbar/item-list-searchbar.component';
 import { ItemListToolbarComponent } from '../../../ui/base-item/item-list-toolbar/item-list-toolbar.component';
@@ -34,9 +48,10 @@ import { PageHeaderComponent } from '../../../ui/page-header/page-header.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
-    IonButtons,
     IonIcon,
     IonContent,
+    IonNote,
+    CategoryFilterBarComponent,
     ItemListComponent,
     ItemListEmptyComponent,
     ItemListSearchbarComponent,
@@ -47,26 +62,25 @@ import { PageHeaderComponent } from '../../../ui/page-header/page-header.compone
 })
 export class ListPageComponent {
   readonly facade = inject(LIST_FACADE);
-  readonly #router = inject(Router);
-  readonly #route = inject(ActivatedRoute);
+  readonly #categoryFilter = inject(CategoryFilterFacade);
 
   itemTemplate = input.required<TemplateRef<ItemListTemplateContext>>();
   icon = input<string>();
-  listHeader = input.required<string>();
-  pageHeader = input.required<string>();
+  pageHeader = input('');
+  heading = input('');
   backHref = input('');
 
-  readonly hasCategories = !!this.facade.manageCategories;
+  readonly canManageCategories = !!this.facade.manageCategories;
 
-  readonly hasFilter = computed(() => !!this.facade.state()?.filterBy);
+  readonly isKnownEmpty = computed(() => this.facade.items()?.length === 0);
 
-  readonly filterName = computed(() => {
-    const state = this.facade.state();
-    return categoryName(state?.filterBy, this.facade.catalog());
+  readonly extraFilters = computed(() => {
+    const items = this.facade.state()?.items ?? [];
+    return ITEM_FILTERS.filter((filter) => filter.isAvailable(items));
   });
 
   constructor() {
-    addIcons({ add, remove, pricetagsOutline, closeOutline });
+    addIcons({ add, remove, pricetagsOutline });
   }
 
   manageCategories() {
@@ -74,11 +88,6 @@ export class ListPageComponent {
   }
 
   clearFilter(): void {
-    this.facade.selectCategory();
-    void this.#router.navigate([], {
-      relativeTo: this.#route,
-      queryParams: {},
-      replaceUrl: true,
-    });
+    this.#categoryFilter.clear();
   }
 }

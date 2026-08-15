@@ -1,4 +1,6 @@
 import {
+  selectActiveHouseholdListId,
+  selectListIdFromRouteData,
   selectListIdParameter,
   selectListItems,
   selectListSearchResult,
@@ -29,6 +31,47 @@ describe('household-list.selector', () => {
       expect(
         selectListIdParameter.projector(undefined as never)
       ).toBeUndefined();
+    });
+  });
+
+  describe('selectListIdFromRouteData projector', () => {
+    it('narrows a list id out of the route data', () => {
+      expect(selectListIdFromRouteData.projector({ listId: '_products' })).toBe(
+        '_products'
+      );
+    });
+
+    it('is undefined for a foreign, absent or non-string list id', () => {
+      expect(
+        selectListIdFromRouteData.projector({ listId: '_tracking' })
+      ).toBeUndefined();
+      expect(
+        selectListIdFromRouteData.projector({ listId: 7 })
+      ).toBeUndefined();
+      expect(selectListIdFromRouteData.projector({})).toBeUndefined();
+      expect(
+        selectListIdFromRouteData.projector(undefined as never)
+      ).toBeUndefined();
+    });
+  });
+
+  describe('selectActiveHouseholdListId projector', () => {
+    it('prefers the list a route definition fixed over a param', () => {
+      expect(
+        selectActiveHouseholdListId.projector('_storage', '_products')
+      ).toBe('_storage');
+    });
+
+    it('falls back to the param, which is what the catalog route carries', () => {
+      expect(
+        selectActiveHouseholdListId.projector(undefined, '_products')
+      ).toBe('_products');
+    });
+
+    it('lands on shopping when neither names a list', () => {
+      expect(selectActiveHouseholdListId.projector(undefined, undefined)).toBe(
+        '_shopping'
+      );
     });
   });
 

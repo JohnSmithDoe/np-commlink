@@ -25,7 +25,6 @@ import { addIcons } from 'ionicons';
 import { happyOutline } from 'ionicons/icons';
 import { Marker } from '../../../model/app.types';
 import { RECENT_EMOJIS } from '../../../util/emoji/recent-emojis.token';
-import { insertAt } from '../../../util/emoji/emoji-text.utils';
 import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/forms/form-rules';
 import { EmojiPickerComponent } from '../../emoji-picker/emoji-picker.component';
 
@@ -74,20 +73,5 @@ export class ItemNameInputComponent implements FormValueControl<string> {
 
   protected onInput(event: InputCustomEvent): void {
     this.value.set(String(event.detail.value ?? ''));
-  }
-
-  protected async insertEmoji(glyph: string): Promise<void> {
-    const current = this.value();
-    const native = await this.input()?.getInputElement();
-    const caret = native?.selectionStart ?? current.length;
-
-    this.value.set(insertAt(current, glyph, caret));
-
-    native?.setSelectionRange(caret + glyph.length, caret + glyph.length);
-  }
-
-  protected async onPickerDismissed(): Promise<void> {
-    this.pickerOpen.set(false);
-    await this.input()?.setFocus();
   }
 }

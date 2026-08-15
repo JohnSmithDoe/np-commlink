@@ -1,24 +1,18 @@
 import dayjs from 'dayjs';
 import { mockKernelState } from '../../@shared/testing/test-data';
-import { mockOfficeTimeState } from '../testing/office-time.test-data';
-import { OfficeTimeState } from '../model/office-time.types';
+import { dayMap, mockOfficeTimeState } from '../testing/office-time.test-data';
 import {
   selectDashboardItems,
   selectDashboardSettings,
+  selectFreedayKeys,
   selectFreedays,
   selectHolidayDays,
   selectHolidays,
+  selectOfficedayKeys,
   selectOfficedays,
   selectOfficeTimeState,
   selectTargetOfficeDaysPerWeek,
 } from './office-time.selector';
-
-const withoutDayLists = () =>
-  mockOfficeTimeState({
-    officedays: undefined as never,
-    freedays: undefined as never,
-    holidays: undefined as never,
-  }) as OfficeTimeState;
 
 describe('office-time.selector', () => {
   it('selects the officeTime feature slice', () => {
@@ -44,24 +38,29 @@ describe('office-time.selector', () => {
     );
   });
 
-  describe('day lists', () => {
-    it('returns the stored days', () => {
-      const officeday = dayjs('2024-03-04');
-      const freeday = dayjs('2024-03-05');
+  describe('day maps', () => {
+    it('returns the stored days keyed by the day', () => {
       const state = mockOfficeTimeState({
-        officedays: [officeday],
-        freedays: [freeday],
+        officedays: dayMap(dayjs('2024-03-04')),
+        freedays: dayMap(dayjs('2024-03-05')),
       });
 
-      expect(selectOfficedays.projector(state)).toEqual([officeday]);
-      expect(selectFreedays.projector(state)).toEqual([freeday]);
+      expect(selectOfficedays.projector(state)).toEqual({ '2024-03-04': true });
+      expect(selectFreedays.projector(state)).toEqual({ '2024-03-05': true });
     });
 
-    it('defaults office days and free days to empty when the slice omits them', () => {
-      const state = withoutDayLists();
+    it('hands the view its keys in date order, whatever order they were written', () => {
+      const late = dayjs('2024-03-09');
+      const early = dayjs('2024-03-04');
 
-      expect(selectOfficedays.projector(state)).toEqual([]);
-      expect(selectFreedays.projector(state)).toEqual([]);
+      expect(selectOfficedayKeys.projector(dayMap(late, early))).toEqual([
+        '2024-03-04',
+        '2024-03-09',
+      ]);
+      expect(selectFreedayKeys.projector(dayMap(late, early))).toEqual([
+        '2024-03-04',
+        '2024-03-09',
+      ]);
     });
   });
 
@@ -77,9 +76,8 @@ describe('office-time.selector', () => {
       expect(selectHolidayDays.projector(holidays)).toEqual([first, second]);
     });
 
-    it('is empty when the slice carries no holiday map', () => {
-      expect(selectHolidays.projector(withoutDayLists())).toBeUndefined();
-      expect(selectHolidayDays.projector(undefined as never)).toEqual([]);
+    it('is empty when no holidays have been fetched yet', () => {
+      expect(selectHolidayDays.projector({})).toEqual([]);
     });
   });
 });

@@ -12,6 +12,7 @@ import {
   restaurantOutline,
   settingsOutline,
   sparklesOutline,
+  sunnyOutline,
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
@@ -30,6 +31,7 @@ export const DECK_ICONS = {
   'restaurant-outline': restaurantOutline,
   'settings-outline': settingsOutline,
   'sparkles-outline': sparklesOutline,
+  'sunny-outline': sunnyOutline,
   'timer-outline': timerOutline,
   'wallet-outline': walletOutline,
 } as const;

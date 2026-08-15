@@ -12,7 +12,7 @@ export function buildTransferLegs(
   const magnitude = Math.abs(amountCents);
   const shared = {
     dateISO,
-    description,
+    name: description,
     source: 'manual' as const,
     status: 'confirmed' as const,
     isTransfer: true,

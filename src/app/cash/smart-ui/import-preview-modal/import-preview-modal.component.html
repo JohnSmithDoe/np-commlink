@@ -37,11 +37,11 @@
       @for (txn of transactions; track txn.id) {
         <ion-item>
           <ion-label>
-            <h2>{{ txn.description }}</h2>
+            <h2>{{ txn.name }}</h2>
             <p>
               {{ txn.dateISO | localizedDate }}
-              @if (txn.categoryId) {
-                · {{ categoryName(txn.categoryId) }}
+              @if (categoryIdOf(txn); as categoryId) {
+                · {{ categoryName(categoryId) }}
               }
             </p>
           </ion-label>

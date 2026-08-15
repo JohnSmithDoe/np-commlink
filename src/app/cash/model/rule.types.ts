@@ -1,5 +1,17 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * A rule keeps a singular `categoryId` and leaves the inherited
+ * `categoryIds` unused, because the two mean opposite things: a
+ * transaction IS TAGGED WITH its categories, a rule ASSIGNS one. On the
+ * tag axis every rule would answer the filter bar and the "n items in this
+ * category" count as though it were a row in that category.
+ *
+ * `FilterField` still says `'description'` because it names the BANK's
+ * field, the one the user picks between, not our model's `name`. Renaming
+ * would cost a migration to make the persisted rules read worse.
+ * ───────────────────────────────────────────────────────────────── */
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
+import { BaseItem } from '../../@shared/model/base-item.types';
 import { CategoryId } from '../../@shared/model/category.types';
 
 export type FilterField = 'description' | 'amount';
@@ -28,10 +40,8 @@ export interface CashFilterCondition {
   caseSensitive?: boolean;
 }
 
-export interface CashRule {
-  id: string;
+export interface CashRule extends BaseItem {
   order: number;
-  name?: string;
   match: 'all' | 'any';
   conditions: CashFilterCondition[];
   categoryId: CategoryId;

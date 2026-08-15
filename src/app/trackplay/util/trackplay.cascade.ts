@@ -1,13 +1,27 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * These run as a post-pass over the state `combineReducers` already
+ * produced, and they read the PRE-action slice — `snapshotFor` is what
+ * undo restores. That only holds while no per-aggregate reducer handles
+ * the same action, because `combineReducers` returns the identical object
+ * when nothing changed. The three `removeItem`s and `restoreLastDeleted`
+ * therefore live here and nowhere else; `trackplay.reducer.ts` says so
+ * again next to the wiring.
+ * ───────────────────────────────────────────────────────────────── */
+
+import { removeListItem } from '../../@shared/util/item-lists/list.utils';
 import {
   Game,
+  GamesState,
   GameType,
+  GameTypesState,
   Player,
-  Round,
+  PlayersState,
   TrackplayDeleted,
   TrackplayState,
   TrackplayId,
 } from '../model/trackplay.types';
 import { DEFAULT_GAME_TYPE_ID } from './trackplay.factory';
+import { gameTypeIdOf, withGameTypeId } from './game-type.utils';
 
 export const snapshotFor = (
   state: TrackplayState,
@@ -15,121 +29,95 @@ export const snapshotFor = (
 ): TrackplayDeleted => ({
   name,
   snapshot: {
-    players: state.players,
-    games: state.games,
-    gameTypes: state.gameTypes,
-    rounds: state.rounds,
+    players: state.players.items,
+    games: state.games.items,
+    gameTypes: state.gameTypes.items,
   },
 });
 
-type GamesAndRounds = {
-  games: Record<TrackplayId, Game>;
-  rounds: Record<TrackplayId, Round>;
-};
-
-const dropPlayerScoresFromRounds = (
-  { games, rounds }: GamesAndRounds,
-  game: Game,
-  playerId: TrackplayId
-): void => {
-  for (const roundId of game.rounds) {
-    const round = rounds[roundId];
-    if (!round) continue;
+const withoutPlayer = (game: Game, playerId: TrackplayId): Game => ({
+  ...game,
+  playerIds: game.playerIds.filter((id) => id !== playerId),
+  rounds: game.rounds.map((round) => {
     const values = { ...round.values };
     delete values[playerId];
-    rounds[roundId] = { ...round, values };
-  }
-  games[game.id] = {
-    ...game,
-    players: game.players.filter((id) => id !== playerId),
-  };
+    return { ...round, values };
+  }),
+});
+
+const detachPlayer = (game: Game, playerId: TrackplayId): Game | undefined => {
+  const remaining = game.playerIds.filter((id) => id !== playerId);
+  if (remaining.length > 0) return withoutPlayer(game, playerId);
+  if (game.ended) return undefined;
+  return { ...game, playerIds: [], rounds: [] };
 };
 
-const discardEndedEmptyGame = (
-  { games, rounds }: GamesAndRounds,
-  game: Game
-): void => {
-  for (const roundId of game.rounds) delete rounds[roundId];
-  delete games[game.id];
-};
-
-const emptyLiveGame = ({ games, rounds }: GamesAndRounds, game: Game): void => {
-  for (const roundId of game.rounds) delete rounds[roundId];
-  games[game.id] = { ...game, players: [], rounds: [] };
-};
-
-const detachPlayerFromGame = (
-  target: GamesAndRounds,
-  game: Game,
+const detachPlayerFromGames = (
+  games: GamesState,
   playerId: TrackplayId
-): void => {
-  const remaining = game.players.filter((id) => id !== playerId);
-  if (remaining.length > 0) dropPlayerScoresFromRounds(target, game, playerId);
-  else if (game.ended) discardEndedEmptyGame(target, game);
-  else emptyLiveGame(target, game);
-};
+): GamesState => ({
+  ...games,
+  items: games.items
+    .map((game) =>
+      game.playerIds.includes(playerId) ? detachPlayer(game, playerId) : game
+    )
+    .filter((game): game is Game => !!game),
+});
 
 export const deletePlayerCascade = (
   state: TrackplayState,
   player: Player
-): TrackplayState => {
-  const players = { ...state.players };
-  delete players[player.id];
-  const target: GamesAndRounds = {
-    games: { ...state.games },
-    rounds: { ...state.rounds },
-  };
-  for (const game of Object.values(state.games)) {
-    if (!game.players.includes(player.id)) continue;
-    detachPlayerFromGame(target, game, player.id);
-  }
-  return { ...state, players, ...target };
-};
+): TrackplayState => ({
+  ...state,
+  players: removeListItem<PlayersState, Player>(state.players, player),
+  games: detachPlayerFromGames(state.games, player.id),
+});
 
 export const deleteGameCascade = (
   state: TrackplayState,
   game: Game
-): TrackplayState => {
-  const games = { ...state.games };
-  delete games[game.id];
-  const rounds = { ...state.rounds };
-  for (const roundId of game.rounds) delete rounds[roundId];
-  return { ...state, games, rounds };
-};
+): TrackplayState => ({
+  ...state,
+  games: removeListItem<GamesState, Game>(state.games, game),
+});
 
 const reassignGamesToDefaultType = (
-  games: Record<TrackplayId, Game>,
+  games: GamesState,
   typeId: TrackplayId
-): Record<TrackplayId, Game> =>
-  Object.fromEntries(
-    Object.entries(games).map(([id, game]) => [
-      id,
-      game.type === typeId ? { ...game, type: DEFAULT_GAME_TYPE_ID } : game,
-    ])
-  );
+): GamesState => ({
+  ...games,
+  items: games.items.map((game) =>
+    gameTypeIdOf(game) === typeId
+      ? withGameTypeId(game, DEFAULT_GAME_TYPE_ID)
+      : game
+  ),
+});
 
-const clearDeletedTypeFromFilters = (
-  config: TrackplayState['config'],
+const clearDeletedTypeFromFilter = <T extends { filterBy?: string }>(
+  view: T,
   typeId: TrackplayId
-): TrackplayState['config'] => {
-  let next = config;
-  for (const key of ['games', 'gamesForPlayer'] as const) {
-    if (next[key].typeId !== typeId) continue;
-    next = { ...next, [key]: { ...next[key], typeId: '' } };
-  }
-  return next;
-};
+): T => (view.filterBy === typeId ? { ...view, filterBy: undefined } : view);
 
 export const deleteGameTypeCascade = (
   state: TrackplayState,
   type: GameType
-): TrackplayState => {
-  const gameTypes = { ...state.gameTypes };
-  delete gameTypes[type.id];
-  return {
-    ...state,
-    gameTypes,
-    games: reassignGamesToDefaultType(state.games, type.id),
-    config: clearDeletedTypeFromFilters(state.config, type.id),
-  };
-};
+): TrackplayState => ({
+  ...state,
+  gameTypes: removeListItem<GameTypesState, GameType>(state.gameTypes, type),
+  games: clearDeletedTypeFromFilter(
+    reassignGamesToDefaultType(state.games, type.id),
+    type.id
+  ),
+  gamesForPlayer: clearDeletedTypeFromFilter(state.gamesForPlayer, type.id),
+});
+
+export const restoreSnapshot = (
+  state: TrackplayState,
+  { snapshot }: TrackplayDeleted
+): TrackplayState => ({
+  ...state,
+  players: { ...state.players, items: snapshot.players },
+  games: { ...state.games, items: snapshot.games },
+  gameTypes: { ...state.gameTypes, items: snapshot.gameTypes },
+  lastDeleted: null,
+});

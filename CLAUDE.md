@@ -42,9 +42,10 @@ measurement it carried is either in the three files above or one command away:
 | `pnpm run build` | prod web build → `www/browser`, `--base-href ./` (Capacitor) |
 | `pnpm run build:pages` | prod build with `--base-href /np-commlink/` (Codeberg Pages) |
 | `pnpm test` / `test:watch` / `test:coverage` | Vitest via `@angular/build:unit-test` |
+| `pnpm run test:plugin` | Vitest over `eslint-plugin-commlink/`'s RuleTester specs — its own config, because the builder's tsconfig reaches only under `src` |
 | `pnpm run e2e` | Playwright (`e2e/`, port 4321) |
 | `pnpm run lint` | plugin types → eslint → stylelint, whole repo |
-| `pnpm run verify:all` | every gate, as sixteen reported cards (~90 s cold) |
+| `pnpm run verify:all` | every gate, as seventeen reported cards; `--cold` purges eslint's cache |
 | `pnpm run verify:testids` · `:icons` · `:docs` · `:exports` · `:pages` | the five whole-repo scripts |
 | `pnpm exec sheriff verify src/main.ts` | module boundaries |
 | `pnpm run i18n:extract` | rewrite both bundles from the `marker(...)` literals, `--clean` included |
@@ -52,6 +53,12 @@ measurement it carried is either in the three files above or one command away:
 | `pnpm run apk:build` | web build + `cap sync android` + postsync patches |
 | `pnpm run apk:debug` / `apk:release` / `apk:open` | Gradle assemble (release collects to `releases/`) / Android Studio |
 | `pnpm run apk:signed` | `apk:release` with the signing identity resolved — keystore found, passwords prompted |
+
+**`verify:all` is a pre-commit gate, not a per-edit check.** It is seventeen gates including a
+production build and the whole Playwright run, so it costs ~90 s where the answer usually costs
+four: match the check to the blast radius — `pnpm test` for a spec or logic edit, `pnpm run lint`
+for a lint-shaped one, `pnpm run build` for anything a template or AOT would catch. Run the full
+suite once, before committing.
 
 `android/` is git-ignored and regenerated: `npx cap add android` once per machine.
 
@@ -73,7 +80,7 @@ banner says why. The ones without a gate are the ones to hold in your head.
 | At most one comment per file — a `why` banner above the first code token | `commlink/comments-header-only` |
 | Every `ion-icon`, icon-only control, form control and overlay carries its own name (R1–R9) | eight `commlink/a11y-*` rules |
 | Every `ion-icon` name is registered with `addIcons` by the component that renders it — an unregistered name is an invisible control, not an error | `verify:icons` |
-| `@shared` speaks no domain vocabulary | `commlink/i18n-key-ownership` |
+| `@shared` uses no domain-owned **i18n key** — it owns no wording (this is about keys, not code; see below) | `commlink/i18n-key-ownership` |
 | Muted text is `var(--sr-text-dim)`, never the accent at an alpha | `commlink/muted-text-uses-token` |
 | A spec calling `overrideSelector` also calls `resetSelectors` | `commlink/spec-resets-mock-selectors` |
 | **Speaking code, not comments** — extract the block instead of explaining it | review |
@@ -81,6 +88,15 @@ banner says why. The ones without a gate are the ones to hold in your head.
 | **Retheme the CSS custom properties** — never restyle components one by one | review |
 | **Lean tests, not exhaustive** — no 100% target, no branded-type machinery | review |
 | **R5 and R9 can never be gated** — a gesture is never the only way; the viewport never locks zoom | review |
+
+**`@shared` does hold domain-named code, and that is the design.** The rule above is about *wording*:
+`@shared` may not reach for a domain's i18n key, because that is the boundary the re-domaining drew.
+It says nothing about types or actions — `@shared/data/actions/` carries `NotificationsActions` and
+`DashboardActions`, and `@shared/model/` the types they move. Those are the **cross-domain event bus**,
+and they are what makes sealed domains workable at all: `tracking` tells the inbox a timer is running
+by dispatching a `@shared` action, never by importing `notifications`. Sheriff has no opinion here —
+`domain:* → domain:@shared` is legal for every domain — so the discipline is: a contract two domains
+must agree on goes in `@shared`; a fact one domain owns does not.
 
 Adding a gate, in order: **an upstream rule configured**, then **a rule in `eslint-plugin-commlink/`**,
 then **a script** — the last only for what ESLint structurally cannot see (a whole-repo set difference,

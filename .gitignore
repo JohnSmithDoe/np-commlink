@@ -95,6 +95,13 @@ Thumbs.db
 
 # Merge-planning workspace (transient; delete once execution done)
 /.plan-workspace
+
+# Session handover and point-in-time review (transient; delete once the work in
+# them has shipped). Not further documents: docs/ holds what outlives a task,
+# a current-*.md holds one task, or one snapshot of the tree. The prefix is the
+# contract — eslint.config.js ignores the same pattern, so a scratch doc cannot
+# turn the lint gate red.
+/current-*.md
 # codegraph
 .codegraph
 

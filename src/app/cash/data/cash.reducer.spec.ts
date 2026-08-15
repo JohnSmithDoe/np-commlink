@@ -1,5 +1,9 @@
 import { CashActions } from './cash.actions';
-import { cashReducer, initialState } from './cash.reducer';
+import { CashAccountsActions } from './accounts/cash-accounts.actions';
+import { CashCategoriesActions } from './categories/cash-categories.actions';
+import { CashRulesActions } from './rules/cash-rules.actions';
+import { CashTransactionsActions } from './transactions/cash-transactions.actions';
+import { cashReducer } from './cash.reducer';
 import {
   mockCashAccount,
   mockCashCategoryList,
@@ -8,6 +12,9 @@ import {
   mockCashTransaction,
 } from '../testing/cash.test-data';
 import { mockCategory } from '../../@shared/testing/test-data';
+import { categoryIdOf } from '../util/cash-category.utils';
+
+const initialState = mockCashState();
 
 describe('cashReducer', () => {
   it('returns the initial state for an unknown action', () => {
@@ -17,8 +24,11 @@ describe('cashReducer', () => {
 
   it('adds an account', () => {
     const account = mockCashAccount();
-    const state = cashReducer(initialState, CashActions.addAccount(account));
-    expect(state.accounts).toEqual([account]);
+    const state = cashReducer(
+      initialState,
+      CashAccountsActions.addItem(account)
+    );
+    expect(state.accounts.items).toEqual([account]);
   });
 
   it('updates an existing account in place', () => {
@@ -26,10 +36,10 @@ describe('cashReducer', () => {
     const start = mockCashState({ accounts: [account] });
     const state = cashReducer(
       start,
-      CashActions.updateAccount({ ...account, name: 'Girokonto' })
+      CashAccountsActions.updateItem({ ...account, name: 'Girokonto' })
     );
-    expect(state.accounts).toHaveLength(1);
-    expect(state.accounts[0].name).toBe('Girokonto');
+    expect(state.accounts.items).toHaveLength(1);
+    expect(state.accounts.items[0].name).toBe('Girokonto');
   });
 
   it('removes an account and cascades its transactions', () => {
@@ -40,24 +50,30 @@ describe('cashReducer', () => {
       accounts: [account],
       transactions: [own, other],
     });
-    const state = cashReducer(start, CashActions.removeAccount('a'));
-    expect(state.accounts).toHaveLength(0);
-    expect(state.transactions.map((t) => t.id)).toEqual(['t2']);
+    const state = cashReducer(start, CashAccountsActions.removeItem(account));
+    expect(state.accounts.items).toHaveLength(0);
+    expect(state.transactions.items.map((t) => t.id)).toEqual(['t2']);
   });
 
   it('adds, updates and removes transactions', () => {
     const txn = mockCashTransaction({ id: 't1', amountCents: -500 });
-    const added = cashReducer(initialState, CashActions.addTransaction(txn));
-    expect(added.transactions).toEqual([txn]);
+    const added = cashReducer(
+      initialState,
+      CashTransactionsActions.addItem(txn)
+    );
+    expect(added.transactions.items).toEqual([txn]);
 
     const updated = cashReducer(
       added,
-      CashActions.updateTransaction({ ...txn, amountCents: -750 })
+      CashTransactionsActions.updateItem({ ...txn, amountCents: -750 })
     );
-    expect(updated.transactions[0].amountCents).toBe(-750);
+    expect(updated.transactions.items[0].amountCents).toBe(-750);
 
-    const removed = cashReducer(updated, CashActions.removeTransaction('t1'));
-    expect(removed.transactions).toHaveLength(0);
+    const removed = cashReducer(
+      updated,
+      CashTransactionsActions.removeItem(txn)
+    );
+    expect(removed.transactions.items).toHaveLength(0);
   });
 
   it('appends a batch of imported transactions in one action', () => {
@@ -67,46 +83,61 @@ describe('cashReducer', () => {
       mockCashTransaction({ id: 'i1', source: 'imported' }),
       mockCashTransaction({ id: 'i2', source: 'imported' }),
     ];
-    const state = cashReducer(start, CashActions.importTransactions(batch));
-    expect(state.transactions.map((t) => t.id)).toEqual(['t0', 'i1', 'i2']);
+    const state = cashReducer(
+      start,
+      CashTransactionsActions.importItems(batch)
+    );
+    expect(state.transactions.items.map((t) => t.id)).toEqual([
+      't0',
+      'i1',
+      'i2',
+    ]);
   });
 
   it('sets a transaction category id and flags it as manual', () => {
-    const txn = mockCashTransaction({ id: 't1', categoryId: 'household' });
+    const txn = mockCashTransaction({ id: 't1', categoryIds: ['household'] });
     const start = mockCashState({ transactions: [txn] });
     const state = cashReducer(
       start,
-      CashActions.setTransactionCategory('t1', 'rent', true)
+      CashTransactionsActions.updateItem({
+        ...txn,
+        categoryIds: ['rent'],
+        categoryManual: true,
+      })
     );
-    expect(state.transactions[0].categoryId).toBe('rent');
-    expect(state.transactions[0].categoryManual).toBe(true);
+    expect(categoryIdOf(state.transactions.items[0])).toBe('rent');
+    expect(state.transactions.items[0].categoryManual).toBe(true);
   });
 
   it('re-files a whole rule run in one pass, clearing the manual flag', () => {
     const start = mockCashState({
       transactions: [
         mockCashTransaction({ id: 't1' }),
-        mockCashTransaction({ id: 't2', categoryId: 'fun' }),
-        mockCashTransaction({ id: 't3', categoryId: 'rent' }),
+        mockCashTransaction({ id: 't2', categoryIds: ['fun'] }),
+        mockCashTransaction({ id: 't3', categoryIds: ['rent'] }),
       ],
     });
 
     const state = cashReducer(
       start,
-      CashActions.recategorizeTransactions([
+      CashTransactionsActions.recategorize([
         { transactionId: 't1', categoryId: 'household' },
         { transactionId: 't2', categoryId: undefined },
       ])
     );
 
     expect(
-      state.transactions.map((t) => [t.id, t.categoryId, t.categoryManual])
+      state.transactions.items.map((t) => [
+        t.id,
+        categoryIdOf(t),
+        t.categoryManual,
+      ])
     ).toEqual([
       ['t1', 'household', false],
       ['t2', undefined, false],
       ['t3', 'rent', undefined],
     ]);
-    expect(state.transactions[2]).toBe(start.transactions[2]);
+    expect(state.transactions.items[2]).toBe(start.transactions.items[2]);
   });
 
   it('books both legs of a transfer and deletes the group as a unit', () => {
@@ -126,12 +157,15 @@ describe('cashReducer', () => {
     });
     const booked = cashReducer(
       initialState,
-      CashActions.bookTransfer(fromLeg, toLeg)
+      CashTransactionsActions.bookTransfer(fromLeg, toLeg)
     );
-    expect(booked.transactions.map((t) => t.id)).toEqual(['f', 't']);
+    expect(booked.transactions.items.map((t) => t.id)).toEqual(['f', 't']);
 
-    const removed = cashReducer(booked, CashActions.removeTransaction('f'));
-    expect(removed.transactions).toHaveLength(0);
+    const removed = cashReducer(
+      booked,
+      CashTransactionsActions.removeItem(fromLeg)
+    );
+    expect(removed.transactions.items).toHaveLength(0);
   });
 
   it('reconciles a pending manual entry into an imported survivor', () => {
@@ -139,20 +173,20 @@ describe('cashReducer', () => {
       id: 'm1',
       source: 'manual',
       status: 'pending',
-      categoryId: 'restaurant',
+      categoryIds: ['restaurant'],
       categoryManual: true,
     });
     const imported = mockCashTransaction({ id: 'i1', source: 'imported' });
     const start = mockCashState({ transactions: [manual, imported] });
     const state = cashReducer(
       start,
-      CashActions.reconcileTransaction('m1', 'i1')
+      CashTransactionsActions.reconcile('m1', 'i1')
     );
-    const m = state.transactions.find((t) => t.id === 'm1')!;
-    const index = state.transactions.find((t) => t.id === 'i1')!;
+    const m = state.transactions.items.find((t) => t.id === 'm1')!;
+    const index = state.transactions.items.find((t) => t.id === 'i1')!;
     expect(m.matchedTxnId).toBe('i1');
     expect(m.status).toBe('confirmed');
-    expect(index.categoryId).toBe('restaurant');
+    expect(categoryIdOf(index)).toBe('restaurant');
     expect(index.categoryManual).toBe(true);
   });
 
@@ -165,20 +199,23 @@ describe('cashReducer', () => {
     });
     const imported = mockCashTransaction({ id: 'i1', source: 'imported' });
     const start = mockCashState({ transactions: [manual, imported] });
-    const state = cashReducer(start, CashActions.unreconcileTransaction('m1'));
-    const m = state.transactions.find((t) => t.id === 'm1')!;
+    const state = cashReducer(start, CashTransactionsActions.unreconcile('m1'));
+    const m = state.transactions.items.find((t) => t.id === 'm1')!;
     expect(m.matchedTxnId).toBeUndefined();
     expect(m.status).toBe('pending');
   });
 
   it('adds a pre-minted category once (dedupe by id/name) and removes it by id', () => {
     const rent = mockCategory({ id: 'rent', name: 'Rent' });
-    const added = cashReducer(initialState, CashActions.addCategory(rent));
-    const again = cashReducer(added, CashActions.addCategory(rent));
+    const added = cashReducer(
+      initialState,
+      CashCategoriesActions.addItem(rent)
+    );
+    const again = cashReducer(added, CashCategoriesActions.addItem(rent));
     expect(again).toBe(added);
     expect(again.categories.items).toEqual([rent]);
 
-    const removed = cashReducer(again, CashActions.removeCategory('rent'));
+    const removed = cashReducer(again, CashCategoriesActions.removeItem(rent));
     expect(removed.categories.items).toEqual([]);
   });
 
@@ -187,22 +224,22 @@ describe('cashReducer', () => {
     const food = mockCategory({ id: 'food', name: 'Food' });
     const tagged = mockCashTransaction({
       id: 't1',
-      categoryId: 'rent',
+      categoryIds: ['rent'],
       categoryManual: true,
     });
-    const other = mockCashTransaction({ id: 't2', categoryId: 'food' });
+    const other = mockCashTransaction({ id: 't2', categoryIds: ['food'] });
     const start = mockCashState({
       categories: mockCashCategoryList({ items: [rent, food] }),
       transactions: [tagged, other],
     });
-    const state = cashReducer(start, CashActions.removeCategory('rent'));
+    const state = cashReducer(start, CashCategoriesActions.removeItem(rent));
     expect(state.categories.items).toEqual([food]);
-    const t1 = state.transactions.find((t) => t.id === 't1')!;
-    expect(t1.categoryId).toBeUndefined();
+    const t1 = state.transactions.items.find((t) => t.id === 't1')!;
+    expect(categoryIdOf(t1)).toBeUndefined();
     expect(t1.categoryManual).toBeUndefined();
-    expect(state.transactions.find((t) => t.id === 't2')!.categoryId).toBe(
-      'food'
-    );
+    expect(
+      categoryIdOf(state.transactions.items.find((t) => t.id === 't2')!)
+    ).toBe('food');
   });
 
   it('removing a category drops the rules that assigned it', () => {
@@ -216,9 +253,9 @@ describe('cashReducer', () => {
       ],
     });
 
-    const state = cashReducer(start, CashActions.removeCategory('rent'));
+    const state = cashReducer(start, CashCategoriesActions.removeItem(rent));
 
-    expect(state.rules.map((rule) => rule.id)).toEqual(['r2']);
+    expect(state.rules.items.map((rule) => rule.id)).toEqual(['r2']);
   });
 
   it('prunes rules orphaned by an older build when hydrating', () => {
@@ -233,25 +270,48 @@ describe('cashReducer', () => {
 
     const state = cashReducer(mockCashState(), CashActions.loaded(stored));
 
-    expect(state.rules.map((rule) => rule.id)).toEqual(['r2']);
+    expect(state.rules.items.map((rule) => rule.id)).toEqual(['r2']);
   });
 
-  it('keeps the hydrated object identity when no rule is orphaned', () => {
+  it('keeps every stored row when no rule is orphaned', () => {
     const food = mockCategory({ id: 'food', name: 'Food' });
+    const rule = mockCashRule({ id: 'r2', categoryId: 'food' });
     const stored = mockCashState({
       categories: mockCashCategoryList({ items: [food] }),
-      rules: [mockCashRule({ id: 'r2', categoryId: 'food' })],
+      rules: [rule],
     });
 
-    expect(cashReducer(mockCashState(), CashActions.loaded(stored))).toBe(
-      stored
+    const state = cashReducer(mockCashState(), CashActions.loaded(stored));
+
+    expect(state.rules.items).toEqual([rule]);
+    expect(state.categories.items).toEqual([food]);
+  });
+
+  it('drops a search and a filter on hydrate — both are transient, neither is stored', () => {
+    const stored = mockCashState({ transactions: [mockCashTransaction()] });
+    const withTransients = {
+      ...stored,
+      transactions: {
+        ...stored.transactions,
+        searchQuery: 'REWE',
+        filterBy: 'groceries',
+      },
+    };
+
+    const state = cashReducer(
+      mockCashState(),
+      CashActions.loaded(withTransients)
     );
+
+    expect(state.transactions.searchQuery).toBeUndefined();
+    expect(state.transactions.filterBy).toBeUndefined();
+    expect(state.transactions.items).toHaveLength(1);
   });
 
   it('renaming a category is O(1) on the catalog — id-referencing txns and rules are untouched', () => {
     const rent = mockCategory({ id: 'rent', name: 'Rent' });
     const food = mockCategory({ id: 'food', name: 'Food' });
-    const txn = mockCashTransaction({ id: 't1', categoryId: 'rent' });
+    const txn = mockCashTransaction({ id: 't1', categoryIds: ['rent'] });
     const rule = mockCashRule({ id: 'r1', categoryId: 'rent' });
     const start = mockCashState({
       categories: mockCashCategoryList({ items: [rent, food] }),
@@ -260,14 +320,14 @@ describe('cashReducer', () => {
     });
     const state = cashReducer(
       start,
-      CashActions.updateCategory('rent', 'Housing')
+      CashCategoriesActions.updateItem({ id: 'rent', name: 'Housing' })
     );
     expect(state.categories.items).toEqual([
       { id: 'rent', name: 'Housing' },
       food,
     ]);
-    expect(state.transactions[0].categoryId).toBe('rent');
-    expect(state.rules[0].categoryId).toBe('rent');
+    expect(categoryIdOf(state.transactions.items[0])).toBe('rent');
+    expect(state.rules.items[0].categoryId).toBe('rent');
   });
 
   it('renaming a category onto an existing name merges — remaps txn + rule ids to the survivor', () => {
@@ -275,31 +335,31 @@ describe('cashReducer', () => {
     const food = mockCategory({ id: 'food', name: 'Food' });
     const start = mockCashState({
       categories: mockCashCategoryList({ items: [rent, food] }),
-      transactions: [mockCashTransaction({ id: 't1', categoryId: 'rent' })],
+      transactions: [mockCashTransaction({ id: 't1', categoryIds: ['rent'] })],
       rules: [mockCashRule({ id: 'r1', categoryId: 'rent' })],
     });
     const state = cashReducer(
       start,
-      CashActions.updateCategory('rent', 'Food')
+      CashCategoriesActions.updateItem({ id: 'rent', name: 'Food' })
     );
     expect(state.categories.items).toEqual([food]);
-    expect(state.transactions[0].categoryId).toBe('food');
-    expect(state.rules[0].categoryId).toBe('food');
+    expect(categoryIdOf(state.transactions.items[0])).toBe('food');
+    expect(state.rules.items[0].categoryId).toBe('food');
   });
 
   it('adds, updates and removes filter rules', () => {
     const rule = mockCashRule({ id: 'r1' });
-    const added = cashReducer(initialState, CashActions.addRule(rule));
-    expect(added.rules).toEqual([rule]);
+    const added = cashReducer(initialState, CashRulesActions.addItem(rule));
+    expect(added.rules.items).toEqual([rule]);
 
     const updated = cashReducer(
       added,
-      CashActions.updateRule({ ...rule, categoryId: 'food' })
+      CashRulesActions.updateItem({ ...rule, categoryId: 'food' })
     );
-    expect(updated.rules[0].categoryId).toBe('food');
+    expect(updated.rules.items[0].categoryId).toBe('food');
 
-    const removed = cashReducer(updated, CashActions.removeRule('r1'));
-    expect(removed.rules).toHaveLength(0);
+    const removed = cashReducer(updated, CashRulesActions.removeItem(rule));
+    expect(removed.rules.items).toHaveLength(0);
   });
 
   it('reorders rules and reassigns their order index', () => {
@@ -310,9 +370,9 @@ describe('cashReducer', () => {
         mockCashRule({ id: 'c', order: 2 }),
       ],
     });
-    const state = cashReducer(start, CashActions.reorderRules(['c', 'a', 'b']));
-    expect(state.rules.map((r) => r.id)).toEqual(['c', 'a', 'b']);
-    expect(state.rules.map((r) => r.order)).toEqual([0, 1, 2]);
+    const state = cashReducer(start, CashRulesActions.reorder(['c', 'a', 'b']));
+    expect(state.rules.items.map((r) => r.id)).toEqual(['c', 'a', 'b']);
+    expect(state.rules.items.map((r) => r.order)).toEqual([0, 1, 2]);
   });
 
   it('keeps a rule a partial id list omits instead of dropping it', () => {
@@ -323,9 +383,9 @@ describe('cashReducer', () => {
         mockCashRule({ id: 'c', order: 2 }),
       ],
     });
-    const state = cashReducer(start, CashActions.reorderRules(['b', 'a']));
-    expect(state.rules.map((r) => r.id)).toEqual(['b', 'a', 'c']);
-    expect(state.rules.map((r) => r.order)).toEqual([0, 1, 2]);
+    const state = cashReducer(start, CashRulesActions.reorder(['b', 'a']));
+    expect(state.rules.items.map((r) => r.id)).toEqual(['b', 'a', 'c']);
+    expect(state.rules.items.map((r) => r.order)).toEqual([0, 1, 2]);
   });
 
   it('hydrates from a loaded slice', () => {
@@ -333,11 +393,11 @@ describe('cashReducer', () => {
       initialState,
       CashActions.loaded(mockCashState({ accounts: [mockCashAccount()] }))
     );
-    expect(state.accounts).toHaveLength(1);
+    expect(state.accounts.items).toHaveLength(1);
   });
 
   it('falls back to current state when the loaded cash slice is absent', () => {
     const state = cashReducer(initialState, CashActions.loaded(null));
-    expect(state).toBe(initialState);
+    expect(state).toEqual(initialState);
   });
 });

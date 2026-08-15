@@ -37,15 +37,6 @@
       >
     </div>
   </app-number-input>
-  <ion-item>
-    <ion-toggle
-      labelPlacement="start"
-      [checked]="!!draft().alwaysOnHand"
-      (ionChange)="setAlwaysOnHand($event)"
-      >{{ 'household.product.always-on-hand' | translate }}</ion-toggle
-    >
-  </ion-item>
-
   <app-category-input
     [categories]="selectedCategories()"
     (removeCategory)="removeCategory($event)"

@@ -6,7 +6,7 @@ import {
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data';
+import { GameTypesActions } from '../../data';
 import { TrackplayGameTypesPage } from './game-types.page';
 
 describe('TrackplayGameTypesPage', () => {
@@ -24,15 +24,13 @@ describe('TrackplayGameTypesPage', () => {
     ).componentInstance;
   };
 
-  it('dispatches deleteGameType with the type', () => {
+  it('dispatches removeItem with the type', () => {
     const type = mockGameType({ id: 'skat', name: 'Skat' });
     setup();
 
     component.deleteType(type);
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.deleteGameType(type)
-    );
+    expect(dispatch).toHaveBeenCalledWith(GameTypesActions.removeItem(type));
   });
 
   it('exposes the default (undeletable) type id', () => {

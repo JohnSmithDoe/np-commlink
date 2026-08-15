@@ -4,11 +4,13 @@ import { Store } from '@ngrx/store';
 
 import {
   mockGame,
+  mockGamesState,
   mockPlayer,
+  mockPlayersState,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data';
+import { GamesActions } from '../../data';
 import { TrackplayGamePlayPage } from './game-play.page';
 
 const inputEvent = (value: string): Event =>
@@ -16,7 +18,7 @@ const inputEvent = (value: string): Event =>
 
 const scored = (value: number) =>
   expect.objectContaining({
-    type: TrackplayActions.setRoundValue.type,
+    type: GamesActions.setRoundValue.type,
     gameId: 'g1',
     roundId: 'r1',
     playerId: 'p1',
@@ -55,7 +57,12 @@ describe('TrackplayGamePlayPage', () => {
 
     component.ionViewWillEnter();
 
-    expect(dispatch).toHaveBeenCalledWith(TrackplayActions.enterGamePage('g1'));
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: GamesActions.enterGamePage.type,
+        gameId: 'g1',
+      })
+    );
   });
 
   it('dispatches setRoundValue parsing the input value', () => {
@@ -74,22 +81,23 @@ describe('TrackplayGamePlayPage', () => {
     expect(dispatch).toHaveBeenCalledWith(scored(0));
   });
 
-  it('dispatches toggleGameEnded for the route id', () => {
-    setup();
+  it('flips the ended flag of the game it is showing', () => {
+    const game = mockGame({ id: 'g1', ended: false });
+    setup(mockTrackplayState({ games: mockGamesState([game]) }));
 
     component.toggleEnded();
 
     expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.toggleGameEnded('g1')
+      GamesActions.updateItem({ ...game, ended: true })
     );
   });
 
   it('derives player order, ended flag and player names from the game', () => {
-    const game = mockGame({ id: 'g1', players: ['p1', 'p2'], ended: true });
+    const game = mockGame({ id: 'g1', playerIds: ['p1', 'p2'], ended: true });
     setup(
       mockTrackplayState({
-        games: { g1: game },
-        players: { p1: mockPlayer({ id: 'p1', name: 'Alice' }) },
+        games: mockGamesState([game]),
+        players: mockPlayersState([mockPlayer({ id: 'p1', name: 'Alice' })]),
       })
     );
 

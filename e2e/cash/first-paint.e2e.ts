@@ -25,6 +25,8 @@ test.describe('cash first paint', () => {
     await expect(scaffold).toBeVisible({ timeout: 30_000 });
 
     await expect(scaffold.getByTestId('cash-networth')).toBeVisible();
-    await expect(scaffold.getByTestId('cash-accounts-empty')).toBeVisible();
+    await expect(
+      scaffold.locator('app-item-list-empty app-text-item')
+    ).toBeVisible();
   });
 });

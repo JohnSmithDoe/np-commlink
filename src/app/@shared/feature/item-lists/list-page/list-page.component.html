@@ -1,19 +1,34 @@
 <app-page-header
   [icon]="icon()"
   [label]="pageHeader()"
+  [heading]="heading()"
   [backHref]="backHref()"
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="facade.showCreateDialog()"
 >
+  <ng-content select="[listSwitcher]" />
+
   <app-item-list-searchbar
     [query]="facade.state()?.searchQuery"
     (queryChange)="facade.search($event)"
     (hitEnter)="facade.addItemFromSearch()"
   />
-  <app-item-list-toolbar (selectSortMode)="facade.setSortMode($event)">
+  @if (facade.searchResult()?.exactMatch) {
+    <ion-note
+      class="sr-field-note exact-match-note"
+      data-testid="exact-match-note"
+    >
+      {{ 'item-list.exact-match.note' | translate }}
+    </ion-note>
+  }
+  <app-item-list-toolbar
+    [activeSort]="facade.state()?.sort"
+    [options]="facade.sortOptions?.() ?? []"
+    (selectSortMode)="facade.setSortMode($event)"
+  >
     <ng-content select="[toolbarActions]" />
     <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd />
-    @if (hasCategories) {
+    @if (canManageCategories) {
       <ion-button
         toolbarActionsEnd
         (click)="manageCategories()"
@@ -28,44 +43,36 @@
     }
   </app-item-list-toolbar>
 
+  @if (facade.catalog?.()?.length) {
+    <app-category-filter-bar
+      [catalog]="facade.catalog?.() ?? []"
+      [extraFilters]="extraFilters()"
+      [active]="facade.state()?.filterBy"
+      (selectCategory)="facade.selectCategory?.($event)"
+      (clearFilter)="clearFilter()"
+    />
+  }
+
   <ng-content select="[headerEnd]" toolbar></ng-content>
 </app-page-header>
 
 <ion-content>
-  <ng-content select="[quickAdd]"></ng-content>
+  <ng-content select="[beforeList]"></ng-content>
 
   <app-item-list
-    [headerColor]="hasFilter() ? 'primary' : undefined"
-    [header]="
-      hasFilter()
-        ? ('item-list.header.category-filter'
-          | translate: { category: filterName() })
-        : listHeader()
-    "
     [items]="facade.items()"
-    [catalog]="facade.catalog()"
+    [catalog]="facade.catalog?.() ?? []"
     [itemTemplate]="itemTemplate()"
-  >
-    <ng-content select="[listActions]"></ng-content>
-    @if (hasFilter()) {
-      <ion-buttons slot="end">
-        <ion-button
-          data-testid="clear-category-filter"
-          (click)="clearFilter()"
-          [attr.aria-label]="'item-list.a11y.clear-filter' | translate"
-        >
-          <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
-        </ion-button>
-      </ion-buttons>
-    }
-  </app-item-list>
+  />
   <app-item-list-empty
-    [isEmptyList]="!facade.items()?.length"
+    [isEmptyList]="isKnownEmpty()"
     [isSearching]="!!facade.searchResult()"
+    [isFiltered]="!!facade.state()?.filterBy"
     [searchTerm]="facade.searchResult()?.searchTerm"
     (emptyList)="facade.showCreateDialog()"
     (emptySearch)="facade.addItemFromSearch()"
+    (clearFilter)="clearFilter()"
   />
 
-  <ng-content select="[searchExtras]"></ng-content>
+  <ng-content select="[afterList]"></ng-content>
 </ion-content>

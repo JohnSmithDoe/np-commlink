@@ -1,69 +1,45 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonLabel,
-  IonList,
-  ModalController,
-} from '@ionic/angular/standalone';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { create, dice } from 'ionicons/icons';
 import { GameType } from '../../model/trackplay.types';
-import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TrackplayFacade } from '../../data';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
+import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
+import { TRACKPLAY_EDIT_SWIPE_ACTION } from '../../ui/swipe-actions';
+import { GameTypesFacade, GameTypesPageFacade } from '../../data';
 import { DEFAULT_GAME_TYPE_ID } from '../../util/trackplay.factory';
-import { TrackplayGameTypeEditModalComponent } from '../game-type-edit-modal/game-type-edit-modal.component';
-import { TrackplayGameTypeListItemComponent } from '../../ui/game-type-list-item/game-type-list-item.component';
-import { presentModal } from '../../../@shared/util/app.modal.utils';
+import { EditGameTypeDialogComponent } from '../edit-game-type-dialog/edit-game-type-dialog.component';
 
 @Component({
   selector: 'app-page-trackplay-game-types',
   templateUrl: './game-types.page.html',
+  styleUrls: ['./game-types.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonContent,
-    IonList,
-    IonButton,
-    IonIcon,
-    IonLabel,
     TranslatePipe,
-    PageHeaderComponent,
-    TrackplayGameTypeListItemComponent,
+    ListPageComponent,
+    ListItemComponent,
+    EditGameTypeDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: GameTypesPageFacade }],
 })
 export class TrackplayGameTypesPage {
-  readonly #facade = inject(TrackplayFacade);
-  readonly #modalCtrl = inject(ModalController);
-  readonly #translate = inject(TranslateService);
+  readonly editSwipeAction = TRACKPLAY_EDIT_SWIPE_ACTION;
 
-  readonly rxTypes = this.#facade.gameTypeList;
+  readonly #gameTypes = inject(GameTypesFacade);
+
   readonly defaultTypeId = DEFAULT_GAME_TYPE_ID;
 
   constructor() {
-    addIcons({ add });
-  }
-
-  openCreate(): void {
-    void this.#openDialog();
+    addIcons({ create, dice });
   }
 
   openEdit(type: GameType): void {
-    void this.#openDialog(type.id);
+    this.#gameTypes.showEditDialog(type);
   }
 
   deleteType(type: GameType): void {
-    this.#facade.deleteGameType(type);
-  }
-
-  async #openDialog(gameTypeId?: string): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayGameTypeEditModalComponent,
-      this.#translate.instant(marker('trackplay.label.game-type')),
-      { gameTypeId }
-    );
+    this.#gameTypes.removeItem(type);
   }
 }

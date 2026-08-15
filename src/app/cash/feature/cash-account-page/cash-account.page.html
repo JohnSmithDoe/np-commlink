@@ -1,0 +1,77 @@
+<app-list-page
+  class="ion-page"
+  [heading]="facade.heading()"
+  backHref="/cash"
+  [itemTemplate]="transactionItem"
+>
+  <ion-buttons headerEnd slot="end">
+    @if (facade.canImport()) {
+      <ion-button
+        (click)="csv.click()"
+        [attr.aria-label]="'cash.a11y.import-csv' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="cloud-upload-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    }
+    <ion-button
+      (click)="facade.showEditAccountDialog()"
+      [attr.aria-label]="'cash.a11y.edit-account' | translate"
+    >
+      <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+
+  <span toolbarActionsEnd class="cash-networth__value">
+    {{ facade.balanceCents() | moneyEur }}
+  </span>
+
+  <input
+    beforeList
+    #csv
+    type="file"
+    accept=".csv,text/csv"
+    hidden
+    id="csv-input"
+    (change)="importCsv($event)"
+  />
+</app-list-page>
+
+<ng-template
+  #transactionItem
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [categories]="categories"
+    [startSwipeAction]="reconcileAction(item)"
+    (selectItem)="facade.showEditDialog(item)"
+    (startSwipe)="reconcileOrDetach(item)"
+    (deleteItem)="confirmDelete(item)"
+  >
+    <p itemDetails>
+      {{ item.dateISO | localizedDate }}
+      @if (item.status === 'pending') {
+        · {{ 'cash.txn.pending' | translate }}
+      }
+    </p>
+    <ion-note
+      itemDetails
+      class="cash-txn__amount"
+      [class.cash-txn__amount--out]="item.amountCents < 0"
+      [class.cash-txn__amount--in]="item.amountCents > 0"
+    >
+      {{ item.amountCents | moneyEur }}
+    </ion-note>
+  </app-list-item>
+</ng-template>
+
+<app-edit-cash-account-dialog />
+<app-edit-cash-transaction-dialog />

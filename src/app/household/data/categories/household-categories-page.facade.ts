@@ -1,11 +1,10 @@
 import { computed, Injectable } from '@angular/core';
 import { BaseCategoryListPageFacade } from '../../../@shared/data/categories/category-list-page.facade.base';
+import { itemListCommands } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { Category, CategoryId } from '../../../@shared/model/category.types';
 import { categoryById } from '../../../@shared/util/categories/category.utils';
-import {
-  HOUSEHOLD_CATEGORIES_LIST_ID,
-  HouseholdListId,
-} from '../../model/household-list.types';
+import { HOUSEHOLD_CATEGORIES_LIST_ID } from '../../model/household-list.types';
+import { ROUTE_BY_LIST_ID } from '../../util/household-list.utils';
 import { HouseholdCategoriesActions } from './household-categories.actions';
 import { selectActiveHouseholdListId } from '../list/household-list.selector';
 import {
@@ -16,18 +15,18 @@ import {
   selectHouseholdCountByCategory,
 } from './household-categories.selector';
 
-const LIST_HREF: Record<HouseholdListId, string> = {
-  _shopping: '/household/shopping/_shopping',
-  _storage: '/household/storage/_storage',
-  _products: '/household/products/_products',
-};
-
 @Injectable({ providedIn: 'root' })
 export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   readonly #activeListId = this.store.selectSignal(selectActiveHouseholdListId);
 
   readonly catalogListId = HOUSEHOLD_CATEGORIES_LIST_ID;
   protected readonly actions = HouseholdCategoriesActions;
+
+  protected readonly commands = itemListCommands(this.store, {
+    updateSearch: HouseholdCategoriesActions.updateSearch,
+    updateSort: HouseholdCategoriesActions.updateSort,
+    addItemFromSearch: HouseholdCategoriesActions.addItemFromSearch,
+  });
 
   readonly state = this.store.selectSignal(selectHouseholdCategoryList);
   readonly items = this.store.selectSignal(selectHouseholdCategoriesListItems);
@@ -36,7 +35,7 @@ export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   );
   readonly categories = this.store.selectSignal(selectHouseholdCategories);
   readonly countById = this.store.selectSignal(selectHouseholdCountByCategory);
-  readonly listHref = computed(() => LIST_HREF[this.#activeListId()]);
+  readonly listHref = computed(() => ROUTE_BY_LIST_ID[this.#activeListId()]);
 
   addCategory(category: Category): void {
     this.store.dispatch(HouseholdCategoriesActions.addItem(category));

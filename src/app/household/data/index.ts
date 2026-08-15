@@ -16,6 +16,7 @@ export { ListSettingsActions } from './list-settings/list-settings.actions';
 export { RecipesActions } from './recipes/recipes.actions';
 
 export { HouseholdListPageFacade } from './list/household-list-page.facade';
+export { HouseholdCopyService } from './list/household-copy.service';
 export { HouseholdCategoriesPageFacade } from './categories/household-categories-page.facade';
 export { ListSettingsFacade } from './list-settings/list-settings.facade';
 export { QuickAddFacade } from './quick-add/quick-add.facade';

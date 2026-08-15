@@ -1,67 +1,46 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonIcon,
-  IonList,
-  ModalController,
-  PopoverController,
-} from '@ionic/angular/standalone';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
+import { IonButton, IonIcon } from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { addOutline, createOutline, optionsOutline } from 'ionicons/icons';
+import {
+  addOutline,
+  create,
+  createOutline,
+  eye,
+  eyeOff,
+  playCircle,
+} from 'ionicons/icons';
 import { Game, TrackplayId } from '../../model/trackplay.types';
-import { gameTypeName } from '../../util/game-type.utils';
-import { TrackplayFacade } from '../../data';
-import { TrackplayGameListItemComponent } from '../../ui/game-list-item/game-list-item.component';
-import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
-import { presentModal } from '../../../@shared/util/app.modal.utils';
-import { presentListSettings } from '../present-list-settings';
-import { presentGameDialog } from '../present-game-dialog';
-import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
+import { GameRowComponent } from '../../ui/game-row/game-row.component';
+import { GamesForPlayerPageFacade } from '../../data';
+import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.component';
+import { EditPlayerDialogComponent } from '../edit-player-dialog/edit-player-dialog.component';
 
 @Component({
   selector: 'app-page-trackplay-player',
   templateUrl: './player.page.html',
+  styleUrls: ['./player.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    PageHeaderComponent,
-    IonButtons,
     IonButton,
     IonIcon,
-    IonContent,
-    IonList,
     TranslatePipe,
-    TrackplayGameListItemComponent,
+    ListPageComponent,
+    GameRowComponent,
+    EditGameDialogComponent,
+    EditPlayerDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: GamesForPlayerPageFacade }],
 })
 export class TrackplayPlayerPage {
-  readonly #facade = inject(TrackplayFacade);
+  readonly facade = inject(GamesForPlayerPageFacade);
   readonly #router = inject(Router);
-  readonly #route = inject(ActivatedRoute);
-  readonly #modalCtrl = inject(ModalController);
-  readonly #popoverCtrl = inject(PopoverController);
-  readonly #translate = inject(TranslateService);
-  readonly #unknownTypeLabel = this.#translate.instant(
-    marker('trackplay.label.unknown-type')
-  );
-
-  readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
-
-  readonly rxPlayer = this.#facade.playerById(this.id);
-  readonly rxGames = this.#facade.gamesForPlayer(this.id);
-  readonly rxStats = this.#facade.statsForPlayer(this.id);
-  readonly rxGameTypes = this.#facade.gameTypes;
 
   constructor() {
-    addIcons({ addOutline, createOutline, optionsOutline });
-  }
-
-  typeName(game: Game): string {
-    return gameTypeName(game, this.rxGameTypes(), this.#unknownTypeLabel);
+    addIcons({ addOutline, create, createOutline, eye, eyeOff, playCircle });
   }
 
   goToGame(gameId: TrackplayId): void {
@@ -69,31 +48,10 @@ export class TrackplayPlayerPage {
   }
 
   deleteGame(game: Game): void {
-    this.#facade.deleteGame(game);
+    this.facade.removeItem(game);
   }
 
-  async openPlayerEdit(): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayPlayerEditModalComponent,
-      this.#translate.instant(marker('page-title.trackplay-player')),
-      { playerId: this.id }
-    );
-  }
-
-  async createGame(): Promise<void> {
-    await presentGameDialog(this.#modalCtrl, this.#translate, {
-      presetPlayerIds: [this.id],
-    });
-  }
-
-  async openGameEdit(game: Game): Promise<void> {
-    await presentGameDialog(this.#modalCtrl, this.#translate, {
-      gameId: game.id,
-    });
-  }
-
-  openSettings(event: Event): Promise<void> {
-    return presentListSettings(this.#popoverCtrl, 'gamesForPlayer', event);
+  openGameEdit(game: Game): void {
+    this.facade.showEditDialog(game);
   }
 }

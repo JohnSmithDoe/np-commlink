@@ -1,3 +1,11 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The load memo is keyed BY LANGUAGE, and it has to be: a single
+ * `pending` promise ignored the argument it was called with, so the
+ * first language loaded won forever and switching the app's language
+ * kept the old labels until a reload. The offline spec is what surfaced
+ * it — it induces a failure through an unknown language and only saw it
+ * when no other spec had warmed the memo first.
+ * ───────────────────────────────────────────────────────────────── */
 import { Language } from '../../model/app.types';
 import { matcherFor } from '../app.utils';
 
@@ -21,6 +29,9 @@ export const EMOJI_GROUP_IDS = [
   'objects',
   'symbols',
 ] as const satisfies readonly EmojiGroupId[];
+
+export const isGroupId = (value: unknown): value is EmojiGroupId =>
+  EMOJI_GROUP_IDS.includes(value as EmojiGroupId);
 
 type EmojiData = {
   glyph: string;
@@ -55,10 +66,20 @@ export const toGroups = (data: EmojiDataByGroup): EmojiGroup[] =>
     entries: (data[id] ?? []).map((entry) => toEntry(entry)),
   }));
 
-let pending: Promise<EmojiGroup[]> | undefined;
+const pending = new Map<Language, Promise<EmojiGroup[]>>();
 
-export const loadEmojiCatalog = (language: Language): Promise<EmojiGroup[]> =>
-  (pending ??= DATA_BY_LANGUAGE[language]().then(toGroups));
+export const loadEmojiCatalog = (language: Language): Promise<EmojiGroup[]> => {
+  const cached = pending.get(language);
+  if (cached) return cached;
+  const load = DATA_BY_LANGUAGE[language]()
+    .then(toGroups)
+    .catch((error: unknown) => {
+      pending.delete(language);
+      throw error;
+    });
+  pending.set(language, load);
+  return load;
+};
 
 export const emojiMatching = (query: string) => {
   const matches = matcherFor(query);

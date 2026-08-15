@@ -1,18 +1,19 @@
 // ─── why ────────────────────────────────────────────────────────
-// GEIST shares the commlink terminal register: frame, corner brackets, LEDs and
-// the brand row come from the global .sr-* utilities, so only layout and the
+// GEIST shares the commlink terminal register, so frame, brackets, LEDs and
+// brand row come from the global .sr-* utilities; only layout and the
 // transcript are here.
 //
-// The priming meter is driven by a --gs-primed scale factor rather than a width
-// percentage, because the model download reports progress continuously and
-// transform is the one axis a browser can animate without laying the element
-// out again on every frame.
+// The priming meter scales by --gs-primed rather than a width percentage:
+// download progress is continuous, and transform is the one axis a browser
+// animates without re-laying out every frame.
 //
-// An answer renders in a <pre> so the model's newlines survive, but wrapped and
-// in the deck font rather than the browser's default monospace.
+// An answer renders in a <pre> so the model's newlines survive, wrapped and in
+// the deck font. .gs-back is nearly empty because it composes `gs-btn
+// gs-btn--ghost` in the template.
 //
-// .gs-back is nearly empty on purpose — it composes `gs-btn gs-btn--ghost` in
-// the template, and everything it used to re-declare comes from those two.
+// .gs-btn carries its own :active and :focus-visible because these are native
+// <button>s and inherit no press or focus treatment. Hover answers nothing on
+// touch, which is where this page is used.
 // ────────────────────────────────────────────────────────────────
 
 @use '../../../../theme/deck';
@@ -31,12 +32,7 @@
 }
 
 .gs-bar {
-  @include deck.hud-label;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
-  font-size: var(--fs-xsmall);
-  color: var(--sr-text-dim);
+  @include deck.hud-strip(var(--fs-xsmall), 1.1rem);
 }
 .gs-bar__seg {
   display: inline-flex;
@@ -201,11 +197,6 @@
   color: var(--ion-color-danger);
 }
 
-.gs-cursor {
-  color: var(--sr-cyan);
-  animation: gs-blink 1s steps(2, end) infinite;
-}
-
 .gs-input {
   display: flex;
   flex-direction: column;
@@ -246,6 +237,14 @@
   background: rgba(var(--sr-amber-rgb), 0.16);
   box-shadow: var(--sr-glow);
 }
+.gs-btn:active:not(:disabled) {
+  background: rgba(var(--sr-amber-rgb), 0.28);
+  box-shadow: none;
+}
+.gs-btn:focus-visible {
+  outline: 2px solid var(--sr-amber);
+  outline-offset: 2px;
+}
 .gs-btn:disabled {
   cursor: not-allowed;
   opacity: 0.4;
@@ -264,12 +263,7 @@
 }
 
 .gs-tele {
-  @include deck.hud-label;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.1rem;
-  font-size: var(--fs-xsmall);
-  color: var(--sr-text-dim);
+  @include deck.hud-strip(var(--fs-xsmall), 1.1rem);
 }
 .gs-tele b {
   color: var(--sr-cyan);
@@ -286,20 +280,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gs-dots::after,
-  .gs-cursor {
+  .gs-dots::after {
     animation: none;
-  }
-}
-
-@keyframes gs-blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
   }
 }
 

@@ -1,0 +1,173 @@
+// ─── why ────────────────────────────────────────────────────────
+// The leave animation is defined outside the motion query and only
+// shortened inside the reduce one. `animationend` is what dispatches the
+// completion, so an animation that is removed rather than shortened would
+// leave the card on screen and the day open.
+//
+// It sits on .ritual-offer, the wrapper, so the card and the two quiet
+// actions leave as one group — and because the wrapper is then the only
+// animated node, the event that bubbles up to it fires exactly once.
+//
+// The card hangs at a golden cut rather than the middle. The empty ::before is
+// the mechanism: a lone flexible item whose grow factor is BELOW 1 takes that
+// share of the FREE space — container minus content — and leaves the rest. So
+// what gets cut is the WHITESPACE, not the container, and no unit is involved.
+//
+// The rung is $gc-4, not $gc-2, because the eye reads where the CARD CENTRE
+// lands, not where the space above ends, and a tall card eats a cut of the
+// whitespace: $gc-2 put the centre at 42% of the container, eight points off
+// dead centre and still reading as centred. $gc-4 is the rung that clears it.
+//
+// The width cap is deliberately NOT a golden cut. One sentence over one button
+// at the 900px default stops being a card and reads as a banner, and what
+// fixes that is a comfortable measure — a typographic length, not a
+// proportion. Re-declaring --app-content-max-width is the opt-out global.scss
+// documents, the one commlink, office-time and geist already take.
+// ────────────────────────────────────────────────────────────────
+
+@use 'theme/consts';
+
+:host {
+  --app-content-max-width: 30rem;
+}
+
+.ritual {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100%;
+  color: var(--sr-text);
+}
+
+.ritual::before {
+  content: '';
+  flex-grow: consts.$gc-4;
+}
+
+.ritual-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ritual-offer__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.ritual-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--sr-line);
+  border-radius: 4px;
+  background: var(--sr-panel);
+  text-align: center;
+}
+
+.ritual-card__eyebrow {
+  margin: 0;
+  font-family: var(--sr-deck-font);
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  text-transform: var(--sr-label-transform);
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.ritual-card__task {
+  margin: 0;
+  font-size: var(--fs-xlarge);
+  line-height: 1.3;
+  color: var(--sr-amber);
+}
+
+.ritual-card__action {
+  margin-top: 0.75rem;
+}
+
+.ritual-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.ritual-done__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  --confetti-distance: 190px;
+}
+
+.ritual-done__check {
+  width: 84px;
+  height: 84px;
+  color: var(--sr-amber);
+}
+
+.ritual-done__task {
+  margin: 0;
+  font-size: var(--fs-large);
+  color: var(--sr-text);
+}
+
+.ritual-done__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+
+  strong {
+    font-family: var(--sr-deck-font);
+    font-size: var(--fs-xlarge);
+    color: var(--sr-amber);
+  }
+
+  span {
+    font-size: var(--fs-small);
+    color: var(--sr-text-dim);
+    text-transform: var(--sr-label-transform);
+    letter-spacing: var(--sr-label-tracking);
+  }
+}
+
+.ritual-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ritual-dots__dot {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--sr-line);
+  border-radius: 50%;
+}
+
+.ritual-dots__dot--on {
+  border-color: var(--sr-amber);
+  background: var(--sr-amber);
+}
+
+@keyframes ritual-offer-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.92);
+  }
+}
+
+.ritual-offer--leaving {
+  animation: ritual-offer-leave 320ms ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ritual-offer--leaving {
+    animation-duration: 1ms;
+  }
+}

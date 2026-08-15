@@ -1,16 +1,12 @@
 // ─── why ────────────────────────────────────────────────────────
-// The scoring grid is three regions that must read as one table: the body
-// scrolls both axes, the header and footer scroll horizontally, and JS keeps
-// their offsets in sync. That only holds if the native scrollbars are hidden on
-// all three, and if a data row never scrolls on its own. The round-marker
-// column stays pinned while the player columns move under it.
+// The scoring grid is three regions that must read as ONE table: the body
+// scrolls both axes, header and footer scroll horizontally, and JS keeps their
+// offsets in sync. That only holds with native scrollbars hidden on all three
+// and no data row scrolling on its own. The round-marker column stays pinned.
 //
-// The victory HUD replaces a winner.gif and is pure deck decoration: the plain
-// theme shows the flat trophy above the ranked list and nothing moves. Sparks
-// start at nth-child(4) because __rays and __ring are the first two children.
-// The reduced-motion block at the end has to match the deck rule's specificity
-// AND come after it, or the confetti keeps running for a visitor who asked it
-// not to.
+// The victory HUD is pure deck decoration — plain shows the flat trophy and
+// nothing moves. The sparks are `app-confetti` and carry their own theme and
+// reduced-motion rules; what is left here is the trophy they fall around.
 // ────────────────────────────────────────────────────────────────
 $header-height: 56px;
 $row-height: 56px;
@@ -166,8 +162,7 @@ $round-width: 3rem;
 }
 
 .tp-victory__rays,
-.tp-victory__ring,
-.tp-victory__spark {
+.tp-victory__ring {
   display: none;
 }
 
@@ -221,33 +216,6 @@ $round-width: 3rem;
       filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.65));
     }
   }
-
-  .tp-victory__spark {
-    display: block;
-    position: absolute;
-    top: 0;
-    width: 6px;
-    height: 6px;
-    background: var(--sr-amber);
-    box-shadow: 0 0 6px rgba(var(--sr-amber-rgb), 0.7);
-    opacity: 0;
-    animation: tp-confetti 2.2s linear infinite;
-
-    &:nth-child(even) {
-      background: var(--sr-cyan);
-      box-shadow: 0 0 6px rgba(var(--sr-cyan-rgb), 0.7);
-    }
-
-    @for $i from 1 through 14 {
-      &:nth-child(#{$i + 3}) {
-        left: (2% + ($i - 1) * 7%);
-        width: (4px + ($i % 3) * 2px);
-        height: (4px + ($i % 3) * 2px);
-        animation-delay: (($i % 5) * 0.42s + ($i % 2) * 0.15s);
-        animation-duration: (1.9s + ($i % 4) * 0.4s);
-      }
-    }
-  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -280,28 +248,5 @@ $round-width: 3rem;
     50% {
       transform: translateY(-4px);
     }
-  }
-
-  @keyframes tp-confetti {
-    0% {
-      transform: translateY(-24px) rotate(0deg);
-      opacity: 0;
-    }
-    12% {
-      opacity: 1;
-    }
-    85% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(210px) rotate(220deg);
-      opacity: 0;
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :host-context([data-theme='cyberpunk']) .tp-victory__spark {
-    display: none;
   }
 }

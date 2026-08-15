@@ -4,6 +4,7 @@ import {
   StorageState,
 } from '../../model/household-list.types';
 import {
+  hydratedList,
   addListItem,
   removeListItem,
   updateListItem,
@@ -27,10 +28,10 @@ export const storageReducer = createReducer(
   on(StorageActions.updateItem,(state, { item }): StorageState => updateListItem(state, item)),
   on(StorageActions.updateSearch,(state, { searchQuery }): StorageState => updateListSearch(state, searchQuery)),
   on(StorageActions.updateFilter,(state, { filterBy }): StorageState => ({ ...state, filterBy, })),
-  on(StorageActions.updateSort, (state, { sortBy, sortDirection }): StorageState => ({ ...state, sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection),})),
+  on(StorageActions.updateSort, (state, { sortBy, sortDirection }): StorageState => updateListSort(state, sortBy, sortDirection)),
   on(StorageActions.addShoppingList, (state, { items }): StorageState => addShoppinglistToStorage(state, items)),
 
   on(HouseholdActions.loaded,(_state, { data }): StorageState => {
-    return {...(data?.storage ?? _state), searchQuery:undefined,filterBy: undefined};
+    return hydratedList(data?.storage ?? _state);
   })
 );

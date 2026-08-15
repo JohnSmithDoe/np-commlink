@@ -1,7 +1,21 @@
 export { CashActions } from './cash.actions';
-export type { AccountTransaction } from './cash.selector';
+export { CashAccountsActions } from './accounts/cash-accounts.actions';
+export { CashCategoriesActions } from './categories/cash-categories.actions';
+export { CashRulesActions } from './rules/cash-rules.actions';
+export { CashTransactionsActions } from './transactions/cash-transactions.actions';
 
-export { CashFacade } from './cash.facade';
-export { CashCategoriesPageFacade } from './cash-categories-page.facade';
+export type { AccountWithBalance } from './accounts/cash-accounts.selector';
+export type { AccountTransaction } from './transactions/cash-transactions.selector';
+
+export { CashAccountsFacade } from './accounts/cash-accounts.facade';
+export { CashCategoriesFacade } from './categories/cash-categories.facade';
+
+export { CashAccountsPageFacade } from './accounts/cash-accounts-page.facade';
+export { CashAccountTransactionsPageFacade } from './transactions/cash-account-transactions-page.facade';
+export { CashCategoryTransactionsPageFacade } from './transactions/cash-category-transactions-page.facade';
+export { CashRulesFacade } from './rules/cash-rules.facade';
+export { CashTransactionsFacade } from './transactions/cash-transactions.facade';
+export { CashReportFacade } from './cash-report.facade';
+export { CashCategoriesPageFacade } from './categories/cash-categories-page.facade';
 
 export { cashContext } from './cash.providers';

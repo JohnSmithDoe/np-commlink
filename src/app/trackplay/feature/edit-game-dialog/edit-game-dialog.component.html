@@ -1,0 +1,42 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      label="{{ 'trackplay.label.game-type' | translate }}"
+      [value]="gameTypeId()"
+      (ionChange)="setGameType($event)"
+      data-testid="game-type-select"
+    >
+      @for (type of gameTypes(); track type.id) {
+        <ion-select-option [value]="type.id">{{ type.name }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-list-header>{{ 'trackplay.label.players' | translate }}</ion-list-header>
+  <app-trackplay-player-select
+    [players]="players()"
+    [selectedIds]="seedPlayerIds()"
+    (selectionChange)="setPlayers($event)"
+  />
+
+  <ion-button
+    expand="block"
+    class="tp-play-btn"
+    [disabled]="!canPlay()"
+    (click)="playNow()"
+  >
+    <ion-icon slot="start" name="play-circle" aria-hidden="true" />
+    {{ 'trackplay.action.continue' | translate }}
+  </ion-button>
+</app-item-edit-modal>

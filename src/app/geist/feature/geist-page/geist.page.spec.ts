@@ -2,10 +2,8 @@ import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
-import {
-  LanguageModelService,
-  LanguageModelAvailability,
-} from '../../../@shared/data/theme/language-model.service';
+import { LanguageModelService } from '../../../@shared/data/theme/language-model.service';
+import { LanguageModelAvailability } from '../../../@shared/model/app.types';
 import { GEIST_PERSONAS } from '../../model/geist.consts';
 import { GeistPage } from './geist.page';
 
@@ -179,6 +177,31 @@ describe('GeistPage', () => {
       ]);
 
       expect(page.canSend()).toBe(false);
+    });
+  });
+
+  describe('the send shortcut', () => {
+    it('sends the query and swallows the newline the textarea would insert', () => {
+      const page = setup('unavailable').componentInstance;
+      page.link.set('jacked-in');
+      page.query.set('wer ist Mr. Johnson?');
+      const event = { preventDefault: vi.fn() } as unknown as Event;
+
+      page.sendShortcut(event);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(page.turns()).toHaveLength(1);
+      expect(page.query()).toBe('');
+    });
+
+    it('does nothing while the query is blank', () => {
+      const page = setup('unavailable').componentInstance;
+      page.link.set('jacked-in');
+      const event = { preventDefault: vi.fn() } as unknown as Event;
+
+      page.sendShortcut(event);
+
+      expect(page.turns()).toHaveLength(0);
     });
   });
 

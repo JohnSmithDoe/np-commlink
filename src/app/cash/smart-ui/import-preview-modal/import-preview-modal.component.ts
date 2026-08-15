@@ -20,9 +20,10 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { CashTransaction } from '../../model/transaction.types';
-import { CashFacade } from '../../data';
+import { CashCategoriesFacade, CashTransactionsFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
+import { categoryIdOf } from '../../util/cash-category.utils';
 
 import { CategoryId } from '../../../@shared/model/category.types';
 
@@ -48,9 +49,10 @@ import { CategoryId } from '../../../@shared/model/category.types';
   ],
 })
 export class CashImportPreviewModalComponent {
-  readonly #facade = inject(CashFacade);
+  readonly #facade = inject(CashTransactionsFacade);
+  readonly #categoriesFacade = inject(CashCategoriesFacade);
   readonly #modalCtrl = inject(ModalController);
-  readonly #categories = this.#facade.categories;
+  readonly #categories = this.#categoriesFacade.allItems;
   readonly #categoryName = computed(() =>
     categoryNameLookup(this.#categories())
   );
@@ -59,13 +61,15 @@ export class CashImportPreviewModalComponent {
   duplicates = 0;
   rejected = 0;
 
+  readonly categoryIdOf = categoryIdOf;
+
   categoryName(id: CategoryId | undefined): string {
     return this.#categoryName()(id);
   }
 
   confirm(): void {
     if (this.transactions.length > 0) {
-      this.#facade.importTransactions(this.transactions);
+      this.#facade.importItems(this.transactions);
     }
     void this.#modalCtrl.dismiss();
   }

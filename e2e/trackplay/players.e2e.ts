@@ -12,13 +12,8 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { waitForPersisted } from '../helpers';
-import {
-  createPlayer,
-  gotoTrackplay,
-  mainContent,
-  slideDelete,
-} from './helpers';
+import { listRow, slideDelete, waitForPersisted } from '../helpers';
+import { createPlayer, gotoTrackplay, mainContent } from './helpers';
 
 test.describe('trackplay players', () => {
   test('creates two players via the dialog', async ({ page }) => {
@@ -31,10 +26,9 @@ test.describe('trackplay players', () => {
     await createPlayer(page, 'Alice');
     await createPlayer(page, 'Bob');
 
-    const rows = mainContent(page).locator('app-trackplay-player-list-item');
-    await expect(rows).toHaveCount(2);
-    await expect(rows.filter({ hasText: 'Alice' })).toBeVisible();
-    await expect(rows.filter({ hasText: 'Bob' })).toBeVisible();
+    await expect(mainContent(page).getByTestId('list-row')).toHaveCount(2);
+    await expect(listRow(page, 'Alice')).toBeVisible();
+    await expect(listRow(page, 'Bob')).toBeVisible();
   });
 
   test('deletes a player and restores it via the undo toast', async ({
@@ -47,9 +41,7 @@ test.describe('trackplay players', () => {
     );
 
     await createPlayer(page, 'Charlie');
-    const row = mainContent(page)
-      .locator('app-trackplay-player-list-item')
-      .filter({ hasText: 'Charlie' });
+    const row = listRow(page, 'Charlie');
     await expect(row).toBeVisible();
 
     await slideDelete(row);
@@ -57,7 +49,7 @@ test.describe('trackplay players', () => {
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })
     ).toHaveCount(0);
-    const toast = page.getByTestId('undo-toast');
+    const toast = page.getByTestId('action-toast');
     await expect(toast).toBeVisible();
     await expect(toast).toContainText('Charlie');
 
@@ -83,10 +75,6 @@ test.describe('trackplay players', () => {
       mainContent(page).locator('app-page-trackplay-players')
     ).toBeVisible({ timeout: 30_000 });
 
-    await expect(
-      mainContent(page)
-        .locator('app-trackplay-player-list-item')
-        .filter({ hasText: 'Dunkelzahn' })
-    ).toBeVisible();
+    await expect(listRow(page, 'Dunkelzahn')).toBeVisible();
   });
 });

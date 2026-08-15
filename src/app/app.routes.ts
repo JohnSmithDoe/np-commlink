@@ -67,6 +67,11 @@ export const routes: Routes = [
       import('./tasks/routes/tasks.routes').then((m) => m.tasksRoutes),
   },
   {
+    path: 'ritual',
+    loadChildren: () =>
+      import('./ritual/routes/ritual.routes').then((m) => m.ritualRoutes),
+  },
+  {
     path: 'cash',
     loadChildren: () =>
       import('./cash/routes/cash.routes').then((m) => m.cashRoutes),

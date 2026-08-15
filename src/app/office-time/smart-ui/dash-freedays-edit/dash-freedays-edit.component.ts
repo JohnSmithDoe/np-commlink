@@ -15,7 +15,10 @@ import {
 import { Dayjs } from 'dayjs';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
-import { dayjsToString, holidayHighlights } from '../../util/office-time.utils';
+import {
+  datetimeValues,
+  holidayHighlights,
+} from '../../util/office-time.utils';
 import { DateTimeHighlight } from '../../model/office-time.types';
 
 @Component({
@@ -30,10 +33,7 @@ export class DashFreedaysEditComponent {
   readonly locale = inject(LanguageService).locale;
 
   readonly title = input<string | undefined>();
-  readonly freedays = input<Array<string>, Array<Dayjs> | undefined | null>(
-    [],
-    { transform: (value) => (value ?? []).map((day) => dayjsToString(day)) }
-  );
+  readonly freedays = input<string[]>([]);
 
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
     [],
@@ -41,10 +41,6 @@ export class DashFreedaysEditComponent {
   );
 
   updateFreeDatesFromCalender(event: DatetimeCustomEvent) {
-    const dates = Array.isArray(event.detail.value)
-      ? event.detail.value
-      : [event.detail.value];
-
-    this.#facade.setFreedays(dates);
+    this.#facade.setFreedays(datetimeValues(event.detail.value));
   }
 }

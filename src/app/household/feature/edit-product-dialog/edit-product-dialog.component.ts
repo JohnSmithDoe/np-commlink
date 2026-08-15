@@ -5,9 +5,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonText,
-  IonToggle,
   SelectCustomEvent,
-  ToggleCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -22,7 +20,7 @@ import { CategoriesDialogComponent } from '../../../@shared/ui/categories/catego
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/number-input.component';
-import { HouseholdListPageFacade, ProductsFacade } from '../../data';
+import { HouseholdCopyService, ProductsFacade } from '../../data';
 import { BaseHouseholdEditItemDialog } from '../base-household-edit-item-dialog';
 
 const TIMESPANS: readonly BestBeforeTimespan[] = [
@@ -50,7 +48,6 @@ const TIMESPAN_LABEL_KEYS: Record<BestBeforeTimespan, Marker> = {
     IonSelect,
     IonSelectOption,
     IonText,
-    IonToggle,
     CategoryInputComponent,
     CategoriesDialogComponent,
     NumberInputComponent,
@@ -65,7 +62,7 @@ export class EditProductDialogComponent extends BaseHouseholdEditItemDialog<Prod
 
   protected readonly listId: HouseholdListId = PRODUCTS_LIST_ID;
   readonly #products = inject(ProductsFacade);
-  readonly #engine = inject(HouseholdListPageFacade);
+  readonly #copy = inject(HouseholdCopyService);
 
   readonly siblings = this.#products.allItems;
 
@@ -75,7 +72,7 @@ export class EditProductDialogComponent extends BaseHouseholdEditItemDialog<Prod
   protected save(item: Product): void {
     this.#products.saveItem(item);
     const additional = this.addToAdditionalList();
-    if (additional) this.#engine.addProductToList(additional, item);
+    if (additional) this.#copy.addProductToList(additional, item);
   }
 
   setBestBeforeTimespan(event: SelectCustomEvent<BestBeforeTimespan>) {
@@ -87,9 +84,5 @@ export class EditProductDialogComponent extends BaseHouseholdEditItemDialog<Prod
 
   setBestBeforeTimevalue(value: number) {
     this.patch({ bestBeforeTimevalue: value });
-  }
-
-  setAlwaysOnHand(event: ToggleCustomEvent) {
-    this.patch({ alwaysOnHand: event.detail.checked });
   }
 }

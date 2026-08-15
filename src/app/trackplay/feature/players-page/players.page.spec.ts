@@ -3,11 +3,13 @@ import { Store } from '@ngrx/store';
 
 import {
   mockGame,
+  mockGamesState,
   mockPlayer,
+  mockPlayersState,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { TrackplayActions } from '../../data';
+import { PlayersActions } from '../../data';
 import { TrackplayPlayersPage } from './players.page';
 
 describe('TrackplayPlayersPage', () => {
@@ -23,42 +25,29 @@ describe('TrackplayPlayersPage', () => {
     component = TestBed.createComponent(TrackplayPlayersPage).componentInstance;
   };
 
-  it('dispatches deletePlayer with the player', () => {
+  it('dispatches removeItem with the player', () => {
     const player = mockPlayer({ id: 'p1' });
     setup();
 
     component.deletePlayer(player);
 
-    expect(dispatch).toHaveBeenCalledWith(
-      TrackplayActions.deletePlayer(player)
-    );
-  });
-
-  it('counts shown vs. total players', () => {
-    setup(
-      mockTrackplayState({
-        players: {
-          p1: mockPlayer({ id: 'p1', name: 'Alice' }),
-          p2: mockPlayer({ id: 'p2', name: 'Bob' }),
-        },
-      })
-    );
-
-    expect(component.shown()).toBe(2);
-    expect(component.total()).toBe(2);
+    expect(dispatch).toHaveBeenCalledWith(PlayersActions.removeItem(player));
   });
 
   it('returns per-player stats, falling back to empty stats', () => {
     const ended = mockGame({
       id: 'g1',
-      players: ['p1', 'p2'],
+      playerIds: ['p1', 'p2'],
       rounds: [],
       ended: true,
     });
     setup(
       mockTrackplayState({
-        players: { p1: mockPlayer({ id: 'p1' }), p2: mockPlayer({ id: 'p2' }) },
-        games: { g1: ended },
+        players: mockPlayersState([
+          mockPlayer({ id: 'p1' }),
+          mockPlayer({ id: 'p2' }),
+        ]),
+        games: mockGamesState([ended]),
       })
     );
 

@@ -22,6 +22,7 @@ import { add } from 'ionicons/icons';
   selector: 'app-page-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './page-header.component.html',
+  styleUrl: './page-header.component.scss',
   imports: [
     IonBackButton,
     IonToolbar,

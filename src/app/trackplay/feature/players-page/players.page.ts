@@ -1,65 +1,48 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonIcon,
-  IonList,
-  ModalController,
-  PopoverController,
-} from '@ionic/angular/standalone';
-import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { IonNote } from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { optionsOutline, peopleOutline } from 'ionicons/icons';
+import { create, peopleOutline, person } from 'ionicons/icons';
 import { Player, PlayerStats, TrackplayId } from '../../model/trackplay.types';
-import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { TrackplayFacade } from '../../data';
-import { TrackplayPlayerListItemComponent } from '../../ui/player-list-item/player-list-item.component';
-import { TrackplayPlayerEditModalComponent } from '../player-edit-modal/player-edit-modal.component';
-import { presentModal } from '../../../@shared/util/app.modal.utils';
-import { presentListSettings } from '../present-list-settings';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
+import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
+import { TRACKPLAY_EDIT_SWIPE_ACTION } from '../../ui/swipe-actions';
+import { PlayersFacade, PlayersPageFacade } from '../../data';
+import { EditPlayerDialogComponent } from '../edit-player-dialog/edit-player-dialog.component';
 import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
 
 @Component({
   selector: 'app-page-trackplay-players',
   templateUrl: './players.page.html',
+  styleUrls: ['./players.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonContent,
-    IonList,
-    IonButton,
-    IonIcon,
+    DatePipe,
+    IonNote,
     TranslatePipe,
-    PageHeaderComponent,
-    TrackplayPlayerListItemComponent,
+    ListPageComponent,
+    ListItemComponent,
+    EditPlayerDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: PlayersPageFacade }],
 })
 export class TrackplayPlayersPage {
-  readonly #facade = inject(TrackplayFacade);
+  readonly editSwipeAction = TRACKPLAY_EDIT_SWIPE_ACTION;
+
+  readonly #players = inject(PlayersFacade);
   readonly #router = inject(Router);
-  readonly #modalCtrl = inject(ModalController);
-  readonly #popoverCtrl = inject(PopoverController);
-  readonly #translate = inject(TranslateService);
 
-  readonly rxPlayers = this.#facade.playerList;
-  readonly rxStats = this.#facade.playerStats;
-  readonly #allPlayers = this.#facade.players;
-
-  readonly shown = computed(() => this.rxPlayers().length);
-  readonly total = computed(() => Object.keys(this.#allPlayers()).length);
+  readonly stats = this.#players.stats;
 
   constructor() {
-    addIcons({ optionsOutline, peopleOutline });
+    addIcons({ create, peopleOutline, person });
   }
 
   statsFor(player: Player): PlayerStats {
-    return this.rxStats()[player.id] ?? NO_PLAYER_STATS;
+    return this.stats()[player.id] ?? NO_PLAYER_STATS;
   }
 
   goToPlayer(id: TrackplayId): void {
@@ -67,27 +50,10 @@ export class TrackplayPlayersPage {
   }
 
   deletePlayer(player: Player): void {
-    this.#facade.deletePlayer(player);
+    this.#players.removeItem(player);
   }
 
-  async createPlayer(): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayPlayerEditModalComponent,
-      this.#translate.instant(marker('page-title.trackplay-player'))
-    );
-  }
-
-  async openPlayerEdit(player: Player): Promise<void> {
-    await presentModal(
-      this.#modalCtrl,
-      TrackplayPlayerEditModalComponent,
-      this.#translate.instant(marker('page-title.trackplay-player')),
-      { playerId: player.id }
-    );
-  }
-
-  openSettings(event: Event): Promise<void> {
-    return presentListSettings(this.#popoverCtrl, 'players', event);
+  openPlayerEdit(player: Player): void {
+    this.#players.showEditDialog(player);
   }
 }

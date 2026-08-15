@@ -3,6 +3,7 @@ import {
   localizedDate,
   localizedDateTime,
   localizedMonthYear,
+  padClock,
 } from '../../@shared/util/formatting/date-format.utils';
 import { TrackingViewId } from '../model/tracking.types';
 
@@ -25,14 +26,12 @@ export const formatViewDate = (
   return value && format ? format(value) : '';
 };
 
-const pad = (n: number): string => String(n).padStart(2, '0');
-
 export const formatSecondsAsClock = (totalSeconds: number): string => {
   const safe = Math.max(0, Math.trunc(totalSeconds));
   const hh = Math.trunc(safe / 3600);
   const mm = Math.trunc((safe % 3600) / 60);
   const ss = safe % 60;
-  return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+  return `${padClock(hh)}:${padClock(mm)}:${padClock(ss)}`;
 };
 
 const csvEscape = (value: unknown): string => {

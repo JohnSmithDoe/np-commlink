@@ -1,0 +1,13 @@
+// ─── why ────────────────────────────────────────────────────────
+// No `:host` wrapper: these elements are projected into the shared modal,
+// which Ionic relocates to `ion-app` on present — the host is no longer
+// their ancestor, only the emulated-encapsulation attribute still binds.
+// ────────────────────────────────────────────────────────────────
+
+ion-list-header {
+  color: var(--sr-text-dim);
+}
+
+.tp-play-btn {
+  margin-top: 1rem;
+}

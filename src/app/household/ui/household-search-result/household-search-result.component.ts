@@ -13,20 +13,15 @@ import {
 } from '../../model/household-list.types';
 import { CategoriesPipe } from '../../util/categories.pipe';
 import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-item.component';
-import { ItemListComponent } from '../../../@shared/ui/base-item/item-list/item-list.component';
 import { BaseItem } from '../../../@shared/model/base-item.types';
 import { Category } from '../../../@shared/model/category.types';
 
 @Component({
   selector: 'app-household-search-result',
   templateUrl: './household-search-result.component.html',
+  styleUrl: './household-search-result.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ItemListComponent,
-    TextItemComponent,
-    CategoriesPipe,
-    TranslatePipe,
-  ],
+  imports: [TextItemComponent, CategoriesPipe, TranslatePipe],
 })
 export class HouseholdSearchResultComponent {
   readonly results = input<HouseholdSearchResult<BaseItem> | null>();

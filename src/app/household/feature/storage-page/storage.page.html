@@ -1,15 +1,13 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'page-title.household-storage' | translate }}"
-  listHeader="{{ 'household.list-header.storage' | translate }}"
+  pageHeader="page-title.household-storage"
+  icon="file-tray-stacked-outline"
   [itemTemplate]="storageItem"
 >
-  <app-item-list-quick-add quickAdd />
-  <ion-button (click)="facade.setSortMode('bestBefore')" toolbarActions>{{
-    'household.list-toolbar.mhd' | translate
-  }}</ion-button>
+  <app-household-list-switcher listSwitcher />
+  <app-item-list-quick-add beforeList />
+  <app-household-search-panel beforeList />
   <app-household-scan-button toolbarActions />
-  <app-household-search-panel searchExtras />
 </app-list-page>
 
 <ng-template

@@ -1,5 +1,4 @@
 import { createReducer, on } from '@ngrx/store';
-import { Dayjs } from 'dayjs';
 import {
   DASHBOARD_CARD_VISIBILITY,
   OfficeTimeState,
@@ -7,16 +6,17 @@ import {
 } from '../model/office-time.types';
 import { OfficeTimeActions } from './office-time.actions';
 import {
+  dayjsToString,
+  dayMapFrom,
   deserializeIsoStringMap,
-  deserializeIsoStrings,
-  validateFreedays,
+  withoutHolidays,
 } from '../util/office-time.utils';
 
 export const initialOfficeTime: OfficeTimeState = {
   targetOfficeDaysPerWeek: 2.5,
-  freedays: [],
+  freedays: {},
   holidays: {},
-  officedays: [],
+  officedays: {},
   dashboardSettings: {
     showDateCard: true,
     showPercentageCard: true,
@@ -47,14 +47,6 @@ export const initialOfficeTime: OfficeTimeState = {
   ],
 };
 
-const hasDay = (days: Dayjs[] | undefined, day: Dayjs): boolean =>
-  !!days?.some((existing) => existing.isSame(day, 'day'));
-
-const withDay = (days: Dayjs[] | undefined, day: Dayjs): Dayjs[] => [
-  ...(days ?? []),
-  day,
-];
-
 const withKnownDashboardItems = (
   storedItems: OfficeTimeState['dashboardItems'] | undefined
 ): OfficeTimeState['dashboardItems'] => {
@@ -69,8 +61,8 @@ const withKnownDashboardItems = (
 
 const deserializedDayCollections = (stored: OfficeTimeStateStorage) => ({
   holidays: deserializeIsoStringMap(stored.holidays),
-  officedays: deserializeIsoStrings(stored.officedays),
-  freedays: deserializeIsoStrings(stored.freedays),
+  officedays: dayMapFrom(stored.officedays),
+  freedays: dayMapFrom(stored.freedays),
 });
 
 export const officeTimeReducer = createReducer(
@@ -82,16 +74,15 @@ export const officeTimeReducer = createReducer(
       holidays: { ...holidays },
     })
   ),
-  on(OfficeTimeActions.addOfficeTime, (state, { today }): OfficeTimeState =>
-    hasDay(state.officedays, today)
-      ? state
-      : { ...state, officedays: withDay(state.officedays, today) }
-  ),
+  on(OfficeTimeActions.addOfficeTime, (state, { today }): OfficeTimeState => ({
+    ...state,
+    officedays: { ...state.officedays, [dayjsToString(today)]: true },
+  })),
   on(
     OfficeTimeActions.setOfficedays,
     (state, { officedays }): OfficeTimeState => ({
       ...state,
-      officedays: [...officedays],
+      officedays: dayMapFrom(officedays),
     })
   ),
   on(
@@ -105,14 +96,13 @@ export const officeTimeReducer = createReducer(
     ...initialOfficeTime,
     holidays: state.holidays,
   })),
-  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState =>
-    hasDay(state.freedays, freeday)
-      ? state
-      : { ...state, freedays: withDay(state.freedays, freeday) }
-  ),
+  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState => ({
+    ...state,
+    freedays: { ...state.freedays, [dayjsToString(freeday)]: true },
+  })),
   on(OfficeTimeActions.setFreedays, (state, { freedays }): OfficeTimeState => ({
     ...state,
-    freedays: [...validateFreedays(freedays, state.holidays)],
+    freedays: withoutHolidays(dayMapFrom(freedays), state.holidays),
   })),
   on(
     OfficeTimeActions.saveDashboardSettings,

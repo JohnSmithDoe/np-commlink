@@ -10,11 +10,13 @@ import {
   DeckEntryId,
 } from '../../model/deck.types';
 import {
+  isFactoryDeck,
   orderEntries,
   resolveLabels,
   visibleEntries,
 } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
+import { initialDeck } from './deck.reducer';
 import { selectDeckState } from './deck.selector';
 
 @Injectable({ providedIn: 'root' })
@@ -60,12 +62,9 @@ export class DeckFacade {
     );
   });
 
-  readonly hasCustomConfig = computed(() => {
-    const { order, hiddenEntries, hiddenModules } = this.#config();
-    return (
-      order.length > 0 || hiddenEntries.length > 0 || hiddenModules.length > 0
-    );
-  });
+  readonly hasCustomConfig = computed(
+    () => !isFactoryDeck(this.#config(), initialDeck)
+  );
 
   reorder(order: DeckEntryId[]): void {
     this.#store.dispatch(DeckActions.reorder(order));

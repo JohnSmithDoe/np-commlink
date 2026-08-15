@@ -12,3 +12,10 @@
 :host {
   --app-content-max-width: #{layout.$content-wide};
 }
+
+.exact-match-note {
+  max-width: var(--app-content-max-width);
+  margin-inline: auto;
+  padding-bottom: 0.35rem;
+  color: var(--sr-text-dim);
+}

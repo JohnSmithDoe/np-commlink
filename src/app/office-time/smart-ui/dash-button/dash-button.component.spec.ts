@@ -4,12 +4,17 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { mockKernelState } from '../../../@shared/testing/test-data';
-import { mockOfficeTimeState } from '../../testing/office-time.test-data';
+import {
+  dayMap,
+  mockOfficeTimeState,
+} from '../../testing/office-time.test-data';
 import { OfficeTimeActions } from '../../data';
 import { DashButtonComponent } from './dash-button.component';
 
 const officeTimeWith = (officedays: dayjs.Dayjs[]) =>
-  mockKernelState({ officeTime: mockOfficeTimeState({ officedays }) });
+  mockKernelState({
+    officeTime: mockOfficeTimeState({ officedays: dayMap(...officedays) }),
+  });
 
 describe('DashButtonComponent', () => {
   let store: MockStore;

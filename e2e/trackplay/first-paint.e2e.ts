@@ -10,6 +10,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
+import { listRow } from '../helpers';
 import { gotoTrackplay, headerTitle, mainContent, pageRoot } from './helpers';
 
 test.describe('trackplay first paint', () => {
@@ -58,14 +59,13 @@ test.describe('trackplay first paint', () => {
       'app-page-trackplay-game-types'
     );
 
-    const rows = mainContent(page).locator('app-trackplay-game-type-list-item');
-    const standardRow = rows.filter({ hasText: 'Standard' });
-    const rommeeRow = rows.filter({ hasText: 'Rommé' });
+    const standardRow = listRow(page, 'Standard');
+    const rommeeRow = listRow(page, 'Rommé');
 
     await expect(
-      standardRow.getByTestId('game-type-delete-options')
+      standardRow.getByTestId('list-row-delete-options')
     ).toHaveCount(0);
-    await expect(rommeeRow.getByTestId('game-type-delete-options')).toHaveCount(
+    await expect(rommeeRow.getByTestId('list-row-delete-options')).toHaveCount(
       1
     );
   });

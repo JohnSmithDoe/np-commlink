@@ -2,6 +2,7 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import { Dayjs } from 'dayjs';
 import {
   DashboardSettingsType,
+  HolidayMap,
   OfficeTimeStateStorage,
 } from '../model/office-time.types';
 
@@ -12,7 +13,7 @@ export const OfficeTimeActions = createActionGroup({
     loaded: (officeTime: OfficeTimeStateStorage | null) => ({ officeTime }),
 
     loadHolidays: emptyProps(),
-    loadHolidaysSuccess: (holidays: Record<string, Dayjs>) => ({
+    loadHolidaysSuccess: (holidays: HolidayMap) => ({
       holidays,
     }),
     saveOfficeTime: emptyProps(),
@@ -20,9 +21,9 @@ export const OfficeTimeActions = createActionGroup({
       daysPerWeek,
     }),
     addOfficeTime: (today: Dayjs) => ({ today }),
-    setOfficedays: (officedays: Dayjs[]) => ({ officedays }),
+    setOfficedays: (officedays: string[]) => ({ officedays }),
     addFreeday: (freeday: Dayjs) => ({ freeday }),
-    setFreedays: (freedays: (string | undefined | null)[]) => ({ freedays }),
+    setFreedays: (freedays: string[]) => ({ freedays }),
     saveDashboardSettings: (key: DashboardSettingsType, active: boolean) => ({
       key,
       active,

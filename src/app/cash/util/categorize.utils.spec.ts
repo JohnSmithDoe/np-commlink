@@ -8,7 +8,7 @@ import {
 
 describe('categorize util', () => {
   describe('matchesCondition — description', () => {
-    const txn = mockCashTransaction({ description: 'REWE SAGT DANKE' });
+    const txn = mockCashTransaction({ name: 'REWE SAGT DANKE' });
 
     it('contains / startsWith / endsWith / equals are case-insensitive by default', () => {
       expect(
@@ -67,7 +67,7 @@ describe('categorize util', () => {
 
     it('matches against the imported bank text as stored', () => {
       const imported = mockCashTransaction({
-        description: 'EDEKA//STUTTGART/DE',
+        name: 'EDEKA//STUTTGART/DE',
       });
       expect(
         matchesCondition(imported, {
@@ -112,7 +112,7 @@ describe('categorize util', () => {
 
   describe('matchesRule', () => {
     const txn = mockCashTransaction({
-      description: 'REWE',
+      name: 'REWE',
       amountCents: -4299,
     });
 
@@ -139,7 +139,7 @@ describe('categorize util', () => {
   });
 
   describe('categorize — first matching rule by order wins', () => {
-    const txn = mockCashTransaction({ description: 'REWE SAGT DANKE' });
+    const txn = mockCashTransaction({ name: 'REWE SAGT DANKE' });
 
     it('returns the winning rule’s category id regardless of array order', () => {
       const rules = [
@@ -180,13 +180,13 @@ describe('categorize util', () => {
     it('reports only the transactions whose category actually changes', () => {
       const changes = recategorizations(
         [
-          mockCashTransaction({ id: 'a', description: 'REWE SAGT DANKE' }),
+          mockCashTransaction({ id: 'a', name: 'REWE SAGT DANKE' }),
           mockCashTransaction({
             id: 'b',
-            description: 'REWE SAGT DANKE',
-            categoryId: 'groceries',
+            name: 'REWE SAGT DANKE',
+            categoryIds: ['groceries'],
           }),
-          mockCashTransaction({ id: 'c', description: 'ALDI' }),
+          mockCashTransaction({ id: 'c', name: 'ALDI' }),
         ],
         [reweRule]
       );
@@ -200,8 +200,8 @@ describe('categorize util', () => {
         [
           mockCashTransaction({
             id: 'a',
-            description: 'REWE SAGT DANKE',
-            categoryId: 'fun',
+            name: 'REWE SAGT DANKE',
+            categoryIds: ['fun'],
             categoryManual: true,
           }),
         ],
@@ -215,8 +215,8 @@ describe('categorize util', () => {
         [
           mockCashTransaction({
             id: 'a',
-            description: 'ALDI',
-            categoryId: 'groceries',
+            name: 'ALDI',
+            categoryIds: ['groceries'],
           }),
         ],
         [reweRule]

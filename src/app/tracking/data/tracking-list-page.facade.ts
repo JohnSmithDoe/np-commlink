@@ -1,7 +1,19 @@
-import { inject, Injectable, signal } from '@angular/core';
+/* ─── why ─────────────────────────────────────────────────────────
+ * A tracked ticket is not filed under a category, and tracking means it at
+ * every layer: no `catalog` here, and no `updateFilter` handler in the
+ * reducer either. So this is one of the two facades that hand-picks its
+ * commands instead of handing `itemListCommands` the whole action group —
+ * `createItemListActionEvents` mints an `updateFilter` for every list, and
+ * passing it would point `selectCategory` at an action nothing reduces.
+ * Withholding it keeps the port's promises equal to the reducer's.
+ * ───────────────────────────────────────────────────────────────── */
+import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
-import { ListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../@shared/data/item-lists/list-page.facade.base';
 import { TRACKING_LIST_ID, TrackingItem } from '../model/tracking.types';
 import { createTrackingItem } from '../util/tracking.factory';
 import { TrackingActions } from './tracking.actions';
@@ -11,13 +23,17 @@ import {
   selectTrackingListSearchResult,
   selectTrackingState,
 } from './tracking.selector';
-import { Category } from '../../@shared/model/category.types';
-import { ItemListSortType } from '../../@shared/model/item-list.types';
 
 @Injectable({ providedIn: 'root' })
-export class TrackingListPageFacade implements ListPageFacade {
+export class TrackingListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: TrackingActions.updateSearch,
+    updateSort: TrackingActions.updateSort,
+    addItemFromSearch: TrackingActions.addItemFromSearch,
+  });
 
   readonly state = this.#store.selectSignal(selectTrackingState);
   readonly items = this.#store.selectSignal(selectTrackingListItems);
@@ -25,23 +41,7 @@ export class TrackingListPageFacade implements ListPageFacade {
     selectTrackingListSearchResult
   );
 
-  readonly catalog = signal<readonly Category[]>([]).asReadonly();
-
   readonly allItems = this.#store.selectSignal(selectTrackingItems);
-
-  search(term?: string): void {
-    this.#store.dispatch(TrackingActions.updateSearch(term));
-  }
-
-  addItemFromSearch(): void {
-    this.#store.dispatch(TrackingActions.addItemFromSearch());
-  }
-
-  selectCategory(): void {}
-
-  setSortMode(type: ItemListSortType): void {
-    this.#store.dispatch(TrackingActions.updateSort(type, 'toggle'));
-  }
 
   showCreateDialog(): void {
     this.#dialogs.open({

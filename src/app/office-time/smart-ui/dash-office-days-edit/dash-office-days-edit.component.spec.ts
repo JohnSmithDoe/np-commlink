@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { OfficeTimeActions } from '../../data';
-import { dayjsFromString, dayjsToString } from '../../util/office-time.utils';
 import { DashOfficeDaysEditComponent } from './dash-office-days-edit.component';
 
 describe('DashOfficeDaysEditComponent', () => {
@@ -25,7 +24,7 @@ describe('DashOfficeDaysEditComponent', () => {
     ).componentInstance;
   });
 
-  it('parses selected calendar dates and dispatches setOfficedays', () => {
+  it('strips the empty slots the calendar emits and dispatches setOfficedays', () => {
     const dispatch = vi.spyOn(store, 'dispatch');
 
     component.updateOfficeDates({
@@ -36,10 +35,7 @@ describe('DashOfficeDaysEditComponent', () => {
       typeof OfficeTimeActions.setOfficedays
     >;
     expect(action.type).toBe(OfficeTimeActions.setOfficedays.type);
-    expect(action.officedays.map((day) => dayjsToString(day))).toEqual([
-      '2026-07-01',
-      '2026-07-02',
-    ]);
+    expect(action.officedays).toEqual(['2026-07-01', '2026-07-02']);
   });
 
   it('accepts a single (non-array) datetime value', () => {
@@ -50,20 +46,6 @@ describe('DashOfficeDaysEditComponent', () => {
     const action = dispatch.mock.calls[0][0] as unknown as ReturnType<
       typeof OfficeTimeActions.setOfficedays
     >;
-    expect(action.officedays.map((day) => dayjsToString(day))).toEqual([
-      '2026-07-01',
-    ]);
-  });
-
-  it('exposes the selected office days as date strings', () => {
-    const fixture = TestBed.createComponent(DashOfficeDaysEditComponent);
-    fixture.componentRef.setInput('officedays', [
-      dayjsFromString('2026-07-01'),
-      dayjsFromString('2026-07-02'),
-    ]);
-    expect(fixture.componentInstance.officedates()).toEqual([
-      '2026-07-01',
-      '2026-07-02',
-    ]);
+    expect(action.officedays).toEqual(['2026-07-01']);
   });
 });

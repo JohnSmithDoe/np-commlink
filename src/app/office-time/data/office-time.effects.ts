@@ -14,7 +14,7 @@ import { DatabaseService } from '../../@shared/data/persistence/database.service
 import { OfficeTimeActions } from './office-time.actions';
 import { Store } from '@ngrx/store';
 import { selectHolidays, selectOfficeTimeState } from './office-time.selector';
-import { serializeDateMap, serializeDates } from '../util/office-time.utils';
+import { dayKeysOf, serializeDateMap } from '../util/office-time.utils';
 import { berlinHolidaysFor } from '../util/holidays.utils';
 import {
   OfficeTimeState,
@@ -28,8 +28,8 @@ const serializedForStorage = (
 ): OfficeTimeStateStorage => ({
   ...state,
   holidays: serializeDateMap(state.holidays),
-  officedays: serializeDates(state.officedays),
-  freedays: serializeDates(state.freedays),
+  officedays: dayKeysOf(state.officedays),
+  freedays: dayKeysOf(state.freedays),
 });
 
 @Injectable({ providedIn: 'root' })

@@ -26,6 +26,22 @@
  * searchbar cannot be found by placeholder: the list page's own searchbar
  * is still behind it carrying the same one.
  *
+ * The suggestion-stack test is the only thing that proves TWO elements
+ * reach ONE `<ng-content select="[beforeList]">`. A `select` is a filter,
+ * not a capacity limit — every matching node lands in that slot in call-site
+ * order — but the mirror-image mistake (two `ng-content`s sharing a
+ * selector, where the second is dead) is close enough that nothing should
+ * have to reason about which one is written. It enables both flags first
+ * because every `ListSettings` flag ships `false`, so neither offer renders
+ * on a cold context.
+ *
+ * The undo test lives here rather than beside trackplay's because the two
+ * prove different halves: trackplay's proves its own snapshot restore,
+ * this one proves that a list opting in through `undoableDelete` gets the
+ * toast and gets its row back from its own `addItem`. Only the three
+ * household lists opt in, so the other users of the shared list page must
+ * keep deleting silently.
+ *
  * The emoji test asserts ABSENCE, mirroring
  * `e2e/desktop/emoji-picker.e2e.ts`. Not-rendered rather than hidden is
  * the requirement: an always-mounted `ion-modal` would make every overlay
@@ -41,6 +57,7 @@ import {
   presentedDialog,
   ROUTE,
   searchInput,
+  slideDelete,
   waitForListPage,
   waitForPersisted,
 } from '../helpers';
@@ -57,15 +74,57 @@ function saveButton(page: Page): Locator {
   return editDialog(page).getByRole('button', { name: 'Übernehmen' });
 }
 
+async function enableFlag(page: Page, flag: string): Promise<void> {
+  const toggle = page.getByTestId(`list-settings-flag-${flag}`);
+  await expect(toggle).toBeVisible({ timeout: 30_000 });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+}
+
 test.describe('storage list', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/household/storage/_storage');
+    await page.goto('/#/household/storage');
     await waitForListPage(page);
   });
 
   test('adds an item through the searchbar', async ({ page }) => {
     await addViaSearch(page, 'Bananas');
     await expect(listRow(page, /Bananas/)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('stacks quick-add and the cross-list suggestion above the list', async ({
+    page,
+  }) => {
+    await gotoFeature(page, ROUTE.shopping);
+    await addViaSearch(page, 'Bananas');
+    await expect(listRow(page, /Bananas/)).toBeVisible({ timeout: 10_000 });
+
+    await page.goto('/#/household/list-settings');
+    await enableFlag(page, 'show-quick-add');
+    await enableFlag(page, 'show-shopping-in-storage');
+
+    await gotoFeature(page, ROUTE.storage);
+    const input = searchInput(page);
+    await input.click();
+    await input.fill('Bana');
+
+    const quickAdd = page
+      .locator('app-item-list-quick-add app-text-item:visible')
+      .first();
+    const suggestion = page
+      .locator('app-household-search-panel app-text-item:visible')
+      .first();
+    await expect(quickAdd).toBeVisible({ timeout: 10_000 });
+    await expect(suggestion).toContainText('Aus der Einkaufsliste');
+
+    const quickAddBox = await quickAdd.boundingBox();
+    const suggestionBox = await suggestion.boundingBox();
+    const emptyBox = await page
+      .locator('app-item-list-empty app-text-item:visible')
+      .first()
+      .boundingBox();
+    expect(quickAddBox!.y).toBeLessThan(suggestionBox!.y);
+    expect(suggestionBox!.y).toBeLessThan(emptyBox!.y);
   });
 
   test('keeps items across a navigation round-trip', async ({ page }) => {
@@ -90,6 +149,20 @@ test.describe('storage list', () => {
 
     await expect(listRow(page, /Apples/)).toBeVisible();
     await expect(listRow(page, /Cucumber/)).toHaveCount(0);
+  });
+
+  test('says why the add button greys out on an exact match', async ({
+    page,
+  }) => {
+    await addViaSearch(page, 'Apples');
+
+    const add = page.getByTestId('page-header-add');
+    await expect(add).not.toHaveAttribute('aria-disabled', 'true');
+
+    await searchInput(page).fill('Apples');
+
+    await expect(page.getByTestId('exact-match-note')).toBeVisible();
+    await expect(add).toHaveAttribute('aria-disabled', 'true');
   });
 
   test('edits an item through the edit dialog', async ({ page }) => {
@@ -169,6 +242,22 @@ test.describe('storage list', () => {
     await expect(
       editDialog(page).locator('app-category-input').getByText('Fridge')
     ).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('restores a deleted item from the undo toast', async ({ page }) => {
+    await addViaSearch(page, 'Butter');
+    const row = listRow(page, /Butter/);
+    await expect(row).toBeVisible({ timeout: 10_000 });
+
+    await slideDelete(row);
+    await expect(listRow(page, /Butter/)).toHaveCount(0);
+
+    const toast = page.getByTestId('action-toast');
+    await expect(toast).toBeVisible({ timeout: 10_000 });
+    await expect(toast).toContainText('Butter');
+
+    await toast.getByRole('button', { name: 'Rückgängig' }).click();
+    await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
   });
 
   test('offers no emoji picker on mobile', async ({ page }) => {

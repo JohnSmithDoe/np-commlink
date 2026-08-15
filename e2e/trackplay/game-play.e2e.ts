@@ -23,9 +23,11 @@
 import { expect, Locator, Page, test } from '@playwright/test';
 import {
   addButton,
+  createDialog,
   createPlayer,
   gotoTrackplay,
   mainContent,
+  nameBox,
   pageRoot,
   pickSelectOption,
   togglePlayerInSelect,
@@ -78,13 +80,10 @@ test.describe('trackplay full game', () => {
     await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
     await addButton(pageRoot(page, 'app-page-trackplay-games')).click();
 
-    const dialog = page.locator('app-trackplay-game-edit-modal');
+    const dialog = createDialog(page);
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog
-      .getByTestId('game-name-input')
-      .locator('input')
-      .fill('Testspiel');
+    await nameBox(dialog).fill('Testspiel');
     await pickSelectOption(
       page,
       dialog.getByTestId('game-type-select'),

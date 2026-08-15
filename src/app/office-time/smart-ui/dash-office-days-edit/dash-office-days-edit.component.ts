@@ -17,8 +17,7 @@ import { Dayjs } from 'dayjs';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
 import {
-  dayjsFromString,
-  dayjsToString,
+  datetimeValues,
   freedayHighlights,
   holidayHighlights,
 } from '../../util/office-time.utils';
@@ -35,30 +34,20 @@ export class DashOfficeDaysEditComponent {
   readonly #facade = inject(OfficeTimeFacade);
   readonly locale = inject(LanguageService).locale;
   readonly title = input<string | undefined>();
-  readonly officedays = input<Array<Dayjs> | undefined | null>();
+  readonly officedays = input<string[]>([]);
   readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
     [],
     { transform: holidayHighlights }
   );
-  readonly freedays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
-    [],
-    { transform: freedayHighlights }
-  );
+  readonly freedays = input<
+    DateTimeHighlight[],
+    readonly string[] | null | undefined
+  >([], { transform: freedayHighlights });
   readonly holidaysAndFreedays = computed(() => {
     return [...this.holidays(), ...this.freedays()];
   });
-  readonly officedates = computed(
-    () => this.officedays()?.map((day) => dayjsToString(day)) ?? []
-  );
 
   updateOfficeDates(event: DatetimeCustomEvent) {
-    const dateStrings = Array.isArray(event.detail.value)
-      ? event.detail.value
-      : [event.detail.value];
-    const dates = dateStrings
-      .filter((date): date is string => !!date)
-      .map((date) => dayjsFromString(date))
-      .filter((day): day is Dayjs => day !== null);
-    this.#facade.setOfficedays(dates);
+    this.#facade.setOfficedays(datetimeValues(event.detail.value));
   }
 }

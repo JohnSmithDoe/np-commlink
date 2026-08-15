@@ -1,7 +1,7 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { Marker, Timestamp } from '../../@shared/model/app.types';
+import { IonColor, Marker, Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
-import { ListState } from '../../@shared/model/item-list.types';
+import { ItemList } from '../../@shared/model/item-list.types';
 
 export const TRACKING_LIST_ID = '_tracking';
 
@@ -35,6 +35,18 @@ export const TRACKING_STATE_LABEL_KEYS: Record<TrackingItemState, Marker> = {
   paused: marker('tracking.item.state.paused'),
 };
 
+export const TRACKING_STATE_COLOR: Record<TrackingItemState, IonColor> = {
+  running: 'success',
+  stopped: 'medium',
+  paused: 'warning',
+};
+
+export const TRACKING_TOGGLE_ICON: Record<TrackingItemState, string> = {
+  running: 'pause-outline',
+  stopped: 'play-outline',
+  paused: 'play-outline',
+};
+
 export type TrackingViewId = 'raw' | 'today' | 'daily' | 'monthly' | 'all';
 
 export const TRACKING_VIEW_IDS = [
@@ -45,7 +57,7 @@ export const TRACKING_VIEW_IDS = [
   'all',
 ] as const satisfies readonly TrackingViewId[];
 
-type TrackingList = ListState<TrackingItem> & {
+type TrackingList = ItemList<TrackingItem> & {
   sessions: TrackingItem[];
   sessionsViewId: TrackingViewId;
 };

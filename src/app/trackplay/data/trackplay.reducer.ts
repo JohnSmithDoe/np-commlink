@@ -1,146 +1,85 @@
-import { createReducer, on } from '@ngrx/store';
-import {
-  Game,
-  Player,
-  TrackplayConfig,
-  TrackplayState,
-  TrackplayId,
-} from '../model/trackplay.types';
-import { TrackplayActions } from './trackplay.actions';
-import {
-  createGameType,
-  createPlayer,
-  DEFAULT_GAME_TYPE_ID,
-  DEFAULT_GAME_TYPES,
-  initialTrackplayConfig,
-} from '../util/trackplay.factory';
+/* ─── why ─────────────────────────────────────────────────────────
+ * `combineReducers` returns the IDENTICAL state when no sub-reducer
+ * changed anything, so `trackplayCascade` sees the pre-action slice if and
+ * only if no per-aggregate reducer handles that action — and `lastDeleted`
+ * is a snapshot of the pre-delete slice, which is the whole of undo.
+ *
+ * Hence the three `removeItem`s and `restoreLastDeleted` live ONLY here.
+ * Add one to an aggregate and undo silently starts restoring the
+ * POST-delete state; neither the compiler nor a per-aggregate spec notices.
+ *
+ * `setRoundValue` is the deliberate opposite: the aggregate writes the
+ * round, and the cascade then stamps `lastPlayedAt` on the roster — which
+ * wants the post-write game.
+ * ───────────────────────────────────────────────────────────────── */
+
+import { Action, combineReducers, createReducer, on } from '@ngrx/store';
+import { TrackplayState } from '../model/trackplay.types';
 import {
   deleteGameCascade,
   deleteGameTypeCascade,
   deletePlayerCascade,
+  restoreSnapshot,
   snapshotFor,
 } from '../util/trackplay.cascade';
-import {
-  ensureTrailingBlankRound,
-  setRoundValue,
-} from '../util/trackplay.scoring';
+import { DEFAULT_GAME_TYPE_ID } from '../util/trackplay.factory';
+import { stampParticipants } from '../util/trackplay.scoring';
+import { gamesForPlayerReducer } from './games/games-for-player.reducer';
+import { GamesActions } from './games/games.actions';
+import { gamesReducer } from './games/games.reducer';
+import { GameTypesActions } from './game-types/game-types.actions';
+import { gameTypesReducer } from './game-types/game-types.reducer';
+import { PlayersActions } from './players/players.actions';
+import { playersReducer } from './players/players.reducer';
+import { TrackplayActions } from './trackplay.actions';
 
-export const initialState: TrackplayState = {
-  players: {},
-  games: {},
-  gameTypes: { ...DEFAULT_GAME_TYPES },
-  rounds: {},
-  config: initialTrackplayConfig,
-  lastDeleted: null,
-};
+const lastDeletedReducer = createReducer<TrackplayState['lastDeleted']>(
+  null,
+  on(TrackplayActions.loaded, (): TrackplayState['lastDeleted'] => null)
+);
 
-const upsertPlayer = (
-  state: TrackplayState,
-  player: Player
-): TrackplayState => ({
-  ...state,
-  players: { ...state.players, [player.id]: player },
-});
-
-const upsertGame = (state: TrackplayState, game: Game): TrackplayState => ({
-  ...state,
-  games: { ...state.games, [game.id]: game },
-});
-
-const patchGame = (
-  state: TrackplayState,
-  gameId: TrackplayId,
-  patch: Partial<Game>
-): TrackplayState => {
-  const game = state.games[gameId];
-  return game ? upsertGame(state, { ...game, ...patch }) : state;
-};
-
-const patchListConfig = (
-  state: TrackplayState,
-  key: keyof TrackplayConfig,
-  config: Partial<TrackplayConfig[typeof key]>
-): TrackplayState => ({
-  ...state,
-  config: { ...state.config, [key]: { ...state.config[key], ...config } },
+const perAggregate = combineReducers<TrackplayState>({
+  players: playersReducer,
+  games: gamesReducer,
+  gamesForPlayer: gamesForPlayerReducer,
+  gameTypes: gameTypesReducer,
+  lastDeleted: lastDeletedReducer,
 });
 
 // prettier-ignore
-export const trackplayReducer = createReducer(
-  initialState,
+const trackplayCascade = createReducer(
+  {} as TrackplayState,
 
-  on(TrackplayActions.enterGamePage, (state, { gameId }): TrackplayState => ensureTrailingBlankRound(state, gameId)),
-
-  on(TrackplayActions.createPlayer, (state, { name }): TrackplayState => {
-    const trimmed = name.trim();
-    if (trimmed.length === 0) return state;
-    return upsertPlayer(state, createPlayer(trimmed));
-  }),
-  on(TrackplayActions.renamePlayer, (state, { playerId, name }): TrackplayState => {
-    const player = state.players[playerId];
-    if (!player) return state;
-    return upsertPlayer(state, { ...player, name: name.trim() });
-  }),
-  on(TrackplayActions.deletePlayer, (state, { player }): TrackplayState => ({
-    ...deletePlayerCascade(state, player),
-    lastDeleted: snapshotFor(state, player.name),
+  on(PlayersActions.removeItem, (state, { item }): TrackplayState => ({
+    ...deletePlayerCascade(state, item),
+    lastDeleted: snapshotFor(state, item.name),
   })),
-
-  on(TrackplayActions.createGame, (state, { game }): TrackplayState => upsertGame(state, game)),
-  on(TrackplayActions.renameGame, (state, { gameId, name }): TrackplayState => patchGame(state, gameId, { name: name.trim() })),
-  on(TrackplayActions.changeGameType, (state, { gameId, typeId }): TrackplayState => patchGame(state, gameId, { type: typeId })),
-  on(TrackplayActions.setGamePlayers, (state, { gameId, players }): TrackplayState => patchGame(state, gameId, { players })),
-  on(TrackplayActions.toggleGameEnded, (state, { gameId }): TrackplayState => {
-    const game = state.games[gameId];
-    return game ? upsertGame(state, { ...game, ended: !game.ended }) : state;
-  }),
-  on(TrackplayActions.deleteGame, (state, { game }): TrackplayState => ({
-    ...deleteGameCascade(state, game),
-    lastDeleted: snapshotFor(state, game.name),
+  on(GamesActions.removeItem, (state, { item }): TrackplayState => ({
+    ...deleteGameCascade(state, item),
+    lastDeleted: snapshotFor(state, item.name),
   })),
-
-  on(TrackplayActions.createGameType, (state, { name, winHigh }): TrackplayState => {
-    const trimmed = name.trim();
-    if (trimmed.length === 0) return state;
-    const type = createGameType(trimmed, winHigh);
-    return { ...state, gameTypes: { ...state.gameTypes, [type.id]: type } };
+  on(GameTypesActions.removeItem, (state, { item }): TrackplayState => {
+    if (item.id === DEFAULT_GAME_TYPE_ID) return state;
+    return {
+      ...deleteGameTypeCascade(state, item),
+      lastDeleted: snapshotFor(state, item.name),
+    };
   }),
-  on(TrackplayActions.updateGameType, (state, { gameType }): TrackplayState => ({
+
+  on(TrackplayActions.restoreLastDeleted, (state): TrackplayState =>
+    state.lastDeleted ? restoreSnapshot(state, state.lastDeleted) : state),
+
+  on(GamesActions.setRoundValue, (state, { gameId, at }): TrackplayState => ({
     ...state,
-    gameTypes: { ...state.gameTypes, [gameType.id]: gameType },
-  })),
-  on(TrackplayActions.deleteGameType, (state, { gameType }): TrackplayState => {
-    if (gameType.id === DEFAULT_GAME_TYPE_ID) return state;
-    return {
-      ...deleteGameTypeCascade(state, gameType),
-      lastDeleted: snapshotFor(state, gameType.name),
-    };
-  }),
-
-  on(TrackplayActions.setRoundValue, (state, { gameId, roundId, playerId, value, now }): TrackplayState =>
-    setRoundValue(state, gameId, roundId, playerId, value, now)
-  ),
-
-  on(TrackplayActions.updateGamesConfig, (state, { config }): TrackplayState => patchListConfig(state, 'games', config)),
-  on(TrackplayActions.updateGamesForPlayerConfig, (state, { config }): TrackplayState => patchListConfig(state, 'gamesForPlayer', config)),
-  on(TrackplayActions.updatePlayersConfig, (state, { config }): TrackplayState => patchListConfig(state, 'players', config)),
-
-  on(TrackplayActions.restoreLastDeleted, (state): TrackplayState => {
-    if (!state.lastDeleted) return state;
-    return { ...state, ...state.lastDeleted.snapshot, lastDeleted: null };
-  }),
-
-  on(TrackplayActions.loaded, (_state, { trackplay }): TrackplayState => {
-    const loaded = trackplay ?? initialState;
-    const gameTypes = Object.keys(loaded.gameTypes ?? {}).length > 0
-      ? loaded.gameTypes
-      : { ...DEFAULT_GAME_TYPES };
-    return {
-      ...initialState,
-      ...loaded,
-      gameTypes,
-      config: loaded.config ?? initialTrackplayConfig,
-      lastDeleted: null,
-    };
-  })
+    players: stampParticipants(state.players, state.games, gameId, at),
+  }))
 );
+
+export const initialState: TrackplayState = perAggregate(undefined, {
+  type: '@@trackplay/init',
+});
+
+export const trackplayReducer = (
+  state: TrackplayState | undefined,
+  action: Action
+): TrackplayState => trackplayCascade(perAggregate(state, action), action);

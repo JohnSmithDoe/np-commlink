@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { provideCategoryListFacade } from '../../@shared/util/categories/category-list.facade';
+import { provideCatalogFacade } from '../../@shared/util/categories/category-list.facade';
 import { HouseholdCategoriesPageFacade, householdContext } from '../data';
 
 export const householdRoutes: Routes = [
@@ -8,6 +8,11 @@ export const householdRoutes: Routes = [
     path: '',
     ...householdContext,
     children: [
+      {
+        path: '',
+        redirectTo: 'shopping',
+        pathMatch: 'full',
+      },
       {
         path: 'list-settings',
         title: marker('page-title.household-list-settings'),
@@ -17,24 +22,27 @@ export const householdRoutes: Routes = [
           ),
       },
       {
-        path: 'shopping/:listId',
+        path: 'shopping',
         title: marker('page-title.household-shopping'),
+        data: { listId: '_shopping' },
         loadComponent: () =>
           import('../feature/shopping-page/shopping.page').then(
             (m) => m.ShoppingPage
           ),
       },
       {
-        path: 'storage/:listId',
+        path: 'storage',
         title: marker('page-title.household-storage'),
+        data: { listId: '_storage' },
         loadComponent: () =>
           import('../feature/storage-page/storage.page').then(
             (m) => m.StoragePage
           ),
       },
       {
-        path: 'products/:listId',
+        path: 'products',
         title: marker('page-title.household-products'),
+        data: { listId: '_products' },
         loadComponent: () =>
           import('../feature/products-page/products.page').then(
             (m) => m.ProductsPage
@@ -43,7 +51,7 @@ export const householdRoutes: Routes = [
       {
         path: 'categories/:listId',
         title: marker('page-title.categories'),
-        providers: provideCategoryListFacade(HouseholdCategoriesPageFacade),
+        providers: provideCatalogFacade(HouseholdCategoriesPageFacade),
         loadComponent: () =>
           import('../../@shared/feature/categories/category-list-page/category-list.page').then(
             (m) => m.CategoryListPage

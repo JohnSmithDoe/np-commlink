@@ -1,0 +1,61 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      label="{{ 'cash.label.kind' | translate }}"
+      [formField]="form.kind"
+    >
+      @for (k of kinds; track k) {
+        <ion-select-option [value]="k">
+          {{ kindLabelKeys[k] | translate }}
+        </ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      label="{{ 'cash.label.bank' | translate }}"
+      [formField]="form.bank"
+    >
+      <ion-select-option value="">{{
+        'cash.bank.none' | translate
+      }}</ion-select-option>
+      @for (b of banks; track b) {
+        <ion-select-option [value]="b">{{
+          bankLabelKeys[b] | translate
+        }}</ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <app-money-input
+    label="{{ 'cash.label.opening-balance' | translate }}"
+    [formField]="form.openingBalanceCents"
+  />
+  @if (balanceInvalid()) {
+    <ion-note color="danger" class="sr-field-note">
+      {{ 'cash.account-dialog.balance-invalid' | translate }}
+    </ion-note>
+  }
+
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="date"
+      label="{{ 'cash.label.opening-date' | translate }}"
+      [formField]="form.openingDate"
+    />
+  </ion-item>
+</app-item-edit-modal>

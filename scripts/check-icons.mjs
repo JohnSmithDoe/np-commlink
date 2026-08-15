@@ -30,8 +30,9 @@
  *
  * Check 2 exempts non-component modules by design. A catalog or a payload
  * table legitimately names an icon for someone else to render — the deck
- * catalog names fifteen for the grid and the side menu, and a notification
- * preset names its CTA icon for the inbox. Neither has a template or a
+ * catalog names one per entry for the grid and the side menu, and a
+ * notification preset names its CTA icon for the inbox. Neither has a
+ * template or a
  * constructor, so neither can register; the renderer does, and check 1 still
  * covers them. A bound `[name]` is likewise attributed to whoever wrote the
  * string, not to the template interpolating it.

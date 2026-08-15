@@ -9,11 +9,11 @@ import {
 } from '@ngrx/store';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from '../persistence/database.service';
-import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
+import { ReadBeforeWriteService } from '../persistence/read-before-write.service';
 import {
+  ContextBundle,
   mergeContexts,
   providePersistedContext,
-  ContextBundle,
 } from './persisted-context.provider';
 
 type ProbeState = { items: string[] };
@@ -104,7 +104,7 @@ describe('providePersistedContext', () => {
       database.load.mockRejectedValueOnce(new Error('disk gone'));
 
       await runResolver(bundle);
-      expect(TestBed.inject(PersistedReadRegistry).mayPersist('probe')).toBe(
+      expect(TestBed.inject(ReadBeforeWriteService).mayPersist('probe')).toBe(
         false
       );
 
@@ -123,7 +123,7 @@ describe('providePersistedContext', () => {
 
   it('wires a save effect when the descriptor declares a trigger', () => {
     const store = storeWith(probeContext());
-    TestBed.inject(PersistedReadRegistry).recordRead('probe');
+    TestBed.inject(ReadBeforeWriteService).recordRead('probe');
 
     store.dispatch(ProbeActions.addItem('a'));
 
@@ -132,7 +132,7 @@ describe('providePersistedContext', () => {
 
   it('wires none when it does not, so a derived context never writes', () => {
     const store = storeWith(probeContext(false));
-    TestBed.inject(PersistedReadRegistry).recordRead('probe');
+    TestBed.inject(ReadBeforeWriteService).recordRead('probe');
 
     store.dispatch(ProbeActions.addItem('a'));
 

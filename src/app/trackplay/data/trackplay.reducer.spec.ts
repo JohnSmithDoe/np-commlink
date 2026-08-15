@@ -1,681 +1,244 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The cascades and undo live here rather than in a per-aggregate spec
+ * because that is where they live in the code, and for the reason the
+ * reducer's own banner gives: they must see the PRE-action slice, which
+ * only holds while no aggregate reducer handles the same action. "restores
+ * a player the games reducer never saw removed" is the case that goes red
+ * the moment someone adds `removeItem` to `playersReducer`.
+ * ───────────────────────────────────────────────────────────────── */
+
+import dayjs from 'dayjs';
+import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 import { TrackplayState } from '../model/trackplay.types';
-import { TrackplayActions } from './trackplay.actions';
-import { initialState, trackplayReducer } from './trackplay.reducer';
+import { gameTypeIdOf } from '../util/game-type.utils';
 import {
   mockGame,
+  mockGamesState,
   mockGameType,
+  mockGameTypesState,
   mockPlayer,
+  mockPlayersState,
   mockRound,
   mockTrackplayState,
-  TEST_EPOCH,
 } from '../testing/trackplay.test-data';
+import { GamesActions } from './games/games.actions';
+import { GameTypesActions } from './game-types/game-types.actions';
+import { PlayersActions } from './players/players.actions';
+import { TrackplayActions } from './trackplay.actions';
+import { initialState, trackplayReducer } from './trackplay.reducer';
 
-describe('trackplayReducer', () => {
-  it('returns the initial state for an unknown action and seeds default types', () => {
-    const state = trackplayReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-    expect(Object.keys(state.gameTypes)).toEqual(['default', 'rommee', 'skat']);
+const AT = '2026-05-01T08:00:00.000Z';
+
+const gameOf = (state: TrackplayState, id: string) =>
+  state.games.items.find((game) => game.id === id);
+
+const playerOf = (state: TrackplayState, id: string) =>
+  state.players.items.find((player) => player.id === id);
+
+describe('trackplayReducer — composition', () => {
+  it('returns the same state for an unknown action', () => {
+    expect(trackplayReducer(initialState, { type: 'noop' })).toBe(initialState);
   });
 
-  it('creates a player', () => {
-    const state = trackplayReducer(
-      initialState,
-      TrackplayActions.createPlayer('Alice')
+  it('starts with the three default game types and nothing else', () => {
+    expect(initialState.gameTypes.items).toHaveLength(3);
+    expect(initialState.players.items).toEqual([]);
+    expect(initialState.games.items).toEqual([]);
+    expect(initialState.lastDeleted).toBeNull();
+  });
+});
+
+describe('trackplayReducer — deleting a player', () => {
+  const start = mockTrackplayState({
+    players: mockPlayersState([
+      mockPlayer({ id: 'p1', name: 'Alice' }),
+      mockPlayer({ id: 'p2', name: 'Bob' }),
+    ]),
+    games: mockGamesState([
+      mockGame({
+        id: 'shared',
+        playerIds: ['p1', 'p2'],
+        rounds: [mockRound({ id: 'r0', values: { p1: 5, p2: 3 } })],
+      }),
+      mockGame({ id: 'solo-live', playerIds: ['p1'], ended: false }),
+      mockGame({ id: 'solo-done', playerIds: ['p1'], ended: true }),
+      mockGame({ id: 'other', playerIds: ['p2'] }),
+    ]),
+  });
+
+  const deleted = trackplayReducer(
+    start,
+    PlayersActions.removeItem(mockPlayer({ id: 'p1', name: 'Alice' }))
+  );
+
+  it('drops the player and their scores from a game that survives', () => {
+    expect(playerOf(deleted, 'p1')).toBeUndefined();
+    expect(gameOf(deleted, 'shared')?.playerIds).toEqual(['p2']);
+    expect(gameOf(deleted, 'shared')?.rounds[0].values).toEqual({ p2: 3 });
+  });
+
+  it('empties a running game that loses its last player, and discards an ended one', () => {
+    expect(gameOf(deleted, 'solo-live')).toEqual(
+      expect.objectContaining({ playerIds: [], rounds: [] })
     );
-    expect(Object.values(state.players).map((p) => p.name)).toEqual(['Alice']);
+    expect(gameOf(deleted, 'solo-done')).toBeUndefined();
   });
 
-  it('ignores blank player names', () => {
-    const state = trackplayReducer(
-      initialState,
-      TrackplayActions.createPlayer(' '.repeat(3))
-    );
-    expect(Object.keys(state.players)).toHaveLength(0);
+  it('leaves games the player never joined untouched', () => {
+    expect(gameOf(deleted, 'other')).toBe(gameOf(start, 'other'));
   });
 
-  it('renames a player, trimmed, and ignores an unknown id', () => {
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1', name: 'Alice' }) },
-    });
-
-    const renamed = trackplayReducer(
-      start,
-      TrackplayActions.renamePlayer('p1', '  Alicia  ')
-    );
-
-    expect(renamed.players['p1'].name).toBe('Alicia');
-    expect(
-      trackplayReducer(start, TrackplayActions.renamePlayer('nope', 'X'))
-    ).toBe(start);
-  });
-
-  it('ensures a trailing blank round on entering a game', () => {
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: [] });
-    const start = mockTrackplayState({ games: { g: game } });
-    const state = trackplayReducer(start, TrackplayActions.enterGamePage('g'));
-    expect(state.games['g'].rounds).toHaveLength(1);
-    const roundId = state.games['g'].rounds[0];
-    expect(state.rounds[roundId].values).toEqual({ p1: 0, p2: 0 });
-  });
-
-  it('adds no second blank round when the game already ends in one', () => {
-    const game = mockGame({ id: 'g', players: ['p1'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 0 } }) },
-    });
-
-    expect(trackplayReducer(start, TrackplayActions.enterGamePage('g'))).toBe(
-      start
-    );
-  });
-
-  it('leaves an unknown or already-ended game alone on page entry', () => {
-    const start = mockTrackplayState({
-      games: { done: mockGame({ id: 'done', ended: true, rounds: [] }) },
-    });
-
-    expect(
-      trackplayReducer(start, TrackplayActions.enterGamePage('nope'))
-    ).toBe(start);
-    expect(
-      trackplayReducer(start, TrackplayActions.enterGamePage('done'))
-    ).toBe(start);
-  });
-
-  it('appends a blank round when the trailing round id resolves to nothing', () => {
-    const game = mockGame({ id: 'g', players: ['p1'], rounds: ['gone'] });
-    const start = mockTrackplayState({ games: { g: game } });
-
-    const state = trackplayReducer(start, TrackplayActions.enterGamePage('g'));
-
-    expect(state.games['g'].rounds).toHaveLength(2);
-  });
-
-  it('appends a fresh blank round when the trailing round already carries scores', () => {
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 5, p2: 0 } }) },
-    });
-
-    const state = trackplayReducer(start, TrackplayActions.enterGamePage('g'));
-
-    const appended = state.games['g'].rounds[1];
-    expect(state.games['g'].rounds).toHaveLength(2);
-    expect(state.rounds[appended].values).toEqual({ p1: 0, p2: 0 });
-  });
-
-  it('appends a new blank round when the trailing round gets a non-zero value', () => {
-    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 0, p2: 0 } });
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: round },
-    });
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.setRoundValue('g', 'r0', 'p1', 20)
-    );
-    expect(state.rounds['r0'].values['p1']).toBe(20);
-    expect(state.games['g'].rounds).toHaveLength(2);
-    expect(state.games['g'].updated).toBeGreaterThan(0);
-  });
-
-  it('returns the same state when a cell is blurred without changing', () => {
-    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 20, p2: 0 } });
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: round },
-    });
-
-    expect(
-      trackplayReducer(
-        start,
-        TrackplayActions.setRoundValue('g', 'r0', 'p1', 20)
-      )
-    ).toBe(start);
-  });
-
-  it('does not append a blank round when the trailing round gets a zero', () => {
-    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 0, p2: 0 } });
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: round },
-    });
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.setRoundValue('g', 'r0', 'p1', 0)
-    );
-    expect(state.games['g'].rounds).toEqual(['r0']);
-  });
-
-  it('appends nothing when a round above the trailing one is corrected', () => {
-    const start = mockTrackplayState({
-      games: {
-        g: mockGame({ id: 'g', players: ['p1'], rounds: ['r0', 'r1'] }),
-      },
-      rounds: {
-        r0: mockRound({ id: 'r0', idx: 0, values: { p1: 5 } }),
-        r1: mockRound({ id: 'r1', idx: 1, values: { p1: 0 } }),
-      },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.setRoundValue('g', 'r0', 'p1', 7)
-    );
-
-    expect(state.games['g'].rounds).toEqual(['r0', 'r1']);
-    expect(state.rounds['r0'].values['p1']).toBe(7);
-    expect(state.games['g'].updated).toBeGreaterThan(TEST_EPOCH);
-  });
-
-  it('stamps the time the action carries, not the time it runs', () => {
-    const now = 1_777_000_000_000;
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1', lastPlayed: undefined }) },
-      games: { g: mockGame({ id: 'g', players: ['p1'], rounds: ['r0'] }) },
-      rounds: { r0: mockRound({ id: 'r0', idx: 0, values: { p1: 0 } }) },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.setRoundValue('g', 'r0', 'p1', 20, now)
-    );
-
-    expect(state.games['g'].updated).toBe(now);
-    expect(state.players['p1'].lastPlayed).toBe(now);
-  });
-
-  it('stamps lastPlayed on the scored game participants only', () => {
-    const round = mockRound({ id: 'r0', idx: 0, values: { p1: 0, p2: 0 } });
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      players: {
-        p1: mockPlayer({ id: 'p1', lastPlayed: undefined }),
-        p2: mockPlayer({ id: 'p2', lastPlayed: undefined }),
-        outsider: mockPlayer({ id: 'outsider', lastPlayed: undefined }),
-      },
-      games: { g: game },
-      rounds: { r0: round },
-    });
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.setRoundValue('g', 'r0', 'p1', 20)
-    );
-    expect(state.players['p1'].lastPlayed).toBeGreaterThan(TEST_EPOCH);
-    expect(state.players['p2'].lastPlayed).toBeGreaterThan(TEST_EPOCH);
-    expect(state.players['outsider'].lastPlayed).toBeUndefined();
-    expect(state.players['p1'].lastPlayed).toBe(state.games['g'].updated);
-  });
-
-  it('ignores a round value for an unknown game or round', () => {
-    const start = mockTrackplayState({
-      games: { g: mockGame({ id: 'g', rounds: ['r0'] }) },
-      rounds: { r0: mockRound({ id: 'r0' }) },
-    });
-    expect(
-      trackplayReducer(
-        start,
-        TrackplayActions.setRoundValue('nope', 'r0', 'p1', 1)
-      )
-    ).toBe(start);
-    expect(
-      trackplayReducer(
-        start,
-        TrackplayActions.setRoundValue('g', 'nope', 'p1', 1)
-      )
-    ).toBe(start);
-  });
-
-  it('inserts the game it is handed, id and all', () => {
-    const game = mockGame({
-      id: 'g-new',
-      name: 'Doppelkopf',
-      type: 'skat',
-      players: ['p1'],
-    });
-
-    const state = trackplayReducer(
-      initialState,
-      TrackplayActions.createGame(game)
-    );
-
-    expect(state.games['g-new']).toBe(game);
-  });
-
-  it('renames a game, trimmed, and retypes and re-rosters it', () => {
-    const start = mockTrackplayState({
-      games: { g: mockGame({ id: 'g', name: 'Skat', players: ['p1'] }) },
-    });
-
-    const renamed = trackplayReducer(
-      start,
-      TrackplayActions.renameGame('g', '  Doppelkopf  ')
-    );
-    const retyped = trackplayReducer(
-      renamed,
-      TrackplayActions.changeGameType('g', 'skat')
-    );
-    const rerostered = trackplayReducer(
-      retyped,
-      TrackplayActions.setGamePlayers('g', ['p2', 'p3'])
-    );
-
-    expect(rerostered.games['g'].name).toBe('Doppelkopf');
-    expect(rerostered.games['g'].type).toBe('skat');
-    expect(rerostered.games['g'].players).toEqual(['p2', 'p3']);
-  });
-
-  it('toggles a game between running and ended', () => {
-    const start = mockTrackplayState({
-      games: { g: mockGame({ id: 'g', ended: false }) },
-    });
-
-    const ended = trackplayReducer(
-      start,
-      TrackplayActions.toggleGameEnded('g')
-    );
-    const reopened = trackplayReducer(
-      ended,
-      TrackplayActions.toggleGameEnded('g')
-    );
-
-    expect(ended.games['g'].ended).toBe(true);
-    expect(reopened.games['g'].ended).toBe(false);
-  });
-
-  it('ignores every game mutation aimed at an unknown id', () => {
-    const start = mockTrackplayState({ games: { g: mockGame({ id: 'g' }) } });
-
-    for (const action of [
-      TrackplayActions.renameGame('nope', 'X'),
-      TrackplayActions.changeGameType('nope', 'skat'),
-      TrackplayActions.setGamePlayers('nope', ['p1']),
-      TrackplayActions.toggleGameEnded('nope'),
-    ]) {
-      expect(trackplayReducer(start, action)).toBe(start);
-    }
-  });
-
-  it('cascades a player delete and supports single-level undo', () => {
-    const round = mockRound({ id: 'r0', values: { p1: 5, p2: 3 } });
-    const game = mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0'] });
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }), p2: mockPlayer({ id: 'p2' }) },
-      games: { g: game },
-      rounds: { r0: round },
-    });
-    const deleted = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-    expect(deleted.players['p1']).toBeUndefined();
-    expect(deleted.games['g'].players).toEqual(['p2']);
-    expect(deleted.rounds['r0'].values).toEqual({ p2: 3 });
-    expect(deleted.lastDeleted).not.toBeNull();
-
+  it('restores a player the games reducer never saw removed', () => {
     const restored = trackplayReducer(
       deleted,
       TrackplayActions.restoreLastDeleted()
     );
-    expect(restored.players['p1']).toBeDefined();
-    expect(restored.rounds['r0'].values).toEqual({ p1: 5, p2: 3 });
+
+    expect(deleted.lastDeleted?.name).toBe('Alice');
+    expect(playerOf(restored, 'p1')).toBeDefined();
+    expect(gameOf(restored, 'solo-done')).toBeDefined();
+    expect(gameOf(restored, 'shared')?.rounds[0].values).toEqual({
+      p1: 5,
+      p2: 3,
+    });
     expect(restored.lastDeleted).toBeNull();
   });
+});
 
-  it('drops an ended game that loses its last player', () => {
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }) },
-      games: {
-        g: mockGame({ id: 'g', players: ['p1'], rounds: ['r0'], ended: true }),
-      },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 5 } }) },
-    });
+describe('trackplayReducer — deleting a game and a type', () => {
+  it('stashes a deleted game and gives it back on undo', () => {
+    const game = mockGame({ id: 'g', name: 'Skat' });
+    const start = mockTrackplayState({ games: mockGamesState([game]) });
 
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-
-    expect(state.games['g']).toBeUndefined();
-    expect(state.rounds['r0']).toBeUndefined();
-  });
-
-  it('empties a running game that loses its last player', () => {
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }) },
-      games: { g: mockGame({ id: 'g', players: ['p1'], rounds: ['r0'] }) },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 5 } }) },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-
-    expect(state.games['g'].players).toEqual([]);
-    expect(state.games['g'].rounds).toEqual([]);
-    expect(state.rounds['r0']).toBeUndefined();
-  });
-
-  it('leaves games the deleted player never joined untouched', () => {
-    const other = mockGame({ id: 'other', players: ['p2'], rounds: [] });
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }), p2: mockPlayer({ id: 'p2' }) },
-      games: { other },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-
-    expect(state.games['other']).toBe(other);
-    expect(state.players['p2']).toBeDefined();
-  });
-
-  it('skips a round id a game points at that no longer resolves', () => {
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }), p2: mockPlayer({ id: 'p2' }) },
-      games: {
-        g: mockGame({ id: 'g', players: ['p1', 'p2'], rounds: ['r0', 'gone'] }),
-      },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 5, p2: 3 } }) },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-
-    expect(state.rounds['r0'].values).toEqual({ p2: 3 });
-    expect(state.rounds['gone']).toBeUndefined();
-  });
-
-  it('leaves list settings alone when undoing a delete', () => {
-    const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }) },
-    });
-    const deleted = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-    const resorted = trackplayReducer(
-      deleted,
-      TrackplayActions.updatePlayersConfig({ sort: 'name' })
-    );
-
-    const restored = trackplayReducer(
-      resorted,
-      TrackplayActions.restoreLastDeleted()
-    );
-
-    expect(restored.players['p1']).toBeDefined();
-    expect(restored.config.players.sort).toBe('name');
-  });
-
-  it('deletes a game together with its rounds', () => {
-    const game = mockGame({ id: 'g', rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: mockRound({ id: 'r0' }) },
-    });
-    const state = trackplayReducer(start, TrackplayActions.deleteGame(game));
-    expect(state.games['g']).toBeUndefined();
-    expect(state.rounds['r0']).toBeUndefined();
-  });
-
-  it('restores a deleted game together with its rounds on undo', () => {
-    const game = mockGame({ id: 'g', name: 'Skat', rounds: ['r0'] });
-    const start = mockTrackplayState({
-      games: { g: game },
-      rounds: { r0: mockRound({ id: 'r0', values: { p1: 5 } }) },
-    });
-
-    const deleted = trackplayReducer(start, TrackplayActions.deleteGame(game));
+    const deleted = trackplayReducer(start, GamesActions.removeItem(game));
     const restored = trackplayReducer(
       deleted,
       TrackplayActions.restoreLastDeleted()
     );
 
+    expect(gameOf(deleted, 'g')).toBeUndefined();
     expect(deleted.lastDeleted?.name).toBe('Skat');
-    expect(restored.games['g']).toEqual(game);
-    expect(restored.rounds['r0'].values).toEqual({ p1: 5 });
-    expect(restored.lastDeleted).toBeNull();
+    expect(gameOf(restored, 'g')).toBeDefined();
   });
 
-  it('keeps only the most recent deletion undoable', () => {
+  it('refuses to delete the built-in default type', () => {
+    const state = trackplayReducer(
+      initialState,
+      GameTypesActions.removeItem(mockGameType({ id: 'default' }))
+    );
+
+    expect(state.gameTypes.items).toHaveLength(3);
+    expect(state.lastDeleted).toBeNull();
+  });
+
+  it('retypes its games to the default and clears the armed chip', () => {
+    const custom = mockGameType({ id: 'custom', name: 'Custom' });
+    const start = mockTrackplayState({
+      gameTypes: mockGameTypesState([mockGameType({ id: 'default' }), custom]),
+      games: mockGamesState([mockGame({ id: 'g', categoryIds: ['custom'] })], {
+        filterBy: 'custom',
+      }),
+    });
+
+    const state = trackplayReducer(start, GameTypesActions.removeItem(custom));
+
+    expect(gameTypeIdOf(gameOf(state, 'g')!)).toBe('default');
+    expect(state.games.filterBy).toBeUndefined();
+    expect(state.gamesForPlayer.filterBy).toBeUndefined();
+  });
+
+  it('leaves the list settings alone when undoing', () => {
     const game = mockGame({ id: 'g', name: 'Skat' });
     const start = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }) },
-      games: { g: game },
+      games: mockGamesState([game], { showEndedGames: false }),
     });
 
-    const withoutPlayer = trackplayReducer(
-      start,
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-    const withoutGame = trackplayReducer(
-      withoutPlayer,
-      TrackplayActions.deleteGame(game)
-    );
     const restored = trackplayReducer(
-      withoutGame,
+      trackplayReducer(start, GamesActions.removeItem(game)),
       TrackplayActions.restoreLastDeleted()
     );
 
-    expect(restored.games['g']).toEqual(game);
-    expect(restored.players['p1']).toBeUndefined();
+    expect(restored.games.showEndedGames).toBe(false);
   });
 
-  it('reassigns only the games that used the deleted type', () => {
-    const custom = mockGameType({
-      id: 'custom',
-      name: 'Custom',
-      winHigh: true,
-    });
-    const skatGame = mockGame({ id: 'skat-game', type: 'skat' });
-    const start = mockTrackplayState({
-      gameTypes: { ...mockTrackplayState().gameTypes, custom },
-      games: {
-        'custom-game': mockGame({ id: 'custom-game', type: 'custom' }),
-        'skat-game': skatGame,
-      },
-    });
-
-    const state = trackplayReducer(
-      start,
-      TrackplayActions.deleteGameType(custom)
-    );
-
-    expect(state.gameTypes['custom']).toBeUndefined();
-    expect(state.games['custom-game'].type).toBe('default');
-    expect(state.games['skat-game']).toBe(skatGame);
-  });
-
-  it('refuses to delete the built-in type and leaves an earlier stash intact', () => {
-    const stashed = trackplayReducer(
-      mockTrackplayState({ players: { p1: mockPlayer({ id: 'p1' }) } }),
-      TrackplayActions.deletePlayer(mockPlayer({ id: 'p1' }))
-    );
-
-    const refused = trackplayReducer(
-      stashed,
-      TrackplayActions.deleteGameType(mockGameType({ id: 'default' }))
-    );
-
-    expect(refused).toBe(stashed);
-    expect(refused.lastDeleted).toBe(stashed.lastDeleted);
-  });
-
-  it('restores a deleted type and the games it was reassigned off', () => {
-    const custom = mockGameType({ id: 'custom', name: 'Canasta' });
-    const start = mockTrackplayState({
-      gameTypes: { ...mockTrackplayState().gameTypes, custom },
-      games: { g: mockGame({ id: 'g', type: 'custom' }) },
-    });
-
-    const deleted = trackplayReducer(
-      start,
-      TrackplayActions.deleteGameType(custom)
-    );
-    const restored = trackplayReducer(
-      deleted,
-      TrackplayActions.restoreLastDeleted()
-    );
-
-    expect(deleted.lastDeleted?.name).toBe('Canasta');
-    expect(restored.gameTypes['custom']).toEqual(custom);
-    expect(restored.games['g'].type).toBe('custom');
-    expect(restored.lastDeleted).toBeNull();
-  });
-
-  it('creates a game type, trimmed, and ignores a blank name', () => {
-    const created = trackplayReducer(
-      initialState,
-      TrackplayActions.createGameType('  Canasta  ', false)
-    );
-
-    expect(
-      Object.values(created.gameTypes).find((type) => type.name === 'Canasta')
-        ?.winHigh
-    ).toBe(false);
-    expect(
-      trackplayReducer(
-        initialState,
-        TrackplayActions.createGameType(' '.repeat(3), true)
-      )
-    ).toBe(initialState);
-  });
-
-  it('updates a game type in place', () => {
-    const state = trackplayReducer(
-      mockTrackplayState(),
-      TrackplayActions.updateGameType({
-        id: 'skat',
-        name: 'Skat (Ramsch)',
-        winHigh: false,
-      })
-    );
-
-    expect(state.gameTypes['skat']).toEqual({
-      id: 'skat',
-      name: 'Skat (Ramsch)',
-      winHigh: false,
-    });
-  });
-
-  it('clears a deleted type off the filters that had it selected', () => {
-    const custom = mockGameType({ id: 'custom', name: 'Custom' });
-    const withType = mockTrackplayState({
-      gameTypes: { ...mockTrackplayState().gameTypes, custom },
-    });
-    const gamesFiltered = trackplayReducer(
-      withType,
-      TrackplayActions.updateGamesConfig({ typeId: 'custom' })
-    );
-    const bothFiltered = trackplayReducer(
-      gamesFiltered,
-      TrackplayActions.updateGamesForPlayerConfig({ typeId: 'custom' })
-    );
-
-    const state = trackplayReducer(
-      bothFiltered,
-      TrackplayActions.deleteGameType(custom)
-    );
-
-    expect(state.config.games.typeId).toBe('');
-    expect(state.config.gamesForPlayer.typeId).toBe('');
-  });
-
-  it('merges each list config over the current one, leaving its siblings', () => {
-    const games = trackplayReducer(
-      initialState,
-      TrackplayActions.updateGamesConfig({ sort: 'name' })
-    );
-    const players = trackplayReducer(
-      games,
-      TrackplayActions.updatePlayersConfig({ direction: 'desc' })
-    );
-    const state = trackplayReducer(
-      players,
-      TrackplayActions.updateGamesForPlayerConfig({ showEndedGames: true })
-    );
-
-    expect(state.config.games).toEqual({
-      ...initialState.config.games,
-      sort: 'name',
-    });
-    expect(state.config.players).toEqual({
-      ...initialState.config.players,
-      direction: 'desc',
-    });
-    expect(state.config.gamesForPlayer).toEqual({
-      ...initialState.config.gamesForPlayer,
-      showEndedGames: true,
-    });
-  });
-
-  it('ignores an undo with nothing stashed', () => {
+  it('does nothing when there is no stash to restore', () => {
     expect(
       trackplayReducer(initialState, TrackplayActions.restoreLastDeleted())
     ).toBe(initialState);
   });
+});
 
-  it('hydrates from a datastore and seeds default types when none exist', () => {
-    const fresh = trackplayReducer(initialState, TrackplayActions.loaded(null));
-    expect(Object.keys(fresh.gameTypes)).toEqual(['default', 'rommee', 'skat']);
+describe('trackplayReducer — scoring stamps both aggregates', () => {
+  const start = mockTrackplayState({
+    players: mockPlayersState([
+      mockPlayer({ id: 'p1', lastPlayedAt: undefined }),
+      mockPlayer({ id: 'p2', lastPlayedAt: undefined }),
+      mockPlayer({ id: 'outsider', lastPlayedAt: undefined }),
+    ]),
+    games: mockGamesState([
+      mockGame({
+        id: 'g',
+        playerIds: ['p1', 'p2'],
+        rounds: [mockRound({ id: 'r0', values: { p1: 0, p2: 0 } })],
+      }),
+    ]),
+  });
 
+  const state = trackplayReducer(
+    start,
+    GamesActions.setRoundValue('g', 'r0', 'p1', 20, AT, 'r1')
+  );
+
+  it('stamps the game and only its participants, with the action clock', () => {
+    expect(gameOf(state, 'g')?.updatedAt).toBe(AT);
+    expect(playerOf(state, 'p1')?.lastPlayedAt).toBe(AT);
+    expect(playerOf(state, 'p2')?.lastPlayedAt).toBe(AT);
+    expect(playerOf(state, 'outsider')?.lastPlayedAt).toBeUndefined();
+  });
+
+  it('reads the clock at dispatch time, not while reducing', () => {
+    const defaulted = trackplayReducer(
+      start,
+      GamesActions.setRoundValue('g', 'r0', 'p1', 20)
+    );
+
+    expect(
+      dayjs(gameOf(defaulted, 'g')?.updatedAt).isAfter(TEST_TIMESTAMP)
+    ).toBe(true);
+  });
+
+  it('is a pure function of the action — replayed, it lands the same state', () => {
+    const action = GamesActions.setRoundValue('g', 'r0', 'p1', 20, AT, 'r1');
+
+    expect(trackplayReducer(start, action)).toEqual(
+      trackplayReducer(start, action)
+    );
+  });
+});
+
+describe('trackplayReducer — hydration', () => {
+  it('clears the stash and re-seeds the types from an empty document', () => {
+    const state = trackplayReducer(initialState, TrackplayActions.loaded(null));
+
+    expect(state.gameTypes.items).toHaveLength(3);
+    expect(state.lastDeleted).toBeNull();
+  });
+
+  it('never restores a stash that reached the disk', () => {
     const persisted = mockTrackplayState({
-      players: { p1: mockPlayer({ id: 'p1' }) },
+      players: mockPlayersState([mockPlayer({ id: 'p1' })]),
       lastDeleted: {
         name: 'x',
-        snapshot: { players: {}, games: {}, gameTypes: {}, rounds: {} },
+        snapshot: { players: [], games: [], gameTypes: [] },
       },
     });
-    const loaded = trackplayReducer(
+
+    const state = trackplayReducer(
       initialState,
       TrackplayActions.loaded(persisted)
     );
-    expect(loaded.players['p1']).toBeDefined();
-    expect(loaded.lastDeleted).toBeNull();
-  });
 
-  it('fills in what an older document never carried', () => {
-    const legacy = {
-      players: { p1: mockPlayer({ id: 'p1' }) },
-      games: {},
-      rounds: {},
-      gameTypes: {},
-    } as unknown as TrackplayState;
-
-    const state = trackplayReducer(
-      initialState,
-      TrackplayActions.loaded(legacy)
-    );
-
-    expect(state.config).toEqual(initialState.config);
-    expect(Object.keys(state.gameTypes)).toEqual(['default', 'rommee', 'skat']);
-    expect(state.players['p1']).toBeDefined();
-  });
-
-  it('seeds the default types when a loaded document carries no type catalog', () => {
-    const withoutCatalog = {
-      players: {},
-      games: {},
-      rounds: {},
-      config: initialState.config,
-    } as unknown as TrackplayState;
-
-    const state = trackplayReducer(
-      initialState,
-      TrackplayActions.loaded(withoutCatalog)
-    );
-
-    expect(Object.keys(state.gameTypes)).toEqual(['default', 'rommee', 'skat']);
+    expect(playerOf(state, 'p1')).toBeDefined();
+    expect(state.lastDeleted).toBeNull();
   });
 });

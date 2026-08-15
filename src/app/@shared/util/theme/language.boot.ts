@@ -1,14 +1,12 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The language is settled before the store exists. `provideTranslateService`
- * and `LOCALE_ID` both need a value at injector creation, while the settings
- * slice hydrates asynchronously from `@ionic/storage` — so `localStorage` is
- * the boot source of truth and the slice mirrors it. Every `setLanguage`
- * reloads the app (`restartOnLanguageChange$`), which is what makes
- * `APP_LANGUAGE` safe as a session constant for consumers that cannot reach
- * `data/` — a `ui` component or a pure pipe.
+ * The language is settled before the store exists: `provideTranslateService`
+ * and `LOCALE_ID` need a value at injector creation, while the settings slice
+ * hydrates asynchronously — so `localStorage` is the boot truth and the slice
+ * mirrors it. Every `setLanguage` reloads the app, which is what makes
+ * `APP_LANGUAGE` safe as a session constant for a `ui` component or a pipe.
  *
- * These live apart from `LanguageService` because they are pure functions plus
- * the one-time runtime registration, and `util/` may hold no injectable.
+ * Apart from `LanguageService` because these are pure functions plus one
+ * runtime registration, and `util/` may hold no injectable.
  * ───────────────────────────────────────────────────────────────── */
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';

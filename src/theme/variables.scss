@@ -1,20 +1,21 @@
 // ─── why ────────────────────────────────────────────────────────
-// Ionic's --ion-* chrome, wired to consume the raw --sr-* palette from
-// _shadowrun.scss so a theme override reskins Ionic and the deck from one token
-// group. The aliases here are theme-invariant; the values they point at flip.
+// Ionic's --ion-* chrome, wired to consume the raw --sr-* palette so one token
+// group reskins both. The aliases are theme-invariant; the values flip.
 //
-// The two accent swatches are the exception, because --sr-amber/--sr-cyan alias
-// THEM: plain is a calm corporate blue over a slate teal, cyberpunk the amber
-// and teal neon the deck is built on. Success stays the same green in both — it
-// reads on dark slate and on light paper — and the greyscale steps are the one
-// ramp that has to be authored twice, running bg→text in each direction.
+// The two accent swatches are the exception, since --sr-amber/--sr-cyan alias
+// THEM. Success stays one green in both — it reads on slate and on paper — and
+// the greyscale is the one ramp authored twice, running bg→text each way.
 //
-// Each accent is spelled out as the whole
-// --ion-color-<key>{,-rgb,-contrast,-contrast-rgb,-shade,-tint} family because
-// different Ionic components read different members. DEFAULT_ACCENT_SWATCHES in
-// settings.page.ts duplicates the two base hexes in TS (a colour input must be
-// seeded and cannot read a var()), so changing one here means changing it
-// there.
+// --ion-color-accent is a third family, read only by toasts: it aliases success
+// on plain and primary under cyberpunk, so a toast follows the user's swatch
+// while success keeps encoding a value's SIGN in the charts and cash amounts.
+// Ionic resolves color="accent" only through the .ion-color-accent class below,
+// and that class must stay global — a toast is teleported out to ion-app.
+//
+// Each accent is spelled as the whole --ion-color-<key>{,-rgb,-contrast,…}
+// family because different Ionic components read different members.
+// DEFAULT_ACCENT_SWATCHES in settings.page.ts duplicates the two base hexes,
+// because a colour input must be seeded and cannot read a var().
 // ────────────────────────────────────────────────────────────────
 
 :root {
@@ -32,6 +33,13 @@
   --ion-color-success-contrast-rgb: 255, 255, 255;
   --ion-color-success-shade: #286d37;
   --ion-color-success-tint: #428951;
+
+  --ion-color-accent: var(--ion-color-success);
+  --ion-color-accent-rgb: var(--ion-color-success-rgb);
+  --ion-color-accent-contrast: var(--ion-color-success-contrast);
+  --ion-color-accent-contrast-rgb: var(--ion-color-success-contrast-rgb);
+  --ion-color-accent-shade: var(--ion-color-success-shade);
+  --ion-color-accent-tint: var(--ion-color-success-tint);
 
   --ion-background-color-rgb: 244, 246, 248; // rgb mirror of --sr-bg (plain)
   --ion-text-color-rgb: 31, 39, 51; // rgb mirror of --sr-text (plain)
@@ -91,6 +99,13 @@
   --ion-color-secondary-shade: #2c9992;
   --ion-color-secondary-tint: #47b6af;
 
+  --ion-color-accent: var(--ion-color-primary);
+  --ion-color-accent-rgb: var(--ion-color-primary-rgb);
+  --ion-color-accent-contrast: var(--ion-color-primary-contrast);
+  --ion-color-accent-contrast-rgb: var(--ion-color-primary-contrast-rgb);
+  --ion-color-accent-shade: var(--ion-color-primary-shade);
+  --ion-color-accent-tint: var(--ion-color-primary-tint);
+
   --ion-color-step-50: #353535;
   --ion-color-step-100: #3f3f3f;
   --ion-color-step-150: #494949;
@@ -110,4 +125,13 @@
   --ion-color-step-850: #d2d2d2;
   --ion-color-step-900: #dcdcdc;
   --ion-color-step-950: #e6e6e6;
+}
+
+.ion-color-accent {
+  --ion-color-base: var(--ion-color-accent);
+  --ion-color-base-rgb: var(--ion-color-accent-rgb);
+  --ion-color-contrast: var(--ion-color-accent-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-accent-contrast-rgb);
+  --ion-color-shade: var(--ion-color-accent-shade);
+  --ion-color-tint: var(--ion-color-accent-tint);
 }

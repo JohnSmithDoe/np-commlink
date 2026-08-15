@@ -1,0 +1,60 @@
+<app-page-header
+  icon="settings-outline"
+  label="page-title.ritual-settings"
+  backHref="/ritual"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  <ion-list lines="none">
+    <ion-item>
+      <ion-toggle
+        [checked]="reminder().enabled"
+        (ionChange)="toggleReminder($event.detail.checked)"
+        data-testid="ritual-reminder-toggle"
+      >
+        {{ 'ritual.reminder.label' | translate }}
+      </ion-toggle>
+    </ion-item>
+
+    @if (reminder().enabled) {
+      <ion-item>
+        <ion-input
+          type="time"
+          labelPlacement="start"
+          [label]="'ritual.reminder.time' | translate"
+          [value]="reminderTime()"
+          (ionChange)="setReminderTime($event.detail.value)"
+          data-testid="ritual-reminder-time"
+        />
+      </ion-item>
+    }
+
+    <ion-item>
+      <ion-note>{{ 'ritual.reminder.hint' | translate }}</ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="none">
+    <ion-item>
+      <ion-label>
+        {{ 'ritual.dismissed.label' | translate }}
+        <ion-note>
+          {{
+            'ritual.dismissed.count' | translate: { count: dismissedCount() }
+          }}
+        </ion-note>
+      </ion-label>
+      <ion-button
+        slot="end"
+        fill="outline"
+        size="small"
+        [disabled]="dismissedCount() === 0"
+        (click)="restoreAll()"
+        data-testid="ritual-restore-dismissed"
+      >
+        {{ 'ritual.dismissed.restore' | translate }}
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

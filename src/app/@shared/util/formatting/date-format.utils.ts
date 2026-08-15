@@ -31,3 +31,6 @@ export const localizedDayMonth = (
 
 export const localizedMonthYear = (value: string | Dayjs): string =>
   dayjs(value).format('MMMM YYYY');
+
+export const padClock = (value: number): string =>
+  String(value).padStart(2, '0');

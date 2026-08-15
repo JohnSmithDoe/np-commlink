@@ -1,76 +1,52 @@
-<app-page-header
-  label="page-title.trackplay-games"
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.trackplay-games"
   icon="dice-outline"
-  (addItem)="createGame()"
+  [itemTemplate]="gameRow"
 >
   <ion-button
+    headerEnd
     slot="end"
-    toolbar
     routerLink="/trackplay/players"
     color="primary"
     [attr.aria-label]="'trackplay.a11y.players' | translate"
   >
     <ion-icon slot="icon-only" name="people-outline" aria-hidden="true" />
   </ion-button>
-  <ion-button
-    slot="end"
-    toolbar
-    routerLink="/trackplay/game-types"
-    color="primary"
-    [attr.aria-label]="'trackplay.a11y.game-types' | translate"
-  >
-    <ion-icon slot="icon-only" name="dice-outline" aria-hidden="true" />
-  </ion-button>
-  <ion-button
-    slot="end"
-    toolbar
-    (click)="openSettings($event)"
-    [color]="settingsActive() ? 'warning' : 'primary'"
-    [attr.aria-label]="'trackplay.a11y.settings' | translate"
-  >
-    <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
-  </ion-button>
-</app-page-header>
 
-<ion-content>
-  <p class="sr-hud ion-padding-horizontal">
-    {{ 'trackplay.list-header.games' | translate }} ({{ shownCount() }} /
-    {{ totalCount() }})
-  </p>
-  <ion-list #list>
-    @if (runningGames().length) {
-      <ion-item-divider>
-        <ion-label>{{
-          'trackplay.list-header.running-games' | translate
-        }}</ion-label>
-      </ion-item-divider>
-      @for (game of runningGames(); track game.id) {
-        <app-trackplay-game-list-item
-          [game]="game"
-          [typeName]="typeName(game)"
-          [ionList]="list"
-          (selectGame)="goToGame(game.id)"
-          (editRequested)="openGameEdit(game)"
-          (deleteRequested)="deleteGame(game)"
-        />
-      }
-    }
-    @if (endedGames().length) {
-      <ion-item-divider>
-        <ion-label>{{
-          'trackplay.list-header.ended-games' | translate
-        }}</ion-label>
-      </ion-item-divider>
-      @for (game of endedGames(); track game.id) {
-        <app-trackplay-game-list-item
-          [game]="game"
-          [typeName]="typeName(game)"
-          [ionList]="list"
-          (selectGame)="goToGame(game.id)"
-          (editRequested)="openGameEdit(game)"
-          (deleteRequested)="deleteGame(game)"
-        />
-      }
-    }
-  </ion-list>
-</ion-content>
+  <ion-button
+    toolbarActions
+    (click)="facade.toggleShowEnded()"
+    [attr.aria-pressed]="facade.showEndedGames()"
+    [attr.aria-label]="'trackplay.settings.show-ended' | translate"
+    data-testid="games-show-ended"
+  >
+    <ion-icon
+      slot="icon-only"
+      [name]="facade.showEndedGames() ? 'eye' : 'eye-off'"
+      aria-hidden="true"
+    />
+  </ion-button>
+
+  <span toolbarActionsEnd class="tp-count" data-testid="games-count">
+    {{ facade.shownCount() }} / {{ facade.totalCount() }}
+  </span>
+</app-list-page>
+
+<ng-template
+  #gameRow
+  let-item
+  let-ionList="ionList"
+  let-categories="categories"
+>
+  <app-trackplay-game-row
+    [item]="item"
+    [ionList]="ionList"
+    [categories]="categories"
+    (selectGame)="goToGame(item.id)"
+    (editGame)="openGameEdit(item)"
+    (deleteGame)="deleteGame(item)"
+  />
+</ng-template>
+
+<app-edit-game-dialog />

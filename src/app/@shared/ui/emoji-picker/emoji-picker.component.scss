@@ -14,6 +14,12 @@
   margin: 0.75rem 1rem 0.25rem;
 }
 
+.emoji-picker__preview {
+  --padding-start: 0.75rem;
+
+  letter-spacing: normal;
+}
+
 .emoji-picker__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));

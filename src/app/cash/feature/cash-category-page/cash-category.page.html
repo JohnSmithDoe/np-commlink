@@ -1,0 +1,32 @@
+<app-list-page
+  class="ion-page"
+  [heading]="facade.heading()"
+  backHref="/cash/categories"
+  [itemTemplate]="transactionItem"
+>
+  <span toolbarActionsEnd class="cash-networth__value">
+    {{ facade.totalCents() | moneyEur }}
+  </span>
+</app-list-page>
+
+<ng-template #transactionItem let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [canDelete]="false"
+    (selectItem)="openAccount(item)"
+  >
+    <p itemDetails>
+      {{ item.dateISO | localizedDate }} · {{ accountName(item) }}
+    </p>
+    <ion-note
+      itemDetails
+      class="cash-txn__amount"
+      [class.cash-txn__amount--out]="item.amountCents < 0"
+      [class.cash-txn__amount--in]="item.amountCents > 0"
+    >
+      {{ item.amountCents | moneyEur }}
+    </ion-note>
+  </app-list-item>
+</ng-template>

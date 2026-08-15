@@ -1,0 +1,11 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+/>

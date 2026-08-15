@@ -4,6 +4,7 @@ import {
   ProductsState,
 } from '../../model/household-list.types';
 import {
+  hydratedList,
   addListItem,
   removeListItem,
   updateListItem,
@@ -26,9 +27,9 @@ export const productsReducer = createReducer(
   on(ProductsActions.updateItem,(state, { item }): ProductsState => updateListItem(state, item)),
   on(ProductsActions.updateSearch,(state, { searchQuery }): ProductsState => updateListSearch(state, searchQuery)),
   on(ProductsActions.updateFilter,(state, { filterBy }): ProductsState => ({ ...state, filterBy, })),
-  on(ProductsActions.updateSort, (state, { sortBy, sortDirection }): ProductsState => ({ ...state, sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection),})),
+  on(ProductsActions.updateSort, (state, { sortBy, sortDirection }): ProductsState => updateListSort(state, sortBy, sortDirection)),
 
   on(HouseholdActions.loaded,(_state, { data }): ProductsState => {
-    return {...(data?.products ?? _state), searchQuery:undefined,filterBy: undefined};
+    return hydratedList(data?.products ?? _state);
   })
 );

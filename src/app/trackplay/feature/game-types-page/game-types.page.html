@@ -1,31 +1,32 @@
-<app-page-header
-  label="page-title.trackplay-game-types"
-  (addItem)="openCreate()"
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.trackplay-game-types"
+  icon="dice"
+  backHref="/trackplay"
+  [itemTemplate]="gameTypeRow"
 />
 
-<ion-content class="ion-padding">
-  <p class="sr-hud">{{ 'trackplay.list-header.game-types' | translate }}</p>
-
-  <ion-button
-    expand="block"
-    fill="outline"
-    class="ion-text-left"
-    (click)="openCreate()"
+<ng-template #gameTypeRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [leadingIcon]="'dice'"
+    [canDelete]="item.id !== defaultTypeId"
+    [startSwipeAction]="editSwipeAction"
+    (selectItem)="openEdit(item)"
+    (startSwipe)="openEdit(item)"
+    (deleteItem)="deleteType(item)"
   >
-    <ion-icon slot="start" name="add" aria-hidden="true" />
-    <ion-label>{{ 'trackplay.action.new-game-type' | translate }}</ion-label>
-  </ion-button>
+    <p itemDetails>
+      {{
+        (item.winHigh
+          ? 'trackplay.gametype.win-high'
+          : 'trackplay.gametype.win-low'
+        ) | translate
+      }}
+    </p>
+  </app-list-item>
+</ng-template>
 
-  <ion-list #typeList lines="full">
-    @for (type of rxTypes(); track type.id) {
-      <app-trackplay-game-type-list-item
-        [gameType]="type"
-        [canDelete]="type.id !== defaultTypeId"
-        [ionList]="typeList"
-        (selectType)="openEdit(type)"
-        (editRequested)="openEdit(type)"
-        (deleteRequested)="deleteType(type)"
-      />
-    }
-  </ion-list>
-</ion-content>
+<app-edit-game-type-dialog />

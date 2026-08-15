@@ -1,28 +1,22 @@
 // ─── why ────────────────────────────────────────────────────────
 // Sass MIXINS ONLY. Emitting nothing on @use is the point: a component may
-// safely `@use 'theme/deck'` and @include a recipe where a global class cannot
-// reach — a `:host`, a pseudo-element — which is never true of _shadowrun.scss.
-// Everywhere else prefer the .sr-* classes, which wrap these once.
+// `@use 'theme/deck'` and @include a recipe where a global class cannot reach —
+// a `:host`, a pseudo-element. Everywhere else prefer the .sr-* classes.
 //
-// Surfaces and LEDs come in pairs: a `*-base` mixin is the plain, always-on
-// look and a `*-cyber`/glow mixin is the decorated layer _shadowrun.scss emits
-// only under [data-theme='cyberpunk']. panel-base takes $bg-prop so an Ionic
-// host can paint through its --background var while a plain element uses the
-// real property.
+// Surfaces and LEDs come in pairs: `*-base` is the plain always-on look,
+// `*-cyber`/glow the layer _shadowrun.scss emits only under cyberpunk.
+// panel-base takes $bg-prop so an Ionic host can paint through --background.
 //
 // led-glow declares its pulse INSIDE `prefers-reduced-motion: no-preference`
-// rather than letting a later `reduce` block switch it off: a media query adds
-// no specificity, so a reduce opt-out cannot out-weigh
-// `:root[data-theme='cyberpunk'] .sr-led--on` and silently lost — every LED
-// pulsed regardless, one permanent animation per recipe row. Its @keyframes
-// sr-pulse lives in _shadowrun.scss, since this file emits nothing.
+// rather than switching it off in a later `reduce` block: a media query adds no
+// specificity, so the opt-out lost to `:root[data-theme] .sr-led--on` and every
+// LED pulsed anyway, one permanent animation per row.
 //
-// hud-label exists as a mixin as well as the .sr-hud class because the colour
-// is NOT part of it: four surfaces re-typed the same three declarations while
-// painting their own, which a class alone could not serve. status-bar is shared
-// for the opposite reason — the shared list row and tracking's own render
-// byte-identical markup and had drifted to different widths, and the width IS
-// the widget.
+// hud-label is a mixin as well as a class because the COLOUR is not part of it,
+// which a class alone could not serve; hud-strip is the same four surfaces one
+// step on, parameterised by the only two things that differed. status-bar is
+// shared for the opposite reason — two renders of byte-identical markup had
+// drifted to different widths, and the width IS the widget.
 // ────────────────────────────────────────────────────────────────
 
 @mixin panel-base($bg-prop: background) {
@@ -100,6 +94,15 @@
   letter-spacing: var(--sr-label-tracking);
 }
 
+@mixin hud-strip($font-size, $column-gap) {
+  @include hud-label;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem $column-gap;
+  font-size: $font-size;
+  color: var(--sr-text-dim);
+}
+
 @mixin status-bar {
   display: flex;
   width: 0.5rem;
@@ -118,7 +121,6 @@
   gap: 0.5rem;
   font-family: var(--sr-deck-font);
   letter-spacing: var(--sr-brand-tracking);
-  text-transform: var(--sr-brand-transform);
 }
 @mixin brand-icon {
   /* stylelint-disable-next-line commlink/font-size-uses-scale -- icon box size, not type. */

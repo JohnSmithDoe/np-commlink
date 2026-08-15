@@ -43,7 +43,7 @@ which is the opposite of what a checklist is for. This is not the old `--quiet`:
 hid the output that explains a failure, and this shows only that output.
 
 ```
-┌─ 12/15  unit tests ───────────────────────────────────────── vitest ─┐
+┌─ 14/17  unit tests ───────────────────────────────────────── vitest ─┐
 │ $ pnpm run test:coverage                                             │
 │                                                                      │
 └─ 🦄 success · 13.7s · Tests 1240 passed (1240) ──────────────────────┘
@@ -90,10 +90,11 @@ The **Tool** column is what each card's header names — the script names (`veri
 | 10  | Format            | prettier              | 3s         | markdown is deliberately outside it                                                               |
 | 11  | Export surface    | check-exports.mjs     | 8s         | an `export` with no reader outside its file — what `noUnusedLocals` structurally cannot see       |
 | 12  | ESLint            | eslint                | **30–85s** | the whole repo, not just `src/`; always cold                                                      |
-| 13  | Unit tests        | vitest                | 12–15s     | coverage, not a bare run: the thresholds only bind if something checks them                       |
-| 14  | E2E               | playwright            | 25–55s     | 63 specs, Playwright starts its own `ng serve`                                                    |
-| 15  | Production build  | esbuild               | 7s         | the **pages** base href, which is the one that can break on a subpath                             |
-| 16  | Pages subpath     | check-pages-build.mjs | 1s         | serves 15's output at `/np-commlink/` and requests it — the only gate that reads another's output |
+| 13  | Lint rules        | vitest                | 1s         | RuleTester over the a11y rules — a rule with no spec fails open, reporting nothing                |
+| 14  | Unit tests        | vitest                | 12–15s     | coverage, not a bare run: the thresholds only bind if something checks them                       |
+| 15  | E2E               | playwright            | 25–55s     | 63 specs, Playwright starts its own `ng serve`                                                    |
+| 16  | Production build  | esbuild               | 7s         | the **pages** base href, which is the one that can break on a subpath                             |
+| 17  | Pages subpath     | check-pages-build.mjs | 1s         | serves 16's output at `/np-commlink/` and requests it — the only gate that reads another's output |
 
 **~105–155s**, every time — there is no warm path any more, and gate 12 alone swings ~50s
 with machine load. Cheap enough that "run the whole thing" is always the right answer; do
@@ -113,12 +114,12 @@ Gate 12 dominates and is 93.6% Sheriff's two eslint rules (every `commlink/*` ru
 together is 22ms), so `TIMING=all` before optimising anything about lint. Its cost varies
 a lot with machine load — 32s and 84s are both real measurements of the same command.
 
-Gates 1–12 are read-only and independent, so they *could* run concurrently — the script
+Gates 1–13 are read-only and independent, so they *could* run concurrently — the script
 runs them sequentially anyway, because a few saved seconds is worth less than the
-one-card-at-a-time readout. **13–16 must never overlap**: e2e binds port 4321 and the
+one-card-at-a-time readout. **14–17 must never overlap**: e2e binds port 4321 and the
 build writes `www/`, and both saturate the CPU, which turns a slow spec into a flaky one.
-16 is ordered rather than merely serialised — it serves what 15 wrote, which is why a
-failed 15 skips it rather than letting it read whatever was left on disk.
+17 is ordered rather than merely serialised — it serves what 16 wrote, which is why a
+failed 16 skips it rather than letting it read whatever was left on disk.
 
 ## Traps that produce a wrong answer
 

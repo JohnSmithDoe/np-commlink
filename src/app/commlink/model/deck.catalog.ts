@@ -128,7 +128,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'shopping',
     module: 'household',
     icon: 'cart-outline',
-    route: '/household/shopping/_shopping',
+    route: '/household/shopping',
     titleKey: marker('page-title.household-shopping'),
     labels: {
       cyberpunk: {
@@ -149,7 +149,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'storage',
     module: 'household',
     icon: 'file-tray-stacked-outline',
-    route: '/household/storage/_storage',
+    route: '/household/storage',
     titleKey: marker('page-title.household-storage'),
     labels: {
       cyberpunk: {
@@ -191,7 +191,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'products',
     module: 'household',
     icon: 'pricetags-outline',
-    route: '/household/products/_products',
+    route: '/household/products',
     titleKey: marker('page-title.household-products'),
     labels: {
       cyberpunk: {
@@ -270,6 +270,27 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.games'),
   },
   {
+    id: 'ritual',
+    module: 'ritual',
+    icon: 'sunny-outline',
+    route: '/ritual',
+    titleKey: marker('page-title.ritual'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.ritual.name'),
+        descKey: marker('deck.cyberpunk.ritual.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.ritual.name'),
+        descKey: marker('deck.boomer.ritual.desc'),
+      },
+    },
+    onDeck: true,
+    source: 'ritual',
+    metric: 'done',
+    metricKey: marker('deck.metric.rituals'),
+  },
+  {
     id: 'settings',
     module: 'settings',
     icon: 'settings-outline',
@@ -333,6 +354,9 @@ export const DECK_CHROME_FIELDS = [
   'node-online',
   'node-standby',
   'node-offline',
+  'empty-title',
+  'empty-body',
+  'empty-action',
 ] as const;
 
 export type DeckChromeField = (typeof DECK_CHROME_FIELDS)[number];

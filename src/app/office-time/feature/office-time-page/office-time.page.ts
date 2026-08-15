@@ -58,8 +58,8 @@ export class OfficeTimePage implements ViewWillEnter {
   readonly holidays = this.#facade.holidays;
 
   readonly holidates = this.#facade.holidayDays;
-  readonly officedays = this.#facade.officedays;
-  readonly freedays = this.#facade.freedays;
+  readonly officedayKeys = this.#facade.officedayKeys;
+  readonly freedayKeys = this.#facade.freedayKeys;
   readonly statsWeek = this.#facade.statsWeek;
 
   readonly statsMonth = this.#facade.statsMonth;

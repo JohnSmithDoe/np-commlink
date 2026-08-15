@@ -15,10 +15,10 @@
   </ion-item>
 </ng-template>
 
-<ion-item-sliding (ionDrag)="deleteOnSwipe($event)">
+<ion-item-sliding (ionDrag)="onSwipe($event)">
   <ng-container *ngTemplateOutlet="itemTemplate" />
 
-  @if (view() === 'raw') {
+  @if (canDelete()) {
     <ion-item-options side="end">
       <ion-item-option
         color="danger"

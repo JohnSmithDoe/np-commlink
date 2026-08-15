@@ -1,0 +1,31 @@
+<div class="filter-bar">
+  <ion-button
+    shape="round"
+    [fill]="active() ? 'outline' : 'solid'"
+    [attr.aria-pressed]="!active()"
+    data-testid="clear-category-filter"
+    (click)="clearFilter.emit()"
+  >
+    {{ 'item-list.filter.all' | translate }}
+  </ion-button>
+  @for (category of catalog(); track category.id) {
+    <ion-button
+      shape="round"
+      [fill]="isActive(category.id) ? 'solid' : 'outline'"
+      [attr.aria-pressed]="isActive(category.id)"
+      (click)="toggle(category.id)"
+    >
+      {{ category.name }}
+    </ion-button>
+  }
+  @for (filter of extraFilters(); track filter.id) {
+    <ion-button
+      shape="round"
+      [fill]="isActive(filter.id) ? 'solid' : 'outline'"
+      [attr.aria-pressed]="isActive(filter.id)"
+      (click)="toggle(filter.id)"
+    >
+      {{ filter.labelKey | translate }}
+    </ion-button>
+  }
+</div>

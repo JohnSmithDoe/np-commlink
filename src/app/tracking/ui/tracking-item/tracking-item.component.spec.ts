@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { IonList } from '@ionic/angular/standalone';
 import { provideTranslateService } from '@ngx-translate/core';
 import { TrackingItem } from '../../model/tracking.types';
 import { TrackingItemComponent } from './tracking-item.component';
@@ -12,21 +13,25 @@ const track = (state: TrackingItem['state']): TrackingItem => ({
 });
 
 describe('TrackingItemComponent', () => {
-  let component: TrackingItemComponent;
-
-  beforeEach(() => {
+  it('closes the sliding row before it emits, so no row is left open', async () => {
     TestBed.configureTestingModule({
       imports: [TrackingItemComponent],
       providers: [provideTranslateService(), provideZonelessChangeDetection()],
     });
-    component = TestBed.createComponent(
-      TrackingItemComponent
-    ).componentInstance;
-  });
+    const fixture = TestBed.createComponent(TrackingItemComponent);
+    const order: string[] = [];
+    fixture.componentRef.setInput('item', track('running'));
+    fixture.componentRef.setInput('ionList', {
+      closeSlidingItems: () => {
+        order.push('closed');
+        return Promise.resolve(true);
+      },
+    } as unknown as IonList);
+    const component = fixture.componentInstance;
+    component.editItem.subscribe(() => order.push('emitted'));
 
-  it('maps the tracking state to a status color', () => {
-    expect(component.getColor(track('running'))).toBe('success');
-    expect(component.getColor(track('stopped'))).toBe('medium');
-    expect(component.getColor(track('paused'))).toBe('warning');
+    await component.closeAndEmit(component.editItem);
+
+    expect(order).toEqual(['closed', 'emitted']);
   });
 });

@@ -1,0 +1,65 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.cash"
+  icon="wallet-outline"
+  [itemTemplate]="accountItem"
+>
+  <ion-buttons headerEnd slot="end">
+    <ion-button
+      routerLink="/cash/report"
+      [attr.aria-label]="'cash.a11y.report' | translate"
+    >
+      <ion-icon slot="icon-only" name="bar-chart-outline" aria-hidden="true" />
+    </ion-button>
+    @if (canTransfer()) {
+      <ion-button
+        (click)="openTransfer()"
+        [attr.aria-label]="'cash.a11y.transfer' | translate"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="swap-horizontal-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    }
+    <ion-button
+      routerLink="/cash/rules"
+      [attr.aria-label]="'cash.a11y.rules' | translate"
+    >
+      <ion-icon slot="icon-only" name="funnel-outline" aria-hidden="true" />
+    </ion-button>
+    <ion-button
+      routerLink="/cash/categories"
+      [attr.aria-label]="'cash.a11y.categories' | translate"
+    >
+      <ion-icon slot="icon-only" name="pricetags-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+
+  <span
+    toolbarActionsEnd
+    class="cash-networth__value"
+    data-testid="cash-networth"
+  >
+    {{ netWorthCents() | moneyEur }}
+  </span>
+</app-list-page>
+
+<ng-template #accountItem let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [leadingIcon]="iconFor(item)"
+    (selectItem)="goToAccount(item)"
+    (deleteItem)="confirmDelete(item)"
+  >
+    <p itemDetails>{{ kindLabel(item) | translate }}</p>
+    <ion-note itemDetails class="cash-account__balance">
+      {{ item.balanceCents | moneyEur }}
+    </ion-note>
+  </app-list-item>
+</ng-template>
+
+<app-edit-cash-account-dialog />

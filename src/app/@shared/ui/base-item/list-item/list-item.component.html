@@ -1,12 +1,9 @@
-<ion-item-sliding
-  (ionDrag)="deleteOrCartOnSwipe($event)"
-  data-testid="list-row"
->
+<ion-item-sliding (ionDrag)="onSwipe($event)" data-testid="list-row">
   @let startSwipe = startSwipeAction();
   @if (startSwipe) {
     <ion-item-options side="start">
       <ion-item-option
-        color="success"
+        [color]="startSwipe.color ?? 'success'"
         [expandable]="true"
         (click)="emitStartSwipe()"
         [attr.aria-label]="startSwipe.labelKey | translate"
@@ -22,6 +19,7 @@
 
   <ion-item
     [button]="true"
+    [disabled]="disabled()"
     (click)="selectItem.emit()"
     lines="full"
     [class.with-status]="hasStatusBar()"
@@ -33,7 +31,11 @@
       </div>
     }
 
-    <ion-reorder slot="start"></ion-reorder>
+    @let leading = leadingIcon();
+    @if (leading) {
+      <ion-icon slot="start" [name]="leading" aria-hidden="true"></ion-icon>
+    }
+
     <ion-label
       class="ion-text-wrap"
       [class.bought]="crossedOut()"
@@ -66,13 +68,16 @@
     }
   </ion-item>
 
-  <ion-item-options side="end">
-    <ion-item-option
-      color="danger"
-      [expandable]="true"
-      (click)="emitDeleteItem()"
-    >
-      {{ 'item-list.action.delete' | translate }}
-    </ion-item-option>
-  </ion-item-options>
+  @if (canDelete()) {
+    <ion-item-options side="end" data-testid="list-row-delete-options">
+      <ion-item-option
+        color="danger"
+        [expandable]="true"
+        (click)="emitDeleteItem()"
+        data-testid="list-row-delete"
+      >
+        {{ 'item-list.action.delete' | translate }}
+      </ion-item-option>
+    </ion-item-options>
+  }
 </ion-item-sliding>

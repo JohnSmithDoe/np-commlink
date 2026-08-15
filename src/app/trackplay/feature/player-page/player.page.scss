@@ -1,0 +1,13 @@
+// ─── why ────────────────────────────────────────────────────────
+// No `:host` wrapper: the stats block and the row detail are projected into
+// the shared list page, so the page element is not their ancestor — only
+// the emulated-encapsulation attribute still binds them to this file.
+// ────────────────────────────────────────────────────────────────
+
+@use '../../../../theme/trackplay';
+
+@include trackplay.list-row-second-line;
+
+.tp-player-stats p {
+  margin: 0.25rem 0;
+}

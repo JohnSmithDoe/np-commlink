@@ -47,6 +47,50 @@ describe('ItemListEmptyComponent', () => {
     );
   });
 
+  it('blames the filter, not the list, when a filter is hiding every row', () => {
+    fixture.componentRef.setInput('isEmptyList', true);
+    fixture.componentRef.setInput('isFiltered', true);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'item-list.empty.filtered'
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'item-list.empty.isempty'
+    );
+  });
+
+  it('lets the search message win over the filter one', () => {
+    fixture.componentRef.setInput('isEmptyList', true);
+    fixture.componentRef.setInput('isFiltered', true);
+    fixture.componentRef.setInput('isSearching', true);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'item-list.empty.notfound'
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'item-list.empty.filtered'
+    );
+  });
+
+  it('offers to clear the filter rather than to create an item', () => {
+    let cleared = 0;
+    let created = 0;
+    component.clearFilter.subscribe(() => (cleared += 1));
+    component.emptyList.subscribe(() => (created += 1));
+    fixture.componentRef.setInput('isEmptyList', true);
+    fixture.componentRef.setInput('isFiltered', true);
+    fixture.detectChanges();
+
+    fixture.nativeElement
+      .querySelector('[data-testid="text-item"]')
+      .dispatchEvent(new MouseEvent('click'));
+
+    expect(cleared).toBe(1);
+    expect(created).toBe(0);
+  });
+
   it('renders nothing when the list is not empty', () => {
     fixture.componentRef.setInput('isEmptyList', false);
     fixture.componentRef.setInput('isSearching', false);

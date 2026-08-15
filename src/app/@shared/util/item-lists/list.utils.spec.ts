@@ -1,7 +1,8 @@
 import { BaseItem } from '../../model/base-item.types';
-import { ListState } from '../../model/item-list.types';
+import { ItemList, ItemListSortDirection } from '../../model/item-list.types';
 import {
   addListItem,
+  hydratedList,
   removeListItem,
   updatedSearchQuery,
   updateListItem,
@@ -17,12 +18,15 @@ const item = (over: Partial<BaseItem> = {}): BaseItem => ({
 });
 
 const probeList = (
-  over: Partial<ListState<BaseItem>> = {}
-): ListState<BaseItem> => ({
+  over: Partial<ItemList<BaseItem>> = {}
+): ItemList<BaseItem> => ({
   id: '_probe',
   items: [],
   ...over,
 });
+
+const sorted = (sortDirection: ItemListSortDirection) =>
+  probeList({ sort: { sortBy: 'name', sortDirection } });
 
 describe('addListItem', () => {
   it('prepends the item without deriving categories', () => {
@@ -82,36 +86,71 @@ describe('updateListItem', () => {
   });
 });
 
+describe('hydratedList', () => {
+  it('restores the items and the sort, but never a search or a filter', () => {
+    const stored = probeList({
+      items: [item()],
+      searchQuery: 'milk',
+      filterBy: 'dairy',
+      sort: { sortBy: 'name', sortDirection: 'desc' },
+    });
+
+    expect(hydratedList(stored)).toEqual({
+      ...stored,
+      searchQuery: undefined,
+      filterBy: undefined,
+    });
+  });
+});
+
 describe('updateListSort', () => {
-  it('returns undefined without a sortBy', () => {
-    expect(updateListSort()).toBeUndefined();
+  it('clears the sort without a sortBy, so a configured default can be undone', () => {
+    expect(updateListSort(sorted('desc')).sort).toBeUndefined();
   });
 
   it('honours an explicit direction', () => {
-    expect(updateListSort('name', 'desc')).toEqual({
+    expect(updateListSort(probeList(), 'name', 'desc').sort).toEqual({
       sortBy: 'name',
       sortDirection: 'desc',
     });
   });
 
-  it('keeps the current direction', () => {
-    expect(updateListSort('name', 'keep', 'desc')).toEqual({
+  it('reads the current direction off the state it is given', () => {
+    expect(updateListSort(sorted('desc'), 'name', 'keep').sort).toEqual({
       sortBy: 'name',
       sortDirection: 'desc',
     });
-  });
-
-  it('toggles the direction', () => {
-    expect(updateListSort('name', 'toggle', 'asc')?.sortDirection).toBe('desc');
-    expect(updateListSort('name', 'toggle', 'desc')?.sortDirection).toBe('asc');
+    expect(updateListSort(sorted('asc'), 'name', 'toggle').sort).toEqual({
+      sortBy: 'name',
+      sortDirection: 'desc',
+    });
+    expect(updateListSort(sorted('desc'), 'name', 'toggle').sort).toEqual({
+      sortBy: 'name',
+      sortDirection: 'asc',
+    });
   });
 
   it('defaults to asc', () => {
-    expect(updateListSort('name')?.sortDirection).toBe('asc');
+    expect(updateListSort(probeList(), 'name').sort?.sortDirection).toBe('asc');
+  });
+
+  it('leaves the rest of the state alone', () => {
+    const state = probeList({ items: [item()], searchQuery: 'milk' });
+
+    const next = updateListSort(state, 'name');
+
+    expect(next.items).toBe(state.items);
+    expect(next.searchQuery).toBe('milk');
   });
 });
 
 describe('updateListSearch', () => {
+  it('needs nothing but a search query, so a view without items can use it', () => {
+    expect(updateListSearch({ searchQuery: 'old' }, 'new')).toEqual({
+      searchQuery: 'new',
+    });
+  });
+
   it('stores the query', () => {
     expect(updateListSearch(probeList(), 'milk').searchQuery).toBe('milk');
   });

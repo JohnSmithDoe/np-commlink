@@ -3,13 +3,14 @@ import { matcherFor, matchesSearchExactly } from '../app.utils';
 import { BaseItem } from '../../model/base-item.types';
 import { CategoryId } from '../../model/category.types';
 import {
-  SearchResult,
   ItemListSort,
-  ListState,
+  ItemList,
+  SearchResult,
 } from '../../model/item-list.types';
+import { matcherForFilter } from './list-filter';
 
-const MAXPRIO = Number.MAX_SAFE_INTEGER;
-const MINPRIO = Number.MIN_SAFE_INTEGER;
+const MISSING_LAST = Number.MAX_SAFE_INTEGER;
+const MISSING_FIRST = Number.MIN_SAFE_INTEGER;
 const MAXDATE = '5000-1-1';
 const MINDATE = '1970-1-1';
 
@@ -51,8 +52,8 @@ const compareByOptionalNumber = <T extends BaseItem>(
     return compareByName(a, b, direction);
   const byValue =
     direction === 'asc'
-      ? (aValue ?? MAXPRIO) - (bValue ?? MAXPRIO)
-      : (bValue ?? MINPRIO) - (aValue ?? MINPRIO);
+      ? (aValue ?? MISSING_LAST) - (bValue ?? MISSING_LAST)
+      : (bValue ?? MISSING_FIRST) - (aValue ?? MISSING_FIRST);
   return byValue === 0 ? compareByName(a, b, direction) : byValue;
 };
 
@@ -100,35 +101,23 @@ export const itemComparator = <T extends BaseItem>(sort?: ItemListSort) => {
   if (!field || field === 'name') {
     return (a: T, b: T): number => compareByName(a, b, sort?.sortDirection);
   }
-  let compare: FieldComparator<T> | undefined;
   return (a: T, b: T): number => {
-    if (compare) return compare(a, b, field, sort.sortDirection);
     const sample = optional<unknown>(a, field) ?? optional<unknown>(b, field);
-    const chosen = comparatorForSample<T>(sample);
-    if (sample !== undefined) compare = chosen;
-    return chosen(a, b, field, sort.sortDirection);
+    return comparatorForSample<T>(sample)(a, b, field, sort.sortDirection);
   };
 };
 
-export const filterAndSortItemList = <
-  T extends ListState<R>,
-  R extends BaseItem,
->(
-  state: T,
+export const filterAndSortItemList = <R extends BaseItem>(
+  state: ItemList<R>,
   result?: SearchResult<R>
 ): R[] => {
   return (result?.listItems ?? state.items)
-    .filter(
-      (item) => !state.filterBy || item.categoryIds?.includes(state.filterBy)
-    )
+    .filter(matcherForFilter(state.filterBy))
     .sort(itemComparator<R>(state.sort));
 };
 
-export const filterListBySearchQuery = <
-  T extends ListState<R>,
-  R extends BaseItem,
->(
-  listState: T
+export const filterListBySearchQuery = <R extends BaseItem>(
+  listState: ItemList<R>
 ): SearchResult<R> | undefined => {
   const searchQuery = listState.searchQuery?.trim();
   if (!searchQuery || searchQuery.length === 0) return;

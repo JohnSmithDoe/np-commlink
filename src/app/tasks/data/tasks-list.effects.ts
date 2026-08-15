@@ -2,10 +2,25 @@ import {
   clearSearchAfter,
   createItemListEffects,
 } from '../../@shared/data/item-lists/item-list.effects.factory';
+import {
+  categoryFilterFromRoute,
+  clearCategoryFilterIn,
+} from '../../@shared/data/item-lists/category-filter.effects';
+import { selectRouteCategoryFilter } from '../../@shared/data/router/router.selector';
 import { createCategory } from '../../@shared/util/app.factory';
 import { createTaskItem } from '../util/task.factory';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import { selectTaskCategoryList, selectTasksList } from './tasks.selector';
+
+export const tasksRouteFilterEffects = {
+  drilledFilter$: categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
+    id ? TasksActions.updateFilter(id) : undefined
+  ),
+
+  clearFilter$: clearCategoryFilterIn(() =>
+    TasksActions.updateFilter(undefined)
+  ),
+};
 
 export const tasksListEffects = {
   ...createItemListEffects({

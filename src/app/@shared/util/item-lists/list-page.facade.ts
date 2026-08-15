@@ -3,20 +3,22 @@ import { BaseItem } from '../../model/base-item.types';
 import { Category, CategoryId } from '../../model/category.types';
 import {
   SearchResult,
+  ItemListSortOption,
   ItemListSortType,
-  ListState,
+  ItemList,
 } from '../../model/item-list.types';
 
 export interface ListPageFacade {
-  readonly state: Signal<ListState<BaseItem> | undefined>;
+  readonly state: Signal<ItemList<BaseItem> | undefined>;
   readonly items: Signal<BaseItem[] | undefined>;
   readonly searchResult: Signal<SearchResult<BaseItem> | undefined>;
-  readonly catalog: Signal<readonly Category[]>;
+  readonly catalog?: Signal<readonly Category[]>;
+  readonly sortOptions?: Signal<readonly ItemListSortOption[]>;
 
   search(term?: string): void;
   addItemFromSearch(): void;
   setSortMode(type: ItemListSortType): void;
-  selectCategory(categoryId?: CategoryId): void;
+  selectCategory?(categoryId?: CategoryId): void;
   showCreateDialog(): void;
   manageCategories?(): void;
 }

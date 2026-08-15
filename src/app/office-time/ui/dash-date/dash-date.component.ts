@@ -13,33 +13,11 @@ import {
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { localizedLongDate } from '../../../@shared/util/formatting/date-format.utils';
+import { currentTime$ } from '../../../@shared/util/clock';
 import { TranslatePipe } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  defer,
-  EMPTY,
-  fromEvent,
-  interval,
-  map,
-  startWith,
-  switchMap,
-} from 'rxjs';
 
 dayjs.extend(weekOfYear);
-
-const isPageVisible = () => document.visibilityState === 'visible';
-
-const pageVisibility$ = defer(() =>
-  fromEvent(document, 'visibilitychange').pipe(
-    map(isPageVisible),
-    startWith(isPageVisible())
-  )
-);
-
-const currentTime$ = pageVisibility$.pipe(
-  switchMap((visible) => (visible ? interval(1000).pipe(startWith(0)) : EMPTY)),
-  map(() => dayjs())
-);
 
 @Component({
   selector: 'app-dash-date',

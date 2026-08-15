@@ -1,22 +1,28 @@
 import {
   Game,
+  GamesState,
+  GamesView,
   GameType,
+  GameTypesState,
   Player,
+  PlayersState,
   Round,
   TrackplayState,
 } from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPES,
-  initialTrackplayConfig,
+  initialGamesForPlayerView,
+  initialGamesState,
+  initialGameTypesState,
+  initialPlayersState,
 } from '../util/trackplay.factory';
-
-export const TEST_EPOCH = 1_704_110_400_000; // 2024-01-01T12:00:00.000Z
+import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 
 export function mockPlayer(overrides: Partial<Player> = {}): Player {
   return {
     id: 'player-1',
     name: 'Alice',
-    created: TEST_EPOCH,
+    createdAt: TEST_TIMESTAMP,
     ...overrides,
   };
 }
@@ -29,10 +35,10 @@ export function mockGame(overrides: Partial<Game> = {}): Game {
   return {
     id: 'game-1',
     name: 'Game',
-    created: TEST_EPOCH,
-    updated: TEST_EPOCH,
-    type: 'default',
-    players: [],
+    createdAt: TEST_TIMESTAMP,
+    updatedAt: TEST_TIMESTAMP,
+    categoryIds: ['default'],
+    playerIds: [],
     rounds: [],
     ended: false,
     ...overrides,
@@ -40,25 +46,41 @@ export function mockGame(overrides: Partial<Game> = {}): Game {
 }
 
 export function mockRound(overrides: Partial<Round> = {}): Round {
-  return {
-    id: 'round-1',
-    name: 'round 0',
-    created: TEST_EPOCH,
-    idx: 0,
-    values: {},
-    ...overrides,
-  };
+  return { id: 'round-1', values: {}, ...overrides };
+}
+
+export function mockPlayersState(
+  items: Player[] = [],
+  overrides: Partial<PlayersState> = {}
+): PlayersState {
+  return { ...initialPlayersState, items, ...overrides };
+}
+
+export function mockGamesState(
+  items: Game[] = [],
+  overrides: Partial<GamesState> = {}
+): GamesState {
+  return { ...initialGamesState, items, ...overrides };
+}
+
+export function mockGameTypesState(items?: GameType[]): GameTypesState {
+  return { ...initialGameTypesState, items: items ?? [...DEFAULT_GAME_TYPES] };
+}
+
+export function mockGamesForPlayerView(
+  overrides: Partial<GamesView> = {}
+): GamesView {
+  return { ...initialGamesForPlayerView, ...overrides };
 }
 
 export function mockTrackplayState(
   overrides: Partial<TrackplayState> = {}
 ): TrackplayState {
   return {
-    players: {},
-    games: {},
-    gameTypes: structuredClone(DEFAULT_GAME_TYPES),
-    rounds: {},
-    config: structuredClone(initialTrackplayConfig),
+    players: mockPlayersState(),
+    games: mockGamesState(),
+    gamesForPlayer: mockGamesForPlayerView(),
+    gameTypes: mockGameTypesState(),
     lastDeleted: null,
     ...overrides,
   };

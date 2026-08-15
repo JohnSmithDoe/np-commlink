@@ -146,6 +146,16 @@ jobs:
       - name: Type-check (e2e)
         run: pnpm exec tsc -p tsconfig.e2e.json --noEmit
 
+      # The gates' own gate. A lint rule with no spec fails OPEN — it stops
+      # matching and reports nothing, which reads exactly like a clean tree.
+      # That is not hypothetical: `a11y-no-actionable-toast-button` was inert on
+      # the app's only actionable toast for as long as its receiver regex
+      # required a `Ctrl` suffix the code had stopped using. Separate from the
+      # unit gate because the app's specs run through `@angular/build:unit-test`,
+      # whose tsconfig reaches only under `src`.
+      - name: Lint rules (vitest)
+        run: pnpm run test:plugin
+
       # Coverage rather than a bare run: the thresholds in vitest.config.ts are
       # a regression floor, and they only bind if something checks them.
       - name: Unit tests (vitest)

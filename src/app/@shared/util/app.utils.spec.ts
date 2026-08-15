@@ -2,12 +2,11 @@ import { InputCustomEvent } from '@ionic/angular/standalone';
 import { IonDragEvent } from '../model/app.types';
 import { BaseItem } from '../model/base-item.types';
 import {
+  findMatchingItem,
+  indexOfMatchingItem,
   matcherFor,
   matchesId,
-  matchesItemExactly,
-  matchesItemExactlyIndex as matchesItemExactlyIndex,
   matchesNameExactly,
-  matchesSearch,
   matchesSearchExactly,
   matchingTxt,
   matchingTxtIsNotEmpty,
@@ -93,38 +92,31 @@ describe('app.utils', () => {
       );
     });
 
-    it('matchesItemExactly finds by id first, then by name', () => {
+    it('findMatchingItem finds by id first, then by name', () => {
       const target = baseItem({ id: 'x', name: 'Milk' });
       const byId = baseItem({ id: 'x', name: 'renamed' });
       const byName = baseItem({ id: 'y', name: 'milk' });
-      expect(matchesItemExactly(target, [byName, byId])).toBe(byId);
-      expect(matchesItemExactly(target, [byName])).toBe(byName);
+      expect(findMatchingItem(target, [byName, byId])).toBe(byId);
+      expect(findMatchingItem(target, [byName])).toBe(byName);
       expect(
-        matchesItemExactly(target, [baseItem({ id: 'z', name: 'z' })])
+        findMatchingItem(target, [baseItem({ id: 'z', name: 'z' })])
       ).toBeUndefined();
     });
 
-    it('matchesItemExactlyIndex returns the index of the match', () => {
+    it('indexOfMatchingItem returns the index of the match', () => {
       const list = [
         baseItem({ id: 'a', name: 'a' }),
         baseItem({ id: 'b', name: 'b' }),
       ];
-      expect(
-        matchesItemExactlyIndex(baseItem({ id: 'b', name: 'b' }), list)
-      ).toBe(1);
-      expect(
-        matchesItemExactlyIndex(baseItem({ id: 'c', name: 'c' }), list)
-      ).toBe(-1);
+      expect(indexOfMatchingItem(baseItem({ id: 'b', name: 'b' }), list)).toBe(
+        1
+      );
+      expect(indexOfMatchingItem(baseItem({ id: 'c', name: 'c' }), list)).toBe(
+        -1
+      );
     });
 
-    it('matchesSearch does case-insensitive substring matches over an item or a string', () => {
-      expect(matchesSearch(baseItem({ name: 'Banana' }), 'ana')).toBe(true);
-      expect(matchesSearch('Banana', 'xyz')).toBe(false);
-      expect(matchesSearch('Banana', 'BAN')).toBe(true);
-      expect(matchesSearch('Banana')).toBe(true);
-    });
-
-    it('matcherFor agrees with matchesSearch, needle trimmed', () => {
+    it('matcherFor matches an item or a string, case-insensitive, needle trimmed', () => {
       const matches = matcherFor('  BAN ');
       expect(matches('Banana')).toBe(true);
       expect(matches(baseItem({ name: 'Banana' }))).toBe(true);

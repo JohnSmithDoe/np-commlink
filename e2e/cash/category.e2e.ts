@@ -13,7 +13,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { pageRoot } from '../helpers';
+import { listRow, pageRoot, presentedDialog } from '../helpers';
 
 test.describe('cash transaction category', () => {
   test('assigns a category to a transaction via the single-select picker', async ({
@@ -24,11 +24,11 @@ test.describe('cash transaction category', () => {
     await expect(list).toBeVisible({ timeout: 30_000 });
 
     await list.getByTestId('page-header-add').click();
-    const accountModal = page.locator('app-cash-account-edit-modal');
+    const accountModal = presentedDialog(page, 'Neuen Eintrag anlegen');
     await accountModal
       .getByRole('textbox', { name: 'Name' })
       .fill('CREDSTICK-01');
-    await accountModal.getByRole('button', { name: 'Speichern' }).click();
+    await accountModal.getByRole('button', { name: 'Anlegen' }).click();
     await expect(list.getByText('CREDSTICK-01')).toBeVisible({
       timeout: 10_000,
     });
@@ -36,14 +36,10 @@ test.describe('cash transaction category', () => {
     await list.getByText('CREDSTICK-01').click();
     const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
-    await account
-      .getByRole('button', { name: 'Transaktion hinzufügen' })
-      .click();
+    await account.getByTestId('page-header-add').click();
 
-    const txnModal = page.locator('app-cash-transaction-edit-modal');
-    await txnModal
-      .getByRole('textbox', { name: 'Beschreibung' })
-      .fill('Soykaf refill');
+    const txnModal = presentedDialog(page, 'Neuen Eintrag anlegen');
+    await txnModal.getByRole('textbox', { name: 'Name' }).fill('Soykaf refill');
     await txnModal.getByRole('textbox', { name: 'Betrag' }).fill('12,34');
 
     await txnModal.getByTestId('category-input-trigger').click();
@@ -59,11 +55,10 @@ test.describe('cash transaction category', () => {
     await expect(
       txnModal.locator('app-category-input').getByText('Kaffee')
     ).toBeVisible({ timeout: 10_000 });
-    await txnModal.getByRole('button', { name: 'Speichern' }).click();
+    await txnModal.getByRole('button', { name: 'Anlegen' }).click();
 
-    await expect(account.getByText('Soykaf refill')).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(account.getByText('Kaffee')).toBeVisible({ timeout: 10_000 });
+    const row = listRow(page, 'Soykaf refill');
+    await expect(row).toBeVisible({ timeout: 10_000 });
+    await expect(row.getByTestId('list-row-category')).toHaveText('Kaffee');
   });
 });

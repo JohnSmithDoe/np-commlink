@@ -6,6 +6,10 @@ export type ItemListSort = {
   sortDirection: ItemListSortDirection;
   sortBy: ItemListSortType;
 };
+export type ItemListSortOption = {
+  type: ItemListSortType;
+  labelKey: string;
+};
 
 export type ItemListId = string;
 
@@ -16,8 +20,6 @@ export interface ItemList<T extends BaseItem> {
   sort?: ItemListSort;
   filterBy?: string;
 }
-
-export type ListState<T extends BaseItem> = ItemList<T>;
 
 export interface SearchResult<T extends BaseItem> {
   listItems: T[];

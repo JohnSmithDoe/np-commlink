@@ -1,0 +1,22 @@
+<app-list-item
+  [item]="item()"
+  [title]="item().name"
+  [ionList]="ionList()"
+  [categories]="categories()"
+  [leadingIcon]="'play-circle'"
+  [crossedOut]="item().ended"
+  [disabled]="!item().playerIds.length"
+  [startSwipeAction]="editSwipeAction"
+  (selectItem)="selectGame.emit()"
+  (startSwipe)="editGame.emit()"
+  (deleteItem)="deleteGame.emit()"
+>
+  <p itemDetails class="second-line">
+    <ion-note>{{ 'trackplay.label.created' | translate }}</ion-note>
+    <span class="value">{{ item().createdAt | date: 'short' }}</span>
+  </p>
+  <p itemDetails class="second-line">
+    <ion-note>{{ 'trackplay.label.last-played' | translate }}</ion-note>
+    <span class="value">{{ item().updatedAt | date: 'short' }}</span>
+  </p>
+</app-list-item>

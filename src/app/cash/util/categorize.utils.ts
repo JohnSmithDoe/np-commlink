@@ -1,5 +1,6 @@
 import { CashFilterCondition, CashRule } from '../model/rule.types';
 import { CashTransaction } from '../model/transaction.types';
+import { categoryIdOf } from './cash-category.utils';
 import { eurToCents } from './money.utils';
 
 import { CategoryId } from '../../@shared/model/category.types';
@@ -84,7 +85,7 @@ export function matchesCondition(
 ): boolean {
   return condition.field === 'amount'
     ? matchesAmountCondition(txn.amountCents, condition)
-    : matchesDescriptionCondition(txn.description, condition);
+    : matchesDescriptionCondition(txn.name, condition);
 }
 
 export function matchesRule(txn: CashTransaction, rule: CashRule): boolean {
@@ -118,7 +119,7 @@ export function recategorizations(
   for (const txn of transactions) {
     if (txn.categoryManual) continue;
     const categoryId = categorize(txn, rules);
-    if (categoryId !== txn.categoryId) {
+    if (categoryId !== categoryIdOf(txn)) {
       changes.push({ transactionId: txn.id, categoryId });
     }
   }

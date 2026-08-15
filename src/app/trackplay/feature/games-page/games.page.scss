@@ -1,0 +1,16 @@
+// ─── why ────────────────────────────────────────────────────────
+// No `:host` wrapper: the row detail is projected into `app-list-item` and
+// the counter into the shared toolbar, so the page element is not an
+// ancestor of either — only the emulated-encapsulation attribute binds.
+// ────────────────────────────────────────────────────────────────
+
+@use '../../../../theme/trackplay';
+
+@include trackplay.list-row-second-line;
+
+.tp-count {
+  font-family: var(--sr-deck-font);
+  color: var(--sr-text-dim);
+  margin-inline-end: 0.5rem;
+  white-space: nowrap;
+}

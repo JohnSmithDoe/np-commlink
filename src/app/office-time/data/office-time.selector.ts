@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { OfficeTimeState } from '../model/office-time.types';
+import { dayKeysOf } from '../util/office-time.utils';
 
 export const OFFICE_TIME_STATE_KEY = 'officeTime';
 
@@ -9,38 +10,38 @@ export const selectOfficeTimeState = createFeatureSelector<OfficeTimeState>(
 
 export const selectDashboardSettings = createSelector(
   selectOfficeTimeState,
-  (state) => {
-    return state.dashboardSettings;
-  }
+  (state) => state.dashboardSettings
 );
 
 export const selectDashboardItems = createSelector(
   selectOfficeTimeState,
-  (state) => {
-    return state.dashboardItems;
-  }
-);
-export const selectTargetOfficeDaysPerWeek = createSelector(
-  selectOfficeTimeState,
-  (state) => {
-    return state.targetOfficeDaysPerWeek;
-  }
+  (state) => state.dashboardItems
 );
 
-export const selectHolidays = createSelector(selectOfficeTimeState, (state) => {
-  return state.holidays;
-});
-export const selectHolidayDays = createSelector(selectHolidays, (holidays) => {
-  return Object.values(holidays ?? {});
-});
+export const selectTargetOfficeDaysPerWeek = createSelector(
+  selectOfficeTimeState,
+  (state) => state.targetOfficeDaysPerWeek
+);
+
+export const selectHolidays = createSelector(
+  selectOfficeTimeState,
+  (state) => state.holidays
+);
+
+export const selectHolidayDays = createSelector(selectHolidays, (holidays) =>
+  Object.values(holidays)
+);
 
 export const selectOfficedays = createSelector(
   selectOfficeTimeState,
-  (state) => {
-    return state.officedays ?? [];
-  }
+  (state) => state.officedays
 );
 
-export const selectFreedays = createSelector(selectOfficeTimeState, (state) => {
-  return state.freedays ?? [];
-});
+export const selectFreedays = createSelector(
+  selectOfficeTimeState,
+  (state) => state.freedays
+);
+
+export const selectOfficedayKeys = createSelector(selectOfficedays, dayKeysOf);
+
+export const selectFreedayKeys = createSelector(selectFreedays, dayKeysOf);

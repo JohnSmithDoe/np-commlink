@@ -29,11 +29,3 @@ export const selectDashboardStatsYear = createSelector(
   selectStatsKeys,
   (keys) => calculateStats('year', keys, dayjsToday())
 );
-
-export const toDashboardStatsMetrics = (stats: {
-  officedays: number;
-  percentage: number;
-}): { officedays: number; percentage: number } => ({
-  officedays: stats.officedays,
-  percentage: stats.percentage,
-});

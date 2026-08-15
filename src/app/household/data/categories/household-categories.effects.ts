@@ -1,16 +1,12 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * The catalog page could not add, rename or add-from-search a category,
- * and the cause was this file's absence rather than anything in the
- * dialog. BaseCategoryListPageFacade dispatches `addOrUpdateItem` and
- * `addItemFromSearch`, which are ROUTING actions a reducer is not
- * supposed to handle — the factory below is what turns them into
- * `addItem` or `updateItem`. With nothing registered they reached no
- * reducer case and no effect and died silently, while the inline picker
- * in an item dialog kept working because it dispatches `addItem` itself.
- * Tasks never had the bug because it registered the same factory for its
- * own catalog from the start.
+ * and the cause was this file's absence, not the dialog.
+ * `addOrUpdateItem`/`addItemFromSearch` are ROUTING actions no reducer
+ * handles — the factory below turns them into real writes. Unregistered,
+ * they died silently, while the inline picker kept working because it
+ * dispatches `addItem` itself.
  *
- * So the registration in the context is the load-bearing half, not this
+ * So the REGISTRATION in the context is the load-bearing half, not this
  * file: every test here passed against the unregistered version.
  * ───────────────────────────────────────────────────────────────── */
 

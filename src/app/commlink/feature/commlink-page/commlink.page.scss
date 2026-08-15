@@ -1,33 +1,26 @@
 // ─── why ────────────────────────────────────────────────────────
-// The deck. Frame, corner brackets, LEDs, brand row and scanlines are the
-// global .sr-* utilities; only what is commlink's own is here — hero + glitch,
-// hover sweep, alignment grid, caret, and the offline/standby recolours. The
-// matrix backdrop is the global ion-content gradient, not a page override.
+// The deck. Frame, brackets, LEDs and scanlines are global .sr-* utilities;
+// only commlink's own is here. The matrix backdrop is the global ion-content
+// gradient, not a page override.
 //
-// The two --cl-* tokens are local because this page is their only consumer and
-// both axes are pure deck decoration — a black wash behind the status strip, a
-// black lift under a hovered tile's amber bloom — which the plain theme must
-// not inherit.
+// The --cl-* tokens are local because this page is their only consumer and both
+// are pure deck decoration the plain theme must not inherit.
 //
-// Muted copy is --sr-text-dim rather than a hand-rolled accent-at-0.8: in
-// cyberpunk the token IS amber at 0.85, but the plain accent is a corporate
-// blue, and blue-at-0.8 on this panel measured 3.96:1.
+// Muted copy is --sr-text-dim, not a hand-rolled accent-at-0.8: the plain
+// accent is a corporate blue, which measured 3.96:1 on this panel.
 //
 // The hover/focus response is spelled once under a `:not(.cl-node--offline)`
-// negation instead of eight times, and split because the two halves answer to
-// different input: the lift and the brackets react to keyboard focus too, the
-// sweep and the icon recolour are pointer-only.
+// negation instead of eight times, split because the halves answer to different
+// input — lift and brackets take keyboard focus too, sweep and recolour are
+// pointer-only.
 //
-// A badge's fill is --sr-red-deep, not the neon --sr-red: white numerals need
-// contrast against a filled pill, which neon red only clears as a dot, a border
-// or a large icon. Its --currency variant drops the alert styling altogether —
-// a money amount is not a tally, so the tight round pill relaxes into a
-// readable strip in a neutral accent.
+// A badge fills with --sr-red-deep, not neon --sr-red: white numerals need
+// contrast that neon only clears as a dot, a border or a large icon. The
+// --currency variant drops the alert styling — an amount is not a tally.
 //
-// Under cyberpunk the hero takes back its wide tracking (the base uses the
-// tighter label tracking so the plain hero reads as an ordinary heading) and
-// the terminal glyphs are drawn in CSS rather than translated: they are
-// punctuation in the deck's voice, and plain would read them as noise.
+// Under cyberpunk the hero takes its wide tracking back (the base is tighter so
+// a plain hero reads as an ordinary heading) and the terminal glyphs are drawn
+// in CSS, not translated: punctuation in the deck's voice, noise in plain.
 // ────────────────────────────────────────────────────────────────
 
 @use '../../../../theme/deck';
@@ -74,23 +67,13 @@
   z-index: 3;
 }
 
-.cl-cursor {
-  color: var(--sr-cyan);
-  animation: cl-blink 1.1s steps(1) infinite;
-}
-
 .cl-bar {
-  @include deck.hud-label;
-  display: flex;
-  flex-wrap: wrap;
+  @include deck.hud-strip(var(--fs-small), 1.25rem);
   align-items: center;
-  gap: 0.4rem 1.25rem;
   padding: 0.5rem 0.85rem;
   border: 1px solid var(--sr-line);
   border-radius: var(--sr-radius);
   background: var(--cl-bar-bg);
-  font-size: var(--fs-small);
-  color: var(--sr-text-dim);
 
   b {
     color: var(--sr-cyan);
@@ -286,16 +269,22 @@
   color: var(--sr-amber);
 }
 
+.cl-node--empty {
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-style: dashed;
+}
+.cl-node--empty .cl-node__foot {
+  color: var(--sr-amber);
+}
+
 .cl-tele {
-  @include deck.hud-label;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.5rem;
+  @include deck.hud-strip(var(--fs-small), 1.5rem);
   margin-top: 1.5rem;
   padding: 0.6rem 0.85rem 0;
   border-top: 1px solid var(--sr-line);
-  font-size: var(--fs-small);
-  color: var(--sr-text-dim);
 
   b {
     color: var(--sr-cyan);
@@ -343,22 +332,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cl-cursor {
-    animation: none;
-  }
-}
-
-@keyframes cl-blink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  50.01%,
-  100% {
-    opacity: 0;
-  }
-}
 @keyframes cl-sweep {
   from {
     transform: translateY(-100%);

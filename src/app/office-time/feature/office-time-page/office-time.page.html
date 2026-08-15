@@ -39,27 +39,27 @@
           @case ('officedays-list') {
             <app-dash-days-list
               [title]="'office-time.page.stats.office-days' | translate"
-              [days]="officedays()"
+              [days]="officedayKeys()"
             />
           }
           @case ('officedays-edit') {
             <app-dash-office-days-edit
               [title]="'office-time.page.stats.office-days.edit' | translate"
-              [officedays]="officedays()"
+              [officedays]="officedayKeys()"
               [holidays]="holidates()"
-              [freedays]="freedays()"
+              [freedays]="freedayKeys()"
             />
           }
           @case ('freedays-list') {
             <app-dash-days-list
               [title]="'office-time.page.stats.freedays.list' | translate"
-              [days]="freedays()"
+              [days]="freedayKeys()"
             />
           }
           @case ('freedays-edit') {
             <app-dash-freedays-edit
               [title]="'office-time.page.stats.freedays.edit' | translate"
-              [freedays]="freedays()"
+              [freedays]="freedayKeys()"
               [holidays]="holidates()"
             />
           }

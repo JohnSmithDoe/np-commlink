@@ -24,6 +24,9 @@ export const DECK_CHROME_LABELS: Record<Theme, DeckChrome> = {
     'node-online': marker('deck.cyberpunk.chrome.node-online'),
     'node-standby': marker('deck.cyberpunk.chrome.node-standby'),
     'node-offline': marker('deck.cyberpunk.chrome.node-offline'),
+    'empty-title': marker('deck.cyberpunk.chrome.empty-title'),
+    'empty-body': marker('deck.cyberpunk.chrome.empty-body'),
+    'empty-action': marker('deck.cyberpunk.chrome.empty-action'),
   },
   boomer: {
     grid: marker('deck.boomer.chrome.grid'),
@@ -45,6 +48,9 @@ export const DECK_CHROME_LABELS: Record<Theme, DeckChrome> = {
     'node-online': marker('deck.boomer.chrome.node-online'),
     'node-standby': marker('deck.boomer.chrome.node-standby'),
     'node-offline': marker('deck.boomer.chrome.node-offline'),
+    'empty-title': marker('deck.boomer.chrome.empty-title'),
+    'empty-body': marker('deck.boomer.chrome.empty-body'),
+    'empty-action': marker('deck.boomer.chrome.empty-action'),
   },
 };
 
@@ -58,6 +64,7 @@ export const DECK_MODULE_LABELS: Record<AppModule, Marker> = {
   tasks: marker('deck.module.tasks'),
   cash: marker('deck.module.cash'),
   trackplay: marker('deck.module.trackplay'),
+  ritual: marker('deck.module.ritual'),
   geist: marker('deck.module.geist'),
   settings: marker('deck.module.settings'),
 };

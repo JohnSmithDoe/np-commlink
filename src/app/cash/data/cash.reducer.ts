@@ -1,218 +1,115 @@
-import { createReducer, on } from '@ngrx/store';
-import { CASH_CATEGORIES_LIST_ID, CashState } from '../model/cash.types';
+/* ─── why ─────────────────────────────────────────────────────────
+ * `combineReducers` returns the IDENTICAL state when no sub-reducer
+ * changed anything, so a cascade below sees the PRE-action slices if and
+ * only if no per-aggregate reducer handled that action. Every action here
+ * is therefore absent from its own aggregate's reducer, deliberately —
+ * splitting one across both halves would make the cascade read a list the
+ * aggregate had already rewritten. Neither the compiler nor a
+ * single-aggregate test can see that, so `cash.reducer.spec.ts` asserts
+ * each cascade end to end.
+ *
+ * `withoutOrphanRules` runs on `loaded` rather than on delete: a rule
+ * whose category is gone is unreachable, not wrong, and a document
+ * written before the cascade existed can still hold one.
+ * ───────────────────────────────────────────────────────────────── */
+import { Action, combineReducers, createReducer, on } from '@ngrx/store';
 import {
-  addToCatalog,
+  dropCategoryRef,
+  remapCategoryRef,
   removeFromCatalog,
   renameInCatalog,
 } from '../../@shared/util/categories/category-list.utils';
-import {
-  updateListSearch,
-  updateListSort,
-  withList,
-} from '../../@shared/util/item-lists/list.utils';
+import { removeListItem } from '../../@shared/util/item-lists/list.utils';
+import { CashState } from '../model/cash.types';
 import { CashRule } from '../model/rule.types';
 import { CashTransaction } from '../model/transaction.types';
+import { categoryIdOf } from '../util/cash-category.utils';
+import { CashAccountsActions } from './accounts/cash-accounts.actions';
+import { cashAccountsReducer } from './accounts/cash-accounts.reducer';
+import { cashCategoriesReducer } from './categories/cash-categories.reducer';
+import { CashCategoriesActions } from './categories/cash-categories.actions';
+import { cashRulesReducer } from './rules/cash-rules.reducer';
+import { CashTransactionsActions } from './transactions/cash-transactions.actions';
+import { cashTransactionsReducer } from './transactions/cash-transactions.reducer';
 import { CashActions } from './cash.actions';
 
-export const initialState: CashState = {
-  accounts: [],
-  transactions: [],
-  rules: [],
-  categories: { id: CASH_CATEGORIES_LIST_ID, items: [] },
-};
+const perAggregate = combineReducers<CashState>({
+  accounts: cashAccountsReducer,
+  transactions: cashTransactionsReducer,
+  rules: cashRulesReducer,
+  categories: cashCategoriesReducer,
+});
 
-const upsertById = <T extends { id: string }>(
-  list: readonly T[],
-  entity: T
-): T[] => {
-  const index = list.findIndex((candidate) => candidate.id === entity.id);
-  if (index === -1) return [...list, entity];
-  const next = [...list];
-  next[index] = entity;
-  return next;
+const withTransactions = (
+  state: CashState,
+  items: CashTransaction[]
+): CashState => ({
+  ...state,
+  transactions: { ...state.transactions, items },
+});
+
+const withRules = (state: CashState, items: CashRule[]): CashState => ({
+  ...state,
+  rules: { ...state.rules, items },
+});
+
+const forgetManualWhenUncategorized = (
+  txn: CashTransaction
+): CashTransaction =>
+  categoryIdOf(txn) ? txn : { ...txn, categoryManual: undefined };
+
+const withoutOrphanRules = (state: CashState): CashState => {
+  const known = new Set(state.categories.items.map((entry) => entry.id));
+  const items = state.rules.items.filter((rule) => known.has(rule.categoryId));
+  return items.length === state.rules.items.length
+    ? state
+    : withRules(state, items);
 };
 
 // prettier-ignore
-const withoutOrphanRules = (cash: CashState): CashState => {
-  const known = new Set(cash.categories.items.map((entry) => entry.id));
-  const rules = cash.rules.filter((rule) => known.has(rule.categoryId));
-  return rules.length === cash.rules.length ? cash : { ...cash, rules };
-};
+const cashCascade = createReducer(
+  {} as CashState,
 
-export const cashReducer = createReducer(
-  initialState,
-
-  on(CashActions.addAccount, (state, { account }): CashState => ({
-    ...state,
-    accounts: [...state.accounts, account],
-  })),
-  on(CashActions.updateAccount, (state, { account }): CashState => ({
-    ...state,
-    accounts: upsertById(state.accounts, account),
-  })),
-  on(CashActions.removeAccount, (state, { id }): CashState => ({
-    ...state,
-    accounts: state.accounts.filter((a) => a.id !== id),
-    transactions: state.transactions.filter((t) => t.accountId !== id),
+  on(CashAccountsActions.removeItem, (state, { item }): CashState => ({
+    ...withTransactions(state, state.transactions.items.filter((txn) => txn.accountId !== item.id)),
+    accounts: removeListItem(state.accounts, item),
   })),
 
-  on(CashActions.addTransaction, (state, { transaction }): CashState => ({
-    ...state,
-    transactions: [...state.transactions, transaction],
-  })),
-  on(CashActions.updateTransaction, (state, { transaction }): CashState => ({
-    ...state,
-    transactions: upsertById(state.transactions, transaction),
-  })),
-  on(CashActions.removeTransaction, (state, { id }): CashState => {
-    const groupId = state.transactions.find(
-      (t) => t.id === id
-    )?.transferGroupId;
-    return {
-      ...state,
-      transactions: state.transactions.filter((t) =>
-        groupId ? t.transferGroupId !== groupId : t.id !== id
-      ),
-    };
+  on(CashTransactionsActions.removeItem, (state, { item }): CashState => {
+    const groupId = state.transactions.items.find((txn) => txn.id === item.id)?.transferGroupId;
+    return withTransactions(state, state.transactions.items.filter((txn) =>
+      groupId ? txn.transferGroupId !== groupId : txn.id !== item.id
+    ));
   }),
-  on(CashActions.importTransactions, (state, { transactions }): CashState => ({
-    ...state,
-    transactions: [...state.transactions, ...transactions],
-  })),
-  on(CashActions.bookTransfer, (state, { fromLeg, toLeg }): CashState => ({
-    ...state,
-    transactions: [...state.transactions, fromLeg, toLeg],
-  })),
-  on(
-    CashActions.setTransactionCategory,
-    (state, { id, categoryId, manual }): CashState => ({
-      ...state,
-      transactions: state.transactions.map((t): CashTransaction =>
-        t.id === id ? { ...t, categoryId, categoryManual: manual } : t
+
+  on(CashCategoriesActions.removeItem, (state, { item }): CashState => ({
+    ...withRules(
+      withTransactions(
+        state,
+        dropCategoryRef(state.transactions.items, item.id).map((txn) => forgetManualWhenUncategorized(txn))
       ),
-    })
-  ),
-  on(CashActions.recategorizeTransactions, (state, { changes }): CashState => {
-    const assigned = new Map(
-      changes.map((c) => [c.transactionId, c.categoryId])
-    );
-    return {
-      ...state,
-      transactions: state.transactions.map((t): CashTransaction =>
-        assigned.has(t.id)
-          ? { ...t, categoryId: assigned.get(t.id), categoryManual: false }
-          : t
-      ),
-    };
-  }),
-  on(
-    CashActions.reconcileTransaction,
-    (state, { manualId, importedId }): CashState => {
-      const manual = state.transactions.find((t) => t.id === manualId);
-      const imported = state.transactions.find((t) => t.id === importedId);
-      if (!manual || !imported) return state;
-      const carry =
-        manual.categoryManual && manual.categoryId && !imported.categoryManual;
-      return {
-        ...state,
-        transactions: state.transactions.map((t): CashTransaction => {
-          if (t.id === manualId)
-            return { ...t, matchedTxnId: importedId, status: 'confirmed' };
-          if (t.id === importedId && carry)
-            return {
-              ...t,
-              categoryId: manual.categoryId,
-              categoryManual: true,
-            };
-          return t;
-        }),
-      };
-    }
-  ),
-  on(CashActions.unreconcileTransaction, (state, { manualId }): CashState => ({
-    ...state,
-    transactions: state.transactions.map((t): CashTransaction =>
-      t.id === manualId
-        ? { ...t, matchedTxnId: undefined, status: 'pending' }
-        : t
+      state.rules.items.filter((rule) => rule.categoryId !== item.id)
     ),
+    categories: removeFromCatalog(state.categories, item.id),
   })),
 
-  on(CashActions.addCategory, (state, { category }): CashState =>
-    withList(state, 'categories', addToCatalog(state.categories, category))
-  ),
-  on(CashActions.updateCategorySearch, (state, { searchQuery }): CashState => ({
-    ...state,
-    categories: updateListSearch(state.categories, searchQuery),
-  })),
-  on(
-    CashActions.updateCategorySort,
-    (state, { sortBy, sortDirection }): CashState => ({
-      ...state,
-      categories: {
-        ...state.categories,
-        sort: updateListSort(
-          sortBy,
-          sortDirection,
-          state.categories.sort?.sortDirection
-        ),
-      },
-    })
-  ),
-
-  on(CashActions.removeCategory, (state, { id }): CashState => ({
-    ...state,
-    categories: removeFromCatalog(state.categories, id),
-    rules: state.rules.filter((rule) => rule.categoryId !== id),
-    transactions: state.transactions.map((t): CashTransaction =>
-      t.categoryId === id
-        ? { ...t, categoryId: undefined, categoryManual: undefined }
-        : t
-    ),
-  })),
-  on(CashActions.updateCategory, (state, { id, name }): CashState => {
-    const { catalog, mergedInto } = renameInCatalog(state.categories, id, name);
-    if (!mergedInto) return { ...state, categories: catalog };
-    return {
-      ...state,
-      categories: catalog,
-      transactions: state.transactions.map((t): CashTransaction =>
-        t.categoryId === id ? { ...t, categoryId: mergedInto } : t
-      ),
-      rules: state.rules.map((r): CashRule =>
-        r.categoryId === id ? { ...r, categoryId: mergedInto } : r
-      ),
-    };
+  on(CashCategoriesActions.updateItem, (state, { item }): CashState => {
+    const { catalog, mergedInto } = renameInCatalog(state.categories, item.id, item.name ?? '');
+    const next = mergedInto
+      ? withRules(
+          withTransactions(state, remapCategoryRef(state.transactions.items, item.id, mergedInto)),
+          state.rules.items.map((rule): CashRule =>
+            rule.categoryId === item.id ? { ...rule, categoryId: mergedInto } : rule
+          )
+        )
+      : state;
+    return { ...next, categories: catalog };
   }),
 
-  on(CashActions.addRule, (state, { rule }): CashState => ({
-    ...state,
-    rules: [...state.rules, rule],
-  })),
-  on(CashActions.updateRule, (state, { rule }): CashState => ({
-    ...state,
-    rules: upsertById(state.rules, rule),
-  })),
-  on(CashActions.removeRule, (state, { id }): CashState => ({
-    ...state,
-    rules: state.rules.filter((r) => r.id !== id),
-  })),
-  on(CashActions.reorderRules, (state, { ids }): CashState => {
-    const byId = new Map(state.rules.map((rule) => [rule.id, rule]));
-    const reordered = ids.flatMap((id, index) => {
-      const rule = byId.get(id);
-      if (!rule) return [];
-      byId.delete(id);
-      return [{ ...rule, order: index }];
-    });
-    const untouched = [...byId.values()].map((rule, index) => ({
-      ...rule,
-      order: reordered.length + index,
-    }));
-    return { ...state, rules: [...reordered, ...untouched] };
-  }),
-
-  on(CashActions.loaded, (_state, { cash }): CashState =>
-    cash ? withoutOrphanRules(cash) : _state
-  )
+  on(CashActions.loaded, (state): CashState => withoutOrphanRules(state))
 );
+
+export const cashReducer = (
+  state: CashState | undefined,
+  action: Action
+): CashState => cashCascade(perAggregate(state, action), action);

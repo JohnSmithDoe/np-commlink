@@ -1,11 +1,11 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonColor } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
-import { ListState } from '../../@shared/model/item-list.types';
+import { ItemList } from '../../@shared/model/item-list.types';
 import { HouseholdState } from '../model/household.types';
 import {
-  PRODUCTS_LIST_ID,
   HouseholdListId,
+  PRODUCTS_LIST_ID,
   ShoppingItem,
   StorageItem,
   StorageState,
@@ -13,7 +13,7 @@ import {
 import { QuickAddState } from '../model/list-settings.types';
 import { createStorageItemFromShopping } from './household.factory';
 import {
-  matchesItemExactly,
+  findMatchingItem,
   matchesSearchExactly,
   matchingTxtIsNotEmpty,
 } from '../../@shared/util/app.utils';
@@ -28,6 +28,12 @@ export const SOURCE_PREFIX_BY_LIST_ID: Record<HouseholdListId, string> = {
   _products: '[Products]',
 };
 
+export const ROUTE_BY_LIST_ID: Record<HouseholdListId, string> = {
+  _storage: '/household/storage',
+  _shopping: '/household/shopping',
+  _products: '/household/products',
+};
+
 export const storageStatusColor = ({
   minAmount,
   quantity,
@@ -39,7 +45,7 @@ export const storageStatusColor = ({
 export const stateByListId = (
   state: HouseholdState,
   listId: HouseholdListId
-): ListState<BaseItem> => {
+): ItemList<BaseItem> => {
   //prettier-ignore
   switch (listId) {
     case '_storage': {
@@ -85,14 +91,14 @@ export const deriveQuickAddState = (
 };
 
 export const addListItemOrIncreaseQuantity = <
-  T extends ListState<R>,
+  T extends ItemList<R>,
   R extends StorageItem | ShoppingItem,
 >(
   state: T,
   item: R,
   byOne = true
 ): T => {
-  const found = matchesItemExactly(item, state.items);
+  const found = findMatchingItem(item, state.items);
   if (found) {
     return updateListItem<T, R>(state, {
       ...found,
@@ -102,7 +108,7 @@ export const addListItemOrIncreaseQuantity = <
   return addListItem<T, R>(state, item);
 };
 
-export const removeListItems = <T extends ListState<R>, R extends BaseItem>(
+export const removeListItems = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
   items: R[]
 ): T => {

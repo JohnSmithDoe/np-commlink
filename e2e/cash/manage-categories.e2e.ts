@@ -19,8 +19,8 @@ import {
   addViaSearch,
   listRow,
   pageRoot,
-  waitForListPage,
   waitForPersisted,
+  presentedDialog,
 } from '../helpers';
 
 async function openOverview(page: Page) {
@@ -35,11 +35,12 @@ test.describe('cash manage categories', () => {
     page,
   }) => {
     await openOverview(page);
-    await page.getByRole('button', { name: 'Kategorien' }).first().click();
+    await page.getByRole('link', { name: 'Kategorien' }).first().click();
     await expect(page).toHaveURL(/cash\/categories/);
 
-    await waitForListPage(page);
-    await addViaSearch(page, 'Miete');
+    const catalog = pageRoot(page, 'app-page-category-list');
+    await expect(catalog).toBeVisible({ timeout: 30_000 });
+    await addViaSearch(page, 'Miete', catalog);
 
     await expect(listRow(page, 'Miete')).toBeVisible({ timeout: 10_000 });
     await expect(listRow(page, 'Miete')).toContainText('0');
@@ -53,11 +54,11 @@ test.describe('cash manage categories', () => {
     const list = pageRoot(page, 'app-page-cash');
 
     await list.getByTestId('page-header-add').click();
-    const accountModal = page.locator('app-cash-account-edit-modal');
+    const accountModal = presentedDialog(page, 'Neuen Eintrag anlegen');
     await accountModal
       .getByRole('textbox', { name: 'Name' })
       .fill('CREDSTICK-07');
-    await accountModal.getByRole('button', { name: 'Speichern' }).click();
+    await accountModal.getByRole('button', { name: 'Anlegen' }).click();
     await expect(list.getByText('CREDSTICK-07')).toBeVisible({
       timeout: 10_000,
     });
@@ -65,13 +66,9 @@ test.describe('cash manage categories', () => {
     await list.getByText('CREDSTICK-07').click();
     const account = pageRoot(page, 'app-page-cash-account');
     await expect(account).toBeVisible({ timeout: 10_000 });
-    await account
-      .getByRole('button', { name: 'Transaktion hinzufügen' })
-      .click();
-    const txnModal = page.locator('app-cash-transaction-edit-modal');
-    await txnModal
-      .getByRole('textbox', { name: 'Beschreibung' })
-      .fill('Wohnung Miete');
+    await account.getByTestId('page-header-add').click();
+    const txnModal = presentedDialog(page, 'Neuen Eintrag anlegen');
+    await txnModal.getByRole('textbox', { name: 'Name' }).fill('Wohnung Miete');
     await txnModal.getByRole('textbox', { name: 'Betrag' }).fill('750,00');
     await txnModal.getByTestId('category-input-trigger').click();
     const pickerSearch = page
@@ -82,7 +79,7 @@ test.describe('cash manage categories', () => {
     const createMiete = page.getByText('Miete erstellen');
     await expect(createMiete).toBeVisible({ timeout: 10_000 });
     await createMiete.click();
-    await txnModal.getByRole('button', { name: 'Speichern' }).click();
+    await txnModal.getByRole('button', { name: 'Anlegen' }).click();
     await expect(account.getByText('Wohnung Miete')).toBeVisible({
       timeout: 10_000,
     });

@@ -37,7 +37,7 @@ describe('category.utils', () => {
       mockCategory({ id: 'bakery', name: 'Bakery' }),
     ];
 
-    it('resolves the same names as categoryName, including the empty cases', () => {
+    it('resolves a name, and empty for an unknown or missing id', () => {
       const lookup = categoryNameLookup(catalog);
       expect(lookup('dairy')).toBe('Dairy');
       expect(lookup('nope')).toBe('');

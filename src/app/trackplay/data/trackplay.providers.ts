@@ -1,11 +1,17 @@
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
+import { selectGameCount } from './games/games.selector';
 import { TrackplayActions } from './trackplay.actions';
 import { trackplayReducer } from './trackplay.reducer';
 import { TrackplayEffects } from './trackplay.effects';
 import {
+  gamesListEffects,
+  gameTypesListEffects,
+  playersListEffects,
+  trackplayRouteFilterEffects,
+} from './trackplay-list.effects';
+import {
   TRACKPLAY_STATE_KEY,
-  selectGameCount,
   selectTrackplayPersisted,
 } from './trackplay.selector';
 
@@ -14,7 +20,15 @@ export const trackplayContext = providePersistedContext({
   reducer: trackplayReducer,
   lifecycle: TrackplayActions,
   select: selectTrackplayPersisted,
-  save: { sources: ['[Trackplay]'] },
+  save: {
+    sources: [
+      '[Trackplay]',
+      '[Trackplay Players]',
+      '[Trackplay Games]',
+      '[Trackplay GamesForPlayer]',
+      '[Trackplay GameTypes]',
+    ],
+  },
   telemetry: [
     {
       source: 'trackplay',
@@ -22,5 +36,11 @@ export const trackplayContext = providePersistedContext({
       metrics: createMetric('games'),
     },
   ],
-  effects: [TrackplayEffects],
+  effects: [
+    TrackplayEffects,
+    playersListEffects,
+    gamesListEffects,
+    gameTypesListEffects,
+    trackplayRouteFilterEffects,
+  ],
 });

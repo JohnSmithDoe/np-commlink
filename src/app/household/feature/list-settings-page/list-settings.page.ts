@@ -7,6 +7,8 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { optionsOutline } from 'ionicons/icons';
 import { BooleanKeys, ListSettings } from '../../model/list-settings.types';
 import { ListSettingsFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -28,6 +30,10 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
 export class ListSettingsPage {
   readonly #facade = inject(ListSettingsFacade);
   readonly settings = this.#facade.settings;
+
+  constructor() {
+    addIcons({ optionsOutline });
+  }
 
   toggleFlag(flag: BooleanKeys<ListSettings>) {
     this.#facade.toggleFlag(flag);

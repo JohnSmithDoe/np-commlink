@@ -1,11 +1,12 @@
 <app-list-page
   class="ion-page"
-  pageHeader="{{ 'page-title.household-products' | translate }}"
-  listHeader="{{ 'household.list-header.products' | translate }}"
+  pageHeader="page-title.household-products"
+  icon="pricetags-outline"
   [itemTemplate]="productItem"
 >
-  <app-item-list-quick-add quickAdd />
-  <app-household-search-panel searchExtras />
+  <app-household-list-switcher listSwitcher />
+  <app-item-list-quick-add beforeList />
+  <app-household-search-panel beforeList />
 </app-list-page>
 
 <ng-template

@@ -20,7 +20,8 @@ import { DatePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { chevronBack, chevronForward } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
-import { TodayService, TrackingFacade } from '../../data';
+import { TodayService } from '../../../@shared/data/services/today.service';
+import { TrackingFacade } from '../../data';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 
 @Component({

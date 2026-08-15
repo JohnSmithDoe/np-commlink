@@ -1,56 +1,42 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * This watches the STORE, not `actions$`: the stash is what says a delete
+ * survived its cascade, and `deleteGameType` refuses the default type
+ * outright. Selecting `lastDeleted` means a refused delete is silent for
+ * free, because the reference never changes.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { inject, Injectable } from '@angular/core';
 import { createEffect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { ToastController } from '@ionic/angular/standalone';
-import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { filter, tap } from 'rxjs';
+import { filter, map } from 'rxjs';
+import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { TrackplayDeleted } from '../model/trackplay.types';
 import { TrackplayActions } from './trackplay.actions';
 import { selectLastDeleted } from './trackplay.selector';
 
+const UNDO_TOAST_MS = 5000;
+const UNDO_TOAST_GROUP = 'trackplay-undo';
+
 @Injectable({ providedIn: 'root' })
 export class TrackplayEffects {
   readonly #store = inject(Store);
-  readonly #toast = inject(ToastController);
-  readonly #translate = inject(TranslateService);
 
-  undoDeleteToast$ = createEffect(
-    () => {
-      return this.#store.select(selectLastDeleted).pipe(
-        filter((stash): stash is TrackplayDeleted => stash !== null),
-        tap((stash) => void this.#presentUndoToast(stash.name))
-      );
-    },
-    { dispatch: false }
-  );
-
-  #undoToast?: HTMLIonToastElement;
-
-  async #presentUndoToast(name: string) {
-    await this.#undoToast?.dismiss(null, 'cancel');
-    const toast = await this.#toast.create({
-      header: this.#translate.instant(marker('trackplay.toast.undo-delete')),
-      message: name,
-      duration: 8000,
-      position: 'bottom',
-      htmlAttributes: { 'data-testid': 'undo-toast' },
-      buttons: [
-        {
-          side: 'start',
-          text: this.#translate.instant(marker('trackplay.toast.undo')),
-          role: 'destructive',
-          handler: () => {
-            this.#store.dispatch(TrackplayActions.restoreLastDeleted());
+  undoDeleteToast$ = createEffect(() => {
+    return this.#store.select(selectLastDeleted).pipe(
+      filter((stash): stash is TrackplayDeleted => stash !== null),
+      map((stash) =>
+        NotificationsActions.toast({
+          key: marker('trackplay.toast.undo-delete'),
+          parameters: { name: stash.name },
+          durationMs: UNDO_TOAST_MS,
+          group: UNDO_TOAST_GROUP,
+          action: {
+            labelKey: marker('trackplay.toast.undo'),
+            action: TrackplayActions.restoreLastDeleted(),
           },
-        },
-        {
-          text: this.#translate.instant(marker('trackplay.toast.close')),
-          role: 'cancel',
-        },
-      ],
-    });
-    this.#undoToast = toast;
-    await toast.present();
-  }
+        })
+      )
+    );
+  });
 }

@@ -9,6 +9,9 @@ import { ListItemComponent } from './list-item.component';
 const dragEvent = (amount: number): IonDragEvent =>
   ({ detail: { amount, ratio: 0 } }) as unknown as IonDragEvent;
 
+const settle = (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('ListItemComponent', () => {
   let fixture: ComponentFixture<ListItemComponent>;
   let component: ListItemComponent;
@@ -128,24 +131,25 @@ describe('ListItemComponent', () => {
     const deleted: unknown[] = [];
     component.deleteItem.subscribe(() => deleted.push(true));
 
-    await component.deleteOrCartOnSwipe(dragEvent(200));
+    component.onSwipe(dragEvent(200));
 
-    expect(deleted).toHaveLength(1);
+    await vi.waitFor(() => expect(deleted).toHaveLength(1));
   });
 
   it('routes start drag to cart only once the host has named the action', async () => {
     const carted: unknown[] = [];
     component.startSwipe.subscribe(() => carted.push(true));
 
-    await component.deleteOrCartOnSwipe(dragEvent(-200));
+    component.onSwipe(dragEvent(-200));
+    await settle();
     expect(carted).toHaveLength(0);
 
     fixture.componentRef.setInput('startSwipeAction', {
       labelKey: 'household.a11y.buy-item',
       icon: 'cart',
     });
-    await component.deleteOrCartOnSwipe(dragEvent(-200));
-    expect(carted).toHaveLength(1);
+    component.onSwipe(dragEvent(-200));
+    await vi.waitFor(() => expect(carted).toHaveLength(1));
   });
 
   it('shows a status bar when a status color is set', () => {
@@ -153,5 +157,36 @@ describe('ListItemComponent', () => {
     fixture.detectChanges();
 
     expect(queryByTestId(fixture, 'list-row-status')).not.toBeNull();
+  });
+
+  it('renders a leading icon only once the host names one', () => {
+    fixture.detectChanges();
+    const slotted = (): { name?: string } | null =>
+      fixture.nativeElement.querySelector('ion-icon[slot="start"]');
+    expect(slotted()).toBeNull();
+
+    fixture.componentRef.setInput('leadingIcon', 'play-circle');
+    fixture.detectChanges();
+
+    expect(slotted()?.name).toBe('play-circle');
+  });
+
+  it('hides the delete option when the row forbids deletion', () => {
+    fixture.detectChanges();
+    const endOptions = () =>
+      fixture.nativeElement.querySelector('ion-item-options[side="end"]');
+    expect(endOptions()).not.toBeNull();
+
+    fixture.componentRef.setInput('canDelete', false);
+    fixture.detectChanges();
+
+    expect(endOptions()).toBeNull();
+  });
+
+  it('disables the row on request', () => {
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+
+    expect(getByTestId(fixture, 'list-row-select')['disabled']).toBe(true);
   });
 });

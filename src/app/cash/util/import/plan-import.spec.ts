@@ -42,7 +42,7 @@ describe('planImport', () => {
       accountId: 'acc',
       dateISO: '2026-01-06T00:00:00+01:00',
       amountCents: -4299,
-      description: 'REWE',
+      name: 'REWE',
       source: 'imported',
     });
     const plan = planImport(
@@ -62,7 +62,7 @@ describe('planImport', () => {
       accountId: 'acc',
       dateISO: '2026-01-06T00:00:00+01:00',
       amountCents: -4299,
-      description: 'REWE',
+      name: 'REWE',
       source: 'imported',
     });
     const plan = planImport(
@@ -104,7 +104,7 @@ describe('planImport', () => {
       'batch-4',
       ids()
     );
-    expect(plan.toImport[0].categoryId).toBe('stuff');
+    expect(plan.toImport[0].categoryIds).toEqual(['stuff']);
     expect(plan.toImport[0].categoryManual).toBeUndefined();
   });
 });

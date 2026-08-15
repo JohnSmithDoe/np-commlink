@@ -1,34 +1,54 @@
-<app-page-header
-  label="page-title.trackplay-players"
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.trackplay-players"
   icon="people-outline"
-  (addItem)="createPlayer()"
->
-  <ion-button
-    slot="end"
-    toolbar
-    (click)="openSettings($event)"
-    color="primary"
-    [attr.aria-label]="'trackplay.a11y.settings' | translate"
-  >
-    <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
-  </ion-button>
-</app-page-header>
+  [itemTemplate]="playerRow"
+/>
 
-<ion-content>
-  <p class="sr-hud ion-padding-horizontal">
-    {{ 'trackplay.list-header.players' | translate }} ({{ shown() }} /
-    {{ total() }})
-  </p>
-  <ion-list #list>
-    @for (player of rxPlayers(); track player.id) {
-      <app-trackplay-player-list-item
-        [player]="player"
-        [stats]="statsFor(player)"
-        [ionList]="list"
-        (selectPlayer)="goToPlayer(player.id)"
-        (editRequested)="openPlayerEdit(player)"
-        (deleteRequested)="deletePlayer(player)"
-      />
-    }
-  </ion-list>
-</ion-content>
+<ng-template #playerRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [leadingIcon]="'person'"
+    [startSwipeAction]="editSwipeAction"
+    (selectItem)="goToPlayer(item.id)"
+    (startSwipe)="openPlayerEdit(item)"
+    (deleteItem)="deletePlayer(item)"
+  >
+    <p itemDetails class="second-line">
+      <ion-note>{{ 'trackplay.label.created' | translate }}</ion-note>
+      <span class="value">{{ item.createdAt | date: 'short' }}</span>
+    </p>
+    <p itemDetails class="second-line">
+      <ion-note>{{ 'trackplay.label.last-played' | translate }}</ion-note>
+      <span class="value">
+        @if (item.lastPlayedAt) {
+          {{ item.lastPlayedAt | date: 'short' }}
+        } @else {
+          —
+        }
+      </span>
+    </p>
+    @let playerStats = statsFor(item);
+    <p itemDetails class="second-line">
+      <ion-note>{{ 'trackplay.label.win-loss-open' | translate }}</ion-note>
+      <span class="value">{{
+        'trackplay.stats.win-loss-open'
+          | translate
+            : {
+                win: playerStats.win,
+                loss: playerStats.loss,
+                open: playerStats.open,
+              }
+      }}</span>
+    </p>
+    <p itemDetails class="second-line">
+      <ion-note>{{
+        'trackplay.stats.play' | translate: { count: playerStats.play }
+      }}</ion-note>
+    </p>
+  </app-list-item>
+</ng-template>
+
+<app-edit-player-dialog />

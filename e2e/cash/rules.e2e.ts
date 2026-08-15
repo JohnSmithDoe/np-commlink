@@ -34,11 +34,11 @@ function rulesPage(page: Page): Locator {
 }
 
 function dialog(page: Page): Locator {
-  return page.locator('app-cash-rule-edit-modal');
+  return page.locator('ion-modal.show-modal');
 }
 
 function saveButton(page: Page): Locator {
-  return dialog(page).getByRole('button', { name: 'Speichern' });
+  return dialog(page).getByRole('button', { name: /Anlegen|Übernehmen/ });
 }
 
 function valueInput(page: Page, index: number): Locator {
@@ -83,6 +83,7 @@ test.describe('cash rule builder', () => {
 
     await expect(saveButton(page)).toBeDisabled();
 
+    await dialog(page).getByRole('textbox', { name: 'Name' }).fill('Kaffee');
     await assignNewCategory(page, 'Kaffee');
     await expect(saveButton(page)).toBeDisabled();
 

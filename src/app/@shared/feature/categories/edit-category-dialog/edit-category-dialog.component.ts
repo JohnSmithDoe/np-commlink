@@ -5,7 +5,7 @@ import {
   inject,
 } from '@angular/core';
 import { Category } from '../../../model/category.types';
-import { CATEGORY_LIST_FACADE } from '../../../util/categories/category-list.facade';
+import { CATALOG_FACADE } from '../../../util/categories/category-list.facade';
 import { createCategory } from '../../../util/app.factory';
 import { ItemEditModalComponent } from '../../../ui/base-item/item-edit-modal/item-edit-modal.component';
 import { BaseEditItemDialog } from '../../item-lists/edit-item-dialog/base-edit-item-dialog';
@@ -17,14 +17,14 @@ import { BaseEditItemDialog } from '../../item-lists/edit-item-dialog/base-edit-
   templateUrl: './edit-category-dialog.component.html',
 })
 export class EditCategoryDialogComponent extends BaseEditItemDialog<Category> {
-  readonly #facade = inject(CATEGORY_LIST_FACADE);
+  readonly #facade = inject(CATALOG_FACADE);
 
   protected get listId() {
     return this.#facade.catalogListId;
   }
 
-  readonly siblings = computed<readonly Category[]>(() =>
-    this.#facade.categories()
+  readonly siblings = computed<readonly Category[]>(
+    () => this.#facade.state()?.items ?? []
   );
 
   protected blank(): Category {

@@ -3,7 +3,7 @@ import {
   mockCashState,
   mockCashTransaction,
 } from '../../testing/cash.test-data';
-import { CashActions } from '../../data';
+import { CashTransactionsActions } from '../../data';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashReconcileModalComponent } from './reconcile-modal.component';
 
@@ -55,7 +55,7 @@ describe('CashReconcileModalComponent', () => {
     component.reconcileWith(component.candidates()[0]);
 
     expect(dispatch).toHaveBeenCalledWith(
-      CashActions.reconcileTransaction('m1', 'i1')
+      CashTransactionsActions.reconcile('m1', 'i1')
     );
     expect(dismiss).toHaveBeenCalled();
   });

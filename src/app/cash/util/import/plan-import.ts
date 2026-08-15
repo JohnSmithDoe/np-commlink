@@ -1,5 +1,6 @@
 import { CashRule } from '../../model/rule.types';
 import { CashTransaction } from '../../model/transaction.types';
+import { withCategory } from '../cash-category.utils';
 import { categorize } from '../categorize.utils';
 import { ParsedRow, ParseResult } from './bank-parser';
 
@@ -24,7 +25,7 @@ const importedNaturalKeys = (
     existing
       .filter((txn) => txn.source === 'imported')
       .map((txn) =>
-        naturalKey(txn.accountId, txn.dateISO, txn.amountCents, txn.description)
+        naturalKey(txn.accountId, txn.dateISO, txn.amountCents, txn.name)
       )
   );
 
@@ -41,7 +42,7 @@ const transactionFromRow = (
   accountId,
   dateISO: row.dateISO,
   amountCents: row.amountCents,
-  description: row.description,
+  name: row.description,
   source: 'imported',
   status: 'confirmed',
   importBatchId,
@@ -52,7 +53,7 @@ const autoCategorized = (
   rules: readonly CashRule[]
 ): CashTransaction => {
   const categoryId = categorize(txn, rules);
-  return categoryId === undefined ? txn : { ...txn, categoryId };
+  return categoryId === undefined ? txn : withCategory(txn, categoryId);
 };
 
 export function planImport(

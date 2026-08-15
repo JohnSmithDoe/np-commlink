@@ -1,5 +1,11 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { DashboardStats, DateTimeHighlight } from '../model/office-time.types';
+import {
+  DashboardStats,
+  DateTimeHighlight,
+  DayKey,
+  DayMap,
+  HolidayMap,
+} from '../model/office-time.types';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 
 dayjs.extend(quarterOfYear);
@@ -7,9 +13,9 @@ dayjs.extend(quarterOfYear);
 export type TimePeriod = 'year' | 'quarter' | 'month' | 'week';
 
 interface StatsInputs {
-  officedays: Dayjs[];
-  freedays: Dayjs[];
-  holidays: Record<string, Dayjs>;
+  officedays: DayMap;
+  freedays: DayMap;
+  holidays: HolidayMap;
   targetOfficeDaysPerWeek: number;
 }
 
@@ -40,11 +46,8 @@ export const isWeekend = (current: Dayjs) => {
   return isSunday || isSaturday;
 };
 
-export const isOfficeDay = (current: Dayjs, officeDays?: Array<Dayjs>) => {
-  return (
-    officeDays?.some((officeday) => officeday.isSame(current, 'day')) ?? false
-  );
-};
+export const isOfficeDay = (current: Dayjs, officedays?: DayMap) =>
+  !!officedays?.[dayjsToString(current)];
 
 export const getTargetPercentage = (
   workDays: number,
@@ -56,8 +59,8 @@ export const getTargetPercentage = (
   return Math.trunc((officeDays / targetDays) * 100);
 };
 
-const dayKeys = (days: Dayjs[]): Set<string> =>
-  new Set(days.map((day) => dayjsToString(day)));
+const holidayKeysOf = (holidays?: HolidayMap): Set<string> =>
+  new Set(Object.values(holidays ?? {}).map((day) => dayjsToString(day)));
 
 interface StatsKeys {
   officeKeys: Set<string>;
@@ -67,9 +70,9 @@ interface StatsKeys {
 }
 
 export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => ({
-  officeKeys: dayKeys(inputs.officedays),
-  freeKeys: dayKeys(inputs.freedays),
-  holidayKeys: dayKeys(Object.values(inputs.holidays)),
+  officeKeys: new Set(Object.keys(inputs.officedays ?? {})),
+  freeKeys: new Set(Object.keys(inputs.freedays ?? {})),
+  holidayKeys: holidayKeysOf(inputs.holidays),
   targetOfficeDaysPerWeek: inputs.targetOfficeDaysPerWeek,
 });
 
@@ -126,7 +129,7 @@ export const calculateStats = (
 };
 
 const DAY_FORMAT = 'YYYY-MM-DD';
-export const dayjsToString = (day: Dayjs) => day.format(DAY_FORMAT);
+export const dayjsToString = (day: Dayjs) => day.format(DAY_FORMAT) as DayKey;
 export const dayjsFromString = (date: string): Dayjs | null => {
   const parsed = dayjs(date).hour(12);
   return parsed.isValid() ? parsed : null;
@@ -135,8 +138,8 @@ export const dayjsToday = () => dayjs().hour(12);
 
 export const deserializeIsoStringMap = (
   isoStringMap?: Record<string, string>
-): Record<string, Dayjs> => {
-  const result: Record<string, Dayjs> = {};
+): HolidayMap => {
+  const result: HolidayMap = {};
   for (const [name, isoString] of Object.entries(isoStringMap ?? {})) {
     if (typeof isoString !== 'string') continue;
     const parsed = dayjsFromString(isoString);
@@ -145,14 +148,8 @@ export const deserializeIsoStringMap = (
   return result;
 };
 
-export const deserializeIsoStrings = (isoStrings?: string[]): Dayjs[] =>
-  (isoStrings ?? [])
-    .filter((day): day is string => typeof day === 'string')
-    .map((day) => dayjsFromString(day))
-    .filter((day): day is Dayjs => day !== null);
-
 export const serializeDateMap = (
-  dateMap?: Record<string, Dayjs>
+  dateMap?: HolidayMap
 ): Record<string, string> =>
   Object.fromEntries(
     Object.entries(dateMap ?? {}).map(([name, date]): [string, string] => [
@@ -161,39 +158,66 @@ export const serializeDateMap = (
     ])
   );
 
-export const serializeDates = (dates?: Dayjs[]) =>
-  dates?.map((day) => dayjsToString(day));
-
-export const validateFreedays = (
-  freedays: (string | undefined | null)[],
-  holidays: Record<string, Dayjs> | undefined
-) => {
-  const holidayDays = Object.values(holidays ?? {});
-  return freedays
-    .filter((date): date is string => !!date)
-    .map((date) => dayjsFromString(date))
-    .filter((day): day is Dayjs => day !== null)
-    .filter(
-      (day) => !holidayDays.some((holiday) => holiday.isSame(day, 'day'))
-    );
+export const dayMapFrom = (
+  dates?: ReadonlyArray<string | undefined | null>
+): DayMap => {
+  const days: DayMap = {};
+  for (const date of dates ?? []) {
+    if (typeof date !== 'string') continue;
+    const parsed = dayjsFromString(date);
+    if (parsed) days[dayjsToString(parsed)] = true;
+  }
+  return days;
 };
+
+export const dayKeysOf = (days?: DayMap): DayKey[] =>
+  (Object.keys(days ?? {}) as DayKey[]).toSorted();
+
+export const daysFromKeys = (keys?: readonly string[] | null): Dayjs[] =>
+  (keys ?? [])
+    .map((key) => dayjsFromString(key))
+    .filter((day): day is Dayjs => day !== null);
+
+export const withoutHolidays = (
+  days: DayMap,
+  holidays?: HolidayMap
+): DayMap => {
+  const holidayKeys = holidayKeysOf(holidays);
+  return Object.fromEntries(
+    dayKeysOf(days)
+      .filter((key) => !holidayKeys.has(key))
+      .map((key): [DayKey, true] => [key, true])
+  );
+};
+
+export const datetimeValues = (
+  value: string | string[] | null | undefined
+): string[] =>
+  (Array.isArray(value) ? value : [value]).filter(
+    (date): date is string => !!date
+  );
 
 const HOLIDAY_HIGHLIGHT_BORDER = '2px solid #8f6d11';
 const FREEDAY_HIGHLIGHT_BORDER = '1px solid #4d5061';
 
 const calendarHighlights = (
-  days: Dayjs[] | null | undefined,
+  dates: readonly string[],
   border: string
 ): DateTimeHighlight[] =>
-  (days ?? []).map((day) => ({
-    date: day.format('YYYY-MM-DD'),
+  dates.map((date) => ({
+    date,
     textColor: '#fff',
     backgroundColor: 'rgba(147,150,162,0.33)',
     border,
   }));
 
 export const holidayHighlights = (days?: Dayjs[] | null): DateTimeHighlight[] =>
-  calendarHighlights(days, HOLIDAY_HIGHLIGHT_BORDER);
+  calendarHighlights(
+    (days ?? []).map((day) => dayjsToString(day)),
+    HOLIDAY_HIGHLIGHT_BORDER
+  );
 
-export const freedayHighlights = (days?: Dayjs[] | null): DateTimeHighlight[] =>
-  calendarHighlights(days, FREEDAY_HIGHLIGHT_BORDER);
+export const freedayHighlights = (
+  keys?: readonly string[] | null
+): DateTimeHighlight[] =>
+  calendarHighlights(keys ?? [], FREEDAY_HIGHLIGHT_BORDER);

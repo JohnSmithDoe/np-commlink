@@ -1,3 +1,14 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `mutateLeavingStateDistinct` sets a different slice value per action
+ * because the save effect is guarded by `distinctUntilChanged`: three
+ * mutations that leave the state identical collapse into one write, and the
+ * report latch would never be asked the question the test is asking.
+ *
+ * The two awaited microtasks per step are the rejected `save` promise
+ * settling and `catchError` re-emitting through `concatMap` — without both,
+ * the next action is pushed before the previous write has failed.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import {
@@ -7,10 +18,10 @@ import {
   emptyProps,
 } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { firstValueFrom, Observable, of, toArray } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject, toArray } from 'rxjs';
 import { APP_VERSION } from '../../model/app.consts';
 import { DatabaseService } from '../persistence/database.service';
-import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
+import { ReadBeforeWriteService } from '../persistence/read-before-write.service';
 import { MigrationStep, wrapVersioned } from '../../util/persistence/versioned';
 import { DashboardActions } from '../actions/dashboard.actions';
 import { NotificationsActions } from '../actions/notifications.actions';
@@ -19,6 +30,7 @@ import {
   createMetric,
   createSaveSliceEffect,
   createTelemetrySliceEffect,
+  pickMetrics,
 } from './persisted-slice.effects.factory';
 
 type ProbeState = { items: string[] };
@@ -43,7 +55,27 @@ const selectProbe = createFeatureSelector<ProbeState>('probe');
 const probeState: ProbeState = { items: ['a'] };
 
 const markProbeRead = () =>
-  TestBed.inject(PersistedReadRegistry).recordRead('probe');
+  TestBed.inject(ReadBeforeWriteService).recordRead('probe');
+
+const PROBE_SOURCE = { sources: ['[Probe]'] };
+
+const mutateLeavingStateDistinct = async (
+  items: string[],
+  actions: Subject<Action>
+): Promise<void> => {
+  const store = TestBed.inject(MockStore);
+  for (const item of items) {
+    store.setState({ probe: { items: [item] } });
+    actions.next(ProbeActions.addItem(item));
+    await Promise.resolve();
+    await Promise.resolve();
+  }
+};
+
+const writeFailedToast = NotificationsActions.toast({
+  key: 'toast.storage.write-failed',
+  color: 'danger',
+});
 
 describe('persisted-slice effects', () => {
   let actions$: Observable<Action>;
@@ -70,6 +102,11 @@ describe('persisted-slice effects', () => {
 
   const run = <T>(effect: () => Observable<T>): Observable<T> =>
     TestBed.runInInjectionContext(() => effect());
+
+  const drainSave = (trigger = PROBE_SOURCE) =>
+    firstValueFrom(
+      run(createSaveSliceEffect(trigger, selectProbe, 'probe')).pipe(toArray())
+    );
 
   const probeTelemetry = () =>
     run(
@@ -161,16 +198,43 @@ describe('persisted-slice effects', () => {
       markProbeRead();
       actions$ = of(ProbeActions.addItem('b'));
 
-      await firstValueFrom(
-        run(
-          createSaveSliceEffect({ sources: ['[Probe]'] }, selectProbe, 'probe')
-        )
-      );
+      const emitted = await drainSave();
 
+      expect(emitted).toEqual([]);
       expect(database.save).toHaveBeenCalledWith(
         'probe',
         wrapVersioned(APP_VERSION, probeState)
       );
+    });
+
+    it('reports a rejected write rather than swallowing it', async () => {
+      setup();
+      markProbeRead();
+      database.save.mockRejectedValue(new Error('quota exceeded'));
+      actions$ = of(ProbeActions.addItem('b'));
+
+      const emitted = await drainSave();
+
+      expect(emitted).toEqual([writeFailedToast]);
+    });
+
+    it('reports a failing key once, not once per mutation', async () => {
+      setup();
+      markProbeRead();
+      database.save.mockRejectedValue(new Error('quota exceeded'));
+
+      const pushed = new Subject<Action>();
+      actions$ = pushed;
+      const emitted: Action[] = [];
+      const subscription = run(
+        createSaveSliceEffect(PROBE_SOURCE, selectProbe, 'probe')
+      ).subscribe((action) => emitted.push(action));
+
+      await mutateLeavingStateDistinct(['b', 'c', 'd'], pushed);
+      subscription.unsubscribe();
+
+      expect(database.save).toHaveBeenCalledTimes(3);
+      expect(emitted).toEqual([writeFailedToast]);
     });
 
     it('does NOT persist on the load/loaded hydration lifecycle', async () => {
@@ -216,7 +280,7 @@ describe('persisted-slice effects', () => {
         ).pipe(toArray())
       );
 
-      expect(emitted.length).toBe(1);
+      expect(emitted).toEqual([]);
       expect(database.save).toHaveBeenCalledTimes(1);
     });
 
@@ -232,7 +296,7 @@ describe('persisted-slice effects', () => {
             selectProbe,
             'probe'
           )
-        )
+        ).pipe(toArray())
       );
 
       expect(database.save).toHaveBeenCalledWith(
@@ -252,7 +316,7 @@ describe('persisted-slice effects', () => {
         ).pipe(toArray())
       );
 
-      expect(emitted.length).toBe(1);
+      expect(emitted).toEqual([]);
       expect(database.save).toHaveBeenCalledTimes(1);
     });
 
@@ -298,7 +362,7 @@ describe('persisted-slice effects', () => {
       await firstValueFrom(
         run(
           createSaveSliceEffect({ sources: ['[Probe]'] }, selectProbe, 'probe')
-        )
+        ).pipe(toArray())
       );
 
       expect(database.save).toHaveBeenCalledWith(
@@ -365,6 +429,19 @@ describe('persisted-slice effects', () => {
   describe('metric', () => {
     it('projects one scalar under its key', () => {
       expect(createMetric('balance')(42)).toEqual({ balance: 42 });
+    });
+
+    it('narrows a wider read-model to the keys the dashboard stores', () => {
+      expect(
+        pickMetrics(
+          'officedays',
+          'percentage'
+        )({
+          officedays: 7,
+          percentage: 42,
+          workdays: 20,
+        })
+      ).toEqual({ officedays: 7, percentage: 42 });
     });
   });
 });

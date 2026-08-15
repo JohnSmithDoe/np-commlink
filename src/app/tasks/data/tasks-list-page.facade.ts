@@ -1,11 +1,15 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { categoryById } from '../../@shared/util/categories/category.utils';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { TaskItem, TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
-import { ListPageFacade } from '../../@shared/util/item-lists/list-page.facade';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../@shared/data/item-lists/list-page.facade.base';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import {
   selectTaskItems,
@@ -15,36 +19,28 @@ import {
   selectTasksListSearchResult,
 } from './tasks.selector';
 import { Category, CategoryId } from '../../@shared/model/category.types';
-import { ItemListSortType } from '../../@shared/model/item-list.types';
+import { ItemListSortOption } from '../../@shared/model/item-list.types';
+
+const SORT_OPTIONS: readonly ItemListSortOption[] = [
+  { type: 'prio', labelKey: marker('tasks.list-toolbar.prio') },
+  { type: 'dueAt', labelKey: marker('tasks.list-toolbar.due') },
+];
 
 @Injectable({ providedIn: 'root' })
-export class TasksListPageFacade implements ListPageFacade {
+export class TasksListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
+
+  protected readonly commands = itemListCommands(this.#store, TasksActions);
 
   readonly state = this.#store.selectSignal(selectTasksList);
   readonly items = this.#store.selectSignal(selectTasksListItems);
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
   readonly catalog = this.#store.selectSignal(selectTasksCategories);
+  readonly sortOptions = signal(SORT_OPTIONS);
 
   readonly allItems = this.#store.selectSignal(selectTaskItems);
-
-  search(term?: string): void {
-    this.#store.dispatch(TasksActions.updateSearch(term));
-  }
-
-  addItemFromSearch(): void {
-    this.#store.dispatch(TasksActions.addItemFromSearch());
-  }
-
-  setSortMode(type: ItemListSortType): void {
-    this.#store.dispatch(TasksActions.updateSort(type, 'toggle'));
-  }
-
-  selectCategory(categoryId?: CategoryId): void {
-    this.#store.dispatch(TasksActions.updateFilter(categoryId));
-  }
 
   showCreateDialog(): void {
     const state = this.state();

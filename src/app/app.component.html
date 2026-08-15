@@ -1,4 +1,4 @@
-<ion-app class="">
+<ion-app>
   <ion-menu contentId="main-content">
     <ion-header>
       <ion-toolbar>
@@ -34,7 +34,9 @@
                 <ion-label>{{ entry.nameKey | translate }}</ion-label>
                 @let badge = menuBadge(entry);
                 @if (badge > 0) {
-                  <ion-badge slot="end" color="danger">{{ badge }}</ion-badge>
+                  <ion-badge slot="end" [color]="menuBadgeColor(entry)">{{
+                    badge
+                  }}</ion-badge>
                 }
               </ion-item>
             </ion-menu-toggle>
@@ -44,6 +46,13 @@
     </ion-content>
   </ion-menu>
   <div class="ion-page" id="main-content">
+    @if (navigating()) {
+      <ion-progress-bar
+        type="indeterminate"
+        class="app-navigating"
+        [attr.aria-label]="'a11y.loading' | translate"
+      />
+    }
     <ion-router-outlet></ion-router-outlet>
   </div>
   <ion-toast

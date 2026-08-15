@@ -1,17 +1,44 @@
 <ion-modal
   [isOpen]="isOpen()"
   (didDismiss)="dismissed.emit()"
+  (didPresent)="presented()"
   [attr.aria-label]="'emoji-picker.dialog' | translate"
 >
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-buttons slot="start">
+        <ion-title>{{ 'emoji-picker.dialog' | translate }}</ion-title>
+        <ion-buttons slot="end">
           <ion-button (click)="closed.emit()">
-            {{ 'emoji-picker.close' | translate }}
+            {{ 'emoji-picker.done' | translate }}
           </ion-button>
         </ion-buttons>
-        <ion-title>{{ 'emoji-picker.dialog' | translate }}</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-input
+          #preview
+          class="emoji-picker__preview"
+          labelPlacement="stacked"
+          label="{{ 'emoji-picker.text' | translate }}"
+          [value]="text()"
+          (ionInput)="previewInput($event)"
+          data-testid="emoji-picker-preview"
+        ></ion-input>
+        <ion-buttons slot="end">
+          <ion-button
+            fill="clear"
+            [disabled]="!text()"
+            [attr.aria-label]="'emoji-picker.delete' | translate"
+            (click)="backspace()"
+            data-testid="emoji-picker-backspace"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="backspace-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar
@@ -45,14 +72,15 @@
           {{ 'emoji-picker.recent' | translate }}
         </h2>
         <div class="emoji-picker__grid">
-          @for (glyph of recent(); track glyph) {
+          @for (entry of recentEntries(); track entry.glyph) {
             <button
               type="button"
               class="emoji-picker__cell"
-              (click)="pick(glyph)"
-              data-testid="emoji-option"
+              [attr.aria-label]="entry.label"
+              (click)="pick(entry.glyph)"
+              data-testid="emoji-recent"
             >
-              {{ glyph }}
+              {{ entry.glyph }}
             </button>
           }
         </div>
@@ -73,6 +101,11 @@
           <ion-note class="emoji-picker__empty">
             @if (isLoading()) {
               {{ 'emoji-picker.loading' | translate }}
+            } @else if (failed()) {
+              {{ 'emoji-picker.failed' | translate }}
+              <ion-button fill="clear" size="small" (click)="retry()">
+                {{ 'emoji-picker.retry' | translate }}
+              </ion-button>
             } @else {
               {{ 'emoji-picker.empty' | translate }}
             }

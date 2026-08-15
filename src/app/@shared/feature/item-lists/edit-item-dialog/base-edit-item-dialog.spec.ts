@@ -42,6 +42,12 @@ class TestDialog extends BaseEditItemDialog<BaseItem> {
   }
 }
 
+class TwinTolerantDialog extends TestDialog {
+  protected override uniqueName(): boolean {
+    return false;
+  }
+}
+
 describe('BaseEditItemDialog', () => {
   let host: ItemDialogService;
   let dialog: TestDialog;
@@ -185,6 +191,24 @@ describe('BaseEditItemDialog', () => {
 
       dialog.setName('milk');
       expect(dialog.canSave()).toBe(true);
+    });
+
+    it('accepts a duplicate name when the dialog opts out, but still not a blank one', () => {
+      const twinTolerant = TestBed.runInInjectionContext(
+        () => new TwinTolerantDialog()
+      );
+      twinTolerant.siblings.set([mockBaseItem({ id: 'other', name: 'Bread' })]);
+      host.open({
+        item: mockBaseItem({ id: 'x', name: 'Milk' }),
+        listId: '_storage',
+        editMode: 'update',
+      });
+
+      twinTolerant.setName('Bread');
+      expect(twinTolerant.canSave()).toBe(true);
+
+      twinTolerant.setName(' ');
+      expect(twinTolerant.canSave()).toBe(false);
     });
 
     it('does not save an invalid draft on confirm', () => {

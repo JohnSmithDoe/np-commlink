@@ -13,6 +13,7 @@ import {
 } from '../../@shared/util/categories/category-list.utils';
 import {
   addListItem,
+  hydratedList,
   removeListItem,
   updateListItem,
   updateListSearch,
@@ -35,7 +36,7 @@ export const tasksReducer = createReducer(
   on(TasksActions.updateItem,(state, { item }): TasksState => withList(state, 'list', updateListItem(state.list, item))),
   on(TasksActions.updateSearch,(state, { searchQuery }): TasksState => withList(state, 'list', updateListSearch(state.list, searchQuery))),
   on(TasksActions.updateFilter,(state, { filterBy }): TasksState => ({ ...state, list: { ...state.list, filterBy } })),
-  on(TasksActions.updateSort, (state, { sortBy, sortDirection }): TasksState => ({ ...state, list: { ...state.list, sort: updateListSort(sortBy, sortDirection, state.list.sort?.sortDirection) } })),
+  on(TasksActions.updateSort, (state, { sortBy, sortDirection }): TasksState => withList(state, 'list', updateListSort(state.list, sortBy, sortDirection))),
 
   on(TaskCategoriesActions.addItem, (state, { item }): TasksState => withList(state, 'categoryList', addToCatalog(state.categoryList, item))),
 
@@ -57,13 +58,13 @@ export const tasksReducer = createReducer(
   }),
 
   on(TaskCategoriesActions.updateSearch,(state, { searchQuery }): TasksState => withList(state, 'categoryList', updateListSearch(state.categoryList, searchQuery))),
-  on(TaskCategoriesActions.updateSort, (state, { sortBy, sortDirection }): TasksState => ({ ...state, categoryList: { ...state.categoryList, sort: updateListSort(sortBy, sortDirection, state.categoryList.sort?.sortDirection) } })),
+  on(TaskCategoriesActions.updateSort, (state, { sortBy, sortDirection }): TasksState => withList(state, 'categoryList', updateListSort(state.categoryList, sortBy, sortDirection))),
 
   on(TasksActions.loaded,(state, { tasks }): TasksState => {
     const hydrated = tasks ?? state;
     return {
-      list: { ...hydrated.list, searchQuery: undefined, filterBy: undefined },
-      categoryList: { ...hydrated.categoryList, searchQuery: undefined, filterBy: undefined },
+      list: hydratedList(hydrated.list),
+      categoryList: hydratedList(hydrated.categoryList),
     };
   })
 );

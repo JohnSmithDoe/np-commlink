@@ -10,7 +10,7 @@ import { addViaSearch, listRow, waitForListPage } from '../helpers';
 
 test.describe('shopping list', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/household/shopping/_shopping');
+    await page.goto('/#/household/shopping');
     await waitForListPage(page);
   });
 

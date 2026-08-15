@@ -1,14 +1,21 @@
 import { createReducer, on } from '@ngrx/store';
 import { Timestamp } from '../../@shared/model/app.types';
-import { TrackingItem, TrackingState } from '../model/tracking.types';
+import {
+  TrackingItem,
+  TrackingState,
+  TrackingViewId,
+} from '../model/tracking.types';
 import { TrackingActions } from './tracking.actions';
 import dayjs from 'dayjs';
 import {
   addListItem,
   removeListItem,
   updateListItem,
+  updateListSearch,
   updateListSort,
 } from '../../@shared/util/item-lists/list.utils';
+
+const HYDRATED_SESSIONS_VIEW: TrackingViewId = 'today';
 
 export const initialState: TrackingState = {
   items: [],
@@ -144,7 +151,7 @@ export const trackingReducer = createReducer(
     updateListItem(state, item)
   ),
   on(TrackingActions.updateSearch, (state, { searchQuery }): TrackingState =>
-    searchQuery === state.searchQuery ? state : { ...state, searchQuery }
+    updateListSearch(state, searchQuery)
   ),
   on(
     TrackingActions.toggleTrackingItem,
@@ -184,21 +191,18 @@ export const trackingReducer = createReducer(
 
   on(
     TrackingActions.updateSort,
-    (state, { sortBy, sortDirection }): TrackingState => ({
-      ...state,
-      sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection),
-    })
+    (state, { sortBy, sortDirection }): TrackingState =>
+      updateListSort(state, sortBy, sortDirection)
   ),
 
   on(TrackingActions.loaded, (state, { tracking }): TrackingState => {
+    const stored = tracking ?? state;
     return {
-      ...(tracking ?? state),
-      items: (tracking?.items ?? state.items).map((trackingItem) => ({
-        ...trackingItem,
-      })),
-      sessions: tracking?.sessions ?? state.sessions,
+      items: stored.items,
+      sessions: stored.sessions,
+      sort: stored.sort,
       searchQuery: undefined,
-      sessionsViewId: 'today',
+      sessionsViewId: HYDRATED_SESSIONS_VIEW,
     };
   })
 );

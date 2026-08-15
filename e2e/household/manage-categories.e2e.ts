@@ -62,7 +62,7 @@ async function addViaCatalogSearch(page: Page, name: string) {
 
 test.describe('household category catalog', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/household/storage/_storage');
+    await page.goto('/#/household/storage');
     await waitForListPage(page);
     await openCatalog(page);
   });

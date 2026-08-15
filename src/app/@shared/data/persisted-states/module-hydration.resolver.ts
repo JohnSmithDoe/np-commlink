@@ -3,7 +3,7 @@ import { ResolveFn } from '@angular/router';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, Store } from '@ngrx/store';
 import { firstValueFrom, take } from 'rxjs';
-import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
+import { ReadBeforeWriteService } from '../persistence/read-before-write.service';
 
 export function moduleHydrationResolver(
   key: string,
@@ -11,7 +11,7 @@ export function moduleHydrationResolver(
   loaded: ActionCreator
 ): ResolveFn<boolean> {
   return async () => {
-    const reads = inject(PersistedReadRegistry);
+    const reads = inject(ReadBeforeWriteService);
     if (reads.mayPersist(key)) return true;
 
     const store = inject(Store);

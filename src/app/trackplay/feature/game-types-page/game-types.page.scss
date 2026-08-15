@@ -1,0 +1,9 @@
+// ─── why ────────────────────────────────────────────────────────
+// No `:host` wrapper: the win-direction line is projected into
+// `app-list-item`, so the page element is not its ancestor — only the
+// emulated-encapsulation attribute still binds it to this file.
+// ────────────────────────────────────────────────────────────────
+
+@use '../../../../theme/trackplay';
+
+@include trackplay.label-secondary;

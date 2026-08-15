@@ -43,6 +43,38 @@ describe('trackingReducer', () => {
     expect(searched.searchQuery).toBe('foo');
   });
 
+  describe('updateSearch', () => {
+    it('trims what it stores, so tracking agrees with every other list', () => {
+      expect(
+        trackingReducer(initialState, TrackingActions.updateSearch('  ab  '))
+          .searchQuery
+      ).toBe('ab');
+    });
+
+    it('returns the same state for an unchanged query', () => {
+      const searched = trackingReducer(
+        initialState,
+        TrackingActions.updateSearch('ab')
+      );
+
+      expect(
+        trackingReducer(searched, TrackingActions.updateSearch('ab'))
+      ).toBe(searched);
+    });
+
+    it('clears to undefined, not to an empty string', () => {
+      const searched = trackingReducer(
+        initialState,
+        TrackingActions.updateSearch('ab')
+      );
+
+      expect(
+        trackingReducer(searched, TrackingActions.updateSearch(undefined))
+          .searchQuery
+      ).toBeUndefined();
+    });
+  });
+
   describe('toggleTrackingItem', () => {
     const now = '2026-06-01T10:00:00';
 

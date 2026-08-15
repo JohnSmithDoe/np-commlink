@@ -6,7 +6,14 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { gotoTrackplay, mainContent } from './helpers';
+import { listRow } from '../helpers';
+import {
+  CREATE_BUTTON,
+  createDialog,
+  gotoTrackplay,
+  mainContent,
+  nameBox,
+} from './helpers';
 
 test.describe('trackplay game types', () => {
   test('creates a win-low game type via the dialog', async ({ page }) => {
@@ -16,24 +23,17 @@ test.describe('trackplay game types', () => {
       'app-page-trackplay-game-types'
     );
 
-    await mainContent(page)
-      .getByRole('button', { name: 'Neue Spielart anlegen' })
-      .click();
+    await mainContent(page).getByTestId('page-header-add').click();
 
-    const dialog = page.locator('app-trackplay-game-type-edit-modal');
+    const dialog = createDialog(page);
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog
-      .getByTestId('game-type-name-input')
-      .locator('input')
-      .fill('Doppelkopf');
+    await nameBox(dialog).fill('Doppelkopf');
     await dialog.getByTestId('win-high-toggle').click();
-    await dialog.getByRole('button', { name: 'OK' }).click();
+    await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
     await expect(dialog).toBeHidden();
 
-    const createdRow = mainContent(page)
-      .locator('app-trackplay-game-type-list-item')
-      .filter({ hasText: 'Doppelkopf' });
+    const createdRow = listRow(page, 'Doppelkopf');
     await expect(createdRow).toBeVisible();
     await expect(createdRow).toContainText('Niedrigste Punktzahl gewinnt');
   });
@@ -45,23 +45,16 @@ test.describe('trackplay game types', () => {
       'app-page-trackplay-game-types'
     );
 
-    await mainContent(page)
-      .getByRole('button', { name: 'Neue Spielart anlegen' })
-      .click();
+    await mainContent(page).getByTestId('page-header-add').click();
 
-    const dialog = page.locator('app-trackplay-game-type-edit-modal');
+    const dialog = createDialog(page);
     await expect(dialog).toBeVisible({ timeout: 15_000 });
 
-    await dialog
-      .getByTestId('game-type-name-input')
-      .locator('input')
-      .fill('Canasta');
-    await dialog.getByRole('button', { name: 'OK' }).click();
+    await nameBox(dialog).fill('Canasta');
+    await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
     await expect(dialog).toBeHidden();
 
-    const createdRow = mainContent(page)
-      .locator('app-trackplay-game-type-list-item')
-      .filter({ hasText: 'Canasta' });
+    const createdRow = listRow(page, 'Canasta');
     await expect(createdRow).toBeVisible();
     await expect(createdRow).toContainText('Höchste Punktzahl gewinnt');
   });

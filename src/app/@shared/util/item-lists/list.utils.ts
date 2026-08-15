@@ -1,10 +1,10 @@
-import { matchesItemExactlyIndex, matchesSearch } from '../app.utils';
+import { indexOfMatchingItem, matcherFor } from '../app.utils';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
 import {
   ItemListSort,
   ItemListSortDirection,
   ItemListSortType,
-  ListState,
+  ItemList,
 } from '../../model/item-list.types';
 
 export const withList = <S, K extends keyof S>(
@@ -13,7 +13,7 @@ export const withList = <S, K extends keyof S>(
   next: S[K]
 ): S => (next === state[key] ? state : { ...state, [key]: next });
 
-export const addListItem = <T extends ListState<R>, R extends BaseItem>(
+export const addListItem = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
   item: R
 ): T => {
@@ -24,7 +24,7 @@ export const addListItem = <T extends ListState<R>, R extends BaseItem>(
   return { ...state, items: [item, ...state.items] };
 };
 
-export const removeListItem = <T extends ListState<R>, R extends BaseItem>(
+export const removeListItem = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
   item: R
 ): T => ({
@@ -32,12 +32,12 @@ export const removeListItem = <T extends ListState<R>, R extends BaseItem>(
   items: state.items.filter((listItem) => listItem.id !== item.id),
 });
 
-export const updateListItem = <T extends ListState<R>, R extends BaseItem>(
+export const updateListItem = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
   item: UpdateDTO<R> | undefined
 ): T => {
   if (!item) return state;
-  const itemIndex = matchesItemExactlyIndex(item, state.items);
+  const itemIndex = indexOfMatchingItem(item, state.items);
   const matched = state.items[itemIndex];
   if (!matched) return state;
   const items: UpdateDTO<R>[] = [...state.items];
@@ -45,36 +45,40 @@ export const updateListItem = <T extends ListState<R>, R extends BaseItem>(
   return { ...state, items };
 };
 
-export const updateListSort = (
-  sortBy?: ItemListSortType,
-  requestedDirection?: ItemListSortDirection | 'keep' | 'toggle',
-  currentDirection?: ItemListSortDirection
-) => {
-  let result: ItemListSort | undefined;
-  if (!!sortBy) {
-    const defaultSort = 'asc';
-    let sortDirection: 'asc' | 'desc' = defaultSort;
-    switch (requestedDirection) {
-      case 'asc':
-      case 'desc': {
-        sortDirection = requestedDirection;
-        break;
-      }
-      case 'keep': {
-        sortDirection = currentDirection ?? defaultSort;
-        break;
-      }
-      case 'toggle': {
-        sortDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        break;
-      }
-    }
-    result = { sortBy, sortDirection };
-  }
-  return result;
+const directionFor = (
+  requested?: ItemListSortDirection | 'keep' | 'toggle',
+  current?: ItemListSortDirection
+): ItemListSortDirection => {
+  if (requested === 'asc' || requested === 'desc') return requested;
+  if (requested === 'keep') return current ?? 'asc';
+  if (requested === 'toggle') return current === 'asc' ? 'desc' : 'asc';
+  return 'asc';
 };
 
-export const updateListSearch = <T extends ListState<R>, R extends BaseItem>(
+export const updateListSort = <T extends { sort?: ItemListSort }>(
+  state: T,
+  sortBy?: ItemListSortType,
+  requestedDirection?: ItemListSortDirection | 'keep' | 'toggle'
+): T => ({
+  ...state,
+  sort: sortBy
+    ? {
+        sortBy,
+        sortDirection: directionFor(
+          requestedDirection,
+          state.sort?.sortDirection
+        ),
+      }
+    : undefined,
+});
+
+export const hydratedList = <
+  T extends { searchQuery?: string; filterBy?: string },
+>(
+  list: T
+): T => ({ ...list, searchQuery: undefined, filterBy: undefined });
+
+export const updateListSearch = <T extends { searchQuery?: string }>(
   state: T,
   searchQuery?: string
 ): T => {
@@ -87,9 +91,4 @@ export const updateListSearch = <T extends ListState<R>, R extends BaseItem>(
 export const updatedSearchQuery = (
   item: BaseItem,
   searchQuery: string | undefined
-) => {
-  if (!!item.name && !matchesSearch(item, searchQuery ?? '')) {
-    searchQuery = undefined;
-  }
-  return searchQuery;
-};
+) => (item.name && !matcherFor(searchQuery)(item) ? undefined : searchQuery);

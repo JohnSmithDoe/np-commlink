@@ -3,6 +3,7 @@ import { HOUSEHOLD_CATEGORIES_LIST_ID } from '../../model/household-list.types';
 import { CategoryList } from '../../../@shared/model/category.types';
 import { addToCatalog } from '../../../@shared/util/categories/category-list.utils';
 import {
+  hydratedList,
   updateListSearch,
   updateListSort,
 } from '../../../@shared/util/item-lists/list.utils';
@@ -19,11 +20,7 @@ export const householdCategoriesReducer = createReducer(
   initialState,
   on(HouseholdCategoriesActions.addItem, (state, { item }): CategoryList => addToCatalog(state, item)),
   on(HouseholdCategoriesActions.updateSearch, (state, { searchQuery }): CategoryList => updateListSearch(state, searchQuery)),
-  on(HouseholdCategoriesActions.updateSort, (state, { sortBy, sortDirection }): CategoryList => ({ ...state, sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection) })),
+  on(HouseholdCategoriesActions.updateSort, (state, { sortBy, sortDirection }): CategoryList => updateListSort(state, sortBy, sortDirection)),
 
-  on(HouseholdActions.loaded, (state, { data }): CategoryList => ({
-    ...(data?.categories ?? state),
-    searchQuery: undefined,
-    filterBy: undefined,
-  }))
+  on(HouseholdActions.loaded, (state, { data }): CategoryList => hydratedList(data?.categories ?? state))
 );

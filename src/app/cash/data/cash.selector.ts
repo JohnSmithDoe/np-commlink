@@ -3,27 +3,11 @@ import dayjs from 'dayjs';
 import { CashState } from '../model/cash.types';
 import { CashTransaction } from '../model/transaction.types';
 import { categoryNameLookup } from '../../@shared/util/categories/category.utils';
-import {
-  filterAndSortItemList,
-  filterListBySearchQuery,
-} from '../../@shared/util/item-lists/list.selector';
+import { categoryIdOf } from '../util/cash-category.utils';
 import { centsToEur } from '../util/money.utils';
-import {
-  Category,
-  CategoryId,
-  CategoryList,
-} from '../../@shared/model/category.types';
-import { SearchResult } from '../../@shared/model/item-list.types';
 
 const isReportable = (txn: CashTransaction): boolean =>
   !txn.isTransfer && !txn.matchedTxnId;
-
-const byNewestFirst = (a: CashTransaction, b: CashTransaction): number =>
-  a.dateISO === b.dateISO
-    ? a.id.localeCompare(b.id)
-    : a.dateISO < b.dateISO
-      ? 1
-      : -1;
 
 const addSignedAmount = (
   bucket: { incomeCents: number; spendCents: number },
@@ -37,62 +21,19 @@ export const CASH_STATE_KEY = 'cash';
 
 export const selectCashState = createFeatureSelector<CashState>(CASH_STATE_KEY);
 
-export const selectCashAccounts = createSelector(
+export const selectAllTransactions = createSelector(
   selectCashState,
-  (state) => state.accounts
-);
-export const selectCashTransactions = createSelector(
-  selectCashState,
-  (state) => state.transactions
-);
-export const selectCashRules = createSelector(
-  selectCashState,
-  (state) => state.rules
-);
-export const selectCashCategoryList = createSelector(
-  selectCashState,
-  (state): CategoryList => state.categories
-);
-export const selectCashCategories = createSelector(
-  selectCashCategoryList,
-  (catalog): Category[] => catalog.items
+  (state): CashTransaction[] => state.transactions.items
 );
 
-export const selectCashCategoriesSearchResult = createSelector(
-  selectCashCategoryList,
-  (catalog): SearchResult<Category> | undefined =>
-    filterListBySearchQuery(catalog)
+const selectAllAccounts = createSelector(
+  selectCashState,
+  (state) => state.accounts.items
 );
-
-export const selectCashCategoriesListItems = createSelector(
-  selectCashCategoryList,
-  selectCashCategoriesSearchResult,
-  (catalog, result): Category[] | undefined =>
-    filterAndSortItemList(catalog, result)
-);
-
-export const selectCashCountByCategory = createSelector(
-  selectCashTransactions,
-  (transactions): Map<CategoryId, number> => {
-    const countById = new Map<CategoryId, number>();
-    for (const txn of transactions) {
-      if (txn.matchedTxnId || !txn.categoryId) continue;
-      countById.set(txn.categoryId, (countById.get(txn.categoryId) ?? 0) + 1);
-    }
-    return countById;
-  }
-);
-
-export const selectTransactionsForCategory = (categoryId: CategoryId) =>
-  createSelector(selectCashTransactions, (transactions): CashTransaction[] =>
-    transactions
-      .filter((txn) => txn.categoryId === categoryId && !txn.matchedTxnId)
-      .toSorted(byNewestFirst)
-  );
 
 export const selectAccountBalances = createSelector(
-  selectCashAccounts,
-  selectCashTransactions,
+  selectAllAccounts,
+  selectAllTransactions,
   (accounts, transactions): Record<string, number> => {
     const balances: Record<string, number> = {};
     for (const account of accounts) {
@@ -114,46 +55,8 @@ export const selectNetWorthCents = createSelector(
     Object.values(balances).reduce((sum, cents) => sum + cents, 0)
 );
 
-export const selectAccountsWithBalances = createSelector(
-  selectCashAccounts,
-  selectAccountBalances,
-  (accounts, balances) =>
-    accounts.map((account) => ({
-      ...account,
-      balanceCents: balances[account.id] ?? account.openingBalanceCents,
-    }))
-);
-
-export const selectAccountById = (accountId: string) =>
-  createSelector(selectCashAccounts, (accounts) =>
-    accounts.find((a) => a.id === accountId)
-  );
-
-export type AccountTransaction = CashTransaction & {
-  reconciledManualId?: string;
-};
-
-export const selectTransactionsForAccount = (accountId: string) =>
-  createSelector(
-    selectCashTransactions,
-    (transactions): AccountTransaction[] => {
-      const manualLegBySurvivorId = new Map<string, string>();
-      for (const txn of transactions) {
-        if (txn.matchedTxnId)
-          manualLegBySurvivorId.set(txn.matchedTxnId, txn.id);
-      }
-      return transactions
-        .filter((txn) => txn.accountId === accountId && !txn.matchedTxnId)
-        .map((txn): AccountTransaction => ({
-          ...txn,
-          reconciledManualId: manualLegBySurvivorId.get(txn.id),
-        }))
-        .toSorted(byNewestFirst);
-    }
-  );
-
 export const selectReportTotals = createSelector(
-  selectCashTransactions,
+  selectAllTransactions,
   (transactions) => {
     const totals = { incomeCents: 0, spendCents: 0 };
     for (const txn of transactions) {
@@ -165,7 +68,7 @@ export const selectReportTotals = createSelector(
 );
 
 export const selectMonthlyTotals = createSelector(
-  selectCashTransactions,
+  selectAllTransactions,
   (transactions) => {
     const byMonth = new Map<
       string,
@@ -185,16 +88,15 @@ export const selectMonthlyTotals = createSelector(
 );
 
 export const selectSpendByCategory = createSelector(
-  selectCashTransactions,
-  selectCashCategories,
-  (transactions, categories) => {
+  selectCashState,
+  (state) => {
     const byCategory = new Map<string, number>(); // key = categoryId or ''
-    for (const txn of transactions) {
+    for (const txn of state.transactions.items) {
       if (!isReportable(txn) || txn.amountCents >= 0) continue; // outflows only
-      const key = txn.categoryId ?? '';
+      const key = categoryIdOf(txn) ?? '';
       byCategory.set(key, (byCategory.get(key) ?? 0) + -txn.amountCents);
     }
-    const categoryName = categoryNameLookup(categories);
+    const categoryName = categoryNameLookup(state.categories.items);
     return [...byCategory.entries()]
       .map(([id, cents]) => ({ category: categoryName(id), cents }))
       .toSorted((a, b) => b.cents - a.cents);

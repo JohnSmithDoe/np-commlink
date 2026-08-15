@@ -15,7 +15,7 @@
  * The last test is the one no unit spec could replace: tracking's own
  * chrome reaches the screen only through the shared, domain-blind list
  * page's projection slots — the daily-sessions panel via
- * `[searchExtras]`, the reset/save buttons via `[toolbarActionsEnd]`, and
+ * `[afterList]`, the reset/save buttons via `[toolbarActionsEnd]`, and
  * the settings link DOUBLE-projected through `[headerEnd]` into the page
  * header, which is why that assertion follows the link rather than merely
  * finding it. It also asserts the category UI is absent, since tracking's

@@ -7,6 +7,7 @@ import { ListSettingsActions } from './list-settings/list-settings.actions';
 import { householdReducer } from './household.reducer';
 import {
   HouseholdListEffects,
+  householdRouteFilterEffects,
   productsListEffects,
   shoppingListEffects,
   storageListEffects,
@@ -60,6 +61,7 @@ export const householdContext = providePersistedContext({
   ],
   effects: [
     HouseholdListEffects,
+    householdRouteFilterEffects,
     ShoppingEffects,
     StorageEffects,
     ListSettingsEffects,

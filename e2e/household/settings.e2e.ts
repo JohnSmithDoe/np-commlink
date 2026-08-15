@@ -42,7 +42,7 @@ test.describe('list-settings', () => {
     await expect(toggle).toHaveAttribute('aria-checked', expected);
     await waitForPersisted(page, 'household', `"showQuickAdd":${expected}`);
 
-    await page.goto('/#/household/storage/_storage');
+    await page.goto('/#/household/storage');
     await waitForListPage(page);
     await page.goto('/#/household/list-settings');
     await page.reload();

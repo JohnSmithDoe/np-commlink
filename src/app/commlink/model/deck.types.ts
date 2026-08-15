@@ -13,6 +13,7 @@ export type AppModule =
   | 'tasks'
   | 'cash'
   | 'trackplay'
+  | 'ritual'
   | 'geist'
   | 'settings';
 

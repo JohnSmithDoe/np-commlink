@@ -6,6 +6,7 @@
 #
 #   ./scripts/verify-all.sh            one card per gate, output only where it failed
 #   ./scripts/verify-all.sh --stream   every tool's output live, as it arrives
+#   ./scripts/verify-all.sh --cold     purge eslint's cache first — the strict answer
 #
 # A green gate's output is noise — fifteen of them scroll the one red card off the
 # screen, which is the opposite of what a checklist is for. So the body is quiet
@@ -18,9 +19,9 @@
 # full log is written to $TMPDIR either way — so nothing is only ever visible
 # live.
 #
-# The two other old flags are still gone, both having been ways to ask for a less
-# trustworthy answer: --warm kept a cache that hides cross-file violations, and
-# --keep-going undid a short-circuit.
+# --keep-going is gone, having been a way to undo a short-circuit. --warm is gone
+# as a flag too, but what it asked for is now the default and --cold is its
+# inverse — point 1 below is why that flipped.
 #
 # Dropping the short-circuit is the one real behaviour change: a red cheap gate
 # no longer skips the expensive ones. That costs ~40s on an already-broken tree
@@ -39,9 +40,13 @@
 # has had a chance to start.
 #
 # Three things this encodes so they cannot be forgotten:
-#   1. The eslint cache is per-file while Sheriff is cross-file, so a violation
-#      one file gains because another changed survives a warm run. It is purged
-#      every time, which is what CI gets for free by having no cache at all.
+#   1. eslint's cache is per-file while Sheriff and the four type-aware rules are
+#      cross-file, so a verdict one file gains because another moved survives a
+#      warm run. It is kept anyway: cold, eslint is a third of this whole suite
+#      and warm it is two seconds, and the staleness is nearly double-covered —
+#      the sheriff gate runs cold over everything imported from main.ts, and CI
+#      has no cache at all. What is left is a spec file (which the sheriff CLI
+#      cannot reach) or one of those four rules. --cold buys it back.
 #   2. A stale listener on :4321 makes Playwright fail with errors that have
 #      nothing to do with the code, so the port is cleared before the e2e gate.
 #   3. The expensive gates must not overlap: e2e binds :4321, the build writes
@@ -87,6 +92,7 @@ GATES=(
   "format|format|prettier|pnpm run format:check"
   "exports|export surface|check-exports.mjs|pnpm run verify:exports"
   "eslint|eslint|eslint|pnpm run lint:eslint"
+  "rules|lint rules|vitest|pnpm run test:plugin"
   "unit|unit tests|vitest|pnpm run test:coverage"
   "e2e|e2e|playwright|pnpm run e2e"
   "build|production build|esbuild|pnpm run build:pages"
@@ -95,11 +101,13 @@ GATES=(
 TOTAL=${#GATES[@]}
 
 STREAM=false
+COLD=false
 for arg in "$@"; do
   case "$arg" in
     --stream) STREAM=true ;;
+    --cold) COLD=true ;;
     *)
-      printf 'verify-all: unknown flag %s (only --stream)\n' "$arg" >&2
+      printf 'verify-all: unknown flag %s (only --stream, --cold)\n' "$arg" >&2
       exit 2
       ;;
   esac
@@ -187,6 +195,8 @@ detail_for() {
     testids) grep -Eo '[0-9]+ declared.*' "$log" | tail -1 ;;
     icons) grep -Eo '[0-9]+ used.*' "$log" | tail -1 ;;
     exports) grep -Eo '[0-9]+ exports checked.*' "$log" | tail -1 ;;
+    # Silence is the strict answer; the weaker one says so.
+    eslint) [ "$COLD" = false ] && echo 'warm cache' ;;
     docpaths) grep -Eo '[0-9]+ paths checked.*' "$log" | tail -1 ;;
     unit) strip_ansi <"$log" | grep -E '^ *Tests +[0-9]' | tail -1 | tr -s ' ' | trim ;;
     # EVERY summary line, not the last one. Playwright prints "1 flaky" above
@@ -208,7 +218,7 @@ detail_for() {
 
 prepare_gate() {
   case "$1" in
-    eslint) rm -rf .eslintcache ;;
+    eslint) [ "$COLD" = true ] && rm -rf .eslintcache ;;
     e2e) lsof -ti:4321 2>/dev/null | xargs kill -9 2>/dev/null ;;
   esac
   return 0

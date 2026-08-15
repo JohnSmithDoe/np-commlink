@@ -165,7 +165,7 @@
             <div class="gs-turn">
               <p class="gs-turn__query">&gt; {{ turn.query }}</p>
               <pre
-                class="gs-turn__answer">{{ turn.answer }}@if (turn.streaming) {<span class="gs-cursor" aria-hidden="true">▊</span>}</pre>
+                class="gs-turn__answer">{{ turn.answer }}@if (turn.streaming) {<span class="sr-caret" aria-hidden="true">▊</span>}</pre>
               @if (turn.note) {
                 <p class="gs-turn__note">// {{ turn.note | translate }}</p>
               }
@@ -183,6 +183,8 @@
             [value]="query()"
             [placeholder]="'geist.placeholder' | translate"
             (ionInput)="typeQuery($event)"
+            (keydown.control.enter)="sendShortcut($event)"
+            (keydown.meta.enter)="sendShortcut($event)"
           />
           <div class="gs-input__actions">
             @if (isStreaming()) {

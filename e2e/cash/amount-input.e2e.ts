@@ -18,7 +18,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
-import { pageRoot } from '../helpers';
+import { listRow, pageRoot, presentedDialog } from '../helpers';
 
 function accounts(page: Page): Locator {
   return pageRoot(page, 'app-page-cash');
@@ -29,7 +29,7 @@ function account(page: Page): Locator {
 }
 
 function txnModal(page: Page): Locator {
-  return page.locator('app-cash-transaction-edit-modal');
+  return page.locator('ion-modal.show-modal');
 }
 
 function amountBox(page: Page): Locator {
@@ -40,26 +40,26 @@ async function openLedger(page: Page) {
   await page.goto('/#/cash');
   await expect(accounts(page)).toBeVisible({ timeout: 30_000 });
   await accounts(page).getByTestId('page-header-add').click();
-  const accountModal = page.locator('app-cash-account-edit-modal');
+  const accountModal = presentedDialog(page, 'Neuen Eintrag anlegen');
   await accountModal
     .getByRole('textbox', { name: 'Name' })
     .fill('CREDSTICK-01');
-  await accountModal.getByRole('button', { name: 'Speichern' }).click();
-  await accounts(page).getByText('CREDSTICK-01').click();
+  await accountModal.getByRole('button', { name: 'Anlegen' }).click();
+  await listRow(page, 'CREDSTICK-01').click();
   await expect(account(page)).toBeVisible({ timeout: 10_000 });
 }
 
 test.describe('cash money input', () => {
   test('edits cents without fighting the typist', async ({ page }) => {
     await openLedger(page);
-    await account(page)
-      .getByRole('button', { name: 'Transaktion hinzufügen' })
-      .click();
+    await account(page).getByTestId('page-header-add').click();
     await txnModal(page)
-      .getByRole('textbox', { name: 'Beschreibung' })
+      .getByRole('textbox', { name: 'Name' })
       .fill('Soykaf refill');
 
-    const save = txnModal(page).getByRole('button', { name: 'Speichern' });
+    const save = txnModal(page).getByRole('button', {
+      name: /Anlegen|Übernehmen/,
+    });
     const note = txnModal(page).getByText('Ungültiger Betrag');
 
     await amountBox(page).fill('12,');
@@ -77,11 +77,11 @@ test.describe('cash money input', () => {
     await amountBox(page).fill('12,34');
     await expect(note).toBeHidden();
     await save.click();
-    await expect(account(page).getByText('Soykaf refill')).toBeVisible({
+    await expect(listRow(page, 'Soykaf refill')).toBeVisible({
       timeout: 10_000,
     });
 
-    await account(page).getByText('Soykaf refill').click();
+    await listRow(page, 'Soykaf refill').click();
     await expect(txnModal(page)).toBeVisible({ timeout: 10_000 });
     await expect(amountBox(page)).toHaveValue('12,34');
   });

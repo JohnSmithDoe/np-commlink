@@ -1,7 +1,9 @@
+import { Timestamp } from '../../@shared/model/app.types';
 import {
   Game,
+  GamesState,
+  PlayersState,
   Round,
-  TrackplayState,
   TrackplayId,
 } from '../model/trackplay.types';
 import { createRound } from './trackplay.factory';
@@ -9,86 +11,83 @@ import { createRound } from './trackplay.factory';
 const isRoundBlank = (round?: Round): boolean =>
   !!round && Object.values(round.values).every((v) => !v);
 
-const appendBlankRound = (
-  state: TrackplayState,
-  game: Game
-): TrackplayState => {
-  const blank = createRound(game.rounds.length, game.players);
-  return {
-    ...state,
-    rounds: { ...state.rounds, [blank.id]: blank },
-    games: {
-      ...state.games,
-      [game.id]: { ...game, rounds: [...game.rounds, blank.id] },
-    },
-  };
-};
+const gameById = (games: GamesState, gameId: TrackplayId): Game | undefined =>
+  games.items.find((game) => game.id === gameId);
+
+const withGame = (games: GamesState, next: Game): GamesState => ({
+  ...games,
+  items: games.items.map((game) => (game.id === next.id ? next : game)),
+});
+
+const withBlankRound = (game: Game, roundId: TrackplayId): Game => ({
+  ...game,
+  rounds: [...game.rounds, createRound(game.playerIds, roundId)],
+});
 
 export const ensureTrailingBlankRound = (
-  state: TrackplayState,
-  gameId: TrackplayId
-): TrackplayState => {
-  const game = state.games[gameId];
-  if (!game || game.ended) return state;
-  const lastRoundId = game.rounds.at(-1);
-  const lastRound = lastRoundId ? state.rounds[lastRoundId] : undefined;
-  if (game.rounds.length > 0 && isRoundBlank(lastRound)) return state;
-  return appendBlankRound(state, game);
+  games: GamesState,
+  gameId: TrackplayId,
+  roundId: TrackplayId
+): GamesState => {
+  const game = gameById(games, gameId);
+  if (!game || game.ended) return games;
+  if (game.rounds.length > 0 && isRoundBlank(game.rounds.at(-1))) return games;
+  return withGame(games, withBlankRound(game, roundId));
 };
 
 const withRoundValue = (
-  state: TrackplayState,
-  round: Round,
+  game: Game,
+  roundId: TrackplayId,
   playerId: TrackplayId,
   value: number
-): TrackplayState => ({
-  ...state,
-  rounds: {
-    ...state.rounds,
-    [round.id]: { ...round, values: { ...round.values, [playerId]: value } },
-  },
+): Game => ({
+  ...game,
+  rounds: game.rounds.map((round) =>
+    round.id === roundId
+      ? { ...round, values: { ...round.values, [playerId]: value } }
+      : round
+  ),
 });
 
 const shouldAppendBlankRound = (
   game: Game,
   roundId: TrackplayId,
   value: number
-): boolean => game.rounds.at(-1) === roundId && value !== 0;
-
-const touchGameAndPlayers = (
-  state: TrackplayState,
-  gameId: TrackplayId,
-  now: number
-): TrackplayState => {
-  const game = state.games[gameId];
-  if (!game) return state;
-  const players = { ...state.players };
-  for (const playerId of game.players) {
-    const player = players[playerId];
-    if (player) players[playerId] = { ...player, lastPlayed: now };
-  }
-  return {
-    ...state,
-    games: { ...state.games, [gameId]: { ...game, updated: now } },
-    players,
-  };
-};
+): boolean => game.rounds.at(-1)?.id === roundId && value !== 0;
 
 export const setRoundValue = (
-  state: TrackplayState,
+  games: GamesState,
   gameId: TrackplayId,
   roundId: TrackplayId,
   playerId: TrackplayId,
   value: number,
-  now: number
-): TrackplayState => {
-  const game = state.games[gameId];
-  const round = state.rounds[roundId];
-  if (!game || !round) return state;
-  if (round.values[playerId] === value) return state;
-  const scored = withRoundValue(state, round, playerId, value);
+  at: Timestamp,
+  nextRoundId: TrackplayId
+): GamesState => {
+  const game = gameById(games, gameId);
+  const round = game?.rounds.find((r) => r.id === roundId);
+  if (!game || !round) return games;
+  if (round.values[playerId] === value) return games;
+  const scored = withRoundValue(game, roundId, playerId, value);
   const grown = shouldAppendBlankRound(game, roundId, value)
-    ? appendBlankRound(scored, game)
+    ? withBlankRound(scored, nextRoundId)
     : scored;
-  return touchGameAndPlayers(grown, gameId, now);
+  return withGame(games, { ...grown, updatedAt: at });
+};
+
+export const stampParticipants = (
+  players: PlayersState,
+  games: GamesState,
+  gameId: TrackplayId,
+  at: Timestamp
+): PlayersState => {
+  const game = gameById(games, gameId);
+  if (!game) return players;
+  const roster = new Set(game.playerIds);
+  return {
+    ...players,
+    items: players.items.map((player) =>
+      roster.has(player.id) ? { ...player, lastPlayedAt: at } : player
+    ),
+  };
 };

@@ -1,0 +1,17 @@
+<ion-toolbar>
+  <ion-segment
+    [value]="facade.activeListId()"
+    (ionChange)="switchList($event)"
+    [attr.aria-label]="'household.a11y.switch-list' | translate"
+  >
+    <ion-segment-button value="_products" data-testid="list-switcher-products">
+      {{ 'household.list-switcher.products' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="_shopping" data-testid="list-switcher-shopping">
+      {{ 'household.list-switcher.shopping' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="_storage" data-testid="list-switcher-storage">
+      {{ 'household.list-switcher.storage' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+</ion-toolbar>

@@ -4,7 +4,7 @@ import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { createShoppingItemFromStorage } from '../../util/household.factory';
-import { matchesItemExactly } from '../../../@shared/util/app.utils';
+import { findMatchingItem } from '../../../@shared/util/app.utils';
 import { ShoppingActions } from '../shopping/shopping.actions';
 import { selectShoppingState } from '../shopping/shopping.selector';
 import { StorageActions } from './storage.actions';
@@ -29,7 +29,7 @@ export class StorageEffects {
       concatLatestFrom(() => this.#store.select(selectShoppingState)),
       map(([{ item }, state]) => {
         const shoppingItem = createShoppingItemFromStorage(item);
-        const found = matchesItemExactly(shoppingItem, state.items);
+        const found = findMatchingItem(shoppingItem, state.items);
         if (found) {
           return ShoppingActions.updateItem({
             ...found,

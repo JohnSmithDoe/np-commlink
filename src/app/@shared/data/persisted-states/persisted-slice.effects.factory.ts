@@ -1,23 +1,38 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * The save half reports its failures because nothing else can: no backend,
+ * no retry, so a full quota or an evicted origin leaves the user working
+ * against the in-memory store, believing it saved, until the next launch.
+ *
+ * It reports ONCE PER KEY, not per failed write — whatever breaks a write
+ * breaks every write after it, and the trigger is a mutation, so an
+ * unlatched toast would fire on each keystroke of a search box.
+ *
+ * `concatMap` rather than `tap`: a rejected promise inside `tap` is
+ * unobservable, and two saves of one key racing could land out of order.
+ * ───────────────────────────────────────────────────────────────── */
+
 import { inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
 import {
   catchError,
+  concatMap,
   distinctUntilChanged,
+  EMPTY,
   filter,
   from,
+  ignoreElements,
   map,
   of,
   switchMap,
   take,
-  tap,
   withLatestFrom,
 } from 'rxjs';
 import { APP_VERSION } from '../../model/app.consts';
 import { DashboardTelemetry } from '../../model/dashboard.types';
 import { DatabaseService } from '../persistence/database.service';
-import { PersistedReadRegistry } from '../persistence/persisted-read-registry';
+import { ReadBeforeWriteService } from '../persistence/read-before-write.service';
 import {
   MigrationStep,
   runMigrations,
@@ -54,7 +69,7 @@ export const createLoadSliceEffect = <T>(
     (
       actions$ = inject(Actions),
       database = inject(DatabaseService),
-      reads = inject(PersistedReadRegistry)
+      reads = inject(ReadBeforeWriteService)
     ) => {
       return actions$.pipe(
         ofType(lifecycle.load),
@@ -101,27 +116,40 @@ export const createSaveSliceEffect = <T>(
       actions$ = inject(Actions),
       store = inject(Store),
       database = inject(DatabaseService),
-      reads = inject(PersistedReadRegistry)
+      reads = inject(ReadBeforeWriteService)
     ) => {
+      let reported = false;
       return actions$.pipe(
         filter(isMutation),
         filter(() => reads.mayPersist(key)),
         withLatestFrom(store.select(select)),
         map(([, state]) => state),
         distinctUntilChanged(),
-        tap((state) => {
-          database.save(key, wrapVersioned(APP_VERSION, state)).catch(() => {});
-        })
+        concatMap((state) =>
+          from(database.save(key, wrapVersioned(APP_VERSION, state))).pipe(
+            ignoreElements(),
+            catchError(() => {
+              if (reported) return EMPTY;
+              reported = true;
+              return of(
+                NotificationsActions.toast({
+                  key: marker('toast.storage.write-failed'),
+                  color: 'danger',
+                })
+              );
+            })
+          )
+        )
       );
     },
-    { functional: true, dispatch: false }
+    { functional: true }
   );
 };
 
 const hydratedFromDisk = <T>(
   actions$: Actions,
   lifecycle: SliceLifecycle<T>,
-  reads: PersistedReadRegistry,
+  reads: ReadBeforeWriteService,
   key: string
 ) =>
   actions$.pipe(
@@ -139,7 +167,7 @@ export const createTelemetrySliceEffect = <S, T>(
     (
       actions$ = inject(Actions),
       store = inject(Store),
-      reads = inject(PersistedReadRegistry)
+      reads = inject(ReadBeforeWriteService)
     ) => {
       return hydratedFromDisk(actions$, lifecycle, reads, key).pipe(
         switchMap(() => store.select(spec.select)),
@@ -159,3 +187,8 @@ export const createMetric =
   (value: number | string): DashboardTelemetry['metrics'] => ({
     [key]: value,
   });
+
+export const pickMetrics =
+  <T extends DashboardTelemetry['metrics']>(...keys: readonly (keyof T)[]) =>
+  (value: T): DashboardTelemetry['metrics'] =>
+    Object.fromEntries(keys.map((key) => [key, value[key]]));

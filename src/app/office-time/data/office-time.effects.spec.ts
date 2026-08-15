@@ -7,7 +7,7 @@ import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { APP_VERSION } from '../../@shared/model/app.consts';
 import { DatabaseService } from '../../@shared/data/persistence/database.service';
 import { wrapVersioned } from '../../@shared/util/persistence/versioned';
-import { mockOfficeTimeState } from '../testing/office-time.test-data';
+import { dayMap, mockOfficeTimeState } from '../testing/office-time.test-data';
 import { OfficeTimeActions } from './office-time.actions';
 import { OfficeTimeEffects } from './office-time.effects';
 
@@ -61,8 +61,8 @@ describe('OfficeTimeEffects', () => {
       const effects = setup(
         mockOfficeTimeState({
           holidays: { 'Internationaler Frauentag': day },
-          officedays: [day],
-          freedays: [day],
+          officedays: dayMap(day, dayjs('2026-03-08T18:00:00')),
+          freedays: dayMap(day),
         })
       );
       actions$ = of(OfficeTimeActions.saveOfficeTime());

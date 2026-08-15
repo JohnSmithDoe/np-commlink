@@ -1,0 +1,47 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-segment [formField]="form.direction">
+    <ion-segment-button value="expense">
+      {{ 'cash.txn.expense' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="income">
+      {{ 'cash.txn.income' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <app-money-input
+    label="{{ 'cash.label.amount' | translate }}"
+    [formField]="form.amountCents"
+  />
+  @if (amountInvalid()) {
+    <ion-note color="danger" class="sr-field-note">
+      {{ 'cash.txn-dialog.amount-invalid' | translate }}
+    </ion-note>
+  }
+
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="date"
+      label="{{ 'cash.label.date' | translate }}"
+      [formField]="form.date"
+    />
+  </ion-item>
+
+  <app-cash-category-picker [formField]="form.categoryId" />
+
+  <ion-item>
+    <ion-toggle [formField]="form.pending">
+      {{ 'cash.txn.pending' | translate }}
+    </ion-toggle>
+  </ion-item>
+</app-item-edit-modal>

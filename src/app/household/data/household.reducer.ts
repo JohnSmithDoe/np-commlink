@@ -1,4 +1,21 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `removeItem`/`updateItem` live only in `catalogCascade`: deleting or
+ * renaming a category is not a categories-slice operation, because the
+ * refs live on three other slices and all four move together. One writer
+ * per action, and it is the half that can see every slice.
+ *
+ * Unlike cash's and trackplay's, this cascade is order-TOLERANT, so a
+ * duplicated handler would corrupt nothing today — it would only give the
+ * catalog two writers, and make the next change to `renameInCatalog`'s
+ * merge detection the one that breaks.
+ *
+ * `withEveryItemList` skips `recipes` on purpose: nothing assigns them a
+ * category and their ingredients are filed by `productId`, so a catalog
+ * delete leaves no dangling ref. Give recipes a category axis and this
+ * gains a fourth line.
+ * ───────────────────────────────────────────────────────────────── */
 import { Action, combineReducers, createReducer, on } from '@ngrx/store';
+import { BaseItem } from '../../@shared/model/base-item.types';
 import { HouseholdState } from '../model/household.types';
 import {
   dropCategoryRef,
@@ -25,9 +42,7 @@ const perAggregate = combineReducers<HouseholdState>({
 
 const withEveryItemList = (
   state: HouseholdState,
-  fix: <T extends { id: string; name: string; categoryIds?: string[] }>(
-    items: readonly T[]
-  ) => T[]
+  fix: <T extends BaseItem>(items: readonly T[]) => T[]
 ): HouseholdState => ({
   ...state,
   storage: { ...state.storage, items: fix(state.storage.items) },

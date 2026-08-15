@@ -5,6 +5,7 @@ import { tasksReducer } from './tasks.reducer';
 import {
   taskCategoriesListEffects,
   tasksListEffects,
+  tasksRouteFilterEffects,
 } from './tasks-list.effects';
 import {
   TASKS_STATE_KEY,
@@ -36,5 +37,9 @@ export const tasksContext = providePersistedContext({
       metrics: createMetric('open'),
     },
   ],
-  effects: [tasksListEffects, taskCategoriesListEffects],
+  effects: [
+    tasksListEffects,
+    taskCategoriesListEffects,
+    tasksRouteFilterEffects,
+  ],
 });

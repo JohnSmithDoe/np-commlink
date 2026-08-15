@@ -4,6 +4,7 @@ import {
   ShoppingState,
 } from '../../model/household-list.types';
 import {
+  hydratedList,
   addListItem,
   removeListItem,
   updateListItem,
@@ -29,11 +30,11 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.updateItem,(state, { item }): ShoppingState => updateListItem(state, item)),
   on(ShoppingActions.updateSearch,(state, { searchQuery }): ShoppingState => updateListSearch(state, searchQuery)),
   on(ShoppingActions.updateFilter,(state, { filterBy }): ShoppingState => ({ ...state, filterBy, })),
-  on(ShoppingActions.updateSort, (state, { sortBy, sortDirection }): ShoppingState => ({ ...state, sort: updateListSort(sortBy, sortDirection, state.sort?.sortDirection),})),
+  on(ShoppingActions.updateSort, (state, { sortBy, sortDirection }): ShoppingState => updateListSort(state, sortBy, sortDirection)),
   on(ShoppingActions.showActionSheet, (state):ShoppingState =>  ({...state, showActionSheet: true})),
   on(ShoppingActions.hideActionSheet, (state):ShoppingState =>  ({...state, showActionSheet: false})),
 
   on(HouseholdActions.loaded,(_state, { data }): ShoppingState => {
-    return {...(data?.shopping ?? _state), searchQuery:undefined,filterBy: undefined, showActionSheet: false};
+    return { ...hydratedList(data?.shopping ?? _state), showActionSheet: false };
   }),
 );

@@ -29,18 +29,15 @@ export const matchesNameExactly = (item: BaseItem, other: BaseItem) =>
 export const matchesId = (item: BaseItem, other: BaseItem) =>
   item.id === other.id;
 
-export function matchesItemExactly<T extends BaseItem>(item: T, others: T[]) {
+export function findMatchingItem<T extends BaseItem>(item: T, others: T[]) {
   const byId = others.find((other) => matchesId(item, other));
   return byId || others.find((other) => matchesNameExactly(item, other));
 }
 
-export const matchesItemExactlyIndex = (item: BaseItem, others: BaseItem[]) => {
-  const found = matchesItemExactly(item, others);
+export const indexOfMatchingItem = (item: BaseItem, others: BaseItem[]) => {
+  const found = findMatchingItem(item, others);
   return found ? others.indexOf(found) : -1;
 };
-
-export const matchesSearch = (item: BaseItem | string, searchQuery?: string) =>
-  matchingTxt(item).includes(matchingTxt(searchQuery ?? ''));
 
 export const matcherFor = (searchQuery?: string) => {
   const needle = matchingTxt(searchQuery ?? '');

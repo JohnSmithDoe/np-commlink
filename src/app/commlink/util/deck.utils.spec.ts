@@ -1,6 +1,14 @@
+import { DashboardState } from '../model/dashboard.types';
 import { DeckEntry, DeckState } from '../model/deck.types';
+import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import {
+  badgeLabel,
+  badgeValue,
+  nodeStatusKey,
+  programStatus,
+  resonanceRatingOf,
   isEntryVisible,
+  isFactoryDeck,
   orderEntries,
   resolveLabels,
   toggleIn,
@@ -116,5 +124,162 @@ describe('toggleIn', () => {
 
   it('removes a value that is present', () => {
     expect(toggleIn(['a', 'b'], 'a')).toEqual(['b']);
+  });
+});
+
+const reporting = (overrides: Partial<DeckEntry>): DeckEntry => ({
+  ...entry('shopping', 'household'),
+  ...overrides,
+});
+
+describe('badgeValue', () => {
+  const telemetry: DashboardState = {
+    bySource: {
+      shopping: { source: 'shopping', metrics: { active: 3 } },
+      cash: { source: 'cash', metrics: { balance: '1234' } },
+    },
+  };
+
+  it('reads the metric the catalog entry names', () => {
+    expect(
+      badgeValue(telemetry, reporting({ source: 'shopping', metric: 'active' }))
+    ).toBe(3);
+  });
+
+  it('coerces a reported string to the number a badge renders', () => {
+    expect(
+      badgeValue(telemetry, reporting({ source: 'cash', metric: 'balance' }))
+    ).toBe(1234);
+  });
+
+  it('is null for an entry that reports nothing', () => {
+    expect(badgeValue(telemetry, reporting({}))).toBeNull();
+    expect(badgeValue(telemetry, reporting({ source: 'shopping' }))).toBeNull();
+  });
+
+  it('is null for a source that has not reported yet, which is not zero', () => {
+    expect(
+      badgeValue(telemetry, reporting({ source: 'tasks', metric: 'open' }))
+    ).toBeNull();
+  });
+});
+
+describe('programStatus', () => {
+  const silent: DashboardState = { bySource: {} };
+
+  it('reports a source-less entry’s declared status', () => {
+    expect(programStatus(reporting({}), silent, 'probing')).toBe('online');
+  });
+
+  it('reports standby for a telemetry-backed entry whose source is silent', () => {
+    expect(
+      programStatus(reporting({ source: 'tracking' }), silent, 'probing')
+    ).toBe('standby');
+  });
+
+  it('reports what the read-model holds once the source has reported', () => {
+    const reported: DashboardState = {
+      bySource: {
+        tracking: { source: 'tracking', metrics: {}, status: 'online' },
+      },
+    };
+
+    expect(
+      programStatus(reporting({ source: 'tracking' }), reported, 'probing')
+    ).toBe('online');
+  });
+
+  it.each([
+    ['available', 'online'],
+    ['downloadable', 'standby'],
+    ['downloading', 'standby'],
+    ['probing', 'standby'],
+    ['unavailable', 'offline'],
+  ] as const)(
+    'maps a %s on-device model to a %s tile',
+    (reported, expected) => {
+      expect(
+        programStatus(reporting({ needsLanguageModel: true }), silent, reported)
+      ).toBe(expected);
+    }
+  );
+});
+
+describe('badgeLabel', () => {
+  it('renders a plain count for a non-currency entry', () => {
+    expect(badgeLabel(reporting({}), 7, 'cyberpunk', 'de')).toBe('7');
+  });
+
+  it('renders the themed currency label for a currency entry', () => {
+    expect(
+      badgeLabel(reporting({ currency: true }), 1234, 'cyberpunk', 'de')
+    ).toBe('¥ 1234 nyen');
+    expect(
+      badgeLabel(reporting({ currency: true }), 1234, 'boomer', 'de')
+    ).toContain('€');
+  });
+});
+
+describe('nodeStatusKey', () => {
+  it('names the status word in the active theme’s register', () => {
+    expect(nodeStatusKey(DECK_CHROME_LABELS['cyberpunk'], 'standby')).toBe(
+      'deck.cyberpunk.chrome.node-standby'
+    );
+    expect(nodeStatusKey(DECK_CHROME_LABELS['boomer'], 'standby')).toBe(
+      'deck.boomer.chrome.node-standby'
+    );
+  });
+});
+
+describe('isFactoryDeck', () => {
+  const factory: DeckState = {
+    order: [],
+    hiddenEntries: ['shopping', 'storage'],
+    hiddenModules: [],
+  };
+
+  it('recognizes the factory deck itself', () => {
+    expect(isFactoryDeck(factory, factory)).toBe(true);
+  });
+
+  it('reads a toggle as custom, in either direction', () => {
+    expect(
+      isFactoryDeck({ ...factory, hiddenEntries: ['shopping'] }, factory)
+    ).toBe(false);
+    expect(
+      isFactoryDeck(
+        { ...factory, hiddenEntries: ['shopping', 'storage', 'tasks'] },
+        factory
+      )
+    ).toBe(false);
+  });
+
+  it('ignores the order the hidden ones were toggled in', () => {
+    expect(
+      isFactoryDeck(
+        { ...factory, hiddenEntries: ['storage', 'shopping'] },
+        factory
+      )
+    ).toBe(true);
+  });
+
+  it('reads a drag as custom, because that order is the choice', () => {
+    expect(isFactoryDeck({ ...factory, order: ['storage'] }, factory)).toBe(
+      false
+    );
+  });
+
+  it('reads a hidden module as custom', () => {
+    expect(
+      isFactoryDeck({ ...factory, hiddenModules: ['household'] }, factory)
+    ).toBe(false);
+  });
+});
+
+describe('resonanceRatingOf', () => {
+  it('scales a percentage onto the deck’s six-point rating', () => {
+    expect(resonanceRatingOf(0)).toBe('0.0');
+    expect(resonanceRatingOf(50)).toBe('3.0');
+    expect(resonanceRatingOf(100)).toBe('6.0');
   });
 });

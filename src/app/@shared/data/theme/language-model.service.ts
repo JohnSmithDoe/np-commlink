@@ -1,18 +1,26 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Chrome logs a warning for every Prompt API request that leaves its
- * output language unstated — a bare `availability()` included, which
- * is what the boot probe used to be. Availability is answered per
- * configuration, so the probe declares both app languages: one
- * memoized answer that stays true across a language switch. A caller
- * hands over the output language instead of the expectation objects,
- * so this file is the only place that can state them — and a caller
- * that forgets does not compile.
+ * Chrome warns on every Prompt API request that leaves its output
+ * language unstated, a bare `availability()` included. Availability is
+ * answered per configuration, so the probe declares both app languages:
+ * one memoized answer that survives a language switch. Callers hand over
+ * the language, not the expectation objects, so this is the only file
+ * that states them — and a caller that forgets does not compile.
+ *
+ * Nothing probes from the constructor, which is load-bearing, not tidy.
+ * The DECK page injects this root singleton to label one tile, so a
+ * constructor probe made every deck load issue a native on-device-model
+ * call — and reloading mid-call killed the renderer outright (SIGSEGV,
+ * ~50% of runs, read as a flaky spec until it was measured). A caller
+ * that WANTS the answer asks; until one does, `availability()` reads
+ * `probing`. Reading a status is not the same as paying for it.
  * ───────────────────────────────────────────────────────────────── */
 
 import { Injectable, signal } from '@angular/core';
-import { Language, LANGUAGES } from '../../model/app.types';
-
-export type LanguageModelAvailability = Availability | 'probing';
+import {
+  Language,
+  LANGUAGES,
+  LanguageModelAvailability,
+} from '../../model/app.types';
 
 const languageExpectations = (
   outputs: readonly Language[]
@@ -27,10 +35,6 @@ export class LanguageModelService {
   readonly availability = this.#availability.asReadonly();
 
   #probe: Promise<Availability> | null = null;
-
-  constructor() {
-    void this.probe();
-  }
 
   async probe(): Promise<Availability> {
     this.#probe ??= this.#readAvailability();

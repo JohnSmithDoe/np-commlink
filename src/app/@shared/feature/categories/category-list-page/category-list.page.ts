@@ -2,14 +2,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline } from 'ionicons/icons';
+import { createOutline, pricetagsOutline } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Category, CategoryId } from '../../../model/category.types';
-import { CATEGORY_LIST_FACADE } from '../../../util/categories/category-list.facade';
-import {
-  ListItemComponent,
-  StartSwipeAction,
-} from '../../../ui/base-item/list-item/list-item.component';
+import { CATALOG_FACADE } from '../../../util/categories/category-list.facade';
+import { ListItemComponent } from '../../../ui/base-item/list-item/list-item.component';
+import { StartSwipeAction } from '../../../ui/base-item/base-swipe-row';
 import { EditCategoryDialogComponent } from '../edit-category-dialog/edit-category-dialog.component';
 import { ListPageComponent } from '../../item-lists/list-page/list-page.component';
 
@@ -26,7 +24,7 @@ import { ListPageComponent } from '../../item-lists/list-page/list-page.componen
   ],
 })
 export class CategoryListPage {
-  readonly facade = inject(CATEGORY_LIST_FACADE);
+  readonly facade = inject(CATALOG_FACADE);
 
   readonly startSwipeAction: StartSwipeAction = {
     labelKey: marker('categories.a11y.rename'),
@@ -34,7 +32,7 @@ export class CategoryListPage {
   };
 
   constructor() {
-    addIcons({ createOutline });
+    addIcons({ createOutline, pricetagsOutline });
   }
 
   count(categoryId: CategoryId): number {

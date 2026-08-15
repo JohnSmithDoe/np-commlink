@@ -11,16 +11,27 @@
  * ends up a SIBLING of the edit dialog at the app root rather than a
  * descendant of it. Both are therefore keyed off their own title.
  *
- * The host leaves `mode` at its `single` default, so a pick closes the
- * picker itself — no header button involved. The two-glyph sequence
- * therefore costs two opens, and it is kept at that price because it is
- * the only place the caret survives a real dismiss-and-refocus cycle:
- * `insertEmoji` advances the selection while the modal still owns focus,
- * `didDismiss` hands focus back, and the second glyph must land AFTER
- * the first. A caret re-read as the pre-glyph position spells "🌾🥛".
+ * The picker no longer closes on a pick, so the whole sequence costs one
+ * open — and that is the point of the spec. Two glyphs and a ⌫ without a
+ * dismiss in between is the case the browser alone can falsify: the caret
+ * is TypeScript's while the modal lives, and only a real Ionic render can
+ * show whether it survives one. The caret never leaves the picker — the
+ * name field is read last as proof that the TEXT did.
+ *
+ * The edit dialog leaves the name field's selection at its end, so the
+ * seeded caret puts the glyphs AFTER the name. Asserting the exact string
+ * rather than a regex is the point: it is the seed that is under test, not
+ * merely that two glyphs arrived.
  *
  * The last assertion is the recents store: saving records the glyphs, so
  * the next open offers them with no search at all.
+ *
+ * The second test buys the case a point-caret cannot express. Selection
+ * is the reason the picker reads a RANGE off the preview, and it is only
+ * observable in a browser: the range math is unit-tested, but that the
+ * selection SURVIVES clicking a button — blur does not collapse it — is a
+ * browser fact. Shift+Arrow rather than `setSelectionRange` for the same
+ * reason: the gesture under test is the one a user makes.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
@@ -43,6 +54,10 @@ function picker(page: Page): Locator {
   return presentedDialog(page, 'Emoji auswählen');
 }
 
+function previewBox(page: Page): Locator {
+  return picker(page).getByTestId('emoji-picker-preview').locator('input');
+}
+
 function searchPicker(page: Page, query: string): Promise<void> {
   return picker(page)
     .getByTestId('emoji-picker-search')
@@ -50,45 +65,88 @@ function searchPicker(page: Page, query: string): Promise<void> {
     .fill(query);
 }
 
-function emojiOption(page: Page, glyph: string): Locator {
+function pickEmoji(page: Page, glyph: string): Locator {
   return picker(page).getByTestId('emoji-option').filter({ hasText: glyph });
+}
+
+function recentEmoji(page: Page, glyph: string): Locator {
+  return picker(page).getByTestId('emoji-recent').filter({ hasText: glyph });
 }
 
 test.describe('emoji picker', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/household/storage/_storage');
+    await page.goto('/#/household/storage');
     await waitForListPage(page);
   });
 
-  test('picks emoji into the name and remembers them', async ({ page }) => {
+  test('inserts several emoji in one visit and remembers them', async ({
+    page,
+  }) => {
     await addViaSearch(page, 'Milk');
     await listRow(page, /Milk/).click();
     await expect(editDialog(page)).toBeVisible({ timeout: 10_000 });
 
     await editDialog(page).getByTestId('emoji-picker-trigger').click();
     await expect(picker(page)).toBeVisible({ timeout: 10_000 });
+    await expect(previewBox(page)).toHaveValue('Milk', { timeout: 10_000 });
 
     await searchPicker(page, 'milch');
-    await expect(emojiOption(page, '🥛')).toBeVisible({ timeout: 10_000 });
-    await emojiOption(page, '🥛').click();
-    await expect(picker(page)).toBeHidden({ timeout: 10_000 });
+    await expect(pickEmoji(page, '🥛')).toBeVisible({ timeout: 10_000 });
+    await pickEmoji(page, '🥛').click();
+    await expect(picker(page)).toBeVisible();
+    await expect(previewBox(page)).toHaveValue('Milk🥛', { timeout: 10_000 });
 
-    await editDialog(page).getByTestId('emoji-picker-trigger').click();
-    await expect(picker(page)).toBeVisible({ timeout: 10_000 });
     await searchPicker(page, 'reis');
-    await expect(emojiOption(page, '🌾')).toBeVisible({ timeout: 10_000 });
-    await emojiOption(page, '🌾').click();
-    await expect(picker(page)).toBeHidden({ timeout: 10_000 });
+    await expect(pickEmoji(page, '🌾')).toBeVisible({ timeout: 10_000 });
+    await pickEmoji(page, '🌾').click();
+    await expect(previewBox(page)).toHaveValue('Milk🥛🌾', { timeout: 10_000 });
 
-    await expect(nameBox(page)).toHaveValue(/🥛🌾/, { timeout: 10_000 });
+    await picker(page).getByTestId('emoji-picker-backspace').click();
+    await expect(previewBox(page)).toHaveValue('Milk🥛', { timeout: 10_000 });
+
+    await previewBox(page).click();
+    await page.keyboard.press('Home');
+    await pickEmoji(page, '🌾').click();
+    await expect(previewBox(page)).toHaveValue('🌾Milk🥛', { timeout: 10_000 });
+
+    await picker(page).getByRole('button', { name: 'Fertig' }).click();
+    await expect(picker(page)).toBeHidden({ timeout: 10_000 });
+    await expect(nameBox(page)).toHaveValue('🌾Milk🥛', { timeout: 10_000 });
+
     await editDialog(page).getByRole('button', { name: 'Übernehmen' }).click();
-    await expect(listRow(page, /🥛🌾/)).toBeVisible({ timeout: 10_000 });
+    await expect(listRow(page, /🌾Milk🥛/)).toBeVisible({ timeout: 10_000 });
 
     await addViaSearch(page, 'Butter');
     await listRow(page, /Butter/).click();
     await editDialog(page).getByTestId('emoji-picker-trigger').click();
-    await expect(emojiOption(page, '🥛').first()).toBeVisible({
+    await expect(recentEmoji(page, '🥛')).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('replaces a selection instead of editing beside it', async ({
+    page,
+  }) => {
+    await addViaSearch(page, 'Vollmilch');
+    await listRow(page, /Vollmilch/).click();
+    await expect(editDialog(page)).toBeVisible({ timeout: 10_000 });
+
+    await editDialog(page).getByTestId('emoji-picker-trigger').click();
+    await expect(previewBox(page)).toHaveValue('Vollmilch', {
       timeout: 10_000,
     });
+
+    await previewBox(page).click();
+    await page.keyboard.press('Home');
+    for (let index = 0; index < 4; index++) {
+      await page.keyboard.press('Shift+ArrowRight');
+    }
+    await picker(page).getByTestId('emoji-picker-backspace').click();
+    await expect(previewBox(page)).toHaveValue('milch', { timeout: 10_000 });
+
+    await searchPicker(page, 'milch');
+    await expect(pickEmoji(page, '🥛')).toBeVisible({ timeout: 10_000 });
+    await previewBox(page).click();
+    await page.keyboard.press('ControlOrMeta+a');
+    await pickEmoji(page, '🥛').click();
+    await expect(previewBox(page)).toHaveValue('🥛', { timeout: 10_000 });
   });
 });

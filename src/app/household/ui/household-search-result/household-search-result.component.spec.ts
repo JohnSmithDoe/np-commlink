@@ -41,31 +41,31 @@ describe('HouseholdSearchResultComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('renders no sub-lists when there are no results', () => {
+  it('renders no rows when there are no results', () => {
     fixture.componentRef.setInput('results', mockResults());
     fixture.detectChanges();
 
     expect(
-      fixture.nativeElement.querySelectorAll('app-item-list')
+      fixture.nativeElement.querySelectorAll('app-text-item')
     ).toHaveLength(0);
   });
 
-  it('renders a global result sub-list with the item name', () => {
+  it('names the source list on a row rather than in a group header', () => {
     fixture.componentRef.setInput(
       'results',
       mockResults({ products: [mockProduct({ name: 'Sugar' })] })
     );
     fixture.detectChanges();
 
-    const lists = fixture.nativeElement.querySelectorAll('app-item-list');
-    expect(lists).toHaveLength(1);
+    const rows = fixture.nativeElement.querySelectorAll('app-text-item');
+    expect(rows).toHaveLength(1);
     expect(fixture.nativeElement.textContent).toContain('Sugar');
     expect(fixture.nativeElement.textContent).toContain(
       'list-header.product.search'
     );
   });
 
-  it('renders one sub-list per non-empty result group', () => {
+  it('renders one flat row per match across all result groups', () => {
     fixture.componentRef.setInput(
       'results',
       mockResults({
@@ -77,7 +77,7 @@ describe('HouseholdSearchResultComponent', () => {
     fixture.detectChanges();
 
     expect(
-      fixture.nativeElement.querySelectorAll('app-item-list')
+      fixture.nativeElement.querySelectorAll('app-text-item')
     ).toHaveLength(3);
   });
 });

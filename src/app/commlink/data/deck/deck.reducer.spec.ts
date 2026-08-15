@@ -1,3 +1,4 @@
+import { DECK_CATALOG } from '../../model/deck.catalog';
 import { DeckState } from '../../model/deck.types';
 import { DeckActions } from './deck.actions';
 import { deckReducer, initialDeck } from './deck.reducer';
@@ -32,11 +33,30 @@ describe('deckReducer', () => {
     expect(next.hiddenEntries).toEqual(stored.hiddenEntries);
   });
 
+  describe('the factory default', () => {
+    it('ships an empty deck, so the first choice belongs to the user', () => {
+      expect(initialDeck.hiddenEntries).toEqual(
+        DECK_CATALOG.map((entry) => entry.id)
+      );
+    });
+
+    it('hides no module, so one toggle switches any entry on', () => {
+      expect(initialDeck.hiddenModules).toEqual([]);
+    });
+  });
+
   describe('toggleEntry', () => {
     it('hides a visible entry', () => {
       expect(
-        deckReducer(initialDeck, DeckActions.toggleEntry('cash')).hiddenEntries
-      ).toEqual(['cash']);
+        deckReducer(stored, DeckActions.toggleEntry('shopping')).hiddenEntries
+      ).toEqual(['storage', 'shopping']);
+    });
+
+    it('shows one the factory default starts hidden', () => {
+      expect(
+        deckReducer(initialDeck, DeckActions.toggleEntry('ritual'))
+          .hiddenEntries
+      ).not.toContain('ritual');
     });
 
     it('shows a hidden one again', () => {

@@ -1,9 +1,10 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * The category catalog on the shared list page, plus the drill from a
  * category into its filtered list. The drill is real-browser only: it
- * navigates with `?filter=<id>` and the target list applies that in
- * `ionViewWillEnter`, after the resolver re-hydrates — a sequence jsdom
- * has no way to run.
+ * navigates with `?filter=<id>`, and an effect applies that on
+ * `ROUTER_NAVIGATED` — which lands after the resolver re-hydrates only
+ * because a real router runs resolvers at all. That ordering is the whole
+ * correctness argument (see footguns.md), and jsdom cannot run it.
  *
  * `addCategory` is a local copy of `addViaSearch` and has to stay one.
  * The shared helper takes the FIRST visible searchbar, and the task list
@@ -109,7 +110,7 @@ test.describe('manage categories', () => {
 
     await expect(page).toHaveURL(/tasks\/list\?filter=/);
     await expect(
-      page.locator('#main-content').getByText(/Kategorie: Arbeit/)
+      page.getByRole('button', { name: 'Arbeit', pressed: true })
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -121,14 +122,12 @@ test.describe('manage categories', () => {
     await waitForPersisted(page, 'tasks', 'Arbeit');
 
     await catalogRow(page, 'Arbeit').click();
-    const caption = page
-      .locator('#main-content')
-      .getByText(/Kategorie: Arbeit/);
-    await expect(caption).toBeVisible({ timeout: 10_000 });
+    const armed = page.getByRole('button', { name: 'Arbeit', pressed: true });
+    await expect(armed).toBeVisible({ timeout: 10_000 });
 
     await page.getByTestId('clear-category-filter').click();
 
-    await expect(caption).toBeHidden();
+    await expect(armed).toHaveCount(0);
     await expect(page).toHaveURL(/tasks\/list$/);
   });
 });

@@ -1,3 +1,18 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Keyed BY the day rather than lists of it, so a duplicate date cannot be
+ * written down. It replaced a `hasDay` guard that held only where someone
+ * remembered it, and never covered the whole-array picker writes.
+ *
+ * `true` is the whole value because the KEY is the date — the `Dayjs` is
+ * reconstructible, and storing it would be a second writer for one fact.
+ * It also keeps the shape from colliding with `HolidayMap`, keyed by
+ * NAME: same container, different value, so a swap is a type error.
+ *
+ * A bare `string` is not assignable to `DayKey`, so every write — reads
+ * back off IndexedDB included — goes through `dayjsToString`, which holds
+ * the one cast. `OfficeTimeStateStorage` stays `string[]` on purpose:
+ * no migration ladder, and an old document dedupes on read for free.
+ * ───────────────────────────────────────────────────────────────── */
 import { Dayjs } from 'dayjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
@@ -89,11 +104,17 @@ export type DateTimeHighlight = {
   textColor: string;
 };
 
+export type DayKey = `${number}-${number}-${number}`;
+
+export type DayMap = Record<DayKey, true>;
+
+export type HolidayMap = Record<string, Dayjs>;
+
 export interface OfficeTimeState {
   targetOfficeDaysPerWeek: number;
-  holidays: Record<string, Dayjs>;
-  officedays: Array<Dayjs>;
-  freedays: Array<Dayjs>;
+  holidays: HolidayMap;
+  officedays: DayMap;
+  freedays: DayMap;
   dashboardSettings: DashboardSettings;
   dashboardItems: DashboardItemType[];
 }

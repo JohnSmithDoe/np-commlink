@@ -9,7 +9,11 @@ import { provideTestingProviders } from './test-providers';
 export function setupModalSpec<T>(
   type: Type<T>,
   state: MockState = {}
-): { component: T; dispatch: MockInstance; dismiss: MockInstance } {
+): {
+  component: T;
+  dispatch: MockInstance;
+  dismiss: MockInstance;
+} {
   TestBed.configureTestingModule({
     imports: [type],
     providers: [provideTestingProviders(state)],
@@ -18,9 +22,6 @@ export function setupModalSpec<T>(
     .spyOn(TestBed.inject(ModalController), 'dismiss')
     .mockResolvedValue(true);
   const dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
-  return {
-    component: TestBed.createComponent(type).componentInstance,
-    dispatch,
-    dismiss,
-  };
+  const fixture = TestBed.createComponent(type);
+  return { component: fixture.componentInstance, dispatch, dismiss };
 }

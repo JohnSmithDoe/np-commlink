@@ -1,47 +1,30 @@
 // ─── why ────────────────────────────────────────────────────────
-// The composition root of the style layer — it imports Ionic's CSS, @uses the
-// two partials that EMIT global rules, and holds what is app-wide. The role
-// app.providers.ts plays for the kernel.
+// The composition root of the style layer: Ionic's CSS, the two partials that
+// EMIT, and what is app-wide. What app.providers.ts is to the kernel.
 //
-// TWO themes off ONE token group: cyberpunk (the Shadowrun deck — slate, amber
-// and teal neon, monospace, glow; the default selection) and OK Boomer (plain,
-// light, sans, flat). So retheme the custom properties, never the components
-// one by one. `<html data-theme>` is the switch, written by theme.service off
-// the eager `settings` slice; that read is async, so the boot splash
-// (#app-splash in index.html on web, @capacitor/splash-screen on native) covers
-// boot and the theme lands before first paint instead of racing it.
+// TWO themes off ONE token group, so retheme the custom properties, never the
+// components. `<html data-theme>` is the switch, written by theme.service off
+// the async `settings` read — the boot splash covers that race.
 //
-// Plain is the UN-decorated base and every cyberpunk flourish is *added* under
-// [data-theme='cyberpunk'], so a new surface reads plain unless it opts in. The
-// inverse — cyberpunk as base, OK Boomer suppressing it — was less churn once
-// and a manual re-suppression for every flourish added afterwards.
+// Plain is the UN-decorated base and every cyberpunk flourish is ADDED under
+// [data-theme='cyberpunk'], so a new surface reads plain unless it opts in.
+// The inverse cost a manual re-suppression per flourish, forever.
 //
-// The @use graph follows from that: _fonts and _shadowrun emit CSS, so they are
-// @use'd HERE and nowhere else — a component @using shadowrun re-emits the
-// whole global sheet. The side-effect-free partials (deck, cash, trackplay,
-// dashboard, charts) are the ones a component may @use, spelling the bare
-// `theme/<x>` path, since stylePreprocessorOptions.includePaths carries `src`
-// and a relative `../../../../` breaks silently when the file moves.
+// Hence the @use graph: _fonts and _shadowrun emit, so they are @use'd HERE and
+// nowhere else — a component @using shadowrun re-emits the whole sheet. The
+// side-effect-free partials are the ones a component may @use, spelled
+// `theme/<x>` off includePaths, since a relative path breaks silently on move.
 //
-// --app-content-max-width is a reading column, and the cap lands on
-// `ion-content > *` — every child, independently. So a page changes its width by
-// re-declaring the property on :host rather than by fighting the rule: commlink,
-// office-time and geist take 100%, and the shared list page takes
-// theme/layout's $content-wide. The header's projected rows read the same
-// property, which is what keeps searchbar, sort toolbar and list on one edge
-// once a viewport is wide enough for the difference to show.
+// --app-content-max-width caps `ion-content > *`, every child independently, so
+// a page changes width by re-declaring the property on :host rather than
+// fighting the rule. The header's projected rows read the same property.
 //
-// Three rules below are facts about behaviour outside this file. Android
-// WebView never populates env(safe-area-inset-*) — that is iOS/WKWebView only —
-// so --ion-safe-area-* reads Capacitor's injected --safe-area-inset-* first and
-// keeps env() as the fallback; without it ion-header and ion-tab-bar neither
-// pad nor paint into the system bars. html,body carry a background because
-// Android 16 draws edge to edge behind transparent bars and bare white would
-// show through. And body.scanner-active targets ion-content rather than body:
-// the mlkit preview renders behind the WebView, and shadowrun's
-// `ion-content { --background: radial-gradient(…) }` out-specifies any
-// body-level custom property — which is also why the width-capped content
-// wrapper stays transparent.
+// Three rules below are facts about behaviour outside this file: Android
+// WebView never populates env(safe-area-inset-*), so --ion-safe-area-* reads
+// Capacitor's injection first; html,body carry a background because Android 16
+// draws behind transparent bars; and body.scanner-active targets ion-content,
+// because shadowrun's `ion-content { --background: … }` out-specifies anything
+// set on body — which is why the capped wrapper stays transparent.
 // ────────────────────────────────────────────────────────────────
 
 @use 'theme/fonts'; // @font-face (self-hosted JetBrains Mono)

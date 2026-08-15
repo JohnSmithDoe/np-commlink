@@ -40,11 +40,4 @@ describe('TasksPage', () => {
       editMode: 'update',
     });
   });
-
-  it('dispatches a toggling updateSort for the given sort type', () => {
-    component.setSortMode('name');
-    expect(dispatch).toHaveBeenCalledWith(
-      TasksActions.updateSort('name', 'toggle')
-    );
-  });
 });

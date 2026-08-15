@@ -8,7 +8,8 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import dayjs from 'dayjs';
 import { TrackingItem } from '../../model/tracking.types';
-import { selectAllTrackingSessions, TodayService } from '../../data';
+import { TodayService } from '../../../@shared/data/services/today.service';
+import { selectAllTrackingSessions } from '../../data';
 import { DailySessionsComponent } from './daily-sessions.component';
 
 const session = (

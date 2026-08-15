@@ -1,8 +1,7 @@
 <app-list-page
   class="ion-page"
   icon="timer-outline"
-  pageHeader="{{ 'page-title.tracking' | translate }} "
-  listHeader="{{ 'list-header.tracking' | translate }}  "
+  pageHeader="page-title.tracking"
   [itemTemplate]="trackingItem"
 >
   <ion-button
@@ -21,13 +20,8 @@
     />
   </ion-button>
 
-  <ng-container listActions>
-    <span slot="end" style="margin-right: 1rem">
-      {{ total() }}
-    </span>
-  </ng-container>
-
   <ng-container toolbarActionsEnd>
+    <span class="tracking-total">{{ total() }}</span>
     <ion-button (click)="resetAll()"
       ><ion-icon [icon]="'trash'" slot="start" aria-hidden="true" />
       {{ 'tracking.action.reset-all' | translate }}</ion-button
@@ -48,7 +42,7 @@
     }
   </ng-container>
 
-  <div searchExtras class="after-list">
+  <div afterList class="after-list">
     <app-daily-sessions />
   </div>
 </app-list-page>

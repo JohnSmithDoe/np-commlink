@@ -1,14 +1,14 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Dayjs } from 'dayjs';
 import { DashboardSettingsType } from '../model/office-time.types';
 import { OfficeTimeActions } from './office-time.actions';
 import {
   selectDashboardItems,
   selectDashboardSettings,
-  selectFreedays,
+  selectFreedayKeys,
   selectHolidayDays,
   selectHolidays,
+  selectOfficedayKeys,
   selectOfficedays,
   selectTargetOfficeDaysPerWeek,
 } from './office-time.selector';
@@ -26,8 +26,9 @@ export class OfficeTimeFacade {
 
   readonly holidays = this.#store.selectSignal(selectHolidays);
   readonly holidayDays = this.#store.selectSignal(selectHolidayDays);
-  readonly officedays = this.#store.selectSignal(selectOfficedays);
-  readonly freedays = this.#store.selectSignal(selectFreedays);
+  readonly #officedays = this.#store.selectSignal(selectOfficedays);
+  readonly officedayKeys = this.#store.selectSignal(selectOfficedayKeys);
+  readonly freedayKeys = this.#store.selectSignal(selectFreedayKeys);
   readonly dashboardSettings = this.#store.selectSignal(
     selectDashboardSettings
   );
@@ -37,7 +38,7 @@ export class OfficeTimeFacade {
   );
   readonly #today = signal(dayjsToday());
   readonly todayIsOfficeDay = computed(() =>
-    isOfficeDay(this.#today(), this.officedays())
+    isOfficeDay(this.#today(), this.#officedays())
   );
 
   readonly #statsKeys = this.#store.selectSignal(selectStatsKeys);
@@ -72,11 +73,11 @@ export class OfficeTimeFacade {
     this.#store.dispatch(OfficeTimeActions.addOfficeTime(dayjsToday()));
   }
 
-  setFreedays(freedays: (string | undefined | null)[]): void {
+  setFreedays(freedays: string[]): void {
     this.#store.dispatch(OfficeTimeActions.setFreedays(freedays));
   }
 
-  setOfficedays(officedays: Dayjs[]): void {
+  setOfficedays(officedays: string[]): void {
     this.#store.dispatch(OfficeTimeActions.setOfficedays(officedays));
   }
 

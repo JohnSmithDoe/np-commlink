@@ -119,6 +119,11 @@ export class GeistPage {
     if (this.#session.isEngaged) await this.purge();
   }
 
+  sendShortcut(event: Event): void {
+    event.preventDefault();
+    void this.send();
+  }
+
   async send(): Promise<void> {
     if (!this.canSend()) return;
     const turn = this.#openTurn(this.query().trim());

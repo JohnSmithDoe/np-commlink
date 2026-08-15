@@ -1,6 +1,6 @@
 import { mockBaseItem } from '../../testing/test-data';
 import { BaseItem } from '../../model/base-item.types';
-import { ListState } from '../../model/item-list.types';
+import { ItemList } from '../../model/item-list.types';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
@@ -8,9 +8,9 @@ import {
   itemCountByCategory,
 } from './list.selector';
 
-const mockListState = (
-  overrides: Partial<ListState<BaseItem>> = {}
-): ListState<BaseItem> => ({
+const mockItemList = (
+  overrides: Partial<ItemList<BaseItem>> = {}
+): ItemList<BaseItem> => ({
   items: [],
   ...overrides,
 });
@@ -20,7 +20,7 @@ const named = (
   extra: Record<string, unknown> = {}
 ): BaseItem => ({ ...mockBaseItem({ id: name, name }), ...extra });
 
-const sortedNames = (items: BaseItem[], sort: ListState<BaseItem>['sort']) =>
+const sortedNames = (items: BaseItem[], sort: ItemList<BaseItem>['sort']) =>
   [...items].sort(itemComparator(sort)).map((item) => item.name);
 
 describe('itemComparator', () => {
@@ -187,7 +187,7 @@ describe('itemComparator', () => {
 
 describe('filterAndSortItemList', () => {
   it('sorts the list items when there is no search result', () => {
-    const state = mockListState({
+    const state = mockItemList({
       items: [named('Zulu'), named('Alpha')],
       sort: { sortBy: 'name', sortDirection: 'asc' },
     });
@@ -200,7 +200,7 @@ describe('filterAndSortItemList', () => {
 
   it('does not mutate the state it sorts', () => {
     const items = [named('Zulu'), named('Alpha')];
-    const state = mockListState({
+    const state = mockItemList({
       items,
       sort: { sortBy: 'name', sortDirection: 'asc' },
     });
@@ -211,7 +211,7 @@ describe('filterAndSortItemList', () => {
   });
 
   it('narrows to the active category filter', () => {
-    const state = mockListState({
+    const state = mockItemList({
       filterBy: 'cat-1',
       items: [
         named('kept', { categoryIds: ['cat-1'] }),
@@ -226,7 +226,7 @@ describe('filterAndSortItemList', () => {
   });
 
   it('prefers the search result over the list items', () => {
-    const state = mockListState({ items: [named('Alpha'), named('Zulu')] });
+    const state = mockItemList({ items: [named('Alpha'), named('Zulu')] });
     const result = {
       listItems: [named('Zulu')],
       searchTerm: 'Zulu',
@@ -242,16 +242,16 @@ describe('filterListBySearchQuery', () => {
   it('is undefined without a usable query', () => {
     const items = [named('Milk')];
 
-    expect(filterListBySearchQuery(mockListState({ items }))).toBeUndefined();
+    expect(filterListBySearchQuery(mockItemList({ items }))).toBeUndefined();
     expect(
       filterListBySearchQuery(
-        mockListState({ items, searchQuery: ' '.repeat(3) })
+        mockItemList({ items, searchQuery: ' '.repeat(3) })
       )
     ).toBeUndefined();
   });
 
   it('trims the query and reports the matches', () => {
-    const state = mockListState({
+    const state = mockItemList({
       searchQuery: '  mil ',
       items: [named('Milk'), named('Bread')],
     });
@@ -263,7 +263,7 @@ describe('filterListBySearchQuery', () => {
   });
 
   it('flags the exact match among the partial ones', () => {
-    const state = mockListState({
+    const state = mockItemList({
       searchQuery: 'milk',
       items: [named('Milk chocolate'), named('Milk')],
     });
@@ -272,7 +272,7 @@ describe('filterListBySearchQuery', () => {
   });
 
   it('leaves exactMatch unset when only partial matches exist', () => {
-    const state = mockListState({
+    const state = mockItemList({
       searchQuery: 'milk',
       items: [named('Milk chocolate')],
     });

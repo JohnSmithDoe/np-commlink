@@ -15,6 +15,15 @@
  * The logged day is read back off the card's own label rather than a
  * list, because the office-day list is derived state — this is the domain
  * reading its own write.
+ *
+ * It also asserts the persisted BYTES, which is the only statement here
+ * that a device upgrading into the keyed `officedays` shape still reads
+ * its own history: the store is a day-keyed map now, the document stayed
+ * an array of `YYYY-MM-DD`, and nothing else in the suite would notice
+ * the two parting company. The date is read IN the page — no `timezoneId`
+ * is configured, so a UTC-derived date computed in the test process would
+ * disagree with the browser's for a few hours every night. `sv-SE` is the
+ * locale whose short date already IS `YYYY-MM-DD`.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
@@ -47,7 +56,11 @@ test.describe('office-time (lazy)', () => {
     await dashboard.locator('app-dash-button ion-button').click();
 
     await expect(dashboard.getByText(OFFICE_DAY_LOGGED)).toBeVisible();
-    await waitForPersisted(page, 'officeTime');
+
+    const today = await page.evaluate(() =>
+      new Date().toLocaleDateString('sv-SE')
+    );
+    await waitForPersisted(page, 'officeTime', `"officedays":["${today}"]`);
 
     await page.reload();
 

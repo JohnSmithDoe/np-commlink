@@ -1,5 +1,6 @@
 import { IonColor, Marker, Timestamp } from './app.types';
 import { BaseItem } from './base-item.types';
+import { DispatchableAction } from './dispatchable-action.types';
 
 type NotificationAction = {
   type: string;
@@ -36,8 +37,16 @@ export interface NotificationsState {
   lastViewedAt: Timestamp;
 }
 
+export type ToastAction = {
+  labelKey: Marker;
+  action: DispatchableAction;
+};
+
 export interface ToastMessage {
   key: Marker;
   parameters?: Record<string, string | number>;
   color?: IonColor;
+  durationMs?: number;
+  action?: ToastAction;
+  group?: string;
 }

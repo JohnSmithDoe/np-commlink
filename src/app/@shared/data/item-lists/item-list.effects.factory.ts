@@ -4,10 +4,11 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
 import { map, withLatestFrom } from 'rxjs';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
-import { ListState } from '../../model/item-list.types';
-import { matchesItemExactly } from '../../util/app.utils';
+import { ItemList } from '../../model/item-list.types';
+import { findMatchingItem } from '../../util/app.utils';
 import { updatedSearchQuery } from '../../util/item-lists/list.utils';
 import { NotificationsActions } from '../actions/notifications.actions';
+import { UndoActions } from '../undo/undo.actions';
 
 type Creator<
   Arguments extends unknown[],
@@ -42,13 +43,30 @@ const toastAddItemFailure = <T extends BaseItem>(
     { functional: true }
   );
 
+const pushUndoOnDelete = <T extends BaseItem>(
+  removeItem: Creator<[item: T], { item: T }>,
+  addItem: Creator<[item: T], { item: T }>
+) =>
+  createEffect(
+    (actions$ = inject(Actions)) => {
+      return actions$.pipe(
+        ofType(removeItem),
+        map(({ item }) =>
+          UndoActions.pushed({ name: item.name, action: addItem(item) })
+        )
+      );
+    },
+    { functional: true }
+  );
+
 export const createItemListEffects = <
   T extends BaseItem,
-  S extends ListState<T>,
+  S extends ItemList<T>,
 >(cfg: {
   actions: ListFlowActions<T>;
   select: MemoizedSelector<object, S>;
   create: (name: string, filterBy?: string) => T;
+  undoableDelete?: Creator<[item: T], { item: T }>;
 }) => ({
   addItemFromSearch$: createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
@@ -57,7 +75,7 @@ export const createItemListEffects = <
         withLatestFrom(store.select(cfg.select), (_, list) => list),
         map((list) => {
           const item = cfg.create(list.searchQuery ?? '', list.filterBy);
-          const duplicate = matchesItemExactly(item, list.items);
+          const duplicate = findMatchingItem(item, list.items);
           return duplicate
             ? cfg.actions.addItemFailure(duplicate)
             : cfg.actions.addItem(item);
@@ -73,7 +91,7 @@ export const createItemListEffects = <
         ofType(cfg.actions.addOrUpdateItem),
         withLatestFrom(store.select(cfg.select)),
         map(([{ item }, list]) =>
-          matchesItemExactly(item, list.items)
+          findMatchingItem(item, list.items)
             ? cfg.actions.updateItem(item)
             : cfg.actions.addItem(item)
         )
@@ -96,6 +114,10 @@ export const createItemListEffects = <
   ),
 
   addItemFailure$: toastAddItemFailure(cfg.actions.addItemFailure),
+
+  ...(cfg.undoableDelete
+    ? { undoDelete$: pushUndoOnDelete(cfg.undoableDelete, cfg.actions.addItem) }
+    : {}),
 });
 
 export const clearSearchAfter = (

@@ -1,0 +1,101 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <app-cash-category-picker [formField]="form.categoryId" />
+
+  <ion-segment class="cash-rule-dialog__match" [formField]="form.match">
+    <ion-segment-button value="all">
+      {{ 'cash.match.all' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="any">
+      {{ 'cash.match.any' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list-header>{{ 'cash.label.conditions' | translate }}</ion-list-header>
+  @for (condition of form.conditions; track $index) {
+    @let field = condition.field().value();
+    <div class="cash-condition" data-testid="rule-condition">
+      <div class="cash-condition__row">
+        <ion-select
+          [attr.aria-label]="'cash.a11y.field' | translate"
+          interface="popover"
+          [value]="field"
+          (ionChange)="onField($index, $any($event).detail.value)"
+          data-testid="rule-condition-field"
+        >
+          <ion-select-option value="description">
+            {{ 'cash.field.description' | translate }}
+          </ion-select-option>
+          <ion-select-option value="amount">
+            {{ 'cash.field.amount' | translate }}
+          </ion-select-option>
+        </ion-select>
+
+        <ion-select
+          [attr.aria-label]="'cash.a11y.operator' | translate"
+          interface="popover"
+          [formField]="condition.op"
+        >
+          @for (op of opsFor(field); track op) {
+            <ion-select-option [value]="op">
+              {{ opLabelKeys[op] | translate }}
+            </ion-select-option>
+          }
+        </ion-select>
+
+        <ion-button
+          fill="clear"
+          color="medium"
+          [attr.aria-label]="'cash.a11y.remove-condition' | translate"
+          (click)="removeCondition($index)"
+        >
+          <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+        </ion-button>
+      </div>
+
+      <ion-item>
+        <ion-input
+          [attr.aria-label]="'cash.a11y.value' | translate"
+          [placeholder]="
+            (field === 'amount' ? 'cash.label.amount' : 'cash.label.value')
+              | translate
+          "
+          [formField]="condition.value"
+          data-testid="rule-condition-value"
+        />
+      </ion-item>
+      @if (amountInvalidRows()[$index]) {
+        <ion-note color="danger" class="sr-field-note">
+          {{ 'cash.rule-dialog.amount-invalid' | translate }}
+        </ion-note>
+      }
+
+      @if (field === 'description') {
+        <ion-item>
+          <ion-toggle [formField]="condition.caseSensitive">
+            {{ 'cash.label.case-sensitive' | translate }}
+          </ion-toggle>
+        </ion-item>
+      }
+    </div>
+  }
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="ion-margin-top"
+    (click)="addCondition()"
+  >
+    <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+    {{ 'cash.condition.add' | translate }}
+  </ion-button>
+</app-item-edit-modal>

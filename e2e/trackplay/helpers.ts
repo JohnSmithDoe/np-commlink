@@ -22,9 +22,19 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';
-import { mainContent, openRowSwipe, pageRoot } from '../helpers';
+import { mainContent, pageRoot, presentedDialog } from '../helpers';
 
 export { mainContent, pageRoot };
+
+export const CREATE_BUTTON = 'Anlegen';
+
+export function createDialog(page: Page): Locator {
+  return presentedDialog(page, 'Neuen Eintrag anlegen');
+}
+
+export function nameBox(dialog: Locator): Locator {
+  return dialog.getByPlaceholder('Gib einen Namen ein');
+}
 
 export function addButton(scope: Locator): Locator {
   return scope.getByTestId('page-header-add');
@@ -48,12 +58,10 @@ export function headerTitle(scope: Locator): Locator {
 export async function createPlayer(page: Page, name: string): Promise<void> {
   const players = pageRoot(page, 'app-page-trackplay-players');
   await addButton(players).click();
-  const dialog = page.locator('app-trackplay-player-edit-modal');
+  const dialog = createDialog(page);
   await expect(dialog).toBeVisible({ timeout: 15_000 });
-  const input = dialog.getByTestId('player-name-input').locator('input');
-  await input.click();
-  await input.fill(name);
-  await dialog.getByRole('button', { name: 'OK' }).click();
+  await nameBox(dialog).fill(name);
+  await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
   await expect(dialog).toBeHidden();
   await expect(players.getByText(name, { exact: true })).toBeVisible();
 }
@@ -77,9 +85,4 @@ export async function togglePlayerInSelect(
 ): Promise<void> {
   const row = dialog.getByTestId('player-select-row').filter({ hasText: name });
   await row.getByTestId('player-select-checkbox').click();
-}
-
-export async function slideDelete(row: Locator): Promise<void> {
-  await openRowSwipe(row.locator('ion-item-sliding'), 'start');
-  await row.getByTestId('row-delete').click();
 }

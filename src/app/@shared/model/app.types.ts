@@ -1,10 +1,11 @@
 import type { PredefinedColors } from '@ionic/core';
 
 export type IonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
-export type IonColor = PredefinedColors;
+export type IonColor = PredefinedColors | 'accent';
 export type Marker = string;
 export type Timestamp = string;
 export type Theme = 'cyberpunk' | 'boomer';
+export type LanguageModelAvailability = Availability | 'probing';
 export const THEMES = [
   'cyberpunk',
   'boomer',

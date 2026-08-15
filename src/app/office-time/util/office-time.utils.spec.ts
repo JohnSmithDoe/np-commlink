@@ -4,15 +4,16 @@ import {
   statsKeysFrom,
   dayjsFromString,
   dayjsToString,
+  dayKeysOf,
+  dayMapFrom,
   deserializeIsoStringMap,
-  deserializeIsoStrings,
   getTargetPercentage,
   isOfficeDay,
   isWeekend,
   serializeDateMap,
-  serializeDates,
-  validateFreedays,
+  withoutHolidays,
 } from './office-time.utils';
+import { dayMap } from '../testing/office-time.test-data';
 
 describe('office-time.utils', () => {
   describe('day predicates', () => {
@@ -24,10 +25,10 @@ describe('office-time.utils', () => {
 
     it('matches membership by day for office days', () => {
       const day = dayjs('2026-07-01');
-      expect(isOfficeDay(day, [dayjs('2026-07-01T18:00:00')])).toBe(true);
-      expect(isOfficeDay(day, [dayjs('2026-07-02')])).toBe(false);
-      expect(isOfficeDay(day, [dayjs('2026-07-01')])).toBe(true);
-      expect(isOfficeDay(day, [])).toBe(false);
+      expect(isOfficeDay(day, dayMap(dayjs('2026-07-01T18:00:00')))).toBe(true);
+      expect(isOfficeDay(day, dayMap(dayjs('2026-07-02')))).toBe(false);
+      expect(isOfficeDay(day, dayMap(dayjs('2026-07-01')))).toBe(true);
+      expect(isOfficeDay(day, dayMap())).toBe(false);
       expect(isOfficeDay(day)).toBe(false);
     });
   });
@@ -61,26 +62,31 @@ describe('office-time.utils', () => {
       ).toEqual({
         xmas: '2026-12-25',
       });
-      const days = deserializeIsoStrings(['2026-07-01', 'bad', null as never]);
-      expect(days).toHaveLength(1);
-      expect(serializeDates(days)).toEqual(['2026-07-01']);
+      const days = dayMapFrom(['2026-07-01', 'bad', null]);
+      expect(dayKeysOf(days)).toEqual(['2026-07-01']);
+    });
+
+    it('collapses two spellings of one day into a single key', () => {
+      expect(
+        dayKeysOf(dayMapFrom(['2026-07-01', '2026-07-01T18:00:00']))
+      ).toEqual(['2026-07-01']);
     });
   });
 
-  describe('validateFreedays', () => {
+  describe('withoutHolidays', () => {
     it('drops blanks and any day that is already a holiday', () => {
       const holidays = deserializeIsoStringMap({ h: '2026-07-02' });
-      const result = validateFreedays(
-        ['2026-07-01', '2026-07-02', null],
+      const result = withoutHolidays(
+        dayMapFrom(['2026-07-01', '2026-07-02', null]),
         holidays
       );
-      expect(result.map((date) => dayjsToString(date))).toEqual(['2026-07-01']);
+      expect(dayKeysOf(result)).toEqual(['2026-07-01']);
     });
 
     it('matches a holiday by day even if it carries a time component', () => {
       const holidays = { h: dayjs('2026-07-02T23:00:00') };
-      const result = validateFreedays(['2026-07-02'], holidays);
-      expect(result).toEqual([]);
+      const result = withoutHolidays(dayMapFrom(['2026-07-02']), holidays);
+      expect(result).toEqual({});
     });
   });
 
@@ -92,8 +98,8 @@ describe('office-time.utils', () => {
       targetOfficeDaysPerWeek = 3
     ) =>
       statsKeysFrom({
-        officedays,
-        freedays: [],
+        officedays: dayMap(...officedays),
+        freedays: dayMap(),
         holidays,
         targetOfficeDaysPerWeek,
       });

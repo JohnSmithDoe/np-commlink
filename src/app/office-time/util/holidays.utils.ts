@@ -1,4 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
+import { HolidayMap } from '../model/office-time.types';
 
 /* eslint-disable unicorn/prevent-abbreviations */
 const easterSunday = (year: number): Dayjs => {
@@ -24,9 +25,9 @@ const easterSunday = (year: number): Dayjs => {
 const fixedDay = (year: number, month: number, day: number): Dayjs =>
   dayjs(new Date(year, month - 1, day));
 
-export const berlinHolidaysFor = (year: number): Record<string, Dayjs> => {
+export const berlinHolidaysFor = (year: number): HolidayMap => {
   const easter = easterSunday(year);
-  const holidays: Record<string, Dayjs> = {
+  const holidays: HolidayMap = {
     Neujahr: fixedDay(year, 1, 1),
     Karfreitag: easter.subtract(2, 'day'),
     Ostermontag: easter.add(1, 'day'),

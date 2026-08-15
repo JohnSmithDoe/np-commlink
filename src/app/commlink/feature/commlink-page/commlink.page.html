@@ -6,7 +6,7 @@
       aria-hidden="true"
     />
     <span class="sr-brand__name">{{ wordmark }}</span>
-    <span class="cl-cursor">▊</span>
+    <span class="sr-caret" aria-hidden="true">▊</span>
   </div>
 </app-page-header>
 
@@ -95,6 +95,22 @@
             {{ tile.program.descKey | translate }}
           </div>
           <div class="cl-node__foot">{{ tile.statusKey | translate }}</div>
+        </a>
+      } @empty {
+        <a
+          class="cl-node cl-node--empty sr-panel sr-corners"
+          routerLink="/commlink/deck"
+          data-testid="deck-empty"
+        >
+          <span class="cl-node__scan"></span>
+          <ion-icon
+            class="cl-node__icon"
+            name="options-outline"
+            aria-hidden="true"
+          />
+          <div class="cl-node__name">{{ hud['empty-title'] | translate }}</div>
+          <div class="cl-node__desc">{{ hud['empty-body'] | translate }}</div>
+          <div class="cl-node__foot">{{ hud['empty-action'] | translate }}</div>
         </a>
       }
     </div>

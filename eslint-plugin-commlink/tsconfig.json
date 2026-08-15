@@ -19,7 +19,13 @@
     "lib": ["es2023"],
     "module": "preserve",
     "moduleResolution": "bundler",
-    "types": [],
+    // `vitest/globals` rather than `[]`, so the rule specs beside these files
+    // resolve describe/it/expect without a second tsconfig. The alternative was
+    // splitting spec ownership out — but `projectService: true` in
+    // eslint.config.js resolves every file through the tsconfig that owns it, so
+    // an excluded spec becomes an unlintable file, which is the trade this repo
+    // least wants. Ambient test globals leaking into rule source is cosmetic.
+    "types": ["vitest/globals"],
     "noEmit": true,
     "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true,
