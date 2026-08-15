@@ -309,7 +309,7 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   `cap add android` regenerates it. It does not regenerate it *identically*: a newer `@capacitor/cli`
   scaffolds a different tree, and `android-postsync.sh` only pins the values it was told about — wrapper
   version, AGP, `variables.gradle` SDK levels and manifest defaults all drift silently between machines.
-  Committing turns that into a reviewable diff. 53 files, 0.3 MB; the 240 MB is `app/build` and `.gradle`,
+  Committing turns that into a reviewable diff. 53 files, 0.3 MB; the 240 MB is the apps build and `.gradle`,
   both excluded by the `android/.gitignore` Capacitor ships **because it expects the project to be
   versioned**.
 - **`android-postsync.sh` stays, and its patches split in two.** 4 (versionName/versionCode from
