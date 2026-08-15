@@ -33,13 +33,12 @@ pre-commit:
       glob: 'src/**/*.{scss,css}'
       run: pnpm exec stylelint {staged_files}
 
-# pre-push runs the full fifteen-gate suite — the same work CI does, ~100s cold.
-# It belongs here rather than in pre-commit for two reasons. A minute per commit
-# would be routed around with --no-verify, and that flag is all-or-nothing: skip
-# it once and prettier, eslint and stylelint go with it. And Codeberg's runners
-# are donated capacity whose terms ask for minimal pipelines, so not pushing a
-# red tree is courtesy, not just convenience — a push is rare enough to afford
-# the wait, a commit is not.
+# pre-push runs the full suite — the same work CI does, ~100s cold. It belongs
+# here rather than in pre-commit because a minute per commit would be routed
+# around with --no-verify, and that flag is all-or-nothing: skip it once and
+# prettier, eslint and stylelint go with it. A push is rare enough to afford the
+# wait, a commit is not. It also makes CI a backstop rather than the place you
+# find out, which is why CI stays one serial job.
 #
 # It reads the WORKING TREE, on the assumption that nothing is uncommitted at
 # push time. When that does not hold the runner says so in its header rather

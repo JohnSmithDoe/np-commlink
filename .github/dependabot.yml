@@ -1,0 +1,40 @@
+# Grouped, because the alternative is thirty PRs that each fail. Angular, NgRx
+# and TypeScript move as one release train — bumping @angular/core without
+# @angular/cli does not build — and Ionic ships against a Capacitor major the
+# same way. Every PR here runs the full suite via the pull_request trigger, so a
+# group that cannot go green says so in one place instead of fifteen.
+#
+# One entry covers the tree: eslint-plugin-commlink/package.json declares no
+# dependencies, and pnpm-workspace.yaml has no `packages:` key.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - '@ngrx/*'
+          - 'ng-packagr'
+          - 'rxjs'
+          - 'typescript'
+      ionic:
+        patterns:
+          - '@ionic/*'
+          - '@capacitor/*'
+          - 'ionicons'
+      tooling:
+        dependency-type: development
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ['*']

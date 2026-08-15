@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Gate: the Codeberg Pages build is actually serveable from its subpath.
+// Gate: the GitHub Pages build is actually serveable from its subpath.
 //
 // e2e runs against `ng serve`, which serves from the root and never sees this.
 // CI then produces `build:pages` and deploys it without a single request having
@@ -46,7 +46,7 @@ if (!existsSync(ROOT)) {
 }
 
 /**
- * Serve `www/browser` under BASE, the way Codeberg Pages does. Deliberately NOT
+ * Serve `www/browser` under BASE, the way GitHub Pages does. Deliberately NOT
  * an SPA fallback: hash routing means `index.html` is the only document ever
  * requested, so a 404 here is a real missing file rather than a route.
  */

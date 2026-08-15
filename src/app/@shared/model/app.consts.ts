@@ -7,4 +7,4 @@ export const APP_RELEASE =
 
 export const APP_WORDMARK = 'np-commlink';
 
-export const SOURCE_URL = 'https://codeberg.org/Letothec0dem0nkey/np-commlink';
+export const SOURCE_URL = 'https://github.com/JohnSmithDoe/np-commlink';

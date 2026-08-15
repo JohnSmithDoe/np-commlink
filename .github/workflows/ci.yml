@@ -1,0 +1,244 @@
+# One working job, because CI is a backstop: lefthook runs the whole suite on
+# pre-push, so nothing here is on anyone's critical path. Fanning out would buy
+# wall-clock nobody waits on and cost a reinstall per job.
+#
+# Four things this file cannot say in YAML:
+#   - The tag trigger is `v*`, not the semver glob, so pre-releases are VERIFIED.
+#     Which of them publishes is the shell regex below — the one place the
+#     `vMAJOR.MINOR.PATCH` shape is asserted.
+#   - `deploy` is a separate job only because `environment:` hard-fails on a ref
+#     the environment does not permit, which a pull_request ref never is.
+#   - Publishing a tag also needs a repo setting: github-pages → Deployment
+#     branches and tags → Ref type **Tag**, pattern `v*`. A branch rule, which is
+#     the default, does not cover tags. See README's Deployment section.
+#   - setup-node's `cache: pnpm` is unused: it runs before corepack has made pnpm
+#     exist. Hence the explicit cache steps.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+# GitHub defaults this to off — an omitted block means superseded pushes run to
+# completion. A release is exempt: cancelling one mid-deploy is never wanted.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+# Naming any scope sets every unnamed one to none. deploy adds its own.
+permissions:
+  contents: read
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.release.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      # Corepack reads the pinned version from package.json's packageManager.
+      - name: Activate pnpm
+        run: corepack enable pnpm
+
+      # Both caches key on the lockfile alone. Keying the browser on the resolved
+      # Playwright version would miss less often but needs a step output; the
+      # lockfile moves whenever Playwright does, so a wrong hit stays impossible
+      # and an unrelated bump costs one download.
+      - uses: actions/cache@v6
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-
+
+      - run: pnpm install --frozen-lockfile --store-dir ~/.pnpm-store
+
+      # Through the script, not a glob restated here, so linting by hand cannot
+      # cover less than CI does. `lint` chains stylelint after eslint, which
+      # cannot read SCSS at all.
+      - name: Lint (eslint + stylelint)
+        run: pnpm run lint
+
+      # Enforced by the pre-commit hook too, which --no-verify skips.
+      - name: Format (prettier)
+        run: pnpm run format:check
+
+      - name: Module boundaries (sheriff)
+        run: pnpm run verify
+
+      # The four whole-repo set differences. None is decidable per file, so none
+      # can be an eslint rule: an id no spec references, an icon name nothing
+      # registered, a doc path nothing resolves to, an export nothing imports.
+      - name: Test-id contract (declared ↔ referenced)
+        run: pnpm run verify:testids
+
+      - name: Icon registrations (used ↔ registered)
+        run: pnpm run verify:icons
+
+      - name: Doc paths resolve
+        run: pnpm run verify:docs
+
+      - name: Export surface (no unnecessary export)
+        run: pnpm run verify:exports
+
+      # esbuild transpiles without type-checking, so tsc is its own gate.
+      - name: Type-check (app)
+        run: pnpm exec tsc -p tsconfig.app.json --noEmit
+
+      - name: Type-check (spec)
+        run: pnpm exec tsc -p tsconfig.spec.json --noEmit
+
+      - name: Type-check (e2e)
+        run: pnpm exec tsc -p tsconfig.e2e.json --noEmit
+
+      # The gates' own gate: a lint rule with no spec fails OPEN — it stops
+      # matching and reports nothing, which reads exactly like a clean tree.
+      - name: Lint rules (vitest)
+        run: pnpm run test:plugin
+
+      # Coverage, not a bare run: the thresholds are a floor only if read.
+      - name: Unit tests (vitest)
+        run: pnpm run test:coverage
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('pnpm-lock.yaml') }}
+
+      # --with-deps still runs on a cache hit: the OS packages live outside that
+      # path and are not cacheable, and it no-ops once the browser is there.
+      - name: Install Playwright Chromium + OS deps
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E (playwright)
+        run: pnpm run e2e
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      # Not `build`: Capacitor wants a relative base href, a subpath deploy the
+      # absolute one. Run on pull requests too — a prod build that stopped
+      # compiling is worth catching before merge, not at deploy time.
+      - name: Production build (Pages base href)
+        run: pnpm run build:pages
+
+      # The one thing nothing else touches: the build is DEPLOYED from a subpath
+      # and never REQUESTED from one, so e2e driving `ng serve` at the root
+      # cannot see either fault this catches — a relative <base href>, and a
+      # TranslateHttpLoader prefix gone absolute that 404s every label into its
+      # raw key.
+      - name: Pages build is serveable from its subpath
+        run: pnpm run verify:pages
+
+      # Asserted in shell rather than as an on.push.tags glob so pre-releases
+      # still reach every gate above. GITHUB_REF reaches the script through env,
+      # never spliced as ${{ }} — interpolation is textual substitution before a
+      # shell sees it, which makes the value code rather than data.
+      #
+      # The tag must also AGREE with package.json, because nothing downstream
+      # reads the tag: versionName and versionCode come from package.json
+      # (android-postsync.sh patch 4) and NPC_RELEASE from $npm_package_version.
+      # A tag that ran ahead would publish v1.0.1 carrying an APK that still
+      # claims versionCode 10000, which Android refuses to install over its
+      # predecessor — and the only way in is an uninstall, taking every tracked
+      # session, the pantry and the ledger with it. Silent at build time.
+      - name: Release version?
+        id: release
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          version="${REF#refs/tags/}"
+          if ! printf '%s' "$version" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::notice::$version is not a release version — verified, not published."
+            exit 0
+          fi
+          declared="v$(node -p 'require("./package.json").version')"
+          if [ "$version" != "$declared" ]; then
+            echo "::error::tag $version disagrees with package.json ($declared) — the APK derives its identity from package.json, not from the tag."
+            exit 1
+          fi
+          echo 'publish=true' >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-pages-artifact@v5
+        if: steps.release.outputs.publish == 'true'
+        with:
+          path: www/browser
+
+  deploy:
+    needs: verify
+    if: needs.verify.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # No checkout and no download: deploy-pages finds the artifact by name
+      # within this workflow run, which `needs:` is what guarantees exists.
+      - id: deployment
+        uses: actions/deploy-pages@v5
+
+  # A DRAFT, and it stays one until a human attaches the APK. CI takes a release
+  # exactly as far as it can go without the signing key — tag, title, the notes a
+  # user needs — and stops at the boundary, because the key is deliberately on one
+  # machine and not on a runner (README, "Release signing"). The two assets
+  # `pnpm run apk:signed` produces are attached in the web UI.
+  #
+  # `contents: write` exists in this job and nowhere else: verify only reads, and
+  # deploy authenticates to Pages with a short-lived OIDC token instead. No
+  # checkout either — gh addresses the repository through GH_REPO.
+  release:
+    needs: verify
+    if: needs.verify.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Edit-or-create rather than create: `gh release create` fails outright on
+      # a tag that already has a release, so a re-run of a failed job would need
+      # a manual delete first. `--draft` is re-asserted on that path too — a
+      # re-run can then never publish a release nobody has attached an APK to.
+      - name: Draft the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cat > notes.md <<'EOF'
+          **Android APK** — `np-commlink.apk`, signed with the release key.
+
+          Android will ask you to allow installs from whatever app you open it from. The web app needs
+          no install at all: <https://johnsmithdoe.github.io/np-commlink/>
+
+          Two checks are worth running first, both against values published here and in the README
+          rather than against anything the APK says about itself:
+
+          ```sh
+          sha256sum np-commlink.apk
+          apksigner verify --print-certs np-commlink.apk
+          ```
+
+          The signer SHA-256 must match the fingerprint pinned in the README. It is stable for the life
+          of the app, so checking it once detects any later key swap.
+          EOF
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --draft --title "$TAG" --notes-file notes.md
+          else
+            gh release create "$TAG" --draft --title "$TAG" --notes-file notes.md
+          fi

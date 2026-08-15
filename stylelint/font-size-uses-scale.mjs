@@ -63,7 +63,7 @@ const ruleFunction = (primary) => (root, result) => {
 ruleFunction.ruleName = ruleName;
 ruleFunction.messages = messages;
 ruleFunction.meta = {
-  url: 'https://codeberg.org/Letothec0dem0nkey/np-commlink/src/branch/main/stylelint/font-size-uses-scale.mjs',
+  url: 'https://github.com/JohnSmithDoe/np-commlink/blob/main/stylelint/font-size-uses-scale.mjs',
 };
 
 export default stylelint.createPlugin(ruleName, ruleFunction);

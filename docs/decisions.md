@@ -302,3 +302,50 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   the commit message *described* them (`filter-branch` leaves it without `--msg-filter`). Verify with
   `git rev-list --objects --all`, not a clean tree. No spec reads a `.csv` — each parser's header comment
   is the format source.
+
+## CI and deployment
+
+- **No Codeberg fallback workflow is kept.** The Forgejo file was deleted rather than parked beside the
+  GitHub one. It had never executed on any runner, so every constraint it encoded was reasoned rather than
+  observed, and nothing in the repo can gate a workflow file — it would have rotted while reading as
+  insurance. `git show` recovers it, and it would need testing at that point regardless.
+- **CI is one serial job, and that is not a capacity concession.** `lefthook`'s pre-push runs the same
+  suite, so nothing in CI is on anyone's critical path. Fanning out would buy wall-clock nobody waits on
+  and cost a `pnpm install` per job plus an artifact hand-off at the deploy.
+- **Pages deploys through the artifact API, not a `pages` branch.** `upload-pages-artifact` →
+  `deploy-pages`, authenticated by a short-lived OIDC token, so no long-lived repo-write credential
+  exists. `deploy` is a *separate* job only because `environment:` fails a job outright on a ref the
+  environment does not permit, and a `pull_request` ref never is.
+- **`actions/configure-pages` is deliberately absent.** It injects a base path, which this repo pins in
+  `package.json`'s `build:pages` and asserts in `scripts/check-pages-build.mjs` — a third writer for a
+  constant that is deliberately duplicated *and gated* would be the regression, not the duplication.
+- **The release shape is asserted in shell, not in `on.push.tags`.** GitHub's glob dialect could express
+  `v[0-9]+.[0-9]+.[0-9]+`, but putting it in the trigger would stop pre-release tags from being *verified*.
+  The trigger is `v*` and the publish decision is a job output.
+- **The signing key does not go into GitHub secrets, and CI builds no APK.** Weighed and declined: it
+  would have saved three minutes a few times a year against a credential that *cannot be rotated* — a
+  leak has no recovery story except abandoning the app identity and asking every user to uninstall,
+  which takes their data. The exposure is also wider than "someone steals the repo": anyone with write
+  access, any later workflow edit, and every third-party action sharing the job (`checkout`,
+  `setup-node`, `cache`) would run beside it. The general shape is **automate up to the trust boundary
+  and stop** — the same instinct that put Pages on a short-lived OIDC token instead of a PAT.
+- **So the release is drafted by CI and published by hand.** The `release` job takes it as far as a
+  runner can without the key — tag, title, install and verify notes — and the two assets are attached
+  in the web UI. Draft rather than published is what makes a re-run harmless: the job re-asserts
+  `--draft`, so a retry can never publish a release with no APK on it.
+- **No script wraps that upload.** A `gh release upload` wrapper was written and deleted: `gh` is not
+  installed here and is not wanted, so the script would have been a file that reads like the supported
+  path while failing on its first line — the same reason no Codeberg fallback workflow is kept. Two
+  files dragged into a draft, a few times a year, needs no abstraction.
+- **`contents: write` lives only in that job.** Nothing else in the workflow can alter the repository,
+  and it needs no checkout — `gh` addresses the repo through `GH_REPO`.
+- **The tag must equal `package.json`'s version, and CI fails the run if it does not.** Nothing
+  downstream reads the tag: `versionName`/`versionCode` come from `package.json` (postsync patch 4)
+  and `NPC_RELEASE` from `$npm_package_version`. A tag running ahead would publish `v1.0.1` carrying
+  `versionCode 10000`, which Android rejects as a downgrade — the only way in being an uninstall that
+  takes every tracked session, the pantry and the ledger. Invisible at build time, so it is a gate.
+- **The digest stays a printed line, not a second release asset.** A `.sha256` sidecar was written and
+  reverted: it would be published by the same hand that published the APK, so it proves only "this is
+  the file that was uploaded" — which the signature already proves, and proves better, against a
+  fingerprint pinned once in the README rather than re-published each release. `collect-apk.sh` prints
+  the digest, it is pasted into the notes, and the check that carries the weight is `apksigner`.

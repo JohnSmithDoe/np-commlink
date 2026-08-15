@@ -25,7 +25,7 @@ door changes — never as a follow-up to a code change.** An inventory that mirr
 rewriting every time the tree moves, so this repo keeps none; each fact lives where it cannot drift
 from itself: gates in `scripts/verify-all.sh` (`GATES=(`), boundaries in `sheriff.config.ts`, compiler
 flags in `tsconfig.json`, budgets and coverage floors in `angular.json`, CI steps in
-`.forgejo/workflows/ci.yml`, the style layer's contract in `src/global.scss`'s banner, each lint
+`.github/workflows/ci.yml`, the style layer's contract in `src/global.scss`'s banner, each lint
 rule's rationale in its own.
 
 ## Commands
@@ -34,7 +34,7 @@ rule's rationale in its own.
 | --- | --- |
 | `pnpm start` | dev server (`ng serve`) |
 | `pnpm run build` | prod web build → `www/browser`, `--base-href ./` (Capacitor) |
-| `pnpm run build:pages` | prod build with `--base-href /np-commlink/` (Codeberg Pages) |
+| `pnpm run build:pages` | prod build with `--base-href /np-commlink/` (GitHub Pages) |
 | `pnpm test` / `test:watch` / `test:coverage` | Vitest via `@angular/build:unit-test` |
 | `pnpm run test:plugin` | Vitest over `eslint-plugin-commlink/`'s RuleTester specs — its own config, because the builder's tsconfig reaches only under `src` |
 | `pnpm run e2e` | Playwright (`e2e/`, port 4321) |

@@ -11,8 +11,8 @@ description: >-
 # np-code-review
 
 Adapted from the official `code-review` plugin, which reviews a **GitHub PR** and
-comments via `gh`. Neither exists here: this repo is on Codeberg with Forgejo Actions
-and we work trunk-based, so the review target is a **diff** and the output is
+comments via `gh`. The repo is on GitHub, but the work is trunk-based — changes land
+on `main`, so there is no PR to review. The target is a **diff** and the output is
 `ReportFindings`, rendered in the terminal.
 
 Two properties of the original are the point of it and are preserved:

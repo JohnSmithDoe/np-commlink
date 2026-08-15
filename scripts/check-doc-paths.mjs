@@ -128,7 +128,7 @@ const ruleIds = new Set(
 /**
  * Case-EXACT existence, because `existsSync` is not.
  *
- * macOS is case-insensitive and the Codeberg runner is not, so `existsSync`
+ * macOS is case-insensitive and the CI runner is not, so `existsSync`
  * answers `true` here for `@shared/Util/theme/theme.service` and `false` there —
  * a doc reference that passes locally and reddens the first CI run, which is the
  * one run nobody can bisect. Measured on this filesystem:

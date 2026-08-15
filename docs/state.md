@@ -5,7 +5,7 @@ a human reading the result, or a product decision. Settled questions are in [dec
 
 ## One-way doors — the window closes at first publish
 
-Each field below is one a distribution channel compares to decide *same app or different app*. **Nothing
+Each field below is one a distribution channel compares to decide _same app or different app_. **Nothing
 has been published** (`git ls-remote origin` returns zero refs, no tags, CI has never run), so all are
 still free.
 
@@ -21,19 +21,22 @@ still free.
 - **`enableV3Signing = true` must be on from the first release** — set explicitly against AGP's default at
   `minSdk 24`. v3 carries the proof-of-rotation lineage; without it from the start, rotation is impossible.
 - **`manifest.id` is `"np-commlink"`**, parsed as a URL against the **origin** — a leading or trailing slash
-  is a *different* identity, giving the browser a second app with its own IndexedDB and no route to the
+  is a _different_ identity, giving the browser a second app with its own IndexedDB and no route to the
   first one's data. Write once, never touch.
 - **Renaming a persisted key or a deck entry id is free only until the first release**
   ([decisions.md](./decisions.md)); after it, either needs a ladder step.
 
 ## Blocked — needs something only the owner can supply
 
-- **The first push, CI run and tag all wait on the keystore.** Web and APK ship together, not the PWA
-  alone. Two prerequisites live in repo settings, not git: Actions enabled under *Units*, and a Forgejo
-  webhook targeting the Pages URL with branch filter `pages`. The APK is attached by hand — CI builds none,
-  so the signing key never reaches a runner.
-- **Two follow-ups once the key exists:** paste the signer SHA-256 into the README's *Verify a release APK*
-  placeholder, and publish the APK's `sha256sum` with the tag.
+- **The first push, CI run and tag wait only on repo settings now.** The keystore exists and
+  `pnpm apk:signed` produces an APK verifying under v2 + v3; the fingerprint is pinned in the README. Web
+  and APK ship together, not the PWA alone. Two prerequisites live in repo settings, not git: _Settings →
+  Pages → Source_ set to **GitHub Actions**, and _Settings → Environments → github-pages → Deployment
+  branches and tags_ given a rule with **Ref type: Tag**, pattern `v*`. The environment is auto-created
+  protected to the default branch and a branch rule does not cover tags, so without the second the deploy
+  job fails on the first release with `Branch "v1.0.0" is not allowed to deploy to github-pages`. The APK is
+  attached by hand — CI builds none, so the signing key never reaches a runner.
+- **One follow-up remains at first release:** publish the APK's `sha256sum` with the tag.
 - **A DKB import driven live** — the parser is unit-tested against inline rows; only Volksbank has been
   driven end-to-end in-app.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
@@ -57,7 +60,7 @@ still free.
 ## Deferred on a decision, not on effort
 
 - **The cascade half of the destructive-action policy.** The row half is settled
-  ([decisions.md](./decisions.md)). Left: a category delete strips three reducers, tracking's *Reset all*
+  ([decisions.md](./decisions.md)). Left: a category delete strips three reducers, tracking's _Reset all_
   discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what the
   user was not looking at. Cash's `deleteConfirmAlert` is the one row-level confirm still standing.
 - **Which lists opt into undo.** The mechanism is built — `ToastMessage` carries `action`, `durationMs`
@@ -86,14 +89,14 @@ still free.
   `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.
 - **The barcode / ML Kit scanner's silence was not reproducible** from a read of `barcode.page.ts`. Verify
   before adding anything.
-- **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction *risk*, not data
+- **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
   loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
-  Firefox and Safari. The only honest surface is a passive status row in settings. The *write* half toasts.
+  Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
 - **Multi-list household is not what `:listId` was**, and dropping the param settled it. `HouseholdListId`
   is a closed three-literal union over structurally different item types, named as three fields of
   `HouseholdState` through `combineReducers`, with six `Record<HouseholdListId, …>` maps keyed off it. Real
   multi-list means turning one field into a keyed collection, and two things refuse it: `ListSettings` is
-  six booleans naming the lists pairwise (`showProductsInStorage`, …) with no answer for *which* shopping
+  six booleans naming the lists pairwise (`showProductsInStorage`, …) with no answer for _which_ shopping
   list, and the segment switcher is deliberately unrolled because `testid-is-static` forbids a bound
   `data-testid` inside `@for`. **Categories already deliver the use case** — a shared catalog plus a
   route-state filter gives "Freezer" or "Aldi" separation, filtering and a bookmarkable URL at no
@@ -114,14 +117,14 @@ still free.
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.
 - **The emoji picker's `ion-input` `end` slot is experimental** — Ionic 8 implements `start`/`end` with
-  *simulated* slots. It renders and clicks correctly in e2e and on the web build; the Android WebView is
+  _simulated_ slots. It renders and clicks correctly in e2e and on the web build; the Android WebView is
   the one target no gate covers. The fallback needs no redesign: the identical `ion-button` moves one level
   out, to the wrapping `ion-item`.
 - **`emoji:build` runs by hand, not in CI.** The output is committed, so the build never needs the network
   and a stale artifact can only miss emoji from a newer Unicode release. A gate would need `emojibase-data`
   in CI for a check that fires once a year.
 - **No skin-tone choice in the picker.** CLDR nests tone variants under each base emoji; keeping them turns
-  1644 entries into several thousand, for a picker that decorates an item name. A name pasted *with* a tone
+  1644 entries into several thousand, for a picker that decorates an item name. A name pasted _with_ a tone
   modifier survives the round-trip.
 - **The PWA icons declare `"purpose": "maskable any"` at every size** — one bitmap for both wastes the
   maskable safe-zone padding in the `any` context. Worth splitting only if a real device's crop looks wrong.

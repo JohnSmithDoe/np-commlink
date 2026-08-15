@@ -2,6 +2,8 @@
 
 Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notifications, barcode/SIGIL) with `np-kitchen-bot` (shopping, storage, products, tasks) and np-trackplay (gameing list) into a single Angular 21 / Ionic 8 / Capacitor 8 app.
 
+**Live:** <https://johnsmithdoe.github.io/np-commlink/> _(published with the first release tag.)_
+
 ## Prerequisites
 
 - Trust in Claude... this is a vibe coding project, which i am not really convinced off...
@@ -43,8 +45,8 @@ deliberately not in this repo (below).
 
 ## Release signing — why the key is not in here
 
-Publishing the *source* is what AGPL is for, and it is complete: everything needed to build a
-byte-for-byte equivalent app is in this repository. Publishing the *signing key* would be a
+Publishing the _source_ is what AGPL is for, and it is complete: everything needed to build a
+byte-for-byte equivalent app is in this repository. Publishing the _signing key_ would be a
 different thing entirely, and it would take a guarantee away from users rather than granting one.
 
 Android decides an APK may replace an installed one purely by comparing signatures. With the key
@@ -53,7 +55,7 @@ an APK that installs **over** a real one and silently inherits its data — ever
 pantry, the ledger. Users would have no way to tell the two apart. So the key stays private, the
 same way F-Droid, Signal and every Linux distro keep a repository signing key private while shipping
 all of their source: openness is about being able to inspect and rebuild the artifact, not about
-shared custody of who is allowed to *be* the publisher. And unlike a leaked password it cannot be
+shared custody of who is allowed to _be_ the publisher. And unlike a leaked password it cannot be
 rotated away — a new key can never upgrade an install made with the old one.
 
 The wiring is public even though the key isn't. `scripts/android-postsync.sh` appends a
@@ -85,29 +87,39 @@ If you take an APK from a release rather than building it, two checks are worth 
 values published with the release, not against anything the APK tells you about itself:
 
 ```sh
-sha256sum np-commlink.apk               # must match the digest published with the tag
+sha256sum np-commlink.apk                        # must match the digest published with the tag
 apksigner verify --print-certs np-commlink.apk   # signer SHA-256 must match the fingerprint below
 ```
 
 The signer fingerprint is stable for the life of the app, so pinning it once detects any later key
-swap. _(Published here with the first signed release.)_
+swap:
 
-## Deployment — Codeberg Pages
+```text
+e67966a34b626cf93245d292a83bb45e6872c5226abf3cd3fd181ab2d25c1b1f
+```
 
-Live at **<https://letothec0dem0nkey.codeberg.page/np-commlink/>**, published by
-`.forgejo/workflows/ci.yml` — but only on a **version tag**. A push to `main` runs every gate and
-publishes nothing; pushing `vMAJOR.MINOR.PATCH` runs the same job on that ref and then force-pushes
-the build to this repo's `pages` branch as a fresh orphan commit. So releasing is:
+`apksigner` should report it as _Signer #1 certificate SHA-256 digest_, and should verify the APK
+under **schemes v2 and v3**. v1 (JAR signing) is absent by design — `minSdk 24` has no use for it —
+and v3.1 and v4 stay absent until there is something to rotate or a device asking for incremental
+install.
+
+## Deployment — GitHub Pages
+
+Live at **<https://johnsmithdoe.github.io/np-commlink/>**, published by `.github/workflows/ci.yml` —
+but only on a **version tag**. A push to `main` runs every gate and publishes nothing; pushing
+`vMAJOR.MINOR.PATCH` runs the same gates on that ref and then uploads the build as a Pages artifact
+for a second job to deploy. So releasing is:
 
 ```sh
 git tag v1.0.0 && git push origin v1.0.0
 ```
 
-Pre-release tags (`v1.0.0-rc.1`) are verified but deliberately not published. One site per project —
-the per-user variant (a repository literally named `pages`) would only serve a single site at the
-domain root.
+Pre-release tags (`v1.0.0-rc.1`) are verified but deliberately not published — the tag trigger is
+`v*` so they still reach every gate, and a shell regex in the workflow decides which of them ships.
+The site is a project site, so it serves under `/np-commlink/`; only a repository named
+`johnsmithdoe.github.io` would sit at the domain root.
 
-The subpath is why there are two prod builds: `pnpm build` keeps the relative base href Capacitor
+That subpath is why there are two prod builds: `pnpm build` keeps the relative base href Capacitor
 needs, `pnpm build:pages` sets `/np-commlink/`. To check the deployed layout locally:
 
 ```sh
@@ -116,21 +128,39 @@ mkdir -p /tmp/pages/np-commlink && cp -r www/browser/* /tmp/pages/np-commlink/
 npx http-server /tmp/pages -p 8080   # → http://localhost:8080/np-commlink/
 ```
 
-Two settings are required on the Codeberg repo and are not in version control:
+Two settings are required on the GitHub repo and are not in version control:
 
-1. **Settings → Units** → enable _Actions_ (off by default).
-2. **Settings → Webhooks** → add a **Forgejo** webhook, target URL
-   `https://letothec0dem0nkey.codeberg.page/np-commlink/`, branch filter `pages`. Without it the
-   git-pages server never hears about a deploy. (Its _Test delivery_ button always errors — that is
-   expected; verify by pushing.)
+1. **Settings → Pages → Source** → _GitHub Actions_. Without it a deploy has nothing to deploy into.
+2. **Settings → Environments → github-pages → Deployment branches and tags** → _Selected branches and
+   tags_ → add a rule with **Ref type: Tag**, pattern `v*`. The environment is created protected to
+   the default branch, and a branch rule does not cover tags — without this the deploy job fails with
+   `Branch "v1.0.0" is not allowed to deploy to github-pages`.
 
-If the push in the deploy step is ever rejected, the automatic `forge.token` lost its write scope:
-create an access token with `write:repository`, store it as the repo secret `CODEBERG_TOKEN`, and
-use `${{ secrets.CODEBERG_TOKEN }}` in place of `${{ forge.token }}`.
+No secret is involved: `deploy-pages` authenticates with a short-lived OIDC token minted from the
+job's `id-token: write` permission, so nothing long-lived with write access to the repo exists to
+leak or rotate.
 
-Android APKs are built locally (`pnpm apk:debug`, or `apk:release` with the four `NPC_*` variables
-exported) and attached to the release by hand — CI builds no APK, so no signing key is ever handed
-to a runner.
+## Releasing an APK
+
+CI does everything a release needs except the one step that needs the key. Pushing the version tag
+runs every gate, deploys Pages, and opens the GitHub Release as a **draft** — title, install
+instructions and verification commands already written. The APK is built and attached from the
+machine that holds the keystore:
+
+```sh
+git tag v1.0.0 && git push origin v1.0.0   # gates, Pages, and the draft release
+pnpm apk:signed                            # → releases/np-commlink.apk, digest printed
+```
+
+Then attach the APK to the draft under **Releases**, paste the printed digest into the notes, and
+publish. That is the entire manual step, and it is manual on purpose: it is the one moment the
+signing key is involved, and the key is on one machine rather than in a secret store because it
+**cannot be rotated** — a leak has no remedy except abandoning the app identity, which costs every
+user their data. The minutes CI would save are worth less than that.
+
+The tag has to match `package.json`'s version or CI fails the run before drafting anything: the APK
+takes its `versionName` and `versionCode` from `package.json`, never from the tag, and a
+`versionCode` that does not increase is one Android refuses to install over its predecessor.
 
 ## Layout
 
