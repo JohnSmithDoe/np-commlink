@@ -22,21 +22,23 @@ import { CashTransaction } from '../../model/transaction.types';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import {
   AccountTransaction,
+  CashAccountsFacade,
   CashAccountTransactionsPageFacade,
   CashRulesFacade,
   CashTransactionsFacade,
 } from '../../data';
+import { ParseResult } from '../../util/import/parsed-row';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
-import { parserForBank } from '../../util/import/bank-parsers';
-import { BankParser } from '../../util/import/bank-parser';
-import { decodeCsv } from '../../util/import/read-csv';
+import { readStatementDocuments } from '../../util/import/read-bank-file';
+import { readStatement, StatementRead } from '../../util/import/read-statement';
 import { ImportPlan, planImport } from '../../util/import/plan-import';
-import { takePickedFile } from '../../util/picked-file.utils';
+import { takePickedFiles } from '../../util/picked-file.utils';
+import { CashAccount } from '../../model/account.types';
 import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
 import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dialog/edit-cash-transaction-dialog.component';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
@@ -78,6 +80,7 @@ const DETACH: StartSwipeAction = {
 export class CashAccountPage {
   readonly facade = inject(CashAccountTransactionsPageFacade);
   readonly #transactions = inject(CashTransactionsFacade);
+  readonly #accounts = inject(CashAccountsFacade);
   readonly #rulesFacade = inject(CashRulesFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
@@ -113,14 +116,33 @@ export class CashAccountPage {
     }
   }
 
-  async importCsv(event: Event): Promise<void> {
-    const file = takePickedFile(event);
-    const parser = parserForBank(this.facade.account()?.bank);
-    if (!file || !parser) return;
-    const plan = await this.#whileLoading(() =>
-      this.#planImportFor(file, parser)
+  async importStatement(event: Event): Promise<void> {
+    const files = takePickedFiles(event);
+    const account = this.facade.account();
+    if (files.length === 0 || !account) return;
+
+    const read = await this.#whileLoading(() =>
+      this.#readStatement(files, account)
     );
-    await this.#presentImportPreview(plan);
+    if (read.kind === 'unreadable') {
+      this.#accounts.reportStatementUnreadable();
+      return;
+    }
+    if (read.kind === 'wrong-account') {
+      this.#accounts.reportWrongAccount(read.found);
+      return;
+    }
+    if (read.iban && !account.iban) {
+      this.#accounts.saveItem({ ...account, iban: read.iban });
+    }
+    await this.#presentImportPreview(this.#planFrom(read.parsed));
+  }
+
+  async #readStatement(
+    files: File[],
+    account: CashAccount
+  ): Promise<StatementRead> {
+    return readStatement(await readStatementDocuments(files), account.iban);
   }
 
   async #whileLoading<T>(work: () => Promise<T>): Promise<T> {
@@ -135,8 +157,7 @@ export class CashAccountPage {
     }
   }
 
-  async #planImportFor(file: File, parser: BankParser): Promise<ImportPlan> {
-    const parsed = parser.parse(decodeCsv(await file.arrayBuffer()));
+  #planFrom(parsed: ParseResult): ImportPlan {
     return planImport(
       parsed,
       this.facade.accountId(),

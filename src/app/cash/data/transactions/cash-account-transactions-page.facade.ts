@@ -67,7 +67,7 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
   readonly balanceCents = computed(
     () => this.#accounts.balances()[this.accountId()] ?? 0
   );
-  readonly canImport = computed(() => !!this.account()?.bank);
+  readonly canImport = computed(() => this.account()?.kind !== 'cash');
 
   showCreateDialog(): void {
     this.#transactions.showCreateDialog(

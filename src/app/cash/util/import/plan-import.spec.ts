@@ -2,13 +2,15 @@ import {
   mockCashRule,
   mockCashTransaction,
 } from '../../testing/cash.test-data';
-import { ParsedRow, ParseResult } from './bank-parser';
+import { ParsedRow, ParseResult } from './parsed-row';
 import { planImport } from './plan-import';
 
 const row = (over: Partial<ParsedRow> = {}): ParsedRow => ({
   dateISO: '2026-01-06T00:00:00+01:00',
   amountCents: -4299,
   description: 'REWE',
+  status: 'confirmed',
+  key: '2026010638472910064',
   ...over,
 });
 
@@ -17,77 +19,86 @@ const parsed = (rows: ParsedRow[], rejected = 0): ParseResult => ({
   rejected,
 });
 
+const imported = (over = {}) =>
+  mockCashTransaction({
+    accountId: 'acc',
+    dateISO: '2026-01-06T00:00:00+01:00',
+    amountCents: -4299,
+    name: 'REWE',
+    source: 'imported',
+    importKey: '2026010638472910064',
+    ...over,
+  });
+
 const ids = () => {
   let n = 0;
   return () => `id-${++n}`;
 };
 
+const plan = (
+  rows: ParsedRow[],
+  existing = [] as ReturnType<typeof imported>[]
+) => planImport(parsed(rows), 'acc', [], existing, 'batch', ids());
+
 describe('planImport', () => {
-  it('builds imported transactions with ids, batch id and confirmed status', () => {
-    const plan = planImport(parsed([row()]), 'acc', [], [], 'batch-1', ids());
-    expect(plan.duplicates).toBe(0);
-    expect(plan.toImport).toHaveLength(1);
-    expect(plan.toImport[0]).toMatchObject({
+  it('builds imported transactions with ids, batch id and the parsed status', () => {
+    const result = plan([
+      row({ status: 'pending', key: '2026010638472910064' }),
+    ]);
+
+    expect(result.duplicates).toBe(0);
+    expect(result.toImport[0]).toMatchObject({
       id: 'id-1',
       accountId: 'acc',
       amountCents: -4299,
       source: 'imported',
-      status: 'confirmed',
-      importBatchId: 'batch-1',
+      status: 'pending',
+      importBatchId: 'batch',
+      importKey: '2026010638472910064',
     });
   });
 
-  it('skips rows already imported (natural-key dedup) and counts them', () => {
-    const existing = mockCashTransaction({
-      accountId: 'acc',
-      dateISO: '2026-01-06T00:00:00+01:00',
-      amountCents: -4299,
-      name: 'REWE',
-      source: 'imported',
-    });
-    const plan = planImport(
-      parsed([row()]),
-      'acc',
-      [],
-      [existing],
-      'batch-2',
-      ids()
-    );
-    expect(plan.toImport).toHaveLength(0);
-    expect(plan.duplicates).toBe(1);
+  it('skips a row whose key is already imported', () => {
+    const result = plan([row()], [imported()]);
+
+    expect(result.toImport).toHaveLength(0);
+    expect(result.duplicates).toBe(1);
   });
 
-  it('dedups a row re-imported after a timezone/DST change (keyed on the date, not the offset)', () => {
-    const existing = mockCashTransaction({
-      accountId: 'acc',
-      dateISO: '2026-01-06T00:00:00+01:00',
-      amountCents: -4299,
-      name: 'REWE',
-      source: 'imported',
-    });
-    const plan = planImport(
-      parsed([row({ dateISO: '2026-01-06T00:00:00+02:00' })]),
-      'acc',
-      [],
-      [existing],
-      'batch-tz',
-      ids()
-    );
-    expect(plan.toImport).toHaveLength(0);
-    expect(plan.duplicates).toBe(1);
+  it('keeps two same-day, same-amount, same-text rows that differ by key', () => {
+    const result = plan([row(), row({ key: '2026010638472910065' })]);
+
+    expect(result.toImport).toHaveLength(2);
+    expect(result.duplicates).toBe(0);
   });
 
-  it('dedups identical rows within a single batch', () => {
-    const plan = planImport(
-      parsed([row(), row()]),
-      'acc',
-      [],
-      [],
-      'batch-3',
-      ids()
+  it('dedups on the key alone — a changed date or text does not resurrect a row', () => {
+    const result = plan(
+      [row({ dateISO: '2026-02-01T00:00:00+01:00', description: 'renamed' })],
+      [imported()]
     );
-    expect(plan.toImport).toHaveLength(1);
-    expect(plan.duplicates).toBe(1);
+
+    expect(result.duplicates).toBe(1);
+  });
+
+  it('scopes the key to the account, so the same statement fills two ledgers', () => {
+    const other = imported({ accountId: 'other-acc' });
+    const result = plan([row()], [other]);
+
+    expect(result.toImport).toHaveLength(1);
+  });
+
+  it('dedups repeated keys within a single batch', () => {
+    const result = plan([row(), row()]);
+
+    expect(result.toImport).toHaveLength(1);
+    expect(result.duplicates).toBe(1);
+  });
+
+  it('ignores a manually entered row that happens to match', () => {
+    const result = plan([row()], [imported({ source: 'manual' })]);
+
+    expect(result.toImport).toHaveLength(1);
   });
 
   it('auto-categorizes via the rules (manual override not set on imports)', () => {
@@ -96,15 +107,22 @@ describe('planImport', () => {
       match: 'any',
       conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
     });
-    const plan = planImport(
+    const result = planImport(
       parsed([row()]),
       'acc',
       [rule],
       [],
-      'batch-4',
+      'batch',
       ids()
     );
-    expect(plan.toImport[0].categoryIds).toEqual(['stuff']);
-    expect(plan.toImport[0].categoryManual).toBeUndefined();
+
+    expect(result.toImport[0].categoryIds).toEqual(['stuff']);
+    expect(result.toImport[0].categoryManual).toBeUndefined();
+  });
+
+  it('carries the rejected count through untouched', () => {
+    expect(
+      planImport(parsed([row()], 3), 'acc', [], [], 'batch', ids()).rejected
+    ).toBe(3);
   });
 });

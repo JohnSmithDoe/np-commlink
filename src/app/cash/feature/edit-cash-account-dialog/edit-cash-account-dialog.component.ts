@@ -21,15 +21,12 @@ import { requireParseableDate } from '../../../@shared/util/forms/form-rules';
 import {
   ACCOUNT_KIND_LABEL_KEYS,
   AccountKind,
-  Bank,
-  BANK_LABEL_KEYS,
   CashAccount,
 } from '../../model/account.types';
 import { CASH_ACCOUNTS_LIST_ID } from '../../model/cash.types';
 import { CashAccountsFacade } from '../../data';
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { createCashAccount } from '../../util/cash.factory';
-import { BANK_OPTIONS } from '../../util/import/bank-parsers';
 
 const ACCOUNT_KINDS = Object.keys(
   ACCOUNT_KIND_LABEL_KEYS
@@ -38,7 +35,7 @@ const ACCOUNT_KINDS = Object.keys(
 type AccountForm = {
   name: string;
   kind: AccountKind;
-  bank: Bank | '';
+  iban: string;
   openingBalanceCents: number | null;
   openingDate: string;
 };
@@ -69,9 +66,7 @@ export class EditCashAccountDialogComponent extends BaseEditItemDialog<
   readonly siblings = this.#facade.allItems;
 
   readonly kinds = ACCOUNT_KINDS;
-  readonly banks = BANK_OPTIONS;
   readonly kindLabelKeys = ACCOUNT_KIND_LABEL_KEYS;
-  readonly bankLabelKeys = BANK_LABEL_KEYS;
 
   readonly balanceInvalid = computed(() =>
     this.form.openingBalanceCents().invalid()
@@ -92,7 +87,7 @@ export class EditCashAccountDialogComponent extends BaseEditItemDialog<
     return {
       name: account.name,
       kind: account.kind,
-      bank: account.bank ?? '',
+      iban: account.iban ?? '',
       openingBalanceCents:
         account.openingBalanceCents === 0 ? null : account.openingBalanceCents,
       openingDate: dayjs(account.openingDateISO).format('YYYY-MM-DD'),
@@ -107,7 +102,7 @@ export class EditCashAccountDialogComponent extends BaseEditItemDialog<
       ...seed,
       name: draft.name.trim(),
       kind: draft.kind,
-      bank: draft.bank || undefined,
+      iban: draft.iban.replaceAll(/\s/g, '').toUpperCase() || undefined,
       openingBalanceCents: draft.openingBalanceCents ?? 0,
       openingDateISO: dayjs(draft.openingDate).format(),
     };

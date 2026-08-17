@@ -26,6 +26,13 @@ changing one does not migrate an install, it stands up a second app that cannot 
   route to the first one's data. Never touch.
 - **Renaming a persisted key or a deck entry id now costs a ladder rung** — the free window closed with the
   tag, and [decisions.md](./decisions.md) says what a rung owes.
+- **The cash slice's shape moved without a rung, and that exemption is spent.** `CashAccount.bank` is gone,
+  `iban` and `importKey` are new, and `APP_VERSION` stayed **1** on the single ground that cash has no
+  users — there is no v1 cash data anywhere for a step to migrate, so a rung would have been a file that
+  ran against nothing. Two consequences. A dev browser holding pre-camt cash rows has them with no
+  `importKey`, and the first camt import will not recognise them: **clear the cash slice there rather than
+  reading the duplicate count as truth**. And the exemption does not generalise — the next stored-shape
+  change made once cash holds real data owes the first genuine rung, with no precedent in the repo to copy.
 
 ## Blocked — needs something only the owner can supply
 
@@ -33,8 +40,18 @@ changing one does not migrate an install, it stands up a second app that cannot 
   the tag run gates, deploys Pages and drafts the release, and `pnpm apk:signed` plus an upload finishes it.
   The two GitHub settings the deploy depends on are in the README, not here: they are configuration, not a
   decision anyone still has to make.
-- **A DKB import driven live** — the parser is unit-tested against inline rows; only Volksbank has been
-  driven end-to-end in-app.
+- **Any camt import driven live, against a file a bank actually produced.** The parser is unit-tested
+  against synthetic documents only. The exports in `docs/cash/` have been **refilled** and now import:
+  anonymisation had replaced every digit with `X`, and the runs are written back coherently — booking
+  dates ascending through the period, entry and detail amounts agreeing, a balance chain that adds up
+  across the three pages, mod-97 IBANs, `AcctSvcrRef` unique over all 311 rows. What they still are is
+  Volksbank's real **shape** — tag nesting, ISO-8859-1 bytes, the 150-entry pagination, the 140-character
+  `Ustrd` truncation that splits an IBAN across two of them — carrying invented **value**. So they drive
+  the import end to end and prove nothing about what a bank emits. A real run needs the owner's own
+  download, and `docs/cash/` is gitignored, so nothing committable comes out of it either way. Volksbank,
+  DKB and ING each need their own first
+  run: the format is one, but which optional elements a given bank fills is not — `AcctSvcrRef` above all,
+  since its absence silently downgrades every key on the statement to a derived one.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations, but nothing rendered them
   until the language switch shipped. The first English session is the first proofread.
@@ -70,6 +87,17 @@ changing one does not migrate an install, it stands up a second app that cannot 
   - **The stack has no persistent consumer** — only the toast pops it, so entries below the top are
     unreachable until a toolbar undo button exists, which also retires the
     `a11y-no-actionable-toast-button` suppression for both callers at once.
+- **The IBAN on an account is compared, never validated.** It is normalised — spaces stripped, upper-cased
+  — matched against the statement's, and an empty one adopts what it reads, so the common path never needs
+  a keyboard at all. A hand-typed typo is the gap: it refuses every import as `wrong-account`, and the
+  toast names the IBAN the **file** carries, which reads as the file being wrong. A mod-97 checksum is ten
+  lines; what defers it is whether a wrong-but-well-formed IBAN earns a second error state, since the
+  checksum cannot catch that one either.
+- **Two ways a re-import is not idempotent, both inherent to keying off statement content.** Nothing
+  writes a tombstone, so deleting an imported row and re-importing brings it back; and a `PDNG` entry can
+  carry a different `AcctSvcrRef` once it books, arriving as a second row. Neither bites today — every
+  export on hand is 100 % `BOOK` — and the pending/reconcile flow already exists to absorb the second.
+  Recorded so that neither reads as a regression later.
 - **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
   lists, recipes, cash, categories and trackplay create/edit are silent.
 - **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about

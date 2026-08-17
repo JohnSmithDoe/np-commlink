@@ -15,28 +15,36 @@ import { CashTransactionsActions } from '../../data';
 import { CashState } from '../../model/cash.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
+import {
+  camtDocument,
+  camtEntry,
+  TEST_IBAN,
+} from '../../testing/camt.test-data';
 import { CashAccountPage } from './cash-account.page';
 
 const ACCOUNT_ID = 'cash-account-1';
 
-const CSV_HEADER =
-  'Buchungstag;Valuta;Auftraggeber/Beguenstigter;Verwendungszweck;IBAN;BIC;Betrag;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz';
-const REWE_ROW =
-  '06.01.2026;06.01.2026;REWE Markt GmbH;Einkauf;DE1;GENODEF1;-19,99;;;';
 const REWE_TEXT = 'REWE Markt GmbH — Einkauf';
-const SALARY_ROW =
-  '11.01.2026;11.01.2026;Muster GmbH;Honorar;DE2;MARKDEF1;3.570,00;;;';
-const UNREADABLE_ROW = 'Anfangssaldo;;;;;;1.000,00;;;';
+const REWE_ENTRY = camtEntry({ ref: 'ref-rewe' });
+const SALARY_ENTRY = camtEntry({
+  ref: 'ref-salary',
+  amount: '3570.00',
+  direction: 'CRDT',
+  date: '2026-01-11',
+  name: 'Muster GmbH',
+  purpose: 'Honorar',
+});
+const UNREADABLE_ENTRY = '<Ntry><Amt Ccy="EUR">nonsense</Amt></Ntry>';
 
-const csvFile = (...rows: string[]): File =>
-  new File([[CSV_HEADER, ...rows].join('\n')], 'umsaetze.csv');
+const camtFile = (...entries: string[]): File =>
+  new File([camtDocument(entries)], 'report.xml');
 
 const filePicked = (...files: File[]): Event =>
-  ({ target: { files, value: 'umsaetze.csv' } }) as unknown as Event;
+  ({ target: { files, value: 'report.xml' } }) as unknown as Event;
 
 const importState = (transactions: CashTransaction[] = []): CashState =>
   mockCashState({
-    accounts: [mockCashAccount({ bank: 'volksbank' })],
+    accounts: [mockCashAccount({ iban: TEST_IBAN })],
     rules: [mockCashRule()],
     transactions,
   });
@@ -124,16 +132,18 @@ describe('CashAccountPage', () => {
     expect(component.facade.balanceCents()).toBe(8001);
   });
 
-  it('enables the import once the account names a bank with a parser', () => {
+  it('enables the import for a bank-backed account', () => {
     setup(importState());
 
     expect(component.facade.canImport()).toBe(true);
   });
 
-  it('plans the picked CSV and hands the preview its rows, categorized', async () => {
+  it('plans the picked statement and hands the preview its rows, categorized', async () => {
     setup(importState());
 
-    await component.importCsv(filePicked(csvFile(REWE_ROW, SALARY_ROW)));
+    await component.importStatement(
+      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+    );
 
     expect(create).toHaveBeenCalledWith(
       expect.objectContaining({ component: CashImportPreviewModalComponent })
@@ -158,10 +168,12 @@ describe('CashAccountPage', () => {
     expect(rejected).toBe(0);
   });
 
-  it('stamps one batch id across the file and a distinct id per row', async () => {
+  it('stamps one batch id across the statement and a distinct id per row', async () => {
     setup(importState());
 
-    await component.importCsv(filePicked(csvFile(REWE_ROW, SALARY_ROW)));
+    await component.importStatement(
+      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+    );
 
     const [first, second] = previewProperties().transactions;
     expect(first.importBatchId).toEqual(expect.any(String));
@@ -178,21 +190,26 @@ describe('CashAccountPage', () => {
           amountCents: -1999,
           name: REWE_TEXT,
           source: 'imported',
+          importKey: 'ref-rewe',
         }),
       ])
     );
 
-    await component.importCsv(filePicked(csvFile(REWE_ROW, SALARY_ROW)));
+    await component.importStatement(
+      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+    );
 
     const { transactions, duplicates } = previewProperties();
     expect(transactions.map((txn) => txn.amountCents)).toEqual([357_000]);
     expect(duplicates).toBe(1);
   });
 
-  it('carries unreadable rows through to the preview as rejected', async () => {
+  it('carries unreadable entries through to the preview as rejected', async () => {
     setup(importState());
 
-    await component.importCsv(filePicked(csvFile(REWE_ROW, UNREADABLE_ROW)));
+    await component.importStatement(
+      filePicked(camtFile(REWE_ENTRY, UNREADABLE_ENTRY))
+    );
 
     const { transactions, rejected } = previewProperties();
     expect(transactions).toHaveLength(1);
@@ -201,28 +218,92 @@ describe('CashAccountPage', () => {
 
   it('clears the file input so the same file can be picked again', async () => {
     setup(importState());
-    const event = filePicked(csvFile(REWE_ROW));
+    const event = filePicked(camtFile(REWE_ENTRY));
 
-    await component.importCsv(event);
+    await component.importStatement(event);
 
     expect((event.target as HTMLInputElement).value).toBe('');
   });
 
-  it('imports nothing for an account whose bank has no parser', async () => {
-    setup(mockCashState({ accounts: [mockCashAccount()] }));
-
-    await component.importCsv(filePicked(csvFile(REWE_ROW)));
+  it('offers no import on a physical-cash account, which has no statement', () => {
+    setup(mockCashState({ accounts: [mockCashAccount({ kind: 'cash' })] }));
 
     expect(component.facade.canImport()).toBe(false);
-    expect(create).not.toHaveBeenCalled();
   });
 
   it('imports nothing when the picker was dismissed without a file', async () => {
     setup(importState());
 
-    await component.importCsv(filePicked());
+    await component.importStatement(filePicked());
 
     expect(create).not.toHaveBeenCalled();
+  });
+
+  it('refuses a statement belonging to another account and imports nothing', async () => {
+    setup(
+      mockCashState({
+        accounts: [mockCashAccount({ iban: 'DE97100900004711000200' })],
+      })
+    );
+
+    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+
+    expect(create).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.objectContaining({ key: 'cash.import.wrong-account' }),
+      })
+    );
+  });
+
+  it('adopts the IBAN of the first statement an account with none imports', async () => {
+    setup(mockCashState({ accounts: [mockCashAccount()] }));
+
+    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        item: expect.objectContaining({ iban: TEST_IBAN }),
+      })
+    );
+    expect(create).toHaveBeenCalled();
+  });
+
+  it('leaves the IBAN alone once the account already carries it', async () => {
+    setup(importState());
+
+    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        item: expect.objectContaining({ iban: TEST_IBAN }),
+      })
+    );
+  });
+
+  it('says so when the pick holds no camt document at all', async () => {
+    setup(importState());
+
+    await component.importStatement(
+      filePicked(new File(['Buchungstag;Betrag'], 'umsaetze.csv'))
+    );
+
+    expect(create).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: expect.objectContaining({ key: 'cash.import.unreadable' }),
+      })
+    );
+  });
+
+  it('reads every page of a paginated export as one import', async () => {
+    setup(importState());
+
+    await component.importStatement(
+      filePicked(camtFile(REWE_ENTRY), camtFile(SALARY_ENTRY))
+    );
+
+    expect(previewProperties().transactions).toHaveLength(2);
   });
 
   it('detaches the manual leg a reconciliation absorbed', () => {

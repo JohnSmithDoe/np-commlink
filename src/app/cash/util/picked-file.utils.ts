@@ -1,6 +1,6 @@
-export const takePickedFile = (event: Event): File | undefined => {
+export const takePickedFiles = (event: Event): File[] => {
   const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
+  const files = [...(input.files ?? [])];
   input.value = '';
-  return file;
+  return files;
 };

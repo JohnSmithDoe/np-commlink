@@ -1,5 +1,7 @@
 import { inject, Injectable, Signal } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
+import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { CashAccount } from '../../model/account.types';
 import { CASH_ACCOUNTS_LIST_ID } from '../../model/cash.types';
@@ -50,5 +52,24 @@ export class CashAccountsFacade {
 
   removeItem(item: CashAccount): void {
     this.#store.dispatch(CashAccountsActions.removeItem(item));
+  }
+
+  reportStatementUnreadable(): void {
+    this.#store.dispatch(
+      NotificationsActions.toast({
+        key: marker('cash.import.unreadable'),
+        color: 'danger',
+      })
+    );
+  }
+
+  reportWrongAccount(iban: string): void {
+    this.#store.dispatch(
+      NotificationsActions.toast({
+        key: marker('cash.import.wrong-account'),
+        parameters: { iban },
+        color: 'danger',
+      })
+    );
   }
 }

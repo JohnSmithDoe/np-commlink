@@ -7,8 +7,8 @@
   <ion-buttons headerEnd slot="end">
     @if (facade.canImport()) {
       <ion-button
-        (click)="csv.click()"
-        [attr.aria-label]="'cash.a11y.import-csv' | translate"
+        (click)="statement.click()"
+        [attr.aria-label]="'cash.a11y.import-statement' | translate"
       >
         <ion-icon
           slot="icon-only"
@@ -31,12 +31,13 @@
 
   <input
     beforeList
-    #csv
+    #statement
     type="file"
-    accept=".csv,text/csv"
+    multiple
+    accept=".xml,.zip,text/xml,application/xml,application/zip"
     hidden
-    id="csv-input"
-    (change)="importCsv($event)"
+    id="statement-input"
+    (change)="importStatement($event)"
   />
 </app-list-page>
 

@@ -24,21 +24,17 @@
   </ion-item>
 
   <ion-item>
-    <ion-select
+    <ion-input
       labelPlacement="stacked"
-      label="{{ 'cash.label.bank' | translate }}"
-      [formField]="form.bank"
-    >
-      <ion-select-option value="">{{
-        'cash.bank.none' | translate
-      }}</ion-select-option>
-      @for (b of banks; track b) {
-        <ion-select-option [value]="b">{{
-          bankLabelKeys[b] | translate
-        }}</ion-select-option>
-      }
-    </ion-select>
+      autocapitalize="characters"
+      label="{{ 'cash.label.iban' | translate }}"
+      placeholder="{{ 'cash.account-dialog.iban-placeholder' | translate }}"
+      [formField]="form.iban"
+    />
   </ion-item>
+  <ion-note class="sr-field-note">
+    {{ 'cash.account-dialog.iban-hint' | translate }}
+  </ion-note>
 
   <app-money-input
     label="{{ 'cash.label.opening-balance' | translate }}"

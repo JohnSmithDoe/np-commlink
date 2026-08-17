@@ -68,14 +68,23 @@ describe('EditCashAccountDialogComponent', () => {
     expect(host.request()).toBeNull();
   });
 
-  it('treats a cleared balance as zero and an empty bank as absent', () => {
+  it('treats a cleared balance as zero and an empty IBAN as absent', () => {
     setup(createCashAccount('Bar'), 'create', []);
 
     component.form.openingBalanceCents().value.set(null);
     component.confirm();
 
     expect(saved().openingBalanceCents).toBe(0);
-    expect(saved().bank).toBeUndefined();
+    expect(saved().iban).toBeUndefined();
+  });
+
+  it('stores the IBAN as the statement spells it, not as it was typed', () => {
+    setup(createCashAccount('Giro'), 'create', []);
+
+    component.form.iban().value.set('de81 1009 0000 4711 0001 00');
+    component.confirm();
+
+    expect(saved().iban).toBe('DE81100900004711000100');
   });
 
   it('accepts a negative opening balance', () => {

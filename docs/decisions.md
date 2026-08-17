@@ -370,3 +370,63 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   the file that was uploaded" — which the signature already proves, and proves better, against a
   fingerprint pinned once in the README rather than re-published each release. `collect-apk.sh` prints
   the digest, it is pasted into the notes, and the check that carries the weight is `apksigner`.
+
+- **Bank statements are imported as camt, and only as camt.** The per-bank CSV parsers are gone —
+  `volksbank.parser.ts`, `dkb.parser.ts`, the registry that chose between them, and the `Bank` field on
+  the account that selected one. A CSV export is a positional format whose column order is the bank's
+  private business: Volksbank's real download is 18 columns with `Buchungstag` at index 4, and the
+  parser written against a 10-column sample found no header, returned zero rows and reported zero
+  rejected — a silent empty import with nothing on screen to explain it. camt states what a CSV makes
+  you guess. The namespace names the schema, `<Acct>` names the account, `CdtDbtInd` carries the sign,
+  and amounts and dates are already machine-readable, so ONE parser serves every bank that emits one.
+  The general shape is **prefer a self-describing payload over out-of-band configuration** — the same
+  reason a `Content-Type` beats a client and server that merely agreed offline.
+- **Every parsed row carries an `importKey`, so there is one key space and no branch.** `AcctSvcrRef`
+  identifies a row exactly, but the schema permits a bank to omit it, and a key that is *sometimes*
+  present forces every consumer to hold two notions of duplicate at once. `readStatement` therefore
+  closes the gap before anything downstream sees a row: `camt|<ref>` where the statement carries one,
+  `derived|<date>|<cents>|<text>|<n>` where it does not. The prefixes cannot collide, and `planImport`
+  collapsed to a single `Set` as a result.
+- **`AcctSvcrRef` is ASSUMED to be intrinsic to the entry, and that assumption is load-bearing.**
+  Volksbank's looks like `2026043042104045000` — nineteen digits opening with the booking date. Two
+  readings fit one sample: a booking timestamp plus a counter, which is stable across exports, or a
+  sequence assigned when the *file* was generated, which is not. The second would make every re-import
+  duplicate the whole statement, so the design rests on the first. **Falsifying it costs two minutes:**
+  export one date range twice and diff the references. If they differ, the derived key has to become
+  primary and the reference demoted to a tiebreaker.
+- **Both kinds of key open with `YYYYMMDD`, and the resemblance stops there.** A reference is used
+  verbatim, so it keeps the date the bank put at its front; a derived key is given the same compact date
+  first, so a ledger's keys sort and read alike whichever kind a row got. Going further — matching the
+  length and the all-digit charset too — would manufacture the one collision the two shapes exist to
+  prevent. Instead a derived key carries four `|`-delimited segments, which no plausible reference has,
+  and that holds without assuming anything about what charset or length a bank picks.
+- **The derived key counts occurrences, and counts them after the pages are joined.** Two €4.20
+  coffees on one Tuesday are `…|1` and `…|2`, not one coffee counted once — the collapse the old
+  natural key caused. The numbering is stable across exports because both rows share a date, so no
+  range can contain one without the other and both number the same way. Counting per document instead
+  would restart at `1` wherever a pagination boundary happened to fall between them.
+- **`importKey` stays optional on `CashTransaction` itself.** Every IMPORTED row has one; a manually
+  typed row has no import identity to record. Expressing "required only when `source` is `imported`"
+  needs a split union that eleven unrelated call sites would have to narrow, for a fact the import
+  path already guarantees at the only place it matters.
+- **The parser reads `<Ntry>`, never `<TxDtls>`.** A collective booking is one entry holding many
+  details, and the balance moves once. Everything matches on `localName`: versions disagree on the
+  namespace URI, on whether `<Sts>` holds a code or wraps one, and on whether a party sits under
+  `<Pty>`, and pinning any of it rejects half the exports in the wild. camt.053 parses as a
+  consequence, not as a feature — `BkToCstmrStmt` differs from `BkToCstmrAcctRpt` only above the part
+  this reads.
+- **The account carries an IBAN, and adopts it rather than demanding it.** It is what makes "you just
+  imported the savings statement into the giro" answerable instead of merely regrettable. An empty
+  field takes the IBAN of the first statement it accepts, and a filled one that disagrees refuses the
+  import; asking someone to copy twenty digits correctly before their first import is a worse guard
+  than no guard. A pick that mixes two accounts is refused on the same test, with nothing to compare to.
+- **`fflate` is imported dynamically, inside the unzip branch.** A paginated export arrives as a zip;
+  a single-page one does not, and the file picker takes several files, so the archive is a convenience
+  and not the only path. It is the one import path that needs inflate, and the bundle should not carry
+  it for the case that never happens. A zip is recognised by its magic bytes rather than its
+  extension, so an archive a download manager renamed still opens.
+- **The stored shape changed without a rung, and `APP_VERSION` stays 1.** Dropping `bank` and adding
+  `iban` and `bankRef` is exactly what the ladder exists for, but the cash feature has no users yet:
+  there is no v1 data anywhere that a step could migrate. A stale `bank` key left in a dev browser is
+  read by nothing. The ladder therefore remains unexercised, and the next stored-shape change made
+  after cash has real data still owes it a first real step.

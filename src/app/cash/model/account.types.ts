@@ -3,7 +3,6 @@ import { Marker, Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 
 export type AccountKind = 'giro' | 'creditcard' | 'savings' | 'cash';
-export type Bank = 'volksbank' | 'dkb';
 
 export const ACCOUNT_KIND_LABEL_KEYS: Record<AccountKind, Marker> = {
   giro: marker('cash.account.kind.giro'),
@@ -12,14 +11,9 @@ export const ACCOUNT_KIND_LABEL_KEYS: Record<AccountKind, Marker> = {
   cash: marker('cash.account.kind.cash'),
 };
 
-export const BANK_LABEL_KEYS: Record<Bank, Marker> = {
-  volksbank: marker('cash.bank.volksbank'),
-  dkb: marker('cash.bank.dkb'),
-};
-
 export interface CashAccount extends BaseItem {
   kind: AccountKind;
-  bank?: Bank;
+  iban?: string;
   openingBalanceCents: number;
   openingDateISO: Timestamp;
   createdAt: Timestamp;
