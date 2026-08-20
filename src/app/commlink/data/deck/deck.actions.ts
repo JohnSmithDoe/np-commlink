@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
-import { DeckState, AppModule, DeckEntryId } from '../../model/deck.types';
+import { DeckState, DeckEntryId } from '../../model/deck.types';
 
 export const DeckActions = createActionGroup({
   source: 'Deck',
@@ -9,7 +9,6 @@ export const DeckActions = createActionGroup({
 
     reorder: (order: DeckEntryId[]) => ({ order }),
     toggleEntry: (id: DeckEntryId) => ({ id }),
-    toggleModule: (module: AppModule) => ({ module }),
     reset: emptyProps(),
   },
 });

@@ -5,6 +5,7 @@ import {
 import { DashboardState } from '../model/dashboard.types';
 import { DeckChrome, DeckChromeField } from '../model/deck.catalog';
 import {
+  AppModule,
   DeckEntry,
   DeckProgram,
   DeckState,
@@ -88,8 +89,19 @@ export const badgeValue = (
   return value == undefined ? null : Number(value);
 };
 
+export const groupingModules = (
+  catalog: readonly DeckEntry[]
+): Set<AppModule> => {
+  const seen = new Set<AppModule>();
+  const grouping = new Set<AppModule>();
+  for (const entry of catalog) {
+    if (seen.has(entry.module)) grouping.add(entry.module);
+    seen.add(entry.module);
+  }
+  return grouping;
+};
+
 export const isEntryVisible = (state: DeckState, entry: DeckEntry): boolean =>
-  !state.hiddenModules.includes(entry.module) &&
   !state.hiddenEntries.includes(entry.id);
 
 export const visibleEntries = (
@@ -112,8 +124,7 @@ const sameSet = <T>(a: readonly T[], b: readonly T[]): boolean =>
 
 export const isFactoryDeck = (state: DeckState, factory: DeckState): boolean =>
   sameOrder(state.order, factory.order) &&
-  sameSet(state.hiddenEntries, factory.hiddenEntries) &&
-  sameSet(state.hiddenModules, factory.hiddenModules);
+  sameSet(state.hiddenEntries, factory.hiddenEntries);
 
 export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)

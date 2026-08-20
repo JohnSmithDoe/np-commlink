@@ -4,6 +4,7 @@ import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import {
   badgeLabel,
   badgeValue,
+  groupingModules,
   nodeStatusKey,
   programStatus,
   resonanceRatingOf,
@@ -37,7 +38,6 @@ const CATALOG: readonly DeckEntry[] = [
 const state = (overrides: Partial<DeckState> = {}): DeckState => ({
   order: [],
   hiddenEntries: [],
-  hiddenModules: [],
   ...overrides,
 });
 
@@ -71,20 +71,19 @@ describe('orderEntries', () => {
   });
 });
 
+describe('groupingModules', () => {
+  it('names only the modules that hold more than one program', () => {
+    expect([...groupingModules(CATALOG)]).toEqual(['household']);
+  });
+});
+
 describe('isEntryVisible', () => {
   it('hides an entry the user switched off', () => {
     const config = state({ hiddenEntries: ['cash'] });
     expect(isEntryVisible(config, entry('cash', 'cash'))).toBe(false);
   });
 
-  it('hides every entry of a switched-off module', () => {
-    const config = state({ hiddenModules: ['household'] });
-    expect(isEntryVisible(config, entry('storage', 'household'))).toBe(false);
-  });
-
-  it('leaves a child’s own flag untouched while its module is off', () => {
-    const config = state({ hiddenModules: ['household'] });
-    expect(config.hiddenEntries).toEqual([]);
+  it('shows an entry nothing hides', () => {
     expect(isEntryVisible(state(), entry('storage', 'household'))).toBe(true);
   });
 });
@@ -235,7 +234,6 @@ describe('isFactoryDeck', () => {
   const factory: DeckState = {
     order: [],
     hiddenEntries: ['shopping', 'storage'],
-    hiddenModules: [],
   };
 
   it('recognizes the factory deck itself', () => {
@@ -267,12 +265,6 @@ describe('isFactoryDeck', () => {
     expect(isFactoryDeck({ ...factory, order: ['storage'] }, factory)).toBe(
       false
     );
-  });
-
-  it('reads a hidden module as custom', () => {
-    expect(
-      isFactoryDeck({ ...factory, hiddenModules: ['household'] }, factory)
-    ).toBe(false);
   });
 });
 

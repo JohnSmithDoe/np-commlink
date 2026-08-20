@@ -196,8 +196,6 @@
   "deck.boomer.trackplay.name": "Game scores",
   "deck.config.entries": "Programs",
   "deck.config.intro": "Choose which programs appear on the deck and in the menu — and in what order.",
-  "deck.config.module-off": "Module hidden",
-  "deck.config.modules": "Modules",
   "deck.config.reset": "Reset",
   "deck.cyberpunk.barcode.desc": "barcode / paydata",
   "deck.cyberpunk.barcode.name": "SIGIL",

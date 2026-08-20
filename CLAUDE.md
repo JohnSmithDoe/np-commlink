@@ -84,6 +84,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | **Retheme the CSS custom properties** — never restyle components one by one | review |
 | **Lean tests, not exhaustive** — no 100% target, no branded-type machinery | review |
 | **R5 and R9 can never be gated** — a gesture is never the only way; the viewport never locks zoom | review |
+| **A persisted shape, key or entry id changes only after asking whether a rung is owed** | ask — *Stored shapes* below |
 
 **`@shared` does hold domain-named code, and that is the design.** The rule above governs *wording*
 only. `@shared/data/actions/` carries `NotificationsActions` and `DashboardActions`, `@shared/model/`
@@ -97,6 +98,21 @@ Adding a gate, in order: **an upstream rule configured**, then **a rule in `esli
 then **a script** — the last only for what ESLint cannot see (a whole-repo set difference, or a
 question about the filesystem rather than a file's bytes). Read [footguns.md](docs/footguns.md) first:
 it records several ways a new gate goes silently inert.
+
+## Stored shapes, and who is holding one
+
+**Ask before changing a persisted shape — never decide it from the code.** Whether a rung is owed turns
+on who is running the app, which is a fact only Martin has: not the tag, not "it is only additive", not
+that `runMigrations` would walk past a missing step. Ask when a field is dropped or renamed, when a
+persisted key or a deck entry id moves, and before `APP_VERSION` is bumped.
+
+Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGENDA)**, plus `deck` and
+`settings` by construction — a cold deck ships empty, so reaching those three means having switched
+programs on. Every other slice — `cash`, `tracking`, `officeTime`, `trackplay`, `barcode`,
+`notifications`, `dashboard` — is dev-only, and its shape changes for the price of a cleared browser.
+The user base is small enough that most changes are still free; that is what makes the question worth
+asking rather than assuming, in either direction. What a rung owes when one *is* needed, and what has
+been shipped without one, is in [decisions.md](docs/decisions.md) and [state.md](docs/state.md).
 
 ## Testing shape
 

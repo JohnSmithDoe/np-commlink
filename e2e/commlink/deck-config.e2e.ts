@@ -27,13 +27,6 @@
  * is why an empty deck still reports fourteen; the literal here is the one
  * number that has to be re-read when the catalog gains an entry.
  *
- * A module's flag cascades at read time and is never written into its
- * entries, which is what the last test spends: switching HOUSEHOLD off
- * and on again restores what the user configured underneath, so MARKET —
- * hidden on its own — must stay hidden. Its three entries are switched on
- * BEFORE the module goes off, because a hidden module disables its
- * entries' toggles.
- *
  * The empty node is asserted CLICKABLE, not just present: it is the only
  * route out of the PAGE, and on an empty-by-default deck it is also the
  * first thing a new install shows, so a decorative empty state would
@@ -146,24 +139,10 @@ test.describe('deck configuration', () => {
     await expect(statusStrip(page)).toContainText('/14');
   });
 
-  test('cascades a module without flattening its entries', async ({ page }) => {
+  test('names the module a program belongs to on its own row', async ({
+    page,
+  }) => {
     await openDeckConfig(page);
-    await switchOn(page, MARKET, '"shopping"');
-    await switchOn(page, 'STASH', '"storage"');
-    await switchOn(page, 'CATALOG', '"products"');
-
-    await switchOff(page, MARKET, '"shopping"');
-    await switchOff(page, HOUSEHOLD_MODULE, '"household"');
-
-    await openDeck(page);
-    await expect(deckTile(page, 'STASH')).toHaveCount(0);
-    await expect(deckTile(page, 'CATALOG')).toHaveCount(0);
-
-    await openDeckConfig(page);
-    await switchOn(page, HOUSEHOLD_MODULE, '"household"');
-
-    await openDeck(page);
-    await expect(deckTile(page, 'STASH')).toBeVisible();
-    await expect(deckTile(page, MARKET)).toHaveCount(0);
+    await expect(configRow(page, MARKET)).toContainText(HOUSEHOLD_MODULE);
   });
 });

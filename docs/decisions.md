@@ -21,9 +21,9 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   write-back channel and `canSave` comes from the schema. Revisit only with a measurement.
 - **Specs over facades** — a facade method is one line; a mis-wire is either an argument swap (needs
   branded ids — rejected: an `as` at every mint point *including every IndexedDB read*, in an app with
-  zero `any`) or a same-payload wrong dispatch, which nothing types. **The one exception if any facade
-  earns a spec: `DeckFacade.configuredEntries`**, deriving `hidden` and `moduleHidden` from two
-  `string[]` — swapping them compiles.
+  zero `any`) or a same-payload wrong dispatch, which nothing types. The exception it was granted —
+  `DeckFacade.configuredEntries`, deriving two booleans from two `string[]`, where a swap compiles — died
+  with the module axis: one flag cannot be swapped with anything. **No facade currently earns a spec.**
 - **`addCategory`/`showEditDialog` onto `LIST_FACADE`** — forces `tracking` to implement operations it
   has no concept of.
 
@@ -172,6 +172,11 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   they are on.
 - **A rung is a one-way door on someone's data** — no down-ladder, no backup. `runMigrations` throwing is
   the only safe failure: it loads empty rather than half-migrated.
+- **The release did not freeze every slice — it froze the slices somebody is running.** "A rung is owed
+  only to data somebody else is holding" outlived the tag: most of the app has no users, so most stored
+  shapes still change for the price of a cleared browser. Which slices those are is a fact about people
+  rather than about code, so it is **asked, never inferred**, and the roster lives in
+  [CLAUDE.md](../CLAUDE.md) where a changing fact belongs — not restated here, where it would rot.
 
 ## Scope and defaults
 
@@ -182,7 +187,15 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   added back as a special case.**
 - **Legal only because nothing is stranded — re-check before any entry claims to be reachable "from the
   deck".** Two unconditional entrances: the drawer's static `/settings` button (outside the `@for`) and
-  the grid's `@empty` link. `list-settings` proves it — `onDeck: false`, so a grid was never its way in.
+  the grid's `@empty` link. An `onDeck: false` entry is why they are needed — a grid was never its way in.
+- **One switch per program, and no module axis at all.** A module toggle gated the same visibility a
+  program toggle already gated, so two controls answered one question and a hidden module had to disable
+  its children's toggles to stay coherent. The module survives as a **label on the program row** — dim
+  eyebrow under the page title — and only where it names a group: `groupingModules` gives it to the
+  modules the catalog uses more than once, because on a module of one it repeats the row's own title.
+  `hiddenModules` leaving `DeckState` is owed no rung, and `deck` **is** a slice real users hold: the
+  leftover key is read by nothing, and the one behaviour it could still carry — a module switched off —
+  resolves to those programs appearing again, which is the change asking for itself.
 - **Household is the first MVP feature.** Declined against that scope, not to be re-proposed before a tag:
   - **SOYKAF / recipes are v2** ([state.md](./state.md)); the deck entry is hidden by default.
   - **The bulk `storage → shopping` sweep** — the loop closes by hand already (start-swipe copies a row to

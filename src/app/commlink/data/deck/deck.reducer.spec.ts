@@ -6,7 +6,6 @@ import { deckReducer, initialDeck } from './deck.reducer';
 const stored: DeckState = {
   order: ['cash', 'shopping'],
   hiddenEntries: ['storage'],
-  hiddenModules: ['trackplay'],
 };
 
 describe('deckReducer', () => {
@@ -39,10 +38,6 @@ describe('deckReducer', () => {
         DECK_CATALOG.map((entry) => entry.id)
       );
     });
-
-    it('hides no module, so one toggle switches any entry on', () => {
-      expect(initialDeck.hiddenModules).toEqual([]);
-    });
   });
 
   describe('toggleEntry', () => {
@@ -63,20 +58,6 @@ describe('deckReducer', () => {
       expect(
         deckReducer(stored, DeckActions.toggleEntry('storage')).hiddenEntries
       ).toEqual([]);
-    });
-  });
-
-  describe('toggleModule', () => {
-    it('hides a module without touching its entries', () => {
-      const next = deckReducer(stored, DeckActions.toggleModule('household'));
-      expect(next.hiddenModules).toEqual(['trackplay', 'household']);
-      expect(next.hiddenEntries).toEqual(stored.hiddenEntries);
-    });
-
-    it('restores the per-entry choices when it is switched back on', () => {
-      const off = deckReducer(stored, DeckActions.toggleModule('household'));
-      const on = deckReducer(off, DeckActions.toggleModule('household'));
-      expect(on).toEqual(stored);
     });
   });
 

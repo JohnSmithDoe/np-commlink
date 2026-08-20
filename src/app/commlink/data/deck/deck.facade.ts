@@ -3,13 +3,9 @@ import { Store } from '@ngrx/store';
 import { ThemeService } from '../theme.service';
 import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
+import { DeckProgramConfig, DeckEntryId } from '../../model/deck.types';
 import {
-  DeckModuleConfig,
-  DeckProgramConfig,
-  AppModule,
-  DeckEntryId,
-} from '../../model/deck.types';
-import {
+  groupingModules,
   isFactoryDeck,
   orderEntries,
   resolveLabels,
@@ -40,6 +36,8 @@ export class DeckFacade {
   );
   readonly slotCount = DECK_SLOT_COUNT;
 
+  readonly #grouping = groupingModules(DECK_CATALOG);
+
   readonly configuredEntries = computed<DeckProgramConfig[]>(() => {
     const config = this.#config();
     return orderEntries(DECK_CATALOG, config.order)
@@ -47,19 +45,10 @@ export class DeckFacade {
       .map((entry) => ({
         ...entry,
         hidden: config.hiddenEntries.includes(entry.id),
-        moduleHidden: config.hiddenModules.includes(entry.module),
+        moduleKey: this.#grouping.has(entry.module)
+          ? DECK_MODULE_LABELS[entry.module]
+          : undefined,
       }));
-  });
-
-  readonly configuredModules = computed<DeckModuleConfig[]>(() => {
-    const hidden = this.#config().hiddenModules;
-    return [...new Set(DECK_CATALOG.map((entry) => entry.module))].map(
-      (module) => ({
-        module,
-        labelKey: DECK_MODULE_LABELS[module],
-        hidden: hidden.includes(module),
-      })
-    );
   });
 
   readonly hasCustomConfig = computed(
@@ -72,10 +61,6 @@ export class DeckFacade {
 
   toggleEntry(id: DeckEntryId): void {
     this.#store.dispatch(DeckActions.toggleEntry(id));
-  }
-
-  toggleModule(module: AppModule): void {
-    this.#store.dispatch(DeckActions.toggleModule(module));
   }
 
   reset(): void {

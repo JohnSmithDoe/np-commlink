@@ -42,17 +42,10 @@ export type DeckProgram = DeckEntry & {
 
 export type DeckProgramConfig = DeckProgram & {
   hidden: boolean;
-  moduleHidden: boolean;
-};
-
-export type DeckModuleConfig = {
-  module: AppModule;
-  labelKey: Marker;
-  hidden: boolean;
+  moduleKey?: Marker;
 };
 
 export type DeckState = {
   order: DeckEntryId[];
   hiddenEntries: DeckEntryId[];
-  hiddenModules: AppModule[];
 };

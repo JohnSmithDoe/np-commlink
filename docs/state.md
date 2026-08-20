@@ -24,8 +24,10 @@ changing one does not migrate an install, it stands up a second app that cannot 
 - **`manifest.id` shipped as `"np-commlink"`**, parsed as a URL against the **origin** — a leading or
   trailing slash is a _different_ identity, giving the browser a second app with its own IndexedDB and no
   route to the first one's data. Never touch.
-- **Renaming a persisted key or a deck entry id now costs a ladder rung** — the free window closed with the
-  tag, and [decisions.md](./decisions.md) says what a rung owes.
+- **Renaming a persisted key or a deck entry id costs a ladder rung wherever somebody is holding one** —
+  the tag closed the free window for the slices that have users, not for the app at large.
+  [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer;
+  [decisions.md](./decisions.md) says what a rung owes once one is.
 - **The cash slice's shape moved without a rung, and that exemption is spent.** `CashAccount.bank` is gone,
   `iban` and `importKey` are new, and `APP_VERSION` stayed **1** on the single ground that cash has no
   users — there is no v1 cash data anywhere for a step to migrate, so a rung would have been a file that

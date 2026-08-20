@@ -7,12 +7,9 @@
  *
  * Nothing is stranded, which is what makes it legal. Two entrances are
  * unconditional — the drawer's static `/settings` row and the grid's
- * `@empty` node — and everything else hangs off the config page,
- * `list-settings` included, which is `onDeck: false` and could never have
- * been offered by a grid-shaped default anyway.
- *
- * On the entry axis only, never `hiddenModules`: `isEntryVisible` demands
- * both, so hiding modules too would cost two toggles to switch one on.
+ * `@empty` node — and everything else hangs off the config page, the
+ * `onDeck: false` entries included, which a grid-shaped default could
+ * never have offered anyway.
  * ───────────────────────────────────────────────────────────────── */
 
 import { createReducer, on } from '@ngrx/store';
@@ -24,7 +21,6 @@ import { DeckActions } from './deck.actions';
 export const initialDeck: DeckState = {
   order: [],
   hiddenEntries: DECK_CATALOG.map((entry) => entry.id),
-  hiddenModules: [],
 };
 
 export const deckReducer = createReducer(
@@ -37,10 +33,6 @@ export const deckReducer = createReducer(
   on(DeckActions.toggleEntry, (state, { id }): DeckState => ({
     ...state,
     hiddenEntries: toggleIn(state.hiddenEntries, id),
-  })),
-  on(DeckActions.toggleModule, (state, { module }): DeckState => ({
-    ...state,
-    hiddenModules: toggleIn(state.hiddenModules, module),
   })),
   on(DeckActions.reset, (): DeckState => initialDeck)
 );
