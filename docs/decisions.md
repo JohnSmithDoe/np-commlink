@@ -206,6 +206,13 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
     axes would have to rank which one wins.
 - **A control the user can operate must change something the user can observe, and a page the user can
   reach must be reachable without a URL bar.**
+- **The flags page is not a deck program.** `list-settings` left `DECK_CATALOG` entirely: it configures
+  the three household lists and nothing else, so its entrance is their toolbar
+  (`app-household-list-settings-button`, beside the categories button). A drawer row was a second,
+  weaker answer to a question the toolbar answers better — and one a hidden program could switch off,
+  leaving a page reachable only by URL. A stale id in a stored `hiddenEntries` is inert, since
+  `visibleEntries` reads the catalog rather than the config, so no rung is owed; the one visible effect
+  is that an untouched deck no longer compares equal to the factory one.
 
 ## Destructive actions
 

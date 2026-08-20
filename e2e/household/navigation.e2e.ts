@@ -1,14 +1,7 @@
 import { expect, test } from '@playwright/test';
-import {
-  enableDeckProgram,
-  gotoFeature,
-  pageRoot,
-  ROUTE,
-  waitForListPage,
-} from '../helpers';
+import { gotoFeature, pageRoot, ROUTE, waitForListPage } from '../helpers';
 
 const FLAGS = 'FLAGS';
-const MENU_BUTTON = 'Menü';
 
 test.describe('household navigation', () => {
   test('redirects the root url to the commlink deck', async ({ page }) => {
@@ -61,23 +54,21 @@ test.describe('household navigation', () => {
     ).toBeVisible({ timeout: 30_000 });
   });
 
-  test('reaches list-settings from the drawer, not just by url', async ({
+  test('reaches list-settings from the list toolbar, not from the drawer', async ({
     page,
   }) => {
-    await enableDeckProgram(page, FLAGS, 'list-settings');
     await gotoFeature(page, ROUTE.storage);
 
-    const row = page
-      .locator('ion-menu')
-      .getByTestId('menu-row')
-      .filter({ hasText: FLAGS });
-    await expect(row).toHaveCount(1);
+    await expect(
+      page
+        .locator('ion-menu')
+        .getByTestId('menu-row')
+        .filter({ hasText: FLAGS })
+    ).toHaveCount(0);
 
     await pageRoot(page, 'app-page-storage')
-      .getByLabel(MENU_BUTTON)
-      .first()
+      .getByTestId('household-list-settings-link')
       .click();
-    await row.click();
 
     await expect(page).toHaveURL(/list-settings/);
     await expect(

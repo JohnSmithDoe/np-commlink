@@ -209,24 +209,6 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.count'),
   },
   {
-    id: 'list-settings',
-    module: 'household',
-    icon: 'options-outline',
-    route: '/household/list-settings',
-    titleKey: marker('page-title.household-list-settings'),
-    labels: {
-      cyberpunk: {
-        nameKey: marker('deck.cyberpunk.list-settings.name'),
-        descKey: marker('deck.cyberpunk.list-settings.desc'),
-      },
-      boomer: {
-        nameKey: marker('deck.boomer.list-settings.name'),
-        descKey: marker('deck.boomer.list-settings.desc'),
-      },
-    },
-    onDeck: false,
-  },
-  {
     id: 'cash',
     module: 'cash',
     icon: 'wallet-outline',

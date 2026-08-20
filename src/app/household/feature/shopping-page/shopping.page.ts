@@ -12,6 +12,7 @@ import { ItemListQuickAddComponent } from '../../smart-ui/item-list-quick-add/it
 import { HouseholdListSwitcherComponent } from '../../smart-ui/household-list-switcher/household-list-switcher.component';
 import { HouseholdScanButtonComponent } from '../../smart-ui/household-scan-button/household-scan-button.component';
 import { HouseholdSearchPanelComponent } from '../../smart-ui/household-search-panel/household-search-panel.component';
+import { HouseholdListSettingsButtonComponent } from '../../ui/household-list-settings-button/household-list-settings-button.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
@@ -31,6 +32,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
     HouseholdListSwitcherComponent,
     HouseholdScanButtonComponent,
     HouseholdSearchPanelComponent,
+    HouseholdListSettingsButtonComponent,
     ListItemComponent,
     EditShoppingItemDialogComponent,
     EditProductDialogComponent,
