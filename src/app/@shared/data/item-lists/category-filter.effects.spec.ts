@@ -11,7 +11,6 @@ import { selectRouteCategoryFilter } from '../router/router.selector';
 import {
   categoryFilterFromRoute,
   categoryFilterRouteEffects,
-  clearCategoryFilterIn,
 } from './category-filter.effects';
 
 const TestActions = createActionGroup({
@@ -71,25 +70,6 @@ describe('categoryFilterFromRoute', () => {
     actions$ = of(TestActions.unrelated());
 
     expect(await emissions()).toEqual([]);
-  });
-});
-
-describe('clearCategoryFilterIn', () => {
-  it('turns the shared clear into the domain filter reset', async () => {
-    const actions$: Observable<Action> = of(
-      ItemListRouteActions.clearCategoryFilter()
-    );
-    TestBed.configureTestingModule({
-      providers: [provideMockActions(() => actions$)],
-    });
-
-    const emitted = await firstValueFrom(
-      TestBed.runInInjectionContext(() =>
-        clearCategoryFilterIn(() => TestActions.updateFilter(undefined))()
-      )
-    );
-
-    expect(emitted).toEqual(TestActions.updateFilter(undefined));
   });
 });
 

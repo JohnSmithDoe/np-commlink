@@ -1,7 +1,7 @@
 import {
   AMOUNT_OPS,
   blankCondition,
-  DEFAULT_OP_BY_FIELD,
+  defaultOpFor,
   DESCRIPTION_OPS,
   opsFor,
   toCondition,
@@ -23,22 +23,25 @@ describe('rule-form.utils', () => {
     });
 
     it('defaults each field to an op that field admits', () => {
-      expect(opsFor('description')).toContain(DEFAULT_OP_BY_FIELD.description);
-      expect(opsFor('amount')).toContain(DEFAULT_OP_BY_FIELD.amount);
+      expect(opsFor('description')).toContain(defaultOpFor('description'));
+      expect(opsFor('amount')).toContain(defaultOpFor('amount'));
     });
   });
 
   describe('toConditionForm', () => {
     it('fills the optional case flag so the toggle has a boolean to bind', () => {
       expect(
-        toConditionForm({ field: 'description', op: 'contains', value: 'Rewe' })
-          .caseSensitive
+        toConditionForm({
+          field: 'description',
+          op: 'contains',
+          value: 'Nordkauf',
+        }).caseSensitive
       ).toBe(false);
       expect(
         toConditionForm({
           field: 'description',
           op: 'contains',
-          value: 'Rewe',
+          value: 'Nordkauf',
           caseSensitive: true,
         }).caseSensitive
       ).toBe(true);
@@ -52,7 +55,7 @@ describe('rule-form.utils', () => {
           {
             field: 'description',
             op: 'contains',
-            value: '  Rewe  ',
+            value: '  Nordkauf  ',
             caseSensitive: true,
           },
           'de'
@@ -60,7 +63,7 @@ describe('rule-form.utils', () => {
       ).toEqual({
         field: 'description',
         op: 'contains',
-        value: 'Rewe',
+        value: 'Nordkauf',
         caseSensitive: true,
       });
     });
@@ -87,7 +90,7 @@ describe('rule-form.utils', () => {
       const blank = blankCondition();
 
       expect(blank.field).toBe('description');
-      expect(blank.op).toBe(DEFAULT_OP_BY_FIELD.description);
+      expect(blank.op).toBe(defaultOpFor('description'));
       expect(blank.value).toBe('');
       expect(blank.caseSensitive).toBe(false);
     });

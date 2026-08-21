@@ -32,6 +32,13 @@
                   {{ categoryName(rule.categoryId) }} ·
                   {{ conditionSummaryLabel(rule) }}
                 </p>
+                <p
+                  class="cash-rule__stat"
+                  [class.cash-rule__stat--inert]="inert(rule)"
+                  data-testid="cash-rule-stat"
+                >
+                  {{ statLabelKey(rule) | translate: { count: claimed(rule) } }}
+                </p>
               </ion-label>
             </ion-item>
             <ion-item-options side="end">

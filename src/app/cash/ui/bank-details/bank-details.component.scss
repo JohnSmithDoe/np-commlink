@@ -1,0 +1,19 @@
+.cash-bank-details__body {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.cash-bank-details__row {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.cash-bank-details__label {
+  color: var(--sr-text-dim);
+  font-size: var(--fs-xsmall);
+}
+
+.cash-bank-details__value {
+  overflow-wrap: anywhere;
+}

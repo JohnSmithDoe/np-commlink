@@ -85,10 +85,13 @@ describe('EditCashTransactionDialogComponent', () => {
   });
 
   it('allows a description another booking already has — a statement repeats itself', () => {
-    const rewe = mockCashTransaction({ id: 't1', name: 'REWE SAGT DANKE' });
-    setup(createCashTransaction('', 'a1'), 'create', [rewe]);
+    const nordkauf = mockCashTransaction({
+      id: 't1',
+      name: 'NORDKAUF SAGT DANKE',
+    });
+    setup(createCashTransaction('', 'a1'), 'create', [nordkauf]);
 
-    component.form.name().value.set('REWE SAGT DANKE');
+    component.form.name().value.set('NORDKAUF SAGT DANKE');
     component.form.amountCents().value.set(1999);
 
     expect(component.canSave()).toBe(true);
@@ -107,14 +110,32 @@ describe('EditCashTransactionDialogComponent', () => {
   });
 
   it('flags a deliberately cleared category as manual too, so rules leave it alone', () => {
-    setup();
+    const filed = mockCashTransaction({
+      id: 't1',
+      categoryIds: ['cat-1'],
+      amountCents: -350,
+    });
+    setup(filed, 'update', [filed]);
 
-    component.form.name().value.set('Coffee');
-    component.form.amountCents().value.set(350);
     component.form.categoryId().value.set('');
     component.confirm();
 
     expect(saved().categoryIds).toBeUndefined();
     expect(saved().categoryManual).toBe(true);
+  });
+
+  it('leaves the category alone when only the date was corrected', () => {
+    const auto = mockCashTransaction({
+      id: 't1',
+      categoryIds: ['cat-1'],
+      amountCents: -350,
+    });
+    setup(auto, 'update', [auto]);
+
+    component.form.date().value.set('2026-03-04');
+    component.confirm();
+
+    expect(saved().categoryIds).toEqual(['cat-1']);
+    expect(saved().categoryManual).toBeUndefined();
   });
 });

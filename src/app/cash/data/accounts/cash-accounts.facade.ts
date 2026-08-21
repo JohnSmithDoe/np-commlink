@@ -1,6 +1,7 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { inject, Injectable, LOCALE_ID, Signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
+import { formatEur } from '../../../@shared/util/formatting/money-format.utils';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { CashAccount } from '../../model/account.types';
@@ -19,6 +20,7 @@ import { selectAccountBalances, selectNetWorthCents } from '../cash.selector';
 export class CashAccountsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+  readonly #locale = inject(LOCALE_ID);
 
   readonly allItems = this.#store.selectSignal(selectAccountItems);
   readonly withBalances: Signal<AccountWithBalance[]> =
@@ -69,6 +71,16 @@ export class CashAccountsFacade {
         key: marker('cash.import.wrong-account'),
         parameters: { iban },
         color: 'danger',
+      })
+    );
+  }
+
+  reportBalanceMismatch(differenceCents: number): void {
+    this.#store.dispatch(
+      NotificationsActions.toast({
+        key: marker('cash.import.balance-mismatch'),
+        parameters: { difference: formatEur(differenceCents, this.#locale) },
+        color: 'warning',
       })
     );
   }

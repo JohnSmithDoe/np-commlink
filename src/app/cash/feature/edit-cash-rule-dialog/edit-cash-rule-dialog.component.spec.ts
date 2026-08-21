@@ -45,7 +45,7 @@ describe('EditCashRuleDialogComponent', () => {
   it('requires a category and a non-empty value on every condition', () => {
     setup();
 
-    typeValue(0, 'REWE');
+    typeValue(0, 'NORDKAUF');
     component.form.name().value.set('Household');
     expect(component.canSave()).toBe(false);
 
@@ -91,7 +91,7 @@ describe('EditCashRuleDialogComponent', () => {
   it('trims condition values and keeps the order it was minted with', () => {
     setup(createCashRule('', '', 3));
 
-    fill('  REWE  ');
+    fill('  NORDKAUF  ');
     component.confirm();
 
     expect(saved()).toMatchObject({
@@ -100,7 +100,7 @@ describe('EditCashRuleDialogComponent', () => {
       categoryId: 'cat-1',
     });
     expect(saved().conditions).toEqual([
-      expect.objectContaining({ value: 'REWE' }),
+      expect.objectContaining({ value: 'NORDKAUF' }),
     ]);
     expect(host.request()).toBeNull();
   });
@@ -123,7 +123,7 @@ describe('EditCashRuleDialogComponent', () => {
     const stored = mockCashRule({
       id: 'r1',
       categoryId: 'cat-1',
-      conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
+      conditions: [{ field: 'description', op: 'contains', value: 'NORDKAUF' }],
     });
     TestBed.configureTestingModule({
       providers: [
@@ -141,25 +141,25 @@ describe('EditCashRuleDialogComponent', () => {
       {
         field: 'description',
         op: 'contains',
-        value: 'REWE',
+        value: 'NORDKAUF',
         caseSensitive: false,
       },
     ]);
 
-    typeValue(0, 'ALDI');
-    expect(stored.conditions[0].value).toBe('REWE');
+    typeValue(0, 'PRIMO');
+    expect(stored.conditions[0].value).toBe('NORDKAUF');
 
     component.confirm();
     expect(saved()).toMatchObject({ id: 'r1' });
     expect(saved().conditions).toEqual([
-      expect.objectContaining({ value: 'ALDI' }),
+      expect.objectContaining({ value: 'PRIMO' }),
     ]);
   });
 
   it('refuses a blank name — the shared name input is the rule’s identity', () => {
     setup();
 
-    typeValue(0, 'REWE');
+    typeValue(0, 'NORDKAUF');
     component.form.categoryId().value.set('cat-1');
     component.form.name().value.set('');
 
@@ -170,7 +170,7 @@ describe('EditCashRuleDialogComponent', () => {
     const twin = mockCashRule({ id: 'r1', name: 'Household' });
     setup(createCashRule(''), 'create', [twin]);
 
-    fill('REWE');
+    fill('NORDKAUF');
 
     expect(component.canSave()).toBe(true);
   });

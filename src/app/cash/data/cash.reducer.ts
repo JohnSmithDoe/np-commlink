@@ -11,6 +11,11 @@
  * `withoutOrphanRules` runs on `loaded` rather than on delete: a rule
  * whose category is gone is unreachable, not wrong, and a document
  * written before the cascade existed can still hold one.
+ *
+ * A deleted category DROPS a schedule's `categoryId` where it DELETES a
+ * rule, because the two lose different amounts of themselves: a rule with no
+ * category to assign does nothing, while rent with no category is still rent
+ * and still owes its reserve.
  * ───────────────────────────────────────────────────────────────── */
 import { Action, combineReducers, createReducer, on } from '@ngrx/store';
 import {
@@ -22,6 +27,7 @@ import {
 import { removeListItem } from '../../@shared/util/item-lists/list.utils';
 import { CashState } from '../model/cash.types';
 import { CashRule } from '../model/rule.types';
+import { CashSchedule } from '../model/schedule.types';
 import { CashTransaction } from '../model/transaction.types';
 import { categoryIdOf } from '../util/cash-category.utils';
 import { CashAccountsActions } from './accounts/cash-accounts.actions';
@@ -29,6 +35,7 @@ import { cashAccountsReducer } from './accounts/cash-accounts.reducer';
 import { cashCategoriesReducer } from './categories/cash-categories.reducer';
 import { CashCategoriesActions } from './categories/cash-categories.actions';
 import { cashRulesReducer } from './rules/cash-rules.reducer';
+import { cashSchedulesReducer } from './schedules/cash-schedules.reducer';
 import { CashTransactionsActions } from './transactions/cash-transactions.actions';
 import { cashTransactionsReducer } from './transactions/cash-transactions.reducer';
 import { CashActions } from './cash.actions';
@@ -37,6 +44,7 @@ const perAggregate = combineReducers<CashState>({
   accounts: cashAccountsReducer,
   transactions: cashTransactionsReducer,
   rules: cashRulesReducer,
+  schedules: cashSchedulesReducer,
   categories: cashCategoriesReducer,
 });
 
@@ -52,6 +60,20 @@ const withRules = (state: CashState, items: CashRule[]): CashState => ({
   ...state,
   rules: { ...state.rules, items },
 });
+
+const withSchedules = (state: CashState, items: CashSchedule[]): CashState => ({
+  ...state,
+  schedules: { ...state.schedules, items },
+});
+
+const remapScheduleCategory = (
+  items: readonly CashSchedule[],
+  from: string,
+  to: string | undefined
+): CashSchedule[] =>
+  items.map((schedule) =>
+    schedule.categoryId === from ? { ...schedule, categoryId: to } : schedule
+  );
 
 const forgetManualWhenUncategorized = (
   txn: CashTransaction
@@ -83,12 +105,15 @@ const cashCascade = createReducer(
   }),
 
   on(CashCategoriesActions.removeItem, (state, { item }): CashState => ({
-    ...withRules(
-      withTransactions(
-        state,
-        dropCategoryRef(state.transactions.items, item.id).map((txn) => forgetManualWhenUncategorized(txn))
+    ...withSchedules(
+      withRules(
+        withTransactions(
+          state,
+          dropCategoryRef(state.transactions.items, item.id).map((txn) => forgetManualWhenUncategorized(txn))
+        ),
+        state.rules.items.filter((rule) => rule.categoryId !== item.id)
       ),
-      state.rules.items.filter((rule) => rule.categoryId !== item.id)
+      remapScheduleCategory(state.schedules.items, item.id, undefined)
     ),
     categories: removeFromCatalog(state.categories, item.id),
   })),
@@ -96,11 +121,14 @@ const cashCascade = createReducer(
   on(CashCategoriesActions.updateItem, (state, { item }): CashState => {
     const { catalog, mergedInto } = renameInCatalog(state.categories, item.id, item.name ?? '');
     const next = mergedInto
-      ? withRules(
-          withTransactions(state, remapCategoryRef(state.transactions.items, item.id, mergedInto)),
-          state.rules.items.map((rule): CashRule =>
-            rule.categoryId === item.id ? { ...rule, categoryId: mergedInto } : rule
-          )
+      ? withSchedules(
+          withRules(
+            withTransactions(state, remapCategoryRef(state.transactions.items, item.id, mergedInto)),
+            state.rules.items.map((rule): CashRule =>
+              rule.categoryId === item.id ? { ...rule, categoryId: mergedInto } : rule
+            )
+          ),
+          remapScheduleCategory(state.schedules.items, item.id, mergedInto)
         )
       : state;
     return { ...next, categories: catalog };

@@ -1,16 +1,12 @@
 import {
   mockCashAccount,
-  mockCashState,
   mockCashTransaction,
 } from '../testing/cash.test-data';
-import { mockCategory } from '../../@shared/testing/test-data';
 import {
   selectAccountBalances,
+  selectAllowanceBalanceCents,
   selectCashBalanceEuros,
-  selectMonthlyTotals,
   selectNetWorthCents,
-  selectReportTotals,
-  selectSpendByCategory,
 } from './cash.selector';
 
 describe('cash selectors', () => {
@@ -76,80 +72,30 @@ describe('cash selectors', () => {
     });
   });
 
-  describe('reporting selectors exclude transfers + reconciled legs', () => {
-    const txns = [
-      mockCashTransaction({
-        id: 'in',
-        amountCents: 250_000,
-        dateISO: '2026-01-05',
-      }),
-      mockCashTransaction({
-        id: 'out',
-        amountCents: -4299,
-        categoryIds: ['cat-food'],
-        dateISO: '2026-01-06',
-      }),
-      mockCashTransaction({
-        id: 'out2',
-        amountCents: -1000,
-        dateISO: '2026-02-02',
-      }),
-      mockCashTransaction({
-        id: 'xfer',
-        amountCents: -5000,
-        isTransfer: true,
-        dateISO: '2026-01-07',
-      }),
-      mockCashTransaction({
-        id: 'merged',
-        amountCents: -4299,
-        matchedTxnId: 'out',
-        dateISO: '2026-01-06',
-      }),
-    ];
-
-    it('selectReportTotals sums real income and spend only', () => {
-      const totals = selectReportTotals.projector(txns);
-
-      expect(totals.incomeCents).toBe(250_000);
-      expect(totals.spendCents).toBe(4299 + 1000);
-      expect(totals.netCents).toBe(250_000 - 5299);
-    });
-
-    it('selectMonthlyTotals buckets by month, oldest first', () => {
-      const months = selectMonthlyTotals.projector(txns);
-
-      expect(months.map((month) => month.month)).toEqual([
-        '2026-01',
-        '2026-02',
-      ]);
-      expect(months[0]).toMatchObject({
-        incomeCents: 250_000,
-        spendCents: 4299,
+  describe('selectAllowanceBalanceCents', () => {
+    it('leaves an excluded account out of what can be spent', () => {
+      const giro = mockCashAccount({ id: 'giro' });
+      const savings = mockCashAccount({
+        id: 'savings',
+        excludedFromAllowance: true,
       });
-    });
-
-    it('selectSpendByCategory groups outflows, resolving the id→name via the catalog, uncategorized under ""', () => {
-      const state = mockCashState({
-        transactions: txns,
-        categories: {
-          id: '_cash-categories',
-          items: [mockCategory({ id: 'cat-food', name: 'Food' })],
-        },
-      });
-
-      expect(selectSpendByCategory.projector(state)).toEqual([
-        { category: 'Food', cents: 4299 },
-        { category: '', cents: 1000 },
-      ]);
-    });
-
-    it('reads the whole ledger, never a page’s filtered view', () => {
-      const searched = mockCashState({ transactions: txns });
-
       expect(
-        selectReportTotals.projector(searched.transactions.items).incomeCents
-      ).toBe(250_000);
+        selectAllowanceBalanceCents.projector([giro, savings], {
+          giro: 50_000,
+          savings: 900_000,
+        })
+      ).toBe(50_000);
+    });
+
+    it('counts every account when none is excluded', () => {
+      const giro = mockCashAccount({ id: 'giro' });
+      const cash = mockCashAccount({ id: 'cash' });
+      expect(
+        selectAllowanceBalanceCents.projector([giro, cash], {
+          giro: 50_000,
+          cash: 2000,
+        })
+      ).toBe(52_000);
     });
   });
 

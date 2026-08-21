@@ -12,6 +12,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonListHeader,
   IonNote,
   IonTitle,
   IonToolbar,
@@ -20,7 +21,14 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { CashTransaction } from '../../model/transaction.types';
-import { CashCategoriesFacade, CashTransactionsFacade } from '../../data';
+import {
+  CashAccountsFacade,
+  CashCategoriesFacade,
+  CashSchedulesFacade,
+  CashTransactionsFacade,
+} from '../../data';
+import { ScheduleAmountChange } from '../../model/schedule.types';
+import { balanceDifferenceCents } from '../../util/import/balance-check';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 import { categoryIdOf } from '../../util/cash-category.utils';
@@ -40,6 +48,7 @@ import { CategoryId } from '../../../@shared/model/category.types';
     IonButton,
     IonContent,
     IonList,
+    IonListHeader,
     IonItem,
     IonLabel,
     IonNote,
@@ -50,6 +59,8 @@ import { CategoryId } from '../../../@shared/model/category.types';
 })
 export class CashImportPreviewModalComponent {
   readonly #facade = inject(CashTransactionsFacade);
+  readonly #accountsFacade = inject(CashAccountsFacade);
+  readonly #schedulesFacade = inject(CashSchedulesFacade);
   readonly #categoriesFacade = inject(CashCategoriesFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #categories = this.#categoriesFacade.allItems;
@@ -60,6 +71,10 @@ export class CashImportPreviewModalComponent {
   transactions: CashTransaction[] = [];
   duplicates = 0;
   rejected = 0;
+  accountId = '';
+  closingBalanceCents?: number;
+  asOfISO?: string;
+  amountChanges: ScheduleAmountChange[] = [];
 
   readonly categoryIdOf = categoryIdOf;
 
@@ -67,11 +82,43 @@ export class CashImportPreviewModalComponent {
     return this.#categoryName()(id);
   }
 
+  scheduleName(scheduleId: string): string {
+    return (
+      this.#schedulesFacade.allItems().find(({ id }) => id === scheduleId)
+        ?.name ?? ''
+    );
+  }
+
   confirm(): void {
     if (this.transactions.length > 0) {
       this.#facade.importItems(this.transactions);
     }
+    if (this.amountChanges.length > 0) {
+      this.#schedulesFacade.applyAmountChanges(this.amountChanges);
+      this.#schedulesFacade.reportAmountsLearned(this.amountChanges.length);
+    }
+    this.#checkAgainstBankBalance();
     void this.#modalCtrl.dismiss();
+  }
+
+  #checkAgainstBankBalance(): void {
+    const { closingBalanceCents, asOfISO, accountId } = this;
+    if (closingBalanceCents === undefined || asOfISO === undefined) return;
+    const account = this.#accountsFacade
+      .allItems()
+      .find(({ id }) => id === accountId);
+    if (!account) return;
+
+    const difference = balanceDifferenceCents(
+      closingBalanceCents,
+      asOfISO,
+      accountId,
+      account.openingBalanceCents,
+      this.#facade.allItems()
+    );
+    if (difference !== 0) {
+      this.#accountsFacade.reportBalanceMismatch(difference);
+    }
   }
 
   cancel(): void {

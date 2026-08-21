@@ -6,8 +6,6 @@
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="facade.showCreateDialog()"
 >
-  <ng-content select="[listSwitcher]" />
-
   <app-item-list-searchbar
     [query]="facade.state()?.searchQuery"
     (queryChange)="facade.search($event)"
@@ -24,6 +22,7 @@
   <app-item-list-toolbar
     [activeSort]="facade.state()?.sort"
     [options]="facade.sortOptions?.() ?? []"
+    [sortable]="facade.sortable?.() ?? true"
     (selectSortMode)="facade.setSortMode($event)"
   >
     <ng-content select="[toolbarActions]" />

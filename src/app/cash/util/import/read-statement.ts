@@ -33,6 +33,17 @@ export type StatementRead =
   | { kind: 'wrong-account'; found: string }
   | { kind: 'ok'; iban?: string; parsed: ParseResult };
 
+const lastClosingBalance = (
+  reports: readonly CamtReport[]
+): number | undefined => {
+  for (const report of reports.toReversed()) {
+    if (report.closingBalanceCents !== undefined) {
+      return report.closingBalanceCents;
+    }
+  }
+  return undefined;
+};
+
 const normalizeIban = (iban: string): string =>
   iban.replaceAll(/\s/g, '').toUpperCase();
 
@@ -82,6 +93,10 @@ export function readStatement(
   return {
     kind: 'ok',
     iban: ibans[0],
-    parsed: { rows: withKeys(entries), rejected },
+    parsed: {
+      rows: withKeys(entries),
+      rejected,
+      closingBalanceCents: lastClosingBalance(reports),
+    },
   };
 }

@@ -1,0 +1,43 @@
+@use 'theme/cash';
+
+.cash-match-preview__empty {
+  @include cash.hint(var(--space-3));
+}
+
+.cash-match-preview__count {
+  color: var(--sr-text-dim);
+}
+
+.cash-match-preview__warn {
+  color: var(--ion-color-warning);
+}
+
+.cash-match-preview__body {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.cash-match-preview__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 var(--space-3);
+  font-size: var(--fs-small);
+}
+
+.cash-match-preview__name {
+  grid-area: 1 / 1;
+  overflow-wrap: anywhere;
+}
+
+.cash-match-preview__date {
+  grid-area: 2 / 1;
+  color: var(--sr-text-dim);
+  font-size: var(--fs-xsmall);
+}
+
+.cash-match-preview__amount {
+  grid-area: 1 / 2 / span 2;
+  align-self: center;
+  font-family: var(--sr-deck-font);
+}

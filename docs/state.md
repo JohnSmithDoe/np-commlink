@@ -102,6 +102,30 @@ changing one does not migrate an install, it stands up a second app that cannot 
   Recorded so that neither reads as a regression later.
 - **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
   lists, recipes, cash, categories and trackplay create/edit are silent.
+- **Reading the phone's own payments is parked, and the ceiling is the platform's, not the effort.** No
+  Android API exposes Google Wallet or tap-to-pay history to a third-party app; the Google Pay APIs take
+  payments, they do not report them. The single hook that exists is `NotificationListenerService` — read
+  the bank's and Wallet's own push notifications, parse merchant and amount. It fits the model unusually
+  well: a captured spend is `source: 'manual', status: 'pending'`, which the next camt import reconciles
+  through machinery that already ships. What parks it: it is a native plugin nobody maintains
+  (`capacitor-notificationlistener`'s own author says it is old and probably broken on current Android), so
+  it is a plugin to own; the parsing is per-bank text that breaks when a bank rewords a push; and it is
+  Android-only, inert on the PWA. Proper bank access is a separate wall — PSD2 needs an AISP licence plus
+  an eIDAS certificate, or an aggregator that holds a client secret on a server, and FinTS needs a product
+  registration and a socket client. All three end at a backend this app does not have.
+- **Transfers between own accounts are not detected on import, and the report pays for it.** `isTransfer`
+  is set only by the transfer modal, so importing both accounts' statements books one internal move as
+  spend on one side and income on the other, inflating every figure in the report and the burn-down.
+  Detection is cheap and shaped like `findReconciliationCandidates` — opposite amount, ±3 days, a
+  different account — offered as pairs to link in the import preview. Parked on the owner's call, not on
+  difficulty.
+- **The app is not a share target, and files are why.** The plan was manifest-only, and that is wrong for
+  files: a `share_target` carrying one must be `method: "POST"`, `enctype: "multipart/form-data"`, and the
+  POST has to be intercepted in the service worker — which means wrapping `ngsw-worker.js` in an
+  `importScripts` shim and registering that instead, since ngsw exposes no `fetch` hook. It also arrives
+  with no account context, so the receiving flow needs an account chooser before the import preview. Two
+  hundred lines, a registration path that can brick a PWA install, and nothing Playwright can drive —
+  against roughly two taps saved over the file input the account page already has.
 - **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
   using it. On the APK it is the cheapest upgrade available to how the app feels.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
@@ -109,7 +133,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   reconcile and import-preview modals and the office-time dashboard have none. Moving a surface onto
   `ListPageComponent` is what fixed trackplay, cash and the household lists — the argument for the rest.
   Cash **rules** stays hand-rolled: `ion-reorder-group` has to wrap the rows and the shared list owns that
-  element. Two have copy written and never rendered (`cash.reconcile.empty`, `cash.import.empty`).
+  element. The reconcile and import-preview modals now render theirs; the burn-down, schedules and
+  uncategorized surfaces hand-roll inert copy.
 - **Six shipping controls below the touch target.** `size="small"` is 32 px in Ionic MD; ten sites, four
   `isDevMode()`-gated. The six that ship include the barcode **delete**. The emoji picker's grid is
   `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.

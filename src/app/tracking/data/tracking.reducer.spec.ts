@@ -44,11 +44,11 @@ describe('trackingReducer', () => {
   });
 
   describe('updateSearch', () => {
-    it('trims what it stores, so tracking agrees with every other list', () => {
+    it('stores what it is given, so tracking agrees with every other list', () => {
       expect(
         trackingReducer(initialState, TrackingActions.updateSearch('  ab  '))
           .searchQuery
-      ).toBe('ab');
+      ).toBe('  ab  ');
     });
 
     it('returns the same state for an unchanged query', () => {

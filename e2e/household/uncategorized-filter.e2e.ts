@@ -83,6 +83,26 @@ test.describe('uncategorized filter', () => {
     await expect(listRow(page, /Salz/)).toBeVisible({ timeout: 10_000 });
   });
 
+  test('the ALLE chip widens the list again, not only the URL', async ({
+    page,
+  }) => {
+    await chip(page, 'Getränke').click();
+    await addViaSearch(page, 'Wasser');
+    await expect(listRow(page, /Wasser/)).toBeVisible({ timeout: 10_000 });
+
+    await chip(page, 'Getränke').click();
+    await addViaSearch(page, 'Brot');
+    await expect(listRow(page, /Brot/)).toBeVisible({ timeout: 10_000 });
+
+    await chip(page, 'Getränke').click();
+    await expect(listRow(page, /Brot/)).toHaveCount(0);
+
+    await page.getByTestId('clear-category-filter').first().click();
+
+    await expect(listRow(page, /Brot/)).toBeVisible({ timeout: 10_000 });
+    await expect(listRow(page, /Wasser/)).toBeVisible();
+  });
+
   test('offers no uncategorized chip once every item carries a category', async ({
     page,
   }) => {

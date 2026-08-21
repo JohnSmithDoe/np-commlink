@@ -1,6 +1,9 @@
 import {
+  camtBalance,
   camtDocument,
   camtEntry,
+  TEST_COUNTERPARTY_BIC,
+  TEST_COUNTERPARTY_IBAN,
   TEST_IBAN,
 } from '../../testing/camt.test-data';
 import { parseCamt } from './camt.parser';
@@ -33,9 +36,9 @@ describe('parseCamt', () => {
 
   it('names the counterparty by direction — debtor for money in', () => {
     expect(
-      parseOne(camtEntry({ direction: 'CRDT', name: 'Muster GmbH' }))
+      parseOne(camtEntry({ direction: 'CRDT', name: 'Kestrel Systems GmbH' }))
         ?.description
-    ).toBe('Muster GmbH — Einkauf');
+    ).toBe('Kestrel Systems GmbH — Einkauf');
   });
 
   it('carries AcctSvcrRef through as the bank reference', () => {
@@ -62,7 +65,7 @@ describe('parseCamt', () => {
       purpose: 'Kapitalertragsteuer aus    EUR       12,34 Habenzins',
     });
     expect(parseOne(entry)?.description).toBe(
-      'REWE Markt GmbH — Kapitalertragsteuer aus EUR 12,34 Habenzins'
+      'NORDKAUF Markt GmbH — Kapitalertragsteuer aus EUR 12,34 Habenzins'
     );
   });
 
@@ -126,7 +129,99 @@ describe('parseCamt', () => {
     const flat = camtEntry({ direction: 'CRDT' })
       .replace('<Pty><Nm>', '<Nm>')
       .replace('</Nm></Pty>', '</Nm>');
-    expect(parseOne(flat)?.description).toBe('REWE Markt GmbH — Einkauf');
+    expect(parseOne(flat)?.description).toBe('NORDKAUF Markt GmbH — Einkauf');
+  });
+
+  it('keeps the counterparty and the purpose apart, not only joined', () => {
+    const entry = parseOne(
+      camtEntry({
+        iban: TEST_COUNTERPARTY_IBAN,
+        bic: TEST_COUNTERPARTY_BIC,
+      })
+    );
+    expect(entry?.counterpartyName).toBe('NORDKAUF Markt GmbH');
+    expect(entry?.remittanceInfo).toBe('Einkauf');
+    expect(entry?.counterpartyIban).toBe(TEST_COUNTERPARTY_IBAN);
+    expect(entry?.counterpartyBic).toBe(TEST_COUNTERPARTY_BIC);
+    expect(entry?.description).toBe('NORDKAUF Markt GmbH — Einkauf');
+  });
+
+  it('reads the counterparty account by direction — debtor for money in', () => {
+    const incoming = parseOne(
+      camtEntry({ direction: 'CRDT', iban: TEST_COUNTERPARTY_IBAN })
+    );
+    expect(incoming?.counterpartyIban).toBe(TEST_COUNTERPARTY_IBAN);
+  });
+
+  it('reads the references a rule can match on', () => {
+    const entry = parseOne(
+      camtEntry({
+        endToEndId: 'NOTPROVIDED',
+        mandateId: 'MND-00042',
+        purposeCode: 'GDDS',
+        bankTxCode: 'NDDT',
+        valueDate: '2026-01-08',
+      })
+    );
+    expect(entry?.endToEndId).toBe('NOTPROVIDED');
+    expect(entry?.mandateId).toBe('MND-00042');
+    expect(entry?.purposeCode).toBe('GDDS');
+    expect(entry?.bankTxCode).toBe('NDDT');
+    expect(entry?.valueDateISO).toContain('2026-01-08');
+  });
+
+  it('leaves a field absent rather than empty when the entry omits it', () => {
+    const entry = parseOne(camtEntry());
+    expect(entry?.counterpartyIban).toBeUndefined();
+    expect(entry?.mandateId).toBeUndefined();
+    expect(entry?.purposeCode).toBeUndefined();
+  });
+
+  it('reads a version that spells a BIC BIC instead of BICFI', () => {
+    const older = camtEntry({ bic: TEST_COUNTERPARTY_BIC })
+      .replace('<BICFI>', '<BIC>')
+      .replace('</BICFI>', '</BIC>');
+    expect(parseOne(older)?.counterpartyBic).toBe(TEST_COUNTERPARTY_BIC);
+  });
+
+  it('takes the structured detail from the first TxDtls that carries it', () => {
+    const batched = [
+      '<Ntry>',
+      '<Amt Ccy="EUR">30.00</Amt><CdtDbtInd>DBIT</CdtDbtInd>',
+      '<BookgDt><Dt>2026-01-06</Dt></BookgDt>',
+      '<NtryDtls>',
+      '<TxDtls><RmtInf><Ustrd>Teil A</Ustrd></RmtInf></TxDtls>',
+      `<TxDtls><RltdPties><Cdtr><Nm>Kestrel Systems GmbH</Nm></Cdtr></RltdPties></TxDtls>`,
+      '</NtryDtls>',
+      '</Ntry>',
+    ].join('');
+    const entry = parseOne(batched);
+    expect(entry?.counterpartyName).toBe('Kestrel Systems GmbH');
+    expect(entry?.remittanceInfo).toBe('Teil A');
+  });
+
+  it('reads the closing balance and ignores every other balance kind', () => {
+    const report = parseCamt(
+      camtDocument([camtEntry()], TEST_IBAN, [
+        camtBalance('100.00', 'OPBD'),
+        camtBalance('1234.56', 'CLBD'),
+        camtBalance('999.00', 'CLAV'),
+      ])
+    );
+    expect(report?.closingBalanceCents).toBe(123_456);
+  });
+
+  it('signs an overdrawn closing balance from CdtDbtInd', () => {
+    const report = parseCamt(
+      camtDocument([], TEST_IBAN, [camtBalance('50.00', 'CLBD', 'DBIT')])
+    );
+    expect(report?.closingBalanceCents).toBe(-5000);
+  });
+
+  it('leaves the closing balance absent when the statement carries none', () => {
+    expect(
+      parseCamt(camtDocument([camtEntry()]))?.closingBalanceCents
+    ).toBeUndefined();
   });
 
   it('rejects a document that is not camt rather than reporting it empty', () => {

@@ -1,0 +1,45 @@
+<app-page-header
+  label="page-title.cash-uncategorized"
+  backHref="/cash/report"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  @if (rows().length) {
+    <div class="cash-networth">
+      <span class="cash-networth__label">
+        {{ 'cash.uncategorized.count' | translate: { count: rows().length } }}
+      </span>
+      <span class="cash-networth__value" data-testid="uncategorized-total">
+        {{ totalCents() | moneyEur }}
+      </span>
+    </div>
+
+    <ion-list lines="full">
+      @for (txn of rows(); track txn.id) {
+        <ion-item
+          [button]="true"
+          [detail]="false"
+          (click)="openTransaction(txn)"
+          data-testid="uncategorized-row"
+        >
+          <ion-label class="ion-text-wrap">
+            <h2>{{ txn.name }}</h2>
+            <p>{{ txn.dateISO | localizedDate }}</p>
+          </ion-label>
+          <ion-note slot="end" class="cash-uncategorized__amount">
+            {{ txn.amountCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <p class="cash-uncategorized__empty">
+      {{ 'cash.uncategorized.empty' | translate }}
+    </p>
+  }
+</ion-content>
+
+<app-edit-cash-transaction-dialog />
+<app-edit-cash-rule-dialog />
+<app-edit-cash-schedule-dialog />

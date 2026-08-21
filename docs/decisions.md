@@ -450,3 +450,136 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   there is no v1 data anywhere that a step could migrate. A stale `bank` key left in a dev browser is
   read by nothing. The ladder therefore remains unexercised, and the next stored-shape change made
   after cash has real data still owes it a first real step.
+
+## Structured camt, and the two views it pays for
+
+- **Every camt field becomes its own property, and `description` survives beside them.** They answer
+  different questions: `name` is what the list searches and what a row reads as, the parts are what a
+  rule matches and what the cashboard groups by. Neither derives from the other — a joined string
+  cannot be split back into parties, and a parts-only row has nothing to show a reader who never wrote
+  a rule. The cost is a **re-import**, not a ladder step: rows stored before this carry the joined
+  string and nothing can recover the split.
+- **No table, and no column toggles.** A table's job is comparing many rows on one dimension, and
+  nobody scans forty IBANs; the camt fields are looked up on one booking or matched on in bulk. So they
+  disclose behind one control (`app-cash-bank-details` inside the edit dialog, which already opens on
+  tap) and the three fields worth comparing across rows — date, amount, counterparty — stay in the row.
+  One layout at 393 px and at 1440 px, no breakpoint fork, and no toggle preference to persist.
+- **`FilterField` widened to the camt vocabulary, and the labels are named once.** `TEXT_FILTER_FIELDS`
+  is read by both the operator list and the matcher, so a field cannot be offered without being
+  matchable. `CAMT_DETAIL_LABEL_KEYS` names the camt fields for the reader of a booking AND the writer
+  of a rule; `FIELD_LABEL_KEYS` adds only `description` and `amount`. Two maps would be two wordings
+  for `MndtId` waiting to disagree. An absent field never matches — an unwritten IBAN is not the empty
+  one.
+- **The ledger has one order, pinned in the selector.** `scopedTo` overwrites `sort` with `dateISO`
+  descending. Dropping the toolbar alone would not pin anything: `itemComparator` falls back to
+  `compareByName` when `sort` is absent, so the ledger would read reverse-alphabetically with no
+  control able to fix it. Overwriting also makes whatever an older build persisted inert. `sortable`
+  on the facade is what hides the buttons — gating on the absence of `sortOptions` would have silently
+  stripped A–Z from the six lists that never declared any.
+- **`<Bal>`/`CLBD` is read as a checksum, not adopted as the balance.** Comparing the bank's own
+  closing figure against the derived one turns a silent import gap into a number. It is compared AS OF
+  the statement's last entry: a row typed today, or a later statement already imported, is money the
+  bank had not booked when it wrote that figure. Adopting it instead would paper over exactly the gap
+  it exists to reveal.
+
+## The allowance — a burn-down, and the schedule that feeds it
+
+- **A schedule is its own entity, not a `CashRule` with extra fields**, though both recognise a booking
+  through `CashFilterCondition` (shared as a *type*, via `ConditionSet`). Every transaction wants a
+  category while only a dozen are fixed costs, so merged most rules would carry dead fields; `order`
+  means first-match-wins for rules, where two schedules claiming one booking is a bug to SHOW; and
+  `recategorizations` is pure and re-runnable, while a schedule learning its amount holds state.
+  Merging would turn a re-derivation into a write path.
+- **A schedule's `amountCents` is an estimate that learns.** Rent rising from 900 to 950 is confirmed
+  in the import preview's fourth bucket, not paid for with a rule rewrite. `applyAmountChanges` both
+  learns the amount and advances `nextDueISO` in one action, because they are one fact — the booking
+  arrived. Split, a confirmed amount could land on a schedule still claiming last month's due date,
+  which the reserve would then divide by zero months.
+- **A forecast is never `status: 'pending'`.** `statusOf` already owns that value for camt's `PDNG`, and
+  the reconcile path keys off exactly that field, so a projection and an unsettled bank booking would
+  be indistinguishable.
+- **The reserve is `amount ÷ monthsUntilDue`, and nothing is stored.** `amount ÷ periodMonths` is wrong
+  in a schedule's first month: it claims €50 of a €600 premium is set aside when nothing is, and by the
+  due month the pot holds €50. Dividing by the months REMAINING needs no accumulation history and no
+  first-month case — installed in January, a March premium reserves €300 a month, which is steep and
+  true. Derived on every read means no second ledger to disagree with the bank; a **storable** pot is
+  deferred until there is something a number cannot do (deliberately raiding it, or mirroring real
+  savings).
+- **An overdue schedule stays committed, and is shown.** Its money has not left, so releasing it would
+  report spendable cash a late direct debit is about to take.
+- **Three views, three scopes, three routes.** The ledger is per-account (`/cash/:accountId`) and
+  answers "what happened"; the burn-down is across accounts minus the excluded ones over a calendar
+  month and answers "what can I spend today"; the cashboard (`/cash/report`) is across accounts and
+  months and answers "where does it go". They are not three renderings of one dataset, which is why
+  they are not segments of one page.
+- **`excludedFromAllowance` needs no `APP_VERSION` rung.** It is additive and optional — absent means
+  not excluded — and `runMigrations` skips a missing step, so every slice is simply re-stamped. A bump
+  here would be ceremony. The ladder still owes its first real step to the first *breaking* change.
+- **`todayISO` is a signal the burn-down facade owns.** A computed that reads the clock has no
+  dependency to invalidate, so the allowance would keep yesterday's denominator until something else
+  in the store changed.
+- **The cashboard reports its own trustworthiness.** `selectUncategorizedShare` is the one number that
+  says how much of the "where did it go" answer is actually answered, because "where" *is* the
+  category. Counterparty grouping is by IBAN and skips typed rows, which name no account to group by.
+
+## Turning a booking into a rule, and what the ledger reads like
+
+- **A booking is derived from, not retyped.** The entry point is the transaction dialog and not the row:
+  the row's two swipe slots are already reconcile and delete, and R5 forbids a third gesture-only path.
+  Deriving **commits** the booking first when the form is saveable, because the flow is "file this one,
+  then file the rest like it" — a rule filing everything except the booking it came from is a split brain,
+  and the category on screen is the one the rule must carry.
+- **The condition ladder is ordered by stability, not by information.** `mandateId` (one creditor, one
+  contract — the definition of a fixed cost), then `counterpartyIban` (survives a rename), then
+  `counterpartyName` (survives a new branch), then a one-token stem of the description. The stem is ONE
+  token on purpose: the original may separate two by anything, so a `contains` built from a guess about
+  the gap matches nothing, while one token cannot be wrong about the string it came from — only too broad.
+- **Too broad is answered by feedback, not by cleverness.** The rule and schedule dialogs show what the
+  draft catches — matched of total, how many are already filed elsewhere, and five of them by name — and
+  render nothing until every condition has a value, because `contains ''` matches the whole ledger and a
+  fresh dialog would open on "320 of 320".
+- **A schedule reads its period off the history.** The booking that prompts one is rarely the first of its
+  kind: the median month gap over the bookings its own conditions match, snapped to 1/3/6/12, with the
+  next due date counted from the newest match rather than from the seed.
+- **Rules apply on save, and the apply button stays.** An effect on add/update/remove/reorder re-derives
+  every non-manual category — `reorder` included, because first-match-wins makes the arrangement part of
+  what a rule means. `recategorizations` is pure and converges, which is what makes re-running it safe.
+  The button now covers the other direction: a ledger that drifted from unchanged rules.
+- **A rule says what it catches and what it never will.** Per rule, `matched` and `claimed` are different
+  numbers: zero matched is dead, matched-but-never-claimed is **shadowed** by an earlier rule. First-match
+  ordering is otherwise invisible, and shadowing is the only bug an arrangement can have.
+- **`categoryManual` is stamped only when the category CHANGED in the dialog.** It means "the user chose
+  this, do not overrule it". Stamping it on every save froze a booking against every future rule because
+  somebody corrected its date — and it made the derive flow refuse to file the very booking it came from.
+- **A booking is named after the counterparty, not after the statement line.** The line is counterparty
+  and purpose run together and a purpose is a paragraph, so it read as a wall in the ledger, in the report
+  and in every delete confirm. The paragraph is not lost: it is `remittanceInfo`, shown clamped under the
+  name and matchable by its own field. `ParsedEntry.description` keeps the joined line for one remaining
+  job — building a **derived** import key, where telling two unreferenced rows apart wants everything the
+  bank wrote, not the part that happens to be displayed.
+- **The report window is a facade signal, and the figures are one pass.** Six selectors each walked the
+  ledger and each re-decided what counts, so a window had to be added in six places to be added at all.
+  `reportFor` is one pass owned by `util/`, and the scope lives beside `todayISO` in the facade: it is a
+  question the reader is asking, not a fact about the ledger, so it is neither persisted nor replayed.
+  The window is a calendar span, so the number stops moving at midnight and matches the statement it
+  would be compared against.
+- **The uncategorized share is a route, not a read-out.** It was the one figure reporting the report's own
+  trustworthiness with nowhere to go. `/cash/uncategorized` lists its bookings biggest-first — the figure
+  is weighted by amount, so the order matches what it is trying to fix — and each row is one tap from the
+  dialog that derives a rule. It inherits the report's window: arriving from "this month" and finding two
+  years would answer a question nobody asked.
+- **Fixed costs got their own route.** `/cash/schedules` owns the list, the monthly commitment, and
+  due-versus-confirmed for the current month; the burn-down keeps the allowance and its overdue warning
+  and links across. Marking one paid is a **button** — the one writing action on that page, and R5 says no
+  action is reachable by gesture alone. It advances the due date without touching the amount, where an
+  import does both: a cash-paid commitment has no booking to learn an amount from.
+- **The household lists are an `ion-tabs` outlet under a PATHLESS parent route, and the pathlessness is
+  load-bearing.** The bar moved to the bottom, where a thumb reaches it. `IonTabs` navigates to
+  `tabsPrefix/<tab>` and takes `tabsPrefix` from its own route's URL, so an empty path contributes no
+  segment and `/household/shopping` survives verbatim — which is what `deck.catalog.ts`'s three routes
+  and `ROUTE_BY_LIST_ID` point at, none of them checked by a compiler. Tidying that parent into
+  `path: 'tabs'` breaks all six silently. `list-settings` and `categories/:listId` stay siblings, not
+  children: a sub-page hides the bar, and Ionic would otherwise read either as a fourth tab stack. What
+  this replaced was an `ion-segment` whose value was bound to the route and which therefore had to guard
+  the navigation it echoed back — `ion-tab-bar` reads the router itself, so the guard, the switcher
+  component and `@shared`'s `[listSwitcher]` slot are all deleted rather than moved.

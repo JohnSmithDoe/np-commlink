@@ -32,11 +32,13 @@
           (ionChange)="onField($index, $any($event).detail.value)"
           data-testid="rule-condition-field"
         >
-          <ion-select-option value="description">
-            {{ 'cash.field.description' | translate }}
-          </ion-select-option>
+          @for (textField of textFields; track textField) {
+            <ion-select-option [value]="textField">
+              {{ fieldLabelKeys[textField] | translate }}
+            </ion-select-option>
+          }
           <ion-select-option value="amount">
-            {{ 'cash.field.amount' | translate }}
+            {{ fieldLabelKeys['amount'] | translate }}
           </ion-select-option>
         </ion-select>
 
@@ -79,7 +81,7 @@
         </ion-note>
       }
 
-      @if (field === 'description') {
+      @if (isTextField(field)) {
         <ion-item>
           <ion-toggle [formField]="condition.caseSensitive">
             {{ 'cash.label.case-sensitive' | translate }}
@@ -88,6 +90,11 @@
       }
     </div>
   }
+
+  <app-cash-match-preview
+    [conditionSet]="conditionSet()"
+    [categoryId]="draft().categoryId"
+  />
 
   <ion-button
     expand="block"

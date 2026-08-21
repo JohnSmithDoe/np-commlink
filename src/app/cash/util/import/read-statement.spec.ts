@@ -34,7 +34,7 @@ describe('readStatement', () => {
     const read = readStatement([camtDocument([camtEntry()])]);
 
     expect(read.kind === 'ok' && read.parsed.rows[0].key).toBe(
-      '20260106|-1999|REWE Markt GmbH — Einkauf|1'
+      '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|1'
     );
   });
 
@@ -53,8 +53,8 @@ describe('readStatement', () => {
     expect(
       read.kind === 'ok' && read.parsed.rows.map((row) => row.key)
     ).toEqual([
-      '20260106|-1999|REWE Markt GmbH — Einkauf|1',
-      '20260106|-1999|REWE Markt GmbH — Einkauf|2',
+      '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|1',
+      '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|2',
     ]);
   });
 

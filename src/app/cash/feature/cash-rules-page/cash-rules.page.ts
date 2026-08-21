@@ -56,6 +56,7 @@ import { categoryNameLookup } from '../../../@shared/util/categories/category.ut
 import { reorderedIds } from '../../../@shared/util/app.utils';
 
 import { CategoryId } from '../../../@shared/model/category.types';
+import { Marker } from '../../../@shared/model/app.types';
 
 @Component({
   selector: 'app-page-cash-rules',
@@ -101,6 +102,24 @@ export class CashRulesPage {
   readonly rules = computed(() =>
     this.#rules().toSorted((a, b) => a.order - b.order)
   );
+
+  readonly #stats = this.#facade.stats;
+
+  statLabelKey(rule: CashRule): Marker {
+    const stat = this.#stats()[rule.id];
+    if (!stat || stat.matched === 0) return marker('cash.rule.dead');
+    return stat.claimed === 0
+      ? marker('cash.rule.shadowed')
+      : marker('cash.rule.claims');
+  }
+
+  claimed(rule: CashRule): number {
+    return this.#stats()[rule.id]?.claimed ?? 0;
+  }
+
+  inert(rule: CashRule): boolean {
+    return this.claimed(rule) === 0;
+  }
 
   categoryName(id: CategoryId): string {
     return this.#categoryName()(id);

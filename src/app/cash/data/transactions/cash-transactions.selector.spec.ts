@@ -135,10 +135,14 @@ describe('cash transaction selectors', () => {
     it('searches within the account, never across the whole ledger', () => {
       const result = forAccount(
         [
-          mockCashTransaction({ id: 'mine', accountId: 'a', name: 'REWE' }),
-          mockCashTransaction({ id: 'theirs', accountId: 'b', name: 'REWE' }),
+          mockCashTransaction({ id: 'mine', accountId: 'a', name: 'NORDKAUF' }),
+          mockCashTransaction({
+            id: 'theirs',
+            accountId: 'b',
+            name: 'NORDKAUF',
+          }),
         ],
-        { searchQuery: 'REWE' }
+        { searchQuery: 'NORDKAUF' }
       );
 
       expect(result.map((txn) => txn.id)).toEqual(['mine']);

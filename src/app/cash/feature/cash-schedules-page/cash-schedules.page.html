@@ -1,0 +1,120 @@
+<app-page-header
+  label="page-title.cash-schedules"
+  backHref="/cash"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  <div class="cash-networth">
+    <span class="cash-networth__label">
+      {{ 'cash.schedule.per-month' | translate }}
+    </span>
+    <span class="cash-networth__value" data-testid="schedules-monthly">
+      {{ -commitment().monthlyCents | moneyEur }}
+    </span>
+  </div>
+
+  <ion-list lines="full" class="cash-schedules__breakdown">
+    <ion-item>
+      <ion-label>{{ 'cash.schedule.due-this-month' | translate }}</ion-label>
+      <ion-note slot="end">
+        {{ -commitment().dueThisMonthCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.schedule.confirmed' | translate }}</ion-label>
+      <ion-note slot="end" data-testid="schedules-confirmed">
+        {{ -commitment().confirmedCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.schedule.still-open' | translate }}</ion-label>
+      <ion-note slot="end" [color]="openCents() > 0 ? 'warning' : undefined">
+        {{ -openCents() | moneyEur }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header>{{ 'cash.section.schedules' | translate }}</ion-list-header>
+  @if (schedules().length) {
+    <ion-list lines="full">
+      @for (schedule of schedules(); track schedule.id) {
+        <ion-item-sliding>
+          <ion-item
+            [button]="true"
+            [detail]="false"
+            (click)="openEdit(schedule)"
+            data-testid="cash-schedule-row"
+          >
+            <ion-label class="ion-text-wrap">
+              <h2>{{ schedule.name }}</h2>
+              <p>
+                {{ categoryName(schedule) }} ·
+                {{
+                  'cash.period.months'
+                    | translate: { count: schedule.periodMonths }
+                }}
+              </p>
+              <p [class.cash-schedules__overdue]="overdue(schedule)">
+                @if (overdue(schedule)) {
+                  {{ 'cash.schedule.was-due' | translate }}
+                } @else {
+                  {{ 'cash.schedule.next-due' | translate }}
+                }
+                {{ schedule.nextDueISO | localizedDate }}
+                @if (confirmed(schedule)) {
+                  · {{ 'cash.schedule.seen' | translate }}
+                }
+              </p>
+            </ion-label>
+            <ion-note slot="end" class="cash-schedules__amount">
+              {{ schedule.amountCents | moneyEur }}
+            </ion-note>
+            <ion-buttons slot="end">
+              <ion-button
+                (click)="markSeen(schedule); $event.stopPropagation()"
+                [attr.aria-label]="'cash.a11y.mark-seen' | translate"
+                data-testid="schedule-mark-seen"
+              >
+                <ion-icon
+                  slot="icon-only"
+                  name="checkmark-done-outline"
+                  aria-hidden="true"
+                />
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option
+              color="danger"
+              (click)="confirmDelete(schedule)"
+              [attr.aria-label]="'cash.a11y.delete-schedule' | translate"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="trash-outline"
+                aria-hidden="true"
+              />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="cash-hint">
+      {{ 'cash.schedules.empty' | translate }}
+    </ion-note>
+  }
+
+  <ion-button
+    expand="block"
+    fill="outline"
+    class="ion-margin-top"
+    (click)="openNew()"
+  >
+    <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+    {{ 'cash.schedule.add' | translate }}
+  </ion-button>
+</ion-content>
+
+<app-edit-cash-schedule-dialog />

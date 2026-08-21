@@ -10,11 +10,20 @@
  *
  * `filterBy` stays free for the user-armed chip, which is why the route's
  * category is not written into it.
+ *
+ * A ledger has ONE order, so `scopedTo` overwrites `sort` rather than the
+ * toolbar offering it. Dropping the buttons alone would not pin anything:
+ * `itemComparator` falls back to `compareByName` when `sort` is absent, so
+ * the ledger would read reverse-alphabetically and no control could fix it.
+ * Overwriting here also makes whatever a previous version persisted inert.
  * ───────────────────────────────────────────────────────────────── */
 import { createSelector } from '@ngrx/store';
 import { selectRouteParams as selectRouteParameters } from '../../../@shared/data/router/router.selector';
 import { CategoryId } from '../../../@shared/model/category.types';
-import { SearchResult } from '../../../@shared/model/item-list.types';
+import {
+  ItemListSort,
+  SearchResult,
+} from '../../../@shared/model/item-list.types';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
@@ -33,12 +42,18 @@ export type AccountTransaction = CashTransaction & {
   reconciledManualId?: string;
 };
 
+const NEWEST_FIRST: ItemListSort = {
+  sortBy: 'dateISO',
+  sortDirection: 'desc',
+};
+
 const scopedTo = (
   state: CashTransactionsState,
   keep: (txn: CashTransaction) => boolean
 ): CashTransactionsState => ({
   ...state,
   items: state.items.filter((txn) => keep(txn)),
+  sort: NEWEST_FIRST,
 });
 
 const withReconciledLeg = (

@@ -8,7 +8,7 @@ import { planImport } from './plan-import';
 const row = (over: Partial<ParsedRow> = {}): ParsedRow => ({
   dateISO: '2026-01-06T00:00:00+01:00',
   amountCents: -4299,
-  description: 'REWE',
+  description: 'NORDKAUF',
   status: 'confirmed',
   key: '2026010638472910064',
   ...over,
@@ -24,7 +24,7 @@ const imported = (over = {}) =>
     accountId: 'acc',
     dateISO: '2026-01-06T00:00:00+01:00',
     amountCents: -4299,
-    name: 'REWE',
+    name: 'NORDKAUF',
     source: 'imported',
     importKey: '2026010638472910064',
     ...over,
@@ -41,6 +41,34 @@ const plan = (
 ) => planImport(parsed(rows), 'acc', [], existing, 'batch', ids());
 
 describe('planImport', () => {
+  it('names a row after the counterparty, not the statement line', () => {
+    const [txn] = plan([
+      row({
+        description: 'NORDKAUF Markt GmbH — Einkauf Karte 1 27.05.',
+        counterpartyName: 'NORDKAUF Markt GmbH',
+        remittanceInfo: 'Einkauf Karte 1 27.05.',
+      }),
+    ]).toImport;
+
+    expect(txn).toMatchObject({
+      name: 'NORDKAUF Markt GmbH',
+      remittanceInfo: 'Einkauf Karte 1 27.05.',
+    });
+  });
+
+  it('falls back to the purpose, then the whole line', () => {
+    const [withPurpose] = plan([
+      row({
+        description: 'ENTGELT — Kontoführung',
+        remittanceInfo: 'Kontoführung',
+      }),
+    ]).toImport;
+    expect(withPurpose?.name).toBe('Kontoführung');
+
+    const [bare] = plan([row({ description: 'BARGELDAUSZAHLUNG' })]).toImport;
+    expect(bare?.name).toBe('BARGELDAUSZAHLUNG');
+  });
+
   it('builds imported transactions with ids, batch id and the parsed status', () => {
     const result = plan([
       row({ status: 'pending', key: '2026010638472910064' }),
@@ -105,7 +133,7 @@ describe('planImport', () => {
     const rule = mockCashRule({
       categoryId: 'stuff',
       match: 'any',
-      conditions: [{ field: 'description', op: 'contains', value: 'REWE' }],
+      conditions: [{ field: 'description', op: 'contains', value: 'NORDKAUF' }],
     });
     const result = planImport(
       parsed([row()]),

@@ -1,0 +1,45 @@
+@if (ready()) {
+  @let matches = summary();
+  @if (matches.matched === 0) {
+    <ion-note class="cash-match-preview__empty" data-testid="match-preview">
+      {{ 'cash.preview.none' | translate }}
+    </ion-note>
+  } @else {
+    <ion-accordion-group class="cash-match-preview" data-testid="match-preview">
+      <ion-accordion value="matches">
+        <ion-item slot="header">
+          <ion-label class="ion-text-wrap">
+            <p class="cash-match-preview__count">
+              {{
+                'cash.preview.count'
+                  | translate
+                    : { matched: matches.matched, total: matches.total }
+              }}
+            </p>
+            @if (matches.conflicting > 0) {
+              <p class="cash-match-preview__warn">
+                {{
+                  'cash.preview.conflicting'
+                    | translate: { count: matches.conflicting }
+                }}
+              </p>
+            }
+          </ion-label>
+        </ion-item>
+        <div slot="content" class="cash-match-preview__body">
+          @for (txn of matches.sample; track txn.id) {
+            <div class="cash-match-preview__row">
+              <span class="cash-match-preview__name">{{ txn.name }}</span>
+              <span class="cash-match-preview__date">
+                {{ txn.dateISO | localizedDate }}
+              </span>
+              <span class="cash-match-preview__amount">
+                {{ txn.amountCents | moneyEur }}
+              </span>
+            </div>
+          }
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  }
+}

@@ -37,17 +37,22 @@ import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-
 import { CASH_RULES_LIST_ID } from '../../model/cash.types';
 import {
   CashRule,
+  ConditionSet,
+  FIELD_LABEL_KEYS,
   FilterField,
   FilterOperation,
+  isTextFilterField,
   OP_LABEL_KEYS,
   RuleForm,
+  TEXT_FILTER_FIELDS,
 } from '../../model/rule.types';
 import { CashRulesFacade } from '../../data';
 import { CashCategoryPickerComponent } from '../../smart-ui/cash-category-picker/cash-category-picker.component';
+import { CashMatchPreviewComponent } from '../../smart-ui/match-preview/match-preview.component';
 import { createCashRule } from '../../util/cash.factory';
 import {
   blankCondition,
-  DEFAULT_OP_BY_FIELD,
+  defaultOpFor,
   opsFor,
   ruleRulesFor,
   toCondition,
@@ -76,6 +81,7 @@ import {
     TranslatePipe,
     ItemEditModalComponent,
     CashCategoryPickerComponent,
+    CashMatchPreviewComponent,
   ],
 })
 export class EditCashRuleDialogComponent extends BaseEditItemDialog<
@@ -89,11 +95,21 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
   readonly siblings = this.#facade.allItems;
 
   readonly opLabelKeys = OP_LABEL_KEYS;
+  readonly fieldLabelKeys = FIELD_LABEL_KEYS;
+  readonly textFields = TEXT_FILTER_FIELDS;
   readonly opsFor: (field: FilterField) => readonly FilterOperation[] = opsFor;
+  readonly isTextField = isTextFilterField;
 
   protected override uniqueName(): boolean {
     return false;
   }
+
+  readonly conditionSet = computed<ConditionSet>(() => ({
+    match: this.draft().match,
+    conditions: this.draft().conditions.map((condition) =>
+      toCondition(condition, this.#language())
+    ),
+  }));
 
   readonly amountInvalidRows = computed(() =>
     [...this.form.conditions].map((condition) =>
@@ -164,7 +180,7 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
     this.patch({
       conditions: this.draft().conditions.map((condition, at) =>
         at === index
-          ? { ...condition, field, op: DEFAULT_OP_BY_FIELD[field] }
+          ? { ...condition, field, op: defaultOpFor(field) }
           : condition
       ),
     });

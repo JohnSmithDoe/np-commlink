@@ -24,14 +24,14 @@ import { CashAccountPage } from './cash-account.page';
 
 const ACCOUNT_ID = 'cash-account-1';
 
-const REWE_TEXT = 'REWE Markt GmbH — Einkauf';
-const REWE_ENTRY = camtEntry({ ref: 'ref-rewe' });
+const NORDKAUF_TEXT = 'NORDKAUF Markt GmbH';
+const NORDKAUF_ENTRY = camtEntry({ ref: 'ref-nordkauf' });
 const SALARY_ENTRY = camtEntry({
   ref: 'ref-salary',
   amount: '3570.00',
   direction: 'CRDT',
   date: '2026-01-11',
-  name: 'Muster GmbH',
+  name: 'Kestrel Systems GmbH',
   purpose: 'Honorar',
 });
 const UNREADABLE_ENTRY = '<Ntry><Amt Ccy="EUR">nonsense</Amt></Ntry>';
@@ -142,7 +142,7 @@ describe('CashAccountPage', () => {
     setup(importState());
 
     await component.importStatement(
-      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+      filePicked(camtFile(NORDKAUF_ENTRY, SALARY_ENTRY))
     );
 
     expect(create).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe('CashAccountPage', () => {
         accountId: ACCOUNT_ID,
         dateISO: expect.stringContaining('2026-01-06'),
         amountCents: -1999,
-        name: REWE_TEXT,
+        name: NORDKAUF_TEXT,
         source: 'imported',
         status: 'confirmed',
       }),
@@ -172,7 +172,7 @@ describe('CashAccountPage', () => {
     setup(importState());
 
     await component.importStatement(
-      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+      filePicked(camtFile(NORDKAUF_ENTRY, SALARY_ENTRY))
     );
 
     const [first, second] = previewProperties().transactions;
@@ -188,15 +188,15 @@ describe('CashAccountPage', () => {
           id: 'already-imported',
           dateISO: '2026-01-06',
           amountCents: -1999,
-          name: REWE_TEXT,
+          name: NORDKAUF_TEXT,
           source: 'imported',
-          importKey: 'ref-rewe',
+          importKey: 'ref-nordkauf',
         }),
       ])
     );
 
     await component.importStatement(
-      filePicked(camtFile(REWE_ENTRY, SALARY_ENTRY))
+      filePicked(camtFile(NORDKAUF_ENTRY, SALARY_ENTRY))
     );
 
     const { transactions, duplicates } = previewProperties();
@@ -208,7 +208,7 @@ describe('CashAccountPage', () => {
     setup(importState());
 
     await component.importStatement(
-      filePicked(camtFile(REWE_ENTRY, UNREADABLE_ENTRY))
+      filePicked(camtFile(NORDKAUF_ENTRY, UNREADABLE_ENTRY))
     );
 
     const { transactions, rejected } = previewProperties();
@@ -218,7 +218,7 @@ describe('CashAccountPage', () => {
 
   it('clears the file input so the same file can be picked again', async () => {
     setup(importState());
-    const event = filePicked(camtFile(REWE_ENTRY));
+    const event = filePicked(camtFile(NORDKAUF_ENTRY));
 
     await component.importStatement(event);
 
@@ -246,7 +246,7 @@ describe('CashAccountPage', () => {
       })
     );
 
-    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+    await component.importStatement(filePicked(camtFile(NORDKAUF_ENTRY)));
 
     expect(create).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith(
@@ -259,7 +259,7 @@ describe('CashAccountPage', () => {
   it('adopts the IBAN of the first statement an account with none imports', async () => {
     setup(mockCashState({ accounts: [mockCashAccount()] }));
 
-    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+    await component.importStatement(filePicked(camtFile(NORDKAUF_ENTRY)));
 
     expect(dispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -272,7 +272,7 @@ describe('CashAccountPage', () => {
   it('leaves the IBAN alone once the account already carries it', async () => {
     setup(importState());
 
-    await component.importStatement(filePicked(camtFile(REWE_ENTRY)));
+    await component.importStatement(filePicked(camtFile(NORDKAUF_ENTRY)));
 
     expect(dispatch).not.toHaveBeenCalledWith(
       expect.objectContaining({
@@ -300,7 +300,7 @@ describe('CashAccountPage', () => {
     setup(importState());
 
     await component.importStatement(
-      filePicked(camtFile(REWE_ENTRY), camtFile(SALARY_ENTRY))
+      filePicked(camtFile(NORDKAUF_ENTRY), camtFile(SALARY_ENTRY))
     );
 
     expect(previewProperties().transactions).toHaveLength(2);

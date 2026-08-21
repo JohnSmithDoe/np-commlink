@@ -6,7 +6,8 @@ import {
 } from '../../../@shared/util/item-lists/list.selector';
 import { CashRulesState } from '../../model/cash.types';
 import { CashRule } from '../../model/rule.types';
-import { selectCashState } from '../cash.selector';
+import { RuleStat, ruleStats } from '../../util/categorize.utils';
+import { selectAllTransactions, selectCashState } from '../cash.selector';
 
 const selectRulesState = createSelector(
   selectCashState,
@@ -21,6 +22,13 @@ export const selectRuleItems = createSelector(
 const selectRulesSearchResult = createSelector(
   selectRulesState,
   (state): SearchResult<CashRule> | undefined => filterListBySearchQuery(state)
+);
+
+export const selectRuleStats = createSelector(
+  selectAllTransactions,
+  selectRuleItems,
+  (transactions, rules): Record<string, RuleStat> =>
+    ruleStats(transactions, rules)
 );
 
 export const selectRulesListItems = createSelector(

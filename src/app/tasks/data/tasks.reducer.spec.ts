@@ -33,15 +33,12 @@ describe('tasksReducer', () => {
     expect(state.list.items[0].name).toBe('New');
   });
 
-  it('trims the search query and only updates when it changed', () => {
+  it('stores the search query verbatim and only updates when it changed', () => {
     const start = mockTasksState({ list: { searchQuery: 'milk' } });
-    const unchanged = tasksReducer(
-      start,
-      TasksActions.updateSearch('  milk  ')
-    );
+    const unchanged = tasksReducer(start, TasksActions.updateSearch('milk'));
     expect(unchanged).toBe(start);
     const changed = tasksReducer(start, TasksActions.updateSearch('  bread  '));
-    expect(changed.list.searchQuery).toBe('bread');
+    expect(changed.list.searchQuery).toBe('  bread  ');
   });
 
   it('sets a filter', () => {

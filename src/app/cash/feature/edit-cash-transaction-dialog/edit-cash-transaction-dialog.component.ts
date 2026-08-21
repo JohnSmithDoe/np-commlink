@@ -7,6 +7,17 @@
  * `uniqueName` is off because a statement repeats its descriptions by the
  * dozen: the same string every week, and refusing the second one would
  * refuse the truth.
+ *
+ * Deriving COMMITS the booking first, whenever the form is saveable. The
+ * flow it serves is "file this one, then file the rest like it", so the
+ * category on screen is the one the rule must carry — and a rule filing
+ * everything except the booking it came from is the split brain the commit
+ * avoids. `ItemDialogService` holds one request, so opening the derived
+ * dialog closes this one on its own.
+ *
+ * `categoryManual` is stamped only when the category CHANGED here. It means
+ * "the user chose this, do not overrule it", and setting it on every save
+ * froze a booking against every future rule because somebody fixed its date.
  * ───────────────────────────────────────────────────────────────── */
 import {
   ChangeDetectionStrategy,
@@ -21,8 +32,11 @@ import {
   validate,
 } from '@angular/forms/signals';
 import {
+  IonButton,
+  IonIcon,
   IonInput,
   IonItem,
+  IonListHeader,
   IonNote,
   IonSegment,
   IonSegmentButton,
@@ -30,17 +44,24 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
+import { addIcons } from 'ionicons';
+import { funnelOutline, repeatOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { CategoryId } from '../../../@shared/model/category.types';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
+import { CashBankDetailsComponent } from '../../ui/bank-details/bank-details.component';
 import { requireParseableDate } from '../../../@shared/util/forms/form-rules';
 import { CASH_TRANSACTIONS_LIST_ID } from '../../model/cash.types';
 import {
   CashTransaction,
   CashTransactionStatus,
 } from '../../model/transaction.types';
-import { CashTransactionsFacade } from '../../data';
+import {
+  CashRulesFacade,
+  CashSchedulesFacade,
+  CashTransactionsFacade,
+} from '../../data';
 import { CashCategoryPickerComponent } from '../../smart-ui/cash-category-picker/cash-category-picker.component';
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { categoryIdOf } from '../../util/cash-category.utils';
@@ -66,14 +87,18 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
+    IonButton,
+    IonIcon,
     IonItem,
     IonInput,
+    IonListHeader,
     IonNote,
     IonSegment,
     IonSegmentButton,
     IonToggle,
     TranslatePipe,
     ItemEditModalComponent,
+    CashBankDetailsComponent,
     CashCategoryPickerComponent,
     MoneyInputComponent,
   ],
@@ -83,12 +108,19 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
   TransactionForm
 > {
   readonly #facade = inject(CashTransactionsFacade);
+  readonly #rules = inject(CashRulesFacade);
+  readonly #schedules = inject(CashSchedulesFacade);
 
   protected readonly listId: ItemListId = CASH_TRANSACTIONS_LIST_ID;
   readonly siblings = this.#facade.allItems;
 
   protected override uniqueName(): boolean {
     return false;
+  }
+
+  constructor() {
+    super();
+    addIcons({ funnelOutline, repeatOutline });
   }
 
   readonly amountInvalid = computed(() =>
@@ -132,6 +164,7 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
     const status: CashTransactionStatus = draft.pending
       ? 'pending'
       : 'confirmed';
+    const reclassified = categoryId !== categoryIdOf(seed);
     return {
       ...seed,
       name: draft.name.trim(),
@@ -139,11 +172,34 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
       dateISO: dayjs(draft.date).format(),
       status,
       categoryIds: categoryId ? [categoryId] : undefined,
-      categoryManual: true,
+      categoryManual: reclassified || seed.categoryManual,
     };
   }
 
   protected save(item: CashTransaction): void {
     this.#facade.saveItem(item);
+  }
+
+  readonly canDerive = computed(() => {
+    const seed = this.seedItem();
+    return !!seed && this.siblings().some(({ id }) => id === seed.id);
+  });
+
+  deriveRule(): void {
+    const txn = this.#committed();
+    if (txn) this.#rules.deriveFrom(txn);
+  }
+
+  deriveSchedule(): void {
+    const txn = this.#committed();
+    if (txn) this.#schedules.deriveFrom(txn);
+  }
+
+  #committed(): CashTransaction | undefined {
+    const seed = this.seedItem();
+    if (!seed || !this.canSave()) return seed;
+    const edited = this.fromForm(this.draft(), seed);
+    this.#facade.saveItem(edited);
+    return edited;
   }
 }

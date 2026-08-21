@@ -2,12 +2,14 @@ import { CashActions } from './cash.actions';
 import { CashAccountsActions } from './accounts/cash-accounts.actions';
 import { CashCategoriesActions } from './categories/cash-categories.actions';
 import { CashRulesActions } from './rules/cash-rules.actions';
+import { CashSchedulesActions } from './schedules/cash-schedules.actions';
 import { CashTransactionsActions } from './transactions/cash-transactions.actions';
 import { cashReducer } from './cash.reducer';
 import {
   mockCashAccount,
   mockCashCategoryList,
   mockCashRule,
+  mockCashSchedule,
   mockCashState,
   mockCashTransaction,
 } from '../testing/cash.test-data';
@@ -258,6 +260,89 @@ describe('cashReducer', () => {
     expect(state.rules.items.map((rule) => rule.id)).toEqual(['r2']);
   });
 
+  it("removing a category drops a schedule's reference but keeps the schedule", () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const start = mockCashState({
+      categories: mockCashCategoryList({ items: [rent] }),
+      schedules: [mockCashSchedule({ categoryId: 'rent' })],
+    });
+
+    const state = cashReducer(start, CashCategoriesActions.removeItem(rent));
+
+    expect(state.schedules.items).toHaveLength(1);
+    expect(state.schedules.items[0].categoryId).toBeUndefined();
+  });
+
+  it('merging two categories remaps the schedules that pointed at the loser', () => {
+    const rent = mockCategory({ id: 'rent', name: 'Rent' });
+    const housing = mockCategory({ id: 'housing', name: 'Housing' });
+    const start = mockCashState({
+      categories: mockCashCategoryList({ items: [rent, housing] }),
+      schedules: [mockCashSchedule({ categoryId: 'rent' })],
+    });
+
+    const state = cashReducer(
+      start,
+      CashCategoriesActions.updateItem({ ...rent, name: 'Housing' })
+    );
+
+    expect(state.schedules.items[0].categoryId).toBe('housing');
+  });
+
+  it('learns a schedule amount and advances its due date in one action', () => {
+    const start = mockCashState({
+      schedules: [
+        mockCashSchedule({
+          amountCents: -90_000,
+          periodMonths: 1,
+          nextDueISO: '2026-02-01T00:00:00+01:00',
+        }),
+      ],
+    });
+
+    const state = cashReducer(
+      start,
+      CashSchedulesActions.applyAmountChanges([
+        {
+          scheduleId: 'cash-schedule-1',
+          fromCents: -90_000,
+          toCents: -95_000,
+          transactionId: 't1',
+          seenISO: '2026-02-03T00:00:00+01:00',
+        },
+      ])
+    );
+
+    const [schedule] = state.schedules.items;
+    expect(schedule.amountCents).toBe(-95_000);
+    expect(schedule.nextDueISO).toContain('2026-03-01');
+    expect(schedule.lastSeenISO).toBe('2026-02-03T00:00:00+01:00');
+  });
+
+  it('leaves an unmatched schedule alone when amounts are applied', () => {
+    const start = mockCashState({
+      schedules: [
+        mockCashSchedule(),
+        mockCashSchedule({ id: 's2', name: 'Strom' }),
+      ],
+    });
+
+    const state = cashReducer(
+      start,
+      CashSchedulesActions.applyAmountChanges([
+        {
+          scheduleId: 'cash-schedule-1',
+          fromCents: -90_000,
+          toCents: -95_000,
+          transactionId: 't1',
+          seenISO: '2026-02-03T00:00:00+01:00',
+        },
+      ])
+    );
+
+    expect(state.schedules.items[1]).toBe(start.schedules.items[1]);
+  });
+
   it('prunes rules orphaned by an older build when hydrating', () => {
     const food = mockCategory({ id: 'food', name: 'Food' });
     const stored = mockCashState({
@@ -293,7 +378,7 @@ describe('cashReducer', () => {
       ...stored,
       transactions: {
         ...stored.transactions,
-        searchQuery: 'REWE',
+        searchQuery: 'NORDKAUF',
         filterBy: 'groceries',
       },
     };

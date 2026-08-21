@@ -22,33 +22,6 @@ export const householdRoutes: Routes = [
           ),
       },
       {
-        path: 'shopping',
-        title: marker('page-title.household-shopping'),
-        data: { listId: '_shopping' },
-        loadComponent: () =>
-          import('../feature/shopping-page/shopping.page').then(
-            (m) => m.ShoppingPage
-          ),
-      },
-      {
-        path: 'storage',
-        title: marker('page-title.household-storage'),
-        data: { listId: '_storage' },
-        loadComponent: () =>
-          import('../feature/storage-page/storage.page').then(
-            (m) => m.StoragePage
-          ),
-      },
-      {
-        path: 'products',
-        title: marker('page-title.household-products'),
-        data: { listId: '_products' },
-        loadComponent: () =>
-          import('../feature/products-page/products.page').then(
-            (m) => m.ProductsPage
-          ),
-      },
-      {
         path: 'categories/:listId',
         title: marker('page-title.categories'),
         providers: provideCatalogFacade(HouseholdCategoriesPageFacade),
@@ -56,6 +29,42 @@ export const householdRoutes: Routes = [
           import('../../@shared/feature/categories/category-list-page/category-list.page').then(
             (m) => m.CategoryListPage
           ),
+      },
+      {
+        path: '',
+        loadComponent: () =>
+          import('../feature/household-tabs-page/household-tabs.page').then(
+            (m) => m.HouseholdTabsPage
+          ),
+        children: [
+          {
+            path: 'shopping',
+            title: marker('page-title.household-shopping'),
+            data: { listId: '_shopping' },
+            loadComponent: () =>
+              import('../feature/shopping-page/shopping.page').then(
+                (m) => m.ShoppingPage
+              ),
+          },
+          {
+            path: 'storage',
+            title: marker('page-title.household-storage'),
+            data: { listId: '_storage' },
+            loadComponent: () =>
+              import('../feature/storage-page/storage.page').then(
+                (m) => m.StoragePage
+              ),
+          },
+          {
+            path: 'products',
+            title: marker('page-title.household-products'),
+            data: { listId: '_products' },
+            loadComponent: () =>
+              import('../feature/products-page/products.page').then(
+                (m) => m.ProductsPage
+              ),
+          },
+        ],
       },
     ],
   },

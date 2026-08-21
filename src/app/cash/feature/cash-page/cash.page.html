@@ -6,6 +6,16 @@
 >
   <ion-buttons headerEnd slot="end">
     <ion-button
+      routerLink="/cash/burndown"
+      [attr.aria-label]="'cash.a11y.burndown' | translate"
+    >
+      <ion-icon
+        slot="icon-only"
+        name="speedometer-outline"
+        aria-hidden="true"
+      />
+    </ion-button>
+    <ion-button
       routerLink="/cash/report"
       [attr.aria-label]="'cash.a11y.report' | translate"
     >

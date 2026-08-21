@@ -152,6 +152,10 @@ ion-toolbar {
   --border-width: 0 0 1px 0;
 }
 
+ion-item.ion-color ion-note {
+  --color: var(--ion-color-contrast); // else the grey step, on a swatch
+}
+
 ion-menu ion-item {
   --color: var(--sr-text);
 }

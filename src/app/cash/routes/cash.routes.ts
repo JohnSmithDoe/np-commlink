@@ -23,11 +23,35 @@ export const cashRoutes: Routes = [
           ),
       },
       {
+        path: 'burndown',
+        title: marker('page-title.cash-burndown'),
+        loadComponent: () =>
+          import('../feature/cash-burndown-page/cash-burndown.page').then(
+            (m) => m.CashBurndownPage
+          ),
+      },
+      {
         path: 'report',
         title: marker('page-title.cash-report'),
         loadComponent: () =>
           import('../feature/cash-report-page/cash-report.page').then(
             (m) => m.CashReportPage
+          ),
+      },
+      {
+        path: 'schedules',
+        title: marker('page-title.cash-schedules'),
+        loadComponent: () =>
+          import('../feature/cash-schedules-page/cash-schedules.page').then(
+            (m) => m.CashSchedulesPage
+          ),
+      },
+      {
+        path: 'uncategorized',
+        title: marker('page-title.cash-uncategorized'),
+        loadComponent: () =>
+          import('../feature/cash-uncategorized-page/cash-uncategorized.page').then(
+            (m) => m.CashUncategorizedPage
           ),
       },
       {

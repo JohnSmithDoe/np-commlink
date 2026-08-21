@@ -151,6 +151,25 @@ test.describe('storage list', () => {
     await expect(listRow(page, /Cucumber/)).toHaveCount(0);
   });
 
+  test('keeps spaces typed into the query, across a debounce flush', async ({
+    page,
+  }) => {
+    const input = searchInput(page);
+    await input.click();
+    await input.pressSequentially('Hell');
+    await page.waitForTimeout(400);
+    await input.pressSequentially('o ');
+    await page.waitForTimeout(400);
+    await input.pressSequentially('World');
+    await expect(input).toHaveValue('Hello World');
+
+    await input.fill('');
+    await page.waitForTimeout(400);
+    await input.pressSequentially('w    ');
+    await page.waitForTimeout(400);
+    await expect(input).toHaveValue('w    ');
+  });
+
   test('says why the add button greys out on an exact match', async ({
     page,
   }) => {

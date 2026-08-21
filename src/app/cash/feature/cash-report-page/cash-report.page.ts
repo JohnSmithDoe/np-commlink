@@ -10,15 +10,24 @@ import {
   IonLabel,
   IonList,
   IonNote,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
 import dayjs from 'dayjs';
+import { RouterLink } from '@angular/router';
 import { CashReportFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
+import {
+  REPORT_SCOPES,
+  ReportScope,
+  SCOPE_LABEL_KEYS,
+} from '../../model/report.types';
+import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
 
 Chart.register(...registerables);
@@ -30,13 +39,17 @@ Chart.register(...registerables);
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
+    RouterLink,
     IonContent,
     IonList,
     IonItem,
     IonLabel,
     IonNote,
+    IonSegment,
+    IonSegmentButton,
     TranslatePipe,
     MoneyEurPipe,
+    LocalizedDatePipe,
     BaseChartDirective,
   ],
 })
@@ -45,9 +58,23 @@ export class CashReportPage {
   readonly #translate = inject(TranslateService);
   readonly #colors = chartColors();
 
+  readonly scopes = REPORT_SCOPES;
+  readonly scopeLabelKeys = SCOPE_LABEL_KEYS;
+  readonly scope = this.#facade.scope;
   readonly totals = this.#facade.totals;
   readonly #monthly = this.#facade.monthlyTotals;
   readonly spendByCategory = this.#facade.spendByCategory;
+  readonly biggestExpenses = this.#facade.biggestExpenses;
+  readonly spendByCounterparty = this.#facade.spendByCounterparty;
+  readonly uncategorized = this.#facade.uncategorized;
+
+  constructor() {
+    this.#facade.refreshToday();
+  }
+
+  selectScope(scope: ReportScope): void {
+    this.#facade.setScope(scope);
+  }
 
   readonly hasData = computed(
     () => this.#monthly().length > 0 || this.spendByCategory().length > 0

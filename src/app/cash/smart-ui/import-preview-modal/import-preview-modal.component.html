@@ -32,6 +32,25 @@
     </ion-note>
   }
 
+  @if (amountChanges.length) {
+    <ion-list lines="full" class="cash-import__changes">
+      <ion-list-header>
+        {{ 'cash.import.amount-changes' | translate }}
+      </ion-list-header>
+      @for (change of amountChanges; track change.scheduleId) {
+        <ion-item>
+          <ion-label>
+            <h2>{{ scheduleName(change.scheduleId) }}</h2>
+            <p>
+              {{ change.fromCents | moneyEur }} →
+              {{ change.toCents | moneyEur }}
+            </p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
   @if (transactions.length) {
     <ion-list lines="full">
       @for (txn of transactions; track txn.id) {

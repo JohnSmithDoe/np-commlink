@@ -155,8 +155,10 @@ describe('updateListSearch', () => {
     expect(updateListSearch(probeList(), 'milk').searchQuery).toBe('milk');
   });
 
-  it('trims what it stores, so the four list domains agree', () => {
-    expect(updateListSearch(probeList(), '  milk  ').searchQuery).toBe('milk');
+  it('stores the query verbatim — trimming here would eat the space the user is still typing', () => {
+    expect(updateListSearch(probeList(), '  milk  ').searchQuery).toBe(
+      '  milk  '
+    );
   });
 
   it('returns the SAME state object when the query is unchanged', () => {
@@ -164,9 +166,9 @@ describe('updateListSearch', () => {
     expect(updateListSearch(state, 'milk')).toBe(state);
   });
 
-  it('treats a whitespace-only change as unchanged', () => {
+  it('keeps a trailing space, so the next keystroke lands after it', () => {
     const state = probeList({ searchQuery: 'milk' });
-    expect(updateListSearch(state, 'milk ')).toBe(state);
+    expect(updateListSearch(state, 'milk ').searchQuery).toBe('milk ');
   });
 
   it('clears the query with an empty string', () => {

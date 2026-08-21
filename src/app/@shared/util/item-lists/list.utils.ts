@@ -81,12 +81,7 @@ export const hydratedList = <
 export const updateListSearch = <T extends { searchQuery?: string }>(
   state: T,
   searchQuery?: string
-): T => {
-  const trimmed = searchQuery?.trim();
-  return trimmed === state.searchQuery
-    ? state
-    : { ...state, searchQuery: trimmed };
-};
+): T => (searchQuery === state.searchQuery ? state : { ...state, searchQuery });
 
 export const updatedSearchQuery = (
   item: BaseItem,

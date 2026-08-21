@@ -127,11 +127,11 @@ export abstract class BaseEditItemDialog<
     const item = this.fromForm(this.draft(), this.seedItem() ?? this.blank());
     this.save(item);
     this.#emojiRecents.remember(extractEmoji(item.name));
-    this.host.close();
+    this.host.close(this.listId);
   }
 
   close() {
-    this.host.close();
+    this.host.close(this.listId);
   }
 }
 

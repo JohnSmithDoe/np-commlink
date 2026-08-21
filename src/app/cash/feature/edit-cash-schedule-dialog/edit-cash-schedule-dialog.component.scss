@@ -1,0 +1,9 @@
+@use 'theme/cash';
+
+.cash-schedule-dialog__match {
+  margin: var(--space-3) 0;
+}
+
+.cash-condition {
+  @include cash.condition-row;
+}

@@ -20,7 +20,6 @@ import {
   BaseListPageFacade,
   itemListCommands,
 } from '../../../@shared/data/item-lists/list-page.facade.base';
-import { TRANSACTION_SORT_OPTIONS } from '../../model/transaction.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashAccountsFacade } from '../accounts/cash-accounts.facade';
 import { CashCategoriesFacade } from '../categories/cash-categories.facade';
@@ -58,7 +57,7 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
   );
 
   readonly catalog = this.#categories.allItems;
-  readonly sortOptions = signal(TRANSACTION_SORT_OPTIONS);
+  readonly sortable = signal(false);
 
   readonly account = computed(() =>
     this.#accounts.allItems().find(({ id }) => id === this.accountId())
@@ -68,6 +67,18 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
     () => this.#accounts.balances()[this.accountId()] ?? 0
   );
   readonly canImport = computed(() => this.account()?.kind !== 'cash');
+
+  readonly pendingCount = computed(
+    () =>
+      this.#transactions
+        .allItems()
+        .filter(
+          (txn) =>
+            txn.accountId === this.accountId() &&
+            txn.status === 'pending' &&
+            !txn.matchedTxnId
+        ).length
+  );
 
   showCreateDialog(): void {
     this.#transactions.showCreateDialog(

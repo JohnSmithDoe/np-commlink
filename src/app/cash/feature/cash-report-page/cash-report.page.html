@@ -1,6 +1,19 @@
 <app-page-header label="page-title.cash-report" backHref="/cash" hideButtons />
 
 <ion-content class="ion-padding">
+  <ion-segment
+    class="cash-report__scope"
+    [value]="scope()"
+    (ionChange)="selectScope($any($event).detail.value)"
+    data-testid="report-scope"
+  >
+    @for (option of scopes; track option) {
+      <ion-segment-button [value]="option">
+        {{ scopeLabelKeys[option] | translate }}
+      </ion-segment-button>
+    }
+  </ion-segment>
+
   @if (hasData()) {
     <div class="cash-report__totals">
       <div class="cash-report__stat">
@@ -28,6 +41,25 @@
         }}</span>
       </div>
     </div>
+
+    <a
+      class="cash-report__trust"
+      routerLink="/cash/uncategorized"
+      data-testid="report-uncategorized"
+    >
+      <span class="cash-report__label">
+        {{ 'cash.report.uncategorized-share' | translate }}
+      </span>
+      <span
+        class="cash-report__value"
+        [class.cash-report__value--out]="uncategorized().percent > 20"
+      >
+        {{ uncategorized().percent }}%
+      </span>
+      <span class="cash-report__trust-note">
+        {{ uncategorized().uncategorizedCents | moneyEur }}
+      </span>
+    </a>
 
     <h2 class="cash-report__heading">
       {{ 'cash.report.by-month' | translate }}
@@ -60,6 +92,49 @@
             <ion-label>{{
               row.category || ('cash.report.uncategorized' | translate)
             }}</ion-label>
+            <ion-note slot="end" class="cash-report__cat-amount">
+              {{ row.cents | moneyEur }}
+            </ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (biggestExpenses().length) {
+      <h2 class="cash-report__heading">
+        {{ 'cash.report.biggest' | translate }}
+      </h2>
+      <ion-list lines="full">
+        @for (row of biggestExpenses(); track row.id) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ row.name }}</h3>
+              <p>
+                {{ row.dateISO | localizedDate }}
+                @if (row.category) {
+                  · {{ row.category }}
+                }
+              </p>
+            </ion-label>
+            <ion-note slot="end" class="cash-report__cat-amount">
+              {{ row.cents | moneyEur }}
+            </ion-note>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (spendByCounterparty().length) {
+      <h2 class="cash-report__heading">
+        {{ 'cash.report.by-counterparty' | translate }}
+      </h2>
+      <ion-list lines="full">
+        @for (row of spendByCounterparty(); track row.iban) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ row.name }}</h3>
+              <p>{{ row.iban }}</p>
+            </ion-label>
             <ion-note slot="end" class="cash-report__cat-amount">
               {{ row.cents | moneyEur }}
             </ion-note>

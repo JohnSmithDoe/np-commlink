@@ -43,20 +43,20 @@ describe('CashRulesPage', () => {
       );
 
   it('files only the transactions the rules re-categorize and reports the count', () => {
-    const rewe = mockCashRule({ id: 'r1', categoryId: 'cat-stuff' });
+    const nordkauf = mockCashRule({ id: 'r1', categoryId: 'cat-stuff' });
     setup(
       mockCashState({
-        rules: [rewe],
+        rules: [nordkauf],
         transactions: [
-          mockCashTransaction({ id: 't-new', name: 'REWE SAGT DANKE' }),
+          mockCashTransaction({ id: 't-new', name: 'NORDKAUF SAGT DANKE' }),
           mockCashTransaction({
             id: 't-filed',
-            name: 'REWE CITY',
+            name: 'NORDKAUF CITY',
             categoryIds: ['cat-stuff'],
           }),
           mockCashTransaction({
             id: 't-manual',
-            name: 'REWE MARKT',
+            name: 'NORDKAUF MARKT',
             categoryIds: ['cat-fun'],
             categoryManual: true,
           }),
@@ -79,7 +79,7 @@ describe('CashRulesPage', () => {
       mockCashState({
         rules: [mockCashRule({ id: 'r1' })],
         transactions: [
-          mockCashTransaction({ id: 't1', name: 'STADTWERKE STROM' }),
+          mockCashTransaction({ id: 't1', name: 'STROMWERK NEUSTADT' }),
         ],
       })
     );

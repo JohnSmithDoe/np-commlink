@@ -25,6 +25,14 @@
     </ion-button>
   </ion-buttons>
 
+  @if (facade.pendingCount() > 0) {
+    <ion-note toolbarActionsEnd class="cash-txn__pending-count">
+      {{
+        'cash.txn.pending-count' | translate: { count: facade.pendingCount() }
+      }}
+    </ion-note>
+  }
+
   <span toolbarActionsEnd class="cash-networth__value">
     {{ facade.balanceCents() | moneyEur }}
   </span>
@@ -63,6 +71,9 @@
         · {{ 'cash.txn.pending' | translate }}
       }
     </p>
+    @if (item.remittanceInfo) {
+      <p itemDetails class="cash-txn__purpose">{{ item.remittanceInfo }}</p>
+    }
     <ion-note
       itemDetails
       class="cash-txn__amount"
@@ -76,3 +87,5 @@
 
 <app-edit-cash-account-dialog />
 <app-edit-cash-transaction-dialog />
+<app-edit-cash-rule-dialog />
+<app-edit-cash-schedule-dialog />

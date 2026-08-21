@@ -11,18 +11,13 @@
 
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { map, withLatestFrom } from 'rxjs';
+import { map } from 'rxjs';
 import {
   clearSearchAfter,
   createItemListEffects,
 } from '../../../@shared/data/item-lists/item-list.effects.factory';
 import { categoryFilterFromRoute } from '../../../@shared/data/item-lists/category-filter.effects';
-import { ItemListRouteActions } from '../../../@shared/data/actions/item-list-route.actions';
-import {
-  selectActiveHouseholdListId,
-  selectDrilledCategory,
-} from './household-list.selector';
+import { selectDrilledCategory } from './household-list.selector';
 import {
   createProduct,
   createProductFrom,
@@ -156,19 +151,6 @@ export const householdRouteFilterEffects = {
       categoryId
         ? HouseholdListActions.updateFilter(listId, categoryId)
         : undefined
-  ),
-
-  clearFilter$: createEffect(
-    (actions$ = inject(Actions), store = inject(Store)) => {
-      return actions$.pipe(
-        ofType(ItemListRouteActions.clearCategoryFilter),
-        withLatestFrom(store.select(selectActiveHouseholdListId)),
-        map(([, listId]) =>
-          HouseholdListActions.updateFilter(listId, undefined)
-        )
-      );
-    },
-    { functional: true }
   ),
 };
 

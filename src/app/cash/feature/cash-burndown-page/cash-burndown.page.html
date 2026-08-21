@@ -1,0 +1,97 @@
+<app-page-header
+  label="page-title.cash-burndown"
+  backHref="/cash"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  @let today = burndown();
+
+  <div class="burndown-headline" data-testid="burndown-per-day">
+    <span class="burndown-headline__label">
+      {{ 'cash.burndown.per-day' | translate }}
+    </span>
+    <span
+      class="burndown-headline__value"
+      [class.burndown-headline__value--over]="overspent()"
+    >
+      {{ today.perDayCents | moneyEur }}
+    </span>
+    <span class="burndown-headline__note">
+      {{
+        'cash.burndown.days-left' | translate: { count: today.daysRemaining }
+      }}
+    </span>
+  </div>
+
+  @if (overspent()) {
+    <ion-note color="danger" class="cash-hint">
+      {{ 'cash.burndown.overspent' | translate }}
+    </ion-note>
+  }
+
+  <ion-list lines="full" class="burndown-breakdown">
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.balance' | translate }}</ion-label>
+      <ion-note slot="end" data-testid="burndown-balance">
+        {{ today.balanceCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.reserve' | translate }}</ion-label>
+      <ion-note slot="end" data-testid="burndown-reserve">
+        {{ today.reserveCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.still-due' | translate }}</ion-label>
+      <ion-note slot="end">{{ today.stillDueCents | moneyEur }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.spendable' | translate }}</ion-label>
+      <ion-note slot="end">
+        {{ today.spendableCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.spent' | translate }}</ion-label>
+      <ion-note slot="end">{{ today.spentThisMonthCents | moneyEur }}</ion-note>
+    </ion-item>
+  </ion-list>
+
+  @if (overdue().length) {
+    <ion-list-header>
+      {{ 'cash.schedule.overdue' | translate }}
+    </ion-list-header>
+    <ion-list lines="full">
+      @for (schedule of overdue(); track schedule.id) {
+        <ion-item>
+          <ion-label>
+            <h2>{{ schedule.name }}</h2>
+            <p>
+              {{ 'cash.schedule.was-due' | translate }}
+              {{ schedule.nextDueISO | localizedDate }}
+            </p>
+          </ion-label>
+          <ion-note slot="end" color="warning">
+            {{ schedule.amountCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  <ion-list lines="full">
+    <ion-item
+      [button]="true"
+      [detail]="true"
+      routerLink="/cash/schedules"
+      data-testid="burndown-schedules-link"
+    >
+      <ion-label>{{ 'cash.section.schedules' | translate }}</ion-label>
+      <ion-note slot="end">
+        {{ 'cash.schedule.count' | translate: { count: scheduleCount() } }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+</ion-content>

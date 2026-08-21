@@ -1,0 +1,19 @@
+@if (rows().length > 0) {
+  <ion-accordion-group class="cash-bank-details">
+    <ion-accordion value="bank-details">
+      <ion-item slot="header">
+        <ion-label>{{ 'cash.camt.heading' | translate }}</ion-label>
+      </ion-item>
+      <div slot="content" class="cash-bank-details__body">
+        @for (row of rows(); track row.labelKey) {
+          <div class="cash-bank-details__row">
+            <ion-note class="cash-bank-details__label">
+              {{ row.labelKey | translate }}
+            </ion-note>
+            <span class="cash-bank-details__value">{{ row.value }}</span>
+          </div>
+        }
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+}

@@ -6,6 +6,7 @@ import {
   cashCategoriesListEffects,
 } from './cash-list.effects';
 import { cashReducer } from './cash.reducer';
+import { cashRulesEffects } from './rules/cash-rules.effects';
 import {
   CASH_STATE_KEY,
   selectCashBalanceEuros,
@@ -17,13 +18,18 @@ export const cashContext = providePersistedContext({
   reducer: cashReducer,
   lifecycle: CashActions,
   select: selectCashState,
-  effects: [cashAccountsListEffects, cashCategoriesListEffects],
+  effects: [
+    cashAccountsListEffects,
+    cashCategoriesListEffects,
+    cashRulesEffects,
+  ],
   save: {
     sources: [
       '[Cash]',
       '[Cash Accounts]',
       '[Cash Transactions]',
       '[Cash Rules]',
+      '[Cash Schedules]',
       '[Cash Categories]',
     ],
   },

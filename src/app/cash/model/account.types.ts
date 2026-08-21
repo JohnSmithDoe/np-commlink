@@ -17,4 +17,5 @@ export interface CashAccount extends BaseItem {
   openingBalanceCents: number;
   openingDateISO: Timestamp;
   createdAt: Timestamp;
+  excludedFromAllowance?: boolean;
 }

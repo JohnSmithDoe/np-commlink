@@ -6,18 +6,30 @@
  *
  * It reads at `<Ntry>`, never at `<TxDtls>`. A collective booking is ONE
  * entry holding many details and moves the balance once; importing the
- * details would count that entry as many.
+ * details would count that entry as many. The structured details are read
+ * from the FIRST detail that carries each field, so a batch contributes the
+ * one counterparty it has rather than none.
  *
  * Everything matches on `localName`. Versions disagree on the namespace
- * URI, on whether `<Sts>` holds a code or wraps one, and on whether a
- * party sits under `Pty` — pinning any of it rejects half the exports.
+ * URI, on whether `<Sts>` holds a code or wraps one, on whether a party sits
+ * under `Pty`, and on whether a BIC is `BICFI` or `BIC` — pinning any of it
+ * rejects half the exports.
+ *
+ * `<Bal>` is read for `CLBD` only. It is the bank's own closing figure,
+ * which makes it both the authoritative balance and a checksum against the
+ * balance summed from entries: a disagreement means missing bookings, and
+ * that is answerable rather than merely wrong.
  * ───────────────────────────────────────────────────────────────── */
 import dayjs from 'dayjs';
-import { CashTransactionStatus } from '../../model/transaction.types';
+import {
+  CamtDetails,
+  CashTransactionStatus,
+} from '../../model/transaction.types';
 import { EntryResult, joinDescription, ParsedEntry } from './parsed-row';
 
 export interface CamtReport extends EntryResult {
   iban?: string;
+  closingBalanceCents?: number;
 }
 
 const ANY_NS = '*';
@@ -28,6 +40,7 @@ const REPORT_ROOTS = [
 ];
 const STATEMENTS = ['Rpt', 'Stmt', 'Ntfctn'];
 const DECIMAL = /^(\d+)(?:\.(\d+))?$/;
+const CLOSING_BALANCE = 'CLBD';
 
 const normalize = (value: string | null): string =>
   (value ?? '').replaceAll(/\s+/g, ' ').trim();
@@ -57,15 +70,16 @@ const decimalToCents = (value: string): number | null => {
   return Number(whole) * 100 + Number(fraction.padEnd(2, '0').slice(0, 2));
 };
 
-const bookingDate = (entry: Element): string | null => {
-  const raw =
-    textAt(entry, 'BookgDt', 'Dt') ||
-    textAt(entry, 'BookgDt', 'DtTm') ||
-    textAt(entry, 'ValDt', 'Dt') ||
-    textAt(entry, 'ValDt', 'DtTm');
+const isoDate = (raw: string): string | null => {
   const day = dayjs(raw.slice(0, 10));
   return raw && day.isValid() ? day.format() : null;
 };
+
+const dateAt = (entry: Element, wrapper: string): string | null =>
+  isoDate(textAt(entry, wrapper, 'Dt') || textAt(entry, wrapper, 'DtTm'));
+
+const bookingDate = (entry: Element): string | null =>
+  dateAt(entry, 'BookgDt') ?? dateAt(entry, 'ValDt');
 
 const statusOf = (entry: Element): CashTransactionStatus => {
   const status = descend(entry, 'Sts');
@@ -74,19 +88,54 @@ const statusOf = (entry: Element): CashTransactionStatus => {
   return code === 'PDNG' ? 'pending' : 'confirmed';
 };
 
-const counterpartyOf = (details: Element[], incoming: boolean): string => {
-  const role = incoming ? 'Dbtr' : 'Cdtr';
+const firstOf = (
+  details: Element[],
+  read: (detail: Element) => string
+): string | undefined => {
   for (const detail of details) {
-    const name =
-      textAt(detail, 'RltdPties', role, 'Pty', 'Nm') ||
-      textAt(detail, 'RltdPties', role, 'Nm');
-    if (name) return name;
+    const value = read(detail);
+    if (value) return value;
   }
-  return '';
+  return undefined;
 };
 
-const purposeOf = (entry: Element, details: Element[]): string => {
-  const remittance = details
+const counterpartyOf = (details: Element[], incoming: boolean): string => {
+  const role = incoming ? 'Dbtr' : 'Cdtr';
+  return (
+    firstOf(
+      details,
+      (detail) =>
+        textAt(detail, 'RltdPties', role, 'Pty', 'Nm') ||
+        textAt(detail, 'RltdPties', role, 'Nm')
+    ) ?? ''
+  );
+};
+
+const counterpartyIbanOf = (
+  details: Element[],
+  incoming: boolean
+): string | undefined => {
+  const account = incoming ? 'DbtrAcct' : 'CdtrAcct';
+  return firstOf(details, (detail) =>
+    textAt(detail, 'RltdPties', account, 'Id', 'IBAN')
+  );
+};
+
+const counterpartyBicOf = (
+  details: Element[],
+  incoming: boolean
+): string | undefined => {
+  const agent = incoming ? 'DbtrAgt' : 'CdtrAgt';
+  return firstOf(
+    details,
+    (detail) =>
+      textAt(detail, 'RltdAgts', agent, 'FinInstnId', 'BICFI') ||
+      textAt(detail, 'RltdAgts', agent, 'FinInstnId', 'BIC')
+  );
+};
+
+const remittanceOf = (details: Element[]): string =>
+  details
     .flatMap((detail) => {
       const info = descend(detail, 'RmtInf');
       return info
@@ -95,10 +144,32 @@ const purposeOf = (entry: Element, details: Element[]): string => {
           )
         : [];
     })
-    .filter((line) => line.length > 0);
-  return remittance.length > 0
-    ? remittance.join(' ')
-    : textAt(entry, 'AddtlNtryInf');
+    .filter((line) => line.length > 0)
+    .join(' ');
+
+const bankTxCodeOf = (entry: Element): string | undefined =>
+  textAt(entry, 'BkTxCd', 'Prtry', 'Cd') ||
+  textAt(entry, 'BkTxCd', 'Domn', 'Cd') ||
+  undefined;
+
+const detailsOf = (entry: Element, incoming: boolean): CamtDetails => {
+  const details = childrenNamed(entry, 'NtryDtls').flatMap((group) =>
+    childrenNamed(group, 'TxDtls')
+  );
+  const remittance = remittanceOf(details);
+  return {
+    counterpartyName: counterpartyOf(details, incoming) || undefined,
+    counterpartyIban: counterpartyIbanOf(details, incoming),
+    counterpartyBic: counterpartyBicOf(details, incoming),
+    remittanceInfo: remittance || undefined,
+    endToEndId: firstOf(details, (detail) =>
+      textAt(detail, 'Refs', 'EndToEndId')
+    ),
+    mandateId: firstOf(details, (detail) => textAt(detail, 'Refs', 'MndtId')),
+    purposeCode: firstOf(details, (detail) => textAt(detail, 'Purp', 'Cd')),
+    bankTxCode: bankTxCodeOf(entry),
+    valueDateISO: dateAt(entry, 'ValDt') ?? undefined,
+  };
 };
 
 const entryFrom = (entry: Element): ParsedEntry | null => {
@@ -107,19 +178,30 @@ const entryFrom = (entry: Element): ParsedEntry | null => {
   if (dateISO === null || magnitude === null) return null;
 
   const incoming = textAt(entry, 'CdtDbtInd') !== 'DBIT';
-  const details = childrenNamed(entry, 'NtryDtls').flatMap((group) =>
-    childrenNamed(group, 'TxDtls')
-  );
+  const details = detailsOf(entry, incoming);
   return {
+    ...details,
     dateISO,
     amountCents: incoming ? magnitude : -magnitude,
     description: joinDescription(
-      counterpartyOf(details, incoming),
-      purposeOf(entry, details)
+      details.counterpartyName ?? '',
+      details.remittanceInfo ?? textAt(entry, 'AddtlNtryInf')
     ),
     status: statusOf(entry),
     bankRef: textAt(entry, 'AcctSvcrRef') || undefined,
   };
+};
+
+const closingBalanceOf = (statement: Element): number | undefined => {
+  for (const balance of childrenNamed(statement, 'Bal')) {
+    const code =
+      textAt(balance, 'Tp', 'CdOrPrtry', 'Cd') || textAt(balance, 'Tp', 'Cd');
+    if (code !== CLOSING_BALANCE) continue;
+    const magnitude = decimalToCents(textAt(balance, 'Amt'));
+    if (magnitude === null) continue;
+    return textAt(balance, 'CdtDbtInd') === 'DBIT' ? -magnitude : magnitude;
+  }
+  return undefined;
 };
 
 const statementsIn = (document_: Document): Element[] =>
@@ -137,13 +219,15 @@ export function parseCamt(xml: string): CamtReport | null {
   const entries: ParsedEntry[] = [];
   let rejected = 0;
   let iban: string | undefined;
+  let closingBalanceCents: number | undefined;
   for (const statement of statements) {
     iban ??= textAt(statement, 'Acct', 'Id', 'IBAN') || undefined;
+    closingBalanceCents = closingBalanceOf(statement) ?? closingBalanceCents;
     for (const node of childrenNamed(statement, 'Ntry')) {
       const entry = entryFrom(node);
       if (entry) entries.push(entry);
       else rejected++;
     }
   }
-  return { iban, entries, rejected };
+  return { iban, entries, rejected, closingBalanceCents };
 }

@@ -5,7 +5,9 @@ import {
   AmountOperation,
   CashFilterCondition,
   DescriptionOperation,
+  FilterField,
   FilterOperation,
+  isTextFilterField,
   ConditionForm,
   RuleForm,
 } from '../model/rule.types';
@@ -26,18 +28,11 @@ export const AMOUNT_OPS: readonly AmountOperation[] = [
   'gte',
 ];
 
-export const opsFor = (
-  field: 'description' | 'amount'
-): readonly FilterOperation[] =>
-  field === 'amount' ? AMOUNT_OPS : DESCRIPTION_OPS;
+export const opsFor = (field: FilterField): readonly FilterOperation[] =>
+  isTextFilterField(field) ? DESCRIPTION_OPS : AMOUNT_OPS;
 
-export const DEFAULT_OP_BY_FIELD: {
-  description: DescriptionOperation;
-  amount: AmountOperation;
-} = {
-  description: 'contains',
-  amount: 'eq',
-};
+export const defaultOpFor = (field: FilterField): FilterOperation =>
+  isTextFilterField(field) ? 'contains' : 'eq';
 
 const NO_CONDITIONS = { kind: 'noConditions' } as const;
 export const UNPARSEABLE_AMOUNT = { kind: 'unparseableAmount' } as const;
@@ -88,6 +83,6 @@ export const toCondition = (
   { field, op, value, caseSensitive }: ConditionForm,
   language: Language
 ): CashFilterCondition =>
-  field === 'amount'
-    ? { field, op, value: toStoredThreshold(value, language) }
-    : { field, op, value: value.trim(), caseSensitive };
+  isTextFilterField(field)
+    ? { field, op, value: value.trim(), caseSensitive }
+    : { field, op, value: toStoredThreshold(value, language) };

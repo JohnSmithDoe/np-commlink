@@ -44,4 +44,29 @@
       {{ 'cash.txn.pending' | translate }}
     </ion-toggle>
   </ion-item>
+
+  <app-cash-bank-details [details]="seedItem()" />
+
+  @if (canDerive()) {
+    <ion-list-header>{{ 'cash.derive.heading' | translate }}</ion-list-header>
+    <ion-button
+      expand="block"
+      fill="outline"
+      (click)="deriveRule()"
+      data-testid="derive-rule"
+    >
+      <ion-icon slot="start" name="funnel-outline" aria-hidden="true" />
+      {{ 'cash.derive.rule' | translate }}
+    </ion-button>
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="ion-margin-top"
+      (click)="deriveSchedule()"
+      data-testid="derive-schedule"
+    >
+      <ion-icon slot="start" name="repeat-outline" aria-hidden="true" />
+      {{ 'cash.derive.schedule' | translate }}
+    </ion-button>
+  }
 </app-item-edit-modal>

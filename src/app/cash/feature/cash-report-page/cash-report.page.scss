@@ -43,6 +43,23 @@
   margin: var(--space-4) 0 var(--space-3);
 }
 
+.cash-report__trust {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--sr-line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.cash-report__trust-note {
+  margin-left: auto;
+  font-family: var(--sr-deck-font);
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}
+
 .cash-report__chart {
   position: relative;
   height: 240px;

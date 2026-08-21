@@ -4,25 +4,27 @@
   data-testid="category-input-trigger"
 >
   <ion-label class="ion-text-wrap">
-    {{ 'category-picker.label' | translate }}
-    @for (cat of categories(); track cat.id) {
-      <ion-chip color="primary">
-        <ion-label class="ion-text-wrap">{{ cat.name }}</ion-label>
-        <ion-button
-          fill="clear"
-          size="small"
-          [attr.aria-label]="'a11y.remove-category' | translate"
-          (click)="removeCategory.emit(cat.id); $event.stopPropagation()"
-        >
-          <ion-icon
-            name="close-circle"
-            slot="icon-only"
-            aria-hidden="true"
-          ></ion-icon>
-        </ion-button>
-      </ion-chip>
-    } @empty {
-      {{ 'category-picker.label-empty' | translate }}
-    }
+    <span>{{ 'category-picker.label' | translate }}</span>
+    <span class="category-input__chips">
+      @for (cat of categories(); track cat.id) {
+        <ion-chip color="primary">
+          <ion-label class="ion-text-wrap">{{ cat.name }}</ion-label>
+          <ion-button
+            fill="clear"
+            size="small"
+            [attr.aria-label]="'a11y.remove-category' | translate"
+            (click)="removeCategory.emit(cat.id); $event.stopPropagation()"
+          >
+            <ion-icon
+              name="close-circle"
+              slot="icon-only"
+              aria-hidden="true"
+            ></ion-icon>
+          </ion-button>
+        </ion-chip>
+      } @empty {
+        {{ 'category-picker.label-empty' | translate }}
+      }
+    </span>
   </ion-label>
 </ion-item>

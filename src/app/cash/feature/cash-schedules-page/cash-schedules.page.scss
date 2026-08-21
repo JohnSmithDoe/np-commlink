@@ -1,0 +1,19 @@
+@use 'theme/cash';
+
+.cash-hint {
+  @include cash.hint(var(--space-3) var(--space-4));
+}
+
+.cash-schedules__amount {
+  @include cash.txn-amount(var(--fs-body));
+}
+
+.cash-schedules__overdue {
+  color: var(--ion-color-warning);
+}
+
+.cash-networth {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  @include cash.networth-strip;
+}

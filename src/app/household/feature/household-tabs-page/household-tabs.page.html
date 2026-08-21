@@ -1,0 +1,19 @@
+<ion-tabs>
+  <ion-tab-bar
+    slot="bottom"
+    [attr.aria-label]="'household.a11y.switch-list' | translate"
+  >
+    <ion-tab-button tab="products" data-testid="list-switcher-products">
+      <ion-icon name="pricetags-outline" aria-hidden="true" />
+      {{ 'household.list-switcher.products' | translate }}
+    </ion-tab-button>
+    <ion-tab-button tab="shopping" data-testid="list-switcher-shopping">
+      <ion-icon name="cart-outline" aria-hidden="true" />
+      {{ 'household.list-switcher.shopping' | translate }}
+    </ion-tab-button>
+    <ion-tab-button tab="storage" data-testid="list-switcher-storage">
+      <ion-icon name="file-tray-stacked-outline" aria-hidden="true" />
+      {{ 'household.list-switcher.storage' | translate }}
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

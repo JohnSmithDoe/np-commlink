@@ -1,5 +1,11 @@
-import { CashFilterCondition, CashRule } from '../model/rule.types';
-import { CashTransaction } from '../model/transaction.types';
+import {
+  CashFilterCondition,
+  CashRule,
+  ConditionSet,
+  isTextFilterField,
+  TextFilterField,
+} from '../model/rule.types';
+import { CamtDetails, CashTransaction } from '../model/transaction.types';
 import { categoryIdOf } from './cash-category.utils';
 import { eurToCents } from './money.utils';
 
@@ -79,16 +85,26 @@ const matchesDescriptionCondition = (
   }
 };
 
+const textFieldValue = (
+  txn: CashTransaction,
+  field: TextFilterField
+): string | undefined =>
+  field === 'description' ? txn.name : (txn as CamtDetails)[field];
+
 export function matchesCondition(
   txn: CashTransaction,
   condition: CashFilterCondition
 ): boolean {
-  return condition.field === 'amount'
-    ? matchesAmountCondition(txn.amountCents, condition)
-    : matchesDescriptionCondition(txn.name, condition);
+  if (!isTextFilterField(condition.field)) {
+    return matchesAmountCondition(txn.amountCents, condition);
+  }
+  const source = textFieldValue(txn, condition.field);
+  return source === undefined
+    ? false // an unwritten IBAN is not the empty one
+    : matchesDescriptionCondition(source, condition);
 }
 
-export function matchesRule(txn: CashTransaction, rule: CashRule): boolean {
+export function matchesRule(txn: CashTransaction, rule: ConditionSet): boolean {
   if (rule.conditions.length === 0) return false; // an empty rule never fires
   return rule.match === 'all'
     ? rule.conditions.every((condition) => matchesCondition(txn, condition))
@@ -104,6 +120,33 @@ export function categorize(
     if (matchesRule(txn, rule)) return rule.categoryId;
   }
   return undefined;
+}
+
+export interface RuleStat {
+  matched: number;
+  claimed: number;
+}
+
+export function ruleStats(
+  transactions: readonly CashTransaction[],
+  rules: readonly CashRule[]
+): Record<string, RuleStat> {
+  const ordered = rules.toSorted((a, b) => a.order - b.order);
+  const stats: Record<string, RuleStat> = {};
+  for (const rule of ordered) stats[rule.id] = { matched: 0, claimed: 0 };
+
+  for (const txn of transactions) {
+    let claimedBy: string | undefined;
+    for (const rule of ordered) {
+      if (!matchesRule(txn, rule)) continue;
+      const stat = stats[rule.id];
+      if (stat) stat.matched++;
+      claimedBy ??= rule.id;
+    }
+    const winner = claimedBy ? stats[claimedBy] : undefined;
+    if (winner) winner.claimed++;
+  }
+  return stats;
 }
 
 export interface CashRecategorization {

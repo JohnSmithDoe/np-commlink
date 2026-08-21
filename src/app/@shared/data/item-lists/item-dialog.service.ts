@@ -1,3 +1,13 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `close` takes the caller's `listId`, and a caller that is no longer the
+ * open dialog is IGNORED. One request means one dialog, so when a dialog
+ * opens another the first one hides — and `ion-modal` answers that by
+ * emitting `didDismiss`, whose handler is `close()`. Unqualified, that
+ * closes the dialog that just opened: the second appears and vanishes.
+ *
+ * Navigation closes unconditionally, and passes no id for that reason:
+ * there the request itself is what has become stale.
+ * ───────────────────────────────────────────────────────────────── */
 import { inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationStart, Router } from '@angular/router';
@@ -31,7 +41,8 @@ export class ItemDialogService {
     this.#request.set({ ...request, item: { ...request.item } });
   }
 
-  close(): void {
+  close(listId?: ItemListId): void {
+    if (listId && this.#request()?.listId !== listId) return;
     this.#request.set(null);
   }
 }

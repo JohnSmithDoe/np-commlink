@@ -11,6 +11,7 @@ import {
   IonNote,
   IonSelect,
   IonSelectOption,
+  IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
@@ -38,6 +39,7 @@ type AccountForm = {
   iban: string;
   openingBalanceCents: number | null;
   openingDate: string;
+  excludedFromAllowance: boolean;
 };
 
 @Component({
@@ -51,6 +53,7 @@ type AccountForm = {
     IonNote,
     IonSelect,
     IonSelectOption,
+    IonToggle,
     TranslatePipe,
     ItemEditModalComponent,
     MoneyInputComponent,
@@ -91,6 +94,7 @@ export class EditCashAccountDialogComponent extends BaseEditItemDialog<
       openingBalanceCents:
         account.openingBalanceCents === 0 ? null : account.openingBalanceCents,
       openingDate: dayjs(account.openingDateISO).format('YYYY-MM-DD'),
+      excludedFromAllowance: account.excludedFromAllowance ?? false,
     };
   }
 
@@ -105,6 +109,7 @@ export class EditCashAccountDialogComponent extends BaseEditItemDialog<
       iban: draft.iban.replaceAll(/\s/g, '').toUpperCase() || undefined,
       openingBalanceCents: draft.openingBalanceCents ?? 0,
       openingDateISO: dayjs(draft.openingDate).format(),
+      excludedFromAllowance: draft.excludedFromAllowance || undefined,
     };
   }
 

@@ -16,3 +16,17 @@
 .cash-txn__amount {
   @include cash.txn-amount(var(--fs-body));
 }
+
+.cash-txn__pending-count {
+  color: var(--ion-color-warning);
+  font-size: var(--fs-small);
+}
+
+.cash-txn__purpose {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--sr-text-dim);
+  font-size: var(--fs-xsmall);
+}

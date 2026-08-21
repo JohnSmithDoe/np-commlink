@@ -9,6 +9,12 @@
  * `items()` is the list after filtering, so asking it whether anything
  * lacks a category answers "no" the moment any filter is armed — the
  * uncategorized chip vanished under the tap that armed it.
+ *
+ * "Alle" resets through the BOUND facade and not only through the shared
+ * clear action, because the page is the one place that knows which list is
+ * on screen. Routing it through a broadcast action needed every domain to
+ * register a listener, and the two that never did had a chip that stripped
+ * the URL and left the list exactly as it was.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -88,6 +94,7 @@ export class ListPageComponent {
   }
 
   clearFilter(): void {
+    this.facade.selectCategory?.(undefined);
     this.#categoryFilter.clear();
   }
 }

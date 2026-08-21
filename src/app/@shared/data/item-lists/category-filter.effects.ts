@@ -35,17 +35,6 @@ export const categoryFilterFromRoute = <T>(
     { functional: true }
   );
 
-export const clearCategoryFilterIn = (toAction: () => Action) =>
-  createEffect(
-    (actions$ = inject(Actions)) => {
-      return actions$.pipe(
-        ofType(ItemListRouteActions.clearCategoryFilter),
-        map(toAction)
-      );
-    },
-    { functional: true }
-  );
-
 export const categoryFilterRouteEffects = {
   stripCategoryFilterParam$: createEffect(
     (actions$ = inject(Actions), router = inject(Router)) => {

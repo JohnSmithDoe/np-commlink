@@ -36,18 +36,18 @@ describe('productsReducer', () => {
     expect(state.items[0].name).toBe('New');
   });
 
-  it('trims the search query and only updates when it changed', () => {
+  it('stores the search query verbatim and only updates when it changed', () => {
     const start = mockProductsState({ searchQuery: 'sugar' });
     const unchanged = productsReducer(
       start,
-      ProductsActions.updateSearch('  sugar  ')
+      ProductsActions.updateSearch('sugar')
     );
     expect(unchanged).toBe(start);
     const changed = productsReducer(
       start,
       ProductsActions.updateSearch('  salt  ')
     );
-    expect(changed.searchQuery).toBe('salt');
+    expect(changed.searchQuery).toBe('  salt  ');
   });
 
   it('sets a filter', () => {

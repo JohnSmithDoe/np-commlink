@@ -4,6 +4,14 @@
   @include cash.hint(var(--space-3) var(--space-4));
 }
 
+.cash-rule__stat {
+  color: var(--sr-text-dim);
+
+  &--inert {
+    color: var(--ion-color-warning);
+  }
+}
+
 ion-buttons[slot='start'] ion-button {
   --padding-start: 0.15rem;
   --padding-end: 0.15rem;

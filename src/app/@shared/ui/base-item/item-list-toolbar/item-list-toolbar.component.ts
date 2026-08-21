@@ -4,8 +4,12 @@
  * cannot show it. Every tap toggles direction, so a projected button meant
  * a second tap silently reversed the list with nothing on screen changing.
  *
- * `name` is built in — every list sorts by it — and domains add their own
- * through `options`, which keeps `[toolbarActions]` meaning ACTIONS.
+ * `name` is built in — most lists sort by it — and domains add their own
+ * through `options`, which keeps `[toolbarActions]` meaning ACTIONS. It is
+ * `sortable` that decides whether ANY of them render: a facade declaring no
+ * `sortOptions` gets no sort buttons rather than the built-in one alone,
+ * which is how a ledger keeps this toolbar for its actions while its order
+ * stays pinned in the selector.
  *
  * The input is `activeSort`, not `sort`: `unicorn/no-array-sort` matches on
  * call shape, and `this.sort()` is indistinguishable from `Array#sort()`.
@@ -48,6 +52,7 @@ const SORT_BY_NAME: ItemListSortOption = {
 export class ItemListToolbarComponent {
   readonly activeSort = input<ItemListSort>();
   readonly options = input<readonly ItemListSortOption[]>([]);
+  readonly sortable = input(true);
 
   readonly selectSortMode = output<ItemListSortType>();
 

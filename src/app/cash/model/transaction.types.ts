@@ -16,14 +16,25 @@
  * other call sites would have to narrow.
  * ───────────────────────────────────────────────────────────────── */
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { Timestamp } from '../../@shared/model/app.types';
-import { ItemListSortOption } from '../../@shared/model/item-list.types';
+import { Marker, Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
+
+export interface CamtDetails {
+  counterpartyName?: string;
+  counterpartyIban?: string;
+  counterpartyBic?: string;
+  remittanceInfo?: string;
+  endToEndId?: string;
+  mandateId?: string;
+  purposeCode?: string;
+  bankTxCode?: string;
+  valueDateISO?: string;
+}
 
 type CashTransactionSource = 'imported' | 'manual';
 export type CashTransactionStatus = 'pending' | 'confirmed';
 
-export interface CashTransaction extends BaseItem {
+export interface CashTransaction extends BaseItem, CamtDetails {
   accountId: string;
   dateISO: Timestamp;
   amountCents: number;
@@ -37,7 +48,26 @@ export interface CashTransaction extends BaseItem {
   importKey?: string;
 }
 
-export const TRANSACTION_SORT_OPTIONS: readonly ItemListSortOption[] = [
-  { type: 'dateISO', labelKey: marker('cash.list-toolbar.date') },
-  { type: 'amountCents', labelKey: marker('cash.list-toolbar.amount') },
+export const CAMT_DETAIL_FIELDS: readonly (keyof CamtDetails)[] = [
+  'counterpartyName',
+  'counterpartyIban',
+  'counterpartyBic',
+  'remittanceInfo',
+  'endToEndId',
+  'mandateId',
+  'purposeCode',
+  'bankTxCode',
+  'valueDateISO',
 ];
+
+export const CAMT_DETAIL_LABEL_KEYS: Record<keyof CamtDetails, Marker> = {
+  counterpartyName: marker('cash.camt.counterpartyName'),
+  counterpartyIban: marker('cash.camt.counterpartyIban'),
+  counterpartyBic: marker('cash.camt.counterpartyBic'),
+  remittanceInfo: marker('cash.camt.remittanceInfo'),
+  endToEndId: marker('cash.camt.endToEndId'),
+  mandateId: marker('cash.camt.mandateId'),
+  purposeCode: marker('cash.camt.purposeCode'),
+  bankTxCode: marker('cash.camt.bankTxCode'),
+  valueDateISO: marker('cash.camt.valueDateISO'),
+};

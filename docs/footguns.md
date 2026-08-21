@@ -195,6 +195,12 @@ unlabelled icon-only toolbar buttons. **A gate green for a structural reason is 
   nothing — iOS Safari has ignored `user-scalable=no` since iOS 10, the exact platform it was written for.
   **Never gateable** — `index.html` is not an Angular template. Trade accepted: the Android WebView
   pinch-zooms the whole shell.
+- **A dismissing `ion-modal` fires `didDismiss`, and an unqualified handler closes the modal that
+  replaced it.** `ItemDialogService` holds one request, so a dialog that opens another (a booking deriving
+  a rule) makes the first one's `isOpen` go false. Ionic then dismisses it and emits `didDismiss`, whose
+  handler used to call `close()` — clearing the request the second dialog was reading. The second appeared
+  and vanished, and nothing logged. `close(listId)` now ignores a caller that is not the open dialog; the
+  router subscription still closes unqualified, because there the request itself is stale.
 - **`ion-content` already sets `role="main"`** (unless inside a menu/popover/modal), so a hand-placed
   `<main>` produces two landmarks — this app once wrapped the **side menu** in `<main>`.
 - **`ion-back-button` is `display:none` until `:host(.show-back-button)`**, set from
@@ -205,6 +211,23 @@ unlabelled icon-only toolbar buttons. **A gate green for a structural reason is 
   anchor, the outlet puts `aria-hidden` on the leaving page, and Chrome drops focus to `<body>`. `main.ts`
   boots `['heading','banner']`, dropping the usual `'content'` on purpose: it would match every page's own
   `ion-content` and skip the one thing worth announcing on arrival.
+
+## `@for` with `@empty` inserts at the front once the empty branch has rendered
+
+Verified in a browser, not deduced: a `@for`/`@empty` pair that rendered its **empty** branch first inserts
+the first item view at the block's *leading* anchor, not after the block's preceding siblings. In
+`category-input` that put the category chip **before** the "Kategorien:" text it belongs to — visible only
+on the second open of one component instance (empty → one chip), which is why it read as "sometimes".
+
+The fix is structural, and it is the rule for any such block: **give a `@for` with an `@empty` its own
+container element**, so a misplaced insertion cannot escape it. Nothing gates this — a block whose parent
+holds nothing else is unaffected, so the smell is a `@for`/`@empty` sharing a parent with static content.
+
+Two sites still share a parent with a sibling and are exposed the same way, both with element siblings
+rather than text: `edit-recipe-dialog` (the first ingredient can land above its own "Zutaten" heading) and
+`categories-dialog` (the first category can land above the "create" row). Both put `ion-item`s straight
+into an `ion-list`, where a wrapping `<div>` is not free — Ionic styles those children — so neither is
+wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document order.
 
 ## Scheduled notifications
 

@@ -15,7 +15,6 @@ import {
   BaseListPageFacade,
   itemListCommands,
 } from '../../../@shared/data/item-lists/list-page.facade.base';
-import { TRANSACTION_SORT_OPTIONS } from '../../model/transaction.types';
 import { categoryById } from '../../../@shared/util/categories/category.utils';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashCategoriesFacade } from '../categories/cash-categories.facade';
@@ -49,7 +48,7 @@ export class CashCategoryTransactionsPageFacade extends BaseListPageFacade {
     selectRoutedCategorySearchResult
   );
 
-  readonly sortOptions = signal(TRANSACTION_SORT_OPTIONS);
+  readonly sortable = signal(false);
 
   readonly heading = computed(
     () =>

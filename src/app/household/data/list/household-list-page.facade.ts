@@ -2,12 +2,10 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
 import {
   PRODUCTS_LIST_ID,
   STORAGE_LIST_ID,
-  HouseholdListId,
 } from '../../model/household-list.types';
 import { BarcodeScannerService } from '../barcode-scanner.service';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
@@ -19,7 +17,6 @@ import {
   createHouseholdItem,
   createProduct,
 } from '../../util/household.factory';
-import { ROUTE_BY_LIST_ID } from '../../util/household-list.utils';
 import { HouseholdListActions } from './household-list.actions';
 import { selectHouseholdCategories } from '../categories/household-categories.selector';
 import {
@@ -38,7 +35,6 @@ const STORAGE_SORT_OPTIONS: readonly ItemListSortOption[] = [
 export class HouseholdListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
-  readonly #nav = inject(NavController);
   readonly #dialogs = inject(ItemDialogService);
   readonly #scanner = inject(BarcodeScannerService);
 
@@ -82,14 +78,6 @@ export class HouseholdListPageFacade extends BaseListPageFacade {
 
   manageCategories(): void {
     void this.#router.navigate(['/household/categories', this.activeListId()]);
-  }
-
-  switchList(listId: HouseholdListId): void {
-    if (listId === this.activeListId()) return;
-    void this.#nav.navigateRoot(ROUTE_BY_LIST_ID[listId], {
-      animated: false,
-      replaceUrl: true,
-    });
   }
 
   showCreateProductDialog(): void {

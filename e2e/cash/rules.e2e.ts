@@ -10,7 +10,7 @@
  * of the stored rule with its type intact.
  *
  * Switching a row's field to `Betrag` re-reads the value already typed as
- * a threshold. `REWE` does not parse, and `matchesAmountCondition` would
+ * a threshold. `NORDKAUF` does not parse, and `matchesAmountCondition` would
  * silently treat such a rule as "never matches" — refusing to save it is
  * the honest outcome.
  *
@@ -87,7 +87,7 @@ test.describe('cash rule builder', () => {
     await assignNewCategory(page, 'Kaffee');
     await expect(saveButton(page)).toBeDisabled();
 
-    await valueInput(page, 0).fill('REWE');
+    await valueInput(page, 0).fill('NORDKAUF');
     await expect(saveButton(page)).toBeEnabled();
 
     await pickField(page, 0, 'Betrag');

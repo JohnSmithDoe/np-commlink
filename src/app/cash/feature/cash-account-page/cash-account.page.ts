@@ -25,6 +25,7 @@ import {
   CashAccountsFacade,
   CashAccountTransactionsPageFacade,
   CashRulesFacade,
+  CashSchedulesFacade,
   CashTransactionsFacade,
 } from '../../data';
 import { ParseResult } from '../../util/import/parsed-row';
@@ -37,9 +38,13 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { readStatementDocuments } from '../../util/import/read-bank-file';
 import { readStatement, StatementRead } from '../../util/import/read-statement';
 import { ImportPlan, planImport } from '../../util/import/plan-import';
+import { lastEntryDateISO } from '../../util/import/balance-check';
+import { amountChangesFor } from '../../util/schedule.utils';
 import { takePickedFiles } from '../../util/picked-file.utils';
 import { CashAccount } from '../../model/account.types';
 import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
+import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
+import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/edit-cash-schedule-dialog.component';
 import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dialog/edit-cash-transaction-dialog.component';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
 import { CashReconcileModalComponent } from '../../smart-ui/reconcile-modal/reconcile-modal.component';
@@ -64,6 +69,8 @@ const DETACH: StartSwipeAction = {
     ListPageComponent,
     ListItemComponent,
     EditCashAccountDialogComponent,
+    EditCashRuleDialogComponent,
+    EditCashScheduleDialogComponent,
     EditCashTransactionDialogComponent,
     IonButtons,
     IonButton,
@@ -82,6 +89,7 @@ export class CashAccountPage {
   readonly #transactions = inject(CashTransactionsFacade);
   readonly #accounts = inject(CashAccountsFacade);
   readonly #rulesFacade = inject(CashRulesFacade);
+  readonly #schedulesFacade = inject(CashSchedulesFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
   readonly #loadingCtrl = inject(LoadingController);
@@ -135,7 +143,7 @@ export class CashAccountPage {
     if (read.iban && !account.iban) {
       this.#accounts.saveItem({ ...account, iban: read.iban });
     }
-    await this.#presentImportPreview(this.#planFrom(read.parsed));
+    await this.#presentImportPreview(read.parsed);
   }
 
   async #readStatement(
@@ -168,7 +176,8 @@ export class CashAccountPage {
     );
   }
 
-  async #presentImportPreview(plan: ImportPlan): Promise<void> {
+  async #presentImportPreview(parsed: ParseResult): Promise<void> {
+    const plan = this.#planFrom(parsed);
     await presentModal(
       this.#modalCtrl,
       CashImportPreviewModalComponent,
@@ -177,6 +186,13 @@ export class CashAccountPage {
         transactions: plan.toImport,
         duplicates: plan.duplicates,
         rejected: plan.rejected,
+        accountId: this.facade.accountId(),
+        closingBalanceCents: parsed.closingBalanceCents,
+        asOfISO: lastEntryDateISO(parsed.rows),
+        amountChanges: amountChangesFor(
+          plan.toImport,
+          this.#schedulesFacade.allItems()
+        ),
       }
     );
   }

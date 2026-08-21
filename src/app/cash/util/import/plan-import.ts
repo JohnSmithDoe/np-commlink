@@ -7,9 +7,15 @@
  * The account prefixes the key because a reference is only unique WITHIN
  * the account that issued it, and the same statement imported into two
  * accounts is two ledgers, not one.
+ *
+ * A row is NAMED by whoever was paid, not by the statement line. The line
+ * is the counterparty and the purpose run together, and a purpose is a
+ * paragraph — it made every ledger row, every report entry and every delete
+ * confirm read as a wall. The paragraph is not lost: it is `remittanceInfo`,
+ * shown under the name and matchable by its own field.
  * ───────────────────────────────────────────────────────────────── */
 import { CashRule } from '../../model/rule.types';
-import { CashTransaction } from '../../model/transaction.types';
+import { CamtDetails, CashTransaction } from '../../model/transaction.types';
 import { withCategory } from '../cash-category.utils';
 import { categorize } from '../categorize.utils';
 import { ParsedRow, ParseResult } from './parsed-row';
@@ -30,17 +36,33 @@ const importedKeys = (existing: readonly CashTransaction[]): Set<string> =>
       .map((txn) => scopedKey(txn.accountId, txn.importKey ?? ''))
   );
 
+const detailsFromRow = (row: ParsedRow): CamtDetails => ({
+  counterpartyName: row.counterpartyName,
+  counterpartyIban: row.counterpartyIban,
+  counterpartyBic: row.counterpartyBic,
+  remittanceInfo: row.remittanceInfo,
+  endToEndId: row.endToEndId,
+  mandateId: row.mandateId,
+  purposeCode: row.purposeCode,
+  bankTxCode: row.bankTxCode,
+  valueDateISO: row.valueDateISO,
+});
+
+const nameFromRow = (row: ParsedRow): string =>
+  row.counterpartyName?.trim() || row.remittanceInfo?.trim() || row.description;
+
 const transactionFromRow = (
   row: ParsedRow,
   accountId: string,
   importBatchId: string,
   id: string
 ): CashTransaction => ({
+  ...detailsFromRow(row),
   id,
   accountId,
   dateISO: row.dateISO,
   amountCents: row.amountCents,
-  name: row.description,
+  name: nameFromRow(row),
   source: 'imported',
   status: row.status,
   importBatchId,

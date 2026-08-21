@@ -1,0 +1,15 @@
+@use 'theme/cash';
+
+.cash-uncategorized__amount {
+  @include cash.txn-amount(var(--fs-body));
+}
+
+.cash-uncategorized__empty {
+  @include cash.empty-state;
+}
+
+.cash-networth {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  @include cash.networth-strip;
+}

@@ -9,10 +9,7 @@
  * list that narrows and never widens again.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  categoryFilterFromRoute,
-  clearCategoryFilterIn,
-} from '../../@shared/data/item-lists/category-filter.effects';
+import { categoryFilterFromRoute } from '../../@shared/data/item-lists/category-filter.effects';
 import { createItemListEffects } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { selectRouteCategoryFilter } from '../../@shared/data/router/router.selector';
 import {
@@ -32,10 +29,6 @@ import {
 export const trackplayRouteFilterEffects = {
   drilledFilter$: categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
     id ? GamesActions.updateFilter(id) : undefined
-  ),
-
-  clearFilter$: clearCategoryFilterIn(() =>
-    GamesActions.updateFilter(undefined)
   ),
 };
 

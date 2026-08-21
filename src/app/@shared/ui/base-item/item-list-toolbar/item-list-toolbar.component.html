@@ -1,27 +1,29 @@
 <ion-toolbar>
   <ion-buttons slot="start">
-    <ion-button
-      (click)="selectSortMode.emit(sortByName.type)"
-      [attr.aria-pressed]="isActive(sortByName.type)"
-      data-testid="list-toolbar-sort-az"
-    >
-      {{ sortByName.labelKey | translate }}
-      @let nameDirection = directionIcon(sortByName.type);
-      @if (nameDirection) {
-        <ion-icon [name]="nameDirection" slot="end" aria-hidden="true" />
-      }
-    </ion-button>
-    @for (option of options(); track option.type) {
+    @if (sortable()) {
       <ion-button
-        (click)="selectSortMode.emit(option.type)"
-        [attr.aria-pressed]="isActive(option.type)"
+        (click)="selectSortMode.emit(sortByName.type)"
+        [attr.aria-pressed]="isActive(sortByName.type)"
+        data-testid="list-toolbar-sort-az"
       >
-        {{ option.labelKey | translate }}
-        @let optionDirection = directionIcon(option.type);
-        @if (optionDirection) {
-          <ion-icon [name]="optionDirection" slot="end" aria-hidden="true" />
+        {{ sortByName.labelKey | translate }}
+        @let nameDirection = directionIcon(sortByName.type);
+        @if (nameDirection) {
+          <ion-icon [name]="nameDirection" slot="end" aria-hidden="true" />
         }
       </ion-button>
+      @for (option of options(); track option.type) {
+        <ion-button
+          (click)="selectSortMode.emit(option.type)"
+          [attr.aria-pressed]="isActive(option.type)"
+        >
+          {{ option.labelKey | translate }}
+          @let optionDirection = directionIcon(option.type);
+          @if (optionDirection) {
+            <ion-icon [name]="optionDirection" slot="end" aria-hidden="true" />
+          }
+        </ion-button>
+      }
     }
     <ng-content />
   </ion-buttons>
