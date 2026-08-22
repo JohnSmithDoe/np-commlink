@@ -3,48 +3,32 @@
  * consumer enables nothing rule by rule. `tsRecommended` and
  * `templateRecommended` borrow angular-eslint's names because they mean
  * the same thing and sit in the same `extends` arrays; every rule is
- * `error` in all three, so `all` is their union rather than a stricter
- * tier.
+ * `error` in all three, so `all` is their union, not a stricter tier.
  *
  * Split by LANGUAGE because `extends` applies the enclosing block's
  * `files` to everything it extends. A template-scoped config nested under
  * a TypeScript-scoped parent intersects to nothing, and the failure is
  * silent: measured, all nine template rules went inert while every `.ts`
- * file kept exactly the rules it had and the suite stayed green.
+ * file kept its rules and the suite stayed green.
  *
- * The globs live here, reversing the old rule set's "this exports rules
- * only, the config decides which files". That rule guarded against a
- * `no-restricted-syntax` *selector* being dropped by a later block setting
- * the same rule — an argument about shared option bags, not about rule
- * ids, which cannot be shadowed that way. Nothing here should exist at all
- * if an upstream rule expresses the same check; CLAUDE.md
- * has the order to try, under Enforced > ESLint.
+ * The globs live here, not in the consumer's config: a rule id cannot be
+ * shadowed by a later block the way a shared option bag can.
  *
  * Why each scope is drawn where it is:
- *   - `marker(...)` is TS-only — a template reads keys through the pipe,
- *     which takes whatever the component hands it.
+ *   - `marker(...)` is TS-only — a template reads keys through the pipe.
  *   - i18n-key-ownership runs on both languages, because a key leaks
- *     through either. Specs are exempt: a fixture naming a foreign key is
- *     describing data, not shipping wording.
- *   - instant-argument-is-marker exempts specs too — a stub echoing
- *     `instant('some.key')` describes the service's contract.
- *   - no-action-type-literal exempts specs, which pin the generated wire
- *     format on purpose rather than matching on it.
+ *     through either. It exempts specs, as do instant-argument-is-marker
+ *     and no-action-type-literal: a fixture naming a foreign key or a
+ *     pinned wire format is describing data, not shipping it.
  *   - testid-is-static does NOT exempt specs: a composed id there is the
  *     half scripts/check-testids.mjs cannot see either.
- *   - e2e-ionic-locator-traps is Playwright-only. A Vitest spec never
- *     builds these locators, and `locator` / `getByRole` are common enough
- *     names that widening the glob would start guessing.
- *   - comments-header-only is the one rule with no narrowing and no
- *     `ignores` at all — not specs, not e2e, not this plugin's own
- *     sources. A header block only reads as a signal if it means the same
- *     thing in every file, so a carve-out is a region where it means
- *     nothing. Every-TS-file intersected with the consumer's own glob is
- *     the 587 files ng lint passes; it is TS-only because a template has
- *     no first code token to sit above.
- *   - The NgRx allowlist is an `ignores:` glob rather than rule options:
- *     ESLint already does glob matching, and `app.providers.ts` earns its
- *     entry by composing the eager kernel.
+ *   - e2e-ionic-locator-traps is Playwright-only; `locator` and
+ *     `getByRole` are common enough names that widening would guess.
+ *   - comments-header-only has no narrowing and no `ignores` at all: a
+ *     header block only reads as a signal if it means the same thing in
+ *     every file, so a carve-out is a region where it means nothing. It
+ *     is TS-only — a template has no first code token to sit above.
+ *   - The NgRx allowlist is an `ignores:` glob, not rule options.
  * ───────────────────────────────────────────────────────────────── */
 
 import type { Linter } from 'eslint';

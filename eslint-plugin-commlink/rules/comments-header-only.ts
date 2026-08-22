@@ -1,51 +1,34 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Shape and placement, never presence. No rule can tell a file whose
- * decisions are non-derivable from one whose code already reads as
- * its own summary, so a missing header is never a finding — the
- * block's mere existence is the signal, and demanding one everywhere
- * would destroy exactly that signal.
+ * Shape, placement and length, never presence. No rule can tell a
+ * file whose decisions are non-derivable from one whose code already
+ * reads as its own summary, so a missing header is never a finding —
+ * the block's existence is the signal. Length is the half that IS
+ * checkable: prose grows a paragraph at a time, each defensible, and
+ * only a count keeps the block from becoming the file's narration.
  *
- * A directive is addressed to a tool, not to a reader, so it is
- * allowed in any position. But a directive is a KEYWORD PLUS THE
- * TOOL'S OWN SYNTAX, never a keyword plus prose: a paragraph opening
- * "eslint-disable naming that decision …" is a sentence, and matching
- * the keyword alone let it exempt itself, leaving a hole in the middle
- * of the paragraph around it. Where a tool honours the keyword in only
- * one comment shape, that shape is part of the syntax — measured,
- * `// eslint-disable no-var` suppresses nothing, so as a line comment
- * it is prose no matter what follows it.
+ * A directive is addressed to a tool, not a reader, so it may sit in
+ * any position — but it is a KEYWORD PLUS THE TOOL'S OWN SYNTAX,
+ * never a keyword plus prose. Matching the keyword alone let a
+ * paragraph opening "eslint-disable naming that decision …" exempt
+ * itself, leaving a hole in the middle of the prose around it. Where
+ * a tool honours the keyword in only one comment shape, that shape is
+ * part of the syntax: `// eslint-disable no-var` suppresses nothing,
+ * so as a line comment it is prose whatever follows it. `@ts-*` stays
+ * keyword-only — TypeScript defines the tail as free text, so no
+ * syntax is left to check.
  *
- * The `@ts-*` family is the exception that stays keyword-only:
- * TypeScript defines the tail as a free-text description, so there is
- * no syntax left to check and only a paragraph literally beginning
- * `@ts-expect-error` can slip through.
+ * A global list is comma-separated here though ESLint also tolerates
+ * whitespace, because "globals are shared state" parses as three
+ * names — the separator is what tells a declaration from a sentence.
  *
- * A global list is comma-separated here even though ESLint also
- * tolerates bare whitespace, because "globals are shared state" parses
- * as three whitespace-separated names — the separator is the only
- * thing telling a declaration from a sentence.
- *
- * The trailing slot is the one position that stays anchored to the
- * token it describes, so it is the home of a LABEL — a cross-reference
- * the type system cannot carry, a domain fact about an opaque literal.
- * It is bounded because prettier never wraps a comment: unbounded, it
- * would simply absorb the own-line prose this rule bans.
+ * The trailing slot stays anchored to its token, so it holds a LABEL;
+ * it is bounded like the banner because prettier never wraps prose.
  *
  * The banner dashes are U+2500 (─); a hyphen run looks the same at a
  * glance and is why the first/last line each get their own message.
- * Banner lines are split CRLF-tolerantly, so a correct banner is never
- * accused of a shape complaint over a line ending nobody can see.
  *
- * A file that is nothing but comments has no first code token, so it
- * is read as all header: there is no code for prose to sit below.
- *
- * JSDoc above the imports is reported as JSDoc rather than as a
- * malformed banner — it fails the shape either way, and that is the
- * accurate diagnosis of how it got there.
- *
- * No autofix. Deleting a comment is a judgement about whether its
- * content survives as a name, an extraction, a header line or a
- * paragraph in docs/ — four different edits, none mechanical.
+ * No autofix. Whether a comment's content survives as a name, an
+ * extraction, a header line or a paragraph in docs/ is a judgement.
  * ───────────────────────────────────────────────────────────────── */
 
 import type { Rule } from 'eslint';
@@ -56,6 +39,7 @@ const BANNER_INTERIOR = /^ \*( .*)?$/;
 const LINE_BREAK = /\r?\n/;
 
 const TRAILING_LABEL_MAX = 60;
+const BANNER_MAX_LINES = 32;
 
 const RULE_NAME = String.raw`@?[\w$-]+(?:\/[\w$-]+)*`;
 const RULE_LIST = new RegExp(
@@ -143,7 +127,7 @@ export const rule: Rule.RuleModule = {
     type: 'problem',
     docs: {
       description:
-        'A file carries at most one comment — a `why` banner above the first code token, listing what is not derivable from the code — plus short `//` labels trailing a line of code.',
+        'A file carries at most one comment — a bounded `why` banner above the first code token, listing what is not derivable from the code — plus short `//` labels trailing a line of code.',
     },
     schema: [],
     messages: {
@@ -161,6 +145,8 @@ export const rule: Rule.RuleModule = {
         'The header block must close with a rule line — ` * ─────… */` (U+2500 dashes) on its own line.',
       bannerInteriorLine:
         'Every interior line of the header block starts with ` * `. Nothing else is a header line, so a stray line means the block has grown a second shape.',
+      bannerTooLong:
+        'This header block is {{lines}} lines; at most {{max}} may sit above the first code token. Past that it has stopped being the list of what the code cannot say and become a narration of it — cut the paragraphs the expression underneath already states, keep the decisions, and move anything true beyond this file to docs/ where it is said once.',
       trailingCommentIsBlock:
         'A comment sharing a line with code is a `//` label, never a `/* … */` block. The block form carries no end-of-line, so it can grow into the paragraph the trailing slot exists to keep out — and it can sit mid-expression, where it is no longer a label for anything a reader can point at.',
       trailingCommentTooLong:
@@ -195,12 +181,16 @@ export const rule: Rule.RuleModule = {
       trailingPerLine.set(line, (trailingPerLine.get(line) ?? 0) + 1);
     }
 
-    const report = (comment: CommentLike, messageId: string) => {
+    const report = (
+      comment: CommentLike,
+      messageId: string,
+      data?: Record<string, string>
+    ) => {
       if (!comment.loc) return;
       context.report({
         loc: comment.loc,
         messageId,
-        data: { max: String(TRAILING_LABEL_MAX) },
+        data: data ?? { max: String(TRAILING_LABEL_MAX) },
       });
     };
 
@@ -231,7 +221,15 @@ export const rule: Rule.RuleModule = {
       const stray = lines
         .slice(1, last)
         .some((line) => !BANNER_INTERIOR.test(line));
-      if (stray) report(comment, 'bannerInteriorLine');
+      if (stray) {
+        report(comment, 'bannerInteriorLine');
+        return;
+      }
+      if (lines.length > BANNER_MAX_LINES)
+        report(comment, 'bannerTooLong', {
+          max: String(BANNER_MAX_LINES),
+          lines: String(lines.length),
+        });
     };
 
     const checkHeader = (comment: CommentLike, index: number) => {

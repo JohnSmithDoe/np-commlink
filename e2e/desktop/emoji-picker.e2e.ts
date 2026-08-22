@@ -3,9 +3,8 @@
  * keyboard already has one — so its trigger does not render on the Pixel
  * 5 the rest of the suite emulates. `e2e/desktop/` is the only path the
  * `desktop-chromium` project matches and the only one `mobile-chromium`
- * ignores, which is why this one spec lives apart. Its mirror image, the
- * trigger being ABSENT on a phone, is asserted from the mobile project in
- * `e2e/household/storage.e2e.ts`.
+ * ignores, which is why this one spec lives apart. The mirror image, the
+ * trigger being ABSENT on a phone, is asserted from `storage.e2e.ts`.
  *
  * The picker is an `ion-modal` of its own presented over another, so it
  * ends up a SIBLING of the edit dialog at the app root rather than a
@@ -19,19 +18,17 @@
  * name field is read last as proof that the TEXT did.
  *
  * The edit dialog leaves the name field's selection at its end, so the
- * seeded caret puts the glyphs AFTER the name. Asserting the exact string
- * rather than a regex is the point: it is the seed that is under test, not
- * merely that two glyphs arrived.
+ * seeded caret puts the glyphs AFTER the name. The exact string is
+ * asserted rather than a regex: it is the seed that is under test.
  *
  * The last assertion is the recents store: saving records the glyphs, so
  * the next open offers them with no search at all.
  *
  * The second test buys the case a point-caret cannot express. Selection
- * is the reason the picker reads a RANGE off the preview, and it is only
+ * is why the picker reads a RANGE off the preview, and it is only
  * observable in a browser: the range math is unit-tested, but that the
  * selection SURVIVES clicking a button — blur does not collapse it — is a
- * browser fact. Shift+Arrow rather than `setSelectionRange` for the same
- * reason: the gesture under test is the one a user makes.
+ * browser fact. Shift+Arrow for the same reason: it is a user gesture.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';

@@ -9,32 +9,26 @@
  * assertion that a row and its tile cannot disagree.
  *
  * A cold deck ships EMPTY, so every test that needs a tile switches its
- * program on first, and the two waits are not interchangeable:
- * `switchOn` waits for the id to ARRIVE in the stored document and
- * `switchOff` for it to leave. Waiting on the field name would resolve
- * against a previous write — `visibleEntries` is in the doc from the
- * first one onwards — so the id is the only honest signal in either
- * direction.
+ * program on first, and the two waits are not interchangeable: `switchOn`
+ * waits for the id to ARRIVE in the stored document, `switchOff` for it
+ * to leave. Waiting on the field name would resolve against a previous
+ * write — `visibleEntries` is in the doc from the first one onwards.
  *
  * `openDeck` anchors on the status strip rather than on any tile: it is
  * the one element the grid renders whatever the configuration says, so it
  * cannot wait for something a previous step just hid.
  *
  * Hiding a program is a navigation choice, not an uninstall, so the
- * status strip keeps reporting the grid's full complement. The
- * denominator is the whole assertion — the copy around it is i18n and
- * theme-cased, and matching that would pin the translation instead. It
- * counts `onDeck` entries in the catalog rather than visible ones, which
- * is why an empty deck still reports fifteen; the literal here is the one
- * number that has to be re-read when the catalog gains an entry.
+ * status strip keeps reporting the grid's full complement — it counts
+ * `onDeck` entries in the catalog, which is why an empty deck still
+ * reports fifteen, and why that literal is re-read when the catalog gains
+ * an entry. Only the denominator is asserted: the copy around it is i18n
+ * and theme-cased, and matching that would pin the translation.
  *
  * The empty node is asserted CLICKABLE, not just present: it is the only
- * route out of the PAGE, and on an empty-by-default deck it is also the
- * first thing a new install shows, so a decorative empty state would
- * leave the home screen with nothing on it to act on. Nothing is ever
- * stranded — the drawer's `/settings` row is static, outside the `@for`
- * over `menuEntries` — but that is a fallback, not this surface's own
- * answer.
+ * route out of the PAGE, and on an empty-by-default deck it is the first
+ * thing a new install shows, so a decorative empty state would leave the
+ * home screen with nothing to act on.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';

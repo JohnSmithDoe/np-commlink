@@ -3,50 +3,32 @@
  * three household lists; shopping and tasks only check their own wiring.
  *
  * The filter test needs no wait against the 250 ms debounce, unlike
- * `addViaSearch`: both of its assertions retry, so they outlast it on
- * their own.
+ * `addViaSearch`: both of its assertions retry, so they outlast it.
  *
  * The round-trip test reloads AFTER `gotoFeature`, never after a bare
- * `goto`. A hash navigation is same-document, so reloading too early
+ * `goto`: a hash navigation is same-document, so reloading too early
  * reloads the route just left and the spec proves nothing.
  *
- * The name-rule test is where the move onto Signal Forms is actually
- * proven: the save button reads `canSave` off the field tree, where it
- * used to read validity off the name input through a template ref. The
- * MESSAGE is asserted beside the disabled button because a
- * disabled-button assertion alone let it regress once — Ionic renders its
- * own `errorText` slot only while the `ion-input` carries `ion-invalid
- * ion-touched`, classes produced exclusively by an `NgControl` on that
- * input, which a custom control never puts there. The recovery at the end
- * is `requireUniqueName`'s `editing` exclusion: an item's own name is not
- * a duplicate of itself.
+ * The name-rule test asserts the MESSAGE beside the disabled button,
+ * because the disabled button alone let it regress once — Ionic renders
+ * its `errorText` slot only while the `ion-input` carries `ion-invalid
+ * ion-touched`, which only an `NgControl` on that input produces. The
+ * recovery at the end is `requireUniqueName`'s `editing` exclusion.
  *
- * The picker runs in MULTI mode here, so a separate "Auswählen" confirms
- * it — and that button appearing is what says the picker opened. Its
- * searchbar cannot be found by placeholder: the list page's own searchbar
- * is still behind it carrying the same one.
+ * The picker runs in MULTI mode, so "Auswählen" confirms it — and that
+ * button appearing is what says it opened. Its searchbar cannot be found
+ * by placeholder: the list page's own is behind it with the same one.
  *
- * The suggestion-stack test is the only thing that proves TWO elements
- * reach ONE `<ng-content select="[beforeList]">`. A `select` is a filter,
- * not a capacity limit — every matching node lands in that slot in call-site
- * order — but the mirror-image mistake (two `ng-content`s sharing a
- * selector, where the second is dead) is close enough that nothing should
- * have to reason about which one is written. It enables both flags first
- * because every `ListSettings` flag ships `false`, so neither offer renders
- * on a cold context.
+ * The suggestion-stack test is the only thing proving TWO elements reach
+ * ONE `<ng-content select="[beforeList]">`. It enables both flags first,
+ * because every `ListSettings` flag ships `false`.
  *
- * The undo test lives here rather than beside trackplay's because the two
- * prove different halves: trackplay's proves its own snapshot restore,
- * this one proves that a list opting in through `undoableDelete` gets the
- * toast and gets its row back from its own `addItem`. Only the three
- * household lists opt in, so the other users of the shared list page must
- * keep deleting silently.
+ * The undo test lives here because it proves what trackplay's does not:
+ * that a list opting in through `undoableDelete` gets the toast and its
+ * row back. Only the three household lists opt in.
  *
- * The emoji test asserts ABSENCE, mirroring
- * `e2e/desktop/emoji-picker.e2e.ts`. Not-rendered rather than hidden is
- * the requirement: an always-mounted `ion-modal` would make every overlay
- * locator on this route ambiguous, app-wide, for a control a phone
- * keyboard already provides.
+ * The emoji test asserts ABSENCE: an always-mounted `ion-modal` would
+ * make every overlay locator on this route ambiguous, app-wide.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';

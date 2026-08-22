@@ -1,76 +1,34 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Every trap encoded here was paid for once, by a spec that passed alone
- * and reddened after an SPA navigation. They live in one place so no spec
- * re-derives them; CLAUDE.md carries the general statement of each, so
- * what follows is only what is not there.
+ * Every trap here was paid for once, by a spec that passed alone and
+ * reddened after an SPA navigation. footguns.md states each in general,
+ * so what follows is only what these signatures add.
  *
- * Playwright gives every test a fresh browser context, so each one boots
- * against an empty IndexedDB and whatever a test seeds is the whole of
- * its state.
+ * `searchInput` filters on `:visible`, which stops being enough once a
+ * domain has two list pages in ONE stack: the departed page still
+ * measures non-zero and `.first()` takes it in document order, so the
+ * click lands on a router outlet. That is what `scope` is for.
  *
- * `presentedDialog` keys off `.show-modal` plus the title because every
- * simpler scope was measured wrong: presenting MOVES the `ion-modal` to
- * `ion-app` and leaves an `overlay-hidden` twin inside the wrapper, one
- * list route mounts five of them, and Ionic sets no `role="dialog"` at
- * all.
- *
- * `searchInput` filters on `:visible` because Ionic marks an inactive
- * routed page `.ion-page-hidden` rather than unmounting it, so after one
- * navigation two searchbars exist and the element name cannot say which
- * is live. That is not always enough: once a domain has two list pages in
- * ONE stack, the departed page still measures non-zero and `.first()`
- * takes it in document order, so the click lands on a router outlet. The
- * optional `scope` is for that case — hand it the page root and the
- * ambiguity is gone by construction.
- *
- * `listRow` matches the row element rather than its text:
- * `getByText(/Milk/)` also matches every ancestor whose text contains it,
- * and dropping that ambiguity is what removes the `.first()`.
+ * `listRow` matches the row element, not its text — `getByText(/Milk/)`
+ * also matches every ancestor containing it.
  *
  * `openRowSwipe` calls the component's own `open()` because Ionic parks
  * an `ion-item-sliding`'s options translated off-screen, where a
- * synthesized swipe gesture never reaches them. It takes the sliding
- * element rather than the row, which every caller now satisfies by handing
- * it a `listRow(…)`: `data-testid="list-row"` sits ON the
- * `ion-item-sliding` in the shared row, and the shared row is the only row
- * left.
+ * synthesized gesture never reaches them.
  *
  * `addViaSearch` waits twice against the searchbar's 250 ms debounce:
- * once so the Enter handler reads the query just typed instead of the
- * previous one, and once after clearing the box so the freshly added row
- * is not still filtered out of view.
+ * once so the Enter handler reads the query just typed, and once after
+ * clearing the box so the new row is not still filtered out of view.
  *
  * `persistedDocument` opens the database only once `databases()` says it
- * exists, so probing cannot win the race against the app's own
- * localforage init by creating an empty one first. One store holds every
- * `npc-*` doc — see `storageConfig` in `src/main.ts`.
+ * exists, so probing cannot beat the app's localforage init by creating
+ * an empty one first. A slice's write emits no DOM signal at all, so the
+ * store is the only honest condition a following reload can synchronize
+ * on — and for a write that REMOVES, absence of the id is the signal.
  *
- * `waitForPersisted` exists because a slice's disk write emits no DOM
- * signal whatsoever, so the store itself is the only honest condition a
- * following reload can be synchronized on. `waitForPersistedWithout` is
- * its inverse, for the writes that REMOVE rather than add — switching a
- * deck entry OFF drops its id from `visibleEntries`, so presence of the
- * key is no signal at all and absence of the id is the only one.
- *
- * `createDialog`/`editDialog`/`nameBox`/`addButton`/`CREATE_BUTTON` name
- * copy that `@shared` owns — the edit-item modal's two titles, the name
- * input's placeholder, the page header's add button — so they belong to no
- * suite. `gotoPage` is here for the same reason: every feature reaches its
- * route by hash and then waits for its own page element.
- *
- * `pickSelectOption` clicks the locator it is handed, so a caller must
- * pass the `ion-select` HOST — its shadow `part="inner"` swallows a click
- * aimed at the accessible button. It drives the default `alert` interface,
- * which needs its own OK; a popover-interface select confirms on the tap
- * instead.
- *
- * `enableDeckProgram` exists because a cold deck ships EMPTY: the state
- * names what is VISIBLE and starts with nothing, so any spec asserting
- * something about a tile or a drawer row has to switch its program on
- * first. It takes the entry id as well as the codename because the
- * codename is theme-resolved copy the store never sees, and the store is
- * what has to be waited on: callers reload after it, and a reload that
- * beat the write would land back on an empty deck.
+ * `enableDeckProgram` exists because a cold deck ships EMPTY: any spec
+ * touching a tile or a drawer row switches its program on first. It
+ * needs the entry id too — the codename is theme-resolved copy the
+ * store never sees, and the store is what the reload waits on.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';

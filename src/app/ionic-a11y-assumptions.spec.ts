@@ -2,28 +2,24 @@
  * The `commlink/a11y-*` rules are built on facts about Ionic's own
  * source, and this dates the READING of those facts. It cannot check
  * them: each is an inline literal inside a `render()`,
- * `componentWillLoad()` or `connectedCallback()`, so it is reachable
- * as neither a value nor a lint target — and jsdom never runs the
- * Stencil runtime, so no mounted element can be asked either. What is
- * readable is which version we read them against.
+ * `componentWillLoad()` or `connectedCallback()`, so it is neither a
+ * value nor a lint target — and jsdom never runs the Stencil runtime.
  *
  * So this goes red on a major bump and says only that: the reading
  * expired. It never claims a fact broke. A `toString()` regex over the
- * emitted `componentWillLoad` was the alternative and was rejected —
- * it survives a rename but not a hoist to module scope, so its red is
- * ambiguous while its remedy is identical to this one's, and a gate
- * that reports what it cannot know teaches people to disable it.
+ * emitted `componentWillLoad` was rejected — it survives a rename but
+ * not a hoist to module scope, so its red is ambiguous while its
+ * remedy is identical, and a gate that reports what it cannot know
+ * teaches people to disable it.
  *
  * ionicons is read through the range `@ionic/core` DECLARES, not from
  * the installed top-level copy. The 7.4.0 at the root supplies icon
  * path data to `addIcons`; the `ion-icon` that renders is the 8.x
- * `@ionic/core` bundles, and that copy's `exports` map hides its own
- * `package.json`. This is the only readable statement about the copy
- * that actually runs, and it moves when Ionic deliberately re-bases
- * rather than whenever ionicons ships inside the caret.
- *
- * Stencil is here because it emits every `render()` and
- * `inheritAttributes()` the other two rows depend on.
+ * `@ionic/core` bundles, whose `exports` map hides its own
+ * `package.json`. So it moves when Ionic deliberately re-bases, not
+ * whenever ionicons ships inside the caret. Stencil is here because it
+ * emits every `render()` and `inheritAttributes()` the other two rows
+ * depend on.
  *
  * `!==`, not `>`: a downgrade expires the reading just as well, and it
  * is what makes this reproducible by editing a constant either way.
@@ -31,9 +27,8 @@
  * stale coordinate sends the reader somewhere wrong with confidence.
  *
  * The standing weakness, since nothing else records it: the remedy is
- * editing the constant below, and nothing forces the re-reads. The
- * message is the checklist, so bumping a number puts the four coordinates
- * in the same diff as the bump. That is the whole mechanism.
+ * editing the constant below and nothing forces the re-reads — the
+ * message is the checklist, so a bump carries the four coordinates.
  * ───────────────────────────────────────────────────────────────── */
 import ionicCorePackage from '@ionic/core/package.json';
 

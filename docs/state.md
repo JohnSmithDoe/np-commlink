@@ -261,9 +261,6 @@ or a bill that only a phone with a few hundred rows actually presents.
   (readings, pills) and wants a factory beside `list.selector.ts`; the settings page renders the same
   label + segment block three times; and `Chart.register(...registerables)` plus a near-identical options
   object sits in three chart hosts, where `@shared/util/charts/` is already the shared home.
-- **Several `why` banners run 21–32 lines against a 6–14 guideline**, and a few paragraphs narrate what the
-  expression underneath already says. Trimming is per-file judgement, so it happens when a file is opened
-  for another reason.
 
 ## Findings from the review that are still open
 

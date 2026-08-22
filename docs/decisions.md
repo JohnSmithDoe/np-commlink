@@ -750,3 +750,18 @@ set was inverted, and are left standing rather than re-woven.
   nothing, because the switch that replaced the initializer did not exist when that cron was placed.
 - **This is not a migration rung.** What is stale is a schedule the OS owns, not a shape on disk.
   `runMigrations` never sees it and `APP_VERSION` has no opinion about it.
+
+## A header block is bounded at 32 lines
+
+- **`commlink/comments-header-only` counts the banner's lines now, and 32 is the ceiling.** Presence stays
+  unjudgeable — no rule can tell a file whose decisions are non-derivable from one whose code already reads
+  as its own summary — but length is checkable, and it is the half review kept letting through: prose
+  arrives a paragraph at a time, each one defensible. Seven banners were over, one at 74. What came out was
+  footguns.md restated, narration of the expression underneath, and history ("reversing the old rule set",
+  "no longer closes on a pick"). The check runs after the shape checks, so a malformed block still gets the
+  accurate diagnosis rather than a length complaint.
+- **24 was measured and declined.** Three files pay a FACT rather than a word there: `e2e/helpers.ts` loses
+  `openRowSwipe`'s off-screen parking, `ionic-a11y-assumptions.spec.ts` the rejected `toString()` regex,
+  `configs.ts` half its per-scope bullets. Moving those three into this document was the alternative — a
+  short banner bought with a growing doc. The guideline for a NEW banner is still 6–14 lines: 32 is the
+  gate, not the target.
