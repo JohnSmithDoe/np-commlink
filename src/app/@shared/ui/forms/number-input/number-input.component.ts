@@ -15,10 +15,10 @@ import { parseNumberInput } from '../../../util/app.utils';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberInputComponent {
-  label = input<string>();
-  disabled = input(false, { transform: booleanAttribute });
-  value = input<string | number | null>();
-  updateValue = output<number>();
+  readonly label = input<string>();
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly value = input<string | number | null>();
+  readonly updateValue = output<number>();
 
   updateInputValue(event: InputCustomEvent) {
     this.updateValue.emit(parseNumberInput(event));

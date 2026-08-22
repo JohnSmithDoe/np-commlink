@@ -15,6 +15,36 @@ const tseslint = require('typescript-eslint');
 const json = require('@eslint/json').default;
 const markdown = require('@eslint/markdown').default;
 
+// `input()`, `output()`, `model()` and the `*Child*` queries each return a
+// binding object Angular captures once and holds by reference. Reassigning the
+// property never rebinds anything — it detaches the member from the binding
+// still feeding the template, and neither tsc nor the template type-checker
+// says a word. `readonly` is the declaration that makes the reassignment
+// impossible, and it was already true of 147 of the repo's 157 such members.
+//
+// Two selectors because the required forms are a different AST: `input()` is a
+// bare callee, `input.required()` a member expression. Upstream's
+// `prefer-output-readonly` covers only the `@Output()` decorator, which this
+// repo does not use.
+//
+// SPREAD THIS, never re-declare `no-restricted-syntax` in a later block: flat
+// config replaces a rule's options rather than merging them, so a second
+// declaration silently drops these for every file it matches.
+const READONLY_SIGNAL_MEMBERS = [
+  {
+    selector:
+      'PropertyDefinition:not([readonly=true]) > CallExpression.value[callee.name=/^(input|output|model|viewChild|viewChildren|contentChild|contentChildren)$/]',
+    message:
+      'Declare this readonly — an input/output/query holds a binding Angular captured by reference, so reassigning it detaches the binding instead of changing it.',
+  },
+  {
+    selector:
+      'PropertyDefinition:not([readonly=true]) > CallExpression.value[callee.object.name=/^(input|model|viewChild|viewChildren|contentChild|contentChildren)$/][callee.property.name="required"]',
+    message:
+      'Declare this readonly — an input/output/query holds a binding Angular captured by reference, so reassigning it detaches the binding instead of changing it.',
+  },
+];
+
 module.exports = defineConfig(
   globalIgnores([
     '**/.*/',
@@ -116,6 +146,7 @@ module.exports = defineConfig(
           ],
         },
       ],
+      'no-restricted-syntax': ['error', ...READONLY_SIGNAL_MEMBERS],
     },
   },
   {
@@ -152,6 +183,7 @@ module.exports = defineConfig(
     rules: {
       'no-restricted-syntax': [
         'error',
+        ...READONLY_SIGNAL_MEMBERS,
         {
           selector: 'Decorator[expression.callee.name="Injectable"]',
           message:

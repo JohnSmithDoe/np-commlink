@@ -80,12 +80,13 @@ export class ListPageComponent {
   readonly facade = inject(LIST_FACADE);
   readonly #categoryFilter = inject(CategoryFilterFacade);
 
-  itemTemplate = input.required<TemplateRef<ItemListTemplateContext>>();
-  icon = input<string>();
-  pageHeader = input('');
-  heading = input('');
-  backHref = input('');
-  windowSize = input<number>();
+  readonly itemTemplate =
+    input.required<TemplateRef<ItemListTemplateContext>>();
+  readonly icon = input<string>();
+  readonly pageHeader = input('');
+  readonly heading = input('');
+  readonly backHref = input('');
+  readonly windowSize = input<number>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
 
