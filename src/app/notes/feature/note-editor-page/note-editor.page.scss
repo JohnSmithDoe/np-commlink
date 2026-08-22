@@ -1,0 +1,46 @@
+@use 'theme/consts';
+
+.note-title {
+  font-size: var(--fs-large);
+  font-weight: 600;
+}
+
+.note-body {
+  min-height: 8rem;
+}
+
+.note-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: consts.$gc-1 * 1rem;
+  padding-inline: consts.$gc-1 * 1rem;
+}
+
+.note-image {
+  position: relative;
+  margin: 0;
+  width: calc(50% - #{consts.$gc-1 * 0.5rem});
+}
+
+.note-image-open {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 100%;
+  height: auto;
+
+  img {
+    display: block;
+    width: 100%;
+    border-radius: var(--sr-radius);
+  }
+}
+
+.note-image-remove {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+}
+
+.note-actions {
+  padding: consts.$gc-1 * 1rem;
+}

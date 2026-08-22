@@ -1,9 +1,9 @@
 import {
-  barcodeOutline,
   businessOutline,
   cartOutline,
   checkboxOutline,
   diceOutline,
+  documentTextOutline,
   fileTrayStackedOutline,
   hardwareChipOutline,
   notificationsOutline,
@@ -19,11 +19,11 @@ import {
 } from 'ionicons/icons';
 
 export const DECK_ICONS = {
-  'barcode-outline': barcodeOutline,
   'business-outline': businessOutline,
   'cart-outline': cartOutline,
   'checkbox-outline': checkboxOutline,
   'dice-outline': diceOutline,
+  'document-text-outline': documentTextOutline,
   'file-tray-stacked-outline': fileTrayStackedOutline,
   'hardware-chip-outline': hardwareChipOutline,
   'notifications-outline': notificationsOutline,

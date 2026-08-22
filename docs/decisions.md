@@ -653,3 +653,40 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 - **Pills match on the id, like readings, but for the neighbouring reason.** Their uniqueness rule is scoped
   to one profile — two profiles may each hold an "Ibuprofen" — and the default name-matching would edit the
   wrong one. `create` is null because a pill without a profile is not a pill and a search box carries none.
+
+## Notes (SIGIL), and what the rename cost
+
+- **The deck entry id moved `barcode` → `notes` with no rung, and the consequence was accepted rather than
+  paid for.** `hiddenEntries` lists what is OFF, so an id the catalog gained is not in anyone's stored set
+  and reads as visible: every existing install has NOTES switched on by itself, and the dead `barcode` id
+  sits inertly in their `order`. Asked and answered — `APP_VERSION` stays **1** and the ladder is still
+  unexercised. This is the second exemption taken (cash was the first), and unlike that one it was taken
+  against a slice real users DO hold. It buys no precedent: it is cheap only because switching one program
+  back off is a tap.
+- **The badge picture was abandoned, not migrated.** `npc-barcode` is left on disk, read by nothing. The
+  feature it held survives as a note that happens to carry an image, which is why `rotateBase64` moved into
+  `notes/util` intact — the at-the-checkout gesture is the same one, reached from a row's start swipe.
+- **One note type, never two.** "Image note" and "text note" would need a discriminator, a convert action
+  and a branch in every renderer, to describe the difference "this one has no body". Keep has one type too;
+  the distinction it draws is in the CREATE affordance, not in the data.
+- **Notes are ARRANGED, not sorted, so the page left `ListPageComponent`.** A sort toolbar over a
+  hand-dragged order offers to silently discard it — the argument `cash-rules.page` already carries. That
+  page is also the precedent for the exit itself: `ion-reorder-group` must be an ancestor of every
+  `ion-reorder`, and `app-item-list` owns the element rows project into. The searchbar and the empty state
+  are still the shared ones; only the list body is the page's own.
+- **`items` is one array and the two sections are a partition of it.** Pinning is therefore a one-field
+  change and never a move between collections, and `reorderSection` writes a section's new order back into
+  the slots that section already occupied. It REFUSES an order shorter than its section, because that is
+  exactly what a drag under an armed search would send — the handle is also hidden while searching, so the
+  refusal is a backstop and not the UI.
+- **The editor has no save button.** Every keystroke is a candidate write and a write serialises the whole
+  slice, images included, so the facade debounces and flushes on destroy. Destroy is also the reason the
+  note id is captured on the way IN: by the time the page is torn down the router has moved on, `:id` is
+  gone, and a route-derived note reads as undefined — which is how the discard-a-blank-note path first
+  failed.
+- **A picked image is re-encoded to a 1600px JPEG before it is stored.** The budget is about the write, not
+  the display: the whole slice is rewritten on each save, so one untouched camera photo would be paid for
+  again on every keystroke of the body beneath it.
+- **Reorder is pointer-only, and that is a known R5 gap.** `ion-reorder-group` ships no keyboard support and
+  nothing else in the app offers "move this note up". `cash-rules` already ships the same gap where order is
+  *semantic*; here it is cosmetic, since every note stays reachable, searchable and openable without a drag.

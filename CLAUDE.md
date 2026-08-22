@@ -109,7 +109,7 @@ persisted key or a deck entry id moves, and before `APP_VERSION` is bumped.
 Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGENDA), and `vitals`
 (BIOMON)**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
 three means having switched programs on. Every other slice — `cash`, `tracking`, `officeTime`,
-`trackplay`, `barcode`, `notifications`, `dashboard` — is dev-only, and its shape changes for the price
+`trackplay`, `notes`, `notifications`, `dashboard` — is dev-only, and its shape changes for the price
 of a cleared browser.
 The user base is small enough that most changes are still free; that is what makes the question worth
 asking rather than assuming, in either direction. What a rung owes when one *is* needed, and what has

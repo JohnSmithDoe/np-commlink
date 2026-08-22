@@ -1,0 +1,107 @@
+<app-page-header
+  icon="document-text-outline"
+  label="page-title.notes"
+  (addItem)="facade.createNote()"
+>
+  <app-item-list-searchbar
+    [query]="facade.state().searchQuery"
+    (queryChange)="facade.search($event)"
+    (hitEnter)="facade.createNote()"
+  />
+</app-page-header>
+
+<ion-content>
+  @if (facade.pinned().length) {
+    <ion-list #pinnedList lines="full">
+      <ion-list-header>{{
+        'notes.section.pinned' | translate
+      }}</ion-list-header>
+      <ion-reorder-group
+        [disabled]="isSearching()"
+        (ionReorderEnd)="reorder($any($event), true)"
+      >
+        @for (item of facade.pinned(); track item.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              noteRow;
+              context: { $implicit: item, ionList: pinnedList }
+            "
+          />
+        }
+      </ion-reorder-group>
+    </ion-list>
+  }
+
+  @if (facade.unpinned().length) {
+    <ion-list #otherList lines="full">
+      @if (facade.pinned().length) {
+        <ion-list-header>{{
+          'notes.section.others' | translate
+        }}</ion-list-header>
+      }
+      <ion-reorder-group
+        [disabled]="isSearching()"
+        (ionReorderEnd)="reorder($any($event), false)"
+      >
+        @for (item of facade.unpinned(); track item.id) {
+          <ng-container
+            *ngTemplateOutlet="
+              noteRow;
+              context: { $implicit: item, ionList: otherList }
+            "
+          />
+        }
+      </ion-reorder-group>
+    </ion-list>
+  }
+
+  <app-item-list-empty
+    [isEmptyList]="isEmpty()"
+    [isSearching]="isSearching()"
+    [searchTerm]="facade.searchResult()?.searchTerm"
+    (emptyList)="facade.createNote()"
+    (emptySearch)="facade.createNote()"
+  />
+</ion-content>
+
+<ng-template #noteRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name || ('notes.item.untitled' | translate)"
+    [ionList]="ionList"
+    [leadingIcon]="item.pinned ? 'pin' : undefined"
+    [reorderable]="!isSearching()"
+    [startSwipeAction]="swipeActionFor(item)"
+    (selectItem)="facade.openNote(item)"
+    (startSwipe)="viewImages(item)"
+    (deleteItem)="facade.removeItem(item)"
+  >
+    @if (snippet(item); as text) {
+      <ng-container itemDetails>
+        <ion-note class="note-snippet">{{ text }}</ion-note>
+      </ng-container>
+    }
+
+    @if (item.images?.length) {
+      <ng-container itemDetails>
+        <div class="note-thumbs">
+          @for (image of item.images; track image.id) {
+            <ion-thumbnail>
+              <img
+                [src]="image.dataUrl"
+                [alt]="'notes.image.alt' | translate"
+              />
+            </ion-thumbnail>
+          }
+        </div>
+      </ng-container>
+    }
+  </app-list-item>
+</ng-template>
+
+<app-note-image-viewer
+  [images]="viewedImages()"
+  [openAt]="openAt()"
+  (rotate)="rotateImage($event)"
+  (dismiss)="viewedNoteId.set(undefined)"
+/>

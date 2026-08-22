@@ -31,9 +31,9 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'barcode',
+    path: 'notes',
     loadChildren: () =>
-      import('./barcode/routes/barcode.routes').then((m) => m.barcodeRoutes),
+      import('./notes/routes/notes.routes').then((m) => m.notesRoutes),
   },
   {
     path: 'notifications',

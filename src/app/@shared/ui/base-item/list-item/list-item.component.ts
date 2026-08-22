@@ -22,6 +22,7 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonLabel,
+  IonReorder,
   IonNote,
   IonText,
 } from '@ionic/angular/standalone';
@@ -49,6 +50,7 @@ import { BaseSwipeRow } from '../base-swipe-row';
     IonItemOption,
     IonItemOptions,
     IonItemSliding,
+    IonReorder,
     IonText,
     TranslatePipe,
   ],
@@ -65,6 +67,7 @@ export class ListItemComponent extends BaseSwipeRow {
   readonly showQuantityActions = input(false, {
     transform: booleanAttribute,
   });
+  readonly reorderable = input(false, { transform: booleanAttribute });
 
   readonly hasStatusBar = computed(() => !!this.statusColor());
   readonly categoryNote = computed(() =>

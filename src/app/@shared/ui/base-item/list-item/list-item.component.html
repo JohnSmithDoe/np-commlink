@@ -50,6 +50,10 @@
       <ng-content select="[itemDetails]"></ng-content>
     </ion-label>
 
+    @if (reorderable()) {
+      <ion-reorder slot="end" />
+    }
+
     @if (showQuantityActions()) {
       <ion-buttons slot="end">
         <ion-button

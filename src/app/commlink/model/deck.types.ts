@@ -8,7 +8,7 @@ export type AppModule =
   | 'tracking'
   | 'office-time'
   | 'notifications'
-  | 'barcode'
+  | 'notes'
   | 'household'
   | 'tasks'
   | 'cash'

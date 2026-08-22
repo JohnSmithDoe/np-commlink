@@ -1,0 +1,101 @@
+<app-page-header
+  icon="document-text-outline"
+  label="page-title.note"
+  backHref="/notes"
+  hideButtons="true"
+>
+  <ion-buttons toolbar slot="end">
+    <ion-button
+      (click)="togglePin()"
+      [attr.aria-pressed]="!!note()?.pinned"
+      [attr.aria-label]="'notes.editor.pin' | translate"
+      data-testid="note-pin"
+    >
+      <ion-icon
+        slot="icon-only"
+        [name]="note()?.pinned ? 'pin' : 'pin-outline'"
+        aria-hidden="true"
+      />
+    </ion-button>
+    <ion-button
+      id="present-note-delete-alert"
+      color="danger"
+      [attr.aria-label]="'notes.editor.delete' | translate"
+      data-testid="note-delete"
+    >
+      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
+
+<ion-content>
+  @let current = note();
+  @if (current) {
+    <ion-item lines="none">
+      <ion-input
+        class="note-title"
+        [attr.aria-label]="'notes.editor.title.label' | translate"
+        [placeholder]="'notes.editor.title.placeholder' | translate"
+        [value]="current.name"
+        (ionInput)="editTitle($event)"
+        data-testid="note-title"
+      />
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-textarea
+        class="note-body"
+        [autoGrow]="true"
+        [rows]="8"
+        [attr.aria-label]="'notes.editor.body.label' | translate"
+        [placeholder]="'notes.editor.body.placeholder' | translate"
+        [value]="current.body"
+        (ionInput)="editBody($event)"
+        data-testid="note-body"
+      />
+    </ion-item>
+
+    <div class="note-images">
+      @for (image of images(); track image.id; let i = $index) {
+        <figure class="note-image">
+          <ion-button
+            fill="clear"
+            class="note-image-open"
+            [attr.aria-label]="'notes.image.a11y.open' | translate"
+            (click)="openAt.set(i)"
+          >
+            <img [src]="image.dataUrl" [alt]="'notes.image.alt' | translate" />
+          </ion-button>
+          <ion-button
+            fill="clear"
+            size="small"
+            color="danger"
+            class="note-image-remove"
+            [attr.aria-label]="'notes.editor.remove-image' | translate"
+            (click)="removeImage(image.id)"
+          >
+            <ion-icon slot="icon-only" name="close-circle" aria-hidden="true" />
+          </ion-button>
+        </figure>
+      }
+    </div>
+
+    <div class="note-actions">
+      <app-note-image-input />
+    </div>
+  }
+
+  <ion-alert
+    trigger="present-note-delete-alert"
+    [header]="'notes.delete.header' | translate"
+    [message]="'notes.delete.message' | translate"
+    [buttons]="deleteAlertButtons"
+  />
+</ion-content>
+
+<app-note-image-viewer
+  [images]="images()"
+  [openAt]="openAt()"
+  (rotate)="rotateImage($event)"
+  (dismiss)="openAt.set(undefined)"
+/>

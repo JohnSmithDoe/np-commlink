@@ -59,7 +59,7 @@ export const DECK_MODULE_LABELS: Record<AppModule, Marker> = {
   tracking: marker('deck.module.tracking'),
   'office-time': marker('deck.module.office-time'),
   notifications: marker('deck.module.notifications'),
-  barcode: marker('deck.module.barcode'),
+  notes: marker('deck.module.notes'),
   household: marker('deck.module.household'),
   tasks: marker('deck.module.tasks'),
   cash: marker('deck.module.cash'),

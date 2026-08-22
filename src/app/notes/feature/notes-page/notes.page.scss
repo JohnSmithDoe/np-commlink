@@ -1,0 +1,23 @@
+@use 'theme/consts';
+
+.note-snippet {
+  display: block;
+  white-space: normal;
+  color: var(--sr-text-dim);
+}
+
+.note-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: consts.$gc-3 * 1rem;
+  margin-top: consts.$gc-3 * 1rem;
+
+  ion-thumbnail {
+    --size: #{consts.$gc-1 * 1rem * 3};
+    --border-radius: var(--sr-radius);
+  }
+
+  img {
+    object-fit: cover;
+  }
+}

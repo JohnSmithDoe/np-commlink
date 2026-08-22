@@ -1,0 +1,79 @@
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="dismiss.emit()"
+  [attr.aria-label]="'notes.viewer.dialog' | translate"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'notes.viewer.dialog' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button
+            (click)="rotateCurrent()"
+            [attr.aria-label]="'notes.viewer.rotate' | translate"
+            data-testid="note-image-rotate"
+          >
+            <ion-icon slot="icon-only" name="sync-outline" aria-hidden="true" />
+          </ion-button>
+          <ion-button
+            (click)="dismiss.emit()"
+            [attr.aria-label]="'notes.viewer.close' | translate"
+            data-testid="note-image-close"
+          >
+            <ion-icon slot="icon-only" name="close" aria-hidden="true" />
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      @let image = current();
+      @if (image) {
+        <img
+          class="note-image-full"
+          [src]="image.dataUrl"
+          [alt]="'notes.image.alt' | translate"
+        />
+      }
+    </ion-content>
+
+    @if (hasPages()) {
+      <ion-footer>
+        <ion-toolbar class="note-image-pager">
+          <ion-buttons slot="start">
+            <ion-button
+              (click)="step(-1)"
+              [attr.aria-label]="'notes.viewer.previous' | translate"
+              data-testid="note-image-prev"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="chevron-back-outline"
+                aria-hidden="true"
+              />
+            </ion-button>
+          </ion-buttons>
+          <ion-title size="small" role="status">
+            {{
+              'notes.viewer.position'
+                | translate: { at: index() + 1, of: images().length }
+            }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button
+              (click)="step(1)"
+              [attr.aria-label]="'notes.viewer.next' | translate"
+              data-testid="note-image-next"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="chevron-forward-outline"
+                aria-hidden="true"
+              />
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    }
+  </ng-template>
+</ion-modal>

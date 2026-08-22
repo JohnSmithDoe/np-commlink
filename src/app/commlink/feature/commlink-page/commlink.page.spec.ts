@@ -59,10 +59,10 @@ describe('CommlinkPage', () => {
   describe('onlineCount', () => {
     it('counts only the programs that are actually online', () => {
       const page = setup();
-      expect(page.onlineCount()).toBe(2);
+      expect(page.onlineCount()).toBe(1);
 
       bySource.set({ tracking: { metrics: {}, status: 'online' } });
-      expect(page.onlineCount()).toBe(3);
+      expect(page.onlineCount()).toBe(2);
     });
 
     it('follows the capability, which only resolves after first paint', () => {
@@ -103,7 +103,7 @@ describe('CommlinkPage', () => {
       const page = setup();
 
       expect(
-        page.tiles().find(({ program }) => program.id === 'barcode')?.badgeText
+        page.tiles().find(({ program }) => program.id === 'notes')?.badgeText
       ).toBeNull();
     });
   });
