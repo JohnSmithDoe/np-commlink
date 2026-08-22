@@ -4,6 +4,47 @@ Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notificat
 
 **Live:** <https://johnsmithdoe.github.io/np-commlink/> · **Android:** [latest release](https://github.com/JohnSmithDoe/np-commlink/releases/latest)
 
+## What it does
+
+One deck, and you decide what runs on it.
+
+Most life-admin apps pick a lane — a habit tracker here, a shopping list there, a budget app that
+wants your bank login. np-commlink is the other bet: a single cyberdeck home screen where every
+concern is a **program** you switch on, off, and reorder. Boot it cold and the deck is empty; load
+what you actually need and the rest never exists. Each tile carries its own live number — open tasks,
+unread signals, low stock, the account balance — so the home screen is a status readout, not a
+launcher grid.
+
+Two vocabularies, one app. The **cyberpunk** skin talks in CREDSTICK, STASH and MEATSPACE; the plain
+skin calls them Finances, Pantry and Office time. Same code, same data, one switch — plus light/dark
+independent of skin, a per-skin accent colour you pick yourself, and German or English.
+
+| Program | Plain name | What it's for |
+| --- | --- | --- |
+| **CHRONO** | Time tracking | Timers per task — start, pause, resume. Today, daily, monthly, or the whole raw log, with stats. |
+| **MEATSPACE** | Office time | Tap the days you were in. Public holidays, running totals against your target, and a nudge when you're behind. |
+| **CREDSTICK** | Finances | Accounts, transactions and transfers. Import a CAMT.053 bank statement, let your rules categorise it, and check the balance reconciles. Recurring schedules, a spending report, a burndown that says whether the month survives, and a triage list for whatever stayed uncategorised. |
+| **MARKET** | Shopping list | What's missing, scannable — point the camera at a barcode and the product is already known. |
+| **STASH** | Pantry | What's actually at home, and what's running low. |
+| **CATALOG** | Products | The master data both lists share, so a thing is described once. |
+| **SOYKAF** | Recipes | The recipe book behind the shopping list. |
+| **AGENDA** | Tasks | The plain task list, for everything that isn't its own program. |
+| **DAILY RUN** | Task of the Day | One prompt a day out of a catalogue, ticked off or not. Streak-free by design: today is the only day that matters. |
+| **BIOMON** | Health | Weight logs and pill schedules for everyone in the household — people and pets. Per-weekday times, dose, and a reminder that knows whether today's was already taken. |
+| **TRACKPLAY** | Game scores | Round-by-round scoring for game night, with players, game types, and per-player stats. |
+| **SIGIL** | Notes | Notes with images attached. |
+| **COMMS** | Notifications | One inbox every program writes to, plus real OS notifications when something is due. |
+| **GEIST** | Assistant | A language model that runs **on your device** — no request leaves it, and no key is needed. Where the browser offers one. |
+| **SYSOP** | Settings | Skin, light/dark, language, accents — and which programs are on the deck. |
+
+### No account, no server, nothing phoning home
+
+There is no backend to sign up for, because there is no backend. Everything lives on the device —
+NgRx in memory, `@ionic/storage` on disk — which is why the whole app works on a plane and why there
+is no privacy policy to read: no telemetry, no analytics, no third party, and nothing of yours on
+anyone's machine but yours. Installable as a PWA or as an APK you can build yourself (below), and the
+source is AGPL, so it stays that way.
+
 ## Prerequisites
 
 - Trust in Claude... this is a vibe coding project, which i am not really convinced off...
@@ -170,7 +211,7 @@ DDD / feature-layered under `src/app/<domain>/{data,feature,smart-ui,ui,util}` w
 
 ## License
 
-Copyright (C) 2026 Leto da c0dem0nkey
+Copyright (C) 2026 Leto the c0dem0nkey
 
 np-commlink is free software: you can redistribute it and/or modify it under the terms of the **GNU Affero General Public License, version 3**, as published by the Free Software Foundation.
 
