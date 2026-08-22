@@ -22,6 +22,23 @@ export default defineConfig({
     // `"types": ["vitest/globals"]` in tsconfig.spec.json), so specs need no
     // per-file imports — the standard Vitest convention.
     globals: true,
+    /**
+     * Pinned because dayjs resolves `startOf('month')` in the RUNNER's zone
+     * while ~44 fixtures across ten cash and notes specs carry an explicit
+     * `+01:00`. A first-of-month instant is inside that month in Berlin and in
+     * the PREVIOUS one at UTC, so `monthsUntilDue` answered 10 instead of 11 and
+     * four specs were green on every machine that wrote them and red only on the
+     * runner — the one place a verdict cannot be bisected.
+     *
+     * Berlin rather than UTC because it is the zone the fixtures mean and the
+     * one the app is built around (`berlinHolidaysFor`, `de` by default). It
+     * makes the suite deterministic; it does NOT make the underlying
+     * sensitivity go away — a stored `nextDueISO` still carries the offset of
+     * the device that wrote it, so a user who crosses a zone can still read a
+     * schedule a month out. That is an app question about a persisted field,
+     * not something a test runner should decide.
+     */
+    env: { TZ: 'Europe/Berlin' },
     server: {
       deps: {
         inline: [/@ionic/, /@stencil/, /ionicons/],
