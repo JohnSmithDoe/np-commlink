@@ -1,0 +1,20 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-segment [formField]="form.type" data-testid="vitals-profile-type">
+    <ion-segment-button value="person">
+      {{ 'vitals.profile.person' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="pet">
+      {{ 'vitals.profile.pet' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+</app-item-edit-modal>

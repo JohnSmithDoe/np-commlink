@@ -4,9 +4,9 @@
 // the emulated-encapsulation attribute still binds them to this file.
 // ────────────────────────────────────────────────────────────────
 
-@use '../../../../theme/trackplay';
+@use 'theme/item-rows';
 
-@include trackplay.list-row-second-line;
+@include item-rows.list-row-second-line;
 
 .tp-player-stats p {
   margin: var(--space-1) 0;

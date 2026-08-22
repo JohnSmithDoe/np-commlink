@@ -8,6 +8,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { createSelector } from '@ngrx/store';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { ItemList, SearchResult } from '../../../@shared/model/item-list.types';
 import {
   filterAndSortItemList,
@@ -25,7 +26,6 @@ import {
   selectGamesForPlayerView,
   selectGamesList,
   selectGameTypesList,
-  selectRoutePlayerId,
 } from '../trackplay.selector';
 import { selectPlayerItems } from '../players/players.selector';
 
@@ -116,7 +116,7 @@ export const selectResultByGame = (gameId: TrackplayId) =>
 export const selectGamesForPlayerList = createSelector(
   selectGamesList,
   selectGamesForPlayerView,
-  selectRoutePlayerId,
+  selectRouteEntityId,
   (list, view, playerId): ItemList<Game> & { showEndedGames: boolean } => ({
     ...view,
     id: GAMES_LIST_ID,

@@ -15,6 +15,7 @@ export type AppModule =
   | 'trackplay'
   | 'ritual'
   | 'geist'
+  | 'vitals'
   | 'settings';
 
 export type DeckEntryId = string;

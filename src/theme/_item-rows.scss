@@ -1,11 +1,11 @@
 // ─── why ────────────────────────────────────────────────────────
-// The TRACKPLAY surfaces' shared pieces, side-effect-free like _cash and
-// _dashboard so a component @uses it and @includes only what it needs.
+// The label/value second line of a list row, side-effect-free like _cash
+// and _dashboard so a component @uses it and @includes only what it needs.
 //
-// Extracted because the game row and the player row are the same widget with
-// different content, and their two stylesheets were byte-identical copies.
-// label-secondary is one declaration and is here anyway: it was the whole
-// content of both of them.
+// Extracted because the game row, the player row and the weight row are the
+// same widget with different content, and their stylesheets were
+// byte-identical copies. label-secondary is one declaration and is here
+// anyway: it was the whole content of two of them.
 // ────────────────────────────────────────────────────────────────
 
 @mixin label-secondary {

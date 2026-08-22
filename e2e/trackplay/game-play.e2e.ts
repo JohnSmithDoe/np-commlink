@@ -25,7 +25,7 @@ import {
   addButton,
   createDialog,
   createPlayer,
-  gotoTrackplay,
+  gotoPage,
   mainContent,
   nameBox,
   pageRoot,
@@ -66,7 +66,7 @@ async function enterScore(
 }
 
 async function createTwoPlayers(page: Page): Promise<void> {
-  await gotoTrackplay(page, 'trackplay/players', 'app-page-trackplay-players');
+  await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
   await createPlayer(page, 'Alice');
   await createPlayer(page, 'Bob');
 }
@@ -77,7 +77,7 @@ test.describe('trackplay full game', () => {
   }) => {
     await createTwoPlayers(page);
 
-    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
+    await gotoPage(page, 'trackplay', 'app-page-trackplay-games');
     await addButton(pageRoot(page, 'app-page-trackplay-games')).click();
 
     const dialog = createDialog(page);

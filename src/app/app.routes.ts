@@ -77,6 +77,11 @@ export const routes: Routes = [
       import('./cash/routes/cash.routes').then((m) => m.cashRoutes),
   },
   {
+    path: 'vitals',
+    loadChildren: () =>
+      import('./vitals/routes/vitals.routes').then((m) => m.vitalsRoutes),
+  },
+  {
     path: 'trackplay',
     loadChildren: () =>
       import('./trackplay/routes/trackplay.routes').then(

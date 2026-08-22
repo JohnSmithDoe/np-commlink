@@ -4,6 +4,6 @@
 // emulated-encapsulation attribute still binds it to this file.
 // ────────────────────────────────────────────────────────────────
 
-@use '../../../../theme/trackplay';
+@use 'theme/item-rows';
 
-@include trackplay.label-secondary;
+@include item-rows.label-secondary;

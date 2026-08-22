@@ -4,9 +4,9 @@
 // ancestor of either — only the emulated-encapsulation attribute binds.
 // ────────────────────────────────────────────────────────────────
 
-@use '../../../../theme/trackplay';
+@use 'theme/item-rows';
 
-@include trackplay.list-row-second-line;
+@include item-rows.list-row-second-line;
 
 .tp-count {
   font-family: var(--sr-deck-font);

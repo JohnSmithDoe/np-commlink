@@ -19,7 +19,7 @@ import {
   addButton,
   createDialog,
   createPlayer,
-  gotoTrackplay,
+  gotoPage,
   mainContent,
   nameBox,
   pageRoot,
@@ -41,14 +41,10 @@ async function createGame(page: Page, name: string, type: string) {
 
 test.describe('trackplay games', () => {
   test.beforeEach(async ({ page }) => {
-    await gotoTrackplay(
-      page,
-      'trackplay/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
     await createPlayer(page, 'Alice');
 
-    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
+    await gotoPage(page, 'trackplay', 'app-page-trackplay-games');
     await createGame(page, 'Skatrunde', 'Skat');
     await createGame(page, 'Rommérunde', 'Rommé');
   });
@@ -83,7 +79,7 @@ test.describe('trackplay games', () => {
     await grid.getByRole('button', { name: 'Beenden' }).click();
     await expect(grid.getByText('Das Spiel ist beendet.')).toBeVisible();
 
-    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
+    await gotoPage(page, 'trackplay', 'app-page-trackplay-games');
     await expect(listRow(page, 'Skatrunde')).toBeVisible();
 
     const toggle = mainContent(page).getByTestId('games-show-ended');

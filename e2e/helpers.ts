@@ -52,6 +52,18 @@
  * deck entry drops its id, so presence of the key is no signal at all and
  * absence of the id is the only one.
  *
+ * `createDialog`/`editDialog`/`nameBox`/`addButton`/`CREATE_BUTTON` name
+ * copy that `@shared` owns — the edit-item modal's two titles, the name
+ * input's placeholder, the page header's add button — so they belong to no
+ * suite. `gotoPage` is here for the same reason: every feature reaches its
+ * route by hash and then waits for its own page element.
+ *
+ * `pickSelectOption` clicks the locator it is handed, so a caller must
+ * pass the `ion-select` HOST — its shadow `part="inner"` swallows a click
+ * aimed at the accessible button. It drives the default `alert` interface,
+ * which needs its own OK; a popover-interface select confirms on the tap
+ * instead.
+ *
  * `enableDeckProgram` exists because a cold deck ships EMPTY: every
  * catalog entry starts hidden, so any spec asserting something about a
  * tile or a drawer row has to switch its program on first. It takes the
@@ -80,6 +92,35 @@ export function pageRoot(page: Page, selector: string): Locator {
 
 export function presentedDialog(page: Page, title: string): Locator {
   return page.locator('ion-modal.show-modal').filter({ hasText: title });
+}
+
+export const CREATE_BUTTON = 'Anlegen';
+
+export function createDialog(page: Page): Locator {
+  return presentedDialog(page, 'Neuen Eintrag anlegen');
+}
+
+export function editDialog(page: Page): Locator {
+  return presentedDialog(page, 'Eintrag bearbeiten');
+}
+
+export function nameBox(dialog: Locator): Locator {
+  return dialog.getByPlaceholder('Gib einen Namen ein');
+}
+
+export function addButton(scope: Locator): Locator {
+  return scope.getByTestId('page-header-add');
+}
+
+export async function gotoPage(
+  page: Page,
+  path: string,
+  pageSelector: string
+): Promise<void> {
+  await page.goto(`/#/${path}`);
+  await expect(mainContent(page).locator(pageSelector)).toBeVisible({
+    timeout: 30_000,
+  });
 }
 
 export function searchInput(page: Page, scope?: Locator): Locator {
@@ -209,6 +250,19 @@ export async function waitForPersistedWithout(
       }
     )
     .toBe(true);
+}
+
+export async function pickSelectOption(
+  page: Page,
+  select: Locator,
+  optionLabel: string
+): Promise<void> {
+  await select.click();
+  const alert = page.locator('ion-alert');
+  await expect(alert).toBeVisible({ timeout: 15_000 });
+  await alert.getByRole('radio', { name: optionLabel }).click();
+  await alert.getByRole('button', { name: 'OK' }).click();
+  await expect(alert).toBeHidden();
 }
 
 export async function enableDeckProgram(

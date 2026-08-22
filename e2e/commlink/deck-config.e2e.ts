@@ -24,7 +24,7 @@
  * denominator is the whole assertion — the copy around it is i18n and
  * theme-cased, and matching that would pin the translation instead. It
  * counts `onDeck` entries in the catalog rather than visible ones, which
- * is why an empty deck still reports fourteen; the literal here is the one
+ * is why an empty deck still reports fifteen; the literal here is the one
  * number that has to be re-read when the catalog gains an entry.
  *
  * The empty node is asserted CLICKABLE, not just present: it is the only
@@ -130,13 +130,13 @@ test.describe('deck configuration', () => {
     page,
   }) => {
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/14');
+    await expect(statusStrip(page)).toContainText('/15');
 
     await openDeckConfig(page);
     await switchOn(page, MARKET, '"shopping"');
 
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/14');
+    await expect(statusStrip(page)).toContainText('/15');
   });
 
   test('names the module a program belongs to on its own row', async ({

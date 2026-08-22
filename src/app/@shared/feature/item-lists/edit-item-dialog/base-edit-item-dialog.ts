@@ -83,6 +83,7 @@ export abstract class BaseEditItemDialog<
   );
 
   readonly isOpen = computed(() => this.#request() !== null);
+  readonly isCreateMode = computed(() => this.#editMode() === 'create');
   readonly seedItem = computed(() => this.#request()?.item);
   readonly closeButtonText: Marker = marker('edit.item.dialog.button.close');
   readonly saveButtonText = computed(() => SAVE_BUTTON[this.#editMode()]);

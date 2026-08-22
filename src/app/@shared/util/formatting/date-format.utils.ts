@@ -10,6 +10,13 @@ export const setDayjsLocale = (language: Language): void => {
   dayjs.locale(language);
 };
 
+const ISO_DAY_FORMAT = 'YYYY-MM-DD';
+
+export const isoDay = (value: string | Dayjs): string =>
+  dayjs(value).format(ISO_DAY_FORMAT);
+
+export const todayISO = (): string => dayjs().format(ISO_DAY_FORMAT);
+
 export const localizedDate = (value: string | Dayjs): string =>
   dayjs(value).format('L');
 

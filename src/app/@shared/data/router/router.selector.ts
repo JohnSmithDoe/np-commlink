@@ -12,6 +12,10 @@
  * narrowing it to `undefined` rather than taking the first entry keeps a
  * hand-edited URL from half-applying.
  *
+ * `selectRouteEntityId` is `:id`, the one route param every drill-down
+ * names the same way. Two domains had copied the cast around
+ * `getRouterSelectors`' loose typing before it moved here.
+ *
  * `selectRouteData` is the seam for what the ROUTE DEFINITION fixes
  * rather than the URL: repeating a known segment as `:listId` made
  * `/household/storage/_storage` promise an instance id the closed
@@ -29,6 +33,12 @@ const { selectRouteParams, selectRouteData, selectQueryParam } =
   getRouterSelectors(selectRouter);
 
 export { selectRouteParams, selectRouteData };
+
+export const selectRouteEntityId = createSelector(
+  selectRouteParams,
+  (parameters): string | undefined =>
+    (parameters as Record<string, string> | undefined)?.['id']
+);
 
 export const selectRouteCategoryFilter = createSelector(
   selectQueryParam(CATEGORY_FILTER_PARAM),

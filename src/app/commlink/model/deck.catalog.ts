@@ -252,6 +252,27 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.games'),
   },
   {
+    id: 'vitals',
+    module: 'vitals',
+    icon: 'pulse-outline',
+    route: '/vitals',
+    titleKey: marker('page-title.vitals'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.vitals.name'),
+        descKey: marker('deck.cyberpunk.vitals.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.vitals.name'),
+        descKey: marker('deck.boomer.vitals.desc'),
+      },
+    },
+    onDeck: true,
+    source: 'vitals',
+    metric: 'count',
+    metricKey: marker('deck.metric.count'),
+  },
+  {
     id: 'ritual',
     module: 'ritual',
     icon: 'sunny-outline',

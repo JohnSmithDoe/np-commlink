@@ -33,6 +33,7 @@ export const I18N_OWNERS: Record<string, string[]> = {
   tasks: ['tasks'],
   tracking: ['tracking', 'notifications'],
   trackplay: ['trackplay'],
+  vitals: ['vitals'],
 };
 
 export const ALL_DOMAIN_PREFIXES: string[] = [

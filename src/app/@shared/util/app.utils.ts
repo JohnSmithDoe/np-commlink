@@ -30,8 +30,14 @@ export const matchesId = (item: BaseItem, other: BaseItem) =>
   item.id === other.id;
 
 export function findMatchingItem<T extends BaseItem>(item: T, others: T[]) {
-  const byId = others.find((other) => matchesId(item, other));
-  return byId || others.find((other) => matchesNameExactly(item, other));
+  return (
+    findById(item, others) ??
+    others.find((other) => matchesNameExactly(item, other))
+  );
+}
+
+export function findById<T extends BaseItem>(item: T, others: T[]) {
+  return others.find((other) => matchesId(item, other));
 }
 
 export const indexOfMatchingItem = (item: BaseItem, others: BaseItem[]) => {

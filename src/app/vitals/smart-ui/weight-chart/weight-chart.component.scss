@@ -1,0 +1,3 @@
+@use 'theme/charts';
+
+@include charts.chart-canvas(240px);

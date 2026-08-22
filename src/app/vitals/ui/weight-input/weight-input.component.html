@@ -1,0 +1,11 @@
+<ion-item>
+  <ion-input
+    labelPlacement="stacked"
+    inputmode="decimal"
+    placeholder="0,0"
+    [label]="label()"
+    [value]="raw()"
+    (ionInput)="onInput($event)"
+    (ionBlur)="touchedChange.emit(true)"
+  />
+</ion-item>

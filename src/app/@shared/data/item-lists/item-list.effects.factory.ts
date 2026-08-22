@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
-import { map, withLatestFrom } from 'rxjs';
+import { concatMap, EMPTY, map, of, withLatestFrom } from 'rxjs';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
 import { ItemList } from '../../model/item-list.types';
 import { findMatchingItem } from '../../util/app.utils';
@@ -59,39 +59,63 @@ const pushUndoOnDelete = <T extends BaseItem>(
     { functional: true }
   );
 
+type Matcher<T extends BaseItem> = (item: T, items: T[]) => T | undefined;
+type Creator2<T> = (name: string, filterBy?: string) => T;
+
+const matcherOf = <T extends BaseItem>(match?: Matcher<T>): Matcher<T> =>
+  match ?? findMatchingItem;
+
+const addFromSearch = <T extends BaseItem, S extends ItemList<T>>(
+  actions: ListFlowActions<T>,
+  select: MemoizedSelector<object, S>,
+  create: Creator2<T> | null,
+  match: Matcher<T>
+) =>
+  createEffect(
+    (actions$ = inject(Actions), store = inject(Store)) => {
+      return actions$.pipe(
+        ofType(actions.addItemFromSearch),
+        withLatestFrom(store.select(select), (_, list) => list),
+        concatMap((list) => {
+          if (!create) return EMPTY;
+          const item = create(list.searchQuery ?? '', list.filterBy);
+          const duplicate = match(item, list.items);
+          return of(
+            duplicate
+              ? actions.addItemFailure(duplicate)
+              : actions.addItem(item)
+          );
+        })
+      );
+    },
+    { functional: true }
+  );
+
 export const createItemListEffects = <
   T extends BaseItem,
   S extends ItemList<T>,
 >(cfg: {
   actions: ListFlowActions<T>;
   select: MemoizedSelector<object, S>;
-  create: (name: string, filterBy?: string) => T;
+  create: Creator2<T> | null;
+  match?: Matcher<T>;
   undoableDelete?: Creator<[item: T], { item: T }>;
 }) => ({
-  addItemFromSearch$: createEffect(
-    (actions$ = inject(Actions), store = inject(Store)) => {
-      return actions$.pipe(
-        ofType(cfg.actions.addItemFromSearch),
-        withLatestFrom(store.select(cfg.select), (_, list) => list),
-        map((list) => {
-          const item = cfg.create(list.searchQuery ?? '', list.filterBy);
-          const duplicate = findMatchingItem(item, list.items);
-          return duplicate
-            ? cfg.actions.addItemFailure(duplicate)
-            : cfg.actions.addItem(item);
-        })
-      );
-    },
-    { functional: true }
+  addItemFromSearch$: addFromSearch(
+    cfg.actions,
+    cfg.select,
+    cfg.create,
+    matcherOf(cfg.match)
   ),
 
   addOrUpdateItem$: createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
+      const match = matcherOf(cfg.match);
       return actions$.pipe(
         ofType(cfg.actions.addOrUpdateItem),
         withLatestFrom(store.select(cfg.select)),
         map(([{ item }, list]) =>
-          findMatchingItem(item, list.items)
+          match(item, list.items)
             ? cfg.actions.updateItem(item)
             : cfg.actions.addItem(item)
         )

@@ -1,0 +1,47 @@
+<app-list-page
+  class="ion-page"
+  [heading]="facade.heading()"
+  backHref="/vitals"
+  [itemTemplate]="readingRow"
+>
+  <ion-button
+    headerEnd
+    slot="end"
+    (click)="facade.showEditProfileDialog()"
+    color="primary"
+    [attr.aria-label]="'a11y.edit' | translate"
+  >
+    <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
+  </ion-button>
+
+  <div beforeList>
+    @let delta = facade.summary().deltaGrams;
+    @if (delta !== undefined) {
+      <p class="sr-hud ion-padding-horizontal">
+        {{ 'vitals.label.change' | translate }} {{ delta | kg: true }}
+      </p>
+    }
+    @defer (when facade.hasTrend()) {
+      <app-weight-chart />
+    }
+  </div>
+</app-list-page>
+
+<ng-template #readingRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.grams | kg"
+    [ionList]="ionList"
+    [startSwipeAction]="editSwipeAction"
+    (selectItem)="openReadingEdit(item)"
+    (startSwipe)="openReadingEdit(item)"
+    (deleteItem)="deleteReading(item)"
+  >
+    <p itemDetails class="second-line">
+      <ion-note>{{ item.name | date }}</ion-note>
+    </p>
+  </app-list-item>
+</ng-template>
+
+<app-edit-reading-dialog />
+<app-edit-profile-dialog />

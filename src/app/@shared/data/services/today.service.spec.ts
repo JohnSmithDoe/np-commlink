@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import dayjs from 'dayjs';
-import { dayKey, TodayService } from './today.service';
+import { todayISO } from '../../util/formatting/date-format.utils';
+import { TodayService } from './today.service';
 
 describe('TodayService', () => {
   let service: TodayService;
@@ -15,7 +16,7 @@ describe('TodayService', () => {
 
   it('publishes the current day as a sortable key', () => {
     expect(service.today()).toBe(dayjs().format('YYYY-MM-DD'));
-    expect(service.today()).toBe(dayKey());
+    expect(service.today()).toBe(todayISO());
   });
 
   it('re-reads the clock when the document becomes visible again', () => {
@@ -24,7 +25,7 @@ describe('TodayService', () => {
     document.dispatchEvent(new Event('visibilitychange'));
 
     expect(refresh).toHaveBeenCalled();
-    expect(service.today()).toBe(dayKey());
+    expect(service.today()).toBe(todayISO());
   });
 
   it('does not notify when the day has not changed', () => {

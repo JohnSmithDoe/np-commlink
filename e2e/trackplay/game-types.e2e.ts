@@ -10,14 +10,14 @@ import { listRow } from '../helpers';
 import {
   CREATE_BUTTON,
   createDialog,
-  gotoTrackplay,
+  gotoPage,
   mainContent,
   nameBox,
 } from './helpers';
 
 test.describe('trackplay game types', () => {
   test('creates a win-low game type via the dialog', async ({ page }) => {
-    await gotoTrackplay(
+    await gotoPage(
       page,
       'trackplay/game-types',
       'app-page-trackplay-game-types'
@@ -39,7 +39,7 @@ test.describe('trackplay game types', () => {
   });
 
   test('creates a win-high game type via the dialog', async ({ page }) => {
-    await gotoTrackplay(
+    await gotoPage(
       page,
       'trackplay/game-types',
       'app-page-trackplay-game-types'

@@ -1,0 +1,44 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.vitals"
+  icon="pulse-outline"
+  [itemTemplate]="profileRow"
+/>
+
+<ng-template #profileRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [leadingIcon]="item.type === 'pet' ? 'paw' : 'person'"
+    [startSwipeAction]="editSwipeAction"
+    (selectItem)="goToProfile(item.id)"
+    (startSwipe)="openProfileEdit(item)"
+    (deleteItem)="deleteProfile(item)"
+  >
+    @let summary = summaryFor(item);
+    <p itemDetails class="second-line">
+      <ion-note>{{ 'vitals.label.latest' | translate }}</ion-note>
+      <span class="value">
+        @if (summary.latestGrams !== undefined) {
+          {{ summary.latestGrams | kg }}
+        } @else {
+          —
+        }
+      </span>
+    </p>
+    @if (summary.deltaGrams !== undefined) {
+      <p itemDetails class="second-line">
+        <ion-note>{{ 'vitals.label.change' | translate }}</ion-note>
+        <span class="value">{{ summary.deltaGrams | kg: true }}</span>
+      </p>
+    }
+    <p itemDetails class="second-line">
+      <ion-note>{{
+        'vitals.stats.readings' | translate: { count: summary.count }
+      }}</ion-note>
+    </p>
+  </app-list-item>
+</ng-template>
+
+<app-edit-profile-dialog />

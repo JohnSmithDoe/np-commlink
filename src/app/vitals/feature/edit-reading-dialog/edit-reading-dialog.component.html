@@ -1,0 +1,62 @@
+<app-item-edit-modal
+  [nameField]="null"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="date"
+      label="{{ 'vitals.label.date' | translate }}"
+      [formField]="form.name"
+      data-testid="vitals-reading-date"
+    />
+  </ion-item>
+  @if (dateTaken()) {
+    <ion-note color="danger" class="sr-field-note">
+      {{ 'vitals.reading-dialog.date-taken' | translate }}
+    </ion-note>
+  }
+
+  <app-weight-input
+    label="{{ 'vitals.label.weight' | translate }}"
+    [formField]="form.grams"
+  />
+
+  @if (showCalculator()) {
+    <ion-list-header>
+      {{ 'vitals.reading-dialog.calculator' | translate }}
+    </ion-list-header>
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        label="{{ 'vitals.label.holder' | translate }}"
+        [value]="holderId()"
+        (ionChange)="setHolder($event)"
+        data-testid="vitals-holder-select"
+      >
+        @for (holder of holders(); track holder.id) {
+          <ion-select-option [value]="holder.id">{{
+            holder.name
+          }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    <app-weight-input
+      label="{{ 'vitals.label.holder-weight' | translate }}"
+      [value]="holderGrams()"
+      (valueChange)="setHolderGrams($event)"
+    />
+    <app-weight-input
+      label="{{ 'vitals.label.combined-weight' | translate }}"
+      [value]="combinedGrams()"
+      (valueChange)="setCombinedGrams($event)"
+    />
+  }
+</app-item-edit-modal>

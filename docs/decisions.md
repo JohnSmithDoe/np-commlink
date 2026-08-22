@@ -583,3 +583,43 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   this replaced was an `ion-segment` whose value was bound to the route and which therefore had to guard
   the navigation it echoed back — `ion-tab-bar` reads the router itself, so the guard, the switcher
   component and `@shared`'s `[listSwitcher]` slot are all deleted rather than moved.
+
+## BIOMON — weight, and the profiles it hangs off
+
+- **One domain, one slice: `{ profiles, readings }`.** Blood pressure, when it comes, is a third key in the
+  same slice rather than a `bloodpressure` domain — domains are sealed, so a second one could not import
+  the profiles, and they are the spine. Promoting profiles into `@shared` later is the expensive,
+  irreversible half; keeping them here means the next metric is additive. Generic `value`/`unit`/`kind`
+  records were rejected for the same reason reversed: they buy a union, a unit formatter and an
+  axis-switching chart to serve a metric that does not exist.
+- **A reading's `name` IS its date, `YYYY-MM-DD`.** The shared list machinery keys a row on `name` — the
+  searchbar, `requireUniqueName`, the chronological sort — so `requireUniqueName` over the profile's own
+  readings *is* the "one reading per profile per day" rule, refusing a collision on both add and edit with
+  no second spelling of the date to keep in step. What `name` does not buy is identity: `findMatchingItem`
+  falls back to matching names across a whole list, and two profiles weighed on one day share one. That is
+  why readings skip `createItemListEffects` and carry an id-only add-or-update of their own.
+- **Weight is stored as integer `grams`, rounded to the 100 g the display shows.** `cash` already settled
+  floats-versus-integers for money, and `cents` proves the unit belongs in the field name. Rounding happens
+  at the input edge, not in the type, so a later two-decimal scale needs no migration.
+- **Tapping add on a date already logged opens that reading instead of refusing it.** The consequence is
+  worth knowing: once today is logged, the add button no longer offers a create dialog, so a forgotten
+  past day is reached by editing or deleting today's rather than by adding beside it.
+- **Subtracting the person from a co-weighed pet is a calculator, not data.** The holder picker and the
+  combined field live only in the create dialog and only for a pet; they write the difference into the
+  weight field, and nothing about the holder is stored. So either side can be corrected afterwards with no
+  stale link to answer for. The suggestion is the holder's nearest reading **at or before** the date, never
+  a later one — back-dating must not subtract a body weight from the future.
+- **The deck badge is a count of readings, not a weight.** A kg figure needs a designated self profile, and
+  the module deliberately seeds none; a delta would need a sentinel for "no reading yet", and `-1` is a
+  perfectly good delta. A count needs neither, and reuses `deck.metric.count`.
+- **Deleting a profile takes its readings with it, and the undo entry is built in the command.** An effect
+  runs after the reducer and would snapshot a profile whose history is already gone, so `ProfilesFacade`
+  pushes `restoreProfile(profile, readings)` before dispatching the delete — the last place that can still
+  see both.
+- **The tripwire on `name`-as-a-date: a fifth suppression means the altitude was wrong.** Four of the
+  shared machinery's name-flavoured behaviours meet a reading. Two are answered — identity, by matching on
+  the id alone (`findById` through the factory's `match` seam), and the "A–Z" sort label, by declaring the
+  list unsortable while the slice pins `name` descending. Two are left alone as harmless: the header's add
+  button disables on an exact-match search hit, and `addItemFromSearch` falls back to the create dialog
+  because readings pass no creator. A fifth would mean the date is fighting the mechanism rather than
+  riding it, and the answer then is a real `date` field plus a generalized unique-field rule in `@shared`.

@@ -22,7 +22,10 @@
     <ion-content>
       <h3 class="ion-padding-start">{{ dialogTitle() | translate }}</h3>
       <ion-list>
-        <app-item-name-input [formField]="nameField()" />
+        @let name = nameField();
+        @if (name) {
+          <app-item-name-input [formField]="name" />
+        }
         <ng-content></ng-content>
       </ion-list>
     </ion-content>

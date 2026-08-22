@@ -1,4 +1,5 @@
 import { createSelector } from '@ngrx/store';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { SearchResult } from '../../../@shared/model/item-list.types';
 import {
   filterAndSortItemList,
@@ -12,7 +13,6 @@ import {
   selectGamesList,
   selectGameTypesList,
   selectPlayersList,
-  selectRoutePlayerId,
 } from '../trackplay.selector';
 
 export const selectPlayerItems = createSelector(
@@ -33,7 +33,7 @@ export const selectPlayersListItems = createSelector(
 
 export const selectRoutePlayer = createSelector(
   selectPlayerItems,
-  selectRoutePlayerId,
+  selectRouteEntityId,
   (players, playerId): Player | undefined =>
     players.find((player) => player.id === playerId)
 );
@@ -80,7 +80,7 @@ export const selectPlayerStats = createSelector(
 
 export const selectStatsForRoutePlayer = createSelector(
   selectPlayerStats,
-  selectRoutePlayerId,
+  selectRouteEntityId,
   (stats, playerId): PlayerStats =>
     (playerId ? stats[playerId] : undefined) ?? { ...NO_PLAYER_STATS }
 );

@@ -11,22 +11,18 @@
 
 import { expect, test } from '@playwright/test';
 import { listRow } from '../helpers';
-import { gotoTrackplay, headerTitle, mainContent, pageRoot } from './helpers';
+import { gotoPage, headerTitle, mainContent, pageRoot } from './helpers';
 
 test.describe('trackplay first paint', () => {
   test('paints the games (Spiele) home page', async ({ page }) => {
-    await gotoTrackplay(page, 'trackplay', 'app-page-trackplay-games');
+    await gotoPage(page, 'trackplay', 'app-page-trackplay-games');
     await expect(
       headerTitle(pageRoot(page, 'app-page-trackplay-games'))
     ).toHaveText('Spiele');
   });
 
   test('paints the players (Spieler) page', async ({ page }) => {
-    await gotoTrackplay(
-      page,
-      'trackplay/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
     await expect(
       headerTitle(pageRoot(page, 'app-page-trackplay-players'))
     ).toHaveText('Spieler');
@@ -35,7 +31,7 @@ test.describe('trackplay first paint', () => {
   test('paints the game-types (Spielarten) page and seeds the 3 defaults', async ({
     page,
   }) => {
-    await gotoTrackplay(
+    await gotoPage(
       page,
       'trackplay/game-types',
       'app-page-trackplay-game-types'
@@ -53,7 +49,7 @@ test.describe('trackplay first paint', () => {
   test('does not offer a delete option on the built-in Standard type', async ({
     page,
   }) => {
-    await gotoTrackplay(
+    await gotoPage(
       page,
       'trackplay/game-types',
       'app-page-trackplay-game-types'

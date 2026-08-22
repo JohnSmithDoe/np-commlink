@@ -1,10 +1,14 @@
 // ─── why ────────────────────────────────────────────────────────
-// The circular meter, side-effect-free like _cash and _trackplay. The deficit
-// arc takes --sr-red-deep, the AA-safe red, not the neon --sr-red, which the
-// palette reserves for dots, borders and large icons.
+// The circular meter and the canvas wrapper, side-effect-free like _cash and
+// _item-rows. The deficit arc takes --sr-red-deep, the AA-safe red, not the
+// neon --sr-red, which the palette reserves for dots, borders and large icons.
 //
 // The hole is punched with an ::after painted --sr-panel: it has to match the
 // surface the meter sits ON, which is a card, not the page behind it.
+//
+// chart-canvas emits the :host too: a chart component IS its wrapper, and the
+// two that stand alone on a page differ only in height. The one embedded in a
+// card (cash's report) is a different block and stays where it is.
 // ────────────────────────────────────────────────────────────────
 
 $thickness: 12px;
@@ -37,5 +41,18 @@ $track: var(--sr-red-deep);
     font-size: var(--fs-xlarge);
     z-index: 1;
     color: var(--ion-text-color);
+  }
+}
+
+@mixin chart-canvas($height) {
+  :host {
+    display: block;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    height: $height;
+    padding: var(--space-3) var(--space-3) 0;
+    margin-top: var(--space-4);
   }
 }
