@@ -15,6 +15,7 @@ export interface ListPageFacade {
   readonly catalog?: Signal<readonly Category[]>;
   readonly sortOptions?: Signal<readonly ItemListSortOption[]>;
   readonly sortable?: Signal<boolean>;
+  readonly searchable?: Signal<boolean>;
 
   search(term?: string): void;
   addItemFromSearch(): void;

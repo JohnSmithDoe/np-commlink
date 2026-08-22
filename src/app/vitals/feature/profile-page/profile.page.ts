@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { IonButton, IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { create, createOutline } from 'ionicons/icons';
+import { createOutline } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
@@ -41,7 +41,7 @@ export class VitalsProfilePage {
   readonly facade = inject(ReadingsPageFacade);
 
   constructor() {
-    addIcons({ create, createOutline });
+    addIcons({ createOutline });
   }
 
   openReadingEdit(reading: Reading): void {

@@ -9,6 +9,10 @@
  * The suggested holder weight is that person's nearest reading AT OR
  * BEFORE the date being recorded: back-dating a reading must not subtract
  * a body weight from a later day.
+ *
+ * A single person profile IS the answer to "who is holding the cat", so
+ * the picker starts on them. It stays empty from two onwards, where
+ * guessing would be picking one of two right answers.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -81,7 +85,10 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
 
   readonly holderId = linkedSignal({
     source: this.seedItem,
-    computation: (): VitalsId => '',
+    computation: (): VitalsId => {
+      const holders = this.holders();
+      return holders.length === 1 ? (holders[0]?.id ?? '') : '';
+    },
   });
 
   readonly combinedGrams = linkedSignal({

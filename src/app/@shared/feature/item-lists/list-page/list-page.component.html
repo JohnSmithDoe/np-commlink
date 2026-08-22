@@ -6,11 +6,13 @@
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="facade.showCreateDialog()"
 >
-  <app-item-list-searchbar
-    [query]="facade.state()?.searchQuery"
-    (queryChange)="facade.search($event)"
-    (hitEnter)="facade.addItemFromSearch()"
-  />
+  @if (facade.searchable?.() ?? true) {
+    <app-item-list-searchbar
+      [query]="facade.state()?.searchQuery"
+      (queryChange)="facade.search($event)"
+      (hitEnter)="facade.addItemFromSearch()"
+    />
+  }
   @if (facade.searchResult()?.exactMatch) {
     <ion-note
       class="sr-field-note exact-match-note"

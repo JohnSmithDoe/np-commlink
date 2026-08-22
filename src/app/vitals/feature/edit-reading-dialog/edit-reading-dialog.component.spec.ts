@@ -23,7 +23,7 @@ const myReadings = [
 const holderPicked = (value: string) =>
   ({ detail: { value } }) as SelectCustomEvent<string>;
 
-const setup = (catReadings: Reading[] = []) => {
+const setup = (catReadings: Reading[] = [], persons = [martin]) => {
   TestBed.configureTestingModule({
     providers: [
       provideZonelessChangeDetection(),
@@ -40,7 +40,7 @@ const setup = (catReadings: Reading[] = []) => {
       {
         provide: ProfilesFacade,
         useValue: {
-          persons: signal([martin]),
+          persons: signal(persons),
           routeProfile: signal(cat),
         },
       },
@@ -69,6 +69,25 @@ describe('EditReadingDialogComponent — the calculator', () => {
     expect(component.holderGrams()).toBe(79_000);
   });
 
+  it('starts on the only person there is, weight and all', () => {
+    const { component, host } = setup();
+
+    openFor(host, createReading(cat.id, 0, '2026-01-15'));
+
+    expect(component.holderId()).toBe(martin.id);
+    expect(component.holderGrams()).toBe(79_000);
+  });
+
+  it('picks nobody once a second person exists', () => {
+    const flatmate = mockProfile({ id: 'flatmate', name: 'Rike' });
+    const { component, host } = setup([], [martin, flatmate]);
+
+    openFor(host, createReading(cat.id, 0, '2026-01-15'));
+
+    expect(component.holderId()).toBe('');
+    expect(component.holderGrams()).toBeNull();
+  });
+
   it('writes the difference into the weight once both numbers are known', () => {
     const { component, host } = setup();
     openFor(host, createReading(cat.id, 0, '2026-02-10'));
@@ -90,8 +109,9 @@ describe('EditReadingDialogComponent — the calculator', () => {
     expect(component.draft().grams).toBe(3800);
   });
 
-  it('stays out of the way until both numbers are there', () => {
-    const { component, host } = setup();
+  it('stays out of the way while nobody is holding the cat', () => {
+    const flatmate = mockProfile({ id: 'flatmate', name: 'Rike' });
+    const { component, host } = setup([], [martin, flatmate]);
     openFor(host, createReading(cat.id, 0, '2026-02-10'));
 
     component.setCombinedGrams(84_300);

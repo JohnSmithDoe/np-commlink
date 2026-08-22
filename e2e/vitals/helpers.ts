@@ -7,6 +7,12 @@
  * three of them: the reading's own, the holder's, and the combined one, in
  * that order.
  *
+ * `createProfile` asserts the name landed before it reaches for the save
+ * button. `fill` can win the race against an `ion-modal` still presenting,
+ * and the value is then lost silently: the draft stays blank, `canSave`
+ * stays false, and the click times out against a disabled button 30
+ * seconds later with nothing to say about why.
+ *
  * Everything re-exported below belongs to the suite-wide helpers rather
  * than to this suite — the shared edit modal's copy, the shared page
  * header — while this suite's specs keep one import.
@@ -54,13 +60,16 @@ export async function createProfile(
   const dialog = createDialog(page);
   await expect(dialog).toBeVisible({ timeout: 15_000 });
   await nameBox(dialog).fill(name);
+  await expect(nameBox(dialog)).toHaveValue(name);
   if (type === 'pet') {
     await dialog
       .getByTestId('vitals-profile-type')
       .getByText('Tier', { exact: true })
       .click();
   }
-  await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
+  const save = dialog.getByRole('button', { name: CREATE_BUTTON });
+  await expect(save).toBeEnabled();
+  await save.click();
   await expect(dialog).toBeHidden();
   await expect(profiles.getByText(name, { exact: true })).toBeVisible();
 }

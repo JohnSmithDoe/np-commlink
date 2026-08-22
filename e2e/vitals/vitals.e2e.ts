@@ -6,10 +6,14 @@
  * The second tap on `add` asserts the rule the dialog exists to keep: one
  * reading per profile per day, reached by editing today's rather than
  * refusing a second one at save time.
+ *
+ * Nobody picks the holder here because there is only one person to pick,
+ * and the dialog starts on them — which is the half a unit spec cannot
+ * show, since the prefilled weight arrives through an `ion-input`.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { listRow, pickSelectOption } from '../helpers';
+import { listRow, searchInput } from '../helpers';
 import {
   addButton,
   createDialog,
@@ -53,6 +57,10 @@ test.describe('BIOMON', () => {
     page,
   }) => {
     await openFreshProfile(page);
+    await expect(searchInput(page, pageRoot(page, PROFILE_PAGE))).toHaveCount(
+      0
+    );
+
     await weighIn(page, '78,4');
 
     await expect(listRow(page, '78,4 kg')).toHaveCount(1);
@@ -75,9 +83,7 @@ test.describe('BIOMON', () => {
 
     await addButton(pageRoot(page, PROFILE_PAGE)).click();
     const dialog = createDialog(page);
-    await pickSelectOption(
-      page,
-      dialog.getByTestId('vitals-holder-select'),
+    await expect(dialog.getByTestId('vitals-holder-select')).toContainText(
       'Martin'
     );
     await expect(weightBox(dialog, 1)).toHaveValue('80,0');

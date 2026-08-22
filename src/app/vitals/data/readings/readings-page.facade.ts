@@ -1,9 +1,10 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `sortable` is false, which is how `ListPageComponent` learns this list
- * offers no sort buttons: a reading's `name` is its date, and the built-in
- * one is labelled A–Z. The order is real all the same — the readings slice
- * carries `name` descending, so the toolbar keeps its actions while the
- * list stays newest-first.
+ * `sortable` and `searchable` are both false, which is how
+ * `ListPageComponent` learns this list has neither axis. A reading's `name`
+ * is its date: the built-in sort button is labelled A–Z, and a searchbar
+ * over one profile's dates answers a question nobody asks. The ORDER is
+ * real all the same — the readings slice carries `name` descending, so the
+ * toolbar keeps its actions while the list stays newest-first.
  *
  * `hasTrend` is what the page defers the chart on. One reading is a dot,
  * which says nothing the list does not — and chart.js is 76 KB gzipped, so
@@ -30,6 +31,7 @@ export class ReadingsPageFacade extends BaseListPageFacade {
   readonly items = this.#readings.items;
   readonly searchResult = this.#readings.searchResult;
   readonly sortable = signal(false);
+  readonly searchable = signal(false);
 
   readonly profile = this.#profiles.routeProfile;
   readonly heading = computed(() => this.profile()?.name ?? '');
