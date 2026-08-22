@@ -52,7 +52,7 @@ const EXTENSIONS = [
  * Empty since the 2026-08-04 doc cut: all three entries existed to serve prose
  * that cited a path as deleted, and that prose went with the compendium.
  */
-const KNOWN_ABSENT = new Map([]);
+const KNOWN_ABSENT = new Map();
 
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -75,6 +75,13 @@ const entriesOf = (dir) => (existsSync(dir) ? readdirSync(dir) : []);
  * untracked, so the repo cannot know what a given machine put in it. Docs name
  * `.keystore/alias` as a file the owner MAY create, and both a present and an
  * absent one have to pass — an exemption would go stale the day it is created.
+ *
+ * `docs/cash` is that same case one level down, and is why membership is a path
+ * PREFIX rather than a first segment: the camt exports are gitignored, so prose
+ * naming them resolves on the owner's machine and fails on a fresh clone. That
+ * is the worst shape a gate can have — green everywhere it is written, red only
+ * in CI. `KNOWN_ABSENT` cannot hold it for the `.keystore` reason inverted: the
+ * directory DOES exist here, so the exemption would report itself stale.
  */
 const GENERATED = new Set([
   'www',
@@ -85,7 +92,13 @@ const GENERATED = new Set([
   '.angular',
   'releases',
   '.keystore',
+  'docs/cash',
 ]);
+
+const isGenerated = (token) =>
+  [...GENERATED].some(
+    (prefix) => token === prefix || token.startsWith(prefix + '/')
+  );
 
 /**
  * A token is only a candidate if its first segment names something real, which
@@ -169,7 +182,7 @@ const isCandidate = (token) =>
   !token.startsWith('./') &&
   !UNPATHLIKE.test(token) &&
   FIRST_SEGMENTS.has(token.split('/', 1)[0]) &&
-  !GENERATED.has(token.split('/', 1)[0]) &&
+  !isGenerated(token) &&
   !isRoutePath(token) &&
   !ruleIds.has(token);
 

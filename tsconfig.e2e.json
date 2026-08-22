@@ -18,5 +18,18 @@
   // `@types/node`, and no project here sets `types` — so installing it would
   // inject Node's globals into the app build too, where `setTimeout` would stop
   // returning a number. A config file is not worth that.
-  "include": ["e2e/**/*.ts"]
+  "include": ["e2e/**/*.ts"],
+  // `e2e/handbook/**` is a screenshot GENERATOR, not specs: `*.shots.ts` never
+  // matches `pnpm run e2e`, it writes PNGs instead of asserting, and it is
+  // driven by its own playwright.handbook.config.ts. Being checked here and run
+  // nowhere left it able only to break the build — and it wants Node's `Buffer`,
+  // which is the one thing this project exists to keep out.
+  //
+  // Excluded rather than fixed at the call site: `STATEMENT_XML` is BUILT from
+  // `ENTRIES`, `IBAN` and `CLOSING`, so the notes.e2e.ts trick of passing a
+  // committed file path would fork the fixture from the constants generating it.
+  // The generator's own tsconfig with `types: ["node"]` is what it actually
+  // wants; until it has one it is unchecked, which is what "temporary harness"
+  // already says out loud.
+  "exclude": ["e2e/handbook/**"]
 }
