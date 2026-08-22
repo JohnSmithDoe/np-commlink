@@ -3,6 +3,7 @@
   [heading]="facade.heading()"
   backHref="/cash"
   [itemTemplate]="transactionItem"
+  [windowSize]="LEDGER_WINDOW"
 >
   <ion-buttons headerEnd slot="end">
     @if (facade.canImport()) {

@@ -19,6 +19,12 @@ const mockListState = (
   ...overrides,
 });
 
+const manyItems = (count: number): BaseItem[] =>
+  Array.from({ length: count }, (_, index) => ({
+    id: `t-${index}`,
+    name: `Entry ${index}`,
+  }));
+
 const fakeFacade = (
   state: WritableSignal<ItemList<BaseItem> | undefined>
 ): ListPageFacade & {
@@ -126,6 +132,57 @@ describe('ListPageComponent', () => {
     expect(
       fixture.nativeElement.querySelector('app-category-filter-bar')
     ).toBeNull();
+  });
+
+  it('renders every item while no window is asked for', () => {
+    facade.items.set(manyItems(500));
+
+    expect(component.windowedItems()).toHaveLength(500);
+    expect(component.hiddenCount()).toBe(0);
+  });
+
+  it('renders only the window once one is asked for', () => {
+    fixture.componentRef.setInput('windowSize', 200);
+    facade.items.set(manyItems(500));
+
+    expect(component.windowedItems()).toHaveLength(200);
+    expect(component.hiddenCount()).toBe(300);
+  });
+
+  it('leaves a list shorter than the window whole', () => {
+    fixture.componentRef.setInput('windowSize', 200);
+    facade.items.set(manyItems(12));
+
+    expect(component.windowedItems()).toHaveLength(12);
+    expect(component.hiddenCount()).toBe(0);
+  });
+
+  it('widens the window by one step at a time', () => {
+    fixture.componentRef.setInput('windowSize', 200);
+    facade.items.set(manyItems(500));
+
+    component.showMore();
+
+    expect(component.windowedItems()).toHaveLength(400);
+    expect(component.hiddenCount()).toBe(100);
+  });
+
+  it('collapses a widened window when the search changes', () => {
+    fixture.componentRef.setInput('windowSize', 200);
+    facade.items.set(manyItems(500));
+    component.showMore();
+
+    state.set(mockListState({ searchQuery: 'milk' }));
+
+    expect(component.windowedItems()).toHaveLength(200);
+  });
+
+  it('keeps the list unknown rather than empty while no items have arrived', () => {
+    fixture.componentRef.setInput('windowSize', 200);
+    facade.items.set(undefined);
+
+    expect(component.windowedItems()).toBeUndefined();
+    expect(component.hiddenCount()).toBe(0);
   });
 
   it('keeps a filter offered once armed, reading the unfiltered items', () => {

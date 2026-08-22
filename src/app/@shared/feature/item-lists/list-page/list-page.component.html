@@ -59,10 +59,17 @@
   <ng-content select="[beforeList]"></ng-content>
 
   <app-item-list
-    [items]="facade.items()"
+    [items]="windowedItems()"
     [catalog]="facade.catalog?.() ?? []"
     [itemTemplate]="itemTemplate()"
   />
+  @if (hiddenCount(); as hidden) {
+    <div class="list-window">
+      <ion-button fill="clear" size="small" (click)="showMore()">
+        {{ 'item-list.window.show-more' | translate: { count: hidden } }}
+      </ion-button>
+    </div>
+  }
   <app-item-list-empty
     [isEmptyList]="isKnownEmpty()"
     [isSearching]="!!facade.searchResult()"

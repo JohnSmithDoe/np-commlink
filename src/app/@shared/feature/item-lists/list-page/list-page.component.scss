@@ -13,6 +13,12 @@
   --app-content-max-width: #{layout.$content-wide};
 }
 
+.list-window {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--space-2);
+}
+
 .exact-match-note {
   max-width: var(--app-content-max-width);
   margin-inline: auto;

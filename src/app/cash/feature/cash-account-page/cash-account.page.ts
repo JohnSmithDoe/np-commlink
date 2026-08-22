@@ -60,6 +60,8 @@ const DETACH: StartSwipeAction = {
   color: 'medium',
 };
 
+const LEDGER_WINDOW = 200;
+
 @Component({
   selector: 'app-page-cash-account',
   templateUrl: './cash-account.page.html',
@@ -85,6 +87,8 @@ const DETACH: StartSwipeAction = {
   ],
 })
 export class CashAccountPage {
+  protected readonly LEDGER_WINDOW = LEDGER_WINDOW;
+
   readonly facade = inject(CashAccountTransactionsPageFacade);
   readonly #transactions = inject(CashTransactionsFacade);
   readonly #accounts = inject(CashAccountsFacade);

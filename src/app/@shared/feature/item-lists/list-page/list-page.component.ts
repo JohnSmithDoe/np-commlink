@@ -15,6 +15,15 @@
  * on screen. Routing it through a broadcast action needed every domain to
  * register a listener, and the two that never did had a chip that stripped
  * the URL and left the list exactly as it was.
+ *
+ * `windowSize` caps what is RENDERED, and it lives here rather than in a
+ * facade because `items()` is also what `isKnownEmpty`, the search count and
+ * a page's own totals read — a facade that handed back a slice would make
+ * those answer for the slice. Absent means uncapped, so only a list that can
+ * grow without bound asks for one. The cap resets when the search query or
+ * the armed filter changes: expanding to reach one old row and then clearing
+ * the search would otherwise render the whole collection at once, which is
+ * the render the window exists to prevent.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -23,6 +32,7 @@ import {
   computed,
   inject,
   input,
+  linkedSignal,
   TemplateRef,
 } from '@angular/core';
 import {
@@ -75,10 +85,38 @@ export class ListPageComponent {
   pageHeader = input('');
   heading = input('');
   backHref = input('');
+  windowSize = input<number>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
 
   readonly isKnownEmpty = computed(() => this.facade.items()?.length === 0);
+
+  readonly #shown = linkedSignal<string, number | undefined>({
+    source: () => {
+      const state = this.facade.state();
+      return JSON.stringify([state?.searchQuery, state?.filterBy]);
+    },
+    computation: () => this.windowSize(),
+  });
+
+  readonly windowedItems = computed(() => {
+    const items = this.facade.items();
+    const shown = this.#shown();
+    return shown === undefined || !items || items.length <= shown
+      ? items
+      : items.slice(0, shown);
+  });
+
+  readonly hiddenCount = computed(() => {
+    const shown = this.#shown();
+    if (shown === undefined) return 0;
+    return Math.max(0, (this.facade.items()?.length ?? 0) - shown);
+  });
+
+  showMore(): void {
+    const step = this.windowSize();
+    if (step) this.#shown.update((shown) => (shown ?? step) + step);
+  }
 
   readonly extraFilters = computed(() => {
     const items = this.facade.state()?.items ?? [];

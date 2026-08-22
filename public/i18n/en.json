@@ -473,6 +473,7 @@
   "item-list.filter.all": "All",
   "item-list.filter.uncategorized": "Uncategorized",
   "item-list.toolbar.sort-az": "A-Z",
+  "item-list.window.show-more": "Show {{count}} more",
   "notifications.a11y.clear-done": "Clear done",
   "notifications.a11y.remove": "Remove notification",
   "notifications.action.mark-done": "Done",

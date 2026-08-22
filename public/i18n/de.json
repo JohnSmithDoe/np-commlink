@@ -473,6 +473,7 @@
   "item-list.filter.all": "Alle",
   "item-list.filter.uncategorized": "Ohne Kategorie",
   "item-list.toolbar.sort-az": "A-Z",
+  "item-list.window.show-more": "{{count}} weitere anzeigen",
   "notifications.a11y.clear-done": "Erledigte entfernen",
   "notifications.a11y.remove": "Benachrichtigung entfernen",
   "notifications.action.mark-done": "Erledigt",
