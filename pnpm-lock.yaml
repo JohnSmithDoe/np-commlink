@@ -63,8 +63,8 @@ importers:
         specifier: ^8.0.3
         version: 8.0.3(@capacitor/core@8.4.2)
       '@colsen1991/ngx-translate-extract-marker':
-        specifier: ^2.0.8
-        version: 2.0.8(@angular/common@21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))
+        specifier: ^3.0.1
+        version: 3.0.1(@angular/common@21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))
       '@ionic/angular':
         specifier: ^8.8.15
         version: 8.8.15(6d254f5049553cb9629f08d62b51b7ed)
@@ -640,12 +640,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@colsen1991/ngx-translate-extract-marker@2.0.8':
-    resolution: {integrity: sha512-nYcjHifvXHtF3J4thQE6Lmu+AGNORgpCLYx55PY+XxzWRWfziuKIHhoIbNf9vwc9mMOZakJqfAjvpO+pN9AWdw==}
-    engines: {node: '>=16', npm: '>=8'}
+  '@colsen1991/ngx-translate-extract-marker@3.0.1':
+    resolution: {integrity: sha512-faQeH8zTKB8U+7kdsL54Mj48uJuMKhZ0/t2qONrxyBE5GwWGWxTf778cBi4UR23nOmBzo8A2fyEXCY0gtdkOVQ==}
     peerDependencies:
-      '@angular/common': '>=13.0.0'
-      '@angular/core': '>=13.0.0'
+      '@angular/common': '>=14.2.0'
+      '@angular/core': '>=14.2.0'
 
   '@csstools/color-helpers@6.1.0':
     resolution: {integrity: sha512-064IFJdjTfUqnjpCVpMOdbr8FLQBhinbZj6yRv2An2E41O/pLEXqfFRWqGq/SxlE5PEUYTlvWsG2r8MswAVvkg==}
@@ -5141,7 +5140,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.4.2
 
-  '@colsen1991/ngx-translate-extract-marker@2.0.8(@angular/common@21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))':
+  '@colsen1991/ngx-translate-extract-marker@3.0.1(@angular/common@21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))':
     dependencies:
       '@angular/common': 21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2)
