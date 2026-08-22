@@ -1,0 +1,173 @@
+{
+  "slug": "start",
+  "title": "COMMLINK",
+  "plain": "Startdeck",
+  "route": "/commlink",
+  "summary": "Die Startseite: ein Deck aus Kacheln, das du dir selbst zusammenschaltest — und das Seitenmenü daneben.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "np-commlink ist keine App mit festem Menü, sondern ein <strong>Deck</strong>: eine Startseite, auf die du die Programme lädst, die du wirklich benutzt. Jede Kachel ist ein Programm (Einkaufsliste, Aufgaben, Finanzen …) und zeigt gleich die eine Zahl, um die es dort geht — offene Aufgaben, fehlende Einkäufe, Kontostand. Alles liegt lokal auf dem Gerät: kein Server, kein Konto, keine Synchronisation."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "Ein frisches Deck ist <strong>leer</strong>. Das ist Absicht: du sollst auswählen, nicht aufräumen."
+        },
+        {
+          "type": "ol",
+          "items": [
+            "Die App startet auf <strong>COMMLINK</strong>. Statt Kacheln steht dort eine gestrichelte Fläche <em>KEINE PROGRAMME GELADEN</em> mit dem Hinweis <em>&gt; DECK KONFIGURIEREN</em>.",
+            "Tippe diese Fläche an. Zweiter Weg: Zahnrad oben rechts im Seitenmenü → <strong>Einstellungen</strong> → Abschnitt <em>Deck</em> → <strong>Deck-Konfiguration</strong>.",
+            "Schalte die Programme ein, die du willst — der Schalter rechts in jeder Zeile. Jede Zeile nennt den Codenamen (<strong>MARKET</strong>), darunter den bürgerlichen Namen (<em>Einkaufsliste</em>) und, wenn mehrere Programme aus demselben Bereich kommen, den Bereich (<em>HAUSHALT</em>).",
+            "Zurück auf COMMLINK: für jedes eingeschaltete Programm steht jetzt eine Kachel da."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "start-leeres-deck.webp",
+          "caption": "Kaltstart: das Deck ist leer und bietet seinen eigenen Weg hinein an"
+        },
+        {
+          "type": "figure",
+          "img": "start-deck-konfiguration.webp",
+          "caption": "Deck-Konfiguration: Schalter rechts, Ziehgriff links, Bereich unter dem Namen"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Die Kacheln"
+        },
+        {
+          "type": "figure",
+          "img": "start-deck.webp",
+          "caption": "Deck mit geladenen Programmen — CHRONO läuft, MEATSPACE ist auf Standby"
+        },
+        {
+          "type": "p",
+          "html": "Antippen öffnet das Programm. Oben links steht die Steckplatznummer (<code>0x01</code>), oben rechts die Kennzahl und eine Leuchtdiode, unten die Fußzeile: <strong>&gt; AUSFÜHREN</strong>, <strong>&gt; STANDBY</strong> oder <strong>&gt; KEIN SIGNAL</strong>."
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>AUSFÜHREN</strong> (grün, durchgezogener Rahmen): das Programm hat in dieser Sitzung selbst gemeldet.",
+            "<strong>STANDBY</strong> (gestrichelter Rahmen): die Zahl kommt aus dem letzten gespeicherten Stand — du hast das Programm seit dem Start nicht geöffnet. Trotzdem aktuell zum Zeitpunkt des Speicherns.",
+            "<strong>KEIN SIGNAL</strong>: kommt in der Praxis nur bei <strong>GEIST</strong> vor, wenn der Browser kein lokales Sprachmodell anbietet."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "start-kachel.webp",
+          "caption": "Kachel MARKET: Steckplatz, Kennzahl, Codename, Fußzeile"
+        },
+        {
+          "type": "p",
+          "html": "Jedes Programm meldet genau eine Zahl: CHRONO <em>Anzahl Einträge</em>, MEATSPACE <em>Bürotage</em>, COMMS <em>ungelesen</em>, SIGIL <em>Anzahl Notizen</em>, SOYKAF <em>Anzahl Rezepte</em>, MARKET <em>aktive Zeilen</em>, STASH <em>knappe Bestände</em>, AGENDA <em>offene Aufgaben</em>, CATALOG <em>Anzahl Produkte</em>, CREDSTICK <em>Kontostand</em> (als Betrag, nicht als Anzahl), TRACKPLAY <em>Spiele</em>, BIOMON <em>Anzahl Messungen</em>, DAILY RUN <em>erledigt</em>. SYSOP und GEIST melden nichts. <strong>Eine Null wird nicht angezeigt</strong> — keine Kennzahl heißt: da liegt nichts an."
+        },
+        {
+          "type": "h3",
+          "html": "Statuszeile und Zierrat"
+        },
+        {
+          "type": "figure",
+          "img": "start-statuszeile.webp",
+          "caption": "Kopfzeile: Datum, RES, FIREWALL, geladene Programme"
+        },
+        {
+          "type": "p",
+          "html": "Ehrlich gemessen sind nur: <strong>RAUSCHEN</strong> (ungelesene Meldungen aus COMMS), die <strong>Uhr</strong> und <strong>LAUFZEIT</strong> (die aktuelle Zeit), das Datum, <strong>RES</strong> (dein Büroziel aus MEATSPACE, umgerechnet auf eine Skala 0–6), <strong>n/15 PROGRAMME GELADEN</strong> und <strong>NUYEN</strong> (Kontostand aus CREDSTICK)."
+        },
+        {
+          "type": "p",
+          "html": "Reine Deko sind: <em>MATRIX-LINK STEHT</em>, <em>COMMLINK ONLINE</em>, <strong>GRID ONLINE</strong>, <strong>SIGNAL ▚▚▚▚▚</strong>, <strong>FIREWALL 5</strong>, <strong>SPUR SAUBER</strong>, <strong>ICE PASSIV</strong>. Es gibt keine Verbindung, keine Firewall und keine Spur — die App spricht mit niemandem."
+        },
+        {
+          "type": "h3",
+          "html": "Deck-Konfiguration"
+        },
+        {
+          "type": "p",
+          "html": "Reihenfolge: mit dem <strong>Ziehgriff</strong> links (die zwei Striche) eine Zeile packen und verschieben. Die Reihenfolge gilt für Kacheln <strong>und</strong> Seitenmenü. <strong>Zurücksetzen</strong> unten leert das Deck wieder komplett; solange du nichts geändert hast, ist der Knopf ausgegraut."
+        },
+        {
+          "type": "p",
+          "html": "Die Zeile <strong>COMMLINK</strong> schaltet keine Kachel ein, sondern nur den Menüeintrag zurück auf diese Startseite."
+        },
+        {
+          "type": "h3",
+          "html": "Seitenmenü"
+        },
+        {
+          "type": "figure",
+          "img": "start-menu.webp",
+          "caption": "Seitenmenü: gleiche Programme, gleiche Reihenfolge, Zahlen als Abzeichen"
+        },
+        {
+          "type": "p",
+          "html": "Öffnen: das Hamburger-Symbol oben links — auf jeder Hauptseite. Es listet dieselben Programme in derselben Reihenfolge und zeigt dieselben Zahlen als Abzeichen (COMMS rot, alle anderen grau). CREDSTICK bekommt hier bewusst keins: ein Geldbetrag neben einem Menüpunkt liest sich wie eine Aufgabe. Das <strong>Zahnrad</strong> oben rechts im Menü führt immer zu den Einstellungen — auch bei leerem Deck."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Vom linken Bildschirmrand nach rechts wischen</strong> → Seitenmenü öffnet sich, auf jeder Seite.",
+            "<strong>Ziehgriff (≡) links in der Deck-Konfiguration</strong> halten und schieben → Reihenfolge ändern.",
+            "<strong>Kacheln wischen nicht.</strong> Ein Tipp öffnet, mehr gibt es hier nicht — kein Lang-Druck, kein Kontextmenü.",
+            "Auf <strong>Unterseiten</strong> ersetzt der Zurück-Pfeil das Hamburger-Symbol. Dann erst zurück, dann Menü."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Zurücksetzen stellt keine Standardauswahl her</strong>, es leert das Deck. Danach fängst du bei <em>KEINE PROGRAMME GELADEN</em> an.",
+            "<strong>Ausschalten löscht nichts.</strong> Ein ausgeschaltetes Programm verschwindet aus Kacheln und Menü, seine Daten bleiben vollständig liegen; schaltest du es wieder ein, ist alles da.",
+            "<strong>n/15</strong> zählt den ganzen Katalog, nicht dein Deck. Auf einem leeren Deck steht dort schon 2/15 — gezählt wird, was gemeldet hat, nicht was du siehst.",
+            "<strong>GRID ONLINE heißt nicht \"verbunden\".</strong> Deine Daten liegen ausschließlich in dieser Installation. Browserdaten löschen oder die App deinstallieren heißt: weg. Es gibt keine Kopie in der Cloud.",
+            "Erscheint unten die Meldung <em>Eine neue Version ist bereit</em>, lädt <strong>Neu laden</strong> die neue Fassung. Daten gehen dabei nicht verloren."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/sigil\">SIGIL</a> — Notizen, das kleinste Programm zum Ausprobieren",
+            "<a href=\"#/handbook/agenda\">AGENDA</a> — Aufgaben, das Programm mit den meisten verborgenen Gesten",
+            "<a href=\"#/handbook/credstick\">CREDSTICK</a> — Finanzen, das umfangreichste Programm",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — alle Wisch-, Halte- und Menü-Gesten der App auf einer Seite",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — Einstellungen: Skin (Codenamen oder bürgerliche Namen), Farben, Sprache, gespeicherte Daten"
+          ]
+        }
+      ]
+    }
+  ]
+}

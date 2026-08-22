@@ -1,0 +1,63 @@
+<app-page-header
+  icon="book-outline"
+  label="page-title.handbook"
+  backHref="/handbook"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  @if (failed()) {
+    <div class="hb-state" data-testid="handbook-page-error">
+      <p class="hb-state__text">{{ 'handbook.error.page' | translate }}</p>
+      <ion-button fill="outline" size="small" (click)="retry()">
+        <ion-icon name="refresh-outline" slot="start" aria-hidden="true" />
+        {{ 'handbook.action.retry' | translate }}
+      </ion-button>
+    </div>
+  } @else if (pending()) {
+    <p class="hb-state">{{ 'handbook.loading' | translate }}</p>
+  } @else if (article(); as content) {
+    <app-handbook-article [page]="content" />
+  }
+
+  <nav class="hb-pager" [attr.aria-label]="'handbook.a11y.pager' | translate">
+    @if (previous(); as entry) {
+      <a class="hb-pager__link" [routerLink]="['/handbook', entry.slug]">
+        <ion-icon
+          class="hb-pager__icon"
+          name="chevron-back-outline"
+          aria-hidden="true"
+        />
+        <span class="hb-pager__body">
+          <span class="hb-pager__label">{{
+            'handbook.nav.previous' | translate
+          }}</span>
+          <app-handbook-title [deck]="entry.title" [plain]="entry.plain" />
+        </span>
+      </a>
+    }
+
+    <a class="hb-pager__overview" routerLink="/handbook">
+      {{ 'handbook.nav.overview' | translate }}
+    </a>
+
+    @if (next(); as entry) {
+      <a
+        class="hb-pager__link hb-pager__link--next"
+        [routerLink]="['/handbook', entry.slug]"
+      >
+        <span class="hb-pager__body">
+          <span class="hb-pager__label">{{
+            'handbook.nav.next' | translate
+          }}</span>
+          <app-handbook-title [deck]="entry.title" [plain]="entry.plain" />
+        </span>
+        <ion-icon
+          class="hb-pager__icon"
+          name="chevron-forward-outline"
+          aria-hidden="true"
+        />
+      </a>
+    }
+  </nav>
+</ion-content>

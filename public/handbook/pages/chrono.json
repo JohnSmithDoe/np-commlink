@@ -1,0 +1,173 @@
+{
+  "slug": "chrono",
+  "title": "CHRONO",
+  "plain": "Zeiterfassung",
+  "route": "/tracking",
+  "summary": "Stoppuhr pro Aufgabe, ein Tagesprotokoll darunter und ein Archiv mit Diagramm und CSV-Export.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "CHRONO ist eine Stoppuhr pro Aufgabe. Du legst die Dinge an, an denen du arbeitest — Tickets, Besprechungen, Sonstiges — und tippst die an, die du gerade machst. Immer nur <strong>eine</strong> Uhr läuft; das Umschalten auf die nächste Aufgabe stoppt die vorherige. Am Ende des Tages drückst du einmal <em>Speichern</em>, dann wandern die Zeiten ins Archiv und die Liste steht wieder auf Null."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Tippe in die Suchleiste <strong>„Suchen oder neu anlegen\"</strong>, schreibe den Namen (z. B. <code>LF-4821 Rechnungslauf</code>) und drücke Enter — der Eintrag wird sofort angelegt. Über das <strong>+</strong> oben rechts geht es auch: Dialog <em>Neuen Eintrag anlegen</em>, Namensfeld, Knopf <strong>Anlegen</strong>.",
+            "<strong>Tippe die Zeile an.</strong> Der Balken links wird grün, das Etikett wechselt auf <strong>LÄUFT</strong> und der Timer zählt.",
+            "Tippe dieselbe Zeile nochmal an → <strong>pausiert</strong> (orange). Tippe eine <em>andere</em> Zeile an → die erste wird <strong>gestoppt</strong>, die neue läuft.",
+            "Ist der Tag vorbei: <strong>SPEICHERN</strong> in der Werkzeugzeile. Alles wird archiviert, die Liste beginnt bei Null, die Aufgaben bleiben stehen."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "chrono-list.webp",
+          "caption": "Eine Uhr läuft, zwei Aufgaben sind gestoppt — oben die Tagessumme, unten das Tagesprotokoll"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Werkzeugzeile"
+        },
+        {
+          "type": "p",
+          "html": "<strong>A-Z</strong> sortiert die Liste (nochmal tippen dreht die Richtung). Daneben steht die <strong>Tagessumme über alle Aufgaben</strong> als <code>hh:mm:ss</code>. <strong>VERWERFEN</strong> setzt alle Uhren auf Null, ohne etwas zu archivieren — der Tag ist damit weg. <strong>SPEICHERN</strong> archiviert erst und setzt dann zurück."
+        },
+        {
+          "type": "h3",
+          "html": "Pausen"
+        },
+        {
+          "type": "p",
+          "html": "Pausierst du und startest später wieder, läuft die Uhr an ihrer alten Startzeit weiter; die Zeit dazwischen wird als Pause abgezogen. Ab einer Minute steht sie in der Zeile: <em>(7min Pause)</em>. Deshalb kann eine Aufgabe von 9:00 „bis jetzt\" laufen und trotzdem nur zwei Stunden zählen."
+        },
+        {
+          "type": "h3",
+          "html": "Tagesprotokoll"
+        },
+        {
+          "type": "p",
+          "html": "Unter der Liste steht <strong>Heute</strong> mit allen Sessions dieses Tages, Startzeit, Dauer und <code>3 Sessions • 4h 12m</code>. Mit <strong>‹</strong> und <strong>›</strong> blätterst du in vergangene Tage; nach vorne geht es nicht. Steht dort nichts: <em>Keine Sessions an diesem Tag</em>."
+        },
+        {
+          "type": "figure",
+          "img": "chrono-today.webp",
+          "caption": "Das Tagesprotokoll zeigt die laufende Session mit grünem „läuft\"-Etikett"
+        },
+        {
+          "type": "h3",
+          "html": "Archiv (Zahnrad → <em>Gespeicherte Einträge</em>)"
+        },
+        {
+          "type": "p",
+          "html": "Das Zahnrad oben rechts führt auf <code>/data</code>. Oben ein <strong>Ansicht</strong>-Auswahlfeld mit fünf Sichten auf dieselben archivierten Sessions:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Einzeln</strong> — jede Session für sich, mit Datum und Uhrzeit",
+            "<strong>Heute</strong> — nur heute, pro Aufgabe zusammengefasst",
+            "<strong>Pro Tag</strong> / <strong>Pro Monat</strong> — pro Aufgabe und Tag bzw. Monat summiert",
+            "<strong>Gesamt</strong> — eine Zeile pro Aufgabe, alles addiert"
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Das Balkendiagramm darüber zeigt immer <strong>die letzten 21 Tage in Stunden</strong>, gestapelt nach Aufgabe; die sechs größten bekommen eine eigene Farbe, der Rest landet unter <em>Sonstige</em>. Die gerade laufende Uhr ist darin schon enthalten. <strong>DATEN TEILEN</strong> gibt die aktuelle Ansicht als CSV an das Teilen-Menü des Geräts weiter (Name, Startzeit, Sekunden, <code>hh:mm:ss</code>)."
+        },
+        {
+          "type": "figure",
+          "img": "chrono-data.webp",
+          "caption": "Archiv in der Ansicht „Heute\": 21-Tage-Diagramm und die Sessions darunter"
+        },
+        {
+          "type": "h3",
+          "html": "Korrigieren"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Bearbeiten</strong> ändert nur den <strong>Namen</strong> — Zeiten lassen sich nicht nachtragen oder nachbessern. Zum Korrigieren gibt es genau zwei Wege: <strong>Zurücksetzen</strong> löscht die laufende Aufnahme einer Aufgabe, und im Archiv löschst du eine einzelne falsche Session in der Ansicht <strong>Einzeln</strong> per Wisch."
+        },
+        {
+          "type": "h3",
+          "html": "Kachel im Deck"
+        },
+        {
+          "type": "p",
+          "html": "Die CHRONO-Kachel zeigt <strong>„Anzahl\"</strong> — die Zahl der <em>angelegten Aufgaben</em>, nicht die Zeit, nicht die Zahl der Sessions."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Die Zeile antippen</strong> startet, pausiert bzw. setzt fort. Die ganze Zeile ist der Knopf.",
+            "<strong>⋮ (Drei-Punkte-Menü)</strong> rechts in jeder Zeile: <em>Starten</em> / <em>Pausieren</em>, <em>Bearbeiten</em>, <em>Zurücksetzen</em>, <em>Löschen</em> (rot).",
+            "<strong>Nach links wischen</strong> auf einer Archivzeile → <strong>LÖSCHEN</strong> (rote Fläche, vollständig wischen löscht sofort). <strong>Nur in der Ansicht „Einzeln\"</strong> — in <em>Heute</em>, <em>Pro Tag</em>, <em>Pro Monat</em> und <em>Gesamt</em> wischen die Zeilen nicht, weil eine zusammengefasste Zeile mehrere Sessions ist.",
+            "<strong>Nach rechts wischen</strong> gibt es hier nicht.",
+            "Die Zeilen der Aufgabenliste selbst wischen ebenfalls nicht — Löschen läuft dort über das ⋮-Menü."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "chrono-swipe.webp",
+          "caption": "Archiv, Ansicht „Einzeln\": nach links gewischt liegt LÖSCHEN frei"
+        },
+        {
+          "type": "figure",
+          "img": "chrono-kebab.webp",
+          "caption": "Das ⋮-Menü einer laufenden Aufgabe"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>VERWERFEN fragt nicht nach.</strong> Der ganze Tag ist weg, sofort und ohne Rückfrage.",
+            "<strong>Nur eine Uhr läuft.</strong> Zwei Dinge parallel zu messen ist nicht möglich.",
+            "<strong>Ohne SPEICHERN kein Archiv.</strong> Was am Tagesende nicht gespeichert wurde, taucht in <code>/data</code> nie auf und fehlt auch im Diagramm, sobald die Uhr zurückgesetzt ist.",
+            "<strong>Nach einem Neustart steht die Ansicht wieder auf „Heute\"</strong> — die gewählte Sicht wird nicht gemerkt.",
+            "Zeiten sind nicht editierbar. Vergessen zu starten heißt: verloren."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/meatspace\">MEATSPACE</a> — Anwesenheitstage; CHRONO misst Stunden, MEATSPACE zählt Tage",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — alle Wisch- und Menü-Gesten der App auf einer Seite",
+            "<a href=\"#/handbook/comms\">COMMS</a> — die laufende Uhr meldet sich als Benachrichtigung, mit <em>Pausieren</em> direkt darin",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — zurück zur Übersicht aller Programme"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.hb-name {
+  font-family: var(--sr-deck-font);
+  text-transform: var(--sr-heading-transform);
+  letter-spacing: var(--sr-heading-tracking);
+  color: inherit;
+}
+
+.hb-name--deck {
+  display: none;
+}
+
+:host-context([data-skin='cyberpunk']) {
+  .hb-name--deck {
+    display: inline;
+  }
+
+  .hb-name--plain {
+    display: none;
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "slug": "credstick-import",
+  "title": "CREDSTICK · Import & Regeln",
+  "plain": "Kontoauszug-Import",
+  "route": "/cash/rules",
+  "summary": "Kontoauszug als camt-Datei einlesen, Buchungen per Regel einsortieren, Festkosten wiedererkennen.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "Der Kontoauszug-Import ist der einzige Weg, Bankbuchungen in <strong>CREDSTICK (Finanzen)</strong> zu bekommen, ohne sie abzutippen: du lädst bei deiner Bank einen <strong>camt-Export</strong> herunter, gelesen werden Datum, Betrag, Zahlungspartner, Verwendungszweck und Mandatsreferenz. <strong>Regeln</strong> sortieren in Kategorien, <strong>Festkosten</strong> erkennen wieder, was jeden Monat abgeht."
+        },
+        {
+          "type": "p",
+          "html": "Eines vorweg: <strong>es gibt keine Bankverbindung.</strong> Kein FinTS, kein HBCI, kein Login — der Import ist jedes Mal ein Datei-Import von Hand, und nichts verlässt das Gerät."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Konto anlegen, <strong>Kontotyp</strong> <code>Girokonto</code>, <code>Kreditkarte</code> oder <code>Sparkonto</code> (bei <code>Bargeld</code> gibt es keinen Import-Knopf). <strong>IBAN</strong> darf leer bleiben — <em>„Wird beim ersten Import … übernommen.\"</em>",
+            "Im Online-Banking den <strong>camt-Export</strong> herunterladen. Wie das Menü dort heißt, ist von Bank zu Bank verschieden; gesucht ist camt.052 oder camt.053 — nicht CSV, nicht PDF, nicht MT940.",
+            "Konto antippen. Von den drei Symbolen in der Kopfzeile ist das erste, die <strong>Wolke mit dem Pfeil</strong>, <code>Kontoauszug importieren</code>; dann folgen Stift (Konto bearbeiten) und Plus (Buchung von Hand).",
+            "Datei wählen: eine einzelne <strong>XML</strong>, <strong>mehrere XML auf einmal</strong> oder ein <strong>ZIP</strong> mit den Seiten eines mehrseitigen Exports (am Inhalt erkannt, nicht an der Endung). Vorschau prüfen, <strong>Importieren</strong>."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-entry.webp",
+          "caption": "Die Kopfzeile des Kontos: links die Wolke mit Pfeil — das ist der Import"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Was beim Import passiert"
+        },
+        {
+          "type": "p",
+          "html": "Die Vorschau zeigt <code>n neu · m Duplikate</code> und darunter jede neue Buchung. Erst <strong>Importieren</strong> schreibt."
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Duplikate.</strong> Jede Buchung bekommt einen Schlüssel — die Referenz der Bank, sonst einen aus Datum, Betrag und Text abgeleiteten — und er gilt <strong>pro Konto</strong>. Überlappende Zeiträume darfst du deshalb zweimal einlesen. Zwei gleich hohe Zahlungen am selben Tag zählen als <em>zwei</em>, und eine Buchung ohne Referenz wird nicht übersprungen, sondern über den abgeleiteten Schlüssel erkannt.",
+            "<strong>BOOK und PDNG.</strong> <code>BOOK</code> ist gebucht, <code>PDNG</code> vorgemerkt: die Zeile steht als <strong>Vorgemerkt</strong> im Konto und wird oben gezählt (<code>1 vorgemerkt</code>). Kommt sie später gebucht nach, entsteht keine zweite Zeile — die vorhandene wird bestätigt und behält ihren Abgleich.",
+            "<strong>Nicht lesbare Buchungen</strong> werden gezählt, rot gemeldet und <strong>nicht</strong> importiert.",
+            "<strong>Falsches Konto.</strong> Gehört der Auszug zu einer anderen IBAN, wird er abgelehnt.",
+            "<strong>Kontrollsumme.</strong> Weicht der Schlusssaldo des Auszugs vom errechneten Stand ab, nennt eine Meldung die Differenz — dann fehlen Buchungen."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-preview.webp",
+          "caption": "Die Vorschau: Kategorien sind schon zugeordnet, oben der von den Festkosten gelernte Betrag"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-ledger.webp",
+          "caption": "Nach dem Import: Kategorie und Verwendungszweck an jeder Zeile, vorgemerkte Buchung oben gezählt"
+        },
+        {
+          "type": "h3",
+          "html": "Regeln"
+        },
+        {
+          "type": "p",
+          "html": "<code>CREDSTICK → Trichter-Symbol</code> (<code>/cash/rules</code>). Eine Regel weist <strong>genau eine Kategorie</strong> zu, über Bedingungen auf zehn Bankfeldern: <strong>Beschreibung, Zahlungspartner, IBAN, BIC, Verwendungszweck, End-to-End-Referenz, Mandatsreferenz, Zweckcode, Buchungsschlüssel, Betrag</strong>. Für Text <em>enthält, beginnt mit, endet mit, ist gleich, Regex</em> plus Schalter <strong>Groß-/Kleinschreibung</strong>, für Betrag <code>= &lt; ≤ &gt; ≥</code>. Mehrere Bedingungen verknüpft <strong>Alle / Beliebige</strong>."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Die Reihenfolge entscheidet:</strong> die erste passende Regel gewinnt, sortiert wird mit dem Griff links. Unter jeder Regel steht, was sie tut — <code>greift bei n Buchungen</code>, <code>wird von einer früheren Regel verdeckt</code> oder <code>trifft nichts</code>. <strong>Testen vor dem Speichern:</strong> im Dialog steht <em>„Trifft auf n von m Buchungen zu\"</em> — aufklappen zeigt Beispiele, <em>„n davon sind bereits anders einsortiert\"</em> warnt vor einer zu weiten Regel. Regeln laufen beim Import und bei jeder Änderung am Regelsatz; <strong>Regeln anwenden</strong> lässt sie über das ganze Konto neu laufen, ohne Kategorien anzutasten, die du selbst gesetzt hast."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-rules.webp",
+          "caption": "Drei Regeln mit Griff zum Sortieren; jede Zeile sagt, wie viele Buchungen sie greift"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-rule-dialog.webp",
+          "caption": "Bedingung aus Feld, Operator und Wert — darunter die Live-Trefferzahl"
+        },
+        {
+          "type": "h3",
+          "html": "Aus einer Buchung ableiten"
+        },
+        {
+          "type": "p",
+          "html": "Der schnellste Weg zu einer Regel führt nicht über die Regelliste: tippe eine Buchung an, unten steht <strong>Aus dieser Buchung</strong> mit <strong>Regel erstellen</strong> und <strong>Festkosten erstellen</strong>. Vorbefüllt wird mit dem stabilsten Feld der Buchung — Mandatsreferenz, sonst IBAN, sonst Zahlungspartner, sonst ein Wort der Beschreibung; Festkosten zusätzlich mit Betrag und geschätztem Rhythmus. Ableiten <strong>speichert die Buchung zuerst</strong>: die Kategorie auf dem Schirm ist die, welche die Regel bekommt."
+        },
+        {
+          "type": "h3",
+          "html": "Festkosten"
+        },
+        {
+          "type": "p",
+          "html": "<code>CREDSTICK → Tachometer (Tagesbudget) → Zeile „Festkosten\"</code> (<code>/cash/schedules</code>). Ein Posten hat Betrag, <strong>Rhythmus</strong> (alle 1, 3, 6 oder 12 Monate), <strong>Nächste Fälligkeit</strong>, optional eine Kategorie, und Bedingungen wie eine Regel."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Festkosten erzeugen keine Buchungen.</strong> Sie erkennen sie wieder: passt beim Import eine neue Buchung auf einen Posten, wird dessen Betrag <strong>gelernt</strong> (Vorschau: <em>Geänderte Beträge</em>) und die Fälligkeit rückt eine Periode weiter — Miete von 900 auf 940 kostet also keine Regeländerung. Ohne Import macht das der <strong>Doppelhaken</strong> in der Zeile (<code>Als bezahlt markieren</code>), der nur die Fälligkeit vorrückt. Die Summe füttert die Rücklage im Tagesbudget."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-schedules.webp",
+          "caption": "Festkosten nach dem Import: Betrag gelernt, Fälligkeit vorgerückt, als bezahlt markiert"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> auf einer <strong>Regel</strong> oder einem <strong>Festkosten-Posten</strong> → rote Fläche mit Papierkorb. Hier löscht der Wisch <em>nicht</em> sofort: roten Knopf antippen, dann kommt die Rückfrage.",
+            "<strong>Griff links in der Regelzeile</strong> (zwei Striche) → halten und ziehen sortiert die Regeln neu. Einen Sortier-Knopf gibt es bewusst nicht: die Reihenfolge <em>ist</em> die Bedeutung.",
+            "<strong>Nach links wischen</strong> auf einer <strong>Buchung</strong> im Konto → Löschen. Ein durchgezogener Wisch löst hier direkt aus (mit Rückfrage), anders als in den beiden Listen oben.",
+            "<strong>Nach rechts wischen</strong> auf einer <strong>vorgemerkten</strong> Buchung → <em>Abgleichen</em>: die selbst erfasste Ausgabe dazu auswählen, damit sie nicht doppelt zählt. Auf einer abgeglichenen → <em>Abgleich aufheben</em>.",
+            "<strong>Antippen</strong> öffnet überall den Bearbeiten-Dialog — bei einer Buchung mit den Ableiten-Knöpfen und dem aufklappbaren Block <strong>Bankdaten</strong> (IBAN, BIC, Mandatsreferenz, Zweckcode, Wertstellung)."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-import-rule-swipe.webp",
+          "caption": "Offener Wisch auf einer Regel: der rote Papierkorb muss angetippt werden"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nur camt-XML.</strong> Passt die Datei nicht: <em>„Keine camt-Datei gefunden.\"</em> — kein Leer-Import.",
+            "<strong>Bargeld-Konten haben keinen Import-Knopf.</strong> Wer ihn sucht, hat den Kontotyp falsch gesetzt.",
+            "<strong>Der erste Import bestimmt, welche IBAN dem Konto gehört.</strong> Danach schützt sie: der Sparkonto-Auszug landet nicht mehr im Girokonto.",
+            "<strong>Beträge in Regeln sind vorzeichenbehaftet.</strong> Eine Ausgabe ist negativ; „größer als 25,00\" trifft keine. Für „mehr als 25 € raus\": <code>Betrag</code> <code>&lt; kleiner</code> <code>-25,00</code>.",
+            "<strong>Eine leere Bedingung trifft nichts</strong> und speichert nicht. Eine <em>zu weite</em> speichert anstandslos — die Trefferzahl im Dialog ist die einzige Warnung.",
+            "<strong>Eine gelöschte Regel färbt nichts zurück.</strong> Kategorien bleiben, bis ein geänderter Regelsatz oder <em>Regeln anwenden</em> darüber läuft."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/credstick\">CREDSTICK</a> — Konten, Buchungen, Kategorien: alles, was der Import füllt",
+            "<a href=\"#/handbook/credstick-auswertung\">CREDSTICK · Auswertung</a> — Tagesbudget und Auswertung leben von den Kategorien der Regeln",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — die Wisch-Grammatik der App auf einen Blick"
+          ]
+        }
+      ]
+    }
+  ]
+}

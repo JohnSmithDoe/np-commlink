@@ -1,0 +1,185 @@
+{
+  "slug": "catalog",
+  "title": "CATALOG",
+  "plain": "Produkte",
+  "route": "/household/products",
+  "summary": "Die Stammdaten hinter Einkaufsliste und Vorräten — Produkte mit Haltbarkeitsvorlage, plus alle Listenoptionen der drei Listen.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "CATALOG ist die dritte der drei Haushaltslisten und die einzige ohne Mengen. Hier stehen <strong>Dinge, die du immer wieder kaufst</strong> — einmal benannt, einmal einer Kategorie zugeordnet, einmal mit einer Haltbarkeit versehen. Danach ist ein Produkt eine <strong>Vorlage</strong>: du holst es in <a href=\"#/handbook/market\">MARKET</a> oder <a href=\"#/handbook/stash\">STASH</a>, ohne den Namen erneut zu tippen, und ohne die Kategorien erneut zu setzen."
+        },
+        {
+          "type": "p",
+          "html": "Dieselbe Seite ist außerdem der Zugang zu den <strong>Listenoptionen</strong>, die für alle drei Listen gelten."
+        },
+        {
+          "type": "figure",
+          "img": "catalog-liste.webp",
+          "caption": "Der Produktkatalog: Namen und Kategorien, keine Mengen, keine <code>+</code>/<code>−</code>"
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Über die Leiste unten auf <strong>Produkte</strong> wechseln (oder im Menü <strong>CATALOG</strong>).",
+            "Namen tippen, <strong>Enter</strong>. Fertig — ein Produkt braucht nichts weiter.",
+            "Zeile antippen → <em>Eintrag bearbeiten</em>. <strong>Haltbarkeit</strong> von <em>Ewig</em> auf <em>Wochen</em> stellen und darunter die <strong>Anzahl</strong> setzen, z. B. 3.",
+            "Auf die Listenoptionen (Schieberegler-Symbol oben) gehen und unter <em>Suchergebnisse Vorräte</em> <strong>Produkte anzeigen</strong> einschalten.",
+            "In <a href=\"#/handbook/stash\">STASH</a> den Namen in die Suchleiste tippen: der Vorschlag <em>Aus den Produkten</em> erscheint. Ein Tipp legt den Vorrat an — mit dem ausgerechneten MHD."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Was ein Produkt trägt"
+        },
+        {
+          "type": "p",
+          "html": "Der Dialog zeigt genau vier Dinge, und mehr gibt es nicht:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Name</strong>",
+            "<strong>Haltbarkeit</strong> — <em>Ewig</em>, <em>Tage</em>, <em>Wochen</em>, <em>Monate</em>, <em>Jahre</em>",
+            "<strong>Haltbarkeit (Anzahl)</strong> — die Zahl dazu; bei <em>Ewig</em> ist das Feld gesperrt",
+            "<strong>Kategorien</strong>"
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Kein Barcode-Feld, keine Einheit, keine Standardmenge, kein Preis. Ein gescannter Code wird <strong>nicht</strong> gespeichert (siehe <a href=\"#/handbook/market\">MARKET</a>), und intern gilt jedes Produkt als „Stück“ — sichtbar wird das nur als Voreinstellung der Einheit einer Rezeptzutat in <a href=\"#/handbook/soykaf\">SOYKAF</a>. Ins Regal oder auf den Zettel kommt ein Produkt immer mit <strong>Menge 1</strong>; erhöhen kannst du dort mit <code>+</code>."
+        },
+        {
+          "type": "figure",
+          "img": "catalog-dialog.webp",
+          "caption": "Name, Haltbarkeit als Zeitspanne plus Anzahl, Kategorien — der ganze Produktdialog"
+        },
+        {
+          "type": "h3",
+          "html": "Was Produkte bewirken — und was nicht"
+        },
+        {
+          "type": "p",
+          "html": "Ein Produkt wirkt <strong>vorwärts</strong>, nicht rückwirkend:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Beim Anlegen</strong> in einer der beiden anderen Listen liefert es Name, Kategorien und — für <a href=\"#/handbook/stash\">STASH</a> — das aus der Haltbarkeit berechnete Datum.",
+            "<strong>Rezepte</strong> in <a href=\"#/handbook/soykaf\">SOYKAF</a> bestehen aus Produkten. Ob ein Rezept als <em>Kochbar</em> gilt, prüft die App gegen die Vorräte, Zutat für Zutat."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "<strong>Umbenennst du hier ein Produkt, ändern sich bestehende Zeilen in Einkaufsliste und Vorräten nicht.</strong> Sie sind Kopien; die Änderung gilt für alles, was du danach anlegst. Wirklich durch alle drei Listen läuft nur eine Änderung an den <strong>Kategorien</strong>: eine Kategorie umbenennen oder löschen wirkt sofort überall — deshalb ist <em>Kategorien verwalten</em> von jeder der drei Listen aus derselbe Ort."
+        },
+        {
+          "type": "h3",
+          "html": "Die Listenoptionen"
+        },
+        {
+          "type": "p",
+          "html": "Erreichbar über das <strong>Schieberegler-Symbol</strong> in der Werkzeugleiste jeder der drei Listen; die Einstellungen gelten für alle drei gemeinsam. <strong>Alle acht Schalter sind ab Werk aus</strong> — genau deshalb sieht die App zu Beginn so wortkarg aus. Vier Abschnitte:"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Schnell-Hinzufügen</strong> — zwei Angebote direkt unter der Suchleiste, während du tippst:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<em>Schnellhinzufügen anzeigen</em> — die Zeile <em>Zur \\&lt;Liste\\&gt; hinzufügen</em> mit dem getippten Text.",
+            "<em>Produkte schnell hinzufügen</em> — die Zeile <em>Produkt erstellen</em>. Sie legt das Produkt an <strong>und</strong> setzt es gleich in die Liste, auf der du gerade stehst. Auf der Produktliste selbst erscheint sie nicht."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "<strong>Suchergebnisse Vorräte</strong> / <strong>Suchergebnisse Einkaufsliste</strong> / <strong>Suchergebnisse Produkte</strong> — je zwei Schalter, die entscheiden, ob die Suche auch in den <strong>anderen</strong> beiden Listen nachsieht:"
+        },
+        {
+          "type": "p",
+          "html": "| Auf dieser Liste | Schalter | | --- | --- | | Vorräte | <em>Produkte anzeigen</em>, <em>Einkaufsliste anzeigen</em> | | Einkaufsliste | <em>Produkte anzeigen</em>, <em>Vorräte anzeigen</em> | | Produkte | <em>Vorräte anzeigen</em>, <em>Einkaufsliste anzeigen</em> |"
+        },
+        {
+          "type": "p",
+          "html": "Treffer aus einer fremden Liste erscheinen unter der Suchleiste mit der Herkunft dahinter — <em>Aus den Produkten</em>, <em>Aus den Vorräten</em>, <em>Aus der Einkaufsliste</em>. Ein Tipp <strong>kopiert</strong> den Eintrag in die Liste, auf der du stehst; das Original bleibt liegen. Gefunden wird auch über den <strong>Kategorienamen</strong>, nicht nur über den Namen des Eintrags."
+        },
+        {
+          "type": "figure",
+          "img": "catalog-listenoptionen.webp",
+          "caption": "Alle acht Schalter, ab Werk aus — sie gelten für alle drei Listen"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort, danach fünf Sekunden <strong>Rückgängig</strong>.",
+            "<strong>Nach rechts wischen: hier passiert nichts.</strong> Die Produktliste ist die einzige der drei ohne rechte Geste.",
+            "<strong>Keine <code>+</code>/<code>−</code></strong> und keine Menge — ein Produkt ist kein Bestand.",
+            "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em> mit den vier Feldern von oben.",
+            "<strong><code>A-Z</code></strong> sortiert, nochmal tippen dreht die Richtung; einen <code>MHD</code>-Knopf gibt es nur in <a href=\"#/handbook/stash\">STASH</a>.",
+            "<strong>Schieberegler-Symbol</strong> → Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>.",
+            "Kein Barcode-Symbol auf dieser Liste — gescannt wird in <a href=\"#/handbook/market\">MARKET</a> und <a href=\"#/handbook/stash\">STASH</a>, angelegt wird trotzdem hier."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "catalog-swipe-loeschen.webp",
+          "caption": "Nach links: LÖSCHEN — die einzige Wischgeste dieser Liste"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Umbenennen wirkt nicht rückwärts.</strong> Vorhandene Zeilen in den anderen Listen behalten den alten Namen; sie sind Kopien, keine Verweise.",
+            "Ein Produkt zu löschen räumt die anderen Listen nicht auf — und umgekehrt bleibt das Produkt, wenn du eine Einkaufs- oder Vorratszeile löschst.",
+            "Solange die Listenoptionen aus sind, merkt man von Produkten in den anderen Listen <strong>gar nichts</strong>. Wer sich fragt, wozu der Katalog gut ist, hat meist nur diese Schalter nicht gefunden.",
+            "Ein Vorschlag <em>Aus den Produkten</em> kopiert; er verschiebt nicht. Nach dem Tippen steht der Eintrag zweimal da — einmal als Produkt, einmal in deiner Liste. So ist es gemeint.",
+            "<em>Ewig</em> schaltet das Anzahl-Feld ab. Wer die Zahl nicht ändern kann, hat noch <em>Ewig</em> stehen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/market\">MARKET</a> — die Einkaufsliste, und der Barcode-Scanner, der hier Produkte anlegt",
+            "<a href=\"#/handbook/stash\">STASH</a> — Vorräte, Mindestmengen und das aus der Haltbarkeit berechnete MHD",
+            "<a href=\"#/handbook/soykaf\">SOYKAF</a> — Rezepte aus Produkten, abgeglichen mit den Vorräten",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Suchleiste, Kategorien, Dialoge: die gemeinsame Bedienung"
+          ]
+        }
+      ]
+    }
+  ]
+}

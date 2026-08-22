@@ -1,0 +1,18 @@
+@for (view of groups(); track view.group) {
+  <ion-list lines="full" class="hb-group">
+    <ion-list-header>{{ groupLabel[view.group] | translate }}</ion-list-header>
+    @for (entry of view.entries; track entry.slug) {
+      <ion-item
+        [button]="true"
+        [detail]="true"
+        [routerLink]="['/handbook', entry.slug]"
+        data-testid="handbook-toc-entry"
+      >
+        <ion-label>
+          <app-handbook-title [deck]="entry.title" [plain]="entry.plain" />
+          <ion-note class="hb-entry__summary">{{ entry.summary }}</ion-note>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+}

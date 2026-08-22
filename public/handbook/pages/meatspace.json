@@ -1,0 +1,191 @@
+{
+  "slug": "meatspace",
+  "title": "MEATSPACE",
+  "plain": "Bürozeit",
+  "route": "/office-time",
+  "summary": "Anwesenheitstage antippen, Feiertage und Urlaub abziehen, und sehen wie weit du von der Büropflicht entfernt bist.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "MEATSPACE zählt Tage, nicht Stunden: an welchen Tagen warst du im Büro, und reicht das für deine Büropflicht? Du tippst pro Bürotag einmal auf einen Knopf, den Rest rechnet die App — Feiertage und Urlaub gehen aus der Rechnung heraus, und vier Übersichten sagen dir für Woche, Monat, Quartal und Jahr, wie du stehst."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Oben steht die Karte mit <strong>KW</strong>, Datum und laufender Uhr. Direkt darunter der große Knopf <strong>BÜROTAG ERFASSEN</strong> — heute im Büro? Antippen.",
+            "Der Knopf wird dunkel, zeigt einen Bierkrug und <strong>„Bürotag erfasst. Frohes Schaffen ;)\"</strong>. Für heute ist er damit erledigt und nicht mehr drückbar.",
+            "Runterscrollen zu <strong>BÜROTAGE (BEARBEITEN)</strong>. Dort trägst du Tage nach, die du vergessen hast, und nimmst falsche wieder heraus.",
+            "Weiter unten: <strong>Wochen-, Monats-, Quartals- und Jahresübersicht</strong> mit deiner Quote.",
+            "Über das <strong>Zahnrad</strong> oben rechts setzt du die Büropflicht auf deinen Wert."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-dashboard.webp",
+          "caption": "Kalenderwoche, Datum, Uhrzeit — und der Knopf für heute"
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-logged.webp",
+          "caption": "Nach dem Antippen: der Tag ist erfasst und der Knopf ruht"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Der Monatskalender"
+        },
+        {
+          "type": "p",
+          "html": "<strong>BÜROTAGE (BEARBEITEN)</strong> ist ein Mehrfach-Kalender, kein Dialog: <strong>jeder Tipp auf eine Zahl schaltet den Tag ein, der nächste Tipp auf denselben Tag schaltet ihn aus.</strong> Die Woche beginnt am Montag. Mit <strong>‹ ›</strong> blätterst du durch die Monate, über <strong>„August 2026 ▾\"</strong> springst du direkt in einen anderen Monat oder ein anderes Jahr. Das ist der einzige Weg, vergangene oder künftige Tage zu setzen — der große Knopf kann immer nur <em>heute</em>."
+        },
+        {
+          "type": "p",
+          "html": "Im Bürotage-Kalender sind <strong>Feiertage</strong> (goldener Rand) und deine <strong>Urlaubstage</strong> (grauer Rand) grau hinterlegt — so tippst du nicht versehentlich auf einen Tag, an dem du nicht da warst."
+        },
+        {
+          "type": "p",
+          "html": "<strong>URLAUBSTAGE (BEARBEITEN)</strong> funktioniert genauso, füllt aber die Urlaubsliste; dort sind nur die Feiertage hinterlegt. Trägst du einen Feiertag als Urlaub ein, wird er wieder verworfen: doppelt frei geht nicht."
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-calendar.webp",
+          "caption": "Sieben angetippte Bürotage im Monatsgitter"
+        },
+        {
+          "type": "h3",
+          "html": "Feiertage"
+        },
+        {
+          "type": "p",
+          "html": "Die Karte <strong>FEIERTAGE IN BERLIN</strong> listet die gesetzlichen Feiertage des laufenden Jahres. Sie werden <strong>in der App selbst berechnet</strong> (inklusive Ostern), nicht heruntergeladen — es gibt also keine Netzverbindung und keinen Download, aber auch <strong>keine Auswahl des Bundeslands</strong>: es ist immer Berlin. Die Liste ist nach Anlass sortiert, nicht nach Datum — der <em>Internationale Frauentag</em> steht deshalb am Ende."
+        },
+        {
+          "type": "h3",
+          "html": "Ziel, Stand und der Rüffel"
+        },
+        {
+          "type": "p",
+          "html": "Die Büropflicht steht in den Einstellungen als <strong>Tage pro Woche</strong> (0 bis 5, in Halbtagsschritten, voreingestellt <strong>2,5</strong>). Jede Übersichtskarte rechnet daraus für ihren Zeitraum:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Bürotage:</strong> <code>erfasst von Ziel</code> — das Ziel auf einen halben Tag gerundet",
+            "<strong>Arbeitstage:</strong> Werktage ohne Urlaub und ohne Feiertage (<code>x von y</code>, wenn beides abweicht)",
+            "<strong>Verbleibend:</strong> Arbeitstage ab heute, die noch übrig sind",
+            "<strong>Urlaubstage</strong> und <strong>Feiertage</strong> im Zeitraum"
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Der Ring darüber ist der Rüffel: <strong>grün</strong> ist der erreichte Anteil deines Ziels, <strong>rot</strong> das, was noch fehlt. Bei 100 % oder mehr ist der Ring komplett grün — die Prozentzahl darf über 100 gehen. Reicht dir der Ring nicht, schaltest du ihn in den Einstellungen ab (<em>Prozente anzeigen</em>)."
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-stats.webp",
+          "caption": "66 % im Monat, 120 % in der Woche — grün ist geschafft, rot fehlt"
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-holidays.webp",
+          "caption": "Die Feiertagskarte, direkt unter der Wochenübersicht"
+        },
+        {
+          "type": "h3",
+          "html": "Wortuhr"
+        },
+        {
+          "type": "p",
+          "html": "Eine reine Anzeige: die Uhrzeit als Wörter, in Fünf-Minuten-Schritten. Die vier Punkte in den Ecken sind die einzelnen Minuten dazwischen. Nichts daran ist antippbar."
+        },
+        {
+          "type": "h3",
+          "html": "Einstellungen (Zahnrad → <em>Büro-Einstellungen</em>)"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Büropflicht (Tage/Woche)</strong> — Schieber 0–5, halbe Tage, mit Wertanzeige am Griff",
+            "<strong>Bürotag-Erinnerung</strong> — Schalter; eingeschaltet erscheint darunter <strong>Uhrzeit</strong> für die tägliche Erinnerung. Hinweis der App: <em>„Erinnerungen laufen über das Betriebssystem und funktionieren nur in der App, nicht im Browser.\"</em>",
+            "<strong>Zwölf Anzeige-Schalter</strong>, je einer pro Karte: <em>Kalenderwoche</em>, <em>Prozente</em>, <em>Bürotage bearbeiten</em>, <em>Bürotage</em> (Liste), <em>Urlaubstage bearbeiten</em>, <em>Urlaubstage</em> (Liste), <em>Ferien</em> (= Feiertagskarte), <em>Wochen-</em>, <em>Monats-</em>, <em>Quartals-</em>, <em>Jahresübersicht</em>, <em>Wortuhr</em>. Ausgeschaltet verschwindet die Karte, die Daten bleiben.",
+            "<strong>Daten zurücksetzen</strong> (rot) — Rückfrage <em>„Ganz sicher? Ganz ganz sicher??\"</em> mit <em>Abbrechen</em> und <em>Alles LÖSCHEN</em>."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "meatspace-settings.webp",
+          "caption": "Büropflicht, Erinnerung und die Anzeige-Schalter"
+        },
+        {
+          "type": "h3",
+          "html": "Kachel im Deck"
+        },
+        {
+          "type": "p",
+          "html": "Die MEATSPACE-Kachel zeigt <strong>„Bürotage\"</strong> — die im <em>laufenden Jahr</em> erfassten Tage."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — die Zeilen wischen hier nicht.</strong> MEATSPACE hat keine einzige Wischliste.",
+            "<strong>Tippen im Kalender ist ein Schalter:</strong> derselbe Tag nochmal angetippt wird wieder entfernt. Das ist die einzige Möglichkeit, einen Bürotag zu löschen.",
+            "<strong>Auf „August 2026 ▾\" tippen</strong> öffnet die Monats-/Jahresauswahl — sonst blätterst du dich mit <strong>‹ ›</strong> monatsweise durch.",
+            "<strong>Karten laden beim Scrollen nach.</strong> Kurz sichtbare graue Platzhalter sind normal, kein Fehler."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Der große Knopf gilt nur für heute</strong> und ist danach gesperrt. Nachtragen geht ausschließlich im Kalender.",
+            "<strong>Feiertage sind fest auf Berlin</strong> und nicht umstellbar.",
+            "<strong>Alles LÖSCHEN löscht auch Ziel und Anzeige-Schalter</strong>, nicht nur die Tage. Nur die Feiertage bleiben (sie werden ja gerechnet).",
+            "<strong>Die Erinnerung ist eine Systembenachrichtigung</strong> — in der Browser-Version passiert nichts, auch wenn der Schalter an ist.",
+            "<strong>Prozente über 100 sind kein Fehler</strong>, sondern Überstunden im Büro."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/chrono\">CHRONO</a> — die Stunden zum Tag: Stoppuhr, Sessions, CSV",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — was in der übrigen App wischt, wenn hier nichts wischt",
+            "<a href=\"#/handbook/comms\">COMMS</a> — wo die Bürotag-Erinnerung landet",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — zurück zur Übersicht aller Programme"
+          ]
+        }
+      ]
+    }
+  ]
+}

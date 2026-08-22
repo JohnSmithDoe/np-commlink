@@ -1,0 +1,156 @@
+{
+  "slug": "sigil",
+  "title": "SIGIL",
+  "plain": "Notizen",
+  "route": "/notes",
+  "summary": "Notizen aus Titel, Freitext und Fotos — ohne Speichern-Knopf, mit angehefteter Spitze.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "SIGIL (Notizen) ist der Zettelkasten für alles, was keine Liste ist: eine Adresse, ein Termin, eine Seriennummer, das Foto vom Ausweis. Jede Notiz hat einen Titel, einen Freitext und beliebig viele Bilder — mehr nicht. Keine Formatierung, keine Ordner, keine Verschlagwortung: gefunden wird über die Suche, geordnet wird per Hand."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Notiz-Programm auf dem Deck antippen oder im Menü <strong>Notizen</strong> wählen.",
+            "Oben rechts auf <strong>+</strong>. Der Editor öffnet sich sofort — die Notiz existiert damit schon.",
+            "Oben <strong>Titel</strong>, darunter <strong>Notiz…</strong> ausfüllen. Es gibt keinen Speichern-Knopf; getippt ist gesichert (rund eine halbe Sekunde nach dem letzten Zeichen).",
+            "Optional <strong>BILD HINZUFÜGEN</strong> antippen und ein Bild wählen.",
+            "Mit dem <strong>←</strong> oben links zurück. Wer nichts eingetippt hat, hinterlässt keine Zeile: eine vollständig leere Notiz wird beim Verlassen still verworfen."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "sigil-editor.webp",
+          "caption": "Der Editor: Titel, Freitext, ein angehängtes Bild, oben Anheften und Löschen"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Schreiben und Autospeichern"
+        },
+        {
+          "type": "p",
+          "html": "Jeder Tastenanschlag zählt, gespeichert wird gesammelt kurz nach dem Tippen und außerdem beim Verlassen der Seite. Ein Reload landet wieder im Editor mit dem gleichen Stand. Notizen ohne Titel erscheinen in der Liste als <strong>Ohne Titel</strong>; in der Zeile steht zusätzlich der Anfang des Textes."
+        },
+        {
+          "type": "figure",
+          "img": "sigil-liste.webp",
+          "caption": "Die Liste mit Abschnitten ANGEHEFTET und WEITERE, Textauszug und Bild-Vorschau"
+        },
+        {
+          "type": "h3",
+          "html": "Bilder anhängen"
+        },
+        {
+          "type": "p",
+          "html": "<strong>BILD HINZUFÜGEN</strong> öffnet den Bild-Auswahldialog des Systems (nur Bilddateien, eines pro Klick). Eine eigene Kamera-Ansicht hat SIGIL nicht — ob der Systemdialog neben der Galerie auch die Kamera anbietet, entscheidet das Gerät, nicht die App. Jedes Bild wird beim Übernehmen neu als JPEG gerechnet und auf das Doppelte der Bildschirmkante begrenzt; ein 12-Megapixel-Foto schrumpft dabei deutlich, ohne in der Bildansicht sichtbar zu verlieren."
+        },
+        {
+          "type": "p",
+          "html": "Bilder liegen <strong>nicht in der Notiz</strong>, sondern jedes unter einem eigenen Eintrag im Gerätespeicher. Das rote <strong>×</strong> an der Ecke entfernt ein Bild und löscht die Datei sofort mit. Löscht man die ganze Notiz, bleiben die Dateien zunächst liegen — damit <em>Rückgängig</em> sie zurückholen kann — und werden beim nächsten App-Start eingesammelt."
+        },
+        {
+          "type": "h3",
+          "html": "Bildansicht"
+        },
+        {
+          "type": "p",
+          "html": "Ein Tipp auf die Vorschau öffnet das Bild bildschirmfüllend. Oben rechts dreht das Kreis-Symbol um 90° und schreibt das Ergebnis zurück (die Drehung ist gespeichert, nicht nur angezeigt), das × schließt. Bei mehreren Bildern erscheint unten eine Leiste <strong>1 von 2</strong> mit Vor und Zurück."
+        },
+        {
+          "type": "figure",
+          "img": "sigil-bildansicht.webp",
+          "caption": "Bildansicht: drehen und schließen oben, Blättern unten bei mehreren Bildern"
+        },
+        {
+          "type": "h3",
+          "html": "Anheften"
+        },
+        {
+          "type": "p",
+          "html": "Die Nadel oben im Editor hebt die Notiz in den Abschnitt <strong>ANGEHEFTET</strong> über allen anderen; in der Liste trägt die Zeile dann eine Nadel. Anheften geht <strong>nur im Editor</strong>, nicht aus der Liste."
+        },
+        {
+          "type": "h3",
+          "html": "Suchen"
+        },
+        {
+          "type": "p",
+          "html": "Die Suchleiste <strong>Suchen oder neu anlegen</strong> filtert über Titel <em>und</em> Text — „fähre\" findet die Notiz, in der das Wort nur im Fließtext steht. Enter in der Suchleiste legt eine neue Notiz an und übernimmt das Suchwort als Titel."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach rechts wischen</strong> auf einer Zeile <em>mit</em> Bildern → türkise Fläche <strong>Bilder ansehen</strong>: öffnet die Bildansicht direkt aus der Liste, ohne den Editor. Zeilen ohne Bild haben diese Geste nicht.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten der Hinweis <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong> — die einzige Chance.",
+            "<strong>Griff am rechten Rand</strong> (die zwei Striche) → gedrückt halten und ziehen sortiert die Notiz innerhalb ihres Abschnitts um. Der Griff verschwindet, solange eine Suche aktiv ist.",
+            "<strong>Tipp auf die Zeile</strong> öffnet den Editor, <strong>Tipp auf die Bild-Vorschau im Editor</strong> die Bildansicht.",
+            "Kein Lang-Druck, kein Drei-Punkte-Menü — alles Weitere steckt im Editor."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "sigil-wischen-bilder.webp",
+          "caption": "Nach rechts gewischt: die Aktion „Bilder ansehen\" liegt links unter der Zeile"
+        },
+        {
+          "type": "figure",
+          "img": "sigil-wischen-loeschen.webp",
+          "caption": "Nach links gewischt: LÖSCHEN liegt rechts unter der Zeile"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Es gibt keinen Speichern-Knopf.</strong> Das ist Absicht — wer den Editor sucht und nichts speichert, hat trotzdem alles. Umgekehrt: eine Notiz, in die nichts eingetippt wurde, ist nach dem Zurück weg.",
+            "<strong>Löschen nimmt die Bilder mit.</strong> <em>Rückgängig</em> holt beides zurück, aber nur solange der Hinweis unten steht.",
+            "<strong>Sortieren und Suchen schließen sich aus.</strong> Während gefiltert wird, gibt es keinen Griff: eine Umsortierung würde alle ausgeblendeten Notizen aus der Reihenfolge werfen.",
+            "<strong>Anheften findet man nicht in der Liste.</strong> Es sitzt oben im Editor.",
+            "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Notizen und Fotos löschen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Wischen, Griffe und Menüs, wie sie überall in der App funktionieren",
+            "<a href=\"#/handbook/comms\">COMMS</a> — der Posteingang; die kurzen Hinweise am unteren Rand kommen von dort",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — Sprache, Skin und was mit den Daten auf dem Gerät passiert"
+          ]
+        }
+      ]
+    }
+  ]
+}

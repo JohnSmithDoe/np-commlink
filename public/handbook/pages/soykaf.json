@@ -1,0 +1,152 @@
+{
+  "slug": "soykaf",
+  "title": "SOYKAF",
+  "plain": "Rezepte",
+  "route": "/soykaf",
+  "summary": "Rezeptbuch, das jedes Rezept gegen deine Vorräte hält und sagt, was heute ohne Einkauf geht.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "SOYKAF (Rezepte) ist ein Rezeptbuch mit genau einem Trick: es vergleicht die Zutaten jedes Rezepts mit dem, was in den Vorräten liegt, und schreibt unter jedes Rezept entweder \"Kochbar\" oder \"Fehlt: …\". Die Frage, die es beantwortet, ist nicht \"wie kocht man das\", sondern \"was kann ich jetzt kochen, ohne einkaufen zu gehen\". Die Kopfzeile fasst das zusammen: <code>KOCHBAR (2 / 3)</code>."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "<strong>Zutaten sind Produkte.</strong> Eine Zutat kann nur werden, was in <a href=\"#/handbook/catalog\">CATALOG</a> (Produkte) steht. Also zuerst dort in die Suchleiste tippen und mit Enter anlegen — z. B. Mehl, Milch, Eier.",
+            "<code>/soykaf</code> öffnen und oben rechts <strong>+</strong> drücken. Im Dialog <em>Neuen Eintrag anlegen</em> den Namen eintragen und <strong>Anlegen</strong> drücken.",
+            "Die neue Zeile <strong>antippen</strong> — das öffnet <em>Eintrag bearbeiten</em>. Dort stehen <strong>Portionen</strong> (Vorgabe 2) und <strong>Zubereitungszeit (Min)</strong> (Vorgabe 30).",
+            "Unter <strong>Zutaten</strong> das Feld <strong>Zutat hinzufügen</strong> aufklappen und ein Produkt wählen. Die Zeile erscheint mit <strong>Menge</strong> 1 und der <strong>Einheit</strong> des Produkts; beides ist pro Zeile änderbar (Stück, g, ml). Für jede weitere Zutat das Feld erneut aufklappen — es setzt sich nach jeder Wahl zurück.",
+            "<strong>Zubereitung</strong> ist ein freies Textfeld. <strong>Übernehmen</strong> speichert."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "soykaf-zutat-waehlen.webp",
+          "caption": "\"Zutat hinzufügen\" listet ausschließlich deine Produkte — alphabetisch"
+        },
+        {
+          "type": "figure",
+          "img": "soykaf-rezept-dialog.webp",
+          "caption": "Der Bearbeiten-Dialog: Portionen, Zubereitungszeit, Zutatenzeilen mit Menge und Einheit"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Kochbar oder nicht"
+        },
+        {
+          "type": "p",
+          "html": "Eine Zutat gilt als vorhanden, wenn in <a href=\"#/handbook/stash\">STASH</a> (Vorräte) ein Eintrag mit <strong>Menge über 0</strong> liegt, der entweder aus genau diesem Produkt übernommen wurde oder <strong>genauso heißt</strong> (Groß- und Kleinschreibung sowie Leerzeichen am Rand sind egal). Fehlt eine, steht sie namentlich unter dem Rezept."
+        },
+        {
+          "type": "p",
+          "html": "Die Reihenfolge ist fest: <strong>wenigste fehlende Zutaten oben</strong>, bei Gleichstand alphabetisch. Es gibt hier keine Suchleiste, keine Sortierknöpfe und keine Kategorien — die Liste ordnet sich selbst."
+        },
+        {
+          "type": "figure",
+          "img": "soykaf-liste.webp",
+          "caption": "Zwei kochbare Rezepte oben, das unvollständige unten mit \"Fehlt: Zwiebeln, Butter\""
+        },
+        {
+          "type": "h3",
+          "html": "Portionen und Zeit"
+        },
+        {
+          "type": "p",
+          "html": "Beide Zahlen sind reine Beschriftung: <code>4 Portionen · 20 Min</code>. Die Mengen der Zutaten skalieren <strong>nicht</strong> mit den Portionen — wenn du die Portionen änderst, bleiben 300 g Mehl 300 g Mehl."
+        },
+        {
+          "type": "h3",
+          "html": "Zutaten einer Einkaufsliste hinzufügen"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Das kann SOYKAF nicht.</strong> Es gibt keinen Knopf, der die fehlenden Zutaten auf die Einkaufsliste schreibt. Der Weg von Hand:"
+        },
+        {
+          "type": "ol",
+          "items": [
+            "Unter dem Rezept lesen, was fehlt (\"Fehlt: Zwiebeln, Butter\").",
+            "Über das Menü zu <a href=\"#/handbook/market\">MARKET</a> (Einkaufsliste) wechseln, jeden Namen in die Suchleiste tippen und Enter drücken — das legt die Zeile an.",
+            "Nach dem Einkauf die Zeile in MARKET nach rechts wischen (als gekauft markieren) und über das Aktionsmenü <strong>In die Vorräte übernehmen</strong>. Erst der Eintrag in den Vorräten macht das Rezept kochbar."
+          ]
+        },
+        {
+          "type": "h3",
+          "html": "Deck-Kachel"
+        },
+        {
+          "type": "p",
+          "html": "Die Kachel auf dem Deck zeigt <code>Anzahl: n</code> — die Zahl <strong>aller</strong> Rezepte, nicht die der kochbaren. Die kochbaren stehen nur in der Kopfzeile der Seite."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> auf einer Rezeptzeile → rote Fläche <strong>LÖSCHEN</strong>. Sie muss <strong>angetippt</strong> werden: SOYKAF ist die eine Liste, in der ein vollständiger Wisch <em>nicht</em> sofort löscht. Verlass dich nicht darauf, es ist die Ausnahme.",
+            "<strong>Nach rechts wischen</strong> → keine Aktion. Diese Seite hat nur eine Wischseite.",
+            "<strong>Zeile antippen</strong> → Bearbeiten-Dialog. Kein Langdruck, kein Options-Menü, kein Sortiergriff.",
+            "<strong>Leere Liste:</strong> den Hinweistext \"Die Liste enthält keine Einträge\" antippen legt ein Rezept an.",
+            "<strong>Im Dialog:</strong> roter Mülleimer rechts an jeder Zutatenzeile entfernt die Zutat sofort, ohne Rückfrage — gespeichert wird sie erst mit <strong>Übernehmen</strong>, <strong>Abbrechen</strong> verwirft alles."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "soykaf-swipe.webp",
+          "caption": "Nach links gewischt: die rote Fläche LÖSCHEN, die angetippt werden muss"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Im Bearbeiten-Dialog sind die Zutatennamen auf dem Handy unsichtbar.</strong> Menge, Einheit und Mülleimer verdrängen den Namen auf null Breite. Die Zeilen stehen in der Reihenfolge, in der du sie hinzugefügt hast — mehr Anhaltspunkt hast du nicht.",
+            "<strong>Ein Rezept ohne Zutaten ist \"Kochbar.\"</strong> Nichts kann fehlen, also fehlt nichts.",
+            "<strong>Die Einkaufsliste zählt nicht.</strong> Was du noch kaufen willst, macht kein Rezept kochbar; nur die Vorräte werden gelesen.",
+            "<strong>Umbenennen kann ein Rezept blind machen.</strong> Ein Vorratseintrag, der aus dem Produkt übernommen wurde, bleibt nach dem Umbenennen des Produkts erkannt. Ein von Hand getippter Vorratseintrag wird nur über den Namen erkannt und passt danach nicht mehr.",
+            "<strong>Löschen ist endgültig</strong> — keine Rückfrage, kein Rückgängig, kein Papierkorb."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/catalog\">CATALOG</a> — hier entstehen die Produkte, aus denen Zutaten werden",
+            "<a href=\"#/handbook/stash\">STASH</a> — die Vorräte, gegen die gerechnet wird",
+            "<a href=\"#/handbook/market\">MARKET</a> — der Umweg, auf dem fehlende Zutaten zu Einkäufen werden",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — warum das Wischen überall sonst anders funktioniert als hier"
+          ]
+        }
+      ]
+    }
+  ]
+}

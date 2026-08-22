@@ -1,0 +1,25 @@
+.hb-search {
+  --background: var(--sr-panel);
+  --color: var(--sr-text);
+  --placeholder-color: var(--sr-text-dim);
+  --box-shadow: none;
+  --border-radius: var(--sr-radius);
+}
+
+.hb-intro {
+  margin: 0 0 var(--space-4);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}
+
+.hb-state {
+  margin: var(--space-5) 0;
+  text-align: center;
+  color: var(--sr-text-dim);
+  font-size: var(--fs-small);
+}
+
+.hb-state__text {
+  margin: 0 0 var(--space-3);
+}

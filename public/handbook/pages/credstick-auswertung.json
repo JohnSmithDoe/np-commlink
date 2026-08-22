@@ -1,0 +1,182 @@
+{
+  "slug": "credstick-auswertung",
+  "title": "CREDSTICK · Auswertung",
+  "plain": "Auswertungen",
+  "route": "/cash/report",
+  "summary": "Drei Seiten über demselben Kontobuch — Tagesbudget, Ausgaben und Auswertung — und wozu jede taugt.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "CREDSTICK (Finanzen) hat drei Seiten über demselben Kontobuch, die verschiedene Fragen beantworten. <strong>Tagesbudget</strong> sagt „was darf ich heute noch ausgeben\", <strong>Ausgaben</strong> erfasst Bargeld- und Kartenzahlungen samt Monatsliste, <strong>Auswertung</strong> ist die Rückschau mit Diagrammen. Wer sie verwechselt, sucht das Balkendiagramm auf der falschen Seite — das Tagesbudget hat trotz seines Namens keine Kurve."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Öffne CREDSTICK (Finanzen) — die Kontoliste. Oben rechts stehen fünf Symbole ohne Text.",
+            "Der <strong>Tacho</strong> führt zum <em>Tagesbudget</em>, das <strong>Balkendiagramm</strong> zur <em>Auswertung</em>. Beide brauchen mindestens ein Konto mit Buchungen, sonst steht dort „Keine Daten für die Auswertung\".",
+            "Für das Tagesbudget brauchst du zusätzlich <strong>Festkosten</strong> (Miete, Strom, Mobilfunk) — ohne sie ist die <em>Rücklage</em> 0,00 € und das Budget rechnet mit Geld, das schon vergeben ist.",
+            "<em>Nach Kategorie</em> zeigt nur etwas, wenn Buchungen <strong>Kategorien</strong> haben — vergib sie beim Erfassen oder über Regeln."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-nav.webp",
+          "caption": "Die Kontoliste: Tacho = Tagesbudget, Balken = Auswertung"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Auswertung (<code>/cash/report</code>)"
+        },
+        {
+          "type": "p",
+          "html": "Die einzige Seite mit Diagrammen. Oben das Zeitfenster: <strong>Monat · 3 Monate · Jahr · Alles</strong> — alles Kalenderfenster, nichts Gleitendes: der laufende Monat, der laufende Monat plus die zwei davor, ab dem 1. Januar. Danach:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Einnahmen / Ausgaben / Saldo</strong> für das Fenster.",
+            "<strong>Ohne Kategorie</strong> in Prozent der Ausgaben — das ist die Vertrauensangabe: sie sagt, wie viel der Antwort „wo ist das Geld hin\" überhaupt beantwortet ist. Über 20 % wird sie rot. Die Zeile ist <strong>antippbar</strong> und führt zur Nachsortier-Liste.",
+            "<strong>Nach Monat</strong> — ein Balkenpaar pro Monat, grün Einnahmen, rot Ausgaben.",
+            "<strong>Nach Kategorie</strong> — Ring plus Liste, absteigend nach Betrag. Nur Ausgaben; Einnahmen kommen hier nicht vor.",
+            "<strong>Größte Ausgaben</strong> — die zehn teuersten Einzelbuchungen des Fensters mit Datum und Kategorie.",
+            "<strong>Nach Zahlungspartner</strong> — nur für Buchungen mit IBAN des Gegenkontos, also praktisch nur für importierte Kontoauszüge. Selbst erfasste Ausgaben erscheinen hier nie."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Gezählt wird über <strong>alle</strong> Konten. Umbuchungen zwischen eigenen Konten und abgeglichene Doubletten fallen heraus — sonst wäre jedes Verschieben von Geld eine Ausgabe."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-report-monat.webp",
+          "caption": "Fenster „Monat\": Kennzahlen, Vertrauensangabe, Balken"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-report-alles.webp",
+          "caption": "„Alles\" — drei Monate im Balkendiagramm"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-report-kategorien.webp",
+          "caption": "Ring und Liste nach Kategorie"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-report-groesste.webp",
+          "caption": "Die zehn größten Einzelausgaben"
+        },
+        {
+          "type": "h3",
+          "html": "Tagesbudget (<code>/cash/burndown</code>)"
+        },
+        {
+          "type": "p",
+          "html": "Kein Diagramm, sondern eine Kette von Zahlen. Groß oben: <strong>Heute noch</strong> — das Tagesbudget minus dem, was heute schon weg ist. Wird es negativ, ist es rot; das ist ein normaler Dienstag und morgen wieder gut. Darunter die Rechnung:"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Kontostand</strong> (alle Konten außer den als „Nicht im Tagesbudget\" markierten) − <strong>Rücklage</strong> (für Festkosten künftiger Monate, anteilig auf die verbleibenden Monate bis zur Fälligkeit) − <strong>Noch fällig</strong> (Festkosten dieses Monats und überfällige, in voller Höhe) = <strong>Verfügbar</strong>. Geteilt durch die verbleibenden Tage inklusive heute ergibt das <strong>Pro Tag</strong>."
+        },
+        {
+          "type": "p",
+          "html": "Nur echte Buchungen mit negativem Betrag zählen als Ausgabe — Einnahmen erhöhen den Kontostand, sind aber kein Gegenposten. Festkosten sind <em>Pläne</em>, keine Buchungen: sie mindern das Budget, ohne im Kontostand zu stehen. Ist <em>Pro Tag</em> negativ, erscheint der Satz „Diesen Monat ist nichts mehr frei — die Festkosten sind noch nicht bezahlt.\""
+        },
+        {
+          "type": "p",
+          "html": "Ein Abschnitt <strong>Überfällig</strong> listet Festkosten, deren Termin vorbei ist. Deren Geld bleibt gebunden — eine verspätete Abbuchung kommt trotzdem."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-tagesbudget.webp",
+          "caption": "Die Budgetkette von „Heute noch\" bis „Verfügbar\""
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-tagesbudget-ueberfaellig.webp",
+          "caption": "Überfällige Festkosten und der Sprung zu den Festkosten"
+        },
+        {
+          "type": "h3",
+          "html": "Ausgaben (<code>/cash/spending</code>)"
+        },
+        {
+          "type": "p",
+          "html": "Erreichbar <strong>nur</strong> über die Zeile <em>Ausgabe erfassen</em> im Tagesbudget — kein Symbol, kein Menüeintrag. Oben derselbe „Heute noch\"-Wert, darunter der Schnellerfasser: <strong>Bargeld / Karte</strong>, vier Betragsknöpfe, Betragsfeld, Kategorie, Konto, <em>Buchen</em>. Darunter <strong>Diesen Monat</strong> — alle Ausgaben des laufenden Monats, neueste zuerst. Kartenzahlungen werden „Vorgemerkt\" gebucht und warten auf den Kontoauszug; sie zählen ab dem Tippen gegen das Budget, werden nach dem Abgleich aber nicht doppelt gezählt."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-auswertung-ausgaben.webp",
+          "caption": "Karte gewählt: Hinweis, festes Konto und die Monatsliste"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — die Zeilen wischen auf keiner der drei Seiten.</strong> Weder Auswertung noch Tagesbudget noch Ausgaben haben Wischaktionen.",
+            "<strong>„Ohne Kategorie\" antippen</strong> (Auswertung) → Nachsortier-Liste; dort öffnet eine Zeile den Buchungsdialog, und der Prozentwert fällt sofort danach.",
+            "<strong>Legende antippen</strong> (Balken und Ring) → schaltet die Reihe bzw. das Segment aus und wieder ein. <strong>Balken oder Ringsegment antippen</strong> → zeigt nur den Wert an. Es ist <em>kein</em> Sprung zu den Buchungen dahinter.",
+            "<strong>„Ausgabe erfassen\" antippen</strong> (Tagesbudget) → die Ausgabenseite. Die Zahl daneben ist die Anzahl der Ausgaben dieses Monats.",
+            "<strong>„Festkosten\" antippen</strong> (Tagesbudget, ganz unten) → die Festkostenliste.",
+            "<strong>Einen Betragsknopf erneut antippen</strong> (Ausgaben) → löscht den Betrag wieder, ohne die Tastatur zu holen.",
+            "<strong>✕ am Kategorie-Chip antippen</strong> (Ausgaben) → Kategorie entfernen.",
+            "<strong>Eine Zeile in „Diesen Monat\" antippen</strong> → Buchungsdialog mit Betrag, Datum, Kategorie und dem Schalter <em>Vorgemerkt</em>, dazu <em>Aus dieser Buchung → Regel / Festkosten erstellen</em>.",
+            "<strong>Zurück-Pfeil auf der Ausgabenseite</strong> führt zum Tagesbudget, nicht zur Kontoliste."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Die Auswertung filtert nicht nach Konto.</strong> Auch ein Konto mit „Nicht im Tagesbudget\" ist voll dabei. Das Tagesbudget lässt es weg — deshalb weichen <em>Kontostand</em> dort und der Gesamtsaldo in der Kontoliste voneinander ab.",
+            "<strong>„3 Monate\" ist kein Quartal</strong>, sondern der laufende Monat plus zwei. Freie Zeiträume gibt es nicht.",
+            "<strong>Es gibt keinen Export.</strong> Kein CSV, kein PDF, kein Drucken, kein Teilen — die Zahlen bleiben auf dem Gerät.",
+            "<strong>Keine Prognose über den Monat hinaus.</strong> <em>Pro Tag</em> endet am Monatsletzten. Auch Budgetziele pro Kategorie, Ampeln und Vergleiche mit Vormonat oder Vorjahr gibt es nicht.",
+            "<strong>„Nach Zahlungspartner\" bleibt leer</strong>, solange nichts importiert wurde. Das ist kein Fehler.",
+            "Wird ein Betrag als Einnahme statt als Ausgabe erfasst, verschwindet er aus <em>Nach Kategorie</em> und aus <em>Größte Ausgaben</em>, und <em>Saldo</em> springt um den doppelten Betrag."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/credstick\">CREDSTICK</a> — Konten, Buchungen, Regeln und Festkosten: alles, was diese Seiten auswerten",
+            "<a href=\"#/handbook/credstick-import\">CREDSTICK · Import &amp; Regeln</a> — der camt-Import; erst er füllt „Nach Zahlungspartner\"",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — der Skin-Schalter, der CREDSTICK in „Finanzen\" umbenennt"
+          ]
+        }
+      ]
+    }
+  ]
+}

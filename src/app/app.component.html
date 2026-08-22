@@ -6,6 +6,18 @@
         <ion-buttons slot="end">
           <ion-menu-toggle>
             <ion-button
+              routerLink="/handbook"
+              [attr.aria-label]="'page-title.handbook' | translate"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="book-outline"
+                aria-hidden="true"
+              />
+            </ion-button>
+          </ion-menu-toggle>
+          <ion-menu-toggle>
+            <ion-button
               routerLink="/settings"
               [attr.aria-label]="'page-title.settings' | translate"
             >

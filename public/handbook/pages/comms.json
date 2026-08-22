@@ -1,0 +1,171 @@
+{
+  "slug": "comms",
+  "title": "COMMS",
+  "plain": "Nachrichten",
+  "route": "/notifications",
+  "summary": "Der Posteingang, in den die App sich selbst schreibt — plus die echten Erinnerungen des Betriebssystems.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "COMMS (Nachrichten) ist der Posteingang, in den die App sich selbst schreibt. Er beantwortet eine Frage: <em>läuft irgendwo noch etwas, das ich vergessen habe?</em> Die Einträge sind keine Nachrichten von außen — es gibt keinen Server und keine Anmeldung —, sondern Zustände aus anderen Programmen, die sonst niemand sieht, solange man deren Seite nicht öffnet."
+        },
+        {
+          "type": "p",
+          "html": "Davon strikt getrennt sind die <strong>echten Benachrichtigungen des Betriebssystems</strong> (unten): die klingeln außerhalb der App und erscheinen <em>nicht</em> in diesem Posteingang."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "In CHRONO (Zeiterfassung) einen Tracker antippen, damit er läuft.",
+            "Zurück auf das Deck: die COMMS-Kachel trägt jetzt ein rotes Zähler-Abzeichen, die Kopfzeile zählt es als <em>Rauschen</em> bzw. <em>Ungelesen</em> mit.",
+            "COMMS öffnen. Oben <strong>Neu (n)</strong>, darunter eine Zeile pro Tracker.",
+            "<strong>PAUSIEREN</strong> auf der laufenden Zeile springt zurück in die Zeiterfassung und pausiert sie dort wirklich.",
+            "<strong>ERLEDIGT</strong> schiebt die Zeile in den eingeklappten Abschnitt <strong>Erledigt</strong>."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "comms-deck-kachel.webp",
+          "caption": "Die COMMS-Kachel auf dem Deck mit dem Zähler der ungelesenen Einträge"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Wer hineinschreibt, und wann"
+        },
+        {
+          "type": "p",
+          "html": "Heute genau ein Programm: <strong>CHRONO (Zeiterfassung)</strong>. Jedes Starten, Pausieren, Umbenennen, Löschen und Zurücksetzen eines Trackers schreibt den ganzen Block der Zeiterfassungs-Einträge neu — eine Zeile pro Tracker, der seit dem letzten Zurücksetzen einmal gelaufen ist:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Läuft</strong> (grün) mit dem Knopf <strong>PAUSIEREN</strong>",
+            "<strong>Pausiert</strong> (gelb) mit dem Knopf <strong>STARTEN</strong>",
+            "<strong>Gestoppt</strong> (grau, ohne Knopf) — das passiert von selbst, sobald ein <em>anderer</em> Tracker gestartet wird, denn es läuft immer nur einer."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Alle anderen Programme melden sich <strong>nicht</strong> hier, sondern als kurzer Hinweis am unteren Bildschirm­rand („Einträge wurden gespeichert\", „… gelöscht\" mit <em>Rückgängig</em>, Speicherfehler). Diese Hinweise sind flüchtig und werden nirgends aufbewahrt. Im Entwicklungsmodus stehen unter der Liste zusätzlich zwei Testknöpfe; in der ausgelieferten App und im APK sind sie nicht vorhanden."
+        },
+        {
+          "type": "figure",
+          "img": "comms-posteingang.webp",
+          "caption": "Drei Einträge aus der Zeiterfassung: einer läuft mit CTA, zwei sind gestoppt"
+        },
+        {
+          "type": "h3",
+          "html": "Gelesen, ungelesen und das Abzeichen"
+        },
+        {
+          "type": "p",
+          "html": "Ungelesen heißt: offener Eintrag, der sich seit dem letzten Besuch dieser Seite geändert hat. <strong>Das Öffnen der Seite setzt den Zähler auf null</strong> — die Einträge selbst bleiben aber in <strong>Neu</strong> stehen, bis man <em>ERLEDIGT</em> drückt. Gelesen und erledigt sind zwei verschiedene Dinge."
+        },
+        {
+          "type": "h3",
+          "html": "Sprung zurück zur Ursache"
+        },
+        {
+          "type": "p",
+          "html": "Der farbige Knopf auf einer Zeile ist kein Formular, sondern ein Rücksprung: er öffnet die Zeiterfassung, führt den Befehl dort aus (starten bzw. pausieren) und die Zeile kommt geändert zurück. Ein zweites Auslösen durch Neuladen ist nicht möglich — der Befehl wird nach der Ausführung aus der Adresse entfernt."
+        },
+        {
+          "type": "h3",
+          "html": "Aufräumen"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>ERLEDIGT</strong> auf einer offenen Zeile → sie wandert nach <em>Erledigt</em>.",
+            "Die Kopfzeile <strong>Erledigt (n)</strong> ist ein Schalter: antippen klappt den Abschnitt auf und zu.",
+            "<strong>Papierkorb in der Kopfzeile</strong> löscht alle erledigten Einträge auf einmal.",
+            "<strong>Papierkorb an einer erledigten Zeile</strong> löscht genau diese."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "comms-erledigt.webp",
+          "caption": "Der aufgeklappte Abschnitt „Erledigt\" mit Papierkorb in der Kopfzeile und an der Zeile"
+        },
+        {
+          "type": "h3",
+          "html": "Echte Benachrichtigungen des Betriebssystems"
+        },
+        {
+          "type": "p",
+          "html": "Das sind die, die auf dem Sperrbildschirm auftauchen, wenn die App zu ist — und sie funktionieren <strong>nur in der Android-App (APK)</strong>. Im Browser und in der installierten PWA wird nichts gestellt: die App fragt zuerst, ob sie überhaupt auf einem Gerät mit Betriebssystem-Anbindung läuft, und tut sonst schweigend nichts. Genau das sagen die Einstellungen auch: <em>„Erinnerungen laufen über das Betriebssystem und funktionieren nur in der App, nicht im Browser.\"</em>"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Gefragt wird in dem Moment, in dem du einen Schalter einschaltest</strong> — Android zeigt dann seine Benachrichtigungs-Abfrage. Sagst du nein, erscheint rot <em>„Erinnerung konnte nicht gestellt werden — das System hat Benachrichtigungen abgelehnt.\"</em>",
+            "Es gibt drei Quellen: <strong>Bürotag-Erinnerung</strong> (MEATSPACE, täglich zur eingestellten Uhrzeit), <strong>Tägliche Erinnerung</strong> (DAILY RUN) und die <strong>Medikamenten-Erinnerungen</strong> (BIOMON, wöchentlich pro Medikament und Wochentag).",
+            "Ein Tipp auf so eine Meldung öffnet das zugehörige Programm — nicht den Bildschirm, auf dem du zuletzt warst.",
+            "Den Termin hält danach das Betriebssystem, nicht die App: es erinnert auch, wenn die App wochenlang nicht geöffnet wurde — und deshalb auch an einem Tag, an dem du längst fertig bist."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — die Zeilen wischen hier nicht.</strong> COMMS ist die einzige Liste ohne Wisch-Aktionen.",
+            "Versteckt ist stattdessen, dass die <strong>Kopfzeile „Erledigt (n)\" ein Knopf</strong> ist: ohne Antippen bleibt der Abschnitt zu und wirkt leer.",
+            "Die Zeile selbst ist nicht antippbar; nur ihre Knöpfe reagieren."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Das Abzeichen ist nach dem ersten Blick weg</strong>, die Einträge sind es nicht. Wer aufräumen will, muss <em>ERLEDIGT</em> drücken.",
+            "<strong>Offene Einträge lassen sich nicht direkt löschen</strong> — erst <em>ERLEDIGT</em>, dann Papierkorb.",
+            "<strong>Ein erledigter Eintrag kann als neu zurückkommen:</strong> ändert der zugehörige Tracker seinen Zustand (aus <em>Gestoppt</em> wird <em>Läuft</em>), gilt das als neue Nachricht.",
+            "<strong>Zurücksetzen eines Trackers lässt seine Zeile verschwinden</strong> — die Zeiterfassung schreibt ihren Block komplett neu, statt einzelne Zeilen zu ändern.",
+            "<strong>Im Browser gibt es niemals eine Erinnerung</strong> — und auch keine Fehlermeldung darüber. Wer Wecker braucht, braucht das APK."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/chrono\">CHRONO</a> — die Zeiterfassung, das einzige Programm, das hier hineinschreibt",
+            "<a href=\"#/handbook/meatspace\">MEATSPACE</a> — Bürotag-Erinnerung ein- und ausschalten",
+            "<a href=\"#/handbook/dailyrun\">DAILY RUN</a> — die tägliche Erinnerung",
+            "<a href=\"#/handbook/biomon\">BIOMON</a> — Medikamenten-Erinnerungen pro Wochentag"
+          ]
+        }
+      ]
+    }
+  ]
+}

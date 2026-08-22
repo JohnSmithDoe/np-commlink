@@ -1,0 +1,35 @@
+@if (hits().length > 0) {
+  <ion-list lines="full" class="hb-hits">
+    <ion-list-header>{{
+      'handbook.search.results' | translate: { count: hits().length }
+    }}</ion-list-header>
+    @for (hit of hits(); track hit.entry.slug) {
+      <ion-item
+        [button]="true"
+        [detail]="true"
+        [routerLink]="['/handbook', hit.entry.slug]"
+        data-testid="handbook-search-hit"
+      >
+        <ion-label>
+          <app-handbook-title
+            [deck]="hit.entry.title"
+            [plain]="hit.entry.plain"
+          />
+          <p class="hb-hit__snippet">
+            @for (part of hit.snippet; track $index) {
+              @if (part.match) {
+                <mark>{{ part.text }}</mark>
+              } @else {
+                <span>{{ part.text }}</span>
+              }
+            }
+          </p>
+        </ion-label>
+      </ion-item>
+    }
+  </ion-list>
+} @else {
+  <p class="hb-hits__empty">
+    {{ 'handbook.search.empty' | translate: { value: query() } }}
+  </p>
+}

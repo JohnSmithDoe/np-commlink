@@ -1,0 +1,206 @@
+{
+  "slug": "credstick",
+  "title": "CREDSTICK",
+  "plain": "Finanzen",
+  "route": "/cash",
+  "summary": "Konten, Kontostände und Buchungen — das Kassenbuch des Decks.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "CREDSTICK (Finanzen) ist das Kassenbuch: Konten anlegen, Ausgaben und Einnahmen buchen, in Kategorien sortieren. Alles bleibt auf dem Gerät — keine Bankverbindung holt von allein etwas ab. Statt jede Zeile zu tippen, kannst du den camt-Kontoauszug einlesen (<a href=\"#/handbook/credstick-import\">CREDSTICK · Import &amp; Regeln</a>); ausgewertet wird in <a href=\"#/handbook/credstick-auswertung\">CREDSTICK · Auswertung</a>."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "In der Kontoliste oben rechts auf <strong>+</strong> — oder Namen in die Suchleiste „Suchen oder neu anlegen“ tippen und Enter drücken, dann entsteht das Konto sofort.",
+            "Im Dialog „Neuen Eintrag anlegen“: <strong>Name</strong>, <strong>Kontotyp</strong>, optional <strong>IBAN</strong>, <strong>Anfangssaldo</strong>, <strong>Eröffnungsdatum</strong> — <strong>Anlegen</strong>.",
+            "Konto antippen → die Buchungsliste. Dort wieder <strong>+</strong>: <strong>AUSGABE</strong> oder <strong>EINNAHME</strong>, <strong>Betrag</strong>, <strong>Datum</strong>, <strong>Kategorien:</strong> — <strong>Anlegen</strong>."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-accounts.webp",
+          "caption": "Kontoliste: Typ und Kontostand je Konto, rechts in der Leiste die Summe aller Konten"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Konto und Kontotyp"
+        },
+        {
+          "type": "p",
+          "html": "Vier Typen: <strong>Girokonto</strong>, <strong>Kreditkarte</strong>, <strong>Sparkonto</strong>, <strong>Bargeld</strong>. Der Typ bestimmt das Symbol — und ob importiert werden kann: <strong>Bargeld hat keinen Import-Knopf</strong>, und neue Konten sind Bargeld. Die IBAN darf leer bleiben, sie kommt beim ersten Import aus der Datei. <strong>Nicht im Tagesbudget</strong> nimmt Rücklagen aus der Tagesbudget-Rechnung heraus."
+        },
+        {
+          "type": "h3",
+          "html": "Kontostand"
+        },
+        {
+          "type": "p",
+          "html": "Der Kontostand ist nie eingetippt, sondern gerechnet: <strong>Anfangssaldo + alle Buchungen des Kontos</strong>. Die Zahl in der Leiste der Buchungsliste ist dieses Konto, die in der Kontoliste die Summe aller Konten. Weicht sie vom Papierauszug ab, fehlen Buchungen — der Saldo kann nicht falsch sein. Abgeglichene Buchungen zählen nicht mit, sonst zöge dieselbe Ausgabe zweimal ab."
+        },
+        {
+          "type": "h3",
+          "html": "Buchung anlegen"
+        },
+        {
+          "type": "p",
+          "html": "Eine Buchung speichert <strong>einen</strong> Betrag mit Vorzeichen. Das Vorzeichen kommt aus dem Segment <strong>AUSGABE / EINNAHME</strong>, nicht aus dem Betragsfeld — du tippst immer eine positive Zahl. Dezimaltrennzeichen ist das <strong>Komma</strong>, der Punkt gilt als Tausenderpunkt und wird entfernt: <code>1.234,56</code> ist richtig, <code>12.34</code> wird zu <strong>1.234,00 €</strong>. Ein Minus macht den Betrag ungültig („Ungültiger Betrag“). <strong>Vorgemerkt</strong> markiert eine Buchung, die noch nicht auf dem Konto steht — die Leiste zählt sie als „n vorgemerkt“."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-booking-dialog.webp",
+          "caption": "Neue Buchung: Segment für das Vorzeichen, Betrag mit Komma, Kategorie als Chip"
+        },
+        {
+          "type": "h3",
+          "html": "Umbuchung zwischen Konten"
+        },
+        {
+          "type": "p",
+          "html": "Ab zwei Konten erscheint in der Kontoliste der Doppelpfeil (<strong>Umbuchung</strong>): Von, Nach, Betrag, Datum, Beschreibung. Gespeichert werden <strong>zwei</strong> Buchungen — negativ im Quellkonto, positiv im Zielkonto. Sie erscheinen doppelt, weil jedes Konto seine eigene Bewegung führt; die Gesamtsumme bleibt gleich. <strong>Löschst du eine Hälfte, verschwindet die andere.</strong> Umbuchungen haben keine Kategorie und gelten nicht als Ausgabe."
+        },
+        {
+          "type": "h3",
+          "html": "Kategorie zuweisen und anlegen"
+        },
+        {
+          "type": "p",
+          "html": "Die Zeile <strong>Kategorien:</strong> öffnet den Auswähler — Einfach-Auswahl: ein Tipp wählt, bestätigt und schließt in einem Schritt, es gibt kein „Auswählen“. Das ✕ am Chip nimmt die Kategorie weg. Fehlt sie noch, tippe den Namen in „Suchen oder neu anlegen“: die orange Zeile <strong>„… erstellen“</strong> legt sie an und wählt sie gleich aus. Was du hier selbst setzt, ist geschützt — eine später angewandte Regel überschreibt es nicht."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-category-picker.webp",
+          "caption": "Der Auswähler, die aktuelle Wahl mit Häkchen"
+        },
+        {
+          "type": "figure",
+          "img": "credstick-category-new.webp",
+          "caption": "Ein unbekannter Name bietet „Freizeit erstellen“ an"
+        },
+        {
+          "type": "h3",
+          "html": "Kategorieliste und Kategorie-Seite"
+        },
+        {
+          "type": "p",
+          "html": "Das Preisschild-Symbol (Kontoliste oben, Buchungsliste in der Leiste) führt zur Kategorieliste mit Trefferzahl. Ein Tipp öffnet die <strong>Kategorie-Seite</strong>: alle Buchungen dieser Kategorie über <strong>alle</strong> Konten, neueste zuerst, Summe in der Leiste, je Zeile Datum und Konto. Ein Tipp auf eine Zeile springt ins Konto der Buchung, nicht in den Bearbeiten-Dialog."
+        },
+        {
+          "type": "h3",
+          "html": "„Ohne Kategorie“ — die Triage-Liste"
+        },
+        {
+          "type": "p",
+          "html": "Erreichbar über die Kachel <strong>Ohne Kategorie</strong> in der Auswertung. Sie zeigt nur <strong>Ausgaben ohne Kategorie</strong> im Zeitfenster der Auswertung (Standard: dieser Monat), <strong>größte zuerst</strong> — von oben abarbeiten bringt am meisten. Ein Tipp öffnet den Bearbeiten-Dialog direkt in der Liste: einsortieren, ohne die Liste zu verlassen. Sonst steht dort „Alles einsortiert.“."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-uncategorized.webp",
+          "caption": "Triage: nur unkategorisierte Ausgaben, größte zuerst, mit Summe"
+        },
+        {
+          "type": "h3",
+          "html": "Suchen, filtern, sortieren"
+        },
+        {
+          "type": "p",
+          "html": "Die Suchleiste der Buchungsliste sucht <strong>nur im Namen</strong> und nur in diesem Konto; Enter öffnet den Neu-Dialog, ohne den Text zu übernehmen. Die runden Chips filtern nach Kategorie: <strong>ALLE</strong> hebt auf, <strong>Ohne Kategorie</strong> erscheint nur, wenn es solche Buchungen gibt — bei aktivem Chip erbt eine neue Buchung dessen Kategorie. Die Reihenfolge ist fest <strong>neueste zuerst</strong>, ab 200 Zeilen erscheint „n weitere anzeigen“. Die Kontoliste sortiert nach <strong>A-Z</strong> und <strong>ERSTELLT</strong>."
+        },
+        {
+          "type": "figure",
+          "img": "credstick-ledger.webp",
+          "caption": "Buchungsliste: Einnahme grün, Ausgaben rot, Kategorie über dem Datum"
+        },
+        {
+          "type": "h3",
+          "html": "Bearbeiten und „Aus dieser Buchung“"
+        },
+        {
+          "type": "p",
+          "html": "Zeile antippen → „Eintrag bearbeiten“, speichern mit <strong>Übernehmen</strong>. Bei einer schon gespeicherten Buchung steht unten <strong>Aus dieser Buchung</strong> mit <strong>Regel erstellen</strong> und <strong>Festkosten erstellen</strong>; beide Knöpfe <strong>speichern die Buchung zuerst</strong>. „Abgeleitet“ heißt zwei verschiedene Dinge:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Abgeleitete Regel / Festkosten</strong> — die Bedingung kommt aus dem stabilsten Feld der Buchung: Mandatsreferenz, sonst IBAN des Zahlungspartners, sonst Zahlungspartner („enthält“), sonst <em>ein</em> Wort der Beschreibung. Es entsteht dabei <strong>keine</strong> Buchung.",
+            "<strong>Abgeleiteter Schlüssel</strong> — nur beim Import: eine Kennung aus Datum, Betrag, Beschreibung und Vorkommen, damit ein zweiter Import dieselbe Zeile wiedererkennt, auch ohne Bankreferenz (<a href=\"#/handbook/credstick-import\">CREDSTICK · Import &amp; Regeln</a>)."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Kontozeile nach links</strong> → rotes <strong>LÖSCHEN</strong> (vollständig wischen löst sofort aus). Rückfrage „Konto löschen?“: Konto <strong>und alle seine Buchungen</strong> gehen.",
+            "<strong>Kontozeile nach rechts</strong> → nichts, Konten haben keine rechte Aktion.",
+            "<strong>Buchungszeile nach links</strong> → rotes <strong>LÖSCHEN</strong>, Rückfrage „Buchung löschen?“.",
+            "<strong>Buchungszeile nach rechts</strong> → nur zwei Fälle. <strong>Vorgemerkt</strong>: grün <strong>Abgleichen</strong>, öffnet die passenden importierten Buchungen (gleiches Konto, gleicher Betrag, ± 3 Tage, nächstliegendes Datum oben). Schon abgeglichen: grau <strong>Abgleich aufheben</strong>. Sonst nichts.",
+            "<strong>Kategoriezeile im Auswähler nach links</strong> → Stift (<strong>Umbenennen</strong>) und roter Papierkorb (<strong>Löschen</strong>). Umbenennen auf einen vorhandenen Namen <strong>verschmilzt</strong> beide.",
+            "<strong>Kategoriezeile in der Kategorieliste</strong>: links → <strong>Löschen</strong>, rechts → grüner Stift, der den Umbenennen-Dialog öffnet.",
+            "Zeilen der Kategorie-Seite und der Triage-Liste wischen <strong>nicht</strong>.",
+            "<strong>Bankdaten</strong> importierter Buchungen sind ein zugeklappter Abschnitt — antippen zeigt Zahlungspartner, IBAN, Verwendungszweck, Mandatsreferenz. Getippten Buchungen fehlt er."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "credstick-swipe-delete.webp",
+          "caption": "Nach links gewischt: die Löschfläche einer Buchungszeile"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Punkt statt Komma im Betrag</strong>: <code>12.34</code> wird 1.234,00 €.",
+            "<strong>Neue Konten sind „Bargeld“</strong> — ohne Typwechsel kein Import-Knopf.",
+            "<strong>Eine Umbuchung löschen löscht beide Hälften</strong>, die Rückfrage nennt nur eine.",
+            "<strong>Konto löschen nimmt alle Buchungen mit</strong> — kein Papierkorb, kein Rückgängig.",
+            "<strong>Kategorie löschen</strong> entfernt sie aus allen Buchungen und löscht ihre Regeln.",
+            "<strong>Die Suche findet den Verwendungszweck nicht</strong>, nur den Namen.",
+            "<strong>„Ohne Kategorie“</strong> zeigt nur Ausgaben, und nur im Auswertungs-Fenster.",
+            "<strong>Abgleichen versteckt die vorgemerkte Buchung</strong> — gelöscht ist sie nicht."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/credstick-import\">CREDSTICK · Import &amp; Regeln</a> — Kontoauszug, Regeln und Festkosten statt Tipparbeit",
+            "<a href=\"#/handbook/credstick-auswertung\">CREDSTICK · Auswertung</a> — Auswertung, Tagesbudget, Weg in die Triage-Liste",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — alle Wischgesten des Decks",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — CREDSTICK einschalten: ein kaltes Deck ist leer"
+          ]
+        }
+      ]
+    }
+  ]
+}

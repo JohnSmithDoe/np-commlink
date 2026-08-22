@@ -1,0 +1,203 @@
+{
+  "slug": "gesten",
+  "title": "BEDIENUNG",
+  "plain": "Gesten & Bedienung",
+  "route": "—",
+  "summary": "Wischen, Tippen, Suchen, Sortieren — die versteckten Handgriffe, die in jedem Modul gleich funktionieren.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "Fast jede Liste in dieser App ist dieselbe Liste: Einkaufsliste, Vorräte, Aufgaben, Kategorien, Buchungen, Spieler, Medikamente teilen sich Zeile, Suchleiste und Bearbeiten-Dialog. Was du hier lernst, gilt überall — und die halbe Bedienung ist unsichtbar. Zeilen wischen, aber nichts sagt es. Die Suchleiste legt Einträge an, aber nichts sagt es. Diese Seite sagt es."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "<strong>Menü öffnen</strong> — das ☰ links oben, oder vom linken Bildschirmrand nach rechts wischen.",
+            "Ein Modul wählen. Fehlt es dort, ist sein Programm noch nicht eingeschaltet → <a href=\"#/handbook/start\">COMMLINK</a>.",
+            "In die Suchleiste (<em>Suchen oder neu anlegen</em>) einen Namen tippen, <strong>Enter</strong> — angelegt. Das <code>+</code> oben rechts öffnet stattdessen den Dialog.",
+            "Auf die Zeile tippen → Bearbeiten-Dialog.",
+            "<strong>Nach links wischen</strong> → <em>LÖSCHEN</em>. <strong>Nach rechts wischen</strong> → die Aktion, die dieses Modul auf die rechte Geste gelegt hat."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "gesten-liste.webp",
+          "caption": "Die Standardliste: Suchleiste, Werkzeugleiste, Zeilen mit + und −"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Die Suchleiste ist auch das Eingabefeld"
+        },
+        {
+          "type": "p",
+          "html": "<em>Suchen oder neu anlegen</em> meint es wörtlich. Getippter Text filtert die Liste, unabhängig von Groß- und Kleinschreibung, etwa eine Viertelsekunde nach dem letzten Zeichen. <strong>Enter legt den getippten Text als neuen Eintrag an.</strong> Findet die Suche nichts, steht statt der Liste die Zeile <em>Keine Einträge in der Liste gefunden</em> — auch die legt beim Antippen den Eintrag an. Existiert der Name schon genau so, erscheint <em>Dieser Eintrag steht bereits in der Liste</em> und das <code>+</code> wird grau: der Schutz vor Doppeleinträgen."
+        },
+        {
+          "type": "figure",
+          "img": "gesten-suche-anlegen.webp",
+          "caption": "Suche ohne Treffer: Zeile antippen oder Enter drücken legt „Joghurt“ an"
+        },
+        {
+          "type": "h3",
+          "html": "Werkzeugleiste und Kategoriefilter"
+        },
+        {
+          "type": "p",
+          "html": "<code>A-Z</code> sortiert nach Name; <strong>nochmal tippen dreht die Richtung</strong> (der kleine Pfeil zeigt sie an). Weitere Sortierknöpfe stehen je Modul daneben, rechts die Modul-Aktionen und — wo es Kategorien gibt — das Preisschild <em>Kategorien verwalten</em>. Kennt ein Modul mindestens eine Kategorie, erscheint die Chip-Leiste: <code>ALLE</code>, jede Kategorie, und <code>OHNE KATEGORIE</code>, falls unkategorisierte Einträge existieren. Ein Tipp filtert, <strong>ein zweiter Tipp auf denselben Chip hebt den Filter auf</strong> — <code>ALLE</code> tut dasselbe."
+        },
+        {
+          "type": "figure",
+          "img": "gesten-kategoriefilter.webp",
+          "caption": "Aktiver Filter „Getränke“; unter dem Namen stehen die Kategorien der Zeile"
+        },
+        {
+          "type": "h3",
+          "html": "Der Bearbeiten-Dialog"
+        },
+        {
+          "type": "p",
+          "html": "Zeile antippen → <em>Eintrag bearbeiten</em>. Links <strong>ABBRECHEN</strong>, rechts <strong>ÜBERNEHMEN</strong>, bei einem neuen Eintrag <strong>ANLEGEN</strong>. Der Knopf bleibt grau, solange der Name leer oder doppelt ist; darunter steht dann <em>Der Name darf nicht leer sein</em> bzw. <em>Der Name existiert bereits</em>. Nichts speichert von selbst — Abbrechen verwirft alles."
+        },
+        {
+          "type": "figure",
+          "img": "gesten-dialog-bearbeiten.webp",
+          "caption": "Name, modulspezifische Felder, darunter die Kategoriezeile"
+        },
+        {
+          "type": "h3",
+          "html": "Kategorien auswählen"
+        },
+        {
+          "type": "p",
+          "html": "Die Zeile <em>Kategorien: Klicke hier zum hinzufügen...</em> öffnet den Kategorie-Dialog. Auch hier <strong>legt Enter die Kategorie an</strong> und hakt sie gleich ab; <strong>AUSWÄHLEN</strong> oben rechts übernimmt die Mehrfachauswahl. Das <code>×</code> an einem Chip nimmt die Kategorie nur von diesem Eintrag weg, löscht sie nicht."
+        },
+        {
+          "type": "figure",
+          "img": "gesten-kategorien-dialog.webp",
+          "caption": "Zwei frisch angelegte Kategorien, beide abgehakt"
+        },
+        {
+          "type": "h3",
+          "html": "Zahlen, Beträge und Datum"
+        },
+        {
+          "type": "p",
+          "html": "Mengenfelder (<em>Menge</em>) nehmen <strong>ganze Zahlen</strong>; Nachkommastellen fallen weg, und das erste Zeichen ersetzt den alten Wert statt ihn zu ergänzen. Beträge in <a href=\"#/handbook/credstick\">CREDSTICK</a> werden deutsch gelesen: <strong>Komma ist das Dezimaltrennzeichen, der Punkt ein Tausenderpunkt</strong> (<code>1.50</code> bedeutet 150 €, gemeint war <code>1,50</code>). Gewichte in <a href=\"#/handbook/biomon\">BIOMON</a> nehmen beides und runden auf 100-Gramm-Schritte. Datumsfelder öffnen einen Kalender von unten, dessen Knöpfe englisch beschriftet sind."
+        },
+        {
+          "type": "h3",
+          "html": "Overlays: Aktionsmenü, Popover, Rückfrage"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Aktionsmenü</strong> von unten: in <a href=\"#/handbook/market\">MARKET</a> hinter dem Taschen-Symbol — <em>In die Vorräte übernehmen</em>, <em>Teilen</em>, <em>Abbrechen</em>.",
+            "<strong>Popover</strong> an der Zeile: in <a href=\"#/handbook/chrono\">CHRONO</a> hinter dem ⋮ — Starten, Bearbeiten, Zurücksetzen, Löschen.",
+            "<strong>Rückfrage vor dem Löschen</strong> nur, wo etwas Großes daran hängt: Konten, Regeln, Festkosten und Buchungen in <a href=\"#/handbook/credstick\">CREDSTICK</a>, Notizen in <a href=\"#/handbook/sigil\">SIGIL</a>, das Zurücksetzen in <a href=\"#/handbook/meatspace\">MEATSPACE</a>.",
+            "<strong>Auswahlfelder</strong> (<code>Konto</code>, <code>Zeitraum</code>, …) öffnen Radioknöpfe und brauchen ein <strong>OK</strong>."
+          ]
+        },
+        {
+          "type": "h3",
+          "html": "Emoji (nur am Rechner)"
+        },
+        {
+          "type": "p",
+          "html": "Am Desktop steht neben dem Namensfeld ein Smiley-Knopf mit Suche, Gruppen und <em>Zuletzt verwendet</em>. Am Telefon fehlt er absichtlich — dort hat die Tastatur schon eine Emoji-Taste."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; antippen löscht. <strong>Weit wischen (über ~160 px) löscht sofort</strong>, ohne die Fläche zu berühren und ohne Rückfrage."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "gesten-swipe-loeschen.webp",
+          "caption": "Nach links gewischt: die rote Fläche LÖSCHEN"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach rechts wischen</strong> → die Aktion des Moduls, farbig mit Symbol, ebenfalls sofort bei weitem Wischen: <em>Als gekauft markieren</em> (<a href=\"#/handbook/market\">MARKET</a>), <em>Zur Einkaufsliste hinzufügen</em> (<a href=\"#/handbook/stash\">STASH</a>), <em>Bearbeiten</em> (<a href=\"#/handbook/biomon\">BIOMON</a>, <a href=\"#/handbook/trackplay\">TRACKPLAY</a>), <em>Umbenennen</em> (Kategorielisten), <em>Bilder ansehen</em> (<a href=\"#/handbook/sigil\">SIGIL</a>, nur bei Notizen mit Bild), <em>Abgleichen</em> / <em>Abgleich aufheben</em> (<a href=\"#/handbook/credstick\">CREDSTICK</a>)."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "gesten-swipe-start.webp",
+          "caption": "Nach rechts gewischt: der grüne Einkaufswagen markiert die Zeile als gekauft"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "Nicht jede Zeile hat beides: ohne rechte Aktion passiert nach rechts nichts, und einiges lässt sich gar nicht löschen (Buchungen in der Kategorie-Ansicht von <a href=\"#/handbook/credstick\">CREDSTICK</a>, der Standard-Spieltyp in <a href=\"#/handbook/trackplay\">TRACKPLAY</a>).",
+            "<strong>Auch im Kategorie-Dialog wischen</strong> die Zeilen: nach links erst der Stift (<em>Umbenennen</em>, direkt in der Zeile — Enter übernimmt, Esc verwirft), dann der rote Papierkorb.",
+            "<strong><code>+</code> und <code>−</code> rechts in der Zeile</strong> ändern die Menge ohne Dialog (<a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>); bei 0 ist Schluss, die Zeile verschwindet nicht.",
+            "<strong>Sortier-Griff (≡)</strong>: wo er auftaucht, lässt sich die Zeile daran ziehen — <a href=\"#/handbook/sigil\">SIGIL</a>, die Regeln in <a href=\"#/handbook/credstick\">CREDSTICK</a>, die Programmliste in <a href=\"#/handbook/start\">COMMLINK</a>.",
+            "<strong>Vom linken Bildschirmrand nach rechts wischen</strong> öffnet das Menü.",
+            "<strong>Enter</strong> legt an: in der Suchleiste einen Eintrag, im Kategorie-Dialog eine Kategorie.",
+            "Der <strong>Farbbalken</strong> links ist Status, kein Knopf; die graue Zeile unter dem Namen sind die Kategorien.",
+            "<strong>Kein Lang-Druck.</strong> Nirgends reagiert etwas auf langes Drücken. Findest du nichts, drück nicht länger — wisch."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "Weites Wischen löscht <strong>ohne Rückfrage</strong>. In <a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>, <a href=\"#/handbook/catalog\">CATALOG</a>, <a href=\"#/handbook/sigil\">SIGIL</a>, <a href=\"#/handbook/biomon\">BIOMON</a> und <a href=\"#/handbook/trackplay\">TRACKPLAY</a> erscheint danach fünf Sekunden lang ein Hinweis mit <strong>Rückgängig</strong> — in <a href=\"#/handbook/agenda\">AGENDA</a> und den übrigen Listen nicht. Dort ist weg weg.",
+            "Wer bei gefüllter Suche wischt, wischt auf einer <em>gefilterten</em> Liste.",
+            "Ein Filter überlebt das Verlassen der Seite. Eine „leere“ Liste ist oft nur eine gefilterte: steht dort <em>Kein Eintrag in dieser Kategorie</em>, tippe <code>ALLE</code>.",
+            "Lange Listen zeigen nicht alles — am Ende steht <em>… weitere anzeigen</em>.",
+            "<code>1.50</code> in einem Betragsfeld sind einhundertfünfzig Euro. Komma benutzen."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "<strong>Zwei Versprechen:</strong> Keine Geste ist der einzige Weg — alles, was du wischen kannst, erreichst du auch über eine Schaltfläche, ein Menü oder den Dialog. Und die App sperrt das Zoomen nie; ist die Schrift zu klein, zieh sie auf."
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/start\">COMMLINK</a> — welche Programme sichtbar sind, und in welcher Reihenfolge",
+            "<a href=\"#/handbook/market\">MARKET</a> — die Liste mit den meisten dieser Gesten",
+            "<a href=\"#/handbook/credstick\">CREDSTICK</a> — Beträge und Regeln: hier zählt das Komma",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — Skin und Sprache benennen alle Beschriftungen um"
+          ]
+        }
+      ]
+    }
+  ]
+}

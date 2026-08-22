@@ -1,0 +1,29 @@
+<app-page-header icon="book-outline" label="page-title.handbook" hideButtons>
+  <ion-searchbar
+    class="hb-search"
+    [placeholder]="'handbook.search.placeholder' | translate"
+    [attr.aria-label]="'handbook.a11y.search' | translate"
+    [value]="query()"
+    [debounce]="200"
+    (ionInput)="search($event)"
+  />
+</app-page-header>
+
+<ion-content class="ion-padding">
+  @if (failed()) {
+    <div class="hb-state" data-testid="handbook-index-error">
+      <p class="hb-state__text">{{ 'handbook.error.index' | translate }}</p>
+      <ion-button fill="outline" size="small" (click)="retry()">
+        <ion-icon name="refresh-outline" slot="start" aria-hidden="true" />
+        {{ 'handbook.action.retry' | translate }}
+      </ion-button>
+    </div>
+  } @else if (pending()) {
+    <p class="hb-state">{{ 'handbook.loading' | translate }}</p>
+  } @else if (isSearching()) {
+    <app-handbook-search-results [hits]="hits()" [query]="query()" />
+  } @else {
+    <p class="hb-intro">{{ 'handbook.intro' | translate }}</p>
+    <app-handbook-toc [groups]="groups()" />
+  }
+</ion-content>

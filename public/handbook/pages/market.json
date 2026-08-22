@@ -1,0 +1,174 @@
+{
+  "slug": "market",
+  "title": "MARKET",
+  "plain": "Einkaufsliste",
+  "route": "/household/shopping",
+  "summary": "Die Einkaufsliste — schnell tippen, Mengen zählen, Gekauftes abhaken und am Ende in die Vorräte übernehmen.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "Die Liste für den nächsten Einkauf. Sie ist auf Tempo gebaut: Name tippen, Enter, fertig — kein Dialog, keine Pflichtfelder. Im Laden zählst du mit <code>+</code> und <code>−</code> und wischst Erledigtes zur Seite; zu Hause schiebt ein Menübefehl alles Gekaufte in die <a href=\"#/handbook/stash\">STASH</a>-Vorräte."
+        },
+        {
+          "type": "p",
+          "html": "MARKET ist eine von drei Listen, die zusammen ein Modul bilden. Die Leiste am unteren Rand wechselt zwischen ihnen — <strong>Produkte</strong> (<a href=\"#/handbook/catalog\">CATALOG</a>), <strong>Einkauf</strong> (hier) und <strong>Vorräte</strong> (<a href=\"#/handbook/stash\">STASH</a>). Sie teilen Kategorien, Suche, Zeilenform und die Listenoptionen."
+        },
+        {
+          "type": "figure",
+          "img": "market-tableiste.webp",
+          "caption": "Die drei Listen sind ein Ort: die Leiste unten wechselt zwischen ihnen"
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Im Menü <strong>MARKET (Einkaufsliste)</strong> wählen. Fehlt der Eintrag, ist das Programm noch aus → <a href=\"#/handbook/start\">COMMLINK</a>.",
+            "In die Suchleiste <em>Suchen oder neu anlegen</em> <code>Milch</code> tippen und <strong>Enter</strong> drücken. Die Zeile heißt danach <strong>1 x Milch</strong> — jeder neue Eintrag beginnt bei Menge 1.",
+            "Menge ändern: <code>+</code> und <code>−</code> rechts in der Zeile. Kein Dialog, keine Bestätigung.",
+            "Im Laden: auf der Zeile <strong>nach rechts wischen</strong> → grüne Fläche mit Einkaufswagen. Die Zeile ist danach durchgestrichen.",
+            "Zu Hause: oben das <strong>Taschen-Symbol</strong> → <em>In die Vorräte übernehmen</em>."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "market-liste.webp",
+          "caption": "Zwei erledigte Zeilen sind durchgestrichen, bleiben aber an ihrem Platz"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Einträge anlegen"
+        },
+        {
+          "type": "p",
+          "html": "Die Suchleiste ist das Eingabefeld (Details in <a href=\"#/handbook/gesten\">BEDIENUNG</a>). Ein Name, der genau so schon in der Liste steht, wird abgewiesen — der Hinweis <em>Dieser Eintrag steht bereits in der Liste</em> erscheint und das <code>+</code> oben rechts wird grau. Willst du zwei Packungen, erhöhe die Menge statt einen zweiten Eintrag anzulegen."
+        },
+        {
+          "type": "h3",
+          "html": "Gekauft markieren"
+        },
+        {
+          "type": "p",
+          "html": "Der Wisch nach rechts (oder ein Tipp auf die grüne Fläche) setzt die Zeile auf <em>gekauft</em>: Name und Kategorien werden durchgestrichen. <strong>Die Zeile bleibt, wo sie war</strong> — sie rutscht nicht nach unten und verschwindet nicht. Nur die Kachel auf dem Deck zählt sie nicht mehr mit (<em>aktiv: n</em> meint die noch offenen Zeilen)."
+        },
+        {
+          "type": "h3",
+          "html": "Aktionen: übernehmen und teilen"
+        },
+        {
+          "type": "p",
+          "html": "Das Taschen-Symbol oben erscheint nur, wenn die Liste nicht leer ist, und öffnet ein Menü von unten:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>In die Vorräte übernehmen</strong> (rot) — alle durchgestrichenen Zeilen wandern mit ihrer Menge in die <a href=\"#/handbook/stash\">STASH</a>-Vorräte und <strong>verschwinden aus der Einkaufsliste</strong>. Gibt es dort schon einen Eintrag mit demselben Namen, werden die Mengen addiert. Keine Rückfrage, kein Rückgängig. Der Punkt fehlt, solange nichts abgehakt ist.",
+            "<strong>Teilen</strong> — öffnet das Teilen-Menü des Geräts mit einer Zeile <em>Menge x Name</em> pro Eintrag. Geteilt werden nur die <strong>offenen</strong> Zeilen; Abgehaktes bleibt draußen."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "market-aktionen.webp",
+          "caption": "Das Aktionsmenü; „In die Vorräte übernehmen“ erscheint nur mit abgehakten Zeilen"
+        },
+        {
+          "type": "h3",
+          "html": "Kategorien und Filter"
+        },
+        {
+          "type": "p",
+          "html": "Die Liste wird <strong>nicht</strong> nach Kategorien gruppiert. Sie ist eine flache, alphabetisch sortierte Liste; die Kategorien eines Eintrags stehen grau unter seinem Namen. Ohne Zutun läuft die Sortierung von Z nach A — ein Tipp auf <code>A-Z</code> dreht sie. Filtern übernimmt die Chip-Leiste (<code>ALLE</code>, jede Kategorie, <code>OHNE KATEGORIE</code>)."
+        },
+        {
+          "type": "p",
+          "html": "Praktischer Nebeneffekt: <strong>legst du etwas an, während ein Kategorie-Chip aktiv ist, bekommt der neue Eintrag genau diese Kategorie</strong> — der schnellste Weg, einen Einkauf vorzusortieren."
+        },
+        {
+          "type": "h3",
+          "html": "Barcode-Scanner"
+        },
+        {
+          "type": "p",
+          "html": "Das Barcode-Symbol in der Werkzeugleiste gibt es <strong>nur in der Android-App (APK)</strong>. Im Browser und in der PWA ist die Schaltfläche nicht vorhanden — nicht ausgegraut, sondern gar nicht da. Beim ersten Aufruf fragt Android nach der Kamera und lädt ggf. Googles Scanner-Modul nach; gelesen werden <strong>EAN-13</strong>-Codes."
+        },
+        {
+          "type": "p",
+          "html": "Was danach passiert, überrascht: es öffnet sich <em>Neuen Eintrag anlegen</em> für ein <strong>Produkt</strong>, und im Namensfeld steht die <strong>Ziffernfolge des Codes</strong>. Die App kennt keine Produktdatenbank und speichert den Code auch nicht — sie erkennt nichts, sie tippt für dich. Du ersetzt die Ziffern durch einen Namen. Das Ergebnis landet in <a href=\"#/handbook/catalog\">CATALOG</a>, nicht direkt in der Einkaufsliste. Schlägt der Scan fehl, erscheint <em>Scan fehlgeschlagen – Kamerazugriff prüfen</em>; ein Abbruch bleibt still."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; antippen löscht, weites Wischen löscht sofort. Danach fünf Sekunden lang <strong>Rückgängig</strong> im Hinweis unten.",
+            "<strong>Nach rechts wischen</strong> → grün, Einkaufswagen: <em>Als gekauft markieren</em>. Weites Wischen führt es direkt aus.",
+            "<strong><code>+</code> / <code>−</code> rechts in der Zeile</strong> ändern die Menge ohne Dialog; bei 0 ist Schluss, die Zeile bleibt.",
+            "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em> mit <strong>Name</strong>, <strong>Menge</strong> und <strong>Kategorien</strong>.",
+            "<strong>Taschen-Symbol</strong> oben → Aktionsmenü (nur bei gefüllter Liste).",
+            "<strong>Schieberegler-Symbol</strong> oben → <a href=\"#/handbook/catalog\">CATALOG</a>-Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>.",
+            "Kein Lang-Druck, kein Sortier-Griff, keine Gruppierung."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Ein Häkchen lässt sich nicht zurücknehmen.</strong> Es gibt keine Geste und kein Feld, das <em>gekauft</em> wieder auf offen setzt. Aus Versehen abgehakt? Zeile löschen und neu anlegen.",
+            "Wischst du in <a href=\"#/handbook/stash\">STASH</a> einen Vorrat auf die Einkaufsliste, während dort noch eine <strong>durchgestrichene</strong> Zeile mit demselben Namen liegt, wird nur deren Menge erhöht — sie bleibt durchgestrichen und du übersiehst sie im Laden.",
+            "<em>In die Vorräte übernehmen</em> ist endgültig: die Zeilen sind aus der Einkaufsliste weg, ohne Rückfrage und ohne Rückgängig.",
+            "Löschen einer Zeile löscht nur den Einkaufszettel-Eintrag. Das Produkt in <a href=\"#/handbook/catalog\">CATALOG</a> bleibt.",
+            "Bei gefüllter Suchleiste ist die Liste gefiltert — was du dann wischst, ist nicht unbedingt die Zeile, die du im Kopf hattest."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "market-swipe-kaufen.webp",
+          "caption": "Nach rechts: grün, Einkaufswagen — als gekauft markieren"
+        },
+        {
+          "type": "figure",
+          "img": "market-swipe-loeschen.webp",
+          "caption": "Nach links: LÖSCHEN, mit Rückgängig-Hinweis danach"
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/stash\">STASH</a> — wohin das Gekaufte wandert, und wie es von dort zurückkommt",
+            "<a href=\"#/handbook/catalog\">CATALOG</a> — die Stammdaten hinter beiden Listen, und alle Listenoptionen",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Suchleiste, Sortierung, Dialoge: die Bedienung, die überall gleich ist",
+            "<a href=\"#/handbook/soykaf\">SOYKAF</a> — Rezepte, die aus Produkten und Vorräten lesen"
+          ]
+        }
+      ]
+    }
+  ]
+}

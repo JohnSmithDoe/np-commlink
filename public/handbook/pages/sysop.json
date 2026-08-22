@@ -1,0 +1,188 @@
+{
+  "slug": "sysop",
+  "title": "SYSOP",
+  "plain": "Einstellungen",
+  "route": "/settings",
+  "summary": "Skin, Helligkeit, Sprache und Akzentfarben — plus Version, Lizenz und der Link auf den Quellcode.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "SYSOP (Einstellungen) ist die einzige Seite, die nicht über Inhalte redet, sondern darüber, wie der Rest aussieht und spricht: <strong>Darstellung</strong> (der Skin), <strong>Helligkeit</strong>, <strong>Sprache</strong>, die <strong>Akzentfarben</strong> — dazu der Weg zur Deck-Konfiguration und der Über-Block mit Version, Lizenz und Quellcode. Es gibt keinen Account und keinen Server: was du hier einstellst, liegt auf <strong>diesem</strong> Gerät, genau wie deine Buchungen, Vorräte und Notizen."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Menü (☰) öffnen und <strong>SYSOP</strong> bzw. <strong>Einstellungen</strong> wählen — oder die gleichnamige Deck-Kachel.",
+            "Unter <strong>Darstellung</strong> auf <code>OKBOOMER</code> tippen, wenn du die Cyberpunk-Optik nicht willst. Sofort da, ohne Neustart.",
+            "Unter <strong>Helligkeit</strong> <code>HELL</code> oder <code>DUNKEL</code> — unabhängig vom Skin.",
+            "Unter <strong>Sprache</strong> <code>Deutsch</code> oder <code>English</code>. Darunter steht <em>Die App startet nach dem Wechsel neu.</em> Das tut sie wirklich; deine Daten bleiben erhalten."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "sysop-cyberpunk.webp",
+          "caption": "Die Seite im Zustand nach dem ersten Start: Skin Cyberpunk, Helligkeit dunkel, Sprache Deutsch"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Darstellung: Cyberpunk oder OKBoomer"
+        },
+        {
+          "type": "p",
+          "html": "Das sind nicht zwei Farbschemata, sondern zwei <strong>Vokabulare</strong> über denselben Daten. Im Cyberpunk-Skin heißen die Programme CREDSTICK, STASH, MEATSPACE und CHRONO; im OKBoomer-Skin Finanzen, Vorräte, Bürozeiten und Zeiterfassung. Mit den Namen wechselt auch der Rest der Sprache: die Statuszeile auf dem Deck sagt <code>GRID ONLINE / RAUSCHEN / SIGNAL</code> statt <code>Status / Ungelesen / Sicherung</code>, und Beträge auf den Kacheln stehen als <code>¥ … nyen</code> statt in Euro. Die Optik geht mit: Rasterlinien, Ecken und die Schreibmaschinen-Schrift sind Cyberpunk-Zutaten, OKBoomer ist der schmucklose Grundzustand."
+        },
+        {
+          "type": "p",
+          "html": "Nichts davon berührt deine Daten — dieselbe App, andere Beschriftung. Die Titelzeile einer geöffneten Seite bleibt in beiden Skins sachlich („Einstellungen“, „Zeiterfassung“); umbenannt werden Kacheln, Menü-Einträge und Statusanzeige."
+        },
+        {
+          "type": "figure",
+          "img": "sysop-boomer.webp",
+          "caption": "Dieselbe Seite, nur der Skin ist OKBoomer: kein Raster, kein Glühen, andere Schrift"
+        },
+        {
+          "type": "h3",
+          "html": "Helligkeit, getrennt vom Skin"
+        },
+        {
+          "type": "p",
+          "html": "Hell und Dunkel sind eine eigene Achse. Cyberpunk-hell und OKBoomer-dunkel sind also ganz normale Kombinationen — vier insgesamt."
+        },
+        {
+          "type": "figure",
+          "img": "sysop-hell.webp",
+          "caption": "OKBoomer in Hell — die schlichteste der vier Kombinationen"
+        },
+        {
+          "type": "h3",
+          "html": "Sprache"
+        },
+        {
+          "type": "p",
+          "html": "Deutsch oder English, für die ganze App inklusive Datums-, Wochentags- und Geldformate. Der Wechsel löst einen echten Neustart aus (daher der Hinweis darunter); gespeichert wird vorher, der Neustart verliert also nichts."
+        },
+        {
+          "type": "h3",
+          "html": "Akzentfarben"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Primärfarbe</strong> und <strong>Sekundärfarbe</strong> sind die beiden farbigen Rechtecke am rechten Rand. Ein Tipp darauf öffnet den <strong>Farbwähler deines Systems</strong> (Android bzw. Browser) — eine eigene Oberfläche hat die App dafür nicht. Nach dem Bestätigen ist die Farbe sofort überall: Knöpfe, Links, Kachelrahmen, das Icon in der Kopfzeile. Hellere und dunklere Varianten und die Textfarbe darauf errechnet die App selbst; du wählst nur den Ton."
+        },
+        {
+          "type": "p",
+          "html": "Die Farben gehören <strong>je Skin</strong>: was du in Cyberpunk wählst, lässt OKBoomer unberührt und umgekehrt. <strong>Zurücksetzen</strong> stellt die Werksfarben des gerade aktiven Skins wieder her, nicht die des anderen."
+        },
+        {
+          "type": "figure",
+          "img": "sysop-akzent.webp",
+          "caption": "Eine selbst gewählte Primärfarbe (Pink) — sie färbt sofort die ganze App, nicht nur das Feld"
+        },
+        {
+          "type": "h3",
+          "html": "Deck"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Deck-Konfiguration</strong> springt auf die Seite, auf der du Programme an- und abschaltest und ihre Reihenfolge festlegst. Siehe <a href=\"#/handbook/start\">COMMLINK</a> — hier ist nur der Link."
+        },
+        {
+          "type": "h3",
+          "html": "Über"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Version</strong> zeigt den Build, aus dem deine Installation stammt, darunter <strong>Lizenz: AGPL-3.0</strong>, das Copyright und <strong>Quellcode</strong> — der Eintrag öffnet das öffentliche Repository in einem neuen Tab. Der Link ist Pflicht, nicht Kür: die AGPL verlangt in §13, dass jeder, der eine solche App über das Netz anbietet, seinen Nutzern den zugehörigen Quellcode zugänglich macht. Für die offizielle Web-Version erledigt genau dieser Eintrag das. Für dich heißt es: du kannst nachlesen, was die App tut, und sie selbst bauen."
+        },
+        {
+          "type": "figure",
+          "img": "sysop-lizenz.webp",
+          "caption": "Der Über-Block: Version, Lizenz, Copyright und der Quellcode-Link"
+        },
+        {
+          "type": "h3",
+          "html": "Der Skin wirkt app-weit"
+        },
+        {
+          "type": "p",
+          "html": "Zum Vergleich das Deck im OKBoomer-Skin: dieselben Kacheln wie in <a href=\"#/handbook/start\">COMMLINK</a>, nüchterne Namen, keine Deko."
+        },
+        {
+          "type": "figure",
+          "img": "sysop-deck-boomer.webp",
+          "caption": "Das Deck nach dem Skin-Wechsel: „Zeiterfassung“ statt „CHRONO“"
+        },
+        {
+          "type": "h3",
+          "html": "Wo die Daten liegen, und was das bedeutet"
+        },
+        {
+          "type": "p",
+          "html": "Kein Konto, kein Server, keine Anmeldung: die App speichert alles auf deinem Gerät. Deshalb funktioniert sie offline — und deshalb <strong>synchronisiert nichts</strong>. Handy und Laptop sind zwei getrennte Datenbestände; eine Einstellung oder eine Buchung auf dem einen Gerät erscheint nie auf dem anderen. Einen Export oder einen „alles löschen“-Knopf gibt es hier nicht: Aufräumen passiert modulweise (Bürozeiten haben z. B. ihr eigenes <em>Daten zurücksetzen</em>), und wer die Browserdaten der App löscht, löscht alles."
+        },
+        {
+          "type": "p",
+          "html": "Dasselbe gilt für die zwei Installationsarten: die App läuft als Web-Seite (PWA), die du über die Installieren-Funktion deines Browsers auf den Startbildschirm legen kannst, oder als Android-APK aus dem Release-Bereich des Projekts. Beide sind vollwertig — aber zwei Installationen mit zwei getrennten Datenbeständen. Wer von der PWA zur APK wechselt, fängt dort mit leerem Deck an."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — auf dieser Seite wischt nichts.</strong> Es gibt keine Zeilen zum Wischen, kein Optionsmenü, keinen Lang-Druck und keinen Sortier-Griff. Jede Aktion ist ein einfacher Tipp.",
+            "Leicht zu übersehen: die beiden <strong>Farbrechtecke</strong> sind Knöpfe und öffnen den Farbwähler des Systems. <strong>Quellcode</strong> ist ebenfalls einer und verlässt die App."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Der Wechsel zwischen Hell und Dunkel wirft eigene Akzentfarben weg</strong> — die <strong>beider</strong> Skins, nicht nur die des aktiven. Absicht: ein Ton, der auf dunklem Grund gut aussieht, wird auf hellem oft unlesbar (das Cyberpunk-Amber landet dort bei ~2,3:1 Kontrast), und eine selbst gesetzte Farbe hat Vorrang vor der Sicherung, die genau das verhindern soll. Also: Farbe <strong>nach</strong> dem Umschalten neu wählen.",
+            "<strong>Der Sprachwechsel startet die App neu.</strong> Das ist kein Absturz — offene Dialoge solltest du vorher abschließen.",
+            "<strong>Zurücksetzen</strong> unter Akzentfarben betrifft nur die Farben des aktiven Skins — nicht die Sprache, nicht das Deck, nicht deine Daten.",
+            "Die <strong>Version</strong> sagt dir, welchen Build du hast. Die Web-Version holt sich neue Builds beim Neuladen; eine APK musst du selbst neu installieren."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/start\">COMMLINK</a> — das Deck und die Deck-Konfiguration, die diese Seite verlinkt",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — die Gesten, die es auf den anderen Seiten sehr wohl gibt",
+            "<a href=\"#/handbook/credstick\">CREDSTICK</a> — der beste Ort, um den Skin-Wechsel zu sehen: aus CREDSTICK wird Finanzen, aus <code>¥ nyen</code> werden Euro"
+          ]
+        }
+      ]
+    }
+  ]
+}

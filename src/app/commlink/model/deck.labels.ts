@@ -67,5 +67,6 @@ export const DECK_MODULE_LABELS: Record<AppModule, Marker> = {
   ritual: marker('deck.module.ritual'),
   geist: marker('deck.module.geist'),
   vitals: marker('deck.module.vitals'),
+  handbook: marker('deck.module.handbook'),
   settings: marker('deck.module.settings'),
 };

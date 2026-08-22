@@ -1,0 +1,56 @@
+<article class="hb-article">
+  <h1 class="hb-article__title">
+    <app-handbook-title [deck]="page().title" [plain]="page().plain" />
+  </h1>
+  <p class="hb-article__summary">{{ page().summary }}</p>
+
+  @for (section of page().sections; track $index) {
+    <section class="hb-section" [attr.data-kind]="section.kind">
+      <h2 class="hb-section__heading">
+        @if (sectionIcon(section.kind); as icon) {
+          <ion-icon class="hb-section__icon" [name]="icon" aria-hidden="true" />
+        }
+        <span>{{ section.heading }}</span>
+      </h2>
+
+      @for (block of section.blocks; track $index) {
+        @switch (block.type) {
+          @case ('h3') {
+            <h3 class="hb-block__h3" [innerHTML]="block.html"></h3>
+          }
+          @case ('note') {
+            <aside class="hb-block__note" [innerHTML]="block.html"></aside>
+          }
+          @case ('ul') {
+            <ul class="hb-block__list">
+              @for (item of block.items; track $index) {
+                <li [innerHTML]="item"></li>
+              }
+            </ul>
+          }
+          @case ('ol') {
+            <ol class="hb-block__list">
+              @for (item of block.items; track $index) {
+                <li [innerHTML]="item"></li>
+              }
+            </ol>
+          }
+          @case ('figure') {
+            <figure class="hb-block__figure">
+              <img
+                [src]="figureUrl(block.img)"
+                [alt]="captionText(block.caption)"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption [innerHTML]="block.caption"></figcaption>
+            </figure>
+          }
+          @case ('p') {
+            <p class="hb-block__p" [innerHTML]="block.html"></p>
+          }
+        }
+      }
+    </section>
+  }
+</article>

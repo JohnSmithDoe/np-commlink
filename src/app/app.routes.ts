@@ -43,6 +43,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'handbook',
+    loadChildren: () =>
+      import('./handbook/routes/handbook.routes').then((m) => m.handbookRoutes),
+  },
+  {
     path: 'geist',
     loadChildren: () =>
       import('./geist/routes/geist.routes').then((m) => m.geistRoutes),

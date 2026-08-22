@@ -1,0 +1,165 @@
+{
+  "slug": "geist",
+  "title": "GEIST",
+  "plain": "Assistent",
+  "route": "/geist",
+  "summary": "Ein Sprachmodell, das im Browser auf dem Gerät läuft — ohne Konto, ohne Schlüssel, ohne Anfrage nach außen.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "GEIST (Assistent) ist ein Chat mit einem Sprachmodell, das <strong>auf dem Gerät</strong> rechnet. Es ist kein Zugang zu ChatGPT &amp; Co.: die App benutzt das in Chrome eingebaute Modell (<strong>Prompt API</strong>, Modell <strong>Gemini Nano</strong>) über den Browser. Deshalb gibt es keinen API-Schlüssel, keine Anmeldung und keine Anfrage, die das Gerät verlässt — die Kopfzeile sagt genau das: <em>Knoten lokal · Spur keine · Egress keiner</em>."
+        },
+        {
+          "type": "p",
+          "html": "Der Preis dafür steht gleich im ersten Satz: das Modell muss auf dem Gerät vorhanden sein, und das ist es nur in wenigen Fällen."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "GEIST auf dem Deck öffnen. Oben links prüft die App den Anschluss: <strong>LINK prüft</strong> …",
+            "Danach steht dort <strong>verbunden</strong>, <strong>schläft</strong>, <strong>kein Signal</strong> oder <strong>abgerissen</strong>.",
+            "Bei <em>schläft</em> zeigt die Seite <strong>Kaltstart</strong> und den Knopf <strong>MODELL LADEN</strong>: der erste Start lädt einmalig mehrere Gigabyte, mit Prozentanzeige. Danach läuft alles offline.",
+            "Bei <em>verbunden</em>: unten eine Frage in <strong>Frage an den Geist …</strong> tippen und <strong>SENDEN</strong> drücken (auf einer Tastatur auch Strg+Enter bzw. Cmd+Enter).",
+            "Die Antwort läuft zeichenweise ein; <strong>ABBRECHEN</strong> stoppt sie mitten im Satz."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "geist-status.webp",
+          "caption": "Auf dem Handy die Regel, nicht die Ausnahme: „Keine Resonanz\" samt Voraussetzungen"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Wo GEIST überhaupt läuft"
+        },
+        {
+          "type": "p",
+          "html": "Nur in <strong>Chrome 148 oder neuer auf Windows, macOS oder Linux</strong>, mit rund <strong>22 GB freiem Speicher</strong> und <strong>mehr als 4 GB VRAM oder 16 GB RAM</strong>. Die Android-App und Chrome auf dem Handy haben keinen Zugriff auf das Modell — dort zeigt die Seite <strong>KEINE RESONANZ</strong> und einen Weg zurück zum Deck. Das ist keine Fehlfunktion, sondern der ehrliche Befund des Anschlusstests."
+        },
+        {
+          "type": "p",
+          "html": "Die Deck-Kachel verrät den Zustand mit: sie steht auf <strong>Standby</strong>, solange niemand gefragt hat — das Deck stellt die Frage absichtlich nicht selbst — und schaltet erst nach dem ersten Besuch auf <em>ausführen</em> oder <em>kein Signal</em> um."
+        },
+        {
+          "type": "figure",
+          "img": "geist-deck-kachel.webp",
+          "caption": "Nach dem ersten Besuch trägt die Deck-Kachel den Befund: „kein Signal\""
+        },
+        {
+          "type": "h3",
+          "html": "Was sich sinnvoll fragen lässt"
+        },
+        {
+          "type": "p",
+          "html": "Erklären, umformulieren, zusammenfassen, benennen, übersetzen, Stichpunkte aus einem eingefügten Text ziehen. Das Modell ist klein und arbeitet ohne Internet: es kennt keine aktuellen Ereignisse, keine Webseiten und keine Quellen — und es irrt sich. Für alles, was stimmen muss, ist es der falsche Gesprächspartner."
+        },
+        {
+          "type": "h3",
+          "html": "Es sieht deine Daten <strong>nicht</strong>"
+        },
+        {
+          "type": "p",
+          "html": "GEIST hat keinen Zugriff auf den Rest der App. Die Sitzung bekommt genau zwei Dinge: die Anweisung der gewählten Persona und den Text, den du in das Feld tippst. Keine Notiz, keine Buchung, kein Vorratsbestand wird mitgeschickt, und das Modell kann nichts in der App nachschlagen. Fragen wie „wie viel habe ich diesen Monat ausgegeben?\" kann es deshalb prinzipiell nicht beantworten — wer etwas darüber wissen will, muss es selbst in die Frage hineinschreiben."
+        },
+        {
+          "type": "h3",
+          "html": "Personas"
+        },
+        {
+          "type": "p",
+          "html": "Drei Register bestimmen den Ton, nicht das Wissen:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>FIXER</strong> — kurz und schmutzig: höchstens zwei Sätze, keine Vorrede.",
+            "<strong>ARCHIVAR</strong> — sachlich, in Stichpunkten: maximal fünf Zeilen.",
+            "<strong>MENTOR</strong> — erklärt es in Ruhe: ein kurzer Absatz mit Beispiel."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Die Anweisung wird in der Sprache der App gestellt, und in ihr antwortet das Modell auch. Wer die Sprache in den Einstellungen umschaltet, ändert damit die Antwortsprache der nächsten Sitzung."
+        },
+        {
+          "type": "h3",
+          "html": "Sitzung und Verlauf"
+        },
+        {
+          "type": "p",
+          "html": "Der Verlauf lebt <strong>nur so lange, wie die Seite offen ist</strong>. Er wird nirgends gespeichert: Neuladen, Wegnavigieren oder App-Neustart lassen ihn verschwinden — das ist die Kehrseite davon, dass nichts das Gerät verlässt."
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>VERLAUF LÖSCHEN</strong> leert das Fenster <em>und</em> öffnet eine frische Sitzung; der Zähler <strong>Kontext</strong> steht danach wieder bei 0 %.",
+            "<strong>Kontext</strong> zeigt, wie viel vom Gedächtnis der Sitzung belegt ist. Läuft er gegen 100 %, ist ein Löschen fällig, sonst fällt der Anfang des Gesprächs heraus.",
+            "Ein <strong>Persona-Wechsel während einer laufenden Sitzung löscht den Verlauf mit</strong> — die Anweisung gilt ab dem ersten Wort und kann nicht nachträglich getauscht werden.",
+            "Eine abgebrochene Antwort bleibt mit dem Vermerk <em>abgebrochen</em> stehen, eine gescheiterte mit <em>der Geist ist verstummt</em>. Reißt der Anschluss ganz ab (<strong>Abgerissen</strong>), hilft <strong>ERNEUT VERSUCHEN</strong>."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — hier wischt nichts.</strong> GEIST ist kein Listenprogramm: keine Wisch-Aktion, kein Lang-Druck, kein Sortiergriff, kein Kontextmenü.",
+            "Versteckt ist nur die Tastenkombination <strong>Strg+Enter / Cmd+Enter</strong> zum Senden (auf dem Handy nutzlos, dort ist es der Knopf).",
+            "<strong>SENDEN</strong> bleibt grau, solange der Link nicht <em>verbunden</em> ist oder das Feld leer — der graue Knopf ist die Diagnose, nicht ein Fehler.",
+            "Die Persona-Knöpfe sind gesperrt, während eine Antwort läuft."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Auf dem Handy gibt es GEIST nicht.</strong> Weder im APK noch in mobilem Chrome — die Kachel bleibt dunkel.",
+            "<strong>Der erste Start ist ein Download von mehreren Gigabyte</strong> und braucht dauerhaft Platz auf der Platte. Er passiert erst, wenn du <em>MODELL LADEN</em> drückst.",
+            "<strong>Nichts wird aufbewahrt.</strong> Wer eine Antwort behalten will, kopiert sie in eine Notiz.",
+            "<strong>Das Modell kennt deine Daten nicht</strong> — und es kann sich irren, ohne es zu merken.",
+            "Der Persona-Wechsel wirft den Verlauf weg. Erst fragen, dann wechseln."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/start\">COMMLINK</a> — das Deck und wie die Kachel-Zustände zu lesen sind",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — Sprache umstellen; sie bestimmt die Antwortsprache",
+            "<a href=\"#/handbook/sigil\">SIGIL</a> — Notizen: der Ort für Antworten, die überleben sollen"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "slug": "dailyrun",
+  "title": "DAILY RUN",
+  "plain": "Tagesaufgabe",
+  "route": "/ritual",
+  "summary": "Eine kleine Aufgabe pro Tag, zufällig gezogen, abhakbar — und bewusst ohne Serienzähler.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "DAILY RUN (Tagesaufgabe) stellt dir jeden Tag genau <strong>eine</strong> winzige Aufgabe: ein Glas Wasser, ein Fenster auf, ein Buch zurück ins Regal. Alles im Katalog ist in der Wohnung, in unter drei Minuten, ohne Ausrüstung und ohne Warten auf jemanden zu schaffen — und alles hat einen Moment, in dem es fertig ist. Es ist das Gegenstück zu <a href=\"#/handbook/agenda\">AGENDA</a>: nicht \"was ist alles zu tun\", sondern \"was ist heute das eine\"."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "<code>/ritual</code> öffnen. Die Karte zeigt <strong>HEUTE</strong> und darunter die Aufgabe.",
+            "Machen. Dann <strong>HAB ICH GEMACHT</strong> drücken.",
+            "Die Karte fliegt weg, es gibt ein Häkchen mit Konfetti, den Zähler (<code>5 ERLEDIGT</code>) und sieben Punkte für die letzten sieben Tage.",
+            "Unten erscheint sechs Sekunden lang <strong>RÜCKGÄNGIG</strong> — das ist die einzige Gelegenheit, den Tag wieder aufzumachen.",
+            "Optional das Zahnrad oben rechts für die tägliche Erinnerung."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "dailyrun-karte.webp",
+          "caption": "Die Karte von heute mit den drei Möglichkeiten darunter"
+        },
+        {
+          "type": "figure",
+          "img": "dailyrun-erledigt.webp",
+          "caption": "Nach dem Abhaken: Aufgabe, Gesamtzähler, sieben Tagespunkte — und der Undo-Toast"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Der Katalog"
+        },
+        {
+          "type": "p",
+          "html": "<strong>98 Aufgaben</strong>, fest in der App und nicht erweiterbar — eigene Aufgaben kannst du hier nicht eintragen. Inhaltlich grob sieben Ecken: Körper (\"Streck dich eine Minute lang.\"), Raum und Licht (\"Mach für eine Minute das Licht aus.\"), Aufräumen (\"Stell ein Buch zurück ins Regal.\"), Sinne (\"Riech einmal an deiner Seife.\"), Schauen und Zählen (\"Zähl alle blauen Dinge in diesem Raum.\"), Spielereien (\"Falte ein Papierflugzeug und wirf es einmal.\") und Kontakt (\"Schick jemandem ein Lied, das du magst.\"). Die Gruppen tauchen in der App nirgends auf, du bekommst immer nur eine Karte."
+        },
+        {
+          "type": "h3",
+          "html": "Wie die Aufgabe von heute gewählt wird"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Rein zufällig.</strong> Kein Plan, keine Rotation, keine Gewichtung, keine Reihenfolge. Gezogen wird aus dem Katalog minus drei Ausschlüsse: die <strong>letzten 20 erledigten</strong> Aufgaben, <strong>alles Aussortierte</strong> und die Karte, die gerade auf dem Schirm liegt. Deshalb kommt nichts am nächsten Tag wieder, wohl aber Wochen später. Wäre damit alles ausgeschlossen, wird aus dem ganzen Katalog gezogen, statt keine Karte zu zeigen."
+        },
+        {
+          "type": "p",
+          "html": "Die Ziehung hängt am Datum — aber sie wird nicht gespeichert: <strong>jeder Neustart der App zieht neu</strong>, solange der Tag noch offen ist. Die Karte ist also kein Auftrag, den du bis abends behältst."
+        },
+        {
+          "type": "h3",
+          "html": "Neu würfeln und Mag ich nicht"
+        },
+        {
+          "type": "p",
+          "html": "<strong>NEU WÜRFELN</strong> legt eine andere Karte auf, ohne den Tag zu schließen — beliebig oft, kostet nichts. <strong>MAG ICH NICHT</strong> wirft die Aufgabe <strong>dauerhaft</strong> aus dem Topf, zieht sofort eine neue und meldet <em>Aufgabe aussortiert.</em> mit sechs Sekunden <strong>RÜCKGÄNGIG</strong>."
+        },
+        {
+          "type": "h3",
+          "html": "Abhaken, und was danach passiert"
+        },
+        {
+          "type": "p",
+          "html": "Der Druck auf <strong>HAB ICH GEMACHT</strong> wird erst geschrieben, wenn die Karte fertig weggeflogen ist. Dann steht dort das Erledigt-Bild mit dem Text der Aufgabe, der Zähler <strong>aller</strong> Erledigungen und die sieben Punkte: ein gefüllter Punkt je Tag, an dem etwas erledigt wurde. <strong>NOCH EINE</strong> zieht eine Bonuskarte — abhaken erhöht den Zähler, der Tag bleibt trotzdem geschlossen."
+        },
+        {
+          "type": "h3",
+          "html": "Um Mitternacht"
+        },
+        {
+          "type": "p",
+          "html": "Um 00:00 kippt der Tag von selbst um, und zusätzlich immer dann, wenn du die App wieder in den Vordergrund holst. Aus dem Erledigt-Bild wird eine frische Karte, und die Aufgabe von gestern ist von der neuen Ziehung ausgeschlossen. Ein nicht erledigter Tag verfällt schlicht — es bleibt nichts liegen und es wird nichts nachgetragen."
+        },
+        {
+          "type": "h3",
+          "html": "Keine Serien, und warum das gut ist"
+        },
+        {
+          "type": "p",
+          "html": "Es gibt <strong>keinen Streak, keine Quote, keinen Nachholtermin</strong> — und das ist Absicht. Eine Serie verwandelt die kleine Aufgabe in Besitz, den man verlieren kann: nach dem ersten verpassten Tag kostet die Rückkehr plötzlich Überwindung, und genau die soll dieses Modul nicht verlangen. Die sieben Punkte sind ein Protokoll, keine Punktzahl; heute ist der einzige Tag, der zählt, und morgen fängt bei null Schuld wieder an."
+        },
+        {
+          "type": "h3",
+          "html": "Einstellungen"
+        },
+        {
+          "type": "p",
+          "html": "Das Zahnrad führt nach <code>/ritual/settings</code> und bietet <strong>genau drei</strong> Dinge:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Tägliche Erinnerung</strong> — ein Schalter.",
+            "<strong>Uhrzeit</strong> — erscheint nur, wenn der Schalter an ist; Vorgabe 18:00.",
+            "<strong>Aussortierte Aufgaben</strong> mit Zähler und dem Knopf <strong>ZURÜCKHOLEN</strong>, der <strong>alle</strong> aussortierten Aufgaben auf einmal in den Topf zurücklegt. Bei null ist er gesperrt."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Darunter steht der Hinweis, der die Erinnerung erklärt: sie läuft über das Betriebssystem und funktioniert nur in der App, nicht im Browser."
+        },
+        {
+          "type": "figure",
+          "img": "dailyrun-einstellungen.webp",
+          "caption": "Alles, was die Einstellungen können: Erinnerung, Uhrzeit, Aussortierte zurückholen"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Keine — hier wischt nichts.</strong> DAILY RUN hat keine Liste, keine Zeilen, keinen Langdruck und kein Options-Menü.",
+            "<strong>Die Karte selbst ist absichtlich kein Knopf.</strong> Nur <strong>HAB ICH GEMACHT</strong> schließt den Tag; ein versehentlicher Tipp auf den Text tut nichts.",
+            "<strong>Der Toast unten ist die Rückgängig-Funktion</strong> — sechs Sekunden, danach ist die Erledigung fest. Das <strong>X</strong> am Toast schiebt ihn weg, ohne etwas zurückzunehmen.",
+            "<strong>NOCH EINE</strong> ist die einzige Möglichkeit, an einem geschlossenen Tag noch eine Karte zu sehen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong><code>5 ERLEDIGT</code> und die Deck-Zahl <code>erledigt: n</code> sind Gesamtzahlen</strong>, keine Serie und kein Monatswert.",
+            "<strong>Der Zähler zählt Erledigungen, nicht Tage.</strong> Mit <strong>NOCH EINE</strong> kannst du an einem Tag mehrere sammeln; der Tagespunkt bleibt trotzdem einer.",
+            "<strong>MAG ICH NICHT ist dauerhaft.</strong> Nach dem Toast kommt die Aufgabe nur über <strong>ZURÜCKHOLEN</strong> zurück — und das holt <em>alle</em> Aussortierten gleichzeitig, einzeln geht es nicht.",
+            "<strong>Die Aufgabe wechselt beim Neustart.</strong> Wer die App nochmal öffnet, bekommt eine andere Karte; gemerkt wird erst, was du abhakst.",
+            "<strong>Der Erinnerungsschalter tut im Browser nichts</strong> — auch nicht in der installierten Web-Version. Nur die Android-App kann den Termin beim Betriebssystem hinterlegen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/agenda\">AGENDA</a> — für alles, was einen Termin hat und nicht heute passieren muss",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — wie die DAILY-RUN-Kachel aufs Deck kommt und was ihre Zahl bedeutet",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — der Skin-Schalter, der DAILY RUN in \"Tagesaufgabe\" umbenennt"
+          ]
+        }
+      ]
+    }
+  ]
+}

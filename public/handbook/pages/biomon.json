@@ -1,0 +1,194 @@
+{
+  "slug": "biomon",
+  "title": "BIOMON",
+  "plain": "Gesundheit",
+  "route": "/vitals",
+  "summary": "Gewichtsverlauf für Menschen und Tiere, plus Medikamentenpläne mit Wochentagen, Uhrzeit und Erinnerung.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "BIOMON (Gesundheit) ist Wiegebuch und Medikamentenplan in einem. Jedes Lebewesen bekommt ein eigenes Profil — Personen wie Tiere —, darunter hängen ein Gewichtseintrag pro Tag und beliebig viele Medikamente mit festen Zeiten. Ziele, Bewertungen und weitere Auswertungen gibt es nicht."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "BIOMON/<strong>Gesundheit</strong> auf dem Deck antippen oder im Menü wählen. Die Liste startet leer.",
+            "Oben rechts <strong>+</strong>, Namen eingeben, <strong>Person</strong> oder <strong>Tier</strong> wählen, <strong>ANLEGEN</strong>. Schneller: Namen in die Suchleiste tippen und Enter — das legt immer eine <strong>Person</strong> an.",
+            "Die Zeile antippen, auf der Profilseite wieder <strong>+</strong>: <strong>Datum</strong> steht auf heute, <strong>Gewicht</strong> eintragen, <strong>ANLEGEN</strong>.",
+            "Ab dem zweiten Eintrag erscheint über der Liste die Kurve."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "biomon-profiles.webp",
+          "caption": "Die Profilliste: Pfote für Tiere, dazu letztes Gewicht, Veränderung und Anzahl der Einträge"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Profile"
+        },
+        {
+          "type": "p",
+          "html": "Ein Profil besteht aus genau zwei Angaben: <strong>Name</strong> und <strong>Person</strong> oder <strong>Tier</strong> — kein Geburtsdatum, kein Zielgewicht. Der Typ entscheidet das Symbol in der Zeile (Kopf oder Pfote) und ob beim Eintragen der Rechner „Zusammen gewogen\" erscheint; beides ändert das Stift-Symbol auf der Profilseite."
+        },
+        {
+          "type": "p",
+          "html": "Jede Zeile trägt <strong>Zuletzt</strong> (das jüngste Gewicht), <strong>Veränderung</strong> (Differenz zum Eintrag davor, mit Vorzeichen) und <strong>Einträge: n</strong>."
+        },
+        {
+          "type": "h3",
+          "html": "Gewicht eintragen"
+        },
+        {
+          "type": "p",
+          "html": "Pro Profil und Tag gibt es <strong>einen</strong> Eintrag. Tippt man <strong>+</strong> an einem Tag, für den schon etwas steht, öffnet sich der vorhandene zum Bearbeiten — der Dialog heißt dann <em>Eintrag bearbeiten</em>. Nachträge gehen über das Feld <strong>Datum</strong>; ist das Datum belegt, meldet der Dialog <em>Für dieses Datum gibt es schon einen Eintrag</em> und speichert nicht."
+        },
+        {
+          "type": "p",
+          "html": "Gewichte werden auf 100 g gerundet und mit Komma geschrieben (<code>79,9</code>); ein angehängtes „kg\" wird verstanden. Neueste Zeile oben — Suchleiste und Sortierknopf hat diese Liste nicht."
+        },
+        {
+          "type": "figure",
+          "img": "biomon-profile-chart.webp",
+          "caption": "Profilseite: Veränderung, Kurve und die Einträge, neueste oben"
+        },
+        {
+          "type": "h3",
+          "html": "Kurve"
+        },
+        {
+          "type": "p",
+          "html": "Die Kurve erscheint ab <strong>zwei</strong> Einträgen und zeigt <em>alle</em> Einträge des Profils — es gibt keinen Zeitraum-Umschalter (Woche/Monat/Jahr) und keinen Zoom. Und sie zählt Einträge, nicht Tage: zwischen zwei Punkten liegt immer derselbe Abstand, egal ob ein Tag oder drei Wochen dazwischenliegen. Das Datum steht unter dem Punkt, ein Tipp zeigt den Wert."
+        },
+        {
+          "type": "h3",
+          "html": "Tiere: zusammen wiegen"
+        },
+        {
+          "type": "p",
+          "html": "Wer eine Katze nicht allein auf die Waage bekommt, nutzt beim <strong>Anlegen</strong> eines Tier-Eintrags den Abschnitt <strong>ZUSAMMEN GEWOGEN</strong>: <strong>Gehalten von</strong> (nur Personen-Profile), <strong>Gewicht der Person</strong>, <strong>Zusammen auf der Waage</strong>. Sobald beide Zahlen stehen, schreibt die App die Differenz nach oben ins Feld <strong>Gewicht</strong>. Gibt es genau eine Person, ist sie vorausgewählt; ab zwei muss gewählt werden. Das vorgeschlagene Personengewicht ist deren letzter Eintrag <strong>am oder vor</strong> dem eingetragenen Datum — ein Nachtrag rechnet also nicht mit einem späteren Gewicht."
+        },
+        {
+          "type": "p",
+          "html": "Gespeichert wird nur die eine Zahl, keine Verknüpfung — beim späteren Bearbeiten ist der Abschnitt darum weg."
+        },
+        {
+          "type": "figure",
+          "img": "biomon-pet-calculator.webp",
+          "caption": "Zusammen gewogen: 84,2 kg minus 79,9 kg ergeben 4,3 kg für Luna"
+        },
+        {
+          "type": "h3",
+          "html": "Medikamente"
+        },
+        {
+          "type": "p",
+          "html": "Das Köfferchen-Symbol auf der Profilseite führt zu <strong>Medikamente</strong> — die Liste gehört immer diesem Profil. Ein Eintrag hat <strong>Name</strong>, <strong>Dosis (Stück)</strong>, <strong>Uhrzeit</strong>, <strong>Wochentage</strong> und zwei Schalter. Die Dosis muss größer als 0 sein und mindestens ein Wochentag gewählt bleiben, sonst bleibt <strong>ANLEGEN</strong> grau; anfangs stehen alle sieben Tage auf „an\"."
+        },
+        {
+          "type": "p",
+          "html": "Die Kürzel der Wochentage kommen aus der eingestellten Sprache, nicht aus den Texten der App: mit englischer Oberfläche stehen dort englische Kürzel. Die Reihenfolge bleibt Montag zuerst."
+        },
+        {
+          "type": "figure",
+          "img": "biomon-pill-dialog.webp",
+          "caption": "Der Medikamenten-Dialog: Dosis, Uhrzeit, Wochentage, Erinnern und Heute genommen"
+        },
+        {
+          "type": "p",
+          "html": "In der Liste steht unter dem Namen <code>2 Stück · 21:00 · Mo · Mi · Fr</code>, bei allen sieben Tagen stattdessen <strong>Täglich</strong>. Die Glocke links zeigt, ob <strong>Erinnern</strong> an ist."
+        },
+        {
+          "type": "h3",
+          "html": "Heute genommen"
+        },
+        {
+          "type": "p",
+          "html": "Der Schalter <strong>Heute genommen</strong> notiert die Einnahme für den <em>heutigen Tag</em>; die Zeile wird dann durchgestrichen. Das ist keine Eigenschaft des Medikaments: morgen ist der Haken von selbst wieder weg. Zurücknehmen geht genauso — Zeile antippen, Schalter aus, <strong>ÜBERNEHMEN</strong>."
+        },
+        {
+          "type": "figure",
+          "img": "biomon-pills.webp",
+          "caption": "Medikamentenliste: Magnesium dreimal pro Woche, Vitamin D3 heute schon genommen"
+        },
+        {
+          "type": "h3",
+          "html": "Erinnerungen"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Erinnern</strong> stellt pro gewähltem Wochentag eine wöchentliche Systembenachrichtigung zur eingetragenen Uhrzeit (<em>Zeit für Magnesium</em> / <em>2 × Magnesium für Martin</em>). Das übernimmt das Betriebssystem, nicht die App — und darum funktioniert es <strong>nur in der Android-App</strong>; im Browser und in der PWA passiert wortlos nichts, wie der Hinweis unter den Schaltern sagt. Verweigert Android die Erlaubnis, erscheint <em>Erinnerung konnte nicht gestellt werden</em>. Bei jeder Änderung und bei jedem App-Start werden alle Erinnerungen neu gestellt. Ein abgehaktes „Heute genommen\" hält sie <strong>nicht</strong> auf: sie kommt trotzdem."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach rechts wischen</strong> auf einer Zeile (Profil, Eintrag oder Medikament) → grüne Fläche <strong>Bearbeiten</strong>, öffnet denselben Dialog wie ein Tipp.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong>.",
+            "<strong>Tipp</strong> auf eine Profilzeile öffnet das Profil, auf eine Eintrags- oder Medikamentenzeile den Bearbeiten-Dialog.",
+            "<strong>Enter in der Suchleiste</strong> der Profilliste legt eine Person mit diesem Namen an. In der Medikamentenliste filtert die Suchleiste nur — dort geht Neues ausschließlich über <strong>+</strong>.",
+            "<strong>Köfferchen</strong> auf der Profilseite → Medikamente, <strong>Stift</strong> → umbenennen oder Typ wechseln.",
+            "Kein Lang-Druck, kein Sortier-Griff, kein Drei-Punkte-Menü in BIOMON."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "biomon-swipe-edit.webp",
+          "caption": "Nach rechts gewischt: Bearbeiten liegt links unter der Zeile"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Ein Profil löschen löscht seine Geschichte mit</strong> — Einträge, Medikamente, Einnahme-Vermerke. <strong>Rückgängig</strong> holt alles zurück, aber nur solange der Hinweis unten steht.",
+            "<strong>Ein zweiter Eintrag am selben Tag ist nicht vorgesehen</strong>, sondern <strong>+</strong> öffnet den bestehenden.",
+            "<strong>Erinnerungen im Browser sind still.</strong> Wer sie braucht, braucht die App.",
+            "<strong>Die Kurve zeichnet keine Zeitachse.</strong> Eine Lücke von drei Wochen sieht aus wie ein Tag.",
+            "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Gewichtsverlauf löschen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Wischen, Suchleiste und Dialoge, wie sie überall funktionieren",
+            "<a href=\"#/handbook/comms\">COMMS</a> — der Posteingang; die Hinweise am unteren Rand kommen von dort",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — die Sprache bestimmt Wochentags-Kürzel und Komma",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — das Deck; die BIOMON-Kachel zeigt die Zahl aller Einträge"
+          ]
+        }
+      ]
+    }
+  ]
+}

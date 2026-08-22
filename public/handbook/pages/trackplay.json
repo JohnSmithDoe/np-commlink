@@ -1,0 +1,192 @@
+{
+  "slug": "trackplay",
+  "title": "TRACKPLAY",
+  "plain": "Spielstände",
+  "route": "/trackplay",
+  "summary": "Der Punkteblock: Spieler, Spielarten und Partien mit Runde-für-Runde-Wertung, Sieger und Bilanz.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "TRACKPLAY (Spielstände) ersetzt den Zettel am Spieltisch. Angelegt werden <strong>Spieler</strong>, eine <strong>Spielart</strong> (sie entscheidet, ob viele oder wenige Punkte gewinnen) und daraus eine <strong>Partie</strong>, in die man Runde für Runde die Punkte einträgt. Die App summiert, kürt den Sieger und führt für jeden Spieler eine Bilanz aus Siegen, Niederlagen und offenen Partien."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "TRACKPLAY/<strong>Spielstände</strong> auf dem Deck antippen oder im Menü <strong>Spiele</strong> wählen.",
+            "Oben rechts das <strong>Personen-Symbol</strong> → <strong>Spieler</strong>. Dort <strong>+</strong>, Name, <strong>ANLEGEN</strong> — für jeden Mitspieler einmal. Schneller: Namen in die Suchleiste tippen und Enter.",
+            "Mit <strong>←</strong> zurück zu <strong>Spiele</strong>, dann <strong>+</strong>: <strong>Name</strong> der Partie, <strong>Spielart</strong> wählen, Spieler anhaken.",
+            "<strong>WEITER</strong> speichert und öffnet direkt den Punkteblock; <strong>ANLEGEN</strong> speichert nur."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-new-game.webp",
+          "caption": "Neue Partie: Name, Spielart und die angehakten Spieler; WEITER führt sofort in den Block"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Spieler"
+        },
+        {
+          "type": "p",
+          "html": "Ein Spieler ist nur ein Name. Die Zeile zeigt <strong>Erstellt</strong>, <strong>Zuletzt gespielt</strong>, die Bilanz <strong>Siege / Niederlagen / Offen</strong> und <strong>Gespielt: n</strong>; sortiert wird nach <strong>A-Z</strong>, <strong>ERSTELLT</strong> oder <strong>ZULETZT GESPIELT</strong>. <em>Zuletzt gespielt</em> rückt vor, sobald in einer Partie mit diesem Spieler ein Punktwert eingetragen wird — nicht schon beim Anlegen."
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-players.webp",
+          "caption": "Die Spielerliste mit Bilanz: Siege / Niederlagen / Offen und Anzahl der Partien"
+        },
+        {
+          "type": "h3",
+          "html": "Spielarten"
+        },
+        {
+          "type": "p",
+          "html": "Die Spielarten stecken hinter dem <strong>Preisschild-Symbol</strong> in der Werkzeugleiste — die am besten versteckte Seite des Moduls. Drei sind vorinstalliert: <strong>Standard</strong>, <strong>Rommé</strong>, <strong>Skat</strong>."
+        },
+        {
+          "type": "p",
+          "html": "Eine Spielart entscheidet genau zwei Dinge: ihren <strong>Namen</strong> und die <strong>Richtung</strong> der Wertung. Der Schalter heißt <em>Höchste Punktzahl gewinnt</em>; aus bedeutet <em>Niedrigste Punktzahl gewinnt</em> (so ist Rommé eingestellt). Mehr steckt nicht darin — keine Rundenzahl, keine Zielpunkte, keine Abbruchbedingung."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Standard</strong> lässt sich nicht löschen. Löscht man eine andere Spielart, wandern ihre Partien auf <em>Standard</em> — eine Partie ohne Spielart gibt es nicht, sonst wüsste niemand, wer gewonnen hat."
+        },
+        {
+          "type": "h3",
+          "html": "Partien und Filter"
+        },
+        {
+          "type": "p",
+          "html": "Der Name einer Partie muss eindeutig sein, die Spielart ist genau eine, die Spielerliste beliebig lang; <strong>WEITER</strong> wird erst aktiv, wenn mindestens ein Spieler angehakt ist."
+        },
+        {
+          "type": "p",
+          "html": "Die Chips über der Liste filtern nach Spielart, der Zähler in der Werkzeugleiste zeigt <strong>angezeigt / insgesamt</strong>. Unter dem Namen steht die Spielart, dazu <strong>Erstellt</strong> und <strong>Zuletzt gespielt</strong>."
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-games.webp",
+          "caption": "Die Spieleliste: Chips je Spielart, Zähler 2 / 2, beendete Partie durchgestrichen"
+        },
+        {
+          "type": "h3",
+          "html": "Punkte eintragen"
+        },
+        {
+          "type": "p",
+          "html": "Der Block ist eine Tabelle: <strong>eine Spalte pro Spieler</strong> in der Reihenfolge des Anhakens, <strong>eine Zeile pro Runde</strong>, unten die Summenzeile mit <strong>Σ</strong>. Die Rundenspalte links zählt ab <strong>0</strong>."
+        },
+        {
+          "type": "p",
+          "html": "Ein Wert gilt, sobald das Feld verlassen wird; <strong>Enter</strong> tut genau das. Steht in der <em>letzten</em> Zeile eine Zahl, hängt die App eine neue leere Runde an — deshalb unten immer eine Nullzeile, und deshalb sucht man „Runde hinzufügen\" nie. Die Summe rechnet sofort mit."
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-play.webp",
+          "caption": "Drei Runden, drei Spieler, unten die Summen — Rommé, also gewinnt die kleinste Zahl"
+        },
+        {
+          "type": "h3",
+          "html": "Beenden, Sieger, Weiterspielen"
+        },
+        {
+          "type": "p",
+          "html": "<strong>BEENDEN</strong> oben rechts schließt die Partie ab: <em>Das Spiel ist beendet</em>, darunter der Sieger mit seiner Punktzahl, ein Pokal und die Plätze 2, 3, … Wer gewinnt, entscheidet die Richtung der Spielart — bei Rommé die niedrigste Summe, bei Skat die höchste."
+        },
+        {
+          "type": "p",
+          "html": "Der Knopf heißt danach <strong>WEITER</strong> und nimmt das Beenden zurück; alle Runden stehen unverändert da. Beendete Partien erscheinen in der Liste durchgestrichen; das <strong>Augen-Symbol</strong> blendet sie aus und wieder ein — in der Spieleliste sind sie zunächst <strong>sichtbar</strong>, auf einer Spielerseite zunächst <strong>ausgeblendet</strong>."
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-winner.webp",
+          "caption": "Ergebnis: Sieger, Punktzahl, Pokal und die weiteren Plätze"
+        },
+        {
+          "type": "h3",
+          "html": "Spielerseite und Statistik"
+        },
+        {
+          "type": "p",
+          "html": "Ein Tipp auf eine Spielerzeile öffnet dessen eigene Seite: oben die Bilanz <strong>1/0/1</strong> und <strong>Gespielt: 2</strong>, darunter nur die Partien dieses Spielers. <strong>+</strong> legt hier eine Partie an, in der er schon angehakt ist, der <strong>Stift</strong> benennt ihn um."
+        },
+        {
+          "type": "p",
+          "html": "Gezählt wird so: <strong>Gespielt</strong> sind alle Partien, in denen der Spieler steht, <strong>Offen</strong> die noch nicht beendeten. Bei einer beendeten Partie bekommt der Erste der Rangliste einen <strong>Sieg</strong>, <em>jeder andere Mitspieler</em> eine <strong>Niederlage</strong>."
+        },
+        {
+          "type": "figure",
+          "img": "trackplay-player-swipe.webp",
+          "caption": "Spielerseite mit Bilanz — die Zeile ist nach rechts gewischt, Bearbeiten liegt darunter"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach rechts wischen</strong> auf einer Zeile (Partie, Spieler, Spielart) → grüne Fläche <strong>Bearbeiten</strong>: bei einer Partie derselbe Dialog wie beim Anlegen — der Weg, Spieler nachzutragen.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong>. Bei <em>Standard</em> fehlt die Löschfläche.",
+            "<strong>Tipp auf eine Partiezeile</strong> öffnet den Punkteblock, <strong>auf eine Spielerzeile</strong> die Spielerseite, <strong>auf eine Spielart</strong> den Bearbeiten-Dialog.",
+            "<strong>Enter in der Suchleiste</strong> legt sofort an: in der Spieleliste eine Partie <strong>ohne Spieler</strong> mit der Spielart des aktiven Chips, in der Spielerliste einen Spieler, in den Spielarten eine Spielart mit <em>Höchste Punktzahl gewinnt</em>.",
+            "<strong>Waagerecht wischen im Punkteblock</strong>: ab vier Spielern ist die Tabelle breiter als der Schirm — Kopfzeile, Runden und Summenzeile scrollen gemeinsam.",
+            "<strong>Augen-Symbol</strong> = beendete Partien zeigen/verbergen, <strong>Preisschild</strong> = Spielarten, <strong>Personen-Symbol</strong> = Spielerliste.",
+            "Kein Lang-Druck, kein Sortier-Griff, kein Drei-Punkte-Menü in TRACKPLAY."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Eine Partie ohne Spieler lässt sich nicht öffnen</strong> — die Zeile ist grau. So entstehen die per Enter angelegten: nach rechts wischen, <strong>Bearbeiten</strong>, Spieler anhaken.",
+            "<strong>Einen Spieler löschen greift in laufende Partien ein</strong>: seine Spalte und seine Punkte gehen mit. War er der letzte, wird eine laufende Partie geleert und eine beendete ganz gelöscht.",
+            "<strong>Rückgängig setzt das ganze Modul auf den Stand vor dem Löschen zurück</strong> — Spieler, Partien und Spielarten. Was in den fünf Sekunden danach noch angelegt wurde, ist damit weg.",
+            "<strong>Ein Unentschieden gibt es nicht.</strong> Bei gleicher Summe gewinnt, wer beim Anlegen weiter vorn angehakt wurde.",
+            "<strong>Punkte gelten erst beim Verlassen des Feldes</strong> — Enter ist der sichere Weg.",
+            "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Spielstände löschen."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Wischen, Suchleiste und Chips, wie sie überall funktionieren",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — das Deck; die TRACKPLAY-Kachel zeigt die Zahl der Partien",
+            "<a href=\"#/handbook/biomon\">BIOMON</a> — das zweite Modul mit Unterseiten hinter einem Symbol in der Kopfzeile",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — der Skin entscheidet, ob der Pokal Strahlen wirft"
+          ]
+        }
+      ]
+    }
+  ]
+}

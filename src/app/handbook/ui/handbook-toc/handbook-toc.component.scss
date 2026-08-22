@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.hb-group {
+  background: transparent;
+}
+
+.hb-entry__summary {
+  display: block;
+  margin-top: var(--space-1);
+  white-space: normal;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}

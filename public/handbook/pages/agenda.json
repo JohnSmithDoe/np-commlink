@@ -1,0 +1,168 @@
+{
+  "slug": "agenda",
+  "title": "AGENDA",
+  "plain": "Aufgaben",
+  "route": "/tasks/list",
+  "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien — erledigt heißt hier gelöscht.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "AGENDA (Aufgaben) ist eine einzige, flache Liste von Dingen, die zu tun sind. Jede Aufgabe kann einen Termin, eine Priorität und Kategorien haben — mehr Struktur gibt es nicht: keine Unteraufgaben, keine Projekte, kein Archiv. Der Kopf der Seite heißt übrigens <strong>Todoliste</strong>; AGENDA ist nur der Name auf dem Deck."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "<code>/tasks/list</code> öffnen. In die Suchleiste <strong>Suchen oder neu anlegen</strong> den Namen tippen und <strong>Enter</strong> drücken — die Aufgabe ist angelegt und das Feld leert sich wieder.",
+            "Alternativ <strong>+</strong> oben rechts. Der Dialog <em>Neuen Eintrag anlegen</em> übernimmt dabei den Text aus der Suchleiste und den gerade aktiven Kategoriefilter als Vorbelegung.",
+            "Die Zeile <strong>antippen</strong> öffnet <em>Eintrag bearbeiten</em>: <strong>Name</strong>, <strong>Priorität</strong> (freie Zahl), <strong>Erledigen bis</strong> (öffnet einen Kalender) und <strong>Kategorien</strong>.",
+            "Erledigt? Es gibt keinen Haken — die Zeile <strong>nach links wischen</strong> und löschen."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "agenda-liste.webp",
+          "caption": "Nach Termin sortiert; der Farbstreifen links zeigt überfällig, bald und später"
+        },
+        {
+          "type": "figure",
+          "img": "agenda-aufgabe-dialog.webp",
+          "caption": "Der Bearbeiten-Dialog: Priorität, \"Erledigen bis\" und die Kategorie-Chips"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Es gibt kein \"erledigt\""
+        },
+        {
+          "type": "p",
+          "html": "Eine Aufgabe hat keinen Zustand. Sie steht auf der Liste oder sie ist gelöscht. Deshalb bedeutet die Zahl auf der Deck-Kachel — <code>offen: n</code> — schlicht <strong>alle Aufgaben in der Liste</strong>. Sie kann nicht zwischen offen und fertig unterscheiden, weil die App das nicht speichert."
+        },
+        {
+          "type": "h3",
+          "html": "Termin und Farbstreifen"
+        },
+        {
+          "type": "p",
+          "html": "Der schmale Streifen am linken Rand jeder Zeile ist die Terminwarnung: <strong>rot</strong> = der Termin liegt in der Vergangenheit, <strong>gelb</strong> = innerhalb der nächsten drei Tage, <strong>grün</strong> = später oder ohne Termin. Unter dem Namen steht dann <code>Fällig am: 24.08.2026</code>."
+        },
+        {
+          "type": "h3",
+          "html": "Priorität"
+        },
+        {
+          "type": "p",
+          "html": "Eine beliebige Zahl, ohne Skala und ohne Obergrenze, angezeigt als <code>Priorität: 2</code>. Aufgaben ohne Priorität landen beim Sortieren hinten."
+        },
+        {
+          "type": "h3",
+          "html": "Sortieren"
+        },
+        {
+          "type": "p",
+          "html": "Drei Knöpfe in der Werkzeugzeile: <strong>A-Z</strong>, <strong>PRIO</strong>, <strong>TERMIN</strong>. Immer genau einer ist aktiv, und <strong>jedes Antippen dreht die Richtung um</strong> — der kleine Pfeil daneben zeigt, wohin. Das gilt auch für den Wechsel auf einen anderen Knopf: er übernimmt die aktuelle Richtung und kippt sie. Die Auswahl wird gespeichert und überlebt einen Neustart."
+        },
+        {
+          "type": "h3",
+          "html": "Suchen und filtern"
+        },
+        {
+          "type": "p",
+          "html": "Die Suchleiste filtert die Liste live (nach kurzer Verzögerung). Existiert der getippte Name schon genau, erscheint der Hinweis <em>Dieser Eintrag steht bereits in der Liste</em> und <strong>+</strong> ist gesperrt — so entstehen keine Dubletten."
+        },
+        {
+          "type": "p",
+          "html": "Darunter die Kategorie-Chips: <strong>ALLE</strong> setzt zurück, jeder weitere Chip filtert auf eine Kategorie. Der Chip <strong>OHNE KATEGORIE</strong> erscheint nur, solange mindestens eine Aufgabe keine hat."
+        },
+        {
+          "type": "h3",
+          "html": "Kategorien verwalten"
+        },
+        {
+          "type": "p",
+          "html": "Das Etiketten-Symbol rechts in der Werkzeugzeile (<em>Kategorien verwalten</em>) führt nach <code>/tasks/categories</code>. Diese Seite hat ihre eigene Suchleiste: Name tippen, Enter, Kategorie angelegt. Unter jedem Namen steht, wie viele Aufgaben daran hängen (<code>2 Einträge</code>). <strong>Antippen</strong> einer Kategorie springt zurück in die Liste, gefiltert auf genau diese Kategorie. Der Pfeil oben links kommt zurück."
+        },
+        {
+          "type": "p",
+          "html": "Denselben Katalog erreichst du auch aus dem Aufgaben-Dialog über das Feld <strong>Kategorien:</strong> — dort lassen sich Kategorien ebenfalls anlegen, umbenennen und löschen."
+        },
+        {
+          "type": "figure",
+          "img": "agenda-kategorie-swipe.webp",
+          "caption": "Die Kategorienseite: nach rechts gewischt erscheint der grüne Stift zum Umbenennen"
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> auf einer Aufgabe → rote Fläche <strong>LÖSCHEN</strong>. Ein <em>vollständiger</em> Wisch löscht sofort, ohne Antippen und ohne Rückfrage.",
+            "<strong>Nach rechts wischen</strong> auf einer Aufgabe → keine Aktion. Aufgabenzeilen haben nur die eine Seite.",
+            "<strong>Zeile antippen</strong> → Bearbeiten-Dialog.",
+            "<strong>Kategorienseite, nach rechts wischen</strong> → grüner Stift = <strong>umbenennen</strong> (öffnet denselben Namensdialog).",
+            "<strong>Kategorienseite, nach links wischen</strong> → <strong>LÖSCHEN</strong>, vollständig gewischt sofort.",
+            "<strong>Kategorienseite, Zeile antippen</strong> → in die gefilterte Aufgabenliste springen (nicht bearbeiten).",
+            "<strong>Im Kategorien-Dialog</strong> (aus dem Aufgaben-Dialog) wischt jede Zeile <strong>nach links</strong> und zeigt zwei Knöpfe: Stift zum Umbenennen und roten Mülleimer zum Löschen.",
+            "<strong>Das kleine x</strong> am Kategorie-Chip im Bearbeiten-Dialog entfernt die Zuordnung direkt.",
+            "<strong>Enter in der Suchleiste</strong> legt an; der leere Hinweistext ist ebenfalls anklickbar und tut dasselbe."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "agenda-swipe.webp",
+          "caption": "Nach links gewischt: LÖSCHEN — ein vollständiger Wisch führt es sofort aus"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong><code>offen: n</code> ist keine Zählung offener Aufgaben</strong>, sondern die Länge der Liste.",
+            "<strong>Der Vollwisch löscht ohne Rückfrage und ohne Rückgängig.</strong> Das ist der gewollte Weg, eine Aufgabe abzuhaken — nur ist er nicht umkehrbar.",
+            "<strong>Eine Kategorie löschen löscht keine Aufgaben</strong>, entfernt sie aber aus allen. Die Zuordnung ist danach weg, die Aufgaben bleiben.",
+            "<strong>Umbenennen auf einen bereits vorhandenen Namen verschmilzt</strong> die beiden Kategorien: die umbenannte verschwindet, ihre Aufgaben hängen danach an der bestehenden.",
+            "<strong>Vor dem ersten Antippen eines Sortierknopfs steht die Liste rückwärts</strong> (Z nach A). Der erste Druck auf einen Knopf ist immer aufsteigend, jeder weitere dreht.",
+            "<strong>Ohne Termin ist grün</strong> — die Farbe sagt nicht \"erledigt\", sondern nur \"nicht eilig\"."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/dailyrun\">DAILY RUN</a> — für den Tag, an dem eine Liste zu viel ist",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — dieselben Wischgesten, wie sie überall in der App funktionieren",
+            "<a href=\"#/handbook/market\">MARKET</a> — die andere flache Liste, dort mit Mengen und Kaufhaken",
+            "<a href=\"#/handbook/start\">COMMLINK</a> — wie die AGENDA-Kachel aufs Deck kommt"
+          ]
+        }
+      ]
+    }
+  ]
+}

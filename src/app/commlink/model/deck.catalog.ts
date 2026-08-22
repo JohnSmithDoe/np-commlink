@@ -296,6 +296,24 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.rituals'),
   },
   {
+    id: 'handbook',
+    module: 'handbook',
+    icon: 'book-outline',
+    route: '/handbook',
+    titleKey: marker('page-title.handbook'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.handbook.name'),
+        descKey: marker('deck.cyberpunk.handbook.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.handbook.name'),
+        descKey: marker('deck.boomer.handbook.desc'),
+      },
+    },
+    onDeck: false,
+  },
+  {
     id: 'settings',
     module: 'settings',
     icon: 'settings-outline',

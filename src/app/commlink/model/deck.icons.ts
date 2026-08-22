@@ -1,4 +1,5 @@
 import {
+  bookOutline,
   businessOutline,
   cartOutline,
   checkboxOutline,
@@ -19,6 +20,7 @@ import {
 } from 'ionicons/icons';
 
 export const DECK_ICONS = {
+  'book-outline': bookOutline,
   'business-outline': businessOutline,
   'cart-outline': cartOutline,
   'checkbox-outline': checkboxOutline,

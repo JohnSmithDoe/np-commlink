@@ -1,0 +1,183 @@
+{
+  "slug": "stash",
+  "title": "STASH",
+  "plain": "Vorräte",
+  "route": "/household/storage",
+  "summary": "Was im Haus ist — mit Mindestmenge, Farbbalken, Mindesthaltbarkeitsdatum und einem Wisch zurück auf die Einkaufsliste.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "STASH ist die Antwort auf „habe ich noch?“. Jede Zeile ist ein Ding im Haus mit einer Menge — <code>3 x Reis</code> heißt: drei im Schrank. Zwei Dinge macht diese Liste, die <a href=\"#/handbook/market\">MARKET</a> nicht kann: sie merkt sich pro Eintrag eine <strong>Mindestmenge</strong> und warnt farbig, wenn du darunter rutschst, und sie kennt ein <strong>Mindesthaltbarkeitsdatum</strong>."
+        },
+        {
+          "type": "p",
+          "html": "Die Deck-Kachel <em>STASH (Vorräte)</em> zeigt darum keine Gesamtzahl, sondern <strong>knapp: n</strong>."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "Über die Leiste unten auf <strong>Vorräte</strong> wechseln (oder im Menü <strong>STASH</strong>).",
+            "Namen tippen, <strong>Enter</strong> → <code>1 x Reis</code>. Mengen mit <code>+</code> und <code>−</code>.",
+            "Zeile antippen → <em>Eintrag bearbeiten</em>. Dort <strong>Mindestmenge</strong> setzen, z. B. <code>3</code>.",
+            "Zurück in der Liste ist der Balken links rot: eine Packung ist weniger als drei.",
+            "Nachkaufen: auf der Zeile <strong>nach rechts wischen</strong> → der Eintrag steht auf der <a href=\"#/handbook/market\">MARKET</a>-Einkaufsliste."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "stash-liste.webp",
+          "caption": "Roter Balken bei „Reis“ (unter der Mindestmenge), grün beim Rest, MHD bei „Joghurt“"
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Mindestmenge und der Farbbalken"
+        },
+        {
+          "type": "p",
+          "html": "Die Mindestmenge gehört <strong>zum einzelnen Eintrag</strong>, nicht zur Liste — es gibt keine globale Schwelle. Sie steht im Bearbeiten-Dialog jeder Zeile, und wenn sie gesetzt ist, erscheint in der Liste der Hinweis <em>Mindestmenge: n</em>. Der Balken links liest sich so:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>grün</strong> — Menge größer als die Mindestmenge, oder keine Mindestmenge gesetzt",
+            "<strong>gelb</strong> — Menge genau gleich der Mindestmenge (jetzt wäre der Moment)",
+            "<strong>rot</strong> — Menge kleiner als die Mindestmenge"
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Die Kachel-Zahl <strong>knapp: n</strong> zählt nur die <strong>roten</strong> Zeilen. Eine gelbe ist auf dem Deck unsichtbar. Ein frischer Eintrag hat keine Mindestmenge und ist damit immer grün — der Balken ist also keine Aussage über den Bestand, solange du nichts hinterlegt hast."
+        },
+        {
+          "type": "figure",
+          "img": "stash-dialog.webp",
+          "caption": "Der Dialog der Vorratszeile: Mindestmenge, MHD, Kategorien — aber kein Mengenfeld"
+        },
+        {
+          "type": "h3",
+          "html": "Zurück auf die Einkaufsliste"
+        },
+        {
+          "type": "p",
+          "html": "Das ist die Verbindung zwischen den beiden Listen, und sie ist eine Geste: <strong>auf der Vorratszeile nach rechts wischen</strong> (grüne Fläche mit Einkaufswagen, Beschriftung <em>Zur Einkaufsliste hinzufügen</em>). Weites Wischen führt es sofort aus, ein Tipp auf die Fläche genauso."
+        },
+        {
+          "type": "p",
+          "html": "Was dabei passiert: in <a href=\"#/handbook/market\">MARKET</a> entsteht ein Eintrag mit <strong>Menge 1</strong> und denselben Kategorien. Steht dort schon einer mit demselben Namen, wird nur dessen Menge um eins erhöht. <strong>Der Vorrat selbst bleibt unverändert</strong> — nichts wird abgezogen, nichts verschwindet hier. Es ist ein Merkzettel, kein Umbuchen."
+        },
+        {
+          "type": "figure",
+          "img": "stash-swipe-einkauf.webp",
+          "caption": "Nach rechts: der Eintrag wandert auf die Einkaufsliste — der Vorrat bleibt"
+        },
+        {
+          "type": "h3",
+          "html": "Mindesthaltbarkeitsdatum"
+        },
+        {
+          "type": "p",
+          "html": "Zwei Wege zu einem MHD:"
+        },
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Von Hand</strong> — im Bearbeiten-Dialog das Feld <em>Mindesthaltbarkeitsdatum</em> antippen, ein Kalender fährt von unten hoch (dessen Knöpfe beschriftet Ionic selbst, auf Englisch).",
+            "<strong>Aus einem Produkt</strong> — trägt ein Produkt in <a href=\"#/handbook/catalog\">CATALOG</a> eine <em>Haltbarkeit</em> (z. B. „3 Wochen“), dann rechnet die App beim Übernehmen ins Regal das Datum aus: heute plus drei Wochen."
+          ]
+        },
+        {
+          "type": "p",
+          "html": "Gesetzt erscheint in der Zeile <em>Haltbar bis: TT.MM.JJJJ</em>. In der Werkzeugleiste kommt neben <code>A-Z</code> der Sortierknopf <strong>MHD</strong> dazu — der einzige Ort in der App, an dem diese Liste anders sortiert als die beiden anderen. Ein abgelaufenes Datum wird <strong>nicht</strong> hervorgehoben und löst keinen Hinweis aus."
+        },
+        {
+          "type": "h3",
+          "html": "Vorräte füllen"
+        },
+        {
+          "type": "p",
+          "html": "Vier Wege hinein: die Suchleiste (Enter), das <code>+</code> oben rechts, <em>In die Vorräte übernehmen</em> aus dem Aktionsmenü der <a href=\"#/handbook/market\">MARKET</a>-Liste (mit den dort gekauften Mengen, gleiche Namen werden addiert) — und der Vorschlag <em>Aus den Produkten</em> in der Suche, wenn du ihn in den Listenoptionen eingeschaltet hast. Nur dieser letzte Weg bringt die Haltbarkeit des Produkts mit."
+        },
+        {
+          "type": "figure",
+          "img": "stash-produkt-uebernehmen.webp",
+          "caption": "Der Vorschlag „Aus den Produkten“ — ein Tipp legt den Vorrat an, mit Haltbarkeit"
+        },
+        {
+          "type": "p",
+          "html": "Das Barcode-Symbol gibt es auch hier, und auch hier nur in der Android-App. Es legt ein <strong>Produkt</strong> an, keinen Vorrat — Einzelheiten in <a href=\"#/handbook/market\">MARKET</a>."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort. Danach fünf Sekunden <strong>Rückgängig</strong>.",
+            "<strong>Nach rechts wischen</strong> → grün, Einkaufswagen: <em>Zur Einkaufsliste hinzufügen</em>. Weites Wischen führt es direkt aus.",
+            "<strong><code>+</code> / <code>−</code> rechts in der Zeile</strong> — der <strong>einzige</strong> Weg, die Menge zu ändern; im Dialog gibt es kein Mengenfeld. Bei 0 ist Schluss, die Zeile bleibt stehen.",
+            "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em>: Name, Mindestmenge, Mindesthaltbarkeitsdatum, Kategorien.",
+            "<strong><code>MHD</code></strong> in der Werkzeugleiste sortiert nach Datum, nochmal tippen dreht die Richtung.",
+            "<strong>Schieberegler-Symbol</strong> → <a href=\"#/handbook/catalog\">CATALOG</a>-Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>. <strong>Barcode</strong> → nur in der APK.",
+            "Kein Lang-Druck, kein Sortier-Griff."
+          ]
+        },
+        {
+          "type": "figure",
+          "img": "stash-swipe-loeschen.webp",
+          "caption": "Nach links: LÖSCHEN — mit Rückgängig-Hinweis"
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Menge 0 löscht nicht.</strong> Eine leere Packung bleibt als <code>0 x …</code> stehen, bis du sie wischst.",
+            "Die Mindestmenge steht pro Eintrag. Wer sie nie setzt, hat eine Kachel, die dauerhaft <em>knapp: 0</em> meldet — und eine durchgehend grüne Liste, die nichts bedeutet.",
+            "<strong>Gelb wird nicht gezählt.</strong> Genau auf der Mindestmenge zu sein gilt der Kachel noch nicht als knapp.",
+            "Der Wisch auf die Einkaufsliste <strong>zieht hier nichts ab</strong>. Nach dem Einkauf musst du entweder <em>In die Vorräte übernehmen</em> benutzen oder die Menge selbst hochzählen.",
+            "Liegt in <a href=\"#/handbook/market\">MARKET</a> noch eine <strong>durchgestrichene</strong> Zeile desselben Namens, erhöht der Wisch nur deren Menge — sie bleibt abgehakt und fällt im Laden nicht auf.",
+            "Das MHD ist reine Information. Nichts erinnert dich; nur der <code>MHD</code>-Sortierknopf holt Ablaufendes nach oben."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/market\">MARKET</a> — die Einkaufsliste, in beide Richtungen mit dieser verbunden",
+            "<a href=\"#/handbook/catalog\">CATALOG</a> — Produkte, Haltbarkeitsvorlagen und die Listenoptionen",
+            "<a href=\"#/handbook/soykaf\">SOYKAF</a> — Rezepte prüfen gegen genau diese Vorräte, was kochbar ist",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Wischen, Suchen, Sortieren im Detail"
+          ]
+        }
+      ]
+    }
+  ]
+}
