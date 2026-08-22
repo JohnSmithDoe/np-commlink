@@ -24,7 +24,8 @@ export const settingsContext = providePersistedContext({
   select: selectSettingsState,
   save: {
     on: [
-      SettingsActions.setTheme,
+      SettingsActions.setSkin,
+      SettingsActions.setMode,
       SettingsActions.setLanguage,
       SettingsActions.setAccentColors,
       SettingsActions.resetAccentColors,

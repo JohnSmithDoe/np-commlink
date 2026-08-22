@@ -15,7 +15,7 @@
   display: none;
 }
 
-:host-context([data-theme='cyberpunk']) .confetti__spark {
+:host-context([data-skin='cyberpunk']) .confetti__spark {
   display: block;
   position: absolute;
   top: 0;
@@ -50,7 +50,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host-context([data-theme='cyberpunk']) .confetti__spark {
+  :host-context([data-skin='cyberpunk']) .confetti__spark {
     display: none;
   }
 }

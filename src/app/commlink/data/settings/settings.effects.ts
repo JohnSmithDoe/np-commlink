@@ -26,15 +26,17 @@ export class SettingsEffects {
       return this.#actions$.pipe(
         ofType(
           SettingsActions.loaded,
-          SettingsActions.setTheme,
+          SettingsActions.setSkin,
+          SettingsActions.setMode,
           SettingsActions.setAccentColors,
           SettingsActions.resetAccentColors
         ),
         concatLatestFrom(() => this.#store.select(selectSettingsState)),
         tap(([action, settings]) => {
           this.#theme.apply(
-            settings.theme,
-            settings.customAccents?.[settings.theme]
+            settings.skin,
+            settings.mode,
+            settings.customAccents?.[settings.skin]
           );
           if (action.type === SettingsActions.loaded.type) {
             this.#splash.reveal();

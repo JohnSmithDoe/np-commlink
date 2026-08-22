@@ -4,7 +4,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { LanguageModelService } from '../../../@shared/data/theme/language-model.service';
 import {
   LanguageModelAvailability,
-  Theme,
+  Skin,
 } from '../../../@shared/model/app.types';
 import { DashboardFacade, DeckFacade, ThemeService } from '../../data';
 import { DECK_CATALOG } from '../../model/deck.catalog';
@@ -17,7 +17,7 @@ const catalogPrograms = DECK_CATALOG.filter((entry) => entry.onDeck).map(
 
 describe('CommlinkPage', () => {
   const availability = signal<LanguageModelAvailability>('probing');
-  const theme = signal<Theme>('cyberpunk');
+  const skin = signal<Skin>('cyberpunk');
   const bySource = signal<
     Record<
       string,
@@ -27,14 +27,14 @@ describe('CommlinkPage', () => {
 
   const setup = () => {
     availability.set('probing');
-    theme.set('cyberpunk');
+    skin.set('cyberpunk');
     bySource.set({});
     TestBed.configureTestingModule({
       providers: [
         provideTranslateService(),
         provideZonelessChangeDetection(),
         { provide: LanguageModelService, useValue: { availability } },
-        { provide: ThemeService, useValue: { theme } },
+        { provide: ThemeService, useValue: { skin } },
         {
           provide: DashboardFacade,
           useValue: {
@@ -109,16 +109,16 @@ describe('CommlinkPage', () => {
   });
 
   describe('the HUD chrome', () => {
-    it('follows the active theme', () => {
+    it('follows the active skin', () => {
       const page = setup();
       expect(page.chrome()['noise']).toBe('deck.cyberpunk.chrome.noise');
 
-      theme.set('boomer');
+      skin.set('boomer');
       expect(page.chrome()['noise']).toBe('deck.boomer.chrome.noise');
     });
   });
 
-  it('renders the CREDSTICK badge in the active theme’s currency', () => {
+  it('renders the CREDSTICK badge in the active skin’s currency', () => {
     const page = setup();
     bySource.set({ cash: { metrics: { balance: 1234 } } });
     const cashTile = () =>
@@ -126,7 +126,7 @@ describe('CommlinkPage', () => {
 
     expect(cashTile()).toBe('¥ 1234 nyen');
 
-    theme.set('boomer');
+    skin.set('boomer');
     expect(cashTile()).toContain('€');
   });
 
@@ -151,9 +151,9 @@ describe('CommlinkPage', () => {
       expect(page.resonanceRating()).toBe('3.0');
     });
 
-    it('renders the real EUR balance under the boomer theme', () => {
+    it('renders the real EUR balance under the boomer skin', () => {
       const page = setup();
-      theme.set('boomer');
+      skin.set('boomer');
       bySource.set({ cash: { metrics: { balance: 1234 } } });
 
       expect(page.nuyenLabel()).toContain('1.234,00');

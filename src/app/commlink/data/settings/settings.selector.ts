@@ -7,9 +7,14 @@ export const SETTINGS_STATE_KEY = 'settings';
 export const selectSettingsState =
   createFeatureSelector<SettingsState>(SETTINGS_STATE_KEY);
 
-export const selectTheme = createSelector(
+export const selectSkin = createSelector(
   selectSettingsState,
-  (settings) => settings.theme
+  (settings) => settings.skin
+);
+
+export const selectMode = createSelector(
+  selectSettingsState,
+  (settings) => settings.mode
 );
 
 export const selectRecentEmojis = createSelector(

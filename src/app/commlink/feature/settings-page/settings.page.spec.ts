@@ -4,25 +4,30 @@ import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 
 import type { SegmentCustomEvent } from '@ionic/core';
-import { AccentColors, Theme } from '../../../@shared/model/app.types';
+import { AccentColors, Mode, Skin } from '../../../@shared/model/app.types';
 import { SettingsFacade } from '../../data';
 import { SettingsPage } from './settings.page';
 
 describe('SettingsPage', () => {
-  const theme = signal<Theme>('cyberpunk');
-  const customAccents = signal<Partial<Record<Theme, AccentColors>>>({});
+  const skin = signal<Skin>('cyberpunk');
+  const mode = signal<Mode>('dark');
+  const customAccents = signal<Partial<Record<Skin, AccentColors>>>({});
   const settings = {
-    theme,
+    skin,
+    mode,
     customAccents,
-    setTheme: vi.fn(),
+    setSkin: vi.fn(),
+    setMode: vi.fn(),
     setAccentColors: vi.fn(),
     resetAccentColors: vi.fn(),
   };
 
   const setup = () => {
-    theme.set('cyberpunk');
+    skin.set('cyberpunk');
+    mode.set('dark');
     customAccents.set({});
-    settings.setTheme.mockClear();
+    settings.setSkin.mockClear();
+    settings.setMode.mockClear();
     settings.setAccentColors.mockClear();
     settings.resetAccentColors.mockClear();
     TestBed.configureTestingModule({
@@ -36,19 +41,36 @@ describe('SettingsPage', () => {
     return TestBed.createComponent(SettingsPage).componentInstance;
   };
 
-  describe('the theme picker', () => {
-    it('offers every member of the theme union, each with a label key', () => {
+  describe('the skin picker', () => {
+    it('offers every member of the skin union, each with a label key', () => {
       const page = setup();
-      expect(page.themes).toEqual(['cyberpunk', 'boomer']);
-      for (const option of page.themes) {
-        expect(page.themeLabelKeys[option]).toBe(`settings.theme.${option}`);
+      expect(page.skins).toEqual(['cyberpunk', 'boomer']);
+      for (const option of page.skins) {
+        expect(page.skinLabelKeys[option]).toBe(`settings.theme.${option}`);
       }
     });
 
-    it('sets the theme the segment reports', () => {
+    it('sets the skin the segment reports', () => {
       const page = setup();
-      page.changeTheme({ detail: { value: 'boomer' } } as SegmentCustomEvent);
-      expect(settings.setTheme).toHaveBeenCalledWith('boomer');
+      page.changeSkin({ detail: { value: 'boomer' } } as SegmentCustomEvent);
+      expect(settings.setSkin).toHaveBeenCalledWith('boomer');
+    });
+  });
+
+  describe('the mode picker', () => {
+    it('offers every member of the mode union, each with a label key', () => {
+      const page = setup();
+      expect(page.modes).toEqual(['light', 'dark']);
+      for (const option of page.modes) {
+        expect(page.modeLabelKeys[option]).toBe(`settings.mode.${option}`);
+      }
+    });
+
+    it('sets the mode the segment reports, leaving the skin alone', () => {
+      const page = setup();
+      page.changeMode({ detail: { value: 'light' } } as SegmentCustomEvent);
+      expect(settings.setMode).toHaveBeenCalledWith('light');
+      expect(settings.setSkin).not.toHaveBeenCalled();
     });
   });
 
@@ -59,11 +81,21 @@ describe('SettingsPage', () => {
       expect(page.secondarySwatch()).toBe('#32aea6');
     });
 
-    it("reads the OTHER theme's built-in swatch once switched", () => {
+    it("reads the OTHER skin's built-in swatch once switched", () => {
       const page = setup();
-      theme.set('boomer');
+      skin.set('boomer');
+      mode.set('light');
       expect(page.primarySwatch()).toBe('#2f5bd0');
       expect(page.secondarySwatch()).toBe('#4b6b7a');
+    });
+
+    it('re-reads the swatch when only the MODE changes', () => {
+      const page = setup();
+      skin.set('boomer');
+      mode.set('light');
+      expect(page.primarySwatch()).toBe('#2f5bd0');
+      mode.set('dark');
+      expect(page.primarySwatch()).toBe('#7aa2f7');
     });
 
     it('prefers a stored override over the built-in swatch', () => {
@@ -97,9 +129,9 @@ describe('SettingsPage', () => {
   });
 
   describe('resetAccents', () => {
-    it('dispatches a reset for the currently-selected theme', () => {
+    it('dispatches a reset for the currently-selected skin', () => {
       const page = setup();
-      theme.set('boomer');
+      skin.set('boomer');
       page.resetAccents();
       expect(settings.resetAccentColors).toHaveBeenCalledWith('boomer');
     });

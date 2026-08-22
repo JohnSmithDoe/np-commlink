@@ -69,6 +69,6 @@
   }
 }
 
-:host-context([data-theme='cyberpunk']) .char {
+:host-context([data-skin='cyberpunk']) .char {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }

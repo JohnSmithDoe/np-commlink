@@ -15,17 +15,18 @@ describe('settingsReducer', () => {
   it('hydrates from loaded()', () => {
     const state = settingsReducer(
       initialSettings,
-      SettingsActions.loaded({ theme: 'boomer', language: 'de' })
+      SettingsActions.loaded({ skin: 'boomer', mode: 'light', language: 'de' })
     );
-    expect(state).toEqual({ theme: 'boomer', language: 'de' });
+    expect(state).toEqual({ skin: 'boomer', mode: 'light', language: 'de' });
   });
 
-  it('fills a persisted doc that is missing the theme from the defaults', () => {
+  it('fills a persisted doc that is missing either axis from the defaults', () => {
     const state = settingsReducer(
       initialSettings,
       SettingsActions.loaded({} as never)
     );
-    expect(state.theme).toBe('cyberpunk');
+    expect(state.skin).toBe('cyberpunk');
+    expect(state.mode).toBe('dark');
   });
 
   it('keeps the initial state when loaded() carries null (fresh install)', () => {
@@ -36,20 +37,29 @@ describe('settingsReducer', () => {
     expect(state).toBe(initialSettings);
   });
 
-  it('defaults the theme to cyberpunk', () => {
-    expect(initialSettings.theme).toBe('cyberpunk');
+  it('defaults to the cyberpunk skin in dark mode', () => {
+    expect(initialSettings.skin).toBe('cyberpunk');
+    expect(initialSettings.mode).toBe('dark');
   });
 
-  it('sets the theme via setTheme() while keeping other fields', () => {
+  it('sets the skin via setSkin() while keeping other fields', () => {
     const state = settingsReducer(
       initialSettings,
-      SettingsActions.setTheme('boomer')
+      SettingsActions.setSkin('boomer')
     );
-    expect(state).toEqual({ ...initialSettings, theme: 'boomer' });
+    expect(state).toEqual({ ...initialSettings, skin: 'boomer' });
+  });
+
+  it('sets the mode independently of the skin', () => {
+    const state = settingsReducer(
+      initialSettings,
+      SettingsActions.setMode('light')
+    );
+    expect(state).toEqual({ ...initialSettings, mode: 'light' });
   });
 
   describe('setAccentColors', () => {
-    it('stores a custom accent pair under the given theme', () => {
+    it('stores a custom accent pair under the given skin', () => {
       const state = settingsReducer(
         initialSettings,
         SettingsActions.setAccentColors('cyberpunk', {
@@ -62,7 +72,7 @@ describe('settingsReducer', () => {
       });
     });
 
-    it("keeps the other theme's override untouched", () => {
+    it("keeps the other skin's override untouched", () => {
       const seeded = settingsReducer(
         initialSettings,
         SettingsActions.setAccentColors('cyberpunk', {
@@ -85,7 +95,7 @@ describe('settingsReducer', () => {
   });
 
   describe('resetAccentColors', () => {
-    it("deletes only the given theme's override", () => {
+    it("deletes only the given skin's override", () => {
       const seeded = settingsReducer(
         initialSettings,
         SettingsActions.setAccentColors('cyberpunk', {
@@ -146,7 +156,11 @@ describe('settingsReducer', () => {
     });
 
     it('hydrates a stored doc that predates the field', () => {
-      const stored = { theme: 'boomer', language: 'en' } as SettingsState;
+      const stored = {
+        skin: 'boomer',
+        mode: 'light',
+        language: 'en',
+      } as SettingsState;
       const hydrated = settingsReducer(
         initialSettings,
         SettingsActions.loaded(stored)

@@ -1,7 +1,4 @@
-import {
-  LanguageModelAvailability,
-  Theme,
-} from '../../@shared/model/app.types';
+import { LanguageModelAvailability, Skin } from '../../@shared/model/app.types';
 import { DashboardState } from '../model/dashboard.types';
 import { DeckChrome, DeckChromeField } from '../model/deck.catalog';
 import {
@@ -43,10 +40,10 @@ export const programStatus = (
 export const badgeLabel = (
   entry: DeckEntry,
   value: number,
-  theme: Theme,
+  skin: Skin,
   locale: string
 ): string =>
-  entry.currency ? currencyLabel(theme, value, locale) : String(value);
+  entry.currency ? currencyLabel(skin, value, locale) : String(value);
 
 export const nodeStatusKey = (
   chrome: DeckChrome,
@@ -113,8 +110,8 @@ export const visibleEntries = (
   );
 
 export const resolveLabels =
-  (theme: Theme) =>
-  (entry: DeckEntry): DeckProgram => ({ ...entry, ...entry.labels[theme] });
+  (skin: Skin) =>
+  (entry: DeckEntry): DeckProgram => ({ ...entry, ...entry.labels[skin] });
 
 const sameOrder = <T>(a: readonly T[], b: readonly T[]): boolean =>
   a.length === b.length && a.every((value, index) => value === b[index]);

@@ -6,7 +6,8 @@ import { SettingsState } from '../../model/settings.types';
 const RECENT_EMOJI_LIMIT = 24;
 
 export const initialSettings: SettingsState = {
-  theme: 'cyberpunk',
+  skin: 'cyberpunk',
+  mode: 'dark',
   language: 'de',
 };
 
@@ -15,9 +16,13 @@ export const settingsReducer = createReducer(
   on(SettingsActions.loaded, (state, { settings }): SettingsState =>
     settings ? { ...initialSettings, ...settings } : state
   ),
-  on(SettingsActions.setTheme, (state, { theme }): SettingsState => ({
+  on(SettingsActions.setSkin, (state, { skin }): SettingsState => ({
     ...state,
-    theme,
+    skin,
+  })),
+  on(SettingsActions.setMode, (state, { mode }): SettingsState => ({
+    ...state,
+    mode,
   })),
   on(SettingsActions.setLanguage, (state, { language }): SettingsState => ({
     ...state,
@@ -25,13 +30,13 @@ export const settingsReducer = createReducer(
   })),
   on(
     SettingsActions.setAccentColors,
-    (state, { theme, colors }): SettingsState => ({
+    (state, { skin, colors }): SettingsState => ({
       ...state,
-      customAccents: { ...state.customAccents, [theme]: colors },
+      customAccents: { ...state.customAccents, [skin]: colors },
     })
   ),
-  on(SettingsActions.resetAccentColors, (state, { theme }): SettingsState => {
-    const { [theme]: _removed, ...rest } = state.customAccents ?? {};
+  on(SettingsActions.resetAccentColors, (state, { skin }): SettingsState => {
+    const { [skin]: _removed, ...rest } = state.customAccents ?? {};
     return { ...state, customAccents: rest };
   }),
   on(EmojiActions.used, (state, { glyphs }): SettingsState => ({

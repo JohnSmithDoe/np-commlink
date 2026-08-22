@@ -177,7 +177,7 @@ $round-width: 3rem;
   }
 }
 
-:host-context([data-theme='cyberpunk']) {
+:host-context([data-skin='cyberpunk']) {
   .tp-victory__rays {
     display: block;
     width: 150%;

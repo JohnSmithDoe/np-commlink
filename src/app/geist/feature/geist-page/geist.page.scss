@@ -57,7 +57,7 @@
   font-size: 3rem;
   color: var(--sr-amber);
 }
-:host-context([data-theme='cyberpunk']) .gs-panel__icon {
+:host-context([data-skin='cyberpunk']) .gs-panel__icon {
   filter: drop-shadow(0 0 14px rgba(var(--sr-amber-rgb), 0.5));
 }
 

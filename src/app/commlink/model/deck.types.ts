@@ -1,4 +1,4 @@
-import { Marker, Theme } from '../../@shared/model/app.types';
+import { Marker, Skin } from '../../@shared/model/app.types';
 import { DeckIcon } from './deck.icons';
 
 export type ProgramStatus = 'online' | 'standby' | 'offline';
@@ -26,7 +26,7 @@ export type DeckEntry = {
   icon: DeckIcon;
   route: string;
   titleKey: Marker;
-  labels: Record<Theme, { nameKey: Marker; descKey: Marker }>;
+  labels: Record<Skin, { nameKey: Marker; descKey: Marker }>;
   onDeck: boolean;
   source?: string;
   metric?: string;

@@ -4,7 +4,8 @@ export function mockSettingsState(
   overrides: Partial<SettingsState> = {}
 ): SettingsState {
   return {
-    theme: 'cyberpunk',
+    skin: 'cyberpunk',
+    mode: 'dark',
     language: 'de',
     ...overrides,
   };

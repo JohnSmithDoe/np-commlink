@@ -5,30 +5,35 @@ const setup = () => TestBed.inject(ThemeService);
 
 describe('ThemeService', () => {
   afterEach(() => {
-    delete document.documentElement.dataset['theme'];
+    delete document.documentElement.dataset['skin'];
+    delete document.documentElement.dataset['mode'];
     document.documentElement.style.cssText = '';
   });
 
-  it('sets the <html data-theme> attribute', () => {
+  it('sets the <html> axis pair as two independent attributes', () => {
     const theme = setup();
-    theme.apply('boomer');
-    expect(document.documentElement.dataset['theme']).toBe('boomer');
+    theme.apply('boomer', 'dark');
+    expect(document.documentElement.dataset['skin']).toBe('boomer');
+    expect(document.documentElement.dataset['mode']).toBe('dark');
   });
 
-  it('publishes the applied theme on the theme signal', () => {
+  it('publishes each applied axis on its own signal', () => {
     const theme = setup();
-    theme.apply('boomer');
-    expect(theme.theme()).toBe('boomer');
+    theme.apply('boomer', 'light');
+    expect(theme.skin()).toBe('boomer');
+    expect(theme.mode()).toBe('light');
   });
 
-  it('sets the <meta name="theme-color"> content', () => {
+  it('takes the <meta name="theme-color"> content from the MODE, not the skin', () => {
     const meta = document.createElement('meta');
     meta.setAttribute('name', 'theme-color');
     document.head.append(meta);
 
     const theme = setup();
-    theme.apply('cyberpunk');
+    theme.apply('boomer', 'dark');
     expect(meta.getAttribute('content')).toBe('#0f141b');
+    theme.apply('cyberpunk', 'light');
+    expect(meta.getAttribute('content')).toBe('#f4f6f8');
 
     meta.remove();
   });
@@ -36,7 +41,10 @@ describe('ThemeService', () => {
   describe('accent overrides', () => {
     it('sets the full derived var set for an overridden accent', () => {
       const theme = setup();
-      theme.apply('cyberpunk', { primary: '#3880ff', secondary: '#32aea6' });
+      theme.apply('cyberpunk', 'dark', {
+        primary: '#3880ff',
+        secondary: '#32aea6',
+      });
 
       const style = document.documentElement.style;
       expect(style.getPropertyValue('--ion-color-primary')).toBe('#3880ff');
@@ -57,8 +65,11 @@ describe('ThemeService', () => {
 
     it('leaves an un-overridden accent with no inline var (falls back to SCSS)', () => {
       const theme = setup();
-      theme.apply('cyberpunk', { primary: '#3880ff', secondary: '#32aea6' });
-      theme.apply('cyberpunk', { primary: '#3880ff' } as never);
+      theme.apply('cyberpunk', 'dark', {
+        primary: '#3880ff',
+        secondary: '#32aea6',
+      });
+      theme.apply('cyberpunk', 'dark', { primary: '#3880ff' } as never);
 
       expect(
         document.documentElement.style.getPropertyValue('--ion-color-secondary')
@@ -67,8 +78,11 @@ describe('ThemeService', () => {
 
     it('clears every accent var when reapplied with no override at all', () => {
       const theme = setup();
-      theme.apply('cyberpunk', { primary: '#3880ff', secondary: '#32aea6' });
-      theme.apply('cyberpunk');
+      theme.apply('cyberpunk', 'dark', {
+        primary: '#3880ff',
+        secondary: '#32aea6',
+      });
+      theme.apply('cyberpunk', 'dark');
 
       const style = document.documentElement.style;
       expect(style.getPropertyValue('--ion-color-primary')).toBe('');

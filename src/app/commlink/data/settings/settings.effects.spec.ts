@@ -53,29 +53,34 @@ describe('SettingsEffects', () => {
 
   describe('applyTheme$', () => {
     it('mirrors the hydrated theme onto the DOM', async () => {
-      const effects = setup({ theme: 'boomer', language: 'de' });
+      const effects = setup({ skin: 'boomer', mode: 'light', language: 'de' });
       actions$ = of(
-        SettingsActions.loaded({ theme: 'boomer', language: 'de' })
+        SettingsActions.loaded({
+          skin: 'boomer',
+          mode: 'light',
+          language: 'de',
+        })
       );
 
       await firstValueFrom(effects.applyTheme$);
 
-      expect(theme.apply).toHaveBeenCalledWith('boomer', undefined);
+      expect(theme.apply).toHaveBeenCalledWith('boomer', 'light', undefined);
     });
 
-    it('mirrors a picked theme', async () => {
-      const effects = setup({ theme: 'boomer', language: 'de' });
-      actions$ = of(SettingsActions.setTheme('boomer'));
+    it('mirrors a picked skin', async () => {
+      const effects = setup({ skin: 'boomer', mode: 'light', language: 'de' });
+      actions$ = of(SettingsActions.setSkin('boomer'));
 
       await firstValueFrom(effects.applyTheme$);
 
-      expect(theme.apply).toHaveBeenCalledWith('boomer', undefined);
+      expect(theme.apply).toHaveBeenCalledWith('boomer', 'light', undefined);
     });
 
     it("passes the active theme's custom accents", async () => {
       const colors = { primary: '#111111', secondary: '#222222' };
       const effects = setup({
-        theme: 'cyberpunk',
+        skin: 'cyberpunk',
+        mode: 'dark',
         language: 'de',
         customAccents: { cyberpunk: colors },
       });
@@ -83,12 +88,13 @@ describe('SettingsEffects', () => {
 
       await firstValueFrom(effects.applyTheme$);
 
-      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', colors);
+      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', 'dark', colors);
     });
 
     it("does not pass the OTHER theme's accents", async () => {
       const effects = setup({
-        theme: 'cyberpunk',
+        skin: 'cyberpunk',
+        mode: 'dark',
         language: 'de',
         customAccents: {
           boomer: { primary: '#333333', secondary: '#444444' },
@@ -98,12 +104,13 @@ describe('SettingsEffects', () => {
 
       await firstValueFrom(effects.applyTheme$);
 
-      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', undefined);
+      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', 'dark', undefined);
     });
 
     it('mirrors a reset back to the built-in swatch', async () => {
       const effects = setup({
-        theme: 'cyberpunk',
+        skin: 'cyberpunk',
+        mode: 'dark',
         language: 'de',
         customAccents: {},
       });
@@ -111,7 +118,7 @@ describe('SettingsEffects', () => {
 
       await firstValueFrom(effects.applyTheme$);
 
-      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', undefined);
+      expect(theme.apply).toHaveBeenCalledWith('cyberpunk', 'dark', undefined);
     });
   });
 
@@ -125,9 +132,9 @@ describe('SettingsEffects', () => {
       expect(splash.reveal).toHaveBeenCalledTimes(1);
     });
 
-    it('does not lift on a theme change — the splash is a boot affordance', async () => {
+    it('does not lift on a skin change — the splash is a boot affordance', async () => {
       const effects = setup();
-      actions$ = of(SettingsActions.setTheme('boomer'));
+      actions$ = of(SettingsActions.setSkin('boomer'));
 
       await firstValueFrom(effects.applyTheme$.pipe(toArray()));
 
@@ -140,7 +147,11 @@ describe('SettingsEffects', () => {
       theme.apply.mockImplementation(() => void order.push('apply'));
       splash.reveal.mockImplementation(() => void order.push('reveal'));
       actions$ = of(
-        SettingsActions.loaded({ theme: 'boomer', language: 'de' })
+        SettingsActions.loaded({
+          skin: 'boomer',
+          mode: 'light',
+          language: 'de',
+        })
       );
 
       await firstValueFrom(effects.applyTheme$);
@@ -160,9 +171,13 @@ describe('SettingsEffects', () => {
 
   describe('applyLanguage$', () => {
     it('hands the hydrated language to the language service', async () => {
-      const effects = setup({ theme: 'boomer', language: 'en' });
+      const effects = setup({ skin: 'boomer', mode: 'light', language: 'en' });
       actions$ = of(
-        SettingsActions.loaded({ theme: 'boomer', language: 'en' })
+        SettingsActions.loaded({
+          skin: 'boomer',
+          mode: 'light',
+          language: 'en',
+        })
       );
 
       await firstValueFrom(effects.applyLanguage$);
@@ -171,7 +186,11 @@ describe('SettingsEffects', () => {
     });
 
     it('applies a picked language', async () => {
-      const effects = setup({ theme: 'cyberpunk', language: 'en' });
+      const effects = setup({
+        skin: 'cyberpunk',
+        mode: 'dark',
+        language: 'en',
+      });
       actions$ = of(SettingsActions.setLanguage('en'));
 
       await firstValueFrom(effects.applyLanguage$);
@@ -183,7 +202,11 @@ describe('SettingsEffects', () => {
   describe('restartOnLanguageChange$', () => {
     it('waits for the pending write before restarting', async () => {
       const order: string[] = [];
-      const effects = setup({ theme: 'cyberpunk', language: 'en' });
+      const effects = setup({
+        skin: 'cyberpunk',
+        mode: 'dark',
+        language: 'en',
+      });
       database.settled.mockImplementation(
         async () => void order.push('settled')
       );
@@ -197,7 +220,7 @@ describe('SettingsEffects', () => {
 
     it('does not restart for any other settings change', async () => {
       const effects = setup();
-      actions$ = of(SettingsActions.setTheme('boomer'));
+      actions$ = of(SettingsActions.setSkin('boomer'));
 
       await firstValueFrom(effects.restartOnLanguageChange$.pipe(toArray()));
 

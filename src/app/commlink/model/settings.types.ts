@@ -1,8 +1,14 @@
-import { AccentColors, Language, Theme } from '../../@shared/model/app.types';
+import {
+  AccentColors,
+  Language,
+  Mode,
+  Skin,
+} from '../../@shared/model/app.types';
 
 export interface SettingsState {
-  theme: Theme;
+  skin: Skin;
+  mode: Mode;
   language: Language;
-  customAccents?: Partial<Record<Theme, AccentColors>>;
+  customAccents?: Partial<Record<Skin, AccentColors>>;
   recentEmojis?: string[];
 }

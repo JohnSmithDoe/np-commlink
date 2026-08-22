@@ -2,7 +2,8 @@ import { createActionGroup, emptyProps } from '@ngrx/store';
 import {
   AccentColors,
   Language,
-  Theme,
+  Mode,
+  Skin,
 } from '../../../@shared/model/app.types';
 import { SettingsState } from '../../model/settings.types';
 
@@ -12,14 +13,15 @@ export const SettingsActions = createActionGroup({
     load: emptyProps(),
     loaded: (settings: SettingsState | null) => ({ settings }),
 
-    setTheme: (theme: Theme) => ({ theme }),
+    setSkin: (skin: Skin) => ({ skin }),
+    setMode: (mode: Mode) => ({ mode }),
 
     setLanguage: (language: Language) => ({ language }),
 
-    setAccentColors: (theme: Theme, colors: AccentColors) => ({
-      theme,
+    setAccentColors: (skin: Skin, colors: AccentColors) => ({
+      skin,
       colors,
     }),
-    resetAccentColors: (theme: Theme) => ({ theme }),
+    resetAccentColors: (skin: Skin) => ({ skin }),
   },
 });

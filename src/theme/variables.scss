@@ -1,10 +1,17 @@
 // ─── why ────────────────────────────────────────────────────────
 // Ionic's --ion-* chrome, wired to consume the raw --sr-* palette so one token
-// group reskins both. The aliases are theme-invariant; the values flip. The two
-// accent swatches are the exception, since --sr-amber/--sr-cyan alias THEM.
+// group reskins both axes. The aliases are theme-invariant; the values flip.
+//
+// The step ladder and the two rgb mirrors follow data-mode; the accent FAMILY
+// and the toolbar colour follow data-skin; the accent VALUES are the one thing
+// reading both, because neither hue survives crossing the other ground —
+// cyberpunk's amber drops to 2.3:1 on paper, boomer's blue to 2.6:1 on ink.
+// Hence four compound blocks, each pair verified at 5.2:1 or better, and each
+// spelled with the shade/tint that deriveIonicColorSet would compute, so a
+// custom swatch and a built-in one behave alike.
 //
 // --ion-color-accent is a third family, read only by toasts: it aliases success
-// on plain and primary under cyberpunk, so a toast follows the user's swatch
+// on boomer and primary under cyberpunk, so a toast follows the user's swatch
 // while success keeps encoding a value's SIGN in the charts and cash amounts.
 // Its .ion-color-accent class must stay global — a toast is teleported to
 // ion-app — and each accent is spelled as the whole --ion-color-<key>-* family
@@ -34,23 +41,9 @@
   --ion-color-accent-shade: var(--ion-color-success-shade);
   --ion-color-accent-tint: var(--ion-color-success-tint);
 
-  --ion-background-color-rgb: 244, 246, 248; // rgb mirror of --sr-bg (plain)
-  --ion-text-color-rgb: 31, 39, 51; // rgb mirror of --sr-text (plain)
+  --ion-background-color-rgb: 244, 246, 248; // rgb mirror of --sr-bg (light)
+  --ion-text-color-rgb: 31, 39, 51; // rgb mirror of --sr-text (light)
   --ion-toolbar-color: var(--sr-text);
-
-  --ion-color-primary: #2f5bd0;
-  --ion-color-primary-rgb: 47, 91, 208;
-  --ion-color-primary-contrast: #fff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #2950b7;
-  --ion-color-primary-tint: #446bd5;
-
-  --ion-color-secondary: #4b6b7a;
-  --ion-color-secondary-rgb: 75, 107, 122;
-  --ion-color-secondary-contrast: #fff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #425e6b;
-  --ion-color-secondary-tint: #5d7a87;
 
   --ion-color-step-50: #f2f2f2;
   --ion-color-step-100: #e6e6e6;
@@ -73,31 +66,9 @@
   --ion-color-step-950: #0d0d0d;
 }
 
-:root[data-theme='cyberpunk'] {
-  --ion-background-color-rgb: 15, 20, 27; // rgb mirror of --sr-bg (cyber)
-  --ion-text-color-rgb: 223, 228, 234; // rgb mirror of --sr-text (cyber)
-  --ion-toolbar-color: var(--ion-color-primary);
-
-  --ion-color-primary: #de8b27;
-  --ion-color-primary-rgb: 222, 139, 39;
-  --ion-color-primary-contrast: #000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #c37a22;
-  --ion-color-primary-tint: #e1973d;
-
-  --ion-color-secondary: #32aea6;
-  --ion-color-secondary-rgb: 50, 174, 166;
-  --ion-color-secondary-contrast: #000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #2c9992;
-  --ion-color-secondary-tint: #47b6af;
-
-  --ion-color-accent: var(--ion-color-primary);
-  --ion-color-accent-rgb: var(--ion-color-primary-rgb);
-  --ion-color-accent-contrast: var(--ion-color-primary-contrast);
-  --ion-color-accent-contrast-rgb: var(--ion-color-primary-contrast-rgb);
-  --ion-color-accent-shade: var(--ion-color-primary-shade);
-  --ion-color-accent-tint: var(--ion-color-primary-tint);
+:root[data-mode='dark'] {
+  --ion-background-color-rgb: 15, 20, 27; // rgb mirror of --sr-bg (dark)
+  --ion-text-color-rgb: 223, 228, 234; // rgb mirror of --sr-text (dark)
 
   --ion-color-step-50: #353535;
   --ion-color-step-100: #3f3f3f;
@@ -118,6 +89,81 @@
   --ion-color-step-850: #d2d2d2;
   --ion-color-step-900: #dcdcdc;
   --ion-color-step-950: #e6e6e6;
+}
+
+:root[data-skin='boomer'][data-mode='light'] {
+  --ion-color-primary: #2f5bd0;
+  --ion-color-primary-rgb: 47, 91, 208;
+  --ion-color-primary-contrast: #fff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2950b7;
+  --ion-color-primary-tint: #446bd5;
+
+  --ion-color-secondary: #4b6b7a;
+  --ion-color-secondary-rgb: 75, 107, 122;
+  --ion-color-secondary-contrast: #fff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #425e6b;
+  --ion-color-secondary-tint: #5d7a87;
+}
+
+:root[data-skin='boomer'][data-mode='dark'] {
+  --ion-color-primary: #7aa2f7;
+  --ion-color-primary-rgb: 122, 162, 247;
+  --ion-color-primary-contrast: #000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #6b8fd9;
+  --ion-color-primary-tint: #87abf8;
+
+  --ion-color-secondary: #8fa7b8;
+  --ion-color-secondary-rgb: 143, 167, 184;
+  --ion-color-secondary-contrast: #000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #7e93a2;
+  --ion-color-secondary-tint: #9ab0bf;
+}
+
+:root[data-skin='cyberpunk'] {
+  --ion-toolbar-color: var(--ion-color-primary);
+
+  --ion-color-accent: var(--ion-color-primary);
+  --ion-color-accent-rgb: var(--ion-color-primary-rgb);
+  --ion-color-accent-contrast: var(--ion-color-primary-contrast);
+  --ion-color-accent-contrast-rgb: var(--ion-color-primary-contrast-rgb);
+  --ion-color-accent-shade: var(--ion-color-primary-shade);
+  --ion-color-accent-tint: var(--ion-color-primary-tint);
+}
+
+:root[data-skin='cyberpunk'][data-mode='dark'] {
+  --ion-color-primary: #de8b27;
+  --ion-color-primary-rgb: 222, 139, 39;
+  --ion-color-primary-contrast: #000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+  --ion-color-primary-shade: #c37a22;
+  --ion-color-primary-tint: #e1973d;
+
+  --ion-color-secondary: #32aea6;
+  --ion-color-secondary-rgb: 50, 174, 166;
+  --ion-color-secondary-contrast: #000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+  --ion-color-secondary-shade: #2c9992;
+  --ion-color-secondary-tint: #47b6af;
+}
+
+:root[data-skin='cyberpunk'][data-mode='light'] {
+  --ion-color-primary: #96590a;
+  --ion-color-primary-rgb: 150, 89, 10;
+  --ion-color-primary-contrast: #fff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #844e09;
+  --ion-color-primary-tint: #a06a22;
+
+  --ion-color-secondary: #166b66;
+  --ion-color-secondary-rgb: 22, 107, 102;
+  --ion-color-secondary-contrast: #fff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #135e5a;
+  --ion-color-secondary-tint: #2d7a75;
 }
 
 .ion-color-accent {

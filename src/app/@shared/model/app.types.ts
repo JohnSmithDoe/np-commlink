@@ -5,12 +5,11 @@ export type IonColor = PredefinedColors | 'accent';
 export type Marker = string;
 export type Timestamp = string;
 export type IsoWeekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export type Theme = 'cyberpunk' | 'boomer';
+export type Skin = 'cyberpunk' | 'boomer';
+export type Mode = 'light' | 'dark';
 export type LanguageModelAvailability = Availability | 'probing';
-export const THEMES = [
-  'cyberpunk',
-  'boomer',
-] as const satisfies readonly Theme[];
+export const SKINS = ['cyberpunk', 'boomer'] as const satisfies readonly Skin[];
+export const MODES = ['light', 'dark'] as const satisfies readonly Mode[];
 
 export type Language = 'de' | 'en';
 export const LANGUAGES = ['de', 'en'] as const satisfies readonly Language[];

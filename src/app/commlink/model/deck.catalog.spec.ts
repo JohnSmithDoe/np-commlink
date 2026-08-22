@@ -1,30 +1,30 @@
 import de from '../../../../public/i18n/de.json';
 import en from '../../../../public/i18n/en.json';
-import { Marker, Theme } from '../../@shared/model/app.types';
+import { Marker, Skin } from '../../@shared/model/app.types';
 import { DECK_CATALOG, DECK_CHROME_FIELDS } from './deck.catalog';
 import { DECK_CHROME_LABELS, DECK_MODULE_LABELS } from './deck.labels';
 
-const THEMES: readonly Theme[] = ['cyberpunk', 'boomer'];
+const SKINS: readonly Skin[] = ['cyberpunk', 'boomer'];
 const CATALOGS: Record<string, Record<string, string>> = { de, en };
 
-const labelKeys = (theme: Theme): Marker[] =>
+const labelKeys = (skin: Skin): Marker[] =>
   DECK_CATALOG.flatMap((entry) => [
-    entry.labels[theme].nameKey,
-    entry.labels[theme].descKey,
+    entry.labels[skin].nameKey,
+    entry.labels[skin].descKey,
   ]);
 
-const chromeKeys = (theme: Theme): Marker[] =>
-  DECK_CHROME_FIELDS.map((field) => DECK_CHROME_LABELS[theme][field]);
+const chromeKeys = (skin: Skin): Marker[] =>
+  DECK_CHROME_FIELDS.map((field) => DECK_CHROME_LABELS[skin][field]);
 
 describe('DECK_CATALOG', () => {
   describe.each(Object.entries(CATALOGS))('the %s messages', (_, messages) => {
-    it.each(THEMES)('name and describe every program under %s', (theme) => {
-      const missing = labelKeys(theme).filter((key) => !(key in messages));
+    it.each(SKINS)('name and describe every program under %s', (skin) => {
+      const missing = labelKeys(skin).filter((key) => !(key in messages));
       expect(missing).toEqual([]);
     });
 
-    it.each(THEMES)('voice the whole HUD chrome under %s', (theme) => {
-      const missing = chromeKeys(theme).filter((key) => !(key in messages));
+    it.each(SKINS)('voice the whole HUD chrome under %s', (skin) => {
+      const missing = chromeKeys(skin).filter((key) => !(key in messages));
       expect(missing).toEqual([]);
     });
 

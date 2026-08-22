@@ -24,8 +24,10 @@ import {
   Language,
   LANGUAGES,
   Marker,
-  Theme,
-  THEMES,
+  Mode,
+  MODES,
+  Skin,
+  SKINS,
 } from '../../../@shared/model/app.types';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { APP_RELEASE, SOURCE_URL } from '../../../@shared/model/app.consts';
@@ -40,9 +42,14 @@ import {
   settingsOutline,
 } from 'ionicons/icons';
 
-const THEME_LABEL_KEYS: Record<Theme, Marker> = {
+const SKIN_LABEL_KEYS: Record<Skin, Marker> = {
   cyberpunk: marker('settings.theme.cyberpunk'),
   boomer: marker('settings.theme.boomer'),
+};
+
+const MODE_LABEL_KEYS: Record<Mode, Marker> = {
+  light: marker('settings.mode.light'),
+  dark: marker('settings.mode.dark'),
 };
 
 const LANGUAGE_LABELS: Record<Language, string> = {
@@ -50,9 +57,15 @@ const LANGUAGE_LABELS: Record<Language, string> = {
   en: 'English',
 };
 
-const DEFAULT_ACCENT_SWATCHES: Record<Theme, AccentColors> = {
-  cyberpunk: { primary: '#de8b27', secondary: '#32aea6' },
-  boomer: { primary: '#2f5bd0', secondary: '#4b6b7a' },
+const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
+  cyberpunk: {
+    dark: { primary: '#de8b27', secondary: '#32aea6' },
+    light: { primary: '#96590a', secondary: '#166b66' },
+  },
+  boomer: {
+    light: { primary: '#2f5bd0', secondary: '#4b6b7a' },
+    dark: { primary: '#7aa2f7', secondary: '#8fa7b8' },
+  },
 };
 
 @Component({
@@ -90,29 +103,35 @@ export class SettingsPage {
 
   readonly #settings = inject(SettingsFacade);
 
-  readonly theme = this.#settings.theme;
-  readonly themes = THEMES;
-  readonly themeLabelKeys = THEME_LABEL_KEYS;
+  readonly skin = this.#settings.skin;
+  readonly skins = SKINS;
+  readonly skinLabelKeys = SKIN_LABEL_KEYS;
+  readonly mode = this.#settings.mode;
+  readonly modes = MODES;
+  readonly modeLabelKeys = MODE_LABEL_KEYS;
   readonly languages = LANGUAGES;
   readonly languageLabels = LANGUAGE_LABELS;
   readonly language = this.#settings.language;
 
   readonly #activeAccents = computed(
-    () => this.#settings.customAccents()?.[this.theme()]
+    () => this.#settings.customAccents()?.[this.skin()]
+  );
+  readonly #defaultAccents = computed(
+    () => DEFAULT_ACCENT_SWATCHES[this.skin()][this.mode()]
   );
   readonly primarySwatch = computed(
-    () =>
-      this.#activeAccents()?.primary ??
-      DEFAULT_ACCENT_SWATCHES[this.theme()].primary
+    () => this.#activeAccents()?.primary ?? this.#defaultAccents().primary
   );
   readonly secondarySwatch = computed(
-    () =>
-      this.#activeAccents()?.secondary ??
-      DEFAULT_ACCENT_SWATCHES[this.theme()].secondary
+    () => this.#activeAccents()?.secondary ?? this.#defaultAccents().secondary
   );
 
-  changeTheme(event: SegmentCustomEvent) {
-    this.#settings.setTheme(event.detail.value as Theme);
+  changeSkin(event: SegmentCustomEvent) {
+    this.#settings.setSkin(event.detail.value as Skin);
+  }
+
+  changeMode(event: SegmentCustomEvent) {
+    this.#settings.setMode(event.detail.value as Mode);
   }
 
   changeLanguage(event: SegmentCustomEvent) {
@@ -128,10 +147,10 @@ export class SettingsPage {
   }
 
   resetAccents() {
-    this.#settings.resetAccentColors(this.theme());
+    this.#settings.resetAccentColors(this.skin());
   }
 
   #setAccents(colors: AccentColors) {
-    this.#settings.setAccentColors(this.theme(), colors);
+    this.#settings.setAccentColors(this.skin(), colors);
   }
 }

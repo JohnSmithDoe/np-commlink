@@ -24,7 +24,7 @@
   --cl-lift: 0 4px 12px rgba(15, 23, 42, 0.12);
 }
 
-:host-context([data-theme='cyberpunk']) {
+:host-context([data-skin='cyberpunk']) {
   --cl-bar-bg: rgba(0, 0, 0, 0.3);
   --cl-lift:
     0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(var(--sr-amber-rgb), 0.35);
@@ -39,7 +39,7 @@
   color: var(--sr-text-dim);
 }
 
-:host-context([data-theme='cyberpunk']) .cl::before {
+:host-context([data-skin='cyberpunk']) .cl::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -285,25 +285,25 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :host-context([data-theme='cyberpunk']) .cl-hero__title::before,
-  :host-context([data-theme='cyberpunk']) .cl-hero__title::after {
+  :host-context([data-skin='cyberpunk']) .cl-hero__title::before,
+  :host-context([data-skin='cyberpunk']) .cl-hero__title::after {
     content: attr(data-text);
     position: absolute;
     inset: 0;
     opacity: 0;
     mix-blend-mode: screen;
   }
-  :host-context([data-theme='cyberpunk']) .cl-hero__title::before {
+  :host-context([data-skin='cyberpunk']) .cl-hero__title::before {
     color: var(--sr-cyan);
     animation: cl-glitch 4.2s infinite steps(1);
   }
-  :host-context([data-theme='cyberpunk']) .cl-hero__title::after {
+  :host-context([data-skin='cyberpunk']) .cl-hero__title::after {
     color: var(--sr-red);
     animation: cl-glitch 3.1s infinite steps(1) reverse;
   }
 }
 
-:host-context([data-theme='cyberpunk']) {
+:host-context([data-skin='cyberpunk']) {
   .cl-hero__kicker {
     letter-spacing: 0.35em;
 

@@ -1,12 +1,12 @@
 import { Injectable, Signal, signal } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { AccentColors, Theme } from '../../@shared/model/app.types';
+import { AccentColors, Mode, Skin } from '../../@shared/model/app.types';
 import { deriveIonicColorSet, IonicColorSet } from '../util/ionic-color.utils';
 
-const THEME_COLOR: Record<Theme, string> = {
-  cyberpunk: '#0f141b',
-  boomer: '#f4f6f8',
+const THEME_COLOR: Record<Mode, string> = {
+  light: '#f4f6f8',
+  dark: '#0f141b',
 };
 
 type AccentKey = keyof AccentColors;
@@ -23,15 +23,19 @@ const CSS_VAR_SUFFIX: Record<keyof IonicColorSet, string> = {
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  readonly #theme = signal<Theme>('cyberpunk');
-  readonly theme: Signal<Theme> = this.#theme.asReadonly();
+  readonly #skin = signal<Skin>('cyberpunk');
+  readonly #mode = signal<Mode>('dark');
+  readonly skin: Signal<Skin> = this.#skin.asReadonly();
+  readonly mode: Signal<Mode> = this.#mode.asReadonly();
 
-  apply(theme: Theme, accents?: AccentColors): void {
-    this.#theme.set(theme);
-    document.documentElement.dataset['theme'] = theme;
+  apply(skin: Skin, mode: Mode, accents?: AccentColors): void {
+    this.#skin.set(skin);
+    this.#mode.set(mode);
+    document.documentElement.dataset['skin'] = skin;
+    document.documentElement.dataset['mode'] = mode;
     this.#applyAccentOverrides(accents);
-    this.#applyMetaThemeColor(theme);
-    this.#applyStatusBarStyle(theme);
+    this.#applyMetaThemeColor(mode);
+    this.#applyStatusBarStyle(mode);
   }
 
   #applyAccentOverrides(accents?: AccentColors): void {
@@ -57,15 +61,15 @@ export class ThemeService {
     }
   }
 
-  #applyMetaThemeColor(theme: Theme): void {
+  #applyMetaThemeColor(mode: Mode): void {
     const meta = document.querySelector('meta[name="theme-color"]');
-    meta?.setAttribute('content', THEME_COLOR[theme]);
+    meta?.setAttribute('content', THEME_COLOR[mode]);
   }
 
-  #applyStatusBarStyle(theme: Theme): void {
+  #applyStatusBarStyle(mode: Mode): void {
     if (!Capacitor.isNativePlatform()) return;
     void StatusBar.setStyle({
-      style: theme === 'boomer' ? Style.Light : Style.Dark,
+      style: mode === 'light' ? Style.Light : Style.Dark,
     }).catch(() => {});
   }
 }

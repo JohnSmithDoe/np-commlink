@@ -1,9 +1,9 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { Marker, Theme } from '../../@shared/model/app.types';
+import { Marker, Skin } from '../../@shared/model/app.types';
 import { DeckChrome } from './deck.catalog';
 import { AppModule } from './deck.types';
 
-export const DECK_CHROME_LABELS: Record<Theme, DeckChrome> = {
+export const DECK_CHROME_LABELS: Record<Skin, DeckChrome> = {
   cyberpunk: {
     grid: marker('deck.cyberpunk.chrome.grid'),
     'grid-value': marker('deck.cyberpunk.chrome.grid-value'),

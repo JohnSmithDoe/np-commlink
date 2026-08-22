@@ -18,10 +18,10 @@ import { selectDeckState } from './deck.selector';
 @Injectable({ providedIn: 'root' })
 export class DeckFacade {
   readonly #store = inject(Store);
-  readonly #theme = inject(ThemeService).theme;
+  readonly #skin = inject(ThemeService).skin;
   readonly #config = this.#store.selectSignal(selectDeckState);
 
-  readonly #labelled = computed(() => resolveLabels(this.#theme()));
+  readonly #labelled = computed(() => resolveLabels(this.#skin()));
 
   readonly menuEntries = computed(() =>
     visibleEntries(DECK_CATALOG, this.#config()).map(this.#labelled())

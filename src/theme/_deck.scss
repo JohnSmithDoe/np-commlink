@@ -5,7 +5,7 @@
 //
 // led-glow declares its pulse INSIDE `prefers-reduced-motion: no-preference`
 // rather than switching it off in a later `reduce` block: a media query adds no
-// specificity, so the opt-out lost to `:root[data-theme] .sr-led--on` and every
+// specificity, so the opt-out lost to `:root[data-skin] .sr-led--on` and every
 // LED pulsed anyway, one permanent animation per row.
 // ────────────────────────────────────────────────────────────────
 
@@ -17,7 +17,7 @@
 
 @mixin panel-cyber($bg-prop: background) {
   #{$bg-prop}: linear-gradient(158deg, var(--sr-panel), var(--sr-panel-2));
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 0 1px var(--sr-panel-inset);
 }
 
 @mixin hud-corners($size: 14px) {

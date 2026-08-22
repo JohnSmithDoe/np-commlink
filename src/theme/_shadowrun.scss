@@ -1,15 +1,30 @@
 // ─── why ────────────────────────────────────────────────────────
 // The --sr-* tokens and the .sr-* primitives wrapping _deck.scss's mixins.
 //
-// The accent duo aliases the Ionic brand colours, so a hue lives in one place
-// and variables.scss flips it per theme. Muted TEXT is --sr-text-dim, never the
-// accent at an alpha — the plain accent is a blue that drops under AA that way.
+// TWO independent axes: data-mode owns BRIGHTNESS (every surface and text
+// colour), data-skin owns DECORATION (font, case, tracking, radius, glow). Bare
+// :root is light+boomer, and each attribute block overrides only its own axis,
+// so the four combinations cost two blocks instead of four.
+//
+// `:root[data-mode]` and `:root[data-skin]` weigh the SAME, so for the tokens
+// reading both axes — --sr-line, --sr-text-dim, and the accent duo over in
+// variables.scss — source order is the tie-break and the skin blocks must come
+// LAST. Cyberpunk derives those two from the accent; boomer needs a literal per
+// mode, which is why they sit in the mode blocks at all.
+//
+// --sr-panel-inset and --sr-scanline-ink exist because two cyberpunk flourishes
+// were written as literal blacks against a dark ground; on paper they need the
+// mode's own ink, so the value is mode's and the rule using it stays skin's.
+//
+// The accent duo aliases the Ionic brand colours, so a hue lives in one place.
+// Muted TEXT is --sr-text-dim, never the accent at an alpha — the plain accent
+// is a blue that drops under AA that way.
 //
 // Take the nearest type rung; if none fits, the ladder gains one HERE rather
 // than a call site inventing a value. Icon boxes and clamp() heads stay
 // literals. --space-* is the same ladder times 1rem, anchored on --ion-padding.
 //
-// `color-scheme` follows data-theme to paint what we cannot style — scrollbars,
+// `color-scheme` follows data-mode to paint what we cannot style — scrollbars,
 // native pickers, autofill. The scrollbar pair is on :root, not `*`, because it
 // INHERITS, and inheritance crosses the shadow boundaries `*` cannot.
 // ────────────────────────────────────────────────────────────────
@@ -53,14 +68,16 @@
 
   --sr-bg: #f4f6f8; // app / content backdrop
   --sr-panel: #fff; // cards, items
-  --sr-panel-2: #fff; // gradient floor (flat in plain)
+  --sr-panel-2: #fff; // gradient floor (flat on paper)
   --sr-toolbar: #fff; // toolbar chrome
-  --sr-bg-hi: #f4f6f8; // content backdrop stops (flat in plain)
+  --sr-bg-hi: #fff; // content backdrop stops (cyberpunk's radial only)
   --sr-bg-mid: #f4f6f8;
-  --sr-bg-lo: #f4f6f8;
+  --sr-bg-lo: #e8ecf1;
   --sr-line: rgba(15, 23, 42, 0.12); // hairline / borders
   --sr-text: #1f2733; // body copy
   --sr-text-dim: #5b6472; // muted label (AA on paper)
+  --sr-panel-inset: rgba(15, 23, 42, 0.08); // panel-cyber's inset edge
+  --sr-scanline-ink: rgba(15, 23, 42, 0.05); // .sr-scanlines stripe
 
   --sr-deck-font: var(--sr-sans); // the app-wide UI font
   --sr-heading-transform: none; // ion-title / card titles case
@@ -76,7 +93,7 @@
   scrollbar-color: var(--sr-line) transparent;
 }
 
-:root[data-theme='cyberpunk'] {
+:root[data-mode='dark'] {
   color-scheme: dark;
 
   --sr-bg: #0f141b;
@@ -86,8 +103,15 @@
   --sr-bg-hi: #1e2732;
   --sr-bg-mid: #12161d;
   --sr-bg-lo: #0b0e13;
-  --sr-line: rgba(var(--sr-amber-rgb), 0.35);
+  --sr-line: rgba(226, 232, 240, 0.14);
   --sr-text: #dfe4ea;
+  --sr-text-dim: #9aa4b2;
+  --sr-panel-inset: rgba(0, 0, 0, 0.4);
+  --sr-scanline-ink: rgba(0, 0, 0, 0.22);
+}
+
+:root[data-skin='cyberpunk'] {
+  --sr-line: rgba(var(--sr-amber-rgb), 0.35);
   --sr-text-dim: rgba(var(--sr-amber-rgb), 0.85);
 
   --sr-deck-font: var(--sr-mono);
@@ -103,10 +127,15 @@
     0 0 40px rgba(var(--sr-amber-rgb), 0.22);
 }
 
+:root[data-skin='cyberpunk'][data-mode='light'] {
+  --sr-glow: 0 0 6px rgba(var(--sr-amber-rgb), 0.25);
+  --sr-glow-lg: 0 0 10px rgba(var(--sr-amber-rgb), 0.3);
+}
+
 ion-content {
   --background: var(--sr-bg);
 }
-:root[data-theme='cyberpunk'] ion-content {
+:root[data-skin='cyberpunk'] ion-content {
   --background: radial-gradient(
     circle at 50% -10%,
     var(--sr-bg-hi) 0%,
@@ -138,7 +167,7 @@ ion-card {
 .sr-panel {
   @include deck.panel-base;
 }
-:root[data-theme='cyberpunk'] {
+:root[data-skin='cyberpunk'] {
   ion-card {
     @include deck.panel-cyber(--background);
   }
@@ -159,7 +188,7 @@ ion-item.ion-color ion-note {
 ion-menu ion-item {
   --color: var(--sr-text);
 }
-:root[data-theme='cyberpunk'] ion-menu ion-item {
+:root[data-skin='cyberpunk'] ion-menu ion-item {
   --color: var(--sr-amber);
 }
 
@@ -179,7 +208,7 @@ ion-menu ion-item {
 .sr-corners {
   position: relative;
 }
-:root[data-theme='cyberpunk'] .sr-corners {
+:root[data-skin='cyberpunk'] .sr-corners {
   @include deck.hud-corners;
 }
 
@@ -195,7 +224,7 @@ ion-menu ion-item {
 .sr-led--off {
   background: var(--sr-red);
 }
-:root[data-theme='cyberpunk'] {
+:root[data-skin='cyberpunk'] {
   .sr-led--on {
     @include deck.led-glow(on);
   }
@@ -225,14 +254,14 @@ ion-menu ion-item {
 .sr-brand__name {
   @include deck.brand-name;
 }
-:root[data-theme='cyberpunk'] .sr-brand__icon {
+:root[data-skin='cyberpunk'] .sr-brand__icon {
   filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.6));
 }
 
 .sr-scanlines {
   position: relative;
 }
-:root[data-theme='cyberpunk'] .sr-scanlines::after {
+:root[data-skin='cyberpunk'] .sr-scanlines::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -242,7 +271,7 @@ ion-menu ion-item {
     to bottom,
     transparent 0,
     transparent 2px,
-    rgba(0, 0, 0, 0.22) 3px,
+    var(--sr-scanline-ink) 3px,
     transparent 4px
   );
 }

@@ -2,10 +2,12 @@
 // The composition root of the style layer: Ionic's CSS, the two partials that
 // EMIT, and what is app-wide. What app.providers.ts is to the kernel.
 //
-// TWO themes off ONE token group, so retheme the custom properties, never the
-// components. Plain is the UN-decorated base and every cyberpunk flourish is
-// ADDED under [data-theme='cyberpunk'], so a new surface reads plain unless it
-// opts in; the inverse cost a manual re-suppression per flourish, forever.
+// TWO ORTHOGONAL axes off ONE token group — data-skin for decoration, data-mode
+// for brightness — so retheme the custom properties, never the components.
+// Boomer is the UN-decorated base and every cyberpunk flourish is ADDED under
+// [data-skin='cyberpunk'], so a new surface reads plain unless it opts in; the
+// inverse cost a manual re-suppression per flourish, forever. Because the two
+// axes are independent, the four combinations cost no fourth theme.
 //
 // Hence the @use graph: _fonts and _shadowrun emit, so they are @use'd HERE and
 // nowhere else — a component @using shadowrun re-emits the whole sheet. The

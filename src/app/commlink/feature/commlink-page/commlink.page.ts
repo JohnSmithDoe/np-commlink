@@ -54,12 +54,12 @@ export class CommlinkPage {
   readonly #dashboard = inject(DashboardFacade);
   readonly #deck = inject(DeckFacade);
   readonly #languageModel = inject(LanguageModelService);
-  readonly #theme = inject(ThemeService).theme;
+  readonly #skin = inject(ThemeService).skin;
   readonly #locale = inject(LanguageService).locale;
 
   readonly programs = this.#deck.programs;
 
-  readonly chrome = computed(() => DECK_CHROME_LABELS[this.#theme()]);
+  readonly chrome = computed(() => DECK_CHROME_LABELS[this.#skin()]);
 
   readonly #telemetry = this.#dashboard.dashboardState;
 
@@ -89,7 +89,7 @@ export class CommlinkPage {
         dark: status === 'offline',
         badgeText:
           badge !== null && badge > 0
-            ? badgeLabel(program, badge, this.#theme(), this.#locale())
+            ? badgeLabel(program, badge, this.#skin(), this.#locale())
             : null,
         statusKey: nodeStatusKey(chrome, status),
       };
@@ -99,7 +99,7 @@ export class CommlinkPage {
   readonly noise = this.#dashboard.notificationsUnread;
   readonly nuyenLabel = computed(() =>
     currencyLabel(
-      this.#theme(),
+      this.#skin(),
       reportedMetric(this.#telemetry(), 'cash', 'balance') ?? 0,
       this.#locale()
     )

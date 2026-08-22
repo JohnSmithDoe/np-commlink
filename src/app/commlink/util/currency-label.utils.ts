@@ -1,12 +1,12 @@
 import { formatEur } from '../../@shared/util/formatting/money-format.utils';
-import { Theme } from '../../@shared/model/app.types';
+import { Skin } from '../../@shared/model/app.types';
 
 export function currencyLabel(
-  theme: Theme,
+  skin: Skin,
   euros: number,
   locale?: string
 ): string {
-  return theme === 'cyberpunk'
+  return skin === 'cyberpunk'
     ? `¥ ${euros} nyen`
     : formatEur(euros * 100, locale);
 }

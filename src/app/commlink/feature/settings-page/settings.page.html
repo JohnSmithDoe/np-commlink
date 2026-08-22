@@ -13,13 +13,32 @@
     </ion-item>
     <ion-item lines="none">
       <ion-segment
-        [value]="theme()"
-        (ionChange)="changeTheme($event)"
+        [value]="skin()"
+        (ionChange)="changeSkin($event)"
         [attr.aria-labelledby]="'theme-picker-label'"
       >
-        @for (option of themes; track option) {
+        @for (option of skins; track option) {
           <ion-segment-button [value]="option">
-            <ion-label>{{ themeLabelKeys[option] | translate }}</ion-label>
+            <ion-label>{{ skinLabelKeys[option] | translate }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label id="mode-picker-label">
+        {{ 'settings.mode.title' | translate }}
+      </ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-segment
+        [value]="mode()"
+        (ionChange)="changeMode($event)"
+        [attr.aria-labelledby]="'mode-picker-label'"
+      >
+        @for (option of modes; track option) {
+          <ion-segment-button [value]="option">
+            <ion-label>{{ modeLabelKeys[option] | translate }}</ion-label>
           </ion-segment-button>
         }
       </ion-segment>
