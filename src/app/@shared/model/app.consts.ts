@@ -7,4 +7,6 @@ export const APP_RELEASE =
 
 export const APP_WORDMARK = 'np-commlink';
 
+export const COPYRIGHT = '© 2026 Leto the c0dem0nkey';
+
 export const SOURCE_URL = 'https://github.com/JohnSmithDoe/np-commlink';

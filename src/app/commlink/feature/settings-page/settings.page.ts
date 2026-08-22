@@ -30,7 +30,11 @@ import {
   SKINS,
 } from '../../../@shared/model/app.types';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { APP_RELEASE, SOURCE_URL } from '../../../@shared/model/app.consts';
+import {
+  APP_RELEASE,
+  COPYRIGHT,
+  SOURCE_URL,
+} from '../../../@shared/model/app.consts';
 
 import { SettingsFacade } from '../../data';
 import { addIcons } from 'ionicons';
@@ -39,6 +43,7 @@ import {
   documentTextOutline,
   gridOutline,
   informationCircleOutline,
+  personOutline,
   settingsOutline,
 } from 'ionicons/icons';
 
@@ -95,11 +100,13 @@ export class SettingsPage {
       documentTextOutline,
       codeSlashOutline,
       informationCircleOutline,
+      personOutline,
     });
   }
 
   readonly sourceUrl = SOURCE_URL;
   readonly release = APP_RELEASE;
+  readonly copyright = COPYRIGHT;
 
   readonly #settings = inject(SettingsFacade);
 
