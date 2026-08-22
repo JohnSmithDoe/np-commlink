@@ -5,7 +5,20 @@
  * this one belong?" — argued per feature and never checkable. Empty is a
  * RULE, not a list: it cannot go stale or quietly widen with the catalog.
  *
- * Nothing is stranded, which is what makes it legal. Two entrances are
+ * The state stores what is VISIBLE, which is what makes that a rule and
+ * not a promise. Held the other way round the empty deck was a LIST — the
+ * whole catalog, restated — and absence therefore meant shown: a catalog
+ * entry nobody had ever seen was on by default, and renaming an id
+ * switched its program on for everyone. Now absence means hidden, and
+ * both of those cost nothing.
+ *
+ * A document from before that flip is DISCARDED, not migrated: it names
+ * the ids to hide, which under the new reading are the only ones that
+ * would show. There is no rung — every holder lands on the cold-install
+ * deck and picks again. The guard is what keeps that from being a crash,
+ * since `loaded` is handed whatever was on disk under a `DeckState` cast.
+ *
+ * Nothing is stranded, which is what makes empty legal. Two entrances are
  * unconditional — the drawer's static `/settings` row and the grid's
  * `@empty` node — and everything else hangs off the config page, the
  * `onDeck: false` entries included, which a grid-shaped default could
@@ -13,26 +26,32 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { createReducer, on } from '@ngrx/store';
-import { DECK_CATALOG } from '../../model/deck.catalog';
 import { DeckState } from '../../model/deck.types';
 import { toggleIn } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
 
 export const initialDeck: DeckState = {
   order: [],
-  hiddenEntries: DECK_CATALOG.map((entry) => entry.id),
+  visibleEntries: [],
 };
+
+const isCurrentShape = (deck: DeckState): boolean =>
+  Array.isArray((deck as Partial<DeckState>).visibleEntries) &&
+  Array.isArray((deck as Partial<DeckState>).order);
 
 export const deckReducer = createReducer(
   initialDeck,
-  on(DeckActions.loaded, (state, { deck }): DeckState => deck ?? state),
+  on(DeckActions.loaded, (state, { deck }): DeckState => {
+    if (!deck) return state;
+    return isCurrentShape(deck) ? deck : initialDeck;
+  }),
   on(DeckActions.reorder, (state, { order }): DeckState => ({
     ...state,
     order,
   })),
   on(DeckActions.toggleEntry, (state, { id }): DeckState => ({
     ...state,
-    hiddenEntries: toggleIn(state.hiddenEntries, id),
+    visibleEntries: toggleIn(state.visibleEntries, id),
   })),
   on(DeckActions.reset, (): DeckState => initialDeck)
 );

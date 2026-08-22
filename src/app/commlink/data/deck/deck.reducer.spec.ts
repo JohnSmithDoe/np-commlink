@@ -1,11 +1,10 @@
-import { DECK_CATALOG } from '../../model/deck.catalog';
 import { DeckState } from '../../model/deck.types';
 import { DeckActions } from './deck.actions';
 import { deckReducer, initialDeck } from './deck.reducer';
 
 const stored: DeckState = {
   order: ['cash', 'shopping'],
-  hiddenEntries: ['storage'],
+  visibleEntries: ['cash', 'shopping'],
 };
 
 describe('deckReducer', () => {
@@ -21,6 +20,17 @@ describe('deckReducer', () => {
         initialDeck
       );
     });
+
+    it('discards a document from before the shape was inverted', () => {
+      const legacy = {
+        order: ['cash'],
+        hiddenEntries: ['storage'],
+      } as unknown as DeckState;
+
+      expect(deckReducer(initialDeck, DeckActions.loaded(legacy))).toBe(
+        initialDeck
+      );
+    });
   });
 
   it('replaces the order wholesale, so a drag also normalizes a stale config', () => {
@@ -29,35 +39,33 @@ describe('deckReducer', () => {
       DeckActions.reorder(['shopping', 'cash', 'storage'])
     );
     expect(next.order).toEqual(['shopping', 'cash', 'storage']);
-    expect(next.hiddenEntries).toEqual(stored.hiddenEntries);
+    expect(next.visibleEntries).toEqual(stored.visibleEntries);
   });
 
   describe('the factory default', () => {
     it('ships an empty deck, so the first choice belongs to the user', () => {
-      expect(initialDeck.hiddenEntries).toEqual(
-        DECK_CATALOG.map((entry) => entry.id)
-      );
+      expect(initialDeck.visibleEntries).toEqual([]);
     });
   });
 
   describe('toggleEntry', () => {
     it('hides a visible entry', () => {
       expect(
-        deckReducer(stored, DeckActions.toggleEntry('shopping')).hiddenEntries
-      ).toEqual(['storage', 'shopping']);
+        deckReducer(stored, DeckActions.toggleEntry('shopping')).visibleEntries
+      ).toEqual(['cash']);
     });
 
     it('shows one the factory default starts hidden', () => {
       expect(
         deckReducer(initialDeck, DeckActions.toggleEntry('ritual'))
-          .hiddenEntries
-      ).not.toContain('ritual');
+          .visibleEntries
+      ).toEqual(['ritual']);
     });
 
-    it('shows a hidden one again', () => {
+    it('hides a shown one again', () => {
       expect(
-        deckReducer(stored, DeckActions.toggleEntry('storage')).hiddenEntries
-      ).toEqual([]);
+        deckReducer(stored, DeckActions.toggleEntry('cash')).visibleEntries
+      ).toEqual(['shopping']);
     });
   });
 

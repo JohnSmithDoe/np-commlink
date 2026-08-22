@@ -48,5 +48,5 @@ export type DeckProgramConfig = DeckProgram & {
 
 export type DeckState = {
   order: DeckEntryId[];
-  hiddenEntries: DeckEntryId[];
+  visibleEntries: DeckEntryId[];
 };

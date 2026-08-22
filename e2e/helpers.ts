@@ -48,9 +48,9 @@
  * `waitForPersisted` exists because a slice's disk write emits no DOM
  * signal whatsoever, so the store itself is the only honest condition a
  * following reload can be synchronized on. `waitForPersistedWithout` is
- * its inverse, for the writes that REMOVE rather than add — unhiding a
- * deck entry drops its id, so presence of the key is no signal at all and
- * absence of the id is the only one.
+ * its inverse, for the writes that REMOVE rather than add — switching a
+ * deck entry OFF drops its id from `visibleEntries`, so presence of the
+ * key is no signal at all and absence of the id is the only one.
  *
  * `createDialog`/`editDialog`/`nameBox`/`addButton`/`CREATE_BUTTON` name
  * copy that `@shared` owns — the edit-item modal's two titles, the name
@@ -64,13 +64,13 @@
  * which needs its own OK; a popover-interface select confirms on the tap
  * instead.
  *
- * `enableDeckProgram` exists because a cold deck ships EMPTY: every
- * catalog entry starts hidden, so any spec asserting something about a
- * tile or a drawer row has to switch its program on first. It takes the
- * entry id as well as the codename because the codename is theme-resolved
- * copy the store never sees, and the store is what has to be waited on:
- * callers reload after it, and a reload that beat the write would land
- * back on an empty deck.
+ * `enableDeckProgram` exists because a cold deck ships EMPTY: the state
+ * names what is VISIBLE and starts with nothing, so any spec asserting
+ * something about a tile or a drawer row has to switch its program on
+ * first. It takes the entry id as well as the codename because the
+ * codename is theme-resolved copy the store never sees, and the store is
+ * what has to be waited on: callers reload after it, and a reload that
+ * beat the write would land back on an empty deck.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';
@@ -277,7 +277,7 @@ export async function enableDeckProgram(
     .filter({ hasText: codename });
   await expect(row).toBeVisible({ timeout: 30_000 });
   await row.getByTestId('deck-config-row-toggle').click();
-  await waitForPersistedWithout(page, 'deck', `"${id}"`);
+  await waitForPersisted(page, 'deck', `"${id}"`);
 }
 
 export async function gotoFeature(

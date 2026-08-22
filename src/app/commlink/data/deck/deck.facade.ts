@@ -5,11 +5,11 @@ import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
 import { DeckProgramConfig, DeckEntryId } from '../../model/deck.types';
 import {
+  entriesOnDeck,
   groupingModules,
   isFactoryDeck,
   orderEntries,
   resolveLabels,
-  visibleEntries,
 } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
 import { initialDeck } from './deck.reducer';
@@ -24,7 +24,7 @@ export class DeckFacade {
   readonly #labelled = computed(() => resolveLabels(this.#skin()));
 
   readonly menuEntries = computed(() =>
-    visibleEntries(DECK_CATALOG, this.#config()).map(this.#labelled())
+    entriesOnDeck(DECK_CATALOG, this.#config()).map(this.#labelled())
   );
 
   readonly programs = computed(() =>
@@ -44,7 +44,7 @@ export class DeckFacade {
       .map(this.#labelled())
       .map((entry) => ({
         ...entry,
-        hidden: config.hiddenEntries.includes(entry.id),
+        hidden: !config.visibleEntries.includes(entry.id),
         moduleKey: this.#grouping.has(entry.module)
           ? DECK_MODULE_LABELS[entry.module]
           : undefined,

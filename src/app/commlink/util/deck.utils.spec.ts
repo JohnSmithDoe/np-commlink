@@ -4,6 +4,7 @@ import { DECK_CHROME_LABELS } from '../model/deck.labels';
 import {
   badgeLabel,
   badgeValue,
+  entriesOnDeck,
   groupingModules,
   nodeStatusKey,
   programStatus,
@@ -13,7 +14,6 @@ import {
   orderEntries,
   resolveLabels,
   toggleIn,
-  visibleEntries,
 } from './deck.utils';
 
 const entry = (id: string, module: DeckEntry['module']): DeckEntry => ({
@@ -37,7 +37,7 @@ const CATALOG: readonly DeckEntry[] = [
 
 const state = (overrides: Partial<DeckState> = {}): DeckState => ({
   order: [],
-  hiddenEntries: [],
+  visibleEntries: [],
   ...overrides,
 });
 
@@ -78,25 +78,29 @@ describe('groupingModules', () => {
 });
 
 describe('isEntryVisible', () => {
-  it('hides an entry the user switched off', () => {
-    const config = state({ hiddenEntries: ['cash'] });
-    expect(isEntryVisible(config, entry('cash', 'cash'))).toBe(false);
+  it('shows an entry the user switched on', () => {
+    const config = state({ visibleEntries: ['cash'] });
+    expect(isEntryVisible(config, entry('cash', 'cash'))).toBe(true);
   });
 
-  it('shows an entry nothing hides', () => {
-    expect(isEntryVisible(state(), entry('storage', 'household'))).toBe(true);
+  it('hides an entry nothing names, so a new one arrives off', () => {
+    expect(isEntryVisible(state(), entry('storage', 'household'))).toBe(false);
   });
 });
 
-describe('visibleEntries', () => {
-  it('applies the order and both flags at once', () => {
+describe('entriesOnDeck', () => {
+  it('applies the order and the visible set at once', () => {
     const config = state({
       order: ['cash', 'storage', 'shopping'],
-      hiddenEntries: ['storage'],
+      visibleEntries: ['cash', 'shopping'],
     });
-    expect(
-      visibleEntries(CATALOG, config).map((ordered) => ordered.id)
-    ).toEqual(['cash', 'shopping']);
+    expect(entriesOnDeck(CATALOG, config).map((ordered) => ordered.id)).toEqual(
+      ['cash', 'shopping']
+    );
+  });
+
+  it('is empty on a cold deck, whatever the catalog holds', () => {
+    expect(entriesOnDeck(CATALOG, state())).toEqual([]);
   });
 });
 
@@ -233,7 +237,7 @@ describe('nodeStatusKey', () => {
 describe('isFactoryDeck', () => {
   const factory: DeckState = {
     order: [],
-    hiddenEntries: ['shopping', 'storage'],
+    visibleEntries: ['shopping', 'storage'],
   };
 
   it('recognizes the factory deck itself', () => {
@@ -242,20 +246,20 @@ describe('isFactoryDeck', () => {
 
   it('reads a toggle as custom, in either direction', () => {
     expect(
-      isFactoryDeck({ ...factory, hiddenEntries: ['shopping'] }, factory)
+      isFactoryDeck({ ...factory, visibleEntries: ['shopping'] }, factory)
     ).toBe(false);
     expect(
       isFactoryDeck(
-        { ...factory, hiddenEntries: ['shopping', 'storage', 'tasks'] },
+        { ...factory, visibleEntries: ['shopping', 'storage', 'tasks'] },
         factory
       )
     ).toBe(false);
   });
 
-  it('ignores the order the hidden ones were toggled in', () => {
+  it('ignores the order the entries were toggled in', () => {
     expect(
       isFactoryDeck(
-        { ...factory, hiddenEntries: ['storage', 'shopping'] },
+        { ...factory, visibleEntries: ['storage', 'shopping'] },
         factory
       )
     ).toBe(true);

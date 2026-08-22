@@ -690,3 +690,27 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 - **Reorder is pointer-only, and that is a known R5 gap.** `ion-reorder-group` ships no keyboard support and
   nothing else in the app offers "move this note up". `cash-rules` already ships the same gap where order is
   *semantic*; here it is cosmetic, since every note stays reachable, searchable and openable without a drag.
+
+## The deck stores what is VISIBLE
+
+Supersedes both entries above that reason about `hiddenEntries` — they record what was true while the
+set was inverted, and are left standing rather than re-woven.
+
+- **`DeckState.hiddenEntries` became `visibleEntries`, and absence now means HIDDEN.** Held the other way
+  round, "a cold install ships an empty deck" was a RULE in the prose and a LIST in the code —
+  `DECK_CATALOG.map(id)`, the whole catalog restated — so the one invariant the deck has was maintained by
+  copying. Three things fall out of the flip and none of them needed arguing separately: a catalog entry
+  nobody has ever seen arrives OFF instead of on, renaming a deck entry id can no longer switch a
+  program on for everyone, and `initialDeck` is `[]`.
+- **A pre-flip document is DISCARDED, not migrated, and `APP_VERSION` stays 1.** Its ids name what to
+  hide, which under the new reading are the only ones that would show — so reading it is worse than not.
+  Every holder lands on the cold-install deck and picks their programs again; asked and answered. The
+  reducer's shape guard is what makes that a reset rather than a crash: `loaded` is handed whatever was
+  on disk under a `DeckState` cast, and the old shape has no `visibleEntries` for `.includes` to reach.
+- **The `visibleEntries` FUNCTION became `entriesOnDeck`.** It resolves order and visibility into entries;
+  the field is a set of ids. One name for both would have made `state.visibleEntries` and
+  `visibleEntries(catalog, state)` read as the same thing at a glance, which they are not.
+- **This is what the notes rename should have cost and did not.** The entry above accepted NOTES
+  switching itself on for every install because absence meant shown. That failure mode is now gone by
+  construction — which is the argument for the flip, not a reason the earlier call was wrong given the
+  shape it was made under.

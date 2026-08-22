@@ -3,6 +3,7 @@
     "allow": ["mcp__codegraph__*"],
     "deny": [
       "Bash(git reset --hard*)",
+      "Bash(git reset .*)",
       "Bash(git clean -f*)",
       "Bash(git clean -fd*)",
       "Bash(git clean -df*)",

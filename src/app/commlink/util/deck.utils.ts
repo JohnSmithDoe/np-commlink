@@ -99,9 +99,9 @@ export const groupingModules = (
 };
 
 export const isEntryVisible = (state: DeckState, entry: DeckEntry): boolean =>
-  !state.hiddenEntries.includes(entry.id);
+  state.visibleEntries.includes(entry.id);
 
-export const visibleEntries = (
+export const entriesOnDeck = (
   catalog: readonly DeckEntry[],
   state: DeckState
 ): DeckEntry[] =>
@@ -121,7 +121,7 @@ const sameSet = <T>(a: readonly T[], b: readonly T[]): boolean =>
 
 export const isFactoryDeck = (state: DeckState, factory: DeckState): boolean =>
   sameOrder(state.order, factory.order) &&
-  sameSet(state.hiddenEntries, factory.hiddenEntries);
+  sameSet(state.visibleEntries, factory.visibleEntries);
 
 export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)

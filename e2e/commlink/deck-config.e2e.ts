@@ -10,10 +10,11 @@
  *
  * A cold deck ships EMPTY, so every test that needs a tile switches its
  * program on first, and the two waits are not interchangeable:
- * `switchOn` waits for the id to LEAVE the stored document and `switchOff`
- * for it to arrive. Waiting on the field name would resolve against a
- * previous write — `hiddenEntries` is in the doc from the first one
- * onwards — so the id is the only honest signal in either direction.
+ * `switchOn` waits for the id to ARRIVE in the stored document and
+ * `switchOff` for it to leave. Waiting on the field name would resolve
+ * against a previous write — `visibleEntries` is in the doc from the
+ * first one onwards — so the id is the only honest signal in either
+ * direction.
  *
  * `openDeck` anchors on the status strip rather than on any tile: it is
  * the one element the grid renders whatever the configuration says, so it
@@ -82,7 +83,7 @@ async function switchOn(
   marker: string
 ): Promise<void> {
   await configRow(page, label).getByTestId('deck-config-row-toggle').click();
-  await waitForPersistedWithout(page, 'deck', marker);
+  await waitForPersisted(page, 'deck', marker);
 }
 
 async function switchOff(
@@ -91,7 +92,7 @@ async function switchOff(
   marker: string
 ): Promise<void> {
   await configRow(page, label).getByTestId('deck-config-row-toggle').click();
-  await waitForPersisted(page, 'deck', marker);
+  await waitForPersistedWithout(page, 'deck', marker);
 }
 
 test.describe('deck configuration', () => {
