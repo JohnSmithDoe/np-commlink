@@ -177,6 +177,17 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   shapes still change for the price of a cleared browser. Which slices those are is a fact about people
   rather than about code, so it is **asked, never inferred**, and the roster lives in
   [CLAUDE.md](../CLAUDE.md) where a changing fact belongs — not restated here, where it would rot.
+- **A reset is a legitimate answer to a moved shape, and v1.1.0 gave it twice.** `deck` and `settings` both
+  changed shape under real holders and neither got a rung: the deck **discards** a pre-flip document because
+  its stored field named the ids to _hide_, which the new reading would show — migrating it would invert
+  every holder's choice, so a rung was not the cheaper option but the wrong one. Settings falls through
+  `{...initialSettings, ...settings}`, costing a boomer-skin holder one re-pick. The precedent is narrow and
+  worth naming: a rung is owed to data whose **meaning** survives the change, and a reset is honest when it
+  does not. Cost is what decides between them, and cost is a fact about the roster.
+- **The deck's stored field is now `visibleEntries`, which supersedes how "empty deck" is described under
+  *Scope and defaults*** — an empty deck is no entry _listed_, not every entry _hidden_. Same rule, opposite
+  polarity: absence means hidden, so a catalog entry nobody has seen is off rather than on, and renaming an
+  id can no longer switch a program on for everyone.
 
 ## Scope and defaults
 

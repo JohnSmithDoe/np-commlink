@@ -3,7 +3,7 @@
 **Check before proposing work.** Nothing here is merely undone: each needs a secret, an upstream release,
 a human reading the result, or a product decision. Settled questions are in [decisions.md](./decisions.md).
 
-## One-way doors — closed at v1.0.0
+## One-way doors — closed at v1.0.0, extended at v1.1.0
 
 Each field below is one a distribution channel compares to decide _same app or different app_. **v1.0.0 is
 published**: the tag, the PWA, and a signed APK attached to the release. None of them is free any more —
@@ -35,6 +35,19 @@ changing one does not migrate an install, it stands up a second app that cannot 
   `importKey`, and the first camt import will not recognise them: **clear the cash slice there rather than
   reading the duplicate count as truth**. And the exemption does not generalise — the next stored-shape
   change made once cash holds real data owes the first genuine rung, with no precedent in the repo to copy.
+- **v1.1.0 published `vitals` and `notes`, so their shapes are somebody's data from this tag on.** Neither
+  domain exists at v1.0.1 — the released app had no BIOMON and no SIGIL notes — so the free window for
+  `VitalsState` with its `profiles`, `readings` and `pills` sub-slices, and for `notes`, closes **here** and
+  not earlier. Anything holding either before this tag came from a locally built debug APK, which a
+  release-key install cannot upgrade and therefore never sees.
+- **The `deck` and `settings` shapes moved at v1.1.0 and both RESET rather than migrate.** `deck` stores
+  `visibleEntries` where it stored `hiddenEntries` + `hiddenModules`; `settings` splits `theme` into `skin`
+  and `mode`. `APP_VERSION` stayed **1** on the roster, not on the code: the deck discards a pre-flip
+  document deliberately — `isCurrentShape` in `deck.reducer.ts`, whose banner argues why migrating it would
+  invert every holder's choice — and settings falls through `{...initialSettings, ...settings}`, which is
+  invisible on cyberpunk/dark, one re-pick for a boomer-skin holder, and a dead `theme` key riding along
+  until the next write. So **`APP_VERSION` is still 1 across two releases and `runMigrations` has never run
+  a step**: the first genuine rung is still unwritten, and still has no precedent in the repo to copy.
 
 ## Blocked — needs something only the owner can supply
 
