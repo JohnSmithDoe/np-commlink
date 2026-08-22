@@ -39,7 +39,7 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
 import { reorderedIds } from '../../../@shared/util/app.utils';
 import { NotesListPageFacade } from '../../data';
 import { Note, NoteImageId } from '../../model/notes.types';
-import { noteSnippet } from '../../util/notes.utils';
+import { noteSnippet, resolveImages } from '../../util/notes.utils';
 import { NoteImageViewerComponent } from '../../ui/note-image-viewer/note-image-viewer.component';
 
 const VIEW_IMAGES_SWIPE: StartSwipeAction = {
@@ -86,7 +86,7 @@ export class NotesPage {
     const found = [...this.facade.pinned(), ...this.facade.unpinned()].find(
       (note) => note.id === id
     );
-    return found?.images ?? [];
+    return resolveImages(found?.images, this.facade.imageUrls());
   });
 
   readonly openAt = computed(() =>
@@ -115,7 +115,6 @@ export class NotesPage {
   }
 
   rotateImage(imageId: NoteImageId): void {
-    const noteId = this.viewedNoteId();
-    if (noteId) this.facade.rotateImage(noteId, imageId);
+    this.facade.rotateImage(imageId);
   }
 }

@@ -75,12 +75,19 @@ describe('NoteEditorFacade', () => {
     expect(lastUpdate()?.item.updatedAt).toBeDefined();
   });
 
-  it('appends an image without losing the note it belongs to', () => {
-    setup(mockNote({ images: [{ id: 'img-1', dataUrl: 'data:a' }] }));
+  it('appends an image as an id, and never as bytes in the slice', () => {
+    setup(mockNote({ images: ['img-1'] }));
 
     facade.addImage('data:b');
 
-    expect(lastUpdate()?.item.images).toHaveLength(2);
+    type AddAction = ReturnType<typeof NotesActions.addImage>;
+    const added = (dispatch.mock.calls as AddAction[][])
+      .map(([action]) => action)
+      .findLast((action) => action.type === NotesActions.addImage.type);
+
+    expect(added).toMatchObject({ noteId: 'note-1', dataUrl: 'data:b' });
+    expect(added?.imageId).toBeTruthy();
+    expect(lastUpdate()).toBeUndefined();
   });
 
   it('discards a note left blank, without offering an undo', () => {
@@ -92,7 +99,7 @@ describe('NoteEditorFacade', () => {
   });
 
   it('keeps a note that carries only an image', () => {
-    setup(mockNote({ name: '', images: [{ id: 'img-1', dataUrl: 'data:a' }] }));
+    setup(mockNote({ name: '', images: ['img-1'] }));
 
     facade.leave('note-1');
 

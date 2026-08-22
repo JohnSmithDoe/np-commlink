@@ -22,6 +22,8 @@ export const notesContext = providePersistedContext({
       NotesActions.reorderSection,
       NotesActions.discardBlank,
       NotesActions.togglePin,
+      NotesActions.addImage,
+      NotesActions.removeImage,
     ],
   },
   telemetry: [

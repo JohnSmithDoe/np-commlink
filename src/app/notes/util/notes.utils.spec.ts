@@ -20,8 +20,12 @@ type FakeCanvas = {
 const fake2dContext = () => ({
   translate: vi.fn(),
   rotate: vi.fn(),
+  scale: vi.fn(),
   drawImage: vi.fn(),
 });
+
+const givenScreen = (width = 400, height = 800) =>
+  vi.stubGlobal('screen', { width, height });
 
 const pickedFile = (name = 'badge.png') =>
   new File(['badge-bytes'], name, { type: 'image/png' });
@@ -81,6 +85,7 @@ describe('notes.utils', () => {
 
   beforeEach(() => {
     encodedAs = [];
+    givenScreen();
     context = fake2dContext();
     givenCanvasContext(context);
     const createElement = document.createElement.bind(document);
@@ -130,20 +135,21 @@ describe('notes.utils', () => {
       expect(requestedSource).toBe(BADGE_URL);
     });
 
-    it('re-encodes in the format the image arrived in', async () => {
+    it('re-encodes at the budget the import used, not above it', async () => {
       givenImage(100, 40);
 
       await rotateBase64(PHOTO_URL);
 
-      expect(encodedAs).toEqual(['image/jpeg', 0.92]);
+      expect(encodedAs).toEqual(['image/jpeg', 0.85]);
     });
 
-    it('falls back to png for a data URL with no readable type', async () => {
-      givenImage(100, 40);
+    it('scales a turned frame that outgrows the budget', async () => {
+      givenImage(3000, 3000);
 
-      await rotateBase64('data:;base64,BADGE');
+      await rotateBase64(PHOTO_URL);
 
-      expect(encodedAs[0]).toBe('image/png');
+      expect([canvas.width, canvas.height]).toEqual([1600, 1600]);
+      expect(context.scale).toHaveBeenCalledWith(1600 / 3000, 1600 / 3000);
     });
 
     it('rejects when the image cannot be loaded', async () => {
@@ -182,6 +188,15 @@ describe('notes.utils', () => {
       await readNoteImage(pickedFile());
 
       expect([canvas.width, canvas.height]).toEqual([1600, 1200]);
+    });
+
+    it('takes the budget from the screen it was picked on', async () => {
+      givenScreen(1000, 500);
+      givenImage(4000, 3000);
+
+      await readNoteImage(pickedFile());
+
+      expect([canvas.width, canvas.height]).toEqual([2000, 1500]);
     });
 
     it('rejects a file the browser cannot decode', async () => {

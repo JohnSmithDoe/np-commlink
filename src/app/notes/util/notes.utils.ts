@@ -1,23 +1,34 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * A picked image is re-encoded before it is stored, never kept as the
- * camera produced it. Every note image lives as a base64 string INSIDE
- * the notes slice, and the whole slice is serialised on each save — so
- * one 12-megapixel photo would be re-written on every keystroke of the
- * body it sits under. `MAX_EDGE` is what keeps that write bounded; it is
- * a storage budget, not a display size.
+ * A picked image is re-encoded before it is stored, never kept as the camera
+ * produced it, because base64 costs a third on top of the bytes and
+ * `note-image.store.ts` buys the note out of paying that per keystroke, not
+ * out of paying it at all. The cap is TWO SCREENS on the longest edge: enough
+ * to fill the viewer and take a pinch, and nothing beyond what the device it
+ * was taken on can ever show.
+ *
+ * Rotating goes through the SAME budget as importing — one `encoded`, one
+ * quality, one cap. Written its own way it re-encoded at a HIGHER quality
+ * than the picture was stored at and skipped the cap entirely, so every
+ * rotation grew the file it was only supposed to turn.
  * ───────────────────────────────────────────────────────────────── */
 
 import { SearchResult } from '../../@shared/model/item-list.types';
-import { Note, NotesList } from '../model/notes.types';
+import { Note, NoteImage, NoteImageId, NotesList } from '../model/notes.types';
 
 const RADIANS_PER_DEGREE = Math.PI / 180;
 
-const FALLBACK_MIME_TYPE = 'image/png';
-const LOSSY_QUALITY = 0.92;
-
-const MAX_EDGE = 1600;
+const SCREENS_OF_HEADROOM = 2;
+const FALLBACK_SCREEN_EDGE = 1024;
 const STORED_MIME_TYPE = 'image/jpeg';
 const STORED_QUALITY = 0.85;
+
+const maxEdge = (): number => {
+  const screen = globalThis.screen;
+  const longest = screen
+    ? Math.max(screen.width, screen.height)
+    : FALLBACK_SCREEN_EDGE;
+  return longest * SCREENS_OF_HEADROOM;
+};
 
 const loadImage = async (source: string): Promise<HTMLImageElement> => {
   const img = new Image();
@@ -40,8 +51,18 @@ const readAsDataUrl = (file: File): Promise<string | undefined> =>
     reader.readAsDataURL(file);
   });
 
-const mimeTypeOf = (dataUrl: string): string =>
-  /^data:(image\/[\w.+-]+)[,;]/.exec(dataUrl)?.[1] ?? FALLBACK_MIME_TYPE;
+const encoded = (canvas: HTMLCanvasElement): string =>
+  canvas.toDataURL(STORED_MIME_TYPE, STORED_QUALITY);
+
+const capped = (width: number, height: number) => {
+  const limit = maxEdge();
+  const longest = Math.max(width, height);
+  const ratio = longest > limit ? limit / longest : 1;
+  return {
+    width: Math.round(width * ratio),
+    height: Math.round(height * ratio),
+  };
+};
 
 const rotatedFrame = (img: HTMLImageElement, radians: number) => {
   const sin = Math.abs(Math.sin(radians));
@@ -52,14 +73,8 @@ const rotatedFrame = (img: HTMLImageElement, radians: number) => {
   };
 };
 
-const scaledFrame = (img: HTMLImageElement) => {
-  const longest = Math.max(img.naturalWidth, img.naturalHeight);
-  const ratio = longest > MAX_EDGE ? MAX_EDGE / longest : 1;
-  return {
-    width: Math.round(img.naturalWidth * ratio),
-    height: Math.round(img.naturalHeight * ratio),
-  };
-};
+const scaledFrame = (img: HTMLImageElement) =>
+  capped(img.naturalWidth, img.naturalHeight);
 
 export const readNoteImage = async (
   file: File
@@ -82,7 +97,7 @@ export const readNoteImage = async (
   if (!context) return dataUrl;
 
   context.drawImage(img, 0, 0, width, height);
-  return canvas.toDataURL(STORED_MIME_TYPE, STORED_QUALITY);
+  return encoded(canvas);
 };
 
 export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
@@ -90,7 +105,9 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
 
   const img = await loadImage(dataUrl);
   const radians = (deg % 360) * RADIANS_PER_DEGREE;
-  const { width, height } = rotatedFrame(img, radians);
+  const turned = rotatedFrame(img, radians);
+  const { width, height } = capped(turned.width, turned.height);
+  const scale = turned.width === 0 ? 1 : width / turned.width;
 
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -100,10 +117,20 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
 
   context.translate(width / 2, height / 2);
   context.rotate(radians);
+  context.scale(scale, scale);
   context.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
 
-  return canvas.toDataURL(mimeTypeOf(dataUrl), LOSSY_QUALITY);
+  return encoded(canvas);
 };
+
+export const resolveImages = (
+  ids: readonly NoteImageId[] | undefined,
+  urls: Record<NoteImageId, string>
+): NoteImage[] =>
+  (ids ?? []).flatMap((id) => {
+    const dataUrl = urls[id];
+    return dataUrl ? [{ id, dataUrl }] : [];
+  });
 
 export const searchNotes = (
   list: NotesList
@@ -120,7 +147,10 @@ export const searchNotes = (
 };
 
 export const noteSnippet = (body: string | undefined, limit = 140): string => {
-  const flattened = (body ?? '').replaceAll(/\s+/g, ' ').trim();
+  const flattened = (body ?? '')
+    .slice(0, limit * 4)
+    .replaceAll(/\s+/g, ' ')
+    .trim();
   return flattened.length > limit
     ? `${flattened.slice(0, limit).trimEnd()}…`
     : flattened;

@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Note, NoteImageId } from '../model/notes.types';
 import { createNote } from '../util/notes.factory';
+import { NoteImageStore } from './note-image.store';
 import { NotesActions } from './notes.actions';
 import {
   selectNotesList,
@@ -25,6 +26,9 @@ import {
 export class NotesListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
+  readonly #images = inject(NoteImageStore);
+
+  readonly imageUrls = this.#images.urls;
 
   readonly state = this.#store.selectSignal(selectNotesList);
   readonly searchResult = this.#store.selectSignal(selectNotesSearchResult);
@@ -57,7 +61,7 @@ export class NotesListPageFacade {
     this.#store.dispatch(NotesActions.reorderSection(pinned, ids));
   }
 
-  rotateImage(noteId: string, imageId: NoteImageId): void {
-    this.#store.dispatch(NotesActions.rotateImage(noteId, imageId));
+  rotateImage(imageId: NoteImageId): void {
+    this.#store.dispatch(NotesActions.rotateImage(imageId));
   }
 }

@@ -17,7 +17,7 @@
  * caller is the only one that still knows.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -26,8 +26,11 @@ import dayjs from 'dayjs';
 import { debounceTime, Subject } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { UpdateDTO } from '../../@shared/model/base-item.types';
-import { Note, NoteImageId } from '../model/notes.types';
-import { createNoteImage, isBlankNote } from '../util/notes.factory';
+import { uuidv4 } from '../../@shared/util/app.utils';
+import { Note, NoteImage, NoteImageId } from '../model/notes.types';
+import { isBlankNote } from '../util/notes.factory';
+import { resolveImages } from '../util/notes.utils';
+import { NoteImageStore } from './note-image.store';
 import { NotesActions } from './notes.actions';
 import { selectNotes, selectRouteNote } from './notes.selector';
 
@@ -41,7 +44,13 @@ export class NoteEditorFacade {
 
   #pending: UpdateDTO<Note> | undefined;
 
+  readonly #images = inject(NoteImageStore);
+
   readonly note = this.#store.selectSignal(selectRouteNote);
+
+  readonly images = computed<NoteImage[]>(() =>
+    resolveImages(this.note()?.images, this.#images.urls())
+  );
 
   readonly #notes = this.#store.selectSignal(selectNotes);
 
@@ -80,22 +89,14 @@ export class NoteEditorFacade {
     this.flush();
     const note = this.note();
     if (!note) return;
-    this.#save({
-      id: note.id,
-      name: note.name,
-      images: [...(note.images ?? []), createNoteImage(dataUrl)],
-    });
+    this.#store.dispatch(NotesActions.addImage(note.id, uuidv4(), dataUrl));
   }
 
   removeImage(imageId: NoteImageId): void {
     this.flush();
     const note = this.note();
     if (!note) return;
-    this.#save({
-      id: note.id,
-      name: note.name,
-      images: note.images?.filter((image) => image.id !== imageId),
-    });
+    this.#store.dispatch(NotesActions.removeImage(note.id, imageId));
   }
 
   togglePin(): void {
@@ -104,8 +105,7 @@ export class NoteEditorFacade {
   }
 
   rotateImage(imageId: NoteImageId): void {
-    const note = this.note();
-    if (note) this.#store.dispatch(NotesActions.rotateImage(note.id, imageId));
+    this.#store.dispatch(NotesActions.rotateImage(imageId));
   }
 
   removeNote(): void {

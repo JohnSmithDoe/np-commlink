@@ -12,7 +12,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   OnDestroy,
   signal,
@@ -71,7 +70,7 @@ export class NoteEditorPage implements OnDestroy {
   readonly #translate = inject(TranslateService);
 
   readonly note = this.#facade.note;
-  readonly images = computed(() => this.note()?.images ?? []);
+  readonly images = this.#facade.images;
   readonly openAt = signal<number | undefined>(undefined);
 
   readonly #noteId = this.note()?.id;

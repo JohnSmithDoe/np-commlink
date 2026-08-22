@@ -46,8 +46,23 @@ export class DatabaseService {
     }
   }
 
+  async remove(key: string): Promise<void> {
+    const write = this.#erase(key);
+    this.#pendingWrites.add(write);
+    try {
+      await write;
+    } finally {
+      this.#pendingWrites.delete(write);
+    }
+  }
+
   async settled(): Promise<void> {
     await Promise.allSettled(this.#pendingWrites);
+  }
+
+  async #erase(key: string): Promise<void> {
+    await this.#ensureStorage();
+    await this.#storageService.remove(storageKey(key));
   }
 
   async #write<T>(key: string, value: T | null | undefined) {

@@ -85,11 +85,13 @@
     @if (item.images?.length) {
       <ng-container itemDetails>
         <div class="note-thumbs">
-          @for (image of item.images; track image.id) {
+          @for (imageId of item.images; track imageId) {
             <ion-thumbnail>
               <img
-                [src]="image.dataUrl"
+                [src]="facade.imageUrls()[imageId]"
                 [alt]="'notes.image.alt' | translate"
+                loading="lazy"
+                decoding="async"
               />
             </ion-thumbnail>
           }

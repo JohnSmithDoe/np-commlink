@@ -3,6 +3,7 @@ import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { imageOutline } from 'ionicons/icons';
+import { takePickedFiles } from '../../../@shared/util/forms/picked-file.utils';
 import { NoteEditorFacade } from '../../data';
 import { readNoteImage } from '../../util/notes.utils';
 
@@ -21,10 +22,8 @@ export class NoteImageInputComponent {
   }
 
   async onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const [file] = takePickedFiles(event);
     if (!file) return;
-    input.value = '';
 
     const image = await readNoteImage(file);
     if (image) this.#facade.addImage(image);

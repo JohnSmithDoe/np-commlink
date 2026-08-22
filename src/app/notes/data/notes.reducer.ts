@@ -53,6 +53,19 @@ const withoutNote = (state: NotesState, id: string): NotesState => ({
   },
 });
 
+const mapNote = (
+  state: NotesState,
+  id: string,
+  patch: (note: Note) => Note
+): NotesState => ({
+  list: {
+    ...state.list,
+    items: state.list.items.map((note) =>
+      note.id === id ? patch(note) : note
+    ),
+  },
+});
+
 // prettier-ignore
 export const notesReducer = createReducer(
   initialState,
@@ -70,14 +83,22 @@ export const notesReducer = createReducer(
     },
   })),
 
-  on(NotesActions.togglePin, (state, { id }): NotesState => ({
-    list: {
-      ...state.list,
-      items: state.list.items.map((note) =>
-        note.id === id ? { ...note, pinned: !note.pinned } : note
-      ),
-    },
-  })),
+  on(NotesActions.togglePin, (state, { id }): NotesState =>
+    mapNote(state, id, (note) => ({ ...note, pinned: !note.pinned }))),
+
+  on(NotesActions.addImage, (state, { noteId, imageId, at }): NotesState =>
+    mapNote(state, noteId, (note) => ({
+      ...note,
+      images: [...(note.images ?? []), imageId],
+      updatedAt: at,
+    }))),
+
+  on(NotesActions.removeImage, (state, { noteId, imageId, at }): NotesState =>
+    mapNote(state, noteId, (note) => ({
+      ...note,
+      images: note.images?.filter((id) => id !== imageId),
+      updatedAt: at,
+    }))),
 
   on(NotesActions.removeItem, (state, { item }): NotesState => withoutNote(state, item.id)),
   on(NotesActions.discardBlank, (state, { id }): NotesState => withoutNote(state, id)),

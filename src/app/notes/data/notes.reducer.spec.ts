@@ -117,3 +117,35 @@ describe('notesReducer arrangement', () => {
     expect(next.list.items.map(({ id }) => id)).toEqual(['a', 'b', 'c']);
   });
 });
+
+describe('notesReducer images', () => {
+  const AT = '2026-08-22T10:00:00+02:00';
+
+  it('keeps only the id, so a picture never enters the slice', () => {
+    const next = notesReducer(
+      stateWith(note('a', 'Ausweis')),
+      NotesActions.addImage('a', 'img-1', 'data:a', AT)
+    );
+
+    expect(next.list.items[0]?.images).toEqual(['img-1']);
+    expect(JSON.stringify(next)).not.toContain('data:a');
+    expect(next.list.items[0]?.updatedAt).toBe(AT);
+  });
+
+  it('removes the id it is given and leaves the rest arranged', () => {
+    const withTwo = notesReducer(
+      notesReducer(
+        stateWith(note('a', 'Ausweis')),
+        NotesActions.addImage('a', 'img-1', 'data:a', AT)
+      ),
+      NotesActions.addImage('a', 'img-2', 'data:b', AT)
+    );
+
+    const next = notesReducer(
+      withTwo,
+      NotesActions.removeImage('a', 'img-1', AT)
+    );
+
+    expect(next.list.items[0]?.images).toEqual(['img-2']);
+  });
+});

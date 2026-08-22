@@ -138,6 +138,28 @@ test.describe('notes', () => {
     await expect(viewer).toBeHidden({ timeout: 15_000 });
   });
 
+  test('keeps an attached picture across a full reload', async ({ page }) => {
+    await startNote(page);
+    await titleBox(page).fill('Ausweis');
+    await attach(page);
+
+    const thumb = mainContent(page).locator('.note-image-open img').first();
+    await expect(thumb).toBeVisible({ timeout: 15_000 });
+    await waitForPersisted(page, 'notes', 'Ausweis');
+
+    await page.reload();
+    await expect(mainContent(page).locator(EDITOR_PAGE)).toBeVisible({
+      timeout: 30_000,
+    });
+
+    await expect
+      .poll(async () => thumb.getAttribute('src'), {
+        timeout: 15_000,
+        message: 'the picture did not come back from its own storage key',
+      })
+      .toMatch(/^data:image\//);
+  });
+
   test('reaches the pictures from the list by swipe, without the editor', async ({
     page,
   }) => {

@@ -13,7 +13,7 @@ export interface NoteImage {
 
 export interface Note extends BaseItem {
   body?: string;
-  images?: NoteImage[];
+  images?: NoteImageId[];
   pinned?: boolean;
   updatedAt?: Timestamp;
 }
