@@ -7,8 +7,8 @@ import {
 import { IonButton } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IsoWeekday } from '../../../@shared/model/app.types';
+import { localizedWeekday } from '../../../@shared/util/formatting/date-format.utils';
 import { EVERY_DAY } from '../../util/vitals.factory';
-import { WEEKDAY_FULL_LABEL, WEEKDAY_LABEL } from '../../util/pill.utils';
 
 @Component({
   selector: 'app-weekday-picker',
@@ -22,8 +22,14 @@ export class WeekdayPickerComponent {
   readonly toggled = output<IsoWeekday>();
 
   readonly days = EVERY_DAY;
-  readonly labels = WEEKDAY_LABEL;
-  readonly fullLabels = WEEKDAY_FULL_LABEL;
+
+  label(day: IsoWeekday): string {
+    return localizedWeekday(day, 'short');
+  }
+
+  fullLabel(day: IsoWeekday): string {
+    return localizedWeekday(day, 'long');
+  }
 
   isOn(day: IsoWeekday): boolean {
     return this.weekdays().includes(day);

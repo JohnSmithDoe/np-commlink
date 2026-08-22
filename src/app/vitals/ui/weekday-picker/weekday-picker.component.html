@@ -9,11 +9,11 @@
       size="small"
       [fill]="isOn(day) ? 'solid' : 'outline'"
       [attr.aria-pressed]="isOn(day)"
-      [attr.aria-label]="fullLabels[day] | translate"
+      [attr.aria-label]="fullLabel(day)"
       (click)="toggled.emit(day)"
       data-testid="vitals-weekday"
     >
-      {{ labels[day] | translate }}
+      {{ label(day) }}
     </ion-button>
   }
 </div>

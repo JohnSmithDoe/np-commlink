@@ -95,11 +95,11 @@ changing one does not migrate an install, it stands up a second app that cannot 
   toast names the IBAN the **file** carries, which reads as the file being wrong. A mod-97 checksum is ten
   lines; what defers it is whether a wrong-but-well-formed IBAN earns a second error state, since the
   checksum cannot catch that one either.
-- **Two ways a re-import is not idempotent, both inherent to keying off statement content.** Nothing
-  writes a tombstone, so deleting an imported row and re-importing brings it back; and a `PDNG` entry can
-  carry a different `AcctSvcrRef` once it books, arriving as a second row. Neither bites today — every
-  export on hand is 100 % `BOOK` — and the pending/reconcile flow already exists to absorb the second.
-  Recorded so that neither reads as a regression later.
+- **A re-import is not idempotent in one remaining way, inherent to keying off statement content.**
+  Nothing writes a tombstone, so deleting an imported row and re-importing brings it back. The other half
+  — a `PDNG` entry arriving again under the `AcctSvcrRef` it gained when it booked — is closed: a row now
+  carries its derived key as well as the bank's, and a booked hit on a stored pending row confirms that row
+  in place (`plan-import.ts`). Recorded so the tombstone gap does not read as a regression later.
 - **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
   lists, recipes, cash, categories and trackplay create/edit are silent.
 - **Reading the phone's own payments is parked, and the ceiling is the platform's, not the effort.** No
@@ -136,10 +136,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   element. The reconcile and import-preview modals now render theirs; the burn-down, schedules and
   uncategorized surfaces hand-roll inert copy.
 - **Six shipping controls below the touch target.** `size="small"` is 32 px in Ionic MD; ten sites, four
-  `isDevMode()`-gated. The six that ship include the barcode **delete**. The emoji picker's grid is
+  `isDevMode()`-gated. The six that ship include the household scan button. The emoji picker's grid is
   `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.
-- **The barcode / ML Kit scanner's silence was not reproducible** from a read of `barcode.page.ts`. Verify
-  before adding anything.
 - **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
   loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
   Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
@@ -190,5 +188,83 @@ The constraint shaping all of it: the check is **presence-only** ("in storage" /
 - **Base unit on `Product` + pack sizes.** Open **only if presence-only proves too weak**: making
   `StorageItem.quantity` a base-unit amount pools distinct packs into one number and so **destroys per-pack
   `bestBefore`**. Half the schema exists (`unit`, `packaging`, `packagingWeight?`, unread by the matcher).
-- **Recipe photos** need a place for binaries first — a slice persists as one key/value doc that the generic
-  save effect rewrites wholesale, so base64 images would ride inside the text document.
+- **Recipe photos** now have a place to live: `notes/data/note-image.store.ts` keys each picture on its
+  own and keeps the slice text-only. What is left is generalising it past notes — the store, its resolver
+  and its collector are note-shaped today.
+
+## Known cost, not yet paid
+
+Each of these is measured, understood and left standing on purpose — a shape question, a wording question,
+or a bill that only a phone with a few hundred rows actually presents.
+
+- **A picture is base64 in IndexedDB, and binary is the better answer on both platforms.** The store keys
+  each image on its own now, but the value is still a data URL: base64 costs a third on top of the bytes and
+  every read re-parses a string. A `Blob` in IndexedDB would drop both, rendered through
+  `URL.createObjectURL` — which makes revoking our problem, and only holds if the localforage driver really
+  is IndexedDB (a localStorage fallback cannot carry a Blob at all). On the APK the honest answer is a real
+  file: `@capacitor/filesystem` is not a dependency yet, so it is a plugin to add, sync and patch through
+  `android-postsync.sh`, plus `convertFileSrc` and a CSP that admits it. The PWA has no such option, so
+  either way the code carries two paths.
+- **The notes list decodes a full picture into a 48 px box.** `MAX_EDGE` is two screens, so every thumbnail
+  costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
+  canvas pass at import — the canvas is already there — would store a ~192 px `thumbUrl` beside the
+  picture for a few KB. It is a persisted-shape change on the image document, which is free (`notes` is
+  dev-only), and the list is also unwindowed, so the two belong in one pass.
+- **The pill intake log is never pruned.** `intakes` gains one entry per pill per day and nothing removes
+  it, so it is carried in every vitals write forever — five pills over two years is ~3 600 entries. Pruning
+  past ~90 days is a few lines, but `vitals` is a slice real users hold, so the shape change is a question
+  for Martin and not a cleanup.
+- **A keystroke in a searchbar rewrites a whole slice.** `save.sources` matches on the action source, so
+  `updateSearch` and `updateSort` are mutations as far as the save effect is concerned — worst in `cash`
+  (the entire ledger) and `vitals`. `notes.providers.ts` shows the fix: enumerate the mutations under `on:`
+  and leave search and sort out. Five domains use the source form, so it is a convention to change once.
+- **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new RegExp
+  per transaction and the amount threshold is re-parsed per transaction, then the whole matched set is
+  sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running top-five
+  and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes when the
+  preview updates, which is why it is not a silent cleanup.
+- **`inScope` walks the ledger twice per report.** `report` and `uncategorizedOutflows` each filter the full
+  ledger and each allocate a dayjs per row. One shared `computed` in the facade fixes it, and the cutoff
+  compare can be a string slice — the same trick `burndown.utils` and `balance-check` already use.
+
+## Known duplication and shallow seams
+
+- **Cash's dialog hosts are pasted per page.** "Which dialogs can open anywhere in CREDSTICK" is restated
+  in five templates and five `imports:` arrays, and forgetting one produces a dead button rather than a
+  compile error — which is exactly the bug the spending page shipped. One `feature/cash-dialogs`
+  component, or better a routed cash shell hosting them beside the outlet, ends the checklist.
+- **Import policy is split between a page and a modal.** The page reads files, plans and hands the modal
+  eight loose props; the modal then decides what counts as work and calls two facades. A `CashImportFacade`
+  owning `plan(parsed)` and `commit(preview)` would put one transaction in one place — the seam tore
+  visibly when pending-confirmation was added.
+- **Cash rules and schedules hand-roll add-or-update in their facades** while their action groups already
+  carry `addOrUpdateItem`. Wiring `createItemListEffects` for them is the fix and also brings
+  `syncSearchOnRename$` and the failure toast, so it changes behaviour and is a decision, not a tidy-up.
+- **`windowSize` is a hand-rolled render cap in the shared list page, with one caller.** Ionic ships
+  `ion-infinite-scroll` and the CDK ships virtual scroll; either would need no flag, no second items signal
+  and no reset rule. Also `searchable` is declared on a facade and `windowSize` on the component — two
+  opt-outs at two layers, where `sortable` settled on the facade.
+- **Three smaller repeats, all named and all cheap:** the route-scoped list selector trio exists twice
+  (readings, pills) and wants a factory beside `list.selector.ts`; the settings page renders the same
+  label + segment block three times; and `Chart.register(...registerables)` plus a near-identical options
+  object sits in three chart hosts, where `@shared/util/charts/` is already the shared home.
+- **Several `why` banners run 21–32 lines against a 6–14 guideline**, and a few paragraphs narrate what the
+  expression underneath already says. Trimming is per-file judgement, so it happens when a file is opened
+  for another reason.
+
+## Findings from the review that are still open
+
+Ranked below the fifteen that were fixed, and none of them blocking. Kept here so they are not re-found.
+
+- **`advanced()` clamps a month-end due date and never recovers it** — a 31st becomes the 28th in February
+  and stays there.
+- **Zip members are read in `localeCompare` order**, so page 10 sorts before page 2 and `lastClosingBalance`
+  can take the wrong page's figure. A corrupt zip also throws out of `importStatement` unreported.
+- **`remittanceOf` joins `Ustrd` lines with a space**, which inserts one into an IBAN the 140-character
+  split broke apart.
+- **`cash-report` tracks a derived category NAME**, so two categories sharing a name collide into an NG0955.
+- **The burn-down renders outflow magnitudes unnegated**, so the same €900 reads `+` on one page and `−` on
+  another.
+- **`removeNote` pushes history**, leaving a dead editor one back-tap away.
+- **The household `ion-tab-bar` ignores `--app-content-max-width`**, and `list-page`'s `sortable` flag
+  empties its toolbar instead of removing it, leaving an empty bar on the vitals pages.

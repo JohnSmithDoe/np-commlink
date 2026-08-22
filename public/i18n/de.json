@@ -850,19 +850,5 @@
   "vitals.reading-dialog.calculator": "Zusammen gewogen",
   "vitals.reading-dialog.date-taken": "Für dieses Datum gibt es schon einen Eintrag.",
   "vitals.stats.readings": "Einträge: {{count}}",
-  "vitals.weekday-full.fri": "Freitag",
-  "vitals.weekday-full.mon": "Montag",
-  "vitals.weekday-full.sat": "Samstag",
-  "vitals.weekday-full.sun": "Sonntag",
-  "vitals.weekday-full.thu": "Donnerstag",
-  "vitals.weekday-full.tue": "Dienstag",
-  "vitals.weekday-full.wed": "Mittwoch",
-  "vitals.weekday.every-day": "Täglich",
-  "vitals.weekday.fri": "Fr",
-  "vitals.weekday.mon": "Mo",
-  "vitals.weekday.sat": "Sa",
-  "vitals.weekday.sun": "So",
-  "vitals.weekday.thu": "Do",
-  "vitals.weekday.tue": "Di",
-  "vitals.weekday.wed": "Mi"
+  "vitals.weekday.every-day": "Täglich"
 }
