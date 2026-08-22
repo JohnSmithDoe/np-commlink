@@ -1,0 +1,19 @@
+<div
+  class="weekday-picker"
+  role="group"
+  [attr.aria-label]="'vitals.label.weekdays' | translate"
+>
+  @for (day of days; track day) {
+    <ion-button
+      class="weekday-picker__day"
+      size="small"
+      [fill]="isOn(day) ? 'solid' : 'outline'"
+      [attr.aria-pressed]="isOn(day)"
+      [attr.aria-label]="fullLabels[day] | translate"
+      (click)="toggled.emit(day)"
+      data-testid="vitals-weekday"
+    >
+      {{ labels[day] | translate }}
+    </ion-button>
+  }
+</div>

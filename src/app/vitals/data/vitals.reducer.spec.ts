@@ -36,7 +36,7 @@ describe('vitalsReducer — deleting a profile', () => {
 
     const restored = vitalsReducer(
       deleted,
-      VitalsActions.restoreProfile(cat, [cats])
+      VitalsActions.restoreProfile(cat, [cats], [], [])
     );
 
     expect(restored.profiles.items).toContainEqual(cat);
@@ -76,10 +76,12 @@ describe('vitalsReducer — hydration', () => {
   it('drops a restored search query, so a list opens unfiltered', () => {
     const next = vitalsReducer(
       undefined,
-      VitalsActions.loaded({
-        profiles: mockProfilesState([martin], { searchQuery: 'mar' }),
-        readings: mockReadingsState([mine], { searchQuery: '2026' }),
-      })
+      VitalsActions.loaded(
+        mockVitalsState({
+          profiles: mockProfilesState([martin], { searchQuery: 'mar' }),
+          readings: mockReadingsState([mine], { searchQuery: '2026' }),
+        })
+      )
     );
 
     expect(next.profiles.items).toEqual([martin]);

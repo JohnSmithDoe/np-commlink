@@ -13,13 +13,22 @@
  * traps, and what `allowWhileIdle` does not buy, are in docs/footguns.md.
  * The cost of the cron is that the OS owns the next occurrence: it nudges
  * on a day already finished, which is the right way to be wrong.
+ *
+ * A weekly cron is the same `on` branch with `weekday` set — the plugin
+ * takes the FIRST field given as its repeat unit, so naming weekday before
+ * hour re-arms a week later rather than a day. Its numbering starts at
+ * Sunday, which no domain should have to hold: callers pass an ISO weekday
+ * (Monday 1 … Sunday 7) and the conversion stays on this side, so a
+ * persisted schedule never encodes a plugin's enum.
  * ───────────────────────────────────────────────────────────────── */
 import { inject, Injectable, InjectionToken } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { LocalNotifications } from '@capacitor/local-notifications';
+import { LocalNotifications, Weekday } from '@capacitor/local-notifications';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
+import { IsoWeekday } from '../../model/app.types';
 import {
+  FixedIdSource,
   NOTIFICATION_SOURCES,
   NotificationSource,
 } from '../../model/notification-sources';
@@ -54,11 +63,32 @@ const asNotificationSource = (
 };
 
 type DailyReminder = {
-  source: NotificationSource;
+  source: FixedIdSource;
   titleKey: string;
   bodyKey: string;
   hour: number;
   minute: number;
+};
+
+type WeeklyReminder = {
+  id: number;
+  source: NotificationSource;
+  titleKey: string;
+  bodyKey: string;
+  parameters: Record<string, string>;
+  isoWeekday: IsoWeekday;
+  hour: number;
+  minute: number;
+};
+
+const OS_WEEKDAY: Readonly<Record<IsoWeekday, Weekday>> = {
+  1: Weekday.Monday,
+  2: Weekday.Tuesday,
+  3: Weekday.Wednesday,
+  4: Weekday.Thursday,
+  5: Weekday.Friday,
+  6: Weekday.Saturday,
+  7: Weekday.Sunday,
 };
 
 @Injectable({ providedIn: 'root' })
@@ -72,9 +102,14 @@ export class LocalNotificationsService {
     return display === 'granted';
   }
 
-  async cancel(source: NotificationSource): Promise<void> {
+  async cancel(source: FixedIdSource): Promise<void> {
+    await this.cancelIds([NOTIFICATION_SOURCES[source].id]);
+  }
+
+  async cancelIds(ids: readonly number[]): Promise<void> {
+    if (ids.length === 0) return;
     await this.#plugin.cancel({
-      notifications: [{ id: NOTIFICATION_SOURCES[source].id }],
+      notifications: ids.map((id) => ({ id })),
     });
   }
 
@@ -96,6 +131,38 @@ export class LocalNotificationsService {
           extra: { source: reminder.source },
           schedule: {
             on: { hour: reminder.hour, minute: reminder.minute },
+            allowWhileIdle: true,
+          },
+        },
+      ],
+    });
+    return true;
+  }
+
+  async scheduleWeekly(reminder: WeeklyReminder): Promise<boolean> {
+    if (!this.#isNative) return false;
+    if (!(await this.requestPermission())) return false;
+
+    const copy = await firstValueFrom(
+      this.#translate.get(
+        [reminder.titleKey, reminder.bodyKey],
+        reminder.parameters
+      )
+    );
+
+    await this.#plugin.schedule({
+      notifications: [
+        {
+          id: reminder.id,
+          title: copy[reminder.titleKey],
+          body: copy[reminder.bodyKey],
+          extra: { source: reminder.source },
+          schedule: {
+            on: {
+              weekday: OS_WEEKDAY[reminder.isoWeekday],
+              hour: reminder.hour,
+              minute: reminder.minute,
+            },
             allowWhileIdle: true,
           },
         },

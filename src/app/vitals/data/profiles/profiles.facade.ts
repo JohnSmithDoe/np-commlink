@@ -15,9 +15,11 @@ import {
 } from '../../../@shared/model/item-list.types';
 import { Profile, PROFILES_LIST_ID } from '../../model/vitals.types';
 import { createProfile } from '../../util/vitals.factory';
+import { pillsOf } from '../../util/pill.utils';
 import { readingsOf } from '../../util/vitals.utils';
+import { selectPillItems } from '../pills/pills.selector';
 import { selectReadingItems } from '../readings/readings.selector';
-import { selectProfilesList } from '../vitals.selector';
+import { selectIntakes, selectProfilesList } from '../vitals.selector';
 import { VitalsActions } from '../vitals.actions';
 import { ProfilesActions } from './profiles.actions';
 import {
@@ -34,6 +36,8 @@ export class ProfilesFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
   readonly #readings = this.#store.selectSignal(selectReadingItems);
+  readonly #pills = this.#store.selectSignal(selectPillItems);
+  readonly #intakes = this.#store.selectSignal(selectIntakes);
 
   readonly state = this.#store.selectSignal(selectProfilesList);
   readonly allItems = this.#store.selectSignal(selectProfileItems);
@@ -75,12 +79,16 @@ export class ProfilesFacade {
   }
 
   removeItem(profile: Profile): void {
+    const pills = pillsOf(this.#pills(), profile.id);
+    const pillIds = new Set(pills.map((pill) => pill.id));
     this.#store.dispatch(
       UndoActions.pushed({
         name: profile.name,
         action: VitalsActions.restoreProfile(
           profile,
-          readingsOf(this.#readings(), profile.id)
+          readingsOf(this.#readings(), profile.id),
+          pills,
+          this.#intakes().filter((intake) => pillIds.has(intake.pillId))
         ),
       })
     );

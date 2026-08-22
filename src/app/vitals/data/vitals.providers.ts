@@ -1,9 +1,11 @@
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
+import { PillReminderEffects } from './pill-reminder.effects';
 import { selectReadingsCount } from './readings/readings.selector';
 import { VitalsActions } from './vitals.actions';
 import { vitalsReducer } from './vitals.reducer';
 import {
+  pillsListEffects,
   profilesListEffects,
   readingsListEffects,
 } from './vitals-list.effects';
@@ -15,7 +17,12 @@ export const vitalsContext = providePersistedContext({
   lifecycle: VitalsActions,
   select: selectVitalsState,
   save: {
-    sources: ['[Vitals]', '[Vitals Profiles]', '[Vitals Readings]'],
+    sources: [
+      '[Vitals]',
+      '[Vitals Profiles]',
+      '[Vitals Readings]',
+      '[Vitals Pills]',
+    ],
   },
   telemetry: [
     {
@@ -24,5 +31,10 @@ export const vitalsContext = providePersistedContext({
       metrics: createMetric('count'),
     },
   ],
-  effects: [profilesListEffects, readingsListEffects],
+  effects: [
+    profilesListEffects,
+    readingsListEffects,
+    pillsListEffects,
+    PillReminderEffects,
+  ],
 });

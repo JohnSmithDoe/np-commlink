@@ -8,6 +8,17 @@
     headerEnd
     slot="end"
     fill="clear"
+    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/pills'"
+    [attr.aria-label]="'vitals.a11y.pills' | translate"
+    data-testid="vitals-pills-link"
+  >
+    <ion-icon slot="icon-only" name="medkit-outline" aria-hidden="true" />
+  </ion-button>
+
+  <ion-button
+    headerEnd
+    slot="end"
+    fill="clear"
     (click)="facade.showEditProfileDialog()"
     [attr.aria-label]="'a11y.edit' | translate"
   >

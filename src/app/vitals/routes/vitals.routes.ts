@@ -23,6 +23,14 @@ export const vitalsRoutes: Routes = [
             (m) => m.VitalsProfilePage
           ),
       },
+      {
+        path: 'profile/:id/pills',
+        title: marker('page-title.vitals-pills'),
+        loadComponent: () =>
+          import('../feature/pills-page/pills.page').then(
+            (m) => m.VitalsPillsPage
+          ),
+      },
     ],
   },
 ];

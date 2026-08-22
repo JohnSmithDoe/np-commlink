@@ -4,6 +4,7 @@ export type IonDragEvent = CustomEvent<{ amount: number; ratio: number }>;
 export type IonColor = PredefinedColors | 'accent';
 export type Marker = string;
 export type Timestamp = string;
+export type IsoWeekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Theme = 'cyberpunk' | 'boomer';
 export type LanguageModelAvailability = Availability | 'probing';
 export const THEMES = [

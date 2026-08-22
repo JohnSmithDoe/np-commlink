@@ -623,3 +623,33 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   button disables on an exact-match search hit, and `addItemFromSearch` falls back to the create dialog
   because readings pass no creator. A fifth would mean the date is fighting the mechanism rather than
   riding it, and the answer then is a real `date` field plus a generalized unique-field rule in `@shared`.
+
+## BIOMON — pills, and one id per weekday
+
+- **`pills` and `intakes` are the third and fourth keys of the vitals slice**, for the reason the blood
+  pressure entry already gives: profiles are the spine, domains are sealed, and a `pills` domain could not
+  import them. Adding both keys is additive — a missing key hydrates to initial state — so no rung was owed
+  and `APP_VERSION` did not move.
+- **A pill's `slot` is a block of eight OS notification ids, and `nextSlot` only counts up.** The OS keys a
+  notification by one integer while a pill needs up to seven (one weekly cron per due weekday), so
+  `pillReminder` carries `idBase` instead of `id` and owns everything above it. Slot 0 of each block stays
+  reserved, which makes the arithmetic a shift. Never reusing a freed slot costs one integer in the slice
+  and removes the need to re-establish that no cancel and schedule can ever race over one id.
+- **The reminder effect reconciles the whole domain, not the pill that moved.** An effect runs after the
+  reducer, so a deleted pill is already gone from state and nothing can read its ids back off — the same
+  for every pill a deleted profile took. `nextSlot` bounds the sweep: every id ever issued is below it, so
+  one `cancelIds` call clears the range and the due pills re-arm behind it. That one path also covers a
+  weekday being unticked, a profile rename changing the reminder body, and an undo.
+- **`weekdays` is ISO (Monday 1), never the plugin's `Weekday`.** Capacitor numbers from Sunday; that enum
+  is a runtime import and a dependency's detail, and this shape is persisted. `LocalNotificationsService`
+  converts at the platform edge, which is also where the `on: { weekday, hour, minute }` cron lives.
+- **An intake is a fact about a day, so it is a separate collection keyed by `(pillId, takenOn)`** — not a
+  field on the pill, which would leave yesterday's tick reading as today's. "Taken today" is a comparison
+  against `TodayService.today`, so the daily reset needs no timer and no midnight action. This mirrors
+  ritual's `completions`.
+- **Both switches live in the edit dialog, not the row.** No list row in this app carries a toggle, and a
+  row that owned the taken-tick would have to answer "taken when" on every render. It also keeps R5 free:
+  nothing here is reachable by gesture alone.
+- **Pills match on the id, like readings, but for the neighbouring reason.** Their uniqueness rule is scoped
+  to one profile — two profiles may each hold an "Ibuprofen" — and the default name-matching would edit the
+  wrong one. `create` is null because a pill without a profile is not a pill and a search box carries none.

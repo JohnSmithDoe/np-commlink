@@ -36,9 +36,9 @@ criterion.
   storage bucket is **evictable** — `provideDurableStorage()` requests promotion fire-and-forget (Firefox
   prompts; awaiting it would hold the splash open).
 
-## Six Ionic locator traps
+## Seven Ionic locator traps
 
-Each passes alone and fails after an SPA navigation.
+The first six pass alone and fail after an SPA navigation; the last fails on its own.
 
 - **Scope to the page component** `app-page-<x>`, not `#main-content` — the outlet keeps visited routes
   mounted, so a sibling page's identical button is still there.
@@ -55,6 +55,11 @@ Each passes alone and fails after an SPA navigation.
   sits in the DOM whether presented or not. Narrow with `:not(.overlay-hidden)`. General rule: **an
   always-mounted overlay makes every element-name locator for it ambiguous app-wide**, so adding one to
   the shell changes every spec's namespace.
+- **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
+  `input.aux-input[type=hidden]` beside the control it binds, so `getByTestId(…).locator('input')` on any
+  bound `ion-toggle`/`ion-input` resolves to **two** elements and fails strict mode. `getByRole('switch')`
+  is not the way out either: the real control lives in the shadow root and the role is not exposed to it.
+  Narrow by type — `input[type="checkbox"]`.
 
 ## Specs
 
@@ -242,6 +247,12 @@ wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document 
   `scheduleDaily` refuses off-native and reports it rather than appearing to work.
 - **`allowWhileIdle` buys only the first delivery of a cron** — the plugin's re-arm drops back to a plain
   non-wakeup alarm, so from the second occurrence a dozing device may hold the nudge.
+- **`schedule.on` takes its repeat interval from the FIRST field set, in the order year, month, day,
+  weekday, hour, minute, second** (`DateMatch.java`: each branch assigns `unit` only `if (unit == -1)`, and
+  `nextTrigger` increments the unit one coarser than that one). So `{ hour, minute }` re-arms daily and
+  `{ weekday, hour, minute }` re-arms weekly — a weekday subset is one cron per day, not one cron that
+  knows several days. Setting a `day` or `month` you did not mean silently demotes the repeat to monthly
+  or yearly.
 
 ## Money, dates, forms
 

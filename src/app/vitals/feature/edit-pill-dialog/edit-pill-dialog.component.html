@@ -1,0 +1,65 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="number"
+      inputmode="decimal"
+      step="0.5"
+      min="0.5"
+      label="{{ 'vitals.label.dose' | translate }}"
+      [formField]="form.dose"
+      data-testid="vitals-pill-dose"
+    />
+  </ion-item>
+  @if (doseInvalid()) {
+    <ion-note color="danger" class="sr-field-note">
+      {{ 'vitals.pill-dialog.dose-invalid' | translate }}
+    </ion-note>
+  }
+
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="time"
+      label="{{ 'vitals.label.time' | translate }}"
+      [formField]="form.time"
+      data-testid="vitals-pill-time"
+    />
+  </ion-item>
+
+  <app-weekday-picker
+    [weekdays]="draft().weekdays"
+    (toggled)="toggleWeekday($event)"
+  />
+  @if (weekdaysInvalid()) {
+    <ion-note color="danger" class="sr-field-note">
+      {{ 'vitals.pill-dialog.no-weekday' | translate }}
+    </ion-note>
+  }
+
+  <ion-item>
+    <ion-toggle [formField]="form.remind" data-testid="vitals-pill-remind">
+      {{ 'vitals.label.remind' | translate }}
+    </ion-toggle>
+  </ion-item>
+
+  <ion-item>
+    <ion-toggle [formField]="form.takenToday" data-testid="vitals-pill-taken">
+      {{ 'vitals.label.taken-today' | translate }}
+    </ion-toggle>
+  </ion-item>
+
+  <ion-note class="sr-field-note">
+    {{ 'vitals.pill-dialog.native-only' | translate }}
+  </ion-note>
+</app-item-edit-modal>

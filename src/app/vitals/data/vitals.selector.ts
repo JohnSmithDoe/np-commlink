@@ -1,5 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  IntakesState,
+  PillsState,
   ProfilesState,
   ReadingsState,
   VitalsState,
@@ -18,4 +20,14 @@ export const selectProfilesList = createSelector(
 export const selectReadingsList = createSelector(
   selectVitalsState,
   (state): ReadingsState => state.readings
+);
+
+export const selectPillsList = createSelector(
+  selectVitalsState,
+  (state): PillsState => state.pills
+);
+
+export const selectIntakes = createSelector(
+  selectVitalsState,
+  (state): IntakesState => state.intakes
 );

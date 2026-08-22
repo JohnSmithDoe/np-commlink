@@ -1,0 +1,31 @@
+<app-list-page
+  class="ion-page"
+  [heading]="facade.heading()"
+  [backHref]="'/vitals/profile/' + (facade.profile()?.id ?? '')"
+  [itemTemplate]="pillRow"
+/>
+
+<ng-template #pillRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [crossedOut]="facade.isTakenToday(item)"
+    [leadingIcon]="
+      item.remind ? 'notifications-outline' : 'notifications-off-outline'
+    "
+    [startSwipeAction]="editSwipeAction"
+    (selectItem)="openPillEdit(item)"
+    (startSwipe)="openPillEdit(item)"
+    (deleteItem)="deletePill(item)"
+  >
+    <p itemDetails class="second-line">
+      <ion-note>
+        {{ 'vitals.pill.summary' | translate: { dose: item.dose } }} ·
+        {{ time(item) }} · {{ item.weekdays | weekdays }}
+      </ion-note>
+    </p>
+  </app-list-item>
+</ng-template>
+
+<app-edit-pill-dialog />

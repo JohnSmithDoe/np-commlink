@@ -41,3 +41,22 @@ export const localizedMonthYear = (value: string | Dayjs): string =>
 
 export const padClock = (value: number): string =>
   String(value).padStart(2, '0');
+
+export const clockTime = (hour: number, minute: number): string =>
+  `${padClock(hour)}:${padClock(minute)}`;
+
+export const parseClock = (
+  value: unknown
+): { hour: number; minute: number } | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const [hour, minute] = value.split(':').map(Number);
+  if (
+    hour === undefined ||
+    minute === undefined ||
+    Number.isNaN(hour) ||
+    Number.isNaN(minute)
+  ) {
+    return undefined;
+  }
+  return { hour, minute };
+};
