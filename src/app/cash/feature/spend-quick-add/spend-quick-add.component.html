@@ -1,0 +1,77 @@
+<div class="spend-quick-add">
+  <ion-segment [value]="method()">
+    @for (option of methods; track option) {
+      <ion-segment-button
+        [value]="option"
+        (click)="setMethod(option)"
+        data-testid="spend-method-option"
+      >
+        {{ methodLabelKeys[option] | translate }}
+      </ion-segment-button>
+    }
+  </ion-segment>
+
+  @if (hasNoAccount()) {
+    <ion-note color="warning" class="cash-hint" data-testid="spend-no-account">
+      {{ emptyLabelKeys[method()] | translate }}
+    </ion-note>
+  } @else {
+    <div class="spend-quick-add__presets">
+      @for (preset of presets; track preset) {
+        <ion-button
+          size="small"
+          [fill]="amountCents() === preset ? 'solid' : 'outline'"
+          (click)="pickPreset(preset)"
+          data-testid="spend-preset"
+        >
+          {{ preset | moneyEur }}
+        </ion-button>
+      }
+    </div>
+
+    <app-money-input
+      label="{{ 'cash.label.amount' | translate }}"
+      [(value)]="amountCents"
+    />
+
+    <app-cash-category-picker [(value)]="categoryId" />
+
+    @if (needsAccountChoice()) {
+      <ion-item>
+        <ion-select
+          labelPlacement="stacked"
+          label="{{ 'cash.spend.account' | translate }}"
+          [value]="account()?.id"
+          (ionChange)="chooseAccount($event.detail.value)"
+          data-testid="spend-account"
+        >
+          @for (option of accounts(); track option.id) {
+            <ion-select-option [value]="option.id">
+              {{ option.name }}
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    } @else if (account()) {
+      <ion-item lines="none">
+        <ion-label>{{ 'cash.spend.account' | translate }}</ion-label>
+        <ion-note slot="end">{{ account()?.name }}</ion-note>
+      </ion-item>
+    }
+
+    @if (settlesLater()) {
+      <ion-note class="cash-hint" data-testid="spend-settles-later">
+        {{ 'cash.spend.settles-later' | translate }}
+      </ion-note>
+    }
+
+    <ion-button
+      expand="block"
+      [disabled]="!canBook()"
+      (click)="book()"
+      data-testid="spend-book"
+    >
+      {{ 'cash.spend.book' | translate }}
+    </ion-button>
+  }
+</div>

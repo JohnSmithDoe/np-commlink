@@ -1,0 +1,62 @@
+<app-page-header
+  label="page-title.cash-spending"
+  backHref="/cash/burndown"
+  hideButtons
+/>
+
+<ion-content class="ion-padding">
+  @let today = burndown();
+
+  <div class="spending-headline" data-testid="spending-remaining-today">
+    <span class="spending-headline__label">
+      {{ 'cash.burndown.remaining-today' | translate }}
+    </span>
+    <span
+      class="spending-headline__value"
+      [class.spending-headline__value--over]="overToday()"
+    >
+      {{ today.remainingTodayCents | moneyEur }}
+    </span>
+    <span class="spending-headline__note">
+      {{ 'cash.burndown.spent-today' | translate }}
+      {{ today.spentTodayCents | moneyEur }}
+    </span>
+  </div>
+
+  <app-cash-spend-quick-add />
+
+  <ion-list-header>
+    {{ 'cash.spend.this-month' | translate }}
+  </ion-list-header>
+  @if (spends().length) {
+    <ion-list lines="full">
+      @for (spend of spends(); track spend.id) {
+        <ion-item
+          [button]="true"
+          [detail]="true"
+          (click)="editSpend(spend)"
+          data-testid="spending-row"
+        >
+          <ion-label>
+            <h2>{{ spend.name }}</h2>
+            <p>
+              {{ spend.dateISO | localizedDate }}
+              @if (spend.status === 'pending') {
+                · {{ 'cash.txn.pending' | translate }}
+              }
+            </p>
+          </ion-label>
+          <ion-note slot="end">
+            {{ spend.amountCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+      }
+    </ion-list>
+  } @else {
+    <ion-note class="cash-hint" data-testid="spending-empty">
+      {{ 'cash.spend.empty' | translate }}
+    </ion-note>
+  }
+</ion-content>
+
+<app-edit-cash-transaction-dialog />

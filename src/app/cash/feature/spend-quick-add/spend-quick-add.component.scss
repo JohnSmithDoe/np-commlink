@@ -1,0 +1,18 @@
+@use 'theme/cash';
+
+.spend-quick-add {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--sr-line);
+}
+
+.spend-quick-add__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.cash-hint {
+  @include cash.hint(var(--space-1));
+}

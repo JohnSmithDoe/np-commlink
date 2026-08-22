@@ -14,6 +14,7 @@
       labelPlacement="stacked"
       label="{{ 'cash.label.kind' | translate }}"
       [formField]="form.kind"
+      data-testid="account-kind"
     >
       @for (k of kinds; track k) {
         <ion-select-option [value]="k">

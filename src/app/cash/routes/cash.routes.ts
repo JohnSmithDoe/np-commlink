@@ -31,6 +31,14 @@ export const cashRoutes: Routes = [
           ),
       },
       {
+        path: 'spending',
+        title: marker('page-title.cash-spending'),
+        loadComponent: () =>
+          import('../feature/cash-spending-page/cash-spending.page').then(
+            (m) => m.CashSpendingPage
+          ),
+      },
+      {
         path: 'report',
         title: marker('page-title.cash-report'),
         loadComponent: () =>

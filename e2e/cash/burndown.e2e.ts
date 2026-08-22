@@ -80,6 +80,12 @@ test.describe('cash burndown', () => {
     await expect(
       burndownPage(page).getByTestId('burndown-per-day')
     ).toBeVisible();
+    await expect(
+      burndownPage(page).getByTestId('burndown-remaining-today')
+    ).toBeVisible();
+    await expect(
+      burndownPage(page).getByTestId('burndown-spent-today')
+    ).toHaveText(/0,00/);
     await expect(burndownPage(page).getByTestId('burndown-reserve')).toHaveText(
       /0,00/
     );

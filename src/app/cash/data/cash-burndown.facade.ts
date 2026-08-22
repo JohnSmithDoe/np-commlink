@@ -7,7 +7,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
-import { burndownFor } from '../util/burndown.utils';
+import { burndownFor, spendsThisMonth } from '../util/burndown.utils';
 import { dueStatus } from '../util/schedule.utils';
 import {
   selectAllowanceBalanceCents,
@@ -34,6 +34,10 @@ export class CashBurndownFacade {
       this.schedules(),
       this.#todayISO()
     )
+  );
+
+  readonly monthSpends = computed(() =>
+    spendsThisMonth(this.#transactions(), this.#todayISO())
   );
 
   readonly overdue = computed(() =>

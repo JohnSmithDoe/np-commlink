@@ -7,20 +7,19 @@
 <ion-content class="ion-padding">
   @let today = burndown();
 
-  <div class="burndown-headline" data-testid="burndown-per-day">
+  <div class="burndown-headline" data-testid="burndown-remaining-today">
     <span class="burndown-headline__label">
-      {{ 'cash.burndown.per-day' | translate }}
+      {{ 'cash.burndown.remaining-today' | translate }}
     </span>
     <span
       class="burndown-headline__value"
-      [class.burndown-headline__value--over]="overspent()"
+      [class.burndown-headline__value--over]="overToday()"
     >
-      {{ today.perDayCents | moneyEur }}
+      {{ today.remainingTodayCents | moneyEur }}
     </span>
     <span class="burndown-headline__note">
-      {{
-        'cash.burndown.days-left' | translate: { count: today.daysRemaining }
-      }}
+      {{ 'cash.burndown.today-allowance' | translate }}
+      {{ today.allowanceTodayCents | moneyEur }}
     </span>
   </div>
 
@@ -31,6 +30,40 @@
   }
 
   <ion-list lines="full" class="burndown-breakdown">
+    <ion-item
+      [button]="true"
+      [detail]="true"
+      routerLink="/cash/spending"
+      data-testid="burndown-spending-link"
+    >
+      <ion-label>{{ 'cash.spend.add' | translate }}</ion-label>
+      <ion-note slot="end">
+        {{ 'cash.spend.count' | translate: { count: spendCount() } }}
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" class="burndown-breakdown">
+    <ion-item>
+      <ion-label>{{ 'cash.burndown.spent-today' | translate }}</ion-label>
+      <ion-note slot="end" data-testid="burndown-spent-today">
+        {{ today.spentTodayCents | moneyEur }}
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        {{ 'cash.burndown.per-day' | translate }}
+        <p>
+          {{
+            'cash.burndown.days-left'
+              | translate: { count: today.daysRemaining }
+          }}
+        </p>
+      </ion-label>
+      <ion-note slot="end" data-testid="burndown-per-day">
+        {{ today.perDayCents | moneyEur }}
+      </ion-note>
+    </ion-item>
     <ion-item>
       <ion-label>{{ 'cash.burndown.balance' | translate }}</ion-label>
       <ion-note slot="end" data-testid="burndown-balance">
@@ -81,7 +114,7 @@
     </ion-list>
   }
 
-  <ion-list lines="full">
+  <ion-list lines="full" class="burndown-breakdown">
     <ion-item
       [button]="true"
       [detail]="true"
