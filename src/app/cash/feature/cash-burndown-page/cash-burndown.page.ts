@@ -64,8 +64,4 @@ export class CashBurndownPage {
   readonly overToday = computed(() => this.burndown().remainingTodayCents < 0);
   readonly scheduleCount = computed(() => this.#facade.schedules().length);
   readonly spendCount = computed(() => this.#facade.monthSpends().length);
-
-  constructor() {
-    this.#facade.refreshToday();
-  }
 }

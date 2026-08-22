@@ -1,26 +1,18 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Every row leaves here with a key, so nothing downstream has to ask
- * whether it has one. `AcctSvcrRef` is exact but OPTIONAL in the schema,
- * and a derived key is the honest substitute: same inputs, same key, so a
- * re-import recognises the row either way.
+ * `AcctSvcrRef` is exact but OPTIONAL in the schema, so every row also
+ * carries a DERIVED key — and keeps it even when the bank referenced it,
+ * because a PDNG entry arrives without a reference and books later with
+ * one. The exact key alone would import that spend twice.
  *
- * Both kinds open with `YYYYMMDD`, because the observed `AcctSvcrRef` does —
- * nineteen digits, the booking date at the front — and a ledger whose keys
- * sort alike reads alike.
- * The resemblance stops there ON PURPOSE: a derived key carries four
- * `|`-delimited segments, so it cannot be confused with a reference no
- * matter what charset or length a bank chooses for one. Matching the
- * digits too would manufacture the collision the shape is meant to avoid.
+ * The `|`-delimited shape cannot be confused with a reference whatever
+ * charset a bank picks for one, and the occurrence counter is what makes a
+ * derived key survive genuinely identical rows: two €4.20 coffees on one
+ * Tuesday are #1 and #2, not one coffee. Referenced and unreferenced rows
+ * are counted in SEPARATE spaces, because numbering them together would
+ * renumber a key already stored in the ledger. Counting happens after the
+ * pages are concatenated, or a pagination boundary would restart it.
  *
- * The occurrence counter is what makes the derived key survive genuinely
- * identical rows — two €4.20 coffees on one Tuesday are #1 and #2, not one
- * coffee. It is stable because both rows share a date, so no export range
- * can contain one without the other, and both keys number the same way.
- *
- * Keys are assigned AFTER the pages are concatenated. Counting per page
- * would restart at #1 whenever a pagination boundary fell between them.
- *
- * The account guard also lives here: the file names the account it belongs
+ * The account guard lives here too: the file names the account it belongs
  * to, so importing the savings statement into the giro is answerable
  * rather than merely regrettable. An account with no IBAN ADOPTS the one
  * it reads — asking for twenty digits up front is a worse guard than none.
@@ -54,13 +46,14 @@ const derivedBase = (entry: ParsedEntry): string =>
   `${compactDate(entry.dateISO)}|${entry.amountCents}|${entry.description}`;
 
 const withKeys = (entries: readonly ParsedEntry[]): ParsedRow[] => {
-  const occurrences = new Map<string, number>();
+  const referenced = new Map<string, number>();
+  const unreferenced = new Map<string, number>();
   return entries.map((entry) => {
-    if (entry.bankRef) return { ...entry, key: entry.bankRef };
     const base = derivedBase(entry);
-    const occurrence = (occurrences.get(base) ?? 0) + 1;
-    occurrences.set(base, occurrence);
-    return { ...entry, key: `${base}|${occurrence}` };
+    const tally = entry.bankRef ? referenced : unreferenced;
+    const occurrence = (tally.get(base) ?? 0) + 1;
+    tally.set(base, occurrence);
+    return { ...entry, derivedKey: `${base}|${occurrence}` };
   });
 };
 

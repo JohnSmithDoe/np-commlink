@@ -111,15 +111,24 @@ export function matchesRule(txn: CashTransaction, rule: ConditionSet): boolean {
     : rule.conditions.some((condition) => matchesCondition(txn, condition));
 }
 
-export function categorize(
+export const rulesByOrder = (rules: readonly CashRule[]): CashRule[] =>
+  rules.toSorted((a, b) => a.order - b.order);
+
+export const categorizeOrdered = (
   txn: CashTransaction,
-  rules: readonly CashRule[]
-): CategoryId | undefined {
-  const ordered = rules.toSorted((a, b) => a.order - b.order);
+  ordered: readonly CashRule[]
+): CategoryId | undefined => {
   for (const rule of ordered) {
     if (matchesRule(txn, rule)) return rule.categoryId;
   }
   return undefined;
+};
+
+export function categorize(
+  txn: CashTransaction,
+  rules: readonly CashRule[]
+): CategoryId | undefined {
+  return categorizeOrdered(txn, rulesByOrder(rules));
 }
 
 export interface RuleStat {
@@ -131,7 +140,7 @@ export function ruleStats(
   transactions: readonly CashTransaction[],
   rules: readonly CashRule[]
 ): Record<string, RuleStat> {
-  const ordered = rules.toSorted((a, b) => a.order - b.order);
+  const ordered = rulesByOrder(rules);
   const stats: Record<string, RuleStat> = {};
   for (const rule of ordered) stats[rule.id] = { matched: 0, claimed: 0 };
 
@@ -158,10 +167,11 @@ export function recategorizations(
   transactions: readonly CashTransaction[],
   rules: readonly CashRule[]
 ): CashRecategorization[] {
+  const ordered = rulesByOrder(rules);
   const changes: CashRecategorization[] = [];
   for (const txn of transactions) {
     if (txn.categoryManual) continue;
-    const categoryId = categorize(txn, rules);
+    const categoryId = categorizeOrdered(txn, ordered);
     if (categoryId !== categoryIdOf(txn)) {
       changes.push({ transactionId: txn.id, categoryId });
     }

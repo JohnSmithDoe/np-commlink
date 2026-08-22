@@ -6,7 +6,7 @@ import { CASH_RULES_LIST_ID } from '../../model/cash.types';
 import { CashRule } from '../../model/rule.types';
 import { mockCashRule, mockCashState } from '../../testing/cash.test-data';
 import { createCashRule } from '../../util/cash.factory';
-import { blankCondition } from '../../util/rule-form.utils';
+import { blankCondition, opsFor } from '../../util/rule-form.utils';
 import { EditCashRuleDialogComponent } from './edit-cash-rule-dialog.component';
 
 describe('EditCashRuleDialogComponent', () => {
@@ -67,7 +67,7 @@ describe('EditCashRuleDialogComponent', () => {
 
     expect(component.draft().conditions[0]).toMatchObject({
       field: 'amount',
-      op: component.opsFor('amount')[0],
+      op: opsFor('amount')[0],
     });
   });
 

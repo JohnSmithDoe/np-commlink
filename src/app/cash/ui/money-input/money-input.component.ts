@@ -1,19 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-  model,
-  output,
-} from '@angular/core';
-import {
-  FormValueControl,
-  ParseResult,
-  transformedValue,
-} from '@angular/forms/signals';
-import { InputCustomEvent, IonInput, IonItem } from '@ionic/angular/standalone';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ParseResult } from '@angular/forms/signals';
+import { IonInput, IonItem } from '@ionic/angular/standalone';
 import { Language } from '../../../@shared/model/app.types';
-import { APP_LANGUAGE } from '../../../@shared/util/theme/language.boot';
+import { BaseDecimalInput } from '../../../@shared/ui/forms/base-decimal-input';
 import { centsToInput, eurToCents } from '../../util/money.utils';
 
 export const NOT_AN_AMOUNT = { kind: 'notAnAmount' } as const;
@@ -33,21 +22,12 @@ export function parseAmount(
   imports: [IonItem, IonInput],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MoneyInputComponent implements FormValueControl<number | null> {
-  readonly value = model<number | null>(null);
-  readonly label = input<string>();
+export class MoneyInputComponent extends BaseDecimalInput {
+  protected parse(raw: string, language: Language): ParseResult<number | null> {
+    return parseAmount(raw, language);
+  }
 
-  readonly touchedChange = output<boolean>();
-
-  readonly #language = inject(APP_LANGUAGE);
-
-  protected readonly raw = transformedValue(this.value, {
-    parse: (raw: string) => parseAmount(raw, this.#language),
-    format: (cents: number | null) =>
-      cents === null ? '' : centsToInput(cents, this.#language),
-  });
-
-  protected onInput(event: InputCustomEvent): void {
-    this.raw.set(String(event.detail.value ?? ''));
+  protected format(cents: number | null, language: Language): string {
+    return cents === null ? '' : centsToInput(cents, language);
   }
 }

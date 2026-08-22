@@ -51,7 +51,10 @@ import { CategoryId } from '../../../@shared/model/category.types';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { CashBankDetailsComponent } from '../../ui/bank-details/bank-details.component';
-import { requireParseableDate } from '../../../@shared/util/forms/form-rules';
+import {
+  hasOtherErrorKind,
+  requireParseableDate,
+} from '../../../@shared/util/forms/form-rules';
 import { CASH_TRANSACTIONS_LIST_ID } from '../../model/cash.types';
 import {
   CashTransaction,
@@ -123,11 +126,9 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
     addIcons({ funnelOutline, repeatOutline });
   }
 
-  readonly amountInvalid = computed(() =>
-    this.form
-      .amountCents()
-      .errors()
-      .some(({ kind }) => kind !== MISSING_AMOUNT.kind)
+  readonly amountInvalid = hasOtherErrorKind(
+    this.form.amountCents,
+    MISSING_AMOUNT
   );
 
   protected override extraRules(path: SchemaPathTree<TransactionForm>): void {

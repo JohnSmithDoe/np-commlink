@@ -50,18 +50,18 @@ describe('LocalNotificationsService', () => {
     service = TestBed.inject(LocalNotificationsService);
   };
 
-  it('schedules nothing, and says so, when the OS refuses permission', async () => {
+  it('schedules nothing, and names the refusal, when the OS says no', async () => {
     setup('denied');
 
-    expect(await service.scheduleDaily(daily())).toBe(false);
+    expect(await service.scheduleDaily(daily())).toBe('refused');
     expect(plugin.schedule).not.toHaveBeenCalled();
     expect(plugin.cancel).not.toHaveBeenCalled();
   });
 
-  it('refuses a daily reminder in the browser, where a cron fires once and lies', async () => {
+  it('calls the browser unsupported rather than refusing — a cron fires once there and lies', async () => {
     setup('granted', false);
 
-    expect(await service.scheduleDaily(daily())).toBe(false);
+    expect(await service.scheduleDaily(daily())).toBe('unsupported');
     expect(plugin.requestPermissions).not.toHaveBeenCalled();
     expect(plugin.schedule).not.toHaveBeenCalled();
   });
@@ -78,7 +78,7 @@ describe('LocalNotificationsService', () => {
   it('resolves the wording it was handed', async () => {
     setup();
 
-    expect(await service.scheduleDaily(daily())).toBe(true);
+    expect(await service.scheduleDaily(daily())).toBe('armed');
     expect(scheduled()).toEqual(
       expect.objectContaining({
         title: 'de:ritual.reminder.title',

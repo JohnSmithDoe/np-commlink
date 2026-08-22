@@ -2,13 +2,17 @@ import { createActionGroup } from '@ngrx/store';
 import { createItemListActionEvents } from '../../../@shared/data/item-lists/item-list.actions.factory';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashRecategorization } from '../../util/categorize.utils';
+import { ImportConfirmation } from '../../util/import/plan-import';
 
 export const CashTransactionsActions = createActionGroup({
   source: 'Cash Transactions',
   events: {
     ...createItemListActionEvents<CashTransaction>(),
 
-    importItems: (items: CashTransaction[]) => ({ items }),
+    importItems: (
+      items: CashTransaction[],
+      confirmed: ImportConfirmation[] = []
+    ) => ({ items, confirmed }),
     bookTransfer: (fromLeg: CashTransaction, toLeg: CashTransaction) => ({
       fromLeg,
       toLeg,

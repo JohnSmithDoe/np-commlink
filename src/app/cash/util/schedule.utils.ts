@@ -76,7 +76,7 @@ export function reserveTotalCents(
 ): number {
   let total = 0;
   for (const schedule of schedules) {
-    if (dueStatus(schedule, todayISO) === 'due') continue;
+    if (dueStatus(schedule, todayISO) !== 'upcoming') continue;
     total += reserveCentsPerMonth(schedule, todayISO);
   }
   return total;
@@ -131,12 +131,12 @@ export function seenThisMonth(
   );
 }
 
-export function amountChangesFor(
+export function scheduleSightingsFor(
   incoming: readonly CashTransaction[],
   schedules: readonly CashSchedule[]
 ): ScheduleAmountChange[] {
   const claimed = new Set<string>();
-  const changes: ScheduleAmountChange[] = [];
+  const sightings: ScheduleAmountChange[] = [];
   for (const txn of incoming) {
     const schedule = schedules.find(
       (candidate) =>
@@ -144,8 +144,7 @@ export function amountChangesFor(
     );
     if (!schedule) continue;
     claimed.add(schedule.id);
-    if (schedule.amountCents === txn.amountCents) continue;
-    changes.push({
+    sightings.push({
       scheduleId: schedule.id,
       fromCents: schedule.amountCents,
       toCents: txn.amountCents,
@@ -153,8 +152,13 @@ export function amountChangesFor(
       seenISO: txn.dateISO,
     });
   }
-  return changes;
+  return sightings;
 }
+
+export const changedAmounts = (
+  sightings: readonly ScheduleAmountChange[]
+): ScheduleAmountChange[] =>
+  sightings.filter(({ fromCents, toCents }) => fromCents !== toCents);
 
 export function advanced(
   schedule: CashSchedule,

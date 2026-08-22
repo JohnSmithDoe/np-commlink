@@ -8,9 +8,11 @@
  * wording is owned here.
  *
  * A daily reminder is an `on` cron and never `at` + `every` — the OS reads
- * those as alternatives, not modifiers, and the browser has no cron at all,
- * so a daily one refuses off-native rather than appearing to arm. Both
- * traps, and what `allowWhileIdle` does not buy, are in docs/footguns.md.
+ * those as alternatives, not modifiers, and the browser has no cron at all.
+ * Which is why scheduling reports an OUTCOME and not a boolean: "the OS said
+ * no" and "there is no OS to ask" are different answers, and a caller that
+ * cannot tell them apart calls the browser broken in red. Both traps, and
+ * what `allowWhileIdle` does not buy, are in docs/footguns.md.
  * The cost of the cron is that the OS owns the next occurrence: it nudges
  * on a day already finished, which is the right way to be wrong.
  *
@@ -44,6 +46,8 @@ export const IS_NATIVE_PLATFORM = new InjectionToken<boolean>(
   'Capacitor native platform',
   { providedIn: 'root', factory: () => Capacitor.isNativePlatform() }
 );
+
+export type ReminderOutcome = 'armed' | 'refused' | 'unsupported';
 
 type ScheduledReminder = {
   id: number;
@@ -113,9 +117,9 @@ export class LocalNotificationsService {
     });
   }
 
-  async scheduleDaily(reminder: DailyReminder): Promise<boolean> {
-    if (!this.#isNative) return false;
-    if (!(await this.requestPermission())) return false;
+  async scheduleDaily(reminder: DailyReminder): Promise<ReminderOutcome> {
+    if (!this.#isNative) return 'unsupported';
+    if (!(await this.requestPermission())) return 'refused';
     await this.cancel(reminder.source);
 
     const copy = await firstValueFrom(
@@ -136,12 +140,12 @@ export class LocalNotificationsService {
         },
       ],
     });
-    return true;
+    return 'armed';
   }
 
-  async scheduleWeekly(reminder: WeeklyReminder): Promise<boolean> {
-    if (!this.#isNative) return false;
-    if (!(await this.requestPermission())) return false;
+  async scheduleWeekly(reminder: WeeklyReminder): Promise<ReminderOutcome> {
+    if (!this.#isNative) return 'unsupported';
+    if (!(await this.requestPermission())) return 'refused';
 
     const copy = await firstValueFrom(
       this.#translate.get(
@@ -168,7 +172,7 @@ export class LocalNotificationsService {
         },
       ],
     });
-    return true;
+    return 'armed';
   }
 
   async schedule(reminder: ScheduledReminder): Promise<void> {

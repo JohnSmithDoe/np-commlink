@@ -1,34 +1,7 @@
 @use 'theme/cash';
 
 .burndown-headline {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-1);
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--sr-line);
-
-  &__label {
-    letter-spacing: var(--sr-label-tracking);
-    font-size: var(--fs-small);
-    color: var(--sr-text-dim);
-  }
-
-  &__value {
-    font-family: var(--sr-deck-font);
-    font-size: var(--fs-display);
-    color: var(--sr-amber);
-    text-shadow: var(--sr-glow);
-
-    &--over {
-      color: var(--ion-color-danger);
-      text-shadow: none;
-    }
-  }
-
-  &__note {
-    font-size: var(--fs-small);
-    color: var(--sr-text-dim);
-  }
+  @include cash.headline(var(--fs-display), var(--space-4));
 }
 
 .burndown-breakdown {

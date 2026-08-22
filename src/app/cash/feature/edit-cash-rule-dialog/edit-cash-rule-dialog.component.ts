@@ -17,19 +17,13 @@ import { FormField, SchemaPathTree } from '@angular/forms/signals';
 import {
   IonButton,
   IonIcon,
-  IonInput,
-  IonItem,
   IonListHeader,
-  IonNote,
   IonSegment,
   IonSegmentButton,
-  IonSelect,
-  IonSelectOption,
-  IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { addOutline, closeOutline } from 'ionicons/icons';
+import { addOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { ItemListId } from '../../../@shared/model/item-list.types';
@@ -38,22 +32,17 @@ import { CASH_RULES_LIST_ID } from '../../model/cash.types';
 import {
   CashRule,
   ConditionSet,
-  FIELD_LABEL_KEYS,
   FilterField,
-  FilterOperation,
-  isTextFilterField,
-  OP_LABEL_KEYS,
   RuleForm,
-  TEXT_FILTER_FIELDS,
 } from '../../model/rule.types';
 import { CashRulesFacade } from '../../data';
 import { CashCategoryPickerComponent } from '../../smart-ui/cash-category-picker/cash-category-picker.component';
 import { CashMatchPreviewComponent } from '../../smart-ui/match-preview/match-preview.component';
+import { CashConditionRowsComponent } from '../../ui/condition-rows/condition-rows.component';
 import { createCashRule } from '../../util/cash.factory';
 import {
   blankCondition,
   defaultOpFor,
-  opsFor,
   ruleRulesFor,
   toCondition,
   toConditionForm,
@@ -69,18 +58,13 @@ import {
     FormField,
     IonButton,
     IonIcon,
-    IonInput,
-    IonItem,
     IonListHeader,
-    IonNote,
     IonSegment,
     IonSegmentButton,
-    IonSelect,
-    IonSelectOption,
-    IonToggle,
     TranslatePipe,
     ItemEditModalComponent,
     CashCategoryPickerComponent,
+    CashConditionRowsComponent,
     CashMatchPreviewComponent,
   ],
 })
@@ -93,12 +77,6 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
 
   protected readonly listId: ItemListId = CASH_RULES_LIST_ID;
   readonly siblings = this.#facade.allItems;
-
-  readonly opLabelKeys = OP_LABEL_KEYS;
-  readonly fieldLabelKeys = FIELD_LABEL_KEYS;
-  readonly textFields = TEXT_FILTER_FIELDS;
-  readonly opsFor: (field: FilterField) => readonly FilterOperation[] = opsFor;
-  readonly isTextField = isTextFilterField;
 
   protected override uniqueName(): boolean {
     return false;
@@ -122,7 +100,7 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
 
   constructor() {
     super();
-    addIcons({ addOutline, closeOutline });
+    addIcons({ addOutline });
   }
 
   protected override extraRules(path: SchemaPathTree<RuleForm>): void {

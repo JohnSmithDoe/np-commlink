@@ -10,7 +10,8 @@ const row = (over: Partial<ParsedRow> = {}): ParsedRow => ({
   amountCents: -4299,
   description: 'NORDKAUF',
   status: 'confirmed',
-  key: '2026010638472910064',
+  bankRef: '2026010638472910064',
+  derivedKey: '20260106|-4299|NORDKAUF|1',
   ...over,
 });
 
@@ -70,9 +71,7 @@ describe('planImport', () => {
   });
 
   it('builds imported transactions with ids, batch id and the parsed status', () => {
-    const result = plan([
-      row({ status: 'pending', key: '2026010638472910064' }),
-    ]);
+    const result = plan([row({ status: 'pending' })]);
 
     expect(result.duplicates).toBe(0);
     expect(result.toImport[0]).toMatchObject({
@@ -94,10 +93,49 @@ describe('planImport', () => {
   });
 
   it('keeps two same-day, same-amount, same-text rows that differ by key', () => {
-    const result = plan([row(), row({ key: '2026010638472910065' })]);
+    const result = plan([
+      row(),
+      row({
+        bankRef: '2026010638472910065',
+        derivedKey: '20260106|-4299|NORDKAUF|2',
+      }),
+    ]);
 
     expect(result.toImport).toHaveLength(2);
     expect(result.duplicates).toBe(0);
+  });
+
+  it('confirms a pending row that books later with a bank reference', () => {
+    const pending = imported({
+      id: 'pending-1',
+      status: 'pending',
+      importKey: '20260106|-4299|NORDKAUF|1',
+    });
+    const result = plan(
+      [row({ dateISO: '2026-01-07T00:00:00+01:00' })],
+      [pending]
+    );
+
+    expect(result.toImport).toHaveLength(0);
+    expect(result.duplicates).toBe(1);
+    expect(result.toConfirm).toEqual([
+      {
+        id: 'pending-1',
+        importKey: '2026010638472910064',
+        dateISO: '2026-01-07T00:00:00+01:00',
+      },
+    ]);
+  });
+
+  it('leaves an already confirmed row alone when its derived key matches', () => {
+    const result = plan(
+      [row()],
+      [imported({ importKey: '20260106|-4299|NORDKAUF|1' })]
+    );
+
+    expect(result.toImport).toHaveLength(0);
+    expect(result.duplicates).toBe(1);
+    expect(result.toConfirm).toHaveLength(0);
   });
 
   it('dedups on the key alone — a changed date or text does not resurrect a row', () => {

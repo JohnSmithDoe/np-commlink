@@ -35,6 +35,7 @@ export interface NotificationsState {
   items: InboxNotification[];
   doneCollapsed: boolean;
   lastViewedAt: Timestamp;
+  legacyCronsCleared?: boolean;
 }
 
 export type ToastAction = {

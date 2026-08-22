@@ -1,9 +1,10 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
+import { TodayService } from '../../../@shared/data/services/today.service';
 import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
 import {
   CashSchedule,
@@ -36,7 +37,7 @@ export class CashSchedulesFacade {
   readonly allItems = this.#store.selectSignal(selectScheduleItems);
   readonly listItems = this.#store.selectSignal(selectSchedulesListItems);
   readonly #transactions = this.#store.selectSignal(selectAllTransactions);
-  readonly #todayISO = signal(dayjs().format());
+  readonly #todayISO = inject(TodayService).today;
 
   readonly commitment = computed(() => ({
     monthlyCents: monthlyCommitmentCents(this.allItems()),
@@ -54,10 +55,6 @@ export class CashSchedulesFacade {
 
   confirmed(schedule: CashSchedule): boolean {
     return seenThisMonth(schedule, this.#todayISO());
-  }
-
-  refreshToday(): void {
-    this.#todayISO.set(dayjs().format());
   }
 
   showCreateDialog(): void {

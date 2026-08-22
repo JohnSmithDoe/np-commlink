@@ -4,6 +4,7 @@ import {
   TEST_IBAN,
   TEST_REF,
 } from '../../testing/camt.test-data';
+import { importKeyOf } from './parsed-row';
 import { readStatement } from './read-statement';
 
 const OTHER_IBAN = 'DE97100900004711000200';
@@ -17,7 +18,11 @@ describe('readStatement', () => {
 
     expect(read.kind).toBe('ok');
     if (read.kind !== 'ok') return;
-    expect(read.parsed.rows.map((row) => row.key)).toEqual(['a', 'b', 'c']);
+    expect(read.parsed.rows.map((row) => importKeyOf(row))).toEqual([
+      'a',
+      'b',
+      'c',
+    ]);
   });
 
   it('sums the rejected count across pages', () => {
@@ -33,7 +38,7 @@ describe('readStatement', () => {
   it('derives a key for an entry the bank gave no reference', () => {
     const read = readStatement([camtDocument([camtEntry()])]);
 
-    expect(read.kind === 'ok' && read.parsed.rows[0].key).toBe(
+    expect(read.kind === 'ok' && importKeyOf(read.parsed.rows[0])).toBe(
       '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|1'
     );
   });
@@ -42,8 +47,8 @@ describe('readStatement', () => {
     const first = readStatement([camtDocument([camtEntry()])]);
     const second = readStatement([camtDocument([camtEntry()])]);
 
-    expect(first.kind === 'ok' && first.parsed.rows[0].key).toBe(
-      second.kind === 'ok' ? second.parsed.rows[0].key : ''
+    expect(first.kind === 'ok' && importKeyOf(first.parsed.rows[0])).toBe(
+      second.kind === 'ok' ? importKeyOf(second.parsed.rows[0]) : ''
     );
   });
 
@@ -51,7 +56,7 @@ describe('readStatement', () => {
     const read = readStatement([camtDocument([camtEntry(), camtEntry()])]);
 
     expect(
-      read.kind === 'ok' && read.parsed.rows.map((row) => row.key)
+      read.kind === 'ok' && read.parsed.rows.map((row) => importKeyOf(row))
     ).toEqual([
       '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|1',
       '20260106|-1999|NORDKAUF Markt GmbH — Einkauf|2',
@@ -64,7 +69,9 @@ describe('readStatement', () => {
       camtDocument([camtEntry()]),
     ]);
 
-    expect(read.kind === 'ok' && read.parsed.rows[1].key).toContain('|2');
+    expect(read.kind === 'ok' && importKeyOf(read.parsed.rows[1])).toContain(
+      '|2'
+    );
   });
 
   it('never numbers a referenced entry — the bank already made it unique', () => {
@@ -73,26 +80,30 @@ describe('readStatement', () => {
     ]);
 
     expect(
-      read.kind === 'ok' && read.parsed.rows.map((row) => row.key)
+      read.kind === 'ok' && read.parsed.rows.map((row) => importKeyOf(row))
     ).toEqual(['x', 'x']);
   });
 
   it('uses a bank reference verbatim, so it keeps the date the bank put there', () => {
     const read = readStatement([camtDocument([camtEntry({ ref: TEST_REF })])]);
 
-    expect(read.kind === 'ok' && read.parsed.rows[0].key).toBe(TEST_REF);
+    expect(read.kind === 'ok' && importKeyOf(read.parsed.rows[0])).toBe(
+      TEST_REF
+    );
   });
 
   it('opens a derived key with the same YYYYMMDD a reference opens with', () => {
     const read = readStatement([camtDocument([camtEntry()])]);
 
-    expect(read.kind === 'ok' && read.parsed.rows[0].key).toMatch(/^20260106/);
+    expect(read.kind === 'ok' && importKeyOf(read.parsed.rows[0])).toMatch(
+      /^20260106/
+    );
     expect(TEST_REF).toMatch(/^20260106/);
   });
 
   it('cannot derive a key a bank reference could equal — segments, not digits', () => {
     const read = readStatement([camtDocument([camtEntry()])]);
-    const key = read.kind === 'ok' ? read.parsed.rows[0].key : '';
+    const key = read.kind === 'ok' ? importKeyOf(read.parsed.rows[0]) : '';
 
     expect(key.split('|')).toHaveLength(4);
     expect(TEST_REF).not.toContain('|');

@@ -15,6 +15,9 @@ export const categoryIdOf = (
   txn: Pick<CashTransaction, 'categoryIds'>
 ): CategoryId | undefined => txn.categoryIds?.[0];
 
+export const isHouseholdMoney = (txn: CashTransaction): boolean =>
+  !txn.isTransfer && !txn.matchedTxnId;
+
 export const withCategory = <T extends Pick<CashTransaction, 'categoryIds'>>(
   txn: T,
   categoryId: CategoryId | undefined

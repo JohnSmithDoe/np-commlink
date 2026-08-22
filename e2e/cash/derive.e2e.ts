@@ -87,7 +87,7 @@ test.describe('deriving a rule from a booking', () => {
       'Soykaf'
     );
     await expect(
-      rule.getByTestId('rule-condition-value').locator('input')
+      rule.getByTestId('condition-value').locator('input')
     ).toHaveValue('Soykaf');
     await expect(rule.getByTestId('match-preview')).toContainText(
       'Trifft auf 1 von 1'
@@ -123,7 +123,7 @@ test.describe('deriving a rule from a booking', () => {
     const schedule = presentedDialog(page, 'Neuen Eintrag anlegen');
     await expect(schedule.locator('app-money-input input')).toHaveValue('4,20');
     await expect(
-      schedule.getByTestId('schedule-condition-value').locator('input')
+      schedule.getByTestId('condition-value').locator('input')
     ).toHaveValue('Soykaf');
   });
 

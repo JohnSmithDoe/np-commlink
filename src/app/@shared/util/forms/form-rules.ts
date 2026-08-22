@@ -1,9 +1,33 @@
+import { computed, Signal } from '@angular/core';
 import { SchemaPath, validate } from '@angular/forms/signals';
 import dayjs from 'dayjs';
 import { BaseItem } from '../../model/base-item.types';
 import { matchesSearchExactly } from '../app.utils';
 
 export const BLANK_TEXT = { kind: 'blankText' } as const;
+
+type ErrorKind = { kind: string };
+type ErrorBearingField = () => { errors: () => readonly ErrorKind[] };
+
+export const hasErrorKind = (
+  field: ErrorBearingField,
+  error: ErrorKind
+): Signal<boolean> =>
+  computed(() =>
+    field()
+      .errors()
+      .some(({ kind }) => kind === error.kind)
+  );
+
+export const hasOtherErrorKind = (
+  field: ErrorBearingField,
+  error: ErrorKind
+): Signal<boolean> =>
+  computed(() =>
+    field()
+      .errors()
+      .some(({ kind }) => kind !== error.kind)
+  );
 
 const UNPARSEABLE_DATE = { kind: 'unparseableDate' } as const;
 

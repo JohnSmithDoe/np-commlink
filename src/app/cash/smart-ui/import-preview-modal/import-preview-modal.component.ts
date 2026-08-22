@@ -29,6 +29,8 @@ import {
 } from '../../data';
 import { ScheduleAmountChange } from '../../model/schedule.types';
 import { balanceDifferenceCents } from '../../util/import/balance-check';
+import { ImportConfirmation } from '../../util/import/plan-import';
+import { changedAmounts } from '../../util/schedule.utils';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 import { categoryIdOf } from '../../util/cash-category.utils';
@@ -69,14 +71,19 @@ export class CashImportPreviewModalComponent {
   );
 
   transactions: CashTransaction[] = [];
+  confirmations: ImportConfirmation[] = [];
   duplicates = 0;
   rejected = 0;
   accountId = '';
   closingBalanceCents?: number;
   asOfISO?: string;
-  amountChanges: ScheduleAmountChange[] = [];
+  sightings: ScheduleAmountChange[] = [];
 
   readonly categoryIdOf = categoryIdOf;
+
+  get amountChanges(): ScheduleAmountChange[] {
+    return changedAmounts(this.sightings);
+  }
 
   categoryName(id: CategoryId | undefined): string {
     return this.#categoryName()(id);
@@ -90,12 +97,13 @@ export class CashImportPreviewModalComponent {
   }
 
   confirm(): void {
-    if (this.transactions.length > 0) {
-      this.#facade.importItems(this.transactions);
+    if (this.transactions.length > 0 || this.confirmations.length > 0) {
+      this.#facade.importItems(this.transactions, this.confirmations);
     }
-    if (this.amountChanges.length > 0) {
-      this.#schedulesFacade.applyAmountChanges(this.amountChanges);
-      this.#schedulesFacade.reportAmountsLearned(this.amountChanges.length);
+    if (this.sightings.length > 0) {
+      this.#schedulesFacade.applyAmountChanges(this.sightings);
+      const learned = this.amountChanges.length;
+      if (learned > 0) this.#schedulesFacade.reportAmountsLearned(learned);
     }
     this.#checkAgainstBankBalance();
     void this.#modalCtrl.dismiss();

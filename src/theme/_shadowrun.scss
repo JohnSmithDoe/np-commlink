@@ -9,8 +9,10 @@
 // `:root[data-mode]` and `:root[data-skin]` weigh the SAME, so for the tokens
 // reading both axes — --sr-line, --sr-text-dim, and the accent duo over in
 // variables.scss — source order is the tie-break and the skin blocks must come
-// LAST. Cyberpunk derives those two from the accent; boomer needs a literal per
-// mode, which is why they sit in the mode blocks at all.
+// LAST. Cyberpunk derives those two from the accent on ink; boomer needs a
+// literal per mode, which is why they sit in the mode blocks at all — and on
+// paper cyberpunk needs one too, because the amber that carries AA on ink
+// washes out to 3.9:1 there. That pair is the compound block's whole job.
 //
 // --sr-panel-inset and --sr-scanline-ink exist because two cyberpunk flourishes
 // were written as literal blacks against a dark ground; on paper they need the
@@ -128,6 +130,8 @@
 }
 
 :root[data-skin='cyberpunk'][data-mode='light'] {
+  --sr-line: rgba(var(--sr-amber-rgb), 0.55); // 0.35 amber on paper is a ghost
+  --sr-text-dim: #6b5836; // 6.3:1 — the amber wash reads 3.9:1 here
   --sr-glow: 0 0 6px rgba(var(--sr-amber-rgb), 0.25);
   --sr-glow-lg: 0 0 10px rgba(var(--sr-amber-rgb), 0.3);
 }

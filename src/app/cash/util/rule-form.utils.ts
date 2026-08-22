@@ -1,4 +1,9 @@
-import { applyEach, SchemaFn, validate } from '@angular/forms/signals';
+import {
+  applyEach,
+  SchemaFn,
+  SchemaPathTree,
+  validate,
+} from '@angular/forms/signals';
 import { Language } from '../../@shared/model/app.types';
 import { requireText } from '../../@shared/util/forms/form-rules';
 import {
@@ -37,14 +42,13 @@ export const defaultOpFor = (field: FilterField): FilterOperation =>
 const NO_CONDITIONS = { kind: 'noConditions' } as const;
 export const UNPARSEABLE_AMOUNT = { kind: 'unparseableAmount' } as const;
 
-export const ruleRulesFor =
-  (language: () => Language): SchemaFn<RuleForm> =>
-  (path) => {
-    requireText(path.categoryId);
-    validate(path.conditions, ({ value }) =>
+export const conditionRulesFor =
+  (language: () => Language) =>
+  (conditions: SchemaPathTree<RuleForm>['conditions']): void => {
+    validate(conditions, ({ value }) =>
       value().length === 0 ? NO_CONDITIONS : null
     );
-    applyEach(path.conditions, (condition) => {
+    applyEach(conditions, (condition) => {
       requireText(condition.value);
       validate(condition.value, ({ value, valueOf }) => {
         const threshold = valueOf(condition.field) === 'amount';
@@ -53,6 +57,13 @@ export const ruleRulesFor =
           : null;
       });
     });
+  };
+
+export const ruleRulesFor =
+  (language: () => Language): SchemaFn<RuleForm> =>
+  (path) => {
+    requireText(path.categoryId);
+    conditionRulesFor(language)(path.conditions);
   };
 
 export const blankCondition = (): ConditionForm => ({

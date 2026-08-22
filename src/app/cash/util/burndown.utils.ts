@@ -19,6 +19,7 @@
 import dayjs from 'dayjs';
 import { CashSchedule } from '../model/schedule.types';
 import { CashTransaction } from '../model/transaction.types';
+import { isHouseholdMoney } from './cash-category.utils';
 import { dueThisMonthCents, reserveTotalCents } from './schedule.utils';
 
 interface Burndown {
@@ -34,8 +35,8 @@ interface Burndown {
   remainingTodayCents: number;
 }
 
-const DAY = 'YYYY-MM-DD';
-const MONTH = 'YYYY-MM';
+const DAY_LENGTH = 10; // YYYY-MM-DD
+const MONTH_LENGTH = 7; // YYYY-MM
 
 export const daysRemainingInMonth = (todayISO: string): number => {
   const today = dayjs(todayISO);
@@ -43,19 +44,20 @@ export const daysRemainingInMonth = (todayISO: string): number => {
 };
 
 const isSpend = (txn: CashTransaction): boolean =>
-  !txn.isTransfer && !txn.matchedTxnId && txn.amountCents < 0;
+  isHouseholdMoney(txn) && txn.amountCents < 0;
 
-const inBucket = (txn: CashTransaction, todayISO: string, format: string) =>
-  dayjs(txn.dateISO).format(format) === dayjs(todayISO).format(format);
+const inBucket = (dateISO: string, bucket: string): boolean =>
+  dateISO.slice(0, bucket.length) === bucket;
 
 const spentWithin = (
   transactions: readonly CashTransaction[],
   todayISO: string,
-  format: string
+  length: number
 ): number => {
+  const bucket = todayISO.slice(0, length);
   let spent = 0;
   for (const txn of transactions) {
-    if (!isSpend(txn) || !inBucket(txn, todayISO, format)) continue;
+    if (!isSpend(txn) || !inBucket(txn.dateISO, bucket)) continue;
     spent += Math.abs(txn.amountCents);
   }
   return spent;
@@ -64,20 +66,22 @@ const spentWithin = (
 export const spentThisMonthCents = (
   transactions: readonly CashTransaction[],
   todayISO: string
-): number => spentWithin(transactions, todayISO, MONTH);
+): number => spentWithin(transactions, todayISO, MONTH_LENGTH);
 
 export const spentTodayCents = (
   transactions: readonly CashTransaction[],
   todayISO: string
-): number => spentWithin(transactions, todayISO, DAY);
+): number => spentWithin(transactions, todayISO, DAY_LENGTH);
 
 export const spendsThisMonth = (
   transactions: readonly CashTransaction[],
   todayISO: string
-): CashTransaction[] =>
-  transactions
-    .filter((txn) => isSpend(txn) && inBucket(txn, todayISO, MONTH))
+): CashTransaction[] => {
+  const month = todayISO.slice(0, MONTH_LENGTH);
+  return transactions
+    .filter((txn) => isSpend(txn) && inBucket(txn.dateISO, month))
     .toSorted((a, b) => b.dateISO.localeCompare(a.dateISO));
+};
 
 export function burndownFor(
   balanceCents: number,

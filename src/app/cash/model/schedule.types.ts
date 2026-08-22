@@ -19,7 +19,7 @@
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { CategoryId } from '../../@shared/model/category.types';
 import { Timestamp } from '../../@shared/model/app.types';
-import { CashFilterCondition } from './rule.types';
+import { CashFilterCondition, ConditionForm } from './rule.types';
 
 export interface CashSchedule extends BaseItem {
   match: 'all' | 'any';
@@ -48,10 +48,5 @@ export type ScheduleForm = {
   amountCents: number | null;
   periodMonths: number;
   nextDue: string;
-  conditions: {
-    field: CashFilterCondition['field'];
-    op: CashFilterCondition['op'];
-    value: string;
-    caseSensitive: boolean;
-  }[];
+  conditions: ConditionForm[];
 };

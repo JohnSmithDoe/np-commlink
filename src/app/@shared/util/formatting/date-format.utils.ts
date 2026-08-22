@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/de';
 import 'dayjs/locale/en';
-import { Language } from '../../model/app.types';
+import { IsoWeekday, Language } from '../../model/app.types';
 
 dayjs.extend(localizedFormat);
 
@@ -38,6 +38,27 @@ export const localizedDayMonth = (
 
 export const localizedMonthYear = (value: string | Dayjs): string =>
   dayjs(value).format('MMMM YYYY');
+
+export const localizedShortMonthYear = (value: string | Dayjs): string =>
+  dayjs(value).format('MMM YY');
+
+const DAYJS_DAY: Readonly<Record<IsoWeekday, number>> = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 0,
+};
+
+export const localizedWeekday = (
+  day: IsoWeekday,
+  style: 'short' | 'long'
+): string =>
+  dayjs()
+    .day(DAYJS_DAY[day])
+    .format(style === 'long' ? 'dddd' : 'dd');
 
 export const padClock = (value: number): string =>
   String(value).padStart(2, '0');

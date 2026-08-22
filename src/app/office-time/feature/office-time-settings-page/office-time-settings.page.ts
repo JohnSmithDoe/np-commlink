@@ -21,7 +21,10 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { padClock } from '../../../@shared/util/formatting/date-format.utils';
+import {
+  clockTime,
+  parseClock,
+} from '../../../@shared/util/formatting/date-format.utils';
 import { OfficeTimeFacade } from '../../data';
 import {
   DASHBOARD_SETTING_LABEL_KEYS,
@@ -91,7 +94,7 @@ export class OfficeTimeSettingsPage {
   readonly reminder = this.#facade.reminder;
   readonly reminderTime = computed(() => {
     const { hour, minute } = this.reminder();
-    return `${padClock(hour)}:${padClock(minute)}`;
+    return clockTime(hour, minute);
   });
 
   readonly pinFormatter = (value: number) => `${value}`;
@@ -102,15 +105,9 @@ export class OfficeTimeSettingsPage {
 
   setReminderTime(value: string | number | null | undefined) {
     if (typeof value !== 'string') return;
-    const [hour, minute] = value.split(':').map(Number);
-    if (
-      hour == null ||
-      minute == null ||
-      Number.isNaN(hour) ||
-      Number.isNaN(minute)
-    )
-      return;
-    this.#facade.setReminder({ ...this.reminder(), hour, minute });
+    const clock = parseClock(value);
+    if (!clock) return;
+    this.#facade.setReminder({ ...this.reminder(), ...clock });
   }
 
   changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {

@@ -9,6 +9,10 @@
  *
  * `matchedTxnId` rows are skipped for the same reason `selectAccountBalances`
  * skips them — a reconciled pair moved the money once.
+ *
+ * A PENDING row is skipped because `CLBD` is the closing BOOKED balance: a
+ * card spend the bank has not settled is money it did not count, and the one
+ * import where the ledger is right is the one that would report a gap.
  * ───────────────────────────────────────────────────────────────── */
 import { CashTransaction } from '../../model/transaction.types';
 
@@ -26,6 +30,7 @@ export function balanceDifferenceCents(
   for (const txn of ledger) {
     if (txn.accountId !== accountId) continue;
     if (txn.matchedTxnId) continue;
+    if (txn.status === 'pending') continue;
     if (!onOrBefore(txn.dateISO, asOfISO)) continue;
     derived += txn.amountCents;
   }

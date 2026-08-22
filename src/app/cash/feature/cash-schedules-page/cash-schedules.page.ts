@@ -86,7 +86,6 @@ export class CashSchedulesPage {
 
   constructor() {
     addIcons({ addOutline, checkmarkDoneOutline, trashOutline });
-    this.#facade.refreshToday();
   }
 
   categoryName(schedule: CashSchedule): string {

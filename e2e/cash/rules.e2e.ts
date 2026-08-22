@@ -43,13 +43,13 @@ function saveButton(page: Page): Locator {
 
 function valueInput(page: Page, index: number): Locator {
   return dialog(page)
-    .getByTestId('rule-condition-value')
+    .getByTestId('condition-value')
     .nth(index)
     .locator('input');
 }
 
 async function pickField(page: Page, index: number, label: string) {
-  await dialog(page).getByTestId('rule-condition-field').nth(index).click();
+  await dialog(page).getByTestId('condition-field').nth(index).click();
   const popover = page.locator('ion-popover');
   await expect(popover).toBeVisible({ timeout: 10_000 });
   await popover.getByRole('radio', { name: label }).click();
@@ -102,7 +102,7 @@ test.describe('cash rule builder', () => {
     await dialog(page)
       .getByRole('button', { name: 'Bedingung hinzufügen' })
       .click();
-    await expect(dialog(page).getByTestId('rule-condition')).toHaveCount(2);
+    await expect(dialog(page).getByTestId('condition-row')).toHaveCount(2);
     await expect(saveButton(page)).toBeDisabled();
 
     await valueInput(page, 1).fill('Soykaf');

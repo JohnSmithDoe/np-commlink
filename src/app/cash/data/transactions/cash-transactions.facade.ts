@@ -6,6 +6,7 @@ import { CASH_TRANSACTIONS_LIST_ID } from '../../model/cash.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { createCashTransaction } from '../../util/cash.factory';
 import { CashRecategorization } from '../../util/categorize.utils';
+import { ImportConfirmation } from '../../util/import/plan-import';
 import { CashTransactionsActions } from './cash-transactions.actions';
 import { selectAllTransactions } from '../cash.selector';
 
@@ -45,8 +46,8 @@ export class CashTransactionsFacade {
     this.#store.dispatch(CashTransactionsActions.removeItem(item));
   }
 
-  importItems(items: CashTransaction[]): void {
-    this.#store.dispatch(CashTransactionsActions.importItems(items));
+  importItems(items: CashTransaction[], confirmed: ImportConfirmation[]): void {
+    this.#store.dispatch(CashTransactionsActions.importItems(items, confirmed));
   }
 
   bookTransfer(fromLeg: CashTransaction, toLeg: CashTransaction): void {

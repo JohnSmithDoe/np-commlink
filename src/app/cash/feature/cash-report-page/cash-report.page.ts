@@ -17,7 +17,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
-import dayjs from 'dayjs';
 import { RouterLink } from '@angular/router';
 import { CashReportFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -29,6 +28,8 @@ import {
 } from '../../model/report.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
+import { localizedShortMonthYear } from '../../../@shared/util/formatting/date-format.utils';
+import { centsToEur } from '../../util/money.utils';
 
 Chart.register(...registerables);
 
@@ -68,10 +69,6 @@ export class CashReportPage {
   readonly spendByCounterparty = this.#facade.spendByCounterparty;
   readonly uncategorized = this.#facade.uncategorized;
 
-  constructor() {
-    this.#facade.refreshToday();
-  }
-
   selectScope(scope: ReportScope): void {
     this.#facade.setScope(scope);
   }
@@ -83,17 +80,17 @@ export class CashReportPage {
   readonly monthlyData = computed<ChartData<'bar'>>(() => {
     const months = this.#monthly();
     return {
-      labels: months.map((m) => dayjs(`${m.month}-01`).format('MMM YY')),
+      labels: months.map((m) => localizedShortMonthYear(`${m.month}-01`)),
       datasets: [
         {
           label: this.#translate.instant(marker('cash.report.income')),
-          data: months.map((m) => m.incomeCents / 100),
+          data: months.map((m) => centsToEur(m.incomeCents)),
           backgroundColor: this.#colors.income,
           borderWidth: 0,
         },
         {
           label: this.#translate.instant(marker('cash.report.spend')),
-          data: months.map((m) => m.spendCents / 100),
+          data: months.map((m) => centsToEur(m.spendCents)),
           backgroundColor: this.#colors.spend,
           borderWidth: 0,
         },
@@ -110,7 +107,7 @@ export class CashReportPage {
       labels: cats.map((c) => c.category || uncategorized),
       datasets: [
         {
-          data: cats.map((c) => c.cents / 100),
+          data: cats.map((c) => centsToEur(c.cents)),
           backgroundColor: cats.map(
             (_, index) =>
               this.#colors.series[index % this.#colors.series.length]

@@ -39,8 +39,8 @@ import { readStatementDocuments } from '../../util/import/read-bank-file';
 import { readStatement, StatementRead } from '../../util/import/read-statement';
 import { ImportPlan, planImport } from '../../util/import/plan-import';
 import { lastEntryDateISO } from '../../util/import/balance-check';
-import { amountChangesFor } from '../../util/schedule.utils';
-import { takePickedFiles } from '../../util/picked-file.utils';
+import { scheduleSightingsFor } from '../../util/schedule.utils';
+import { takePickedFiles } from '../../../@shared/util/forms/picked-file.utils';
 import { CashAccount } from '../../model/account.types';
 import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
 import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
@@ -188,12 +188,13 @@ export class CashAccountPage {
       this.#translate.instant(marker('cash.import.title')),
       {
         transactions: plan.toImport,
+        confirmations: plan.toConfirm,
         duplicates: plan.duplicates,
         rejected: plan.rejected,
         accountId: this.facade.accountId(),
         closingBalanceCents: parsed.closingBalanceCents,
         asOfISO: lastEntryDateISO(parsed.rows),
-        amountChanges: amountChangesFor(
+        sightings: scheduleSightingsFor(
           plan.toImport,
           this.#schedulesFacade.allItems()
         ),

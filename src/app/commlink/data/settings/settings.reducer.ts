@@ -1,3 +1,11 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * `setMode` DROPS the custom accents. A picked hue is keyed by skin, but no
+ * hue survives crossing the other ground — cyberpunk's amber falls to 2.3:1
+ * on paper, boomer's blue to 2.6:1 on ink — and an override is an inline
+ * style on <html>, so it outranks the compound block that exists to prevent
+ * exactly that. Both skins go, not only the active one: the other one's pick
+ * was made on the old ground too.
+ * ───────────────────────────────────────────────────────────────── */
 import { createReducer, on } from '@ngrx/store';
 import { EmojiActions } from '../../../@shared/data/emoji/emoji.actions';
 import { SettingsActions } from './settings.actions';
@@ -23,6 +31,7 @@ export const settingsReducer = createReducer(
   on(SettingsActions.setMode, (state, { mode }): SettingsState => ({
     ...state,
     mode,
+    customAccents: undefined,
   })),
   on(SettingsActions.setLanguage, (state, { language }): SettingsState => ({
     ...state,

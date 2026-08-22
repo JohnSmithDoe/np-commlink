@@ -1,12 +1,14 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `todayISO` is a signal the facade owns rather than a `dayjs()` inside the
- * computed, because a computed reading the clock never recomputes: it has no
- * dependency to invalidate, so the allowance would keep yesterday's
- * denominator until something else in the store changed.
+ * `todayISO` is a signal rather than a `dayjs()` inside the computed, because
+ * a computed reading the clock never recomputes: it has no dependency to
+ * invalidate, so the allowance would keep yesterday's denominator until
+ * something else in the store changed. It comes from `TodayService`, which
+ * re-arms at midnight and on `visibilitychange` — a page constructor cannot,
+ * because the router outlet caches the page and never builds it again.
  * ───────────────────────────────────────────────────────────────── */
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import dayjs from 'dayjs';
+import { TodayService } from '../../@shared/data/services/today.service';
 import { burndownFor, spendsThisMonth } from '../util/burndown.utils';
 import { dueStatus } from '../util/schedule.utils';
 import {
@@ -19,7 +21,7 @@ import { selectScheduleItems } from './schedules/cash-schedules.selector';
 export class CashBurndownFacade {
   readonly #store = inject(Store);
 
-  readonly #todayISO = signal(dayjs().format());
+  readonly #todayISO = inject(TodayService).today;
 
   readonly #balanceCents = this.#store.selectSignal(
     selectAllowanceBalanceCents
@@ -51,8 +53,4 @@ export class CashBurndownFacade {
       .filter((schedule) => dueStatus(schedule, this.#todayISO()) !== 'overdue')
       .toSorted((a, b) => a.nextDueISO.localeCompare(b.nextDueISO))
   );
-
-  refreshToday(): void {
-    this.#todayISO.set(dayjs().format());
-  }
 }

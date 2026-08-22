@@ -59,6 +59,10 @@ export const notificationsReducer = createReducer(
     })
   ),
   on(
+    NotificationsInboxActions.legacyCronsCleared,
+    (state): NotificationsState => ({ ...state, legacyCronsCleared: true })
+  ),
+  on(
     NotificationsInboxActions.loaded,
     (state, { notifications }): NotificationsState => notifications ?? state
   )

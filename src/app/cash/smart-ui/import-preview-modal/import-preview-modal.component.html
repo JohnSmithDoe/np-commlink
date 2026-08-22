@@ -9,7 +9,7 @@
     <ion-buttons slot="end">
       <ion-button
         strong="true"
-        [disabled]="!transactions.length"
+        [disabled]="!transactions.length && !confirmations.length"
         (click)="confirm()"
       >
         {{ 'cash.import.confirm' | translate }}

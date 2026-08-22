@@ -30,6 +30,11 @@ export const selectDoneCollapsed = createSelector(
   (state): boolean => state.doneCollapsed
 );
 
+export const selectLegacyCronsCleared = createSelector(
+  selectNotificationsState,
+  (state): boolean => state.legacyCronsCleared === true
+);
+
 export const selectNotificationsBadgeCount = createSelector(
   selectNotificationsState,
   unreadCount

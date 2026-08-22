@@ -1,8 +1,13 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * One key space. Every parsed row arrives with a key already — the bank's
- * `AcctSvcrRef` where the statement carries one, a derived key where it
- * does not — so nothing here has to ask which kind it is holding, and the
- * exact and the derived path cannot disagree about what a duplicate is.
+ * One key space, and a row answers with both of its keys — `importKeyOf` is
+ * the bank's `AcctSvcrRef` where the statement carries one and the derived
+ * key where it does not — so a duplicate is a hit on either, and the exact
+ * and the derived path cannot disagree about what one is.
+ *
+ * A hit whose stored row is PENDING and whose incoming row is booked is not
+ * merely a duplicate: it is the same spend, arriving with the reference the
+ * intraday export withheld. Confirming that row in place keeps whatever
+ * manual spend was reconciled against it, which re-importing would orphan.
  *
  * The account prefixes the key because a reference is only unique WITHIN
  * the account that issued it, and the same statement imported into two
@@ -17,11 +22,18 @@
 import { CashRule } from '../../model/rule.types';
 import { CamtDetails, CashTransaction } from '../../model/transaction.types';
 import { withCategory } from '../cash-category.utils';
-import { categorize } from '../categorize.utils';
-import { ParsedRow, ParseResult } from './parsed-row';
+import { categorizeOrdered, rulesByOrder } from '../categorize.utils';
+import { importKeyOf, ParsedRow, ParseResult } from './parsed-row';
+
+export interface ImportConfirmation {
+  id: string;
+  importKey: string;
+  dateISO: string;
+}
 
 export interface ImportPlan {
   toImport: CashTransaction[];
+  toConfirm: ImportConfirmation[];
   duplicates: number;
   rejected: number;
 }
@@ -29,11 +41,13 @@ export interface ImportPlan {
 const scopedKey = (accountId: string, importKey: string): string =>
   `${accountId}|${importKey}`;
 
-const importedKeys = (existing: readonly CashTransaction[]): Set<string> =>
-  new Set(
+const importedByKey = (
+  existing: readonly CashTransaction[]
+): Map<string, CashTransaction> =>
+  new Map(
     existing
       .filter((txn) => txn.source === 'imported' && txn.importKey)
-      .map((txn) => scopedKey(txn.accountId, txn.importKey ?? ''))
+      .map((txn) => [scopedKey(txn.accountId, txn.importKey ?? ''), txn])
   );
 
 const detailsFromRow = (row: ParsedRow): CamtDetails => ({
@@ -66,14 +80,14 @@ const transactionFromRow = (
   source: 'imported',
   status: row.status,
   importBatchId,
-  importKey: row.key,
+  importKey: importKeyOf(row),
 });
 
 const autoCategorized = (
   txn: CashTransaction,
-  rules: readonly CashRule[]
+  ordered: readonly CashRule[]
 ): CashTransaction => {
-  const categoryId = categorize(txn, rules);
+  const categoryId = categorizeOrdered(txn, ordered);
   return categoryId === undefined ? txn : withCategory(txn, categoryId);
 };
 
@@ -85,22 +99,33 @@ export function planImport(
   importBatchId: string,
   makeId: () => string
 ): ImportPlan {
-  const seen = importedKeys(existing);
+  const ordered = rulesByOrder(rules);
+  const known = importedByKey(existing);
   const toImport: CashTransaction[] = [];
+  const toConfirm: ImportConfirmation[] = [];
   let duplicates = 0;
   for (const row of parsed.rows) {
-    const key = scopedKey(accountId, row.key);
-    if (seen.has(key)) {
+    const key = scopedKey(accountId, importKeyOf(row));
+    const derived = scopedKey(accountId, row.derivedKey);
+    const already = known.get(key) ?? known.get(derived);
+    if (already) {
       duplicates++;
+      if (already.status === 'pending' && row.status === 'confirmed') {
+        toConfirm.push({
+          id: already.id,
+          importKey: importKeyOf(row),
+          dateISO: row.dateISO,
+        });
+      }
       continue;
     }
-    seen.add(key);
-    toImport.push(
-      autoCategorized(
-        transactionFromRow(row, accountId, importBatchId, makeId()),
-        rules
-      )
+    const txn = autoCategorized(
+      transactionFromRow(row, accountId, importBatchId, makeId()),
+      ordered
     );
+    known.set(key, txn);
+    known.set(derived, txn);
+    toImport.push(txn);
   }
-  return { toImport, duplicates, rejected: parsed.rejected };
+  return { toImport, toConfirm, duplicates, rejected: parsed.rejected };
 }

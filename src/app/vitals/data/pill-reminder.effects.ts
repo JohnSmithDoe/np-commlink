@@ -1,21 +1,19 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Ritual's two triggers — a load re-arms in silence, a change speaks once
- * — but reconciling the WHOLE domain each time rather than the pill that
- * moved. An effect runs after the reducer, so a deleted pill is already
- * gone from state and there is nothing left to read its ids off; the same
- * goes for every pill a deleted profile took with it. `nextSlot` is what
- * makes the sweep possible: every id ever issued lies below it, so
- * clearing that whole range costs one call and cannot leave an orphan
- * nudging for a pill nobody can see any more.
+ * The daily reminders' two triggers — a load re-arms in silence, a change
+ * speaks once — but reconciling the WHOLE domain each time rather than the
+ * pill that moved. An effect runs after the reducer, so a deleted pill is
+ * already gone from state and there is nothing left to read its ids off.
+ * `nextSlot` is what makes the sweep possible: every id ever issued lies
+ * below it, so clearing that range cannot leave an orphan nudging for a pill
+ * nobody can see any more.
  *
- * The clear must also precede the arm within one promise — a pill's due
- * days SHRINK when a weekday is unticked — and `concatMap` is what keeps
- * two sweeps from interleaving. `switchMap` cannot recall a cancel already
- * in flight, and the abandoned schedule would win.
+ * The clear must precede the arm within one promise — a pill's due days
+ * SHRINK when a weekday is unticked — and `concatMap` is what keeps two
+ * sweeps from interleaving.
  *
- * Vitals hydrates on route, so this first runs when BIOMON is opened after
- * a cold start rather than at boot. The OS keeps its crons across
- * restarts, so nothing lapses in between.
+ * Only a `refused` outcome speaks. A sweep that placed nothing collects no
+ * outcomes at all, and off native every outcome is `unsupported`, so neither
+ * raises a toast about a request the user never made.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable } from '@angular/core';
@@ -25,7 +23,10 @@ import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
 import { catchError, concatMap, filter, from, map, Observable, of } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { LocalNotificationsService } from '../../@shared/data/services/local-notifications.service';
+import {
+  LocalNotificationsService,
+  ReminderOutcome,
+} from '../../@shared/data/services/local-notifications.service';
 import { Pill, PillsState, Profile } from '../model/vitals.types';
 import { pillNotificationBlock, pillNotificationId } from '../util/pill.utils';
 import { PillsActions } from './pills/pills.actions';
@@ -68,7 +69,7 @@ export class PillReminderEffects {
       ),
       concatLatestFrom(() => this.#snapshot()),
       concatMap(([, pills, profiles]) => this.#reconcile(pills, profiles)),
-      filter((armed) => !armed),
+      filter((outcomes) => outcomes.includes('refused')),
       map(() =>
         NotificationsActions.toast({ key: REMINDER_REFUSED, color: 'danger' })
       )
@@ -85,14 +86,16 @@ export class PillReminderEffects {
   #reconcile(
     pills: PillsState,
     profiles: readonly Profile[]
-  ): Observable<boolean> {
-    return from(this.#sweep(pills, profiles)).pipe(catchError(() => of(false)));
+  ): Observable<ReminderOutcome[]> {
+    return from(this.#sweep(pills, profiles)).pipe(
+      catchError(() => of<ReminderOutcome[]>(['refused']))
+    );
   }
 
   async #sweep(
     pills: PillsState,
     profiles: readonly Profile[]
-  ): Promise<boolean> {
+  ): Promise<ReminderOutcome[]> {
     const issued = Array.from({ length: pills.nextSlot }, (_, slot) =>
       pillNotificationBlock(slot)
     ).flat();
@@ -101,24 +104,26 @@ export class PillReminderEffects {
     const due = pills.items.filter(
       (pill) => pill.remind && pill.weekdays.length > 0
     );
-    let armed = true;
+    const outcomes: ReminderOutcome[] = [];
     for (const pill of due) {
-      const ok = await this.#arm(pill, profiles);
-      armed = armed && ok;
+      outcomes.push(...(await this.#arm(pill, profiles)));
     }
-    return armed;
+    return outcomes;
   }
 
-  async #arm(pill: Pill, profiles: readonly Profile[]): Promise<boolean> {
+  async #arm(
+    pill: Pill,
+    profiles: readonly Profile[]
+  ): Promise<ReminderOutcome[]> {
     const parameters = {
       name: pill.name,
       dose: String(pill.dose),
       profile: profiles.find(({ id }) => id === pill.profileId)?.name ?? '',
     };
 
-    let armed = true;
+    const outcomes: ReminderOutcome[] = [];
     for (const weekday of pill.weekdays) {
-      const ok = await this.#notifications.scheduleWeekly({
+      const outcome = await this.#notifications.scheduleWeekly({
         id: pillNotificationId(pill.slot, weekday),
         source: 'pillReminder',
         titleKey: REMINDER_TITLE,
@@ -128,8 +133,8 @@ export class PillReminderEffects {
         hour: pill.hour,
         minute: pill.minute,
       });
-      armed = armed && ok;
+      outcomes.push(outcome);
     }
-    return armed;
+    return outcomes;
   }
 }

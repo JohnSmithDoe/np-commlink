@@ -8,7 +8,10 @@
  *
  * The suggested holder weight is that person's nearest reading AT OR
  * BEFORE the date being recorded: back-dating a reading must not subtract
- * a body weight from a later day.
+ * a body weight from a later day. Which is why the difference is recomputed
+ * from an effect and not only from the three setters — the date has no
+ * setter, it is typed straight into the form, and a suggestion that moves
+ * under a difference already written leaves three numbers that do not add up.
  *
  * A single person profile IS the answer to "who is holding the cat", so
  * the picker starts on them. It stays empty from two onwards, where
@@ -19,8 +22,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   linkedSignal,
+  untracked,
 } from '@angular/core';
 import { FormField, SchemaPathTree, validate } from '@angular/forms/signals';
 import {
@@ -38,6 +43,7 @@ import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import {
   DUPLICATE_NAME,
+  hasErrorKind,
   requireParseableDate,
 } from '../../../@shared/util/forms/form-rules';
 import { ProfilesFacade, ReadingsFacade } from '../../data';
@@ -107,16 +113,19 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
 
   readonly holderGrams = linkedSignal(() => this.#suggestedHolderGrams());
 
+  constructor() {
+    super();
+    effect(() => {
+      this.#suggestedHolderGrams();
+      untracked(() => this.#applyDifference());
+    });
+  }
+
   readonly showCalculator = computed(
     () => this.isCreateMode() && this.#profiles.routeProfile()?.type === 'pet'
   );
 
-  readonly dateTaken = computed(() =>
-    this.form
-      .name()
-      .errors()
-      .some(({ kind }) => kind === DUPLICATE_NAME.kind)
-  );
+  readonly dateTaken = hasErrorKind(this.form.name, DUPLICATE_NAME);
 
   protected override extraRules(path: SchemaPathTree<ReadingForm>): void {
     requireParseableDate(path.name);

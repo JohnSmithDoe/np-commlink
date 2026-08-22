@@ -4,7 +4,7 @@ import {
 } from '../testing/cash.test-data';
 import {
   advanced,
-  amountChangesFor,
+  changedAmounts,
   dueStatus,
   dueThisMonthCents,
   matchesSchedule,
@@ -12,6 +12,7 @@ import {
   reserveCentsPerMonth,
   reserveTotalCents,
   scheduleFor,
+  scheduleSightingsFor,
 } from './schedule.utils';
 
 const JANUARY_6 = '2026-01-06T12:00:00+01:00';
@@ -137,9 +138,18 @@ describe('reserveTotalCents and dueThisMonthCents', () => {
     });
     expect(dueThisMonthCents([late], JANUARY_6)).toBe(20_000);
   });
+
+  it('charges an overdue schedule to one of the two, never both', () => {
+    const late = mockCashSchedule({
+      id: 's3',
+      amountCents: -20_000,
+      nextDueISO: '2026-01-02T00:00:00+01:00',
+    });
+    expect(reserveTotalCents([late], JANUARY_6)).toBe(0);
+  });
 });
 
-describe('amountChangesFor', () => {
+describe('scheduleSightingsFor', () => {
   const rent = mockCashSchedule({ amountCents: -90_000 });
 
   it('reports a rent rise once, without touching the rule', () => {
@@ -148,7 +158,7 @@ describe('amountChangesFor', () => {
       name: 'MIETE Juni',
       amountCents: -95_000,
     });
-    expect(amountChangesFor([booking], [rent])).toEqual([
+    expect(scheduleSightingsFor([booking], [rent])).toEqual([
       {
         scheduleId: rent.id,
         fromCents: -90_000,
@@ -159,15 +169,18 @@ describe('amountChangesFor', () => {
     ]);
   });
 
-  it('says nothing when the amount is unchanged', () => {
+  it('still reports the booking when the amount is unchanged', () => {
     const booking = mockCashTransaction({
       name: 'MIETE',
       amountCents: -90_000,
     });
-    expect(amountChangesFor([booking], [rent])).toEqual([]);
+    const [sighting] = scheduleSightingsFor([booking], [rent]);
+
+    expect(sighting).toMatchObject({ fromCents: -90_000, toCents: -90_000 });
+    expect(changedAmounts([sighting])).toEqual([]);
   });
 
-  it('claims a schedule once, so two payments are not two changes', () => {
+  it('claims a schedule once, so two payments are not two sightings', () => {
     const first = mockCashTransaction({
       id: 't1',
       name: 'MIETE',
@@ -178,7 +191,7 @@ describe('amountChangesFor', () => {
       name: 'MIETE',
       amountCents: -97_000,
     });
-    expect(amountChangesFor([first, second], [rent])).toHaveLength(1);
+    expect(scheduleSightingsFor([first, second], [rent])).toHaveLength(1);
   });
 });
 

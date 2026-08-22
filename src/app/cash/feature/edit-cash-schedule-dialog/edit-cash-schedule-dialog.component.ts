@@ -29,39 +29,35 @@ import {
   IonSegmentButton,
   IonSelect,
   IonSelectOption,
-  IonToggle,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';
-import { addOutline, closeOutline } from 'ionicons/icons';
+import { addOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
-import { requireParseableDate } from '../../../@shared/util/forms/form-rules';
-import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
 import {
-  ConditionSet,
-  FIELD_LABEL_KEYS,
-  FilterField,
-  FilterOperation,
-  isTextFilterField,
-  OP_LABEL_KEYS,
-  TEXT_FILTER_FIELDS,
-} from '../../model/rule.types';
+  hasOtherErrorKind,
+  requireParseableDate,
+} from '../../../@shared/util/forms/form-rules';
+import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
+import { ConditionSet, FilterField } from '../../model/rule.types';
 import { CashSchedule, ScheduleForm } from '../../model/schedule.types';
 import { CashSchedulesFacade } from '../../data';
 import { CashCategoryPickerComponent } from '../../smart-ui/cash-category-picker/cash-category-picker.component';
 import { CashMatchPreviewComponent } from '../../smart-ui/match-preview/match-preview.component';
+import { CashConditionRowsComponent } from '../../ui/condition-rows/condition-rows.component';
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { createCashSchedule } from '../../util/cash.factory';
 import {
   blankCondition,
+  conditionRulesFor,
   defaultOpFor,
-  opsFor,
   toCondition,
   toConditionForm,
+  UNPARSEABLE_AMOUNT,
 } from '../../util/rule-form.utils';
 
 const PERIOD_MONTHS = [1, 3, 6, 12] as const;
@@ -84,10 +80,10 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
     IonSegmentButton,
     IonSelect,
     IonSelectOption,
-    IonToggle,
     TranslatePipe,
     ItemEditModalComponent,
     CashCategoryPickerComponent,
+    CashConditionRowsComponent,
     CashMatchPreviewComponent,
     MoneyInputComponent,
   ],
@@ -102,22 +98,24 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
   protected readonly listId: ItemListId = CASH_SCHEDULES_LIST_ID;
   readonly siblings = this.#facade.allItems;
 
-  readonly opLabelKeys = OP_LABEL_KEYS;
-  readonly fieldLabelKeys = FIELD_LABEL_KEYS;
-  readonly textFields = TEXT_FILTER_FIELDS;
   readonly periods = PERIOD_MONTHS;
-  readonly opsFor: (field: FilterField) => readonly FilterOperation[] = opsFor;
-  readonly isTextField = isTextFilterField;
 
   protected override uniqueName(): boolean {
     return false;
   }
 
-  readonly amountInvalid = computed(() =>
-    this.form
-      .amountCents()
-      .errors()
-      .some(({ kind }) => kind !== MISSING_AMOUNT.kind)
+  readonly amountInvalid = hasOtherErrorKind(
+    this.form.amountCents,
+    MISSING_AMOUNT
+  );
+
+  readonly amountInvalidRows = computed(() =>
+    [...this.form.conditions].map((condition) =>
+      condition
+        .value()
+        .errors()
+        .some(({ kind }) => kind === UNPARSEABLE_AMOUNT.kind)
+    )
   );
 
   readonly conditionSet = computed<ConditionSet>(() => ({
@@ -129,7 +127,7 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
 
   constructor() {
     super();
-    addIcons({ addOutline, closeOutline });
+    addIcons({ addOutline });
   }
 
   protected override extraRules(path: SchemaPathTree<ScheduleForm>): void {
@@ -138,6 +136,7 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
     );
     min(path.amountCents, 1);
     requireParseableDate(path.nextDue);
+    conditionRulesFor(() => this.#language())(path.conditions);
   }
 
   protected blank(): CashSchedule {

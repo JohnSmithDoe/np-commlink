@@ -20,8 +20,11 @@ export interface ParsedEntry extends CamtDetails {
 }
 
 export interface ParsedRow extends ParsedEntry {
-  key: string;
+  derivedKey: string;
 }
+
+export const importKeyOf = (row: ParsedRow): string =>
+  row.bankRef ?? row.derivedKey;
 
 export interface EntryResult {
   entries: ParsedEntry[];

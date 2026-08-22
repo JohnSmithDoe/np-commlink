@@ -1,0 +1,5 @@
+@use 'theme/cash';
+
+.cash-condition {
+  @include cash.condition-row;
+}

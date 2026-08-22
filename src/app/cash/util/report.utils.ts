@@ -2,7 +2,7 @@
  * One pass, not six. The figures were six selectors that each walked every
  * booking and each re-decided what counts, so the window had to be added in
  * six places to be added at all — and a seventh figure would have re-derived
- * `isReportable` a seventh time.
+ * that predicate a seventh time.
  *
  * A window is a CALENDAR span, not a rolling day count: "this month" is the
  * month you are in, so the number stops moving under you every midnight and
@@ -23,13 +23,10 @@ import {
   ReportScope,
 } from '../model/report.types';
 import { CashTransaction } from '../model/transaction.types';
-import { categoryIdOf } from './cash-category.utils';
+import { categoryIdOf, isHouseholdMoney } from './cash-category.utils';
 
 const BIGGEST_EXPENSES_SHOWN = 10;
 const QUARTER_MONTHS = 2;
-
-const isReportable = (txn: CashTransaction): boolean =>
-  !txn.isTransfer && !txn.matchedTxnId;
 
 export function windowStartISO(
   scope: ReportScope,
@@ -60,7 +57,8 @@ export function inScope(
   const start = windowStartISO(scope, todayISO);
   const from = start ? dayjs(start) : undefined;
   return transactions.filter(
-    (txn) => isReportable(txn) && (!from || !dayjs(txn.dateISO).isBefore(from))
+    (txn) =>
+      isHouseholdMoney(txn) && (!from || !dayjs(txn.dateISO).isBefore(from))
   );
 }
 

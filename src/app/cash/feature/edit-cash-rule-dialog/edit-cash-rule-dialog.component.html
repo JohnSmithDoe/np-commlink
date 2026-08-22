@@ -21,75 +21,12 @@
   </ion-segment>
 
   <ion-list-header>{{ 'cash.label.conditions' | translate }}</ion-list-header>
-  @for (condition of form.conditions; track $index) {
-    @let field = condition.field().value();
-    <div class="cash-condition" data-testid="rule-condition">
-      <div class="cash-condition__row">
-        <ion-select
-          [attr.aria-label]="'cash.a11y.field' | translate"
-          interface="popover"
-          [value]="field"
-          (ionChange)="onField($index, $any($event).detail.value)"
-          data-testid="rule-condition-field"
-        >
-          @for (textField of textFields; track textField) {
-            <ion-select-option [value]="textField">
-              {{ fieldLabelKeys[textField] | translate }}
-            </ion-select-option>
-          }
-          <ion-select-option value="amount">
-            {{ fieldLabelKeys['amount'] | translate }}
-          </ion-select-option>
-        </ion-select>
-
-        <ion-select
-          [attr.aria-label]="'cash.a11y.operator' | translate"
-          interface="popover"
-          [formField]="condition.op"
-        >
-          @for (op of opsFor(field); track op) {
-            <ion-select-option [value]="op">
-              {{ opLabelKeys[op] | translate }}
-            </ion-select-option>
-          }
-        </ion-select>
-
-        <ion-button
-          fill="clear"
-          color="medium"
-          [attr.aria-label]="'cash.a11y.remove-condition' | translate"
-          (click)="removeCondition($index)"
-        >
-          <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
-        </ion-button>
-      </div>
-
-      <ion-item>
-        <ion-input
-          [attr.aria-label]="'cash.a11y.value' | translate"
-          [placeholder]="
-            (field === 'amount' ? 'cash.label.amount' : 'cash.label.value')
-              | translate
-          "
-          [formField]="condition.value"
-          data-testid="rule-condition-value"
-        />
-      </ion-item>
-      @if (amountInvalidRows()[$index]) {
-        <ion-note color="danger" class="sr-field-note">
-          {{ 'cash.rule-dialog.amount-invalid' | translate }}
-        </ion-note>
-      }
-
-      @if (isTextField(field)) {
-        <ion-item>
-          <ion-toggle [formField]="condition.caseSensitive">
-            {{ 'cash.label.case-sensitive' | translate }}
-          </ion-toggle>
-        </ion-item>
-      }
-    </div>
-  }
+  <app-cash-condition-rows
+    [conditions]="form.conditions"
+    [amountInvalidRows]="amountInvalidRows()"
+    (fieldPicked)="onField($event.index, $event.field)"
+    (removed)="removeCondition($event)"
+  />
 
   <app-cash-match-preview
     [conditionSet]="conditionSet()"

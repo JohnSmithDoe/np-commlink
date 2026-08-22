@@ -4,6 +4,7 @@ import { createMetric } from '../../@shared/data/persisted-states/persisted-slic
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationsInboxActions } from './notifications.actions';
 import { notificationsReducer } from './notifications.reducer';
+import { LegacyRemindersEffects } from './legacy-reminders.effects';
 import { NotificationsDebugEffects } from './notifications-debug.effects';
 import { NotificationsToastEffects } from './notifications-toast.effects';
 import {
@@ -24,6 +25,7 @@ export const notificationsContext = providePersistedContext({
       NotificationsActions.dismiss,
       NotificationsActions.remove,
       NotificationsInboxActions.clearDone,
+      NotificationsInboxActions.legacyCronsCleared,
       NotificationsInboxActions.toggleDoneSection,
       NotificationsInboxActions.markPageViewed,
     ],
@@ -39,5 +41,6 @@ export const notificationsContext = providePersistedContext({
   effects: [
     ...(isDevMode() ? [NotificationsDebugEffects] : []),
     NotificationsToastEffects,
+    LegacyRemindersEffects,
   ],
 });

@@ -1,12 +1,13 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * `scope` is a signal here and not a slice of the store: it is a question
  * the reader is asking, not a fact about the ledger, so it has no business
- * being persisted or replayed. `todayISO` is owned for the reason the
- * burn-down owns it — a computed that reads the clock never invalidates.
+ * being persisted or replayed. `todayISO` comes from `TodayService` for the
+ * reason the burn-down takes it from there — a computed that reads the clock
+ * never invalidates, and a cached page never rebuilds to re-arm one.
  * ───────────────────────────────────────────────────────────────── */
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import dayjs from 'dayjs';
+import { TodayService } from '../../@shared/data/services/today.service';
 import { ReportScope } from '../model/report.types';
 import { reportFor, uncategorizedOutflows } from '../util/report.utils';
 import { selectAllTransactions } from './cash.selector';
@@ -18,7 +19,7 @@ export class CashReportFacade {
 
   readonly #transactions = this.#store.selectSignal(selectAllTransactions);
   readonly #categories = this.#store.selectSignal(selectCashCategories);
-  readonly #todayISO = signal(dayjs().format());
+  readonly #todayISO = inject(TodayService).today;
   readonly #scope = signal<ReportScope>('month');
 
   readonly scope = this.#scope.asReadonly();
@@ -45,9 +46,5 @@ export class CashReportFacade {
 
   setScope(scope: ReportScope): void {
     this.#scope.set(scope);
-  }
-
-  refreshToday(): void {
-    this.#todayISO.set(dayjs().format());
   }
 }

@@ -18,6 +18,8 @@ import { CashBurndownFacade, CashTransactionsFacade } from '../../data';
 import { CashTransaction } from '../../model/transaction.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
+import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
+import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/edit-cash-schedule-dialog.component';
 import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dialog/edit-cash-transaction-dialog.component';
 import { CashSpendQuickAddComponent } from '../spend-quick-add/spend-quick-add.component';
 
@@ -39,6 +41,8 @@ import { CashSpendQuickAddComponent } from '../spend-quick-add/spend-quick-add.c
     LocalizedDatePipe,
     CashSpendQuickAddComponent,
     EditCashTransactionDialogComponent,
+    EditCashRuleDialogComponent,
+    EditCashScheduleDialogComponent,
   ],
 })
 export class CashSpendingPage {
@@ -49,10 +53,6 @@ export class CashSpendingPage {
   readonly spends = this.#facade.monthSpends;
 
   readonly overToday = computed(() => this.burndown().remainingTodayCents < 0);
-
-  constructor() {
-    this.#facade.refreshToday();
-  }
 
   editSpend(transaction: CashTransaction): void {
     this.#transactions.showEditDialog(transaction);

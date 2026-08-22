@@ -714,3 +714,28 @@ set was inverted, and are left standing rather than re-woven.
   switching itself on for every install because absence meant shown. That failure mode is now gone by
   construction — which is the argument for the flip, not a reason the earlier call was wrong given the
   shape it was made under.
+
+## The theme split, and the accent that cannot cross a ground
+
+- **`theme` became `skin` + `mode` with no rung and no `APP_VERSION` bump.** The stored `theme` values and
+  the new `Skin` values are the same two strings, so a document written by the previous build reads as a
+  skin carrying the default brightness — only the field NAME moved, and `loaded` spreads over
+  `initialSettings`. Asked and answered. It is the third exemption taken and the cheapest of them: the
+  worst case is someone who ran the light theme landing on ink once and tapping a segment.
+- **A hand-picked accent is DROPPED when the brightness changes, and both skins' picks go with it.** The
+  default swatches read skin AND mode, but an override is one inline style on `<html>`, so it outranks the
+  compound block that exists precisely because neither hue survives the other ground — amber falls to
+  2.3:1 on paper, blue to 2.6:1 on ink. Nesting the stored map by mode was the alternative and was
+  declined: a shape change on a slice every install holds, to preserve a colour that is two taps to pick
+  again. The other skin's pick goes too, because it was made on the old ground as well.
+
+## A cron the kernel armed, the kernel cancels
+
+- **The 09:00 office nudge is cancelled once at boot, from the notifications slice, which records that it
+  happened.** The policy moved into `office-time`, but that slice hydrates on route: a deck with OFFICE
+  switched off never reaches the effect that would clear the cron the old app-initializer left with the OS.
+  The kernel hydrates at boot and does reach it. It runs ONCE — cancelling on every boot would disarm
+  anyone who has since switched the reminder on, since only the office page re-arms — and running it costs
+  nothing, because the switch that replaced the initializer did not exist when that cron was placed.
+- **This is not a migration rung.** What is stale is a schedule the OS owns, not a shape on disk.
+  `runMigrations` never sees it and `APP_VERSION` has no opinion about it.

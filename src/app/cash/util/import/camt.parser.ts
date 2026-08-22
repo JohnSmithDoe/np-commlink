@@ -1,8 +1,6 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * One parser for every bank, because camt states what a CSV makes you
- * guess: the account is named in `<Acct>`, the sign is `CdtDbtInd` rather
- * than punctuation, and amounts and dates are already machine-readable.
- * There is nothing per-bank left to configure.
+ * guess. There is nothing per-bank left to configure.
  *
  * It reads at `<Ntry>`, never at `<TxDtls>`. A collective booking is ONE
  * entry holding many details and moves the balance once; importing the
@@ -15,10 +13,13 @@
  * under `Pty`, and on whether a BIC is `BICFI` or `BIC` — pinning any of it
  * rejects half the exports.
  *
- * `<Bal>` is read for `CLBD` only. It is the bank's own closing figure,
- * which makes it both the authoritative balance and a checksum against the
- * balance summed from entries: a disagreement means missing bookings, and
- * that is answerable rather than merely wrong.
+ * A `CdtDbtInd` that reads as neither CRDT nor DBIT REJECTS its entry rather
+ * than defaulting to one: it is the one field whose failure doubles the
+ * error, since a 900 debit read as a credit misses the balance by 1800.
+ *
+ * `<Bal>` is read for `CLBD` only — the bank's own closing figure, which is
+ * both the authoritative balance and a checksum against the one summed from
+ * entries.
  * ───────────────────────────────────────────────────────────────── */
 import dayjs from 'dayjs';
 import {
@@ -80,6 +81,12 @@ const dateAt = (entry: Element, wrapper: string): string | null =>
 
 const bookingDate = (entry: Element): string | null =>
   dateAt(entry, 'BookgDt') ?? dateAt(entry, 'ValDt');
+
+const signOf = (element: Element): 1 | -1 | null => {
+  const indicator = textAt(element, 'CdtDbtInd');
+  if (indicator === 'CRDT') return 1;
+  return indicator === 'DBIT' ? -1 : null;
+};
 
 const statusOf = (entry: Element): CashTransactionStatus => {
   const status = descend(entry, 'Sts');
@@ -175,14 +182,15 @@ const detailsOf = (entry: Element, incoming: boolean): CamtDetails => {
 const entryFrom = (entry: Element): ParsedEntry | null => {
   const dateISO = bookingDate(entry);
   const magnitude = decimalToCents(textAt(entry, 'Amt'));
-  if (dateISO === null || magnitude === null) return null;
+  const sign = signOf(entry);
+  if (dateISO === null || magnitude === null || sign === null) return null;
 
-  const incoming = textAt(entry, 'CdtDbtInd') !== 'DBIT';
+  const incoming = sign > 0;
   const details = detailsOf(entry, incoming);
   return {
     ...details,
     dateISO,
-    amountCents: incoming ? magnitude : -magnitude,
+    amountCents: sign * magnitude,
     description: joinDescription(
       details.counterpartyName ?? '',
       details.remittanceInfo ?? textAt(entry, 'AddtlNtryInf')
@@ -198,8 +206,9 @@ const closingBalanceOf = (statement: Element): number | undefined => {
       textAt(balance, 'Tp', 'CdOrPrtry', 'Cd') || textAt(balance, 'Tp', 'Cd');
     if (code !== CLOSING_BALANCE) continue;
     const magnitude = decimalToCents(textAt(balance, 'Amt'));
-    if (magnitude === null) continue;
-    return textAt(balance, 'CdtDbtInd') === 'DBIT' ? -magnitude : magnitude;
+    const sign = signOf(balance);
+    if (magnitude === null || sign === null) continue;
+    return sign * magnitude;
   }
   return undefined;
 };

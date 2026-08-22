@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
-import { concatMap, EMPTY, map, of, withLatestFrom } from 'rxjs';
+import { EMPTY, map, withLatestFrom } from 'rxjs';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
 import { ItemList } from '../../model/item-list.types';
 import { findMatchingItem } from '../../util/app.utils';
@@ -43,7 +43,7 @@ const toastAddItemFailure = <T extends BaseItem>(
     { functional: true }
   );
 
-const pushUndoOnDelete = <T extends BaseItem>(
+export const pushUndoOnDelete = <T extends BaseItem>(
   removeItem: Creator<[item: T], { item: T }>,
   addItem: Creator<[item: T], { item: T }>
 ) =>
@@ -60,7 +60,7 @@ const pushUndoOnDelete = <T extends BaseItem>(
   );
 
 type Matcher<T extends BaseItem> = (item: T, items: T[]) => T | undefined;
-type Creator2<T> = (name: string, filterBy?: string) => T;
+type ItemFromSearch<T> = (name: string, filterBy?: string) => T;
 
 const matcherOf = <T extends BaseItem>(match?: Matcher<T>): Matcher<T> =>
   match ?? findMatchingItem;
@@ -68,23 +68,21 @@ const matcherOf = <T extends BaseItem>(match?: Matcher<T>): Matcher<T> =>
 const addFromSearch = <T extends BaseItem, S extends ItemList<T>>(
   actions: ListFlowActions<T>,
   select: MemoizedSelector<object, S>,
-  create: Creator2<T> | null,
+  create: ItemFromSearch<T> | null,
   match: Matcher<T>
 ) =>
   createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
+      if (!create) return EMPTY;
       return actions$.pipe(
         ofType(actions.addItemFromSearch),
         withLatestFrom(store.select(select), (_, list) => list),
-        concatMap((list) => {
-          if (!create) return EMPTY;
+        map((list) => {
           const item = create(list.searchQuery ?? '', list.filterBy);
           const duplicate = match(item, list.items);
-          return of(
-            duplicate
-              ? actions.addItemFailure(duplicate)
-              : actions.addItem(item)
-          );
+          return duplicate
+            ? actions.addItemFailure(duplicate)
+            : actions.addItem(item);
         })
       );
     },
@@ -97,7 +95,7 @@ export const createItemListEffects = <
 >(cfg: {
   actions: ListFlowActions<T>;
   select: MemoizedSelector<object, S>;
-  create: Creator2<T> | null;
+  create: ItemFromSearch<T> | null;
   match?: Matcher<T>;
   undoableDelete?: Creator<[item: T], { item: T }>;
 }) => ({

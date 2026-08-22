@@ -19,6 +19,7 @@ import {
 } from '../../model/cash.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { categoryIdOf, withCategory } from '../../util/cash-category.utils';
+import { ImportConfirmation } from '../../util/import/plan-import';
 import { CashActions } from '../cash.actions';
 import { CashTransactionsActions } from './cash-transactions.actions';
 
@@ -33,6 +34,25 @@ const withItems = (
   items: CashTransaction[]
 ): CashTransactionsState => ({ ...state, items });
 
+const booked = (
+  items: readonly CashTransaction[],
+  confirmed: readonly ImportConfirmation[]
+): CashTransaction[] => {
+  if (confirmed.length === 0) return [...items];
+  const byId = new Map(confirmed.map((entry) => [entry.id, entry]));
+  return items.map((txn): CashTransaction => {
+    const entry = byId.get(txn.id);
+    return entry
+      ? {
+          ...txn,
+          status: 'confirmed',
+          importKey: entry.importKey,
+          dateISO: entry.dateISO,
+        }
+      : txn;
+  });
+};
+
 // prettier-ignore
 export const cashTransactionsReducer = createReducer(
   initialTransactionsState,
@@ -42,8 +62,8 @@ export const cashTransactionsReducer = createReducer(
   on(CashTransactionsActions.updateFilter, (state, { filterBy }): CashTransactionsState => ({ ...state, filterBy })),
   on(CashTransactionsActions.updateSort, (state, { sortBy, sortDirection }): CashTransactionsState => updateListSort(state, sortBy, sortDirection)),
 
-  on(CashTransactionsActions.importItems, (state, { items }): CashTransactionsState =>
-    withItems(state, [...state.items, ...items])),
+  on(CashTransactionsActions.importItems, (state, { items, confirmed }): CashTransactionsState =>
+    withItems(state, [...booked(state.items, confirmed), ...items])),
 
   on(CashTransactionsActions.bookTransfer, (state, { fromLeg, toLeg }): CashTransactionsState =>
     withItems(state, [...state.items, fromLeg, toLeg])),

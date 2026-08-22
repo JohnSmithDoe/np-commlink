@@ -23,11 +23,11 @@
  * ───────────────────────────────────────────────────────────────── */
 
 export const I18N_OWNERS: Record<string, string[]> = {
-  barcode: ['barcode'],
   cash: ['cash'],
   commlink: ['commlink', 'deck', 'settings'],
   geist: ['geist'],
   household: ['household'],
+  notes: ['notes'],
   notifications: ['notifications'],
   'office-time': ['office-time'],
   tasks: ['tasks'],

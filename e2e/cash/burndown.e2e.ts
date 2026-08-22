@@ -55,10 +55,7 @@ async function createRent(page: Page) {
 
   await modal.getByRole('textbox', { name: 'Name' }).fill('Miete');
   await modal.locator('app-money-input input').fill('900,00');
-  await modal
-    .getByTestId('schedule-condition-value')
-    .locator('input')
-    .fill('MIETE');
+  await modal.getByTestId('condition-value').locator('input').fill('MIETE');
 
   const nextMonth = await page.evaluate(() => {
     const now = new Date();

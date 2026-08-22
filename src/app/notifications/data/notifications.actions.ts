@@ -10,6 +10,7 @@ export const NotificationsInboxActions = createActionGroup({
     loaded: (notifications: NotificationsState | null) => ({ notifications }),
 
     clearDone: emptyProps(),
+    legacyCronsCleared: emptyProps(),
     toggleDoneSection: emptyProps(),
     addDebugNotification: emptyProps(),
     markPageViewed: (at: string = dayjs().format()) => ({ at }),

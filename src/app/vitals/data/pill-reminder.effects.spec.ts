@@ -4,7 +4,10 @@ import { Action } from '@ngrx/store';
 import { provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of, toArray } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
-import { LocalNotificationsService } from '../../@shared/data/services/local-notifications.service';
+import {
+  LocalNotificationsService,
+  ReminderOutcome,
+} from '../../@shared/data/services/local-notifications.service';
 import { VitalsState } from '../model/vitals.types';
 import {
   mockPill,
@@ -34,10 +37,10 @@ describe('PillReminderEffects', () => {
     scheduleWeekly: ReturnType<typeof vi.fn>;
   };
 
-  const setup = (state: VitalsState, armed = true) => {
+  const setup = (state: VitalsState, outcome: ReminderOutcome = 'armed') => {
     notifications = {
       cancelIds: vi.fn().mockResolvedValue(undefined),
-      scheduleWeekly: vi.fn().mockResolvedValue(armed),
+      scheduleWeekly: vi.fn().mockResolvedValue(outcome),
     };
     TestBed.configureTestingModule({
       providers: [
@@ -135,7 +138,7 @@ describe('PillReminderEffects', () => {
 
   it('says so when the OS refuses a reminder the user just asked for', async () => {
     const pill = mockPill({ slot: 0, weekdays: [1] });
-    setup(stateWith(pill), false);
+    setup(stateWith(pill), 'refused');
     actions$ = of(PillsActions.addItem(pill));
 
     expect(await drain(effects.changeReminders$)).toEqual([refusal]);
@@ -148,6 +151,28 @@ describe('PillReminderEffects', () => {
     actions$ = of(PillsActions.addItem(pill));
 
     expect(await drain(effects.changeReminders$)).toEqual([refusal]);
+  });
+
+  it('stays quiet in a browser, where there was no cron to place', async () => {
+    const pill = mockPill({ slot: 0, weekdays: [1] });
+    setup(stateWith(pill), 'unsupported');
+    actions$ = of(PillsActions.addItem(pill));
+
+    expect(await drain(effects.changeReminders$)).toEqual([]);
+  });
+
+  it('stays quiet when a sweep armed nothing, so a delete is not a refusal', async () => {
+    const deleted = mockPill({ id: 'gone', slot: 0 });
+    setup(
+      mockVitalsState({
+        profiles: mockProfilesState([martin]),
+        pills: mockPillsState([], { nextSlot: 1 }),
+      }),
+      'refused'
+    );
+    actions$ = of(PillsActions.removeItem(deleted));
+
+    expect(await drain(effects.changeReminders$)).toEqual([]);
   });
 
   it('stays quiet about a success', async () => {
