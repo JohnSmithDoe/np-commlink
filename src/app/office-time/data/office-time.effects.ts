@@ -70,7 +70,8 @@ export class OfficeTimeEffects {
         OfficeTimeActions.saveDashboardSettings,
         OfficeTimeActions.saveTargetOfficeDaysPerWeek,
         OfficeTimeActions.setFreedays,
-        OfficeTimeActions.setOfficedays
+        OfficeTimeActions.setOfficedays,
+        OfficeTimeActions.setReminder
       ),
       map(() => OfficeTimeActions.saveOfficeTime())
     );

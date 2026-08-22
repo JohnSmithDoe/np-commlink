@@ -103,6 +103,28 @@ describe('officeTimeReducer', () => {
 
       expect(state.dashboardItems).not.toContain('retired-card');
     });
+
+    it('leaves the reminder off for a document persisted before it existed', () => {
+      const { reminder: _dropped, ...withoutReminder } = persistedWithCards([
+        'date',
+      ]);
+
+      const state = officeTimeReducer(
+        initialOfficeTime,
+        OfficeTimeActions.loaded(withoutReminder as OfficeTimeStateStorage)
+      );
+
+      expect(state.reminder).toEqual(initialOfficeTime.reminder);
+      expect(state.reminder.enabled).toBe(false);
+    });
+  });
+
+  it('stores the reminder the user just set', () => {
+    const state = officeTimeReducer(
+      initialOfficeTime,
+      OfficeTimeActions.setReminder({ enabled: true, hour: 8, minute: 45 })
+    );
+    expect(state.reminder).toEqual({ enabled: true, hour: 8, minute: 45 });
   });
 
   it('resets data while preserving holidays', () => {

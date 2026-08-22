@@ -28,6 +28,7 @@ export function mockOfficeTimeState(
       showWordclockCard: false,
     },
     dashboardItems: [],
+    reminder: { enabled: false, hour: 9, minute: 0 },
     ...overrides,
   };
 }

@@ -46,6 +46,12 @@ type DashboardSettings = {
 
 export type DashboardSettingsType = keyof DashboardSettings;
 
+export type OfficeReminder = {
+  enabled: boolean;
+  hour: number;
+  minute: number;
+};
+
 export const DASHBOARD_SETTING_LABEL_KEYS: Record<
   DashboardSettingsType,
   Marker
@@ -117,6 +123,7 @@ export interface OfficeTimeState {
   freedays: DayMap;
   dashboardSettings: DashboardSettings;
   dashboardItems: DashboardItemType[];
+  reminder: OfficeReminder;
 }
 
 export type OfficeTimeStateStorage = Omit<

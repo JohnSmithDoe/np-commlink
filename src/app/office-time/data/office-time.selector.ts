@@ -13,6 +13,11 @@ export const selectDashboardSettings = createSelector(
   (state) => state.dashboardSettings
 );
 
+export const selectOfficeReminder = createSelector(
+  selectOfficeTimeState,
+  (state) => state.reminder
+);
+
 export const selectDashboardItems = createSelector(
   selectOfficeTimeState,
   (state) => state.dashboardItems

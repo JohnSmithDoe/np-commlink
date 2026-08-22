@@ -9,9 +9,11 @@ import {
   IonAlert,
   IonButton,
   IonContent,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
+  IonNote,
   IonRange,
   IonToggle,
   ToggleChangeEventDetail,
@@ -19,6 +21,7 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { padClock } from '../../../@shared/util/formatting/date-format.utils';
 import { OfficeTimeFacade } from '../../data';
 import {
   DASHBOARD_SETTING_LABEL_KEYS,
@@ -37,6 +40,8 @@ import { settingsOutline } from 'ionicons/icons';
     IonContent,
     IonList,
     IonItem,
+    IonInput,
+    IonNote,
     IonRange,
     IonToggle,
     IonLabel,
@@ -83,7 +88,30 @@ export class OfficeTimeSettingsPage {
 
   readonly targetOfficeDaysPerWeek = this.#facade.targetOfficeDaysPerWeek;
 
+  readonly reminder = this.#facade.reminder;
+  readonly reminderTime = computed(() => {
+    const { hour, minute } = this.reminder();
+    return `${padClock(hour)}:${padClock(minute)}`;
+  });
+
   readonly pinFormatter = (value: number) => `${value}`;
+
+  toggleReminder(enabled: boolean) {
+    this.#facade.setReminder({ ...this.reminder(), enabled });
+  }
+
+  setReminderTime(value: string | number | null | undefined) {
+    if (typeof value !== 'string') return;
+    const [hour, minute] = value.split(':').map(Number);
+    if (
+      hour == null ||
+      minute == null ||
+      Number.isNaN(hour) ||
+      Number.isNaN(minute)
+    )
+      return;
+    this.#facade.setReminder({ ...this.reminder(), hour, minute });
+  }
 
   changeDashboardSettings($event: CustomEvent<ToggleChangeEventDetail>) {
     this.#facade.saveDashboardSettings(

@@ -11,7 +11,7 @@
     <ion-list>
       <ion-item>
         <ion-range
-          labelPlacement="start"
+          labelPlacement="stacked"
           [label]="
             'office-time.page.settings.targetOfficeDaysPerWeek' | translate
           "
@@ -24,6 +24,30 @@
           [value]="targetDays"
           (ionChange)="changeTargetOfficeDaysPerWeek($any($event))"
         />
+      </ion-item>
+      <ion-item>
+        <ion-toggle
+          [checked]="reminder().enabled"
+          (ionChange)="toggleReminder($event.detail.checked)"
+          data-testid="office-reminder-toggle"
+        >
+          {{ 'office-time.reminder.label' | translate }}
+        </ion-toggle>
+      </ion-item>
+      @if (reminder().enabled) {
+        <ion-item>
+          <ion-input
+            type="time"
+            labelPlacement="stacked"
+            [label]="'office-time.reminder.time' | translate"
+            [value]="reminderTime()"
+            (ionChange)="setReminderTime($event.detail.value)"
+            data-testid="office-reminder-time"
+          />
+        </ion-item>
+      }
+      <ion-item>
+        <ion-note>{{ 'office-time.reminder.hint' | translate }}</ion-note>
       </ion-item>
       @for (setting of settings; track setting.key) {
         <ion-item>

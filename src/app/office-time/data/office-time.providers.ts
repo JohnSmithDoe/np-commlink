@@ -3,6 +3,7 @@ import { pickMetrics } from '../../@shared/data/persisted-states/persisted-slice
 import { OfficeTimeActions } from './office-time.actions';
 import { officeTimeReducer } from './office-time.reducer';
 import { OfficeTimeEffects } from './office-time.effects';
+import { OfficeTimeReminderEffects } from './office-time-reminder.effects';
 import {
   OFFICE_TIME_STATE_KEY,
   selectOfficeTimeState,
@@ -21,5 +22,5 @@ export const officeTimeContext = providePersistedContext({
       metrics: pickMetrics('officedays', 'percentage'),
     },
   ],
-  effects: [OfficeTimeEffects],
+  effects: [OfficeTimeEffects, OfficeTimeReminderEffects],
 });

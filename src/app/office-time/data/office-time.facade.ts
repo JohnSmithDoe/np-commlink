@@ -1,6 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { DashboardSettingsType } from '../model/office-time.types';
+import {
+  DashboardSettingsType,
+  OfficeReminder,
+} from '../model/office-time.types';
 import { OfficeTimeActions } from './office-time.actions';
 import {
   selectDashboardItems,
@@ -10,6 +13,7 @@ import {
   selectHolidays,
   selectOfficedayKeys,
   selectOfficedays,
+  selectOfficeReminder,
   selectTargetOfficeDaysPerWeek,
 } from './office-time.selector';
 import { selectStatsKeys } from './office-time-stats.selector';
@@ -36,6 +40,7 @@ export class OfficeTimeFacade {
   readonly targetOfficeDaysPerWeek = this.#store.selectSignal(
     selectTargetOfficeDaysPerWeek
   );
+  readonly reminder = this.#store.selectSignal(selectOfficeReminder);
   readonly #today = signal(dayjsToday());
   readonly todayIsOfficeDay = computed(() =>
     isOfficeDay(this.#today(), this.#officedays())
@@ -83,6 +88,10 @@ export class OfficeTimeFacade {
 
   saveDashboardSettings(key: DashboardSettingsType, active: boolean): void {
     this.#store.dispatch(OfficeTimeActions.saveDashboardSettings(key, active));
+  }
+
+  setReminder(reminder: OfficeReminder): void {
+    this.#store.dispatch(OfficeTimeActions.setReminder(reminder));
   }
 
   saveTargetOfficeDaysPerWeek(daysPerWeek: number): void {

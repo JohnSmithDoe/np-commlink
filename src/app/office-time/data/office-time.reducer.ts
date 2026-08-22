@@ -45,6 +45,7 @@ export const initialOfficeTime: OfficeTimeState = {
     'stats-week',
     'holidays',
   ],
+  reminder: { enabled: false, hour: 9, minute: 0 },
 };
 
 const withKnownDashboardItems = (
@@ -111,6 +112,10 @@ export const officeTimeReducer = createReducer(
       dashboardSettings: { ...state.dashboardSettings, [key]: active },
     })
   ),
+  on(OfficeTimeActions.setReminder, (state, { reminder }): OfficeTimeState => ({
+    ...state,
+    reminder,
+  })),
   on(OfficeTimeActions.loaded, (state, { officeTime }): OfficeTimeState => {
     if (!officeTime) return state;
     return {
@@ -120,6 +125,7 @@ export const officeTimeReducer = createReducer(
         ...initialOfficeTime.dashboardSettings,
         ...officeTime.dashboardSettings,
       },
+      reminder: { ...initialOfficeTime.reminder, ...officeTime.reminder },
       dashboardItems: withKnownDashboardItems(officeTime.dashboardItems),
       ...deserializedDayCollections(officeTime),
     };

@@ -3,6 +3,7 @@ import { Dayjs } from 'dayjs';
 import {
   DashboardSettingsType,
   HolidayMap,
+  OfficeReminder,
   OfficeTimeStateStorage,
 } from '../model/office-time.types';
 
@@ -28,6 +29,7 @@ export const OfficeTimeActions = createActionGroup({
       key,
       active,
     }),
+    setReminder: (reminder: OfficeReminder) => ({ reminder }),
     resetData: emptyProps(),
   },
 });
