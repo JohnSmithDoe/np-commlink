@@ -69,13 +69,14 @@ second app that cannot reach the first one's data.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Two handbook pages carry stale screenshots, and they say so themselves.** `credstick-import` (the
-  rules list lost its in-content add button and its section header; the swipe reveals a text delete
-  now) and `soykaf` (the recipe list gained a searchbar and a sort row). Both page JSONs carry
-  `"shotsStale": true`, which paints a warning above the article, so a reader is told rather than
-  misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
-  flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and
-  no gate can see it — **whoever changes a screen sets it on the pages that show that screen.**
+- **Three handbook pages carry stale screenshots, and they say so themselves.** `credstick-import`
+  (the rules list lost its in-content add button and its section header; the swipe reveals a text
+  delete now), `soykaf` (the recipe list gained a searchbar and a sort row) and `start` (the deck
+  header gained the arrange toggle). All three page JSONs carry `"shotsStale": true`, which paints a
+  warning above the article, so a reader is told rather than misled. Clearing it is a **release**
+  step: re-run `playwright.handbook.config.ts`, then drop the flag. [CLAUDE.md](../CLAUDE.md) forbids
+  an agent regenerating them, so the flag is set by hand and no gate can see it — **whoever changes a
+  screen sets it on the pages that show that screen.**
 
 ## Waiting on upstream
 
@@ -93,63 +94,22 @@ second app that cannot reach the first one's data.
 
 ## Deferred on a decision, not on effort
 
-- **The cascade half of the destructive-action policy.** The row half is settled
-  ([decisions.md](./decisions.md)). Left: a category delete strips three reducers, tracking's _Reset all_
-  discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what the
-  user was not looking at. Cash's `deleteConfirmAlert` is the one row-level confirm still standing.
 - **Which lists opt into undo.** The mechanism is built — `ToastMessage` carries `action`, `durationMs`
   and `group`, and `@shared/data/undo/` holds a ten-deep stack the shared toast effect offers at 5 s. Only
   shopping, storage and products pass `undoableDelete`; tasks, recipes, categories, tracking and
-  trackplay's four lists delete silently. Two gaps:
-  - **Trackplay is not on the stack** — `restoreSnapshot` writes the pre-delete `players`, `games` and
-    `gameTypes` arrays back wholesale, so delete → add player → undo loses the new player. Per-entity
-    restore actions would fix it and let trackplay join. Nothing is blocked: delete followed straight by
-    undo is correct today.
-  - **The stack has no persistent consumer** — only the toast pops it, so entries below the top are
-    unreachable until a toolbar undo button exists, which also retires the
-    `a11y-no-actionable-toast-button` suppression for both callers at once.
-- **The IBAN on an account is compared, never validated.** It is normalised — spaces stripped, upper-cased
-  — matched against the statement's, and an empty one adopts what it reads, so the common path never needs
-  a keyboard at all. A hand-typed typo is the gap: it refuses every import as `wrong-account`, and the
-  toast names the IBAN the **file** carries, which reads as the file being wrong. A mod-97 checksum is ten
-  lines; what defers it is whether a wrong-but-well-formed IBAN earns a second error state, since the
-  checksum cannot catch that one either.
-- **A re-import is not idempotent in one remaining way, inherent to keying off statement content.**
-  Nothing writes a tombstone, so deleting an imported row and re-importing brings it back. The other half
-  is handled: a row carries its derived key as well as the bank's, so a `PDNG` entry arriving again under
-  the `AcctSvcrRef` it gained when it booked confirms the stored pending row in place (`plan-import.ts`).
+  trackplay's four lists delete silently. **The stack has no persistent consumer** — only the toast pops
+  it, so entries below the top are unreachable until a toolbar undo button exists, which also retires the
+  `a11y-no-actionable-toast-button` suppression for both callers at once. Trackplay's own half is
+  scheduled ([next-version.md](./next-version.md)).
+- **A transaction is not deletable, which is how the re-import stays idempotent.** Keying off statement
+  content means nothing can distinguish "deleted on purpose" from "not imported yet", so a delete plus a
+  re-import brought the row back — and the alternative was a tombstone store keyed the same way the rows
+  are. Removing the affordance removes the question: the correction path for a wrong row is the edit
+  dialog, and a manual spend is edited the same way. The other half was already handled: a row carries
+  its derived key as well as the bank's, so a `PDNG` entry arriving again under the `AcctSvcrRef` it
+  gained when it booked confirms the stored pending row in place (`plan-import.ts`).
 - **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
   lists, recipes, cash, categories and trackplay create/edit are silent.
-- **Reading the phone's own payments is parked, and the ceiling is the platform's, not the effort.** No
-  Android API exposes Google Wallet or tap-to-pay history to a third-party app; the Google Pay APIs take
-  payments, they do not report them. The single hook that exists is `NotificationListenerService` — read
-  the bank's and Wallet's own push notifications, parse merchant and amount. It fits the model unusually
-  well: a captured spend is `source: 'manual', status: 'pending'`, which the next camt import reconciles
-  through machinery that already ships. What parks it: it is a native plugin nobody maintains
-  (`capacitor-notificationlistener`'s own author says it is old and probably broken on current Android), so
-  it is a plugin to own; the parsing is per-bank text that breaks when a bank rewords a push; and it is
-  Android-only, inert on the PWA. Proper bank access is a separate wall — PSD2 needs an AISP licence plus
-  an eIDAS certificate, or an aggregator that holds a client secret on a server, and FinTS needs a product
-  registration and a socket client. All three end at a backend this app does not have.
-- **Transfers between own accounts are not detected on import, and the report pays for it.** `isTransfer`
-  is set only by the transfer modal, so importing both accounts' statements books one internal move as
-  spend on one side and income on the other, inflating every figure in the report and the burn-down.
-  Detection is cheap and shaped like `findReconciliationCandidates` — opposite amount, ±3 days, a
-  different account — offered as pairs to link in the import preview. Parked on the owner's call, not on
-  difficulty.
-- **The app is not a share target, and files are why.** A manifest-only declaration is wrong for
-  files: a `share_target` carrying one must be `method: "POST"`, `enctype: "multipart/form-data"`, and the
-  POST has to be intercepted in the service worker — which means wrapping `ngsw-worker.js` in an
-  `importScripts` shim and registering that instead, since ngsw exposes no `fetch` hook. It also arrives
-  with no account context, so the receiving flow needs an account chooser before the import preview. Two
-  hundred lines, a registration path that can brick a PWA install, and nothing Playwright can drive —
-  against roughly two taps saved over the file input the account page already has.
-- **`@capacitor/haptics` has zero call sites — earmarked for v2.0.0.** Kept on plugin-hygiene grounds,
-  which says nothing about using it. On the APK it is the cheapest upgrade available to how the app
-  feels. What defers it is not effort: WHICH events earn a buzz is taste, and it wants a settings
-  switch, because there is nothing to turn off today. The web build cannot ride along either — the
-  plugin's web implementation THROWS `unavailable` where `navigator.vibrate` is absent rather than
-  no-opping, and Safari has none — so every call site needs a platform guard or a catch.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
   notifications, the burn-down, schedules and the uncategorized surface hand-roll inert copy; the
   tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
@@ -183,9 +143,6 @@ second app that cannot reach the first one's data.
   empty-defaulted, fulfilled by `commlink/data` as the longest catalog route prefixing the URL, with
   `icon` surviving as the override for pages with no deck entry. **What defers it is the consequence:** the
   header's glyph becomes route-derived, so adding a route to the catalog later silently changes a header.
-- **Reordering the deck from the grid.** `DeckFacade.reorder(ids)` already takes what an `ionReorderEnd`
-  produces. What stops it: a tile **is** a navigation link, so a drag competes with the tap that opens the
-  program — it needs a long-press-to-arm or an arrange toggle, a UX choice.
 - **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.
@@ -202,64 +159,18 @@ second app that cannot reach the first one's data.
 - **The PWA icons declare `"purpose": "maskable any"` at every size** — one bitmap for both wastes the
   maskable safe-zone padding in the `any` context. Worth splitting only if a real device's crop looks wrong.
 
-## SOYKAF recipe book — v2
-
-The constraint shaping all of it: the check is **presence-only** ("in storage" / "missing"), never "you are
-200 ml short" — storage counts packages while a recipe asks for a measure.
-
-- **Cook → subtract** ingredients from storage, missing ones pushed into `_shopping`. A product decision:
-  it makes cooking mutate stock.
-- **Base unit on `Product` + pack sizes.** Open **only if presence-only proves too weak**: making
-  `StorageItem.quantity` a base-unit amount pools distinct packs into one number and so **destroys per-pack
-  `bestBefore`**. Half the schema exists (`unit`, `packaging`, `packagingWeight?`, unread by the matcher).
-- **Recipe photos** have a place to live: `notes/data/note-image.store.ts` keys each picture on its own
-  and keeps the slice text-only. What is left is generalising it past notes — the store, its resolver and
-  its collector are note-shaped.
 
 ## Known cost, not yet paid
 
-Each of these is measured, understood and left standing on purpose — a shape question, a wording question,
-or a bill that only a phone with a few hundred rows actually presents.
+Measured, understood and left standing on purpose — a shape question, a wording question, or a bill that
+only a phone with a few hundred rows actually presents. The ones that got a date are in
+[next-version.md](./next-version.md).
 
-- **A picture is base64 in IndexedDB, and binary is the better answer on both platforms.** The store keys
-  each image on its own, but the value is a data URL: base64 costs a third on top of the bytes and
-  every read re-parses a string. A `Blob` in IndexedDB would drop both, rendered through
-  `URL.createObjectURL` — which makes revoking our problem, and only holds if the localforage driver really
-  is IndexedDB (a localStorage fallback cannot carry a Blob at all). On the APK the honest answer is a real
-  file: `@capacitor/filesystem` is not a dependency yet, so it is a plugin to add, sync and patch through
-  `android-postsync.sh`, plus `convertFileSrc` and a CSP that admits it. The PWA has no such option, so
-  either way the code carries two paths.
 - **The notes list decodes a full picture into a 48 px box.** `MAX_EDGE` is two screens, so every thumbnail
   costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
   canvas pass at import — the canvas is already there — would store a ~192 px `thumbUrl` beside the
   picture for a few KB. It is a persisted-shape change on the image document, which is free (`notes` is
   dev-only), and the list is also unwindowed, so the two belong in one pass.
-- **The pill intake log is never pruned.** `intakes` gains one entry per pill per day and nothing removes
-  it, so it is carried in every vitals write forever — five pills over two years is ~3 600 entries. Pruning
-  past ~90 days is a few lines, but `vitals` is a slice real users hold, so the shape change is a question
-  for Martin and not a cleanup.
-- **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new RegExp
-  per transaction and the amount threshold is re-parsed per transaction, then the whole matched set is
-  sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running top-five
-  and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes when the
-  preview updates, which is why it is not a silent cleanup.
-
-## Known duplication and shallow seams
-
-- **Import policy is split between a page and a modal.** The page reads files, plans and hands the modal
-  eight loose props; the modal then decides what counts as work and calls two facades. A `CashImportFacade`
-  owning `plan(parsed)` and `commit(preview)` would put one transaction in one place.
-- **Cash rules and schedules hand-roll add-or-update in their facades** while their action groups already
-  carry `addOrUpdateItem`. Wiring `createItemListEffects` for them is the fix and also brings
-  `syncSearchOnRename$` and the failure toast, so it changes behaviour and is a decision, not a tidy-up.
-- **`windowSize` is a hand-rolled render cap in the shared list page, with one caller.** Ionic ships
-  `ion-infinite-scroll` and the CDK ships virtual scroll; either would need no flag, no second items signal
-  and no reset rule. Also `searchable` is declared on a facade and `windowSize` on the component — two
-  opt-outs at two layers, where `sortable` settled on the facade.
-- **Three smaller repeats, all named and all cheap:** the route-scoped list selector trio exists twice
-  (readings, pills) and wants a factory beside `list.selector.ts`; the settings page renders the same
-  label + segment block three times; and `Chart.register(...registerables)` plus a near-identical options
-  object sits in three chart hosts, where `@shared/util/charts/` is already the shared home.
 
 ## Open review findings
 
