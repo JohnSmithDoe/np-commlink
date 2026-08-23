@@ -20,7 +20,12 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
-import { pageRoot, presentedDialog, waitForPersisted } from '../helpers';
+import {
+  addButton,
+  pageRoot,
+  presentedDialog,
+  waitForPersisted,
+} from '../helpers';
 
 const BURNDOWN = '/#/cash/burndown';
 const SCHEDULES = '/#/cash/schedules';
@@ -48,9 +53,7 @@ async function openSchedules(page: Page) {
 }
 
 async function createRent(page: Page) {
-  await schedulesPage(page)
-    .getByRole('button', { name: 'Festkosten hinzufügen' })
-    .click();
+  await addButton(schedulesPage(page)).click();
   const modal = presentedDialog(page, 'Neuen Eintrag anlegen');
 
   await modal.getByRole('textbox', { name: 'Name' }).fill('Miete');

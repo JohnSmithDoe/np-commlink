@@ -18,7 +18,6 @@ import {
   AlertController,
   IonButton,
   IonButtons,
-  IonContent,
   IonIcon,
   IonItem,
   IonItemOption,
@@ -32,8 +31,14 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
-import { addOutline, checkmarkDoneOutline, trashOutline } from 'ionicons/icons';
-import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import {
+  add,
+  checkmarkDoneOutline,
+  remove,
+  trashOutline,
+} from 'ionicons/icons';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 import { CashCategoriesFacade, CashSchedulesFacade } from '../../data';
 import { CashSchedule } from '../../model/schedule.types';
@@ -47,10 +52,9 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   styleUrls: ['./cash-schedules.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    PageHeaderComponent,
+    ListPageComponent,
     IonButton,
     IonButtons,
-    IonContent,
     IonIcon,
     IonItem,
     IonItemSliding,
@@ -64,6 +68,7 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
     MoneyEurPipe,
     LocalizedDatePipe,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: CashSchedulesFacade }],
 })
 export class CashSchedulesPage {
   readonly #facade = inject(CashSchedulesFacade);
@@ -71,7 +76,6 @@ export class CashSchedulesPage {
   readonly #alertCtrl = inject(AlertController);
   readonly #translate = inject(TranslateService);
 
-  readonly schedules = this.#facade.ordered;
   readonly commitment = this.#facade.commitment;
 
   readonly #categoryName = computed(() =>
@@ -83,7 +87,7 @@ export class CashSchedulesPage {
   );
 
   constructor() {
-    addIcons({ addOutline, checkmarkDoneOutline, trashOutline });
+    addIcons({ add, remove, checkmarkDoneOutline, trashOutline });
   }
 
   categoryName(schedule: CashSchedule): string {
@@ -98,10 +102,6 @@ export class CashSchedulesPage {
 
   confirmed(schedule: CashSchedule): boolean {
     return this.#facade.confirmed(schedule);
-  }
-
-  openNew(): void {
-    this.#facade.showCreateDialog();
   }
 
   openEdit(schedule: CashSchedule): void {

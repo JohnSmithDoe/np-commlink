@@ -1,14 +1,11 @@
 import { createSelector } from '@ngrx/store';
 import { SearchResult } from '../../../@shared/model/item-list.types';
-import {
-  filterAndSortItemList,
-  filterListBySearchQuery,
-} from '../../../@shared/util/item-lists/list.selector';
+import { filterListBySearchQuery } from '../../../@shared/util/item-lists/list.selector';
 import { CashSchedulesState } from '../../model/cash.types';
 import { CashSchedule } from '../../model/schedule.types';
 import { selectCashState } from '../cash.selector';
 
-const selectSchedulesState = createSelector(
+export const selectSchedulesState = createSelector(
   selectCashState,
   (state): CashSchedulesState => state.schedules
 );
@@ -18,14 +15,14 @@ export const selectScheduleItems = createSelector(
   (state): CashSchedule[] => state.items
 );
 
-const selectSchedulesSearchResult = createSelector(
+export const selectSchedulesSearchResult = createSelector(
   selectSchedulesState,
   (state): SearchResult<CashSchedule> | undefined =>
     filterListBySearchQuery(state)
 );
 
-export const selectSchedulesListItems = createSelector(
-  selectSchedulesState,
-  selectSchedulesSearchResult,
-  (state, result): CashSchedule[] => filterAndSortItemList(state, result)
+export const selectSchedulesByDueDate = createSelector(
+  selectScheduleItems,
+  (schedules): CashSchedule[] =>
+    schedules.toSorted((a, b) => a.nextDueISO.localeCompare(b.nextDueISO))
 );

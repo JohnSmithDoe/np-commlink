@@ -852,3 +852,26 @@ record why the exit was right while the shared list could not hold a drag handle
   `updateFilter` no longer trigger a save at all and `hydratedList` clears both, so only a chosen sort
   persists — optional, absent on every stored row, and absence reads as the ranking. Asked and
   answered; no rung.
+
+## The schedules page followed the rules page
+
+- **Same shape, one detail apart.** `CashSchedulesState` is an `ItemList<CashSchedule>`, its actions
+  come from `createItemListActionEvents`, and `selectSchedulesListItems` → `facade.listItems` was dead
+  in precisely the way rules' was: name-sorted by `filterAndSortItemList`'s fallback and read by
+  nobody, while the page rendered a `nextDueISO` order of its own. `selectSchedulesByDueDate` is that
+  order, and it is what `items` hands the shared list.
+- **The order is PINNED here and a sort MODE in the recipe book, and the difference is the toolbar.**
+  Pinning is only a one-way door when a toolbar exists to override it. Schedules declare
+  `hasToolbar: false`, so there is no door: due-date order is the only order, stated once in the
+  selector. Offering amount or name sorts later costs what recipes now demonstrates — a sort option
+  standing for "the default" — and nothing else.
+- **The summary block is `beforeList`, in two projected nodes.** `ng-content` projects every matching
+  node, so the strip-plus-breakdown `div` and the `ion-list-header` under it both carry `beforeList`
+  and land in order. That keeps the header out of the `div`'s inline padding, which would have
+  double-indented it.
+- **The row stays the page's own.** It carries a trailing amount and a mark-seen button, and
+  `app-list-item` has slots for neither — but `itemTemplate` never required `app-list-item`, so the
+  row moved across untouched, testids included. `cash-schedule-row` survives for exactly that reason:
+  it sits on a plain `ion-item`, where `no-testid-on-component-element` has no opinion.
+- **`cash.schedule.add` and `cash.schedules.empty` left with the chrome**, the same trade rules made:
+  the header carries the add, the shared empty state carries the copy.

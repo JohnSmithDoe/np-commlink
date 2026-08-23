@@ -226,9 +226,7 @@ async function createSchedule(
   value: string
 ) {
   const schedules = pageRoot(page, 'app-page-cash-schedules');
-  await schedules
-    .getByRole('button', { name: 'Festkosten hinzufügen' })
-    .click();
+  await addButton(schedules).click();
   const modal = createDialog(page);
   await expect(modal).toBeVisible();
   await nameInput(modal).fill(name);

@@ -1,7 +1,7 @@
 @use 'theme/cash';
 
-.cash-hint {
-  @include cash.hint(var(--space-3) var(--space-4));
+.cash-schedules__summary {
+  padding-inline: var(--space-4);
 }
 
 .cash-schedules__amount {

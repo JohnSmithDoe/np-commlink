@@ -11,7 +11,13 @@
  * IBANs are synthesized; no bank identifier here belongs to anyone.
  * ───────────────────────────────────────────────────────────────── */
 import { expect, Locator, Page, test } from '@playwright/test';
-import { CREATE_BUTTON, nameBox, pageRoot, presentedDialog } from '../helpers';
+import {
+  addButton,
+  CREATE_BUTTON,
+  nameBox,
+  pageRoot,
+  presentedDialog,
+} from '../helpers';
 import { openPage, shot } from './shot';
 
 const SAVE = /Anlegen|Übernehmen/;
@@ -221,9 +227,7 @@ test('burn-down and daily spending over a seeded month', async ({ page }) => {
   ];
 
   for (const cost of fixedCosts) {
-    await schedules
-      .getByRole('button', { name: 'Festkosten hinzufügen' })
-      .click();
+    await addButton(schedules).click();
     const dialog = presentedDialog(page, 'Neuen Eintrag anlegen');
     await nameBox(dialog).fill(cost.name);
     await dialog.locator('app-money-input input').fill(cost.amount);

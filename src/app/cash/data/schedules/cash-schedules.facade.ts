@@ -1,9 +1,10 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
+import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
 import {
@@ -26,16 +27,29 @@ import { selectAllTransactions } from '../cash.selector';
 import { CashSchedulesActions } from './cash-schedules.actions';
 import {
   selectScheduleItems,
-  selectSchedulesListItems,
+  selectSchedulesByDueDate,
+  selectSchedulesSearchResult,
+  selectSchedulesState,
 } from './cash-schedules.selector';
 
 @Injectable({ providedIn: 'root' })
-export class CashSchedulesFacade {
+export class CashSchedulesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
 
+  readonly state = this.#store.selectSignal(selectSchedulesState);
+  readonly items = this.#store.selectSignal(selectSchedulesByDueDate);
+  readonly searchResult = this.#store.selectSignal(selectSchedulesSearchResult);
+
+  readonly searchable = signal(false);
+  readonly hasToolbar = signal(false);
+
+  protected readonly commands = {
+    search: (term?: string) =>
+      this.#store.dispatch(CashSchedulesActions.updateSearch(term)),
+  };
+
   readonly allItems = this.#store.selectSignal(selectScheduleItems);
-  readonly listItems = this.#store.selectSignal(selectSchedulesListItems);
   readonly #transactions = this.#store.selectSignal(selectAllTransactions);
   readonly #todayISO = inject(TodayService).today;
 
@@ -44,10 +58,6 @@ export class CashSchedulesFacade {
     dueThisMonthCents: dueThisMonthCents(this.allItems(), this.#todayISO()),
     confirmedCents: confirmedThisMonthCents(this.allItems(), this.#todayISO()),
   }));
-
-  readonly ordered = computed(() =>
-    this.allItems().toSorted((a, b) => a.nextDueISO.localeCompare(b.nextDueISO))
-  );
 
   dueStatusOf(schedule: CashSchedule): ScheduleDueStatus {
     return dueStatus(schedule, this.#todayISO());
