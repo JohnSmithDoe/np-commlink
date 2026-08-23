@@ -57,6 +57,30 @@ and every exemption taken so far.
 
 ## Platform reach
 
+- **The EAN scan works, and identifies nothing.** This is the one entry here about polishing something
+  that already ships. `#showCreateProductFromScan` hands the code to `createProduct` as the **name**, so
+  a scan yields a product called `4006381333931` that you type over — and scanning the same tin next
+  month yields a second one. The fix is a `barcode?: string` on `Product`, which turns the scan into a
+  LOOKUP: a known code adds the existing product to the list it was scanned from, an unknown one opens
+  the create dialog with the code STORED rather than spelled as a name. The shape change is free by the
+  additive-and-optional rule — a missing key hydrates to initial state — so `household` having real
+  holders costs nothing here, and the rung question is answered by the shape rather than the roster.
+  Second half of the same fix: the button sits on storage and shopping only, while every scan lands in
+  products. That leaves the unknown code still needing its name typed once — which the entry below is
+  about, and which this one does not wait for: a stored barcode is worth having whether or not a
+  catalog ever names it.
+- **An offline EAN catalog is possible, and the only open question is what it weighs.** Open Food Facts
+  publishes the whole database as one gzipped CSV — **1.19 GiB, rebuilt daily**, with a daily delta feed
+  beside it so a refresh is not a re-pull. 211 columns, of which four matter (`code`, `product_name`,
+  `brands`, `quantity`) plus `countries_tags` to cut it to the German market, at roughly 40 bytes a kept
+  row. The shape is `emoji:build`'s: a committed artifact regenerated on demand, so the app makes no
+  network call and a stale copy can only miss recent products. **What is NOT measured is the subset
+  size**, and one obvious shortcut does not work — the dump is code-ordered, so its first chunk is the
+  `000`/`001` band and contains no German EAN (400–440) at all, while gzip's single stream has no random
+  access to sample the interior. Only a full download settles it, and that number decides whether this
+  ships to the PWA or stays an APK asset. Second gate before adopting: OFF is **ODbL**, which is
+  share-alike on a derived database — cheap to satisfy in an AGPL repo, but a real term, not a
+  formality.
 - **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
   using it. On the APK it is the cheapest upgrade available to how the app feels. What defers it is not
   effort: WHICH events earn a buzz is taste, and it wants a settings switch, because there is nothing to
