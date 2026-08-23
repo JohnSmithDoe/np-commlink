@@ -144,8 +144,12 @@ second app that cannot reach the first one's data.
   with no account context, so the receiving flow needs an account chooser before the import preview. Two
   hundred lines, a registration path that can brick a PWA install, and nothing Playwright can drive —
   against roughly two taps saved over the file input the account page already has.
-- **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
-  using it. On the APK it is the cheapest upgrade available to how the app feels.
+- **`@capacitor/haptics` has zero call sites — earmarked for v2.0.0.** Kept on plugin-hygiene grounds,
+  which says nothing about using it. On the APK it is the cheapest upgrade available to how the app
+  feels. What defers it is not effort: WHICH events earn a buzz is taste, and it wants a settings
+  switch, because there is nothing to turn off today. The web build cannot ride along either — the
+  plugin's web implementation THROWS `unavailable` where `navigator.vibrate` is absent rather than
+  no-opping, and Safari has none — so every call site needs a platform guard or a catch.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
   notifications, the burn-down, schedules and the uncategorized surface hand-roll inert copy; the
   tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
