@@ -24,6 +24,8 @@ const ProbeActions = createActionGroup({
     load: emptyProps(),
     loaded: (probe: ProbeState | null) => ({ probe }),
     addItem: (name: string) => ({ name }),
+    updateSearch: (searchQuery?: string) => ({ searchQuery }),
+    updateFilter: (filterBy?: string) => ({ filterBy }),
   },
 });
 
@@ -126,6 +128,35 @@ describe('providePersistedContext', () => {
     TestBed.inject(ReadBeforeWriteService).recordRead('probe');
 
     store.dispatch(ProbeActions.addItem('a'));
+
+    expect(database.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('writes on no view-only event, though the source form claims its prefix', () => {
+    const store = storeWith(probeContext());
+    TestBed.inject(ReadBeforeWriteService).recordRead('probe');
+
+    store.dispatch(ProbeActions.updateSearch('mil'));
+    store.dispatch(ProbeActions.updateFilter('dairy'));
+    expect(database.save).not.toHaveBeenCalled();
+
+    store.dispatch(ProbeActions.addItem('milk'));
+    expect(database.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('writes on one anyway where the descriptor names it outright', () => {
+    const store = storeWith(
+      providePersistedContext({
+        key: 'probe',
+        reducer: probeReducer,
+        lifecycle: ProbeActions,
+        select: selectProbe,
+        save: { on: [ProbeActions.updateSearch] },
+      })
+    );
+    TestBed.inject(ReadBeforeWriteService).recordRead('probe');
+
+    store.dispatch(ProbeActions.updateSearch('mil'));
 
     expect(database.save).toHaveBeenCalledTimes(1);
   });

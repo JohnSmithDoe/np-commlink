@@ -9,6 +9,16 @@
  *
  * `concatMap` rather than `tap`: a rejected promise inside `tap` is
  * unobservable, and two saves of one key racing could land out of order.
+ *
+ * `sources` claims a whole domain as mutations, so the shared list events
+ * that change only the VIEW are subtracted from it: a search term would
+ * otherwise serialise the entire slice per debounce, and a filter is
+ * re-dispatched from the route on every entry regardless of what was
+ * stored. `updateSort` is NOT among them — two slices list it under `on:`
+ * deliberately, and a sort survives a reload. Subtracting rather than
+ * enumerating is deliberate too: a mutation forgotten out of an `on:` list
+ * stops persisting silently, where an event missing from this set costs a
+ * redundant write. `on:` remains the escape hatch, and the forms compose.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject } from '@angular/core';
@@ -57,8 +67,11 @@ export type TelemetrySpec<S> = {
   metrics: (value: S) => DashboardTelemetry['metrics'];
 };
 
-const isHydrationLifecycle = (type: string): boolean =>
-  /\] (load|loaded)$/.test(type);
+const HYDRATION_EVENT = /\] (load|loaded)$/;
+const VIEW_ONLY_EVENT = /\] (updateSearch|updateFilter)$/;
+
+const persistsNothing = (type: string): boolean =>
+  HYDRATION_EVENT.test(type) || VIEW_ONLY_EVENT.test(type);
 
 export const createLoadSliceEffect = <T>(
   lifecycle: SliceLifecycle<T>,
@@ -106,7 +119,7 @@ export const createSaveSliceEffect = <T>(
   );
   const matchesSource = (type: string): boolean =>
     (trigger.sources ?? []).some((source) => type.startsWith(source)) &&
-    !isHydrationLifecycle(type);
+    !persistsNothing(type);
 
   const isMutation = (action: Action): boolean =>
     triggerTypes.has(action.type) || matchesSource(action.type);
