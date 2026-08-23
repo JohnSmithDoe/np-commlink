@@ -1,3 +1,4 @@
+import { RECIPE_RANK_SORT } from '../../model/recipe.types';
 import { HouseholdActions } from '../household.actions';
 import { ProductsActions } from '../products/products.actions';
 import { RecipesActions } from './recipes.actions';
@@ -71,6 +72,49 @@ describe('recipesReducer', () => {
 
   it('keeps the current state when there is nothing persisted', () => {
     const state = recipesReducer(initialState, HouseholdActions.loaded(null));
-    expect(state).toBe(initialState);
+    expect(state).toEqual(initialState);
+  });
+
+  it('drops a stale query and filter on the way in', () => {
+    const persisted = mockRecipesState({
+      items: [mockRecipe()],
+      searchQuery: 'stale',
+      filterBy: 'Baking',
+    });
+
+    const state = recipesReducer(
+      initialState,
+      HouseholdActions.loaded(mockHouseholdState({ recipes: persisted }))
+    );
+
+    expect(state.searchQuery).toBeUndefined();
+    expect(state.filterBy).toBeUndefined();
+    expect(state.items).toEqual(persisted.items);
+  });
+
+  it('narrows to the search query and keeps the ranking underneath', () => {
+    const searched = recipesReducer(
+      initialState,
+      RecipesActions.updateSearch('curry')
+    );
+
+    expect(searched.searchQuery).toBe('curry');
+    expect(searched.sort).toBeUndefined();
+  });
+
+  it('records a sort mode the ranking is reachable from', () => {
+    const sorted = recipesReducer(
+      initialState,
+      RecipesActions.updateSort('prepMinutes', 'toggle')
+    );
+
+    expect(sorted.sort).toEqual({
+      sortBy: 'prepMinutes',
+      sortDirection: 'asc',
+    });
+    expect(
+      recipesReducer(sorted, RecipesActions.updateSort(RECIPE_RANK_SORT)).sort
+        ?.sortBy
+    ).toBe(RECIPE_RANK_SORT);
   });
 });

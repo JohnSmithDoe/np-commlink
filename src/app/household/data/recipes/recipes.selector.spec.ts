@@ -7,10 +7,12 @@ import {
   mockStorageItem,
   mockStorageState,
 } from '../../testing/household.test-data';
+import { RECIPE_RANK_SORT } from '../../model/recipe.types';
 import {
   selectRecipeIngredientCatalog,
   selectRecipeMatches,
   selectRecipes,
+  selectRecipesListItems,
 } from './recipes.selector';
 
 describe('recipes.selector', () => {
@@ -74,5 +76,55 @@ describe('recipes.selector', () => {
   it('selects the recipes slice items', () => {
     const state = mockRecipesState({ items: [mockRecipe()] });
     expect(selectRecipes.projector(state)).toEqual(state.items);
+  });
+
+  describe('the rendered order', () => {
+    const alpha = mockRecipe({ id: 'r-alpha', name: 'Alpha', prepMinutes: 90 });
+    const beta = mockRecipe({ id: 'r-beta', name: 'Beta', prepMinutes: 10 });
+    const rankedMatches = [
+      { recipe: beta, missing: [] },
+      { recipe: alpha, missing: ['Flour'] },
+    ];
+
+    const ids = (
+      state: ReturnType<typeof mockRecipesState>,
+      result?: Parameters<typeof selectRecipesListItems.projector>[1]
+    ) =>
+      selectRecipesListItems
+        .projector(state, result, rankedMatches)
+        .map(({ id }) => id);
+
+    it('ranks by cookability while no sort is chosen', () => {
+      expect(ids(mockRecipesState({ items: [alpha, beta] }))).toEqual([
+        'r-beta',
+        'r-alpha',
+      ]);
+    });
+
+    it('reverses the ranking rather than dropping it', () => {
+      const state = mockRecipesState({
+        items: [alpha, beta],
+        sort: { sortBy: RECIPE_RANK_SORT, sortDirection: 'desc' },
+      });
+
+      expect(ids(state)).toEqual(['r-alpha', 'r-beta']);
+    });
+
+    it('hands a field sort to the shared comparator', () => {
+      const state = mockRecipesState({
+        items: [alpha, beta],
+        sort: { sortBy: 'prepMinutes', sortDirection: 'asc' },
+      });
+
+      expect(ids(state)).toEqual(['r-beta', 'r-alpha']);
+    });
+
+    it('narrows the ranking to the search hits, keeping their order', () => {
+      const state = mockRecipesState({ items: [alpha, beta] });
+
+      expect(ids(state, { searchTerm: 'alpha', listItems: [alpha] })).toEqual([
+        'r-alpha',
+      ]);
+    });
   });
 });

@@ -4,6 +4,8 @@ import { ItemUnit } from './household-list.types';
 
 export const RECIPES_LIST_ID = '_recipes';
 
+export const RECIPE_RANK_SORT = 'cookable';
+
 export interface RecipeIngredient {
   id: string;
   productId: string;

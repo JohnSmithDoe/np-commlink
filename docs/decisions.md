@@ -827,3 +827,28 @@ record why the exit was right while the shared list could not hold a drag handle
   list's title, search or comparator to read. Its rows are toggles rather than navigable items, its
   state is `visibleEntries` plus an order rather than an `ItemList`, and the arrangement is the whole
   content. Migrating it would mean inventing a stored `name` the theme owns instead.
+
+## The recipe book is RANKED, and the ranking is a sort mode
+
+- **`RecipesActions` was the last hand-rolled list action group and now comes from
+  `createItemListActionEvents`.** It carried only add/remove/update, so `RecipesState` was typed as an
+  `ItemList<Recipe>` whose `searchQuery` and `sort` no writer ever set. The reducer handles all three
+  view events the way `products` does, `hydratedList` clears the transient pair on the way in, and the
+  page is a `ListPageComponent`.
+- **`rankRecipesByMissing` is a sort MODE, not a pinned order.** It answers "what can I cook right
+  now", which no field on a `Recipe` can, so `itemComparator` cannot express it — but pinning it in
+  the selector (the ledger's answer, `sortable: false`) would have made the toolbar's first tap a
+  one-way door out of the page's whole point. `cookable` is therefore a `sortOptions` entry, it is
+  what an absent `sort` means, and `desc` reverses it rather than discarding it. `prepMinutes` and
+  `servings` are real fields and ride the shared comparator for free.
+- **Search narrows the ranking instead of re-ordering it.** `selectRecipesListItems` filters the
+  ranked matches by the shared `SearchResult`'s ids, so a query never silently re-sorts the list it
+  is narrowing.
+- **A row reads `missing` from a Map, not from the item.** `selectRecipeMatches` returns
+  `{recipe, missing}` and `ItemListComponent` tracks `item.id`, so the wrapper cannot be the item.
+  The page keys the matches by recipe id and looks each row up; `missing` stays derived from products
+  and storage rather than being flattened onto a stored `Recipe`.
+- **`sort` is the one field this adds to a stored household document.** `updateSearch` and
+  `updateFilter` no longer trigger a save at all and `hydratedList` clears both, so only a chosen sort
+  persists — optional, absent on every stored row, and absence reads as the ranking. Asked and
+  answered; no rung.

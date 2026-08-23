@@ -1,20 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
-  IonContent,
-  IonItem,
-  IonItemOption,
-  IonItemOptions,
-  IonItemSliding,
-  IonLabel,
-  IonNote,
-} from '@ionic/angular/standalone';
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
+import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { restaurantOutline } from 'ionicons/icons';
+import { add, remove, restaurantOutline } from 'ionicons/icons';
 import { Recipe } from '../../model/recipe.types';
 import { RecipesFacade } from '../../data';
-import { ItemListEmptyComponent } from '../../../@shared/ui/base-item/item-list-empty/item-list-empty.component';
-import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
+import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
+import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { EditRecipeDialogComponent } from '../edit-recipe-dialog/edit-recipe-dialog.component';
 
 @Component({
@@ -23,24 +21,30 @@ import { EditRecipeDialogComponent } from '../edit-recipe-dialog/edit-recipe-dia
   styleUrl: './recipes.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonContent,
-    IonItem,
-    IonItemOption,
-    IonItemOptions,
-    IonItemSliding,
-    IonLabel,
     IonNote,
     TranslatePipe,
-    ItemListEmptyComponent,
-    PageHeaderComponent,
+    ListPageComponent,
+    ListItemComponent,
     EditRecipeDialogComponent,
   ],
+  providers: [{ provide: LIST_FACADE, useExisting: RecipesFacade }],
 })
 export class RecipesPage {
   readonly facade = inject(RecipesFacade);
 
+  readonly #missingByRecipe = computed(
+    () =>
+      new Map(
+        this.facade.matches().map((match) => [match.recipe.id, match.missing])
+      )
+  );
+
   constructor() {
-    addIcons({ restaurantOutline });
+    addIcons({ add, remove, restaurantOutline });
+  }
+
+  missing(recipe: Recipe): string[] {
+    return this.#missingByRecipe().get(recipe.id) ?? [];
   }
 
   edit(recipe: Recipe) {

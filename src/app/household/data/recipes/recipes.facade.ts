@@ -1,19 +1,46 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
-import { Recipe, RECIPES_LIST_ID } from '../../model/recipe.types';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
+import { ItemListSortOption } from '../../../@shared/model/item-list.types';
+import {
+  Recipe,
+  RECIPE_RANK_SORT,
+  RECIPES_LIST_ID,
+} from '../../model/recipe.types';
 import { createRecipe } from '../../util/household.factory';
 import { RecipesActions } from './recipes.actions';
 import {
   selectRecipeIngredientCatalog,
   selectRecipeMatches,
   selectRecipes,
+  selectRecipesListItems,
+  selectRecipesSearchResult,
+  selectRecipesState,
 } from './recipes.selector';
 
+const SORT_OPTIONS: readonly ItemListSortOption[] = [
+  {
+    type: RECIPE_RANK_SORT,
+    labelKey: marker('household.list-toolbar.cookable'),
+  },
+  { type: 'prepMinutes', labelKey: marker('household.list-toolbar.time') },
+  { type: 'servings', labelKey: marker('household.list-toolbar.servings') },
+];
+
 @Injectable({ providedIn: 'root' })
-export class RecipesFacade {
+export class RecipesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+
+  readonly state = this.#store.selectSignal(selectRecipesState);
+  readonly items = this.#store.selectSignal(selectRecipesListItems);
+  readonly searchResult = this.#store.selectSignal(selectRecipesSearchResult);
+  readonly sortOptions = signal(SORT_OPTIONS);
 
   readonly matches = this.#store.selectSignal(selectRecipeMatches);
   readonly allItems = this.#store.selectSignal(selectRecipes);
@@ -25,9 +52,14 @@ export class RecipesFacade {
     () => this.matches().filter((match) => match.missing.length === 0).length
   );
 
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: RecipesActions.updateSearch,
+    updateSort: RecipesActions.updateSort,
+  });
+
   showCreateDialog(): void {
     this.#dialogs.open({
-      item: createRecipe(''),
+      item: createRecipe(this.state()?.searchQuery ?? ''),
       listId: RECIPES_LIST_ID,
       editMode: 'create',
     });

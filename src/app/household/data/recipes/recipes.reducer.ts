@@ -2,8 +2,11 @@ import { createReducer, on } from '@ngrx/store';
 import { RECIPES_LIST_ID, RecipesState } from '../../model/recipe.types';
 import {
   addListItem,
+  hydratedList,
   removeListItem,
   updateListItem,
+  updateListSearch,
+  updateListSort,
 } from '../../../@shared/util/item-lists/list.utils';
 import { withoutProduct } from '../../util/recipe-match.utils';
 import { HouseholdActions } from '../household.actions';
@@ -29,7 +32,10 @@ export const recipesReducer = createReducer(
   on(RecipesActions.addItem, (state, { item }): RecipesState => addListItem(state, item)),
   on(RecipesActions.removeItem, (state, { item }): RecipesState => removeListItem(state, item)),
   on(RecipesActions.updateItem, (state, { item }): RecipesState => updateListItem(state, item)),
+  on(RecipesActions.updateSearch, (state, { searchQuery }): RecipesState => updateListSearch(state, searchQuery)),
+  on(RecipesActions.updateFilter, (state, { filterBy }): RecipesState => ({ ...state, filterBy })),
+  on(RecipesActions.updateSort, (state, { sortBy, sortDirection }): RecipesState => updateListSort(state, sortBy, sortDirection)),
   on(ProductsActions.removeItem, (state, { item }): RecipesState => dropProductFromRecipes(state, item.id)),
 
-  on(HouseholdActions.loaded, (state, { data }): RecipesState => data?.recipes ?? state)
+  on(HouseholdActions.loaded, (state, { data }): RecipesState => hydratedList(data?.recipes ?? state))
 );
