@@ -56,6 +56,12 @@ const MODE_LABEL_KEYS: Record<Mode, Marker> = {
   dark: marker('settings.mode.dark'),
 };
 
+const SEGMENT_LABEL_KEYS = {
+  skin: marker('settings.theme.title'),
+  mode: marker('settings.mode.title'),
+  language: marker('settings.language.title'),
+} satisfies Record<string, Marker>;
+
 const LANGUAGE_LABELS: Record<Language, string> = {
   de: 'Deutsch',
   en: 'English',
@@ -109,6 +115,7 @@ export class SettingsPage {
 
   readonly #settings = inject(SettingsFacade);
 
+  readonly segmentLabelKeys = SEGMENT_LABEL_KEYS;
   readonly skin = this.#settings.skin;
   readonly skins = SKINS;
   readonly skinLabelKeys = SKIN_LABEL_KEYS;

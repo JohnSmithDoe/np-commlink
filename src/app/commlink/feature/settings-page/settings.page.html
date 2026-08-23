@@ -7,7 +7,7 @@
 <ion-content>
   <ion-list>
     <app-settings-segment
-      labelKey="settings.theme.title"
+      [labelKey]="segmentLabelKeys.skin"
       labelId="theme-picker-label"
       [value]="skin()"
       (valueChange)="changeSkin($event)"
@@ -20,7 +20,7 @@
     </app-settings-segment>
 
     <app-settings-segment
-      labelKey="settings.mode.title"
+      [labelKey]="segmentLabelKeys.mode"
       labelId="mode-picker-label"
       [value]="mode()"
       (valueChange)="changeMode($event)"
@@ -33,7 +33,7 @@
     </app-settings-segment>
 
     <app-settings-segment
-      labelKey="settings.language.title"
+      [labelKey]="segmentLabelKeys.language"
       labelId="language-picker-label"
       [value]="language()"
       (valueChange)="changeLanguage($event)"
