@@ -4,6 +4,7 @@
   "plain": "Auswertungen",
   "route": "/cash/report",
   "summary": "Drei Seiten über demselben Kontobuch — Tagesbudget, Ausgaben und Auswertung — und wozu jede taugt.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

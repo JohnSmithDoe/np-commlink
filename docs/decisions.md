@@ -185,7 +185,9 @@ it was measured against.
   every `ion-button[size='small']` at it. `size="small"` therefore means small TYPE, never a small
   target, which is why banning the attribute was the wrong gate: it would have left the default size
   under 44 px and read as solved. A rem keeps the floor growing with a raised root font; the emoji
-  picker's grid track reads the same token rather than its own literal.
+  picker's grid track and the weekday picker's `min-width` read the same token rather than their own
+  literals. **One opt-out**: the chip's remove X, inline inside a 32 px chip whose own row is the target
+  — flooring it inflates every form that shows a category.
 - **axe-core evaluated, not adopted** — it would cover R1/R2/R3 and add contrast classes no rule here
   touches, but it samples what a run happens to render where ESLint reads every template. Different axes,
   not substitutes — and it structurally cannot see the imperative overlay path, which is why neither rule

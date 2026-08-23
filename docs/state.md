@@ -85,14 +85,16 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Three handbook pages carry stale screenshots, and they say so themselves.** `credstick-import`
-  (the rules list lost its in-content add button and its section header; the swipe reveals a text
-  delete now), `soykaf` (the recipe list gained a searchbar and a sort row) and `start` (the deck
-  header gained the arrange toggle). All three page JSONs carry `"shotsStale": true`, which paints a
-  warning above the article, so a reader is told rather than misled. Clearing it is a **release**
-  step: re-run `playwright.handbook.config.ts`, then drop the flag. [CLAUDE.md](../CLAUDE.md) forbids
-  an agent regenerating them, so the flag is set by hand and no gate can see it — **whoever changes a
-  screen sets it on the pages that show that screen.**
+- **Ten handbook pages carry stale screenshots, and they say so themselves.** Three for content that
+  moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
+  swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row) and
+  `start` (the deck header gained the arrange toggle). Seven for the 44 px touch floor, which grew a
+  `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
+  section), `comms`, `dailyrun`, `chrono`, `biomon`, `credstick-auswertung` and `sigil`. Each page JSON
+  carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather
+  than misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
+  flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and no
+  gate can see it — **whoever changes a screen sets it on the pages that show that screen.**
 
 ## Waiting on upstream
 
@@ -138,9 +140,6 @@ being re-argued.
   and pills plus cash's rules all render `app-list-page` with `searchable` false. Splitting the note
   needs a second key and a `searchable` read inside `app-item-list-empty`, for copy nobody has
   complained about.
-- **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
-  loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
-  Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
 - **One glyph per program, read by both the menu and the page header.** The six list pages each pass their
   own `icon="…"` to `app-page-header` while `DECK_CATALOG` carries the same string — two copies agreeing by
   review only. The fix is small: the icon is a static const, not slice state, and `app.component` already

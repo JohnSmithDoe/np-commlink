@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -30,6 +31,10 @@ import {
 } from '../../../@shared/model/app.types';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
+  readStoragePersistence,
+  StoragePersistence,
+} from '../../../@shared/util/persistence/durable-storage';
+import {
   APP_RELEASE,
   COPYRIGHT,
   SOURCE_URL,
@@ -43,6 +48,7 @@ import {
   gridOutline,
   informationCircleOutline,
   personOutline,
+  serverOutline,
   settingsOutline,
 } from 'ionicons/icons';
 
@@ -54,6 +60,12 @@ const SKIN_LABEL_KEYS: Record<Skin, Marker> = {
 const MODE_LABEL_KEYS: Record<Mode, Marker> = {
   light: marker('settings.mode.light'),
   dark: marker('settings.mode.dark'),
+};
+
+const STORAGE_LABEL_KEYS: Record<StoragePersistence, Marker> = {
+  granted: marker('settings.storage.granted'),
+  denied: marker('settings.storage.denied'),
+  unsupported: marker('settings.storage.unsupported'),
 };
 
 const SEGMENT_LABEL_KEYS = {
@@ -98,6 +110,10 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
   ],
 })
 export class SettingsPage {
+  readonly #storagePersistence = signal<StoragePersistence | null>(null);
+  readonly storagePersistence = this.#storagePersistence.asReadonly();
+  readonly storageLabelKeys = STORAGE_LABEL_KEYS;
+
   constructor() {
     addIcons({
       settingsOutline,
@@ -106,7 +122,11 @@ export class SettingsPage {
       codeSlashOutline,
       informationCircleOutline,
       personOutline,
+      serverOutline,
     });
+    void readStoragePersistence().then((state) =>
+      this.#storagePersistence.set(state)
+    );
   }
 
   readonly sourceUrl = SOURCE_URL;

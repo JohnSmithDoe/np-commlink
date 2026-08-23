@@ -21,6 +21,11 @@
 // equal specificity the later rule won, so the cap applied and the centring did
 // not, and every hand-rolled list sat flush left of its own header rows.
 //
+// The touch floor lives here, not per component: --sr-touch is the number, and
+// `size="small"` therefore means small TYPE, never a small target. The chip's
+// remove X opts back out — it is inline inside a 32px chip whose own row is the
+// target, and flooring it inflates every form that shows a category.
+//
 // The last three rules answer to Android, not to this file: the WebView never
 // populates env(safe-area-inset-*), Android 16 draws behind transparent bars,
 // and shadowrun's `ion-content { --background }` out-specifies body.
@@ -56,6 +61,11 @@ ion-content > *:not(:root) {
 ion-button[size='small'] {
   min-width: var(--sr-touch);
   min-height: var(--sr-touch);
+}
+
+ion-chip ion-button[size='small'] {
+  min-width: 0;
+  min-height: 0;
 }
 
 button.alert-button.alert-button-success {

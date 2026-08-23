@@ -81,6 +81,25 @@
       <ion-label>{{ 'settings.deck.link' | translate }}</ion-label>
     </ion-item>
 
+    @let persistence = storagePersistence();
+    @if (persistence) {
+      <ion-item lines="none">
+        <ion-label>{{ 'settings.storage.title' | translate }}</ion-label>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-icon slot="start" name="server-outline" aria-hidden="true" />
+        <ion-label class="ion-text-wrap">
+          {{ 'settings.storage.persistence' | translate }}
+          @if (persistence !== 'granted') {
+            <ion-note>{{ 'settings.storage.evictable' | translate }}</ion-note>
+          }
+        </ion-label>
+        <ion-note slot="end" data-testid="storage-persistence">
+          {{ storageLabelKeys[persistence] | translate }}
+        </ion-note>
+      </ion-item>
+    }
+
     <ion-item lines="none">
       <ion-label>{{ 'settings.about.title' | translate }}</ion-label>
     </ion-item>

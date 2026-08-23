@@ -4,6 +4,7 @@
   "plain": "Tagesaufgabe",
   "route": "/ritual",
   "summary": "Eine kleine Aufgabe pro Tag, zufällig gezogen, abhakbar — und bewusst ohne Serienzähler.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

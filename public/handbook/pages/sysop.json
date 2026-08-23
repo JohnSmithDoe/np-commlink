@@ -4,6 +4,7 @@
   "plain": "Einstellungen",
   "route": "/settings",
   "summary": "Skin, Helligkeit, Sprache und Akzentfarben — plus Version, Lizenz und der Link auf den Quellcode.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

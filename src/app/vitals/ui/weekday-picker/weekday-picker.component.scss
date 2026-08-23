@@ -7,6 +7,6 @@
 
 .weekday-picker__day {
   flex: 1 1 auto;
-  min-width: 2.75rem;
+  min-width: var(--sr-touch);
   margin: 0;
 }
