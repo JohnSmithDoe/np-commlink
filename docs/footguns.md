@@ -140,14 +140,16 @@ that is the entry criterion.
 
 ## Never compose an identifier at the call site
 
+Gated (`marker-argument-is-literal`, `testid-is-static`, `verify:testids`); what the gates cannot say is
+why a composed one fails SILENTLY rather than loudly.
+
 - **i18n keys** — a key built from a template string is invisible to `--clean` and gets pruned. Declare
-  `Record<TUnion, Marker>` consts — the annotation is what enforces exhaustiveness. Never mirror the
-  dotted path in nested objects.
+  `Record<TUnion, Marker>` consts; the annotation is what enforces exhaustiveness.
 - **`data-testid`** — `'row-' + item.id` and `getByTestId('row-milk')` share no literal, so a composed id
-  drops out of the declared set and the dead-id check stops seeing it. A repeated row carries a static
-  `list-row`; *which* row comes from user-visible content (`filter({ hasText })`). An `app-*` element name
-  **is** already a contract.
-- **Deck entry ids** — never renamed: absence means default, so a rename needs a migration hop.
+  drops out of the declared set and the dead-id check stops seeing it — it reports clean.
+- **Deck entry ids** — never renamed. Absence means HIDDEN, so a renamed id drops out of every stored
+  visible set and switches that program off for everyone holding one. (Before the polarity flip the same
+  rename switched it ON — the hazard survived the fix, in the other direction.)
 
 ## Ionic behaviour worth not re-deriving
 
@@ -250,17 +252,10 @@ Ionic styles those children.
 
 ## Money, dates, forms
 
-- **Integer cents, never floats.** `< 0` outflow, `> 0` inflow; formatting only at the view edge.
 - **Money parsing takes the language explicitly and cannot be centralized** — `12,34` read as English is a
   valid grouped amount (1234 €), so nothing can be rejected. Two call sites must **not** follow the UI: a
   German bank's CSV is German whatever the UI says, and a persisted rule threshold is normalized onto
   German on save so a language switch cannot re-interpret existing rules.
-- **Import dedup keys on the `YYYY-MM-DD` prefix only** — `dateISO` carries a local offset, so keying the
-  full string re-imports the whole batch after a DST change.
-- **A parse returns `{ rows, rejected }`**, never a bare array: a partial import reporting success leaves
-  the balance wrong with nothing to notice it by.
-- **Reconciliation never auto-merges** — an equal-amount coincidence (two identical fares) would corrupt
-  the ledger. Reconciled-away legs are excluded from balances or the spend double-counts.
 - **`requireText`, not the built-in `required()`** — the latter counts `'   '` as present while every
   `persist()` trims. `requireUniqueName` takes `siblings`/`editing` as **thunks**, because `form()`
   evaluates its schema eagerly, before the fields they read exist.

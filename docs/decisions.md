@@ -14,6 +14,7 @@ A module's own reasoning lives beside the module, so this file stays about what 
 - [BIOMON](domains/biomon.md) — weight, profiles, pills and the notification slots
 - [DAILY RUN](domains/ritual.md) — prompts, completions and why there is no streak
 - [SIGIL](domains/notes.md) — one note type, the editor with no save button, images
+- [SOYKAF](domains/soykaf.md) — presence-only matching, and the v2 recipe book
 - [The deck](domains/deck.md) — what ships on, and what stays reachable
 
 ## Declined extractions — read as duplication, are not

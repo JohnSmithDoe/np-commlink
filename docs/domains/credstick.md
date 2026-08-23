@@ -93,3 +93,12 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
 - **`importKey` stays optional on `CashTransaction`.** Expressing "required only when `source` is
   `imported`" needs a split union that eleven unrelated call sites would have to narrow, for a fact the
   import path already guarantees at the only place it matters.
+
+## Traps that do not reproduce from a read of the source
+
+- **Import dedup keys on the `YYYY-MM-DD` prefix only** — `dateISO` carries a local offset, so keying the
+  full string re-imports the whole batch after a DST change.
+- **A parse returns `{ rows, rejected }`**, never a bare array: a partial import reporting success leaves
+  the balance wrong with nothing to notice it by.
+- **Reconciliation never auto-merges** — an equal-amount coincidence (two identical fares) would corrupt
+  the ledger. Reconciled-away legs are excluded from balances or the spend double-counts.
