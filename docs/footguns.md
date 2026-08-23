@@ -1,8 +1,7 @@
 # Footguns
 
-Empirical failures that do **not** reproduce from a read of the source. Each cost a red suite, a
-data-loss bug, or an unbuildable artifact at least once. Nothing here is derivable — that is the entry
-criterion.
+Empirical failures that do **not** reproduce from a read of the source. Nothing here is derivable —
+that is the entry criterion.
 
 ## Lifecycle
 
@@ -21,11 +20,10 @@ criterion.
   bookmark or an APK cold start. `ROUTER_NAVIGATED` fires on `NavigationEnd`, ordered after hydration by
   construction (`category-filter.effects.ts`).
 
-## Persistence — three ways to lose data
+## Persistence
 
 - **A save trigger must exclude `load`/`loaded`.** Hydration dispatches `[X] load` while the slice is
-  still empty `initialState`; persisting on it clobbers the saved doc. Real data-loss bug, now guarded by
-  a reload e2e.
+  still empty `initialState`; persisting on it clobbers the saved doc. A reload e2e guards it.
 - **A telemetry reporter must gate on its slice's `loaded` AND a resolved read**
   (`ReadBeforeWriteService`). `store.select` hands out `initialState` on subscription, so an ungated
   reporter announces a zero that the deck lights as live and the summary writer puts on disk over the
@@ -36,9 +34,7 @@ criterion.
   storage bucket is **evictable** — `provideDurableStorage()` requests promotion fire-and-forget (Firefox
   prompts; awaiting it would hold the splash open).
 
-## Seven Ionic locator traps
-
-The first six pass alone and fail after an SPA navigation; the last fails on its own.
+## Ionic locator traps
 
 - **Scope to the page component** `app-page-<x>`, not `#main-content` — the outlet keeps visited routes
   mounted, so a sibling page's identical button is still there.
@@ -55,7 +51,8 @@ The first six pass alone and fail after an SPA navigation; the last fails on its
   sits in the DOM whether presented or not. Narrow with `:not(.overlay-hidden)`. General rule: **an
   always-mounted overlay makes every element-name locator for it ambiguous app-wide**, so adding one to
   the shell changes every spec's namespace.
-- **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
+- Every trap above passes in a spec that never navigates. The one that fails on its own:
+  **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
   `input.aux-input[type=hidden]` beside the control it binds, so `getByTestId(…).locator('input')` on any
   bound `ion-toggle`/`ion-input` resolves to **two** elements and fails strict mode. `getByRole('switch')`
   is not the way out either: the real control lives in the shadow root and the role is not exposed to it.
@@ -86,35 +83,32 @@ The first six pass alone and fail after an SPA navigation; the last fails on its
 
 ## Gates that can go inert — and inert gates pass
 
-- **A green suite does not verify a config change.** Check with `eslint --print-config <file>`. This
-  repo's docs once called three unicorn rules disabled while all three sat at `error`.
+- **A green suite does not verify a config change.** Check with `eslint --print-config <file>`.
 - **Flat config *replaces* a rule's options, never merges them** — a selector added in one block is
-  silently dropped wherever a later block sets the same rule id. Bit this repo twice; hence the i18n and
-  NgRx checks are rule **ids**, not shared `no-restricted-syntax` option bags.
+  silently dropped wherever a later block sets the same rule id. Hence the i18n and NgRx checks are rule
+  **ids**, not shared `no-restricted-syntax` option bags.
 - **`extends` applies the enclosing block's `files` to everything it extends**, so a template-scoped set
-  nested under a `**/*.ts` parent intersects to **nothing**. Measured: every template rule went inert and
-  a planted nameless `<ion-icon>` linted green.
+  nested under a `**/*.ts` parent intersects to **nothing** — every template rule inert, a nameless
+  `<ion-icon>` green.
 - **Editing a rule's source does not invalidate the ESLint cache** — it hashes the resolved config, not
   the plugin files. Develop with `--no-cache`; `rm -rf .eslintcache` (the builder makes that path a
   *directory*) before believing a full run. The cache is per-file while Sheriff is cross-file: if A breaks
   because B changed, A's cached result is reused.
 - **`build` and `test` run on esbuild (transpile-only)**, so a broken *type-only* import passes both.
   Always run both `tsc --noEmit` passes.
-- **Verify a new gate by breaking what it should catch.** `i18n-key-ownership` needed **two** node types —
+- **Verify a new gate by breaking what it should catch.** `i18n-key-ownership` needs **two** node types —
   a quoted key is a `Literal` in TS but a `LiteralPrimitive` in a template, so a `Literal`-only selector
-  silently passed every template, where most of the class lived.
+  passes every template, where most of the class lives.
 - **A lint rule with no spec fails open** — it stops matching and reports nothing, indistinguishable from
-  a clean tree. All eight `a11y-*` rules had 589 lines and zero tests; one was dead. `pnpm run test:plugin`
-  is what makes a dead rule red, and it needs its own Vitest config because the builder's tsconfig reaches
-  only under `src`.
+  a clean tree. `pnpm run test:plugin` is what makes a dead rule red, and it needs its own Vitest config
+  because the builder's tsconfig reaches only under `src`.
 - **A rule matching on a naming convention decays as the names drift, and reports nothing while it does.**
-  `overlay-options.ts`'s receiver regex required a `Ctrl`/`Controller` suffix — true when written, later
-  missing two of four overlay call sites. Match the part that cannot drift (the kind); treat an affix as
-  decoration. A gate keyed on a convention needs the convention gated too, or it is keyed on nothing.
-- **Verify a diagnostic query before scoping work off it.** A `grep -Lq` inversion faked a ~70-component
-  backlog; counting colocated `*.spec.ts` files is not coverage; grepping templates for `aria-live` cannot
-  see a shadow DOM. Shell idioms lie too — `tsc … | tail -2 && echo clean` prints "clean" whenever `tail`
-  succeeds, which is always.
+  Match the part that cannot drift (the kind); treat an affix as decoration. A gate keyed on a convention
+  needs the convention gated too, or it is keyed on nothing.
+- **Verify a diagnostic query before scoping work off it.** `grep -Lq` inverts; counting colocated
+  `*.spec.ts` files is not coverage; grepping templates for `aria-live` cannot see a shadow DOM. Shell
+  idioms lie too — `tsc … | tail -2 && echo clean` prints "clean" whenever `tail` succeeds, which is
+  always.
 - **Coverage floors measure "of what is under test", not the app** — the builder instruments only what
   specs pull in. Templates are excluded from the denominator on purpose (with `.html` in: 39% statements,
   **1.4% functions**). `coverage.include` does not compose with `@angular/build:unit-test` — the report
@@ -123,35 +117,32 @@ The first six pass alone and fail after an SPA navigation; the last fails on its
 - **`verify:testids` sees only `.html` declarations and *literal* references.** `DECLARE_TS` matches only
   the imperative `'data-testid': '…'` overlay form, so an id in an inline `template:` is declared nowhere;
   `USE_PLAYWRIGHT` matches `getByTestId('literal')`, so an id fed through a loop variable is referenced
-  nowhere. Measured on the household list switcher: three ids invisible on **both** sides and a clean
-  `0 dead · 0 undeclared`. An inline template and a `@for` each break the "static literal verbatim on both
-  sides" requirement, and breaking both hides it.
+  nowhere. An inline template and a `@for` each break the "static literal verbatim on both sides"
+  requirement, and breaking both hides it: three invisible ids still report `0 dead · 0 undeclared`.
 - **One artifact, two writers** is always a bug in the making.
 
 ## Autofix and tooling hazards
 
-- **stylelint `--fix` is not all safe here.** `property-no-vendor-prefix` turned `-webkit-mask` into a
+- **stylelint `--fix` is not all safe here.** `property-no-vendor-prefix` turns `-webkit-mask` into a
   duplicate bare `mask`, dropping the clip on trackplay's victory beams (pre-15.4 Safari);
-  `value-keyword-case` lowercased `Arial` inside `--sr-sans`. Read the `--fix` diff.
+  `value-keyword-case` lowercases `Arial` inside `--sr-sans`. Read the `--fix` diff.
 - **Markdown is outside every formatting gate.** `prettier --write` on a doc reflows the whole file into
   an unreviewable diff. Don't.
 - **`i18n:extract` flags are load-bearing.** Both outputs must be named (no locale discovery);
   `'{de,en}.json'` stays **quoted** so the tool expands the braces, not the shell (macOS `sh` does, `dash`
   does not); use `--format-indentation '  '` and **never the `-fi` alias** — with two outputs yargs reads
   it as clustered `-f -i` and dies with `Unknown format: json,json`; `--trailing-newline` plus that
-  indentation stop a 1164-line churn against prettier. **Acceptance:** `pnpm run i18n:extract` →
-  `git diff --exit-code public/i18n/` is clean.
+  indentation keep a four-figure line churn against prettier out of the diff. **Acceptance:**
+  `pnpm run i18n:extract` → `git diff --exit-code public/i18n/` is clean.
 - **pnpm withholds releases hours old** (11.9 default `minimumReleaseAge`) and it looks exactly like a
   stuck resolver. The escape hatch is the trap: `pnpm add <pkg>@<version>` bypasses it by appending to
   `minimumReleaseAgeExclude` — a supply-chain control widened to win a patch bump. Prefer waiting.
 
 ## Never compose an identifier at the call site
 
-Both halves must share one literal, or the tool that reads it goes blind.
-
-- **i18n keys** — a key built from a template string is invisible to `--clean` and gets pruned; measured
-  once at 120 keys across four families. Declare `Record<TUnion, Marker>` consts — the annotation is what
-  enforces exhaustiveness. Never mirror the dotted path in nested objects.
+- **i18n keys** — a key built from a template string is invisible to `--clean` and gets pruned. Declare
+  `Record<TUnion, Marker>` consts — the annotation is what enforces exhaustiveness. Never mirror the
+  dotted path in nested objects.
 - **`data-testid`** — `'row-' + item.id` and `getByTestId('row-milk')` share no literal, so a composed id
   drops out of the declared set and the dead-id check stops seeing it. A repeated row carries a static
   `list-row`; *which* row comes from user-visible content (`filter({ hasText })`). An `app-*` element name
@@ -160,15 +151,13 @@ Both halves must share one literal, or the tool that reads it goes blind.
 
 ## Ionic behaviour worth not re-deriving
 
-R1–R9 are the a11y rule set; eight are gated by `commlink/a11y-*` and each rule's banner carries its
-argument. Below are the ones whose *underlying fact* is invisible from the source. **R5 and R9 can never
-be gated.**
+R1–R9 are the a11y rule set; each gated rule's banner carries its argument. Below are the ones whose
+*underlying fact* is invisible from the source. **R5 and R9 can never be gated.**
 
-`angular-eslint`'s `templateAccessibility` preset does not substitute: it keys off **native** elements
-while every control here is a runtime-defined custom element, so it reported a clean pass over three
-unlabelled icon-only toolbar buttons. **A gate green for a structural reason is worth less than no gate**
-— it converts "nobody checked" into "something checked and approved".
-
+- **`angular-eslint`'s `templateAccessibility` preset does not substitute** — it keys off **native**
+  elements while every control here is a runtime-defined custom element, so it reports a clean pass over
+  unlabelled icon-only toolbar buttons. **A gate green for a structural reason is worth less than no
+  gate** — it converts "nobody checked" into "something checked and approved".
 - **(R1) `ion-icon` renders `role="img"` unconditionally and derives no name from `name`** — a bare icon
   is an image role with no accessible name. `aria-hidden="true"` is the default, not an optimisation.
 - **(R3) A visible label is not a label the control has.** `ion-item` wires no `aria-labelledby`; a name
@@ -196,18 +185,18 @@ unlabelled icon-only toolbar buttons. **A gate green for a structural reason is 
   keyboard path to the *same* action exists elsewhere, which is not a property of the template. Also why
   `ion-item[button]` carries a row's primary action: a real `<button>`, at the cost of trailing controls
   having to stop propagation.
-- **(R9) The viewport never clamps scale.** `maximum-scale`/`user-scalable=no` fail WCAG 1.4.4 and bought
-  nothing — iOS Safari has ignored `user-scalable=no` since iOS 10, the exact platform it was written for.
+- **(R9) The viewport never clamps scale.** `maximum-scale`/`user-scalable=no` fail WCAG 1.4.4 and buy
+  nothing — iOS Safari ignores `user-scalable=no` since iOS 10, the exact platform it addresses.
   **Never gateable** — `index.html` is not an Angular template. Trade accepted: the Android WebView
   pinch-zooms the whole shell.
 - **A dismissing `ion-modal` fires `didDismiss`, and an unqualified handler closes the modal that
   replaced it.** `ItemDialogService` holds one request, so a dialog that opens another (a booking deriving
-  a rule) makes the first one's `isOpen` go false. Ionic then dismisses it and emits `didDismiss`, whose
-  handler used to call `close()` — clearing the request the second dialog was reading. The second appeared
-  and vanished, and nothing logged. `close(listId)` now ignores a caller that is not the open dialog; the
-  router subscription still closes unqualified, because there the request itself is stale.
+  a rule) makes the first one's `isOpen` go false; Ionic then dismisses it and emits `didDismiss` — and a
+  handler calling `close()` there clears the request the second dialog is reading, with nothing logged.
+  `close(listId)` ignores a caller that is not the open dialog; the router subscription still closes
+  unqualified, because there the request itself is stale.
 - **`ion-content` already sets `role="main"`** (unless inside a menu/popover/modal), so a hand-placed
-  `<main>` produces two landmarks — this app once wrapped the **side menu** in `<main>`.
+  `<main>` produces two landmarks.
 - **`ion-back-button` is `display:none` until `:host(.show-back-button)`**, set from
   `defaultHref !== undefined` — passing `backHref` is what makes it appear. Its click is
   `canGoBack() ? pop() : navigateBack(defaultHref)`, so a hand-rolled `router.navigate` is the fallback
@@ -219,20 +208,20 @@ unlabelled icon-only toolbar buttons. **A gate green for a structural reason is 
 
 ## `@for` with `@empty` inserts at the front once the empty branch has rendered
 
-Verified in a browser, not deduced: a `@for`/`@empty` pair that rendered its **empty** branch first inserts
-the first item view at the block's *leading* anchor, not after the block's preceding siblings. In
-`category-input` that put the category chip **before** the "Kategorien:" text it belongs to — visible only
-on the second open of one component instance (empty → one chip), which is why it read as "sometimes".
+A `@for`/`@empty` pair that rendered its **empty** branch first inserts the first item view at the block's
+*leading* anchor, not after the block's preceding siblings — so a chip lands above the text it belongs to.
+It shows only on the second render of one component instance (empty → one item), which is why it reads as
+"sometimes".
 
 The fix is structural, and it is the rule for any such block: **give a `@for` with an `@empty` its own
 container element**, so a misplaced insertion cannot escape it. Nothing gates this — a block whose parent
 holds nothing else is unaffected, so the smell is a `@for`/`@empty` sharing a parent with static content.
+`e2e/cash/derive.e2e.ts` asserts document order on the fixed site.
 
-Two sites still share a parent with a sibling and are exposed the same way, both with element siblings
-rather than text: `edit-recipe-dialog` (the first ingredient can land above its own "Zutaten" heading) and
-`categories-dialog` (the first category can land above the "create" row). Both put `ion-item`s straight
-into an `ion-list`, where a wrapping `<div>` is not free — Ionic styles those children — so neither is
-wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document order.
+Exposed the same way, with element siblings rather than text: `edit-recipe-dialog` (the first ingredient
+can land above its own "Zutaten" heading) and `categories-dialog` (the first category can land above the
+"create" row). Both put `ion-item`s straight into an `ion-list`, where a wrapping `<div>` is not free —
+Ionic styles those children.
 
 ## Scheduled notifications
 
@@ -271,7 +260,7 @@ wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document 
   `persist()` trims. `requireUniqueName` takes `siblings`/`editing` as **thunks**, because `form()`
   evaluates its schema eagerly, before the fields they read exist.
 - **A name rule's `siblings` must be the whole aggregate, never a page's view of it.** Feeding it the
-  filtered view meant a search term left in the box shrank the sibling set and a duplicate saved. The
+  filtered view means a search term left in the box shrinks the sibling set and a duplicate saves. The
   aggregate read is spelled `allItems` so it cannot be confused with the engine's `items`.
 - **A cleared date box persists the string `'Invalid Date'`** without `requireParseableDate` — it sorts
   above every real date and can never be reconciled.
@@ -296,10 +285,10 @@ wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document 
   with the theme. `theme/_layout.scss` keeps `$content-measure` in `rem`.
 - **Ionic injects a component's CSS at RUNTIME, after `global.scss`, so at equal specificity Ionic wins
   and an app rule half-applies.** `ion-content > *` and `ion-list` are both `(0,0,1)`, and `list.md.css`
-  zeroes `margin-left`/`margin-right` on its own host: the `max-width` from the app rule applied, the
-  `margin-inline: auto` beside it did not, and every hand-rolled list page rendered capped but flush
-  LEFT while its own header rows centred. Half a rule landing is the tell — a rule that loses outright
-  is easy to spot, one that loses a single declaration reads as a layout bug somewhere else entirely.
+  zeroes `margin-left`/`margin-right` on its own host: the `max-width` from the app rule applies, the
+  `margin-inline: auto` beside it does not, and a hand-rolled list page renders capped but flush LEFT
+  while its own header rows centre. Half a rule landing is the tell — a rule that loses outright is easy
+  to spot, one that loses a single declaration reads as a layout bug somewhere else entirely.
   `global.scss` buys the specificity with `:not(:root)`, which matches every child (no `ion-content`
   child is ever the root) and costs `(0,1,1)`.
 - **A shadow Ionic element is reachable only through the custom properties it documents.** `ion-toolbar`
@@ -325,8 +314,8 @@ wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document 
   inlines only the base `:root` as critical CSS, so at first paint the cyberpunk override has not arrived:
   `var(--sr-bg)` paints the *plain* backdrop and `Canvas` paints white — a light splash on the dark
   default, the exact flash the splash exists to prevent, inverted.
-- **`reveal()` removes the splash on `transitionend`, not a timer** — the duration existed twice with
-  nothing holding the copies equal. It also sets `pointer-events: none`: opacity does not affect
+- **`reveal()` removes the splash on `transitionend`, not a timer** — a duration held in two places has
+  nothing keeping the copies equal. It also sets `pointer-events: none`: opacity does not affect
   hit-testing, and a full-bleed overlay at `z-index 99999` otherwise swallows the first press.
 - **Postsync patch 5 (the `signingConfig`) is replaced, not skipped-if-present** — it is the script's own
   content, so an append-if-absent guard would reach only freshly generated `android/` folders and silently

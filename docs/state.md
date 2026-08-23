@@ -3,15 +3,15 @@
 **Check before proposing work.** Nothing here is merely undone: each needs a secret, an upstream release,
 a human reading the result, or a product decision. Settled questions are in [decisions.md](./decisions.md).
 
-## One-way doors — closed at v1.0.0, extended at v1.1.0
+## One-way doors
 
-Each field below is one a distribution channel compares to decide _same app or different app_. **v1.0.0 is
-published**: the tag, the PWA, and a signed APK attached to the release. None of them is free any more —
-changing one does not migrate an install, it stands up a second app that cannot reach the first one's data.
+Each field below is one a distribution channel compares to decide _same app or different app_, and the
+published tags have closed every one of them: changing one does not migrate an install, it stands up a
+second app that cannot reach the first one's data.
 
-- **The signing key exists, has signed v1.0.0, and custody is now the whole task.** The `signingConfig` is
-  postsync patch 5, reading four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The
-  shipped APK verifies v2 + v3 and its signer SHA-256 is pinned in the README. **Back the keystore up in two
+- **The signing key exists and custody is the whole task.** The `signingConfig` is postsync patch 5,
+  reading four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The shipped APK
+  verifies v2 + v3 and its signer SHA-256 is pinned in the README. **Back the keystore up in two
   places**, 25+ year validity — an expired cert cannot sign upgrades, and an APK signed with a different key
   can **never** upgrade one signed with this one, at any version; the only way in is an uninstall that wipes
   every tracked session, the pantry and the ledger. Losing the keystore therefore ends the APK line, and no
@@ -19,8 +19,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   the licence's demand, publishing the identity would let anyone ship a build that upgrades over a real
   install and inherits its data.
 - **`enableV3Signing = true` shipped on** — set explicitly against AGP's default at `minSdk 24`, and
-  confirmed on the released APK. v3 carries the proof-of-rotation lineage, so rotation is still reachable;
-  had it been off for this release it never would have been.
+  confirmed on the released APK. v3 carries the proof-of-rotation lineage, which is what keeps rotation
+  reachable at all.
 - **`manifest.id` shipped as `"np-commlink"`**, parsed as a URL against the **origin** — a leading or
   trailing slash is a _different_ identity, giving the browser a second app with its own IndexedDB and no
   route to the first one's data. Never touch.
@@ -28,28 +28,26 @@ changing one does not migrate an install, it stands up a second app that cannot 
   the tag closed the free window for the slices that have users, not for the app at large.
   [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer;
   [decisions.md](./decisions.md) says what a rung owes once one is.
-- **The cash slice's shape moved without a rung, and that exemption is spent.** `CashAccount.bank` is gone,
-  `iban` and `importKey` are new, and `APP_VERSION` stayed **1** on the single ground that cash has no
-  users — there is no v1 cash data anywhere for a step to migrate, so a rung would have been a file that
-  ran against nothing. Two consequences. A dev browser holding pre-camt cash rows has them with no
-  `importKey`, and the first camt import will not recognise them: **clear the cash slice there rather than
-  reading the duplicate count as truth**. And the exemption does not generalise — the next stored-shape
-  change made once cash holds real data owes the first genuine rung, with no precedent in the repo to copy.
-  `CashSchedule.dueDay` was added under the same exemption, asked and answered: optional, absent on every
+- **Cash's shape has moved without a rung, and that exemption is spent.** `APP_VERSION` stays **1** on the
+  single ground that cash has no users — no v1 cash data exists anywhere for a step to migrate, so a rung
+  would be a file that runs against nothing. Two consequences. A dev browser holding pre-camt cash rows has
+  them with no `importKey`, and a camt import will not recognise them: **clear the cash slice there rather
+  than reading the duplicate count as truth**. And the exemption does not generalise — the next
+  stored-shape change once cash holds real data owes the first genuine rung, with no precedent in the repo
+  to copy. `CashSchedule.dueDay` rides the same exemption, asked and answered: optional, absent on every
   stored row, and `advanced()` falls back to the day its `nextDueISO` already carries.
-- **v1.1.0 published `vitals` and `notes`, so their shapes are somebody's data from this tag on.** Neither
-  domain exists at v1.0.1 — the released app had no BIOMON and no SIGIL notes — so the free window for
-  `VitalsState` with its `profiles`, `readings` and `pills` sub-slices, and for `notes`, closes **here** and
-  not earlier. Anything holding either before this tag came from a locally built debug APK, which a
+- **`vitals` and `notes` are published from v1.1.0 on, so their shapes are somebody's data.** The free
+  window is closed for `VitalsState` with its `profiles`, `readings` and `pills` sub-slices, and for
+  `notes`. Anything holding either from before that tag came from a locally built debug APK, which a
   release-key install cannot upgrade and therefore never sees.
-- **The `deck` and `settings` shapes moved at v1.1.0 and both RESET rather than migrate.** `deck` stores
-  `visibleEntries` where it stored `hiddenEntries` + `hiddenModules`; `settings` splits `theme` into `skin`
-  and `mode`. `APP_VERSION` stayed **1** on the roster, not on the code: the deck discards a pre-flip
-  document deliberately — `isCurrentShape` in `deck.reducer.ts`, whose banner argues why migrating it would
-  invert every holder's choice — and settings falls through `{...initialSettings, ...settings}`, which is
-  invisible on cyberpunk/dark, one re-pick for a boomer-skin holder, and a dead `theme` key riding along
-  until the next write. So **`APP_VERSION` is still 1 across two releases and `runMigrations` has never run
-  a step**: the first genuine rung is still unwritten, and still has no precedent in the repo to copy.
+- **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` — a pre-v1.1.0
+  document carries `hiddenEntries` + `hiddenModules` — and discards that shape deliberately:
+  `isCurrentShape` in `deck.reducer.ts`, whose banner argues why migrating it would invert every holder's
+  choice. `settings` splits `theme` into `skin` and `mode` and falls through
+  `{...initialSettings, ...settings}`, which is invisible on cyberpunk/dark, one re-pick for a boomer-skin
+  holder, and a dead `theme` key riding along until the next write. So **`APP_VERSION` is 1 and
+  `runMigrations` has never run a step**: the first genuine rung is unwritten, and has no precedent in the
+  repo to copy.
 
 ## Blocked — needs something only the owner can supply
 
@@ -58,20 +56,19 @@ changing one does not migrate an install, it stands up a second app that cannot 
   The two GitHub settings the deploy depends on are in the README, not here: they are configuration, not a
   decision anyone still has to make.
 - **Any camt import driven live, against a file a bank actually produced.** The parser is unit-tested
-  against synthetic documents only. The exports in `docs/cash/` have been **refilled** and now import:
-  anonymisation had replaced every digit with `X`, and the runs are written back coherently — booking
-  dates ascending through the period, entry and detail amounts agreeing, a balance chain that adds up
-  across the three pages, mod-97 IBANs, `AcctSvcrRef` unique over all 311 rows. What they still are is
-  Volksbank's real **shape** — tag nesting, ISO-8859-1 bytes, the 150-entry pagination, the 140-character
-  `Ustrd` truncation that splits an IBAN across two of them — carrying invented **value**. So they drive
-  the import end to end and prove nothing about what a bank emits. A real run needs the owner's own
-  download, and `docs/cash/` is gitignored, so nothing committable comes out of it either way. Volksbank,
-  DKB and ING each need their own first
-  run: the format is one, but which optional elements a given bank fills is not — `AcctSvcrRef` above all,
-  since its absence silently downgrades every key on the statement to a derived one.
+  against synthetic documents only. The exports in `docs/cash/` import, and their values are internally
+  coherent — booking dates ascending through the period, entry and detail amounts agreeing, a balance
+  chain that adds up across the three pages, mod-97 IBANs, `AcctSvcrRef` unique over all 311 rows. What
+  they are is Volksbank's real **shape** — tag nesting, ISO-8859-1 bytes, the 150-entry pagination, the
+  140-character `Ustrd` truncation that splits an IBAN across two of them — carrying invented **value**.
+  So they drive the import end to end and prove nothing about what a bank emits. A real run needs the
+  owner's own download, and `docs/cash/` is gitignored, so nothing committable comes out of it either way.
+  Volksbank, DKB and ING each need their own first run: the format is one, but which optional elements a
+  given bank fills is not — `AcctSvcrRef` above all, since its absence silently downgrades every key on
+  the statement to a derived one.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
-  (measured 2026-08-02 — recount before citing), so most are real translations, but nothing rendered them
-  until the language switch shipped. The first English session is the first proofread.
+  (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
+  is the first proofread.
 
 ## Waiting on upstream
 
@@ -96,7 +93,7 @@ changing one does not migrate an install, it stands up a second app that cannot 
 - **Which lists opt into undo.** The mechanism is built — `ToastMessage` carries `action`, `durationMs`
   and `group`, and `@shared/data/undo/` holds a ten-deep stack the shared toast effect offers at 5 s. Only
   shopping, storage and products pass `undoableDelete`; tasks, recipes, categories, tracking and
-  trackplay's four lists delete silently. Two gaps the opt-in did not touch:
+  trackplay's four lists delete silently. Two gaps:
   - **Trackplay is not on the stack** — `restoreSnapshot` writes the pre-delete `players`, `games` and
     `gameTypes` arrays back wholesale, so delete → add player → undo loses the new player. Per-entity
     restore actions would fix it and let trackplay join. Nothing is blocked: delete followed straight by
@@ -112,9 +109,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   checksum cannot catch that one either.
 - **A re-import is not idempotent in one remaining way, inherent to keying off statement content.**
   Nothing writes a tombstone, so deleting an imported row and re-importing brings it back. The other half
-  — a `PDNG` entry arriving again under the `AcctSvcrRef` it gained when it booked — is closed: a row now
-  carries its derived key as well as the bank's, and a booked hit on a stored pending row confirms that row
-  in place (`plan-import.ts`). Recorded so the tombstone gap does not read as a regression later.
+  is handled: a row carries its derived key as well as the bank's, so a `PDNG` entry arriving again under
+  the `AcctSvcrRef` it gained when it booked confirms the stored pending row in place (`plan-import.ts`).
 - **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
   lists, recipes, cash, categories and trackplay create/edit are silent.
 - **Reading the phone's own payments is parked, and the ceiling is the platform's, not the effort.** No
@@ -134,7 +130,7 @@ changing one does not migrate an install, it stands up a second app that cannot 
   Detection is cheap and shaped like `findReconciliationCandidates` — opposite amount, ±3 days, a
   different account — offered as pairs to link in the import preview. Parked on the owner's call, not on
   difficulty.
-- **The app is not a share target, and files are why.** The plan was manifest-only, and that is wrong for
+- **The app is not a share target, and files are why.** A manifest-only declaration is wrong for
   files: a `share_target` carrying one must be `method: "POST"`, `enctype: "multipart/form-data"`, and the
   POST has to be intercepted in the service worker — which means wrapping `ngsw-worker.js` in an
   `importScripts` shim and registering that instead, since ngsw exposes no `fetch` hook. It also arrives
@@ -144,20 +140,20 @@ changing one does not migrate an install, it stands up a second app that cannot 
 - **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
   using it. On the APK it is the cheapest upgrade available to how the app feels.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
-  notifications and cash-rules hand-roll inert ones, and the tracking stats page, deck config, the
-  reconcile and import-preview modals and the office-time dashboard have none. Moving a surface onto
-  `ListPageComponent` is what fixed trackplay, cash and the household lists — the argument for the rest.
-  Cash **rules** stays hand-rolled: `ion-reorder-group` has to wrap the rows and the shared list owns that
-  element. The reconcile and import-preview modals now render theirs; the burn-down, schedules and
-  uncategorized surfaces hand-roll inert copy.
+  notifications, cash-rules, the burn-down, schedules and the uncategorized surface hand-roll inert copy;
+  the tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
+  what carries the useful one for trackplay, cash and the household lists — the argument for the rest.
+  Cash **rules** stays hand-rolled, but no longer over reorder — the shared list carries that now. What
+  is left is page chrome: no searchbar and no toolbar, a trailing header button, and an add-and-apply
+  pair in the content that `app-page-header`'s own add affordance would duplicate.
 - **Six shipping controls below the touch target.** `size="small"` is 32 px in Ionic MD; ten sites, four
   `isDevMode()`-gated. The six that ship include the household scan button. The emoji picker's grid is
   `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.
 - **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
   loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
   Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
-- **Multi-list household is not what `:listId` was**, and dropping the param settled it. `HouseholdListId`
-  is a closed three-literal union over structurally different item types, named as three fields of
+- **Multi-list household is not what `:listId` offered.** `HouseholdListId` is a closed three-literal
+  union over structurally different item types, named as three fields of
   `HouseholdState` through `combineReducers`, with six `Record<HouseholdListId, …>` maps keyed off it. Real
   multi-list means turning one field into a keyed collection, and two things refuse it: `ListSettings` is
   six booleans naming the lists pairwise (`showProductsInStorage`, …) with no answer for _which_ shopping
@@ -169,8 +165,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   own `icon="…"` to `app-page-header` while `DECK_CATALOG` carries the same string — two copies agreeing by
   review only. The fix is small: the icon is a static const, not slice state, and `app.component` already
   `addIcons(DECK_ICONS)` eagerly, so per-page registrations are redundant. **Not a shared selector** —
-  `@shared` naming another domain's store key is what was deleted with the notifications read-half. The
-  shape is `RECENT_EMOJIS`': a read-only `InjectionToken<Signal<string | undefined>>` in `@shared/util`,
+  `@shared` does not name another domain's store key. The shape is `RECENT_EMOJIS`': a read-only
+  `InjectionToken<Signal<string | undefined>>` in `@shared/util`,
   empty-defaulted, fulfilled by `commlink/data` as the longest catalog route prefixing the URL, with
   `icon` surviving as the override for pages with no deck entry. **What defers it is the consequence:** the
   header's glyph becomes route-derived, so adding a route to the catalog later silently changes a header.
@@ -203,9 +199,9 @@ The constraint shaping all of it: the check is **presence-only** ("in storage" /
 - **Base unit on `Product` + pack sizes.** Open **only if presence-only proves too weak**: making
   `StorageItem.quantity` a base-unit amount pools distinct packs into one number and so **destroys per-pack
   `bestBefore`**. Half the schema exists (`unit`, `packaging`, `packagingWeight?`, unread by the matcher).
-- **Recipe photos** now have a place to live: `notes/data/note-image.store.ts` keys each picture on its
-  own and keeps the slice text-only. What is left is generalising it past notes — the store, its resolver
-  and its collector are note-shaped today.
+- **Recipe photos** have a place to live: `notes/data/note-image.store.ts` keys each picture on its own
+  and keeps the slice text-only. What is left is generalising it past notes — the store, its resolver and
+  its collector are note-shaped.
 
 ## Known cost, not yet paid
 
@@ -213,7 +209,7 @@ Each of these is measured, understood and left standing on purpose — a shape q
 or a bill that only a phone with a few hundred rows actually presents.
 
 - **A picture is base64 in IndexedDB, and binary is the better answer on both platforms.** The store keys
-  each image on its own now, but the value is still a data URL: base64 costs a third on top of the bytes and
+  each image on its own, but the value is a data URL: base64 costs a third on top of the bytes and
   every read re-parses a string. A `Blob` in IndexedDB would drop both, rendered through
   `URL.createObjectURL` — which makes revoking our problem, and only holds if the localforage driver really
   is IndexedDB (a localStorage fallback cannot carry a Blob at all). On the APK the honest answer is a real
@@ -246,12 +242,11 @@ or a bill that only a phone with a few hundred rows actually presents.
 
 - **Cash's dialog hosts are pasted per page.** "Which dialogs can open anywhere in CREDSTICK" is restated
   in five templates and five `imports:` arrays, and forgetting one produces a dead button rather than a
-  compile error — which is exactly the bug the spending page shipped. One `feature/cash-dialogs`
-  component, or better a routed cash shell hosting them beside the outlet, ends the checklist.
+  compile error. One `feature/cash-dialogs` component, or better a routed cash shell hosting them beside
+  the outlet, ends the checklist.
 - **Import policy is split between a page and a modal.** The page reads files, plans and hands the modal
   eight loose props; the modal then decides what counts as work and calls two facades. A `CashImportFacade`
-  owning `plan(parsed)` and `commit(preview)` would put one transaction in one place — the seam tore
-  visibly when pending-confirmation was added.
+  owning `plan(parsed)` and `commit(preview)` would put one transaction in one place.
 - **Cash rules and schedules hand-roll add-or-update in their facades** while their action groups already
   carry `addOrUpdateItem`. Wiring `createItemListEffects` for them is the fix and also brings
   `syncSearchOnRename$` and the failure toast, so it changes behaviour and is a decision, not a tidy-up.
@@ -264,11 +259,13 @@ or a bill that only a phone with a few hundred rows actually presents.
   label + segment block three times; and `Chart.register(...registerables)` plus a near-identical options
   object sits in three chart hosts, where `@shared/util/charts/` is already the shared home.
 
-## Findings from the review that are still open
+## Open review findings
 
-Ranked below the fifteen that were fixed, and none of them blocking. Kept here so they are not re-found.
-The five cash ones are gone from this list because they are fixed, not because they were dropped.
+Not blocking; kept here so they are not re-found.
 
-- **`removeNote` pushes history**, leaving a dead editor one back-tap away.
-- **The household `ion-tab-bar` ignores `--app-content-max-width`**, and `list-page`'s `sortable` flag
-  empties its toolbar instead of removing it, leaving an empty bar on the vitals pages.
+- **Neither the vitals toolbar nor the household `ion-tab-bar` is worth touching**, both halves measured
+  rather than argued. `list-page` guards the toolbar on `facade.hasToolbar?.() ?? true` and both vitals
+  facades set it `false`, so there is no empty bar to remove. And the tab-bar has nothing to cap: Ionic
+  gives it `justify-content: center` with `max-width: 168px` per button, so the three are already a centred
+  504px cluster — padding the host moves them 0px (measured at a 1600px viewport, buttons at 548/716/884
+  either way). Its band is full-bleed on the same grounds the header's is.
