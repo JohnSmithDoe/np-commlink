@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  isDevMode,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonButton,
@@ -30,7 +25,7 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { NotificationService, NotificationsFacade } from '../../data';
+import { NotificationsFacade } from '../../data';
 import { InboxNotification } from '../../../@shared/model/notifications.types';
 
 @Component({
@@ -54,12 +49,10 @@ import { InboxNotification } from '../../../@shared/model/notifications.types';
 export class NotificationsPage implements ViewWillEnter {
   readonly #facade = inject(NotificationsFacade);
   readonly #router = inject(Router);
-  readonly #osNotifications = inject(NotificationService);
 
   readonly openNotifications = this.#facade.openNotifications;
   readonly doneNotifications = this.#facade.doneNotifications;
   readonly doneCollapsed = this.#facade.doneCollapsed;
-  readonly isDev = isDevMode();
 
   ionViewWillEnter(): void {
     this.#facade.markPageViewed();
@@ -103,13 +96,5 @@ export class NotificationsPage implements ViewWillEnter {
 
   clearDone() {
     this.#facade.clearDone();
-  }
-
-  fireTestOsNotification() {
-    void this.#osNotifications.fireTestNotification();
-  }
-
-  addDebugNotification() {
-    this.#facade.addDebugNotification();
   }
 }

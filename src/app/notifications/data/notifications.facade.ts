@@ -39,8 +39,4 @@ export class NotificationsFacade {
   clearDone(): void {
     this.#store.dispatch(NotificationsInboxActions.clearDone());
   }
-
-  addDebugNotification(): void {
-    this.#store.dispatch(NotificationsInboxActions.addDebugNotification());
-  }
 }

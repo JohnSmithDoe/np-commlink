@@ -1,11 +1,9 @@
-import { isDevMode } from '@angular/core';
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationsInboxActions } from './notifications.actions';
 import { notificationsReducer } from './notifications.reducer';
 import { LegacyRemindersEffects } from './legacy-reminders.effects';
-import { NotificationsDebugEffects } from './notifications-debug.effects';
 import { NotificationsToastEffects } from './notifications-toast.effects';
 import {
   NOTIFICATIONS_STATE_KEY,
@@ -38,9 +36,5 @@ export const notificationsContext = providePersistedContext({
     },
   ],
   hydrate: 'boot',
-  effects: [
-    ...(isDevMode() ? [NotificationsDebugEffects] : []),
-    NotificationsToastEffects,
-    LegacyRemindersEffects,
-  ],
+  effects: [NotificationsToastEffects, LegacyRemindersEffects],
 });

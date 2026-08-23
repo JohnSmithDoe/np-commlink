@@ -138,15 +138,6 @@ being re-argued.
   and pills plus cash's rules all render `app-list-page` with `searchable` false. Splitting the note
   needs a second key and a `searchable` read inside `app-item-list-empty`, for copy nobody has
   complained about.
-- **Seventeen shipping controls below the touch target, and two debug buttons that should not exist.**
-  `size="small"` is 32 px in Ionic MD against WCAG 2.5.8's 44 px floor. Twenty sites carry it: one is an
-  `ion-title` and not a target at all, two are the `@if (isDev)` debug-notification buttons in
-  `notifications.page.html` — **those get deleted, not resized** — and the other seventeen ship, across
-  ritual (3), notifications (2), tracking's daily-sessions (2), the two handbook retries, the vitals
-  weekday picker, cash's spend-quick-add, the emoji-picker retry, `category-input`, `note-image-input`,
-  the note editor and settings' accent reset. The emoji picker's grid is `minmax(2.75rem, 1fr)` with a
-  banner saying why — the care is here, it is not uniform. Gateable once the dev exemption is gone: a
-  rule can match `size="small"` on an `ion-button` outright.
 - **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
   loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
   Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
@@ -162,11 +153,6 @@ being re-argued.
 - **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.
-- **The categories dialog's swipe is not `expandable`, and nobody has confirmed that was deliberate.**
-  [decisions.md](./decisions.md) now reads it as the cascade carve-out — a category delete strips three
-  reducers — which fits, but it was written to match the code rather than from a decision anyone
-  remembers making. Cash's non-expandable swipe IS deliberate. Confirm or fix this one.
-
 
 ## Known cost, not yet paid
 

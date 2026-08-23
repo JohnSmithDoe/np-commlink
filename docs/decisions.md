@@ -162,8 +162,9 @@ it was measured against.
 
 - **A swipe deletes and does not ask, where a row is cheap to re-add.** Those rows carry an `expandable`
   `ion-item-option`: a list whose job is a pantry or a task pile must be as cheap to remove from as to add
-  to, and a confirm on every row taxes the common case to insure the rare one. **Two swipes are
-  deliberately not expandable** — a category delete, because it cascades, and cash.
+  to, and a confirm on every row taxes the common case to insure the rare one. **Cash is the only swipe
+  deliberately not expandable**, on the grounds below. The categories dialog expands like the rest: its
+  delete cascades through three reducers, and a cascade is answered by undo, not by a harder gesture.
 - **Undo over confirm, and a confirm is not to come back as a substitute for one.** Undo is opt-in per
   list. Cascades and bulk wipes are a different class and are not settled by this — destroying what the
   user was not looking at is scheduled ([next-version.md](./next-version.md)).
@@ -179,6 +180,12 @@ it was measured against.
   alert, both because the receiver regex demanded a suffix the code had stopped writing. Fixed by one
   character class plus RuleTester cases, verified by reverting the regex and watching exactly those
   cases go red.
+- **The touch floor is a token and one global rule, not a lint rule.** `--sr-touch` is 2.75rem — 44 px at
+  the default root, WCAG 2.5.5's enhanced target, not 2.5.8's 24 px minimum — and `global.scss` floors
+  every `ion-button[size='small']` at it. `size="small"` therefore means small TYPE, never a small
+  target, which is why banning the attribute was the wrong gate: it would have left the default size
+  under 44 px and read as solved. A rem keeps the floor growing with a raised root font; the emoji
+  picker's grid track reads the same token rather than its own literal.
 - **axe-core evaluated, not adopted** — it would cover R1/R2/R3 and add contrast classes no rule here
   touches, but it samples what a run happens to render where ESLint reads every template. Different axes,
   not substitutes — and it structurally cannot see the imperative overlay path, which is why neither rule

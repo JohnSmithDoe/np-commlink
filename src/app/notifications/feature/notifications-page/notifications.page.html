@@ -161,19 +161,4 @@
       </div>
     }
   </ion-list>
-
-  @if (isDev) {
-    <div class="debug-actions">
-      <ion-button
-        size="small"
-        color="warning"
-        (click)="fireTestOsNotification()"
-      >
-        {{ 'notifications.debug.os-notification' | translate }}
-      </ion-button>
-      <ion-button size="small" (click)="addDebugNotification()">
-        {{ 'notifications.debug.in-app-notification' | translate }}
-      </ion-button>
-    </div>
-  }
 </ion-content>

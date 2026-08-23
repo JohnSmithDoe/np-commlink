@@ -59,6 +59,8 @@
   --space-5: 1.618rem; // 25.9px — φ¹
   --space-6: 2.618rem; // 41.9px — φ²
 
+  --sr-touch: 2.75rem; // 44px at the default root — WCAG 2.5.5 target floor
+
   --sr-mono:
     'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Courier New',
     monospace;
