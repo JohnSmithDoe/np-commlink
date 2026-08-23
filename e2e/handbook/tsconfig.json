@@ -1,0 +1,23 @@
+/* The screenshot generator's own project — the one tsconfig.e2e.json's banner
+ * says this directory actually wants.
+ *
+ * It exists for ownership, not for a gate. `*.shots.ts` is driven by
+ * playwright.handbook.config.ts and reads `Buffer`, so `types: ["node"]` is the
+ * whole point: the e2e project cannot grant it (Node's globals would reach the
+ * app build, where `setTimeout` stops returning a number) and the root project
+ * grants it to nobody. Excluded from both, these files were resolved by
+ * whichever program claimed the directory next — which is what made a correct
+ * `Buffer` read as TS2591.
+ *
+ * `exclude: []` because tsconfig.e2e.json, which this extends for the compiler
+ * options, excludes exactly this directory.
+ */
+{
+  "extends": "../../tsconfig.e2e.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/handbook",
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": []
+}

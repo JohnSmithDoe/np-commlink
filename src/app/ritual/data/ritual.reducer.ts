@@ -9,23 +9,8 @@
  * would take back a completion the toast was not offering.
  * ───────────────────────────────────────────────────────────────── */
 import { createReducer, on } from '@ngrx/store';
-import {
-  RitualCompletion,
-  RitualPromptId,
-  RitualState,
-} from '../model/ritual.types';
+import { RitualState } from '../model/ritual.types';
 import { RitualActions } from './ritual.actions';
-
-const withoutCompletion = (
-  completions: RitualCompletion[],
-  promptId: RitualPromptId,
-  at: string
-): RitualCompletion[] => {
-  const undone = completions.findIndex(
-    (row) => row.promptId === promptId && row.completedAt === at
-  );
-  return undone === -1 ? completions : completions.toSpliced(undone, 1);
-};
 
 export const initialState: RitualState = {
   completions: [],
@@ -39,11 +24,6 @@ export const ritualReducer = createReducer(
   on(RitualActions.completed, (state, { promptId, at }): RitualState => ({
     ...state,
     completions: [...state.completions, { promptId, completedAt: at }],
-  })),
-
-  on(RitualActions.uncompleted, (state, { promptId, at }): RitualState => ({
-    ...state,
-    completions: withoutCompletion(state.completions, promptId, at),
   })),
 
   on(RitualActions.setReminder, (state, { reminder }): RitualState => ({

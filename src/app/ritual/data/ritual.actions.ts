@@ -15,7 +15,6 @@ export const RitualActions = createActionGroup({
       promptId,
       at: dayjs(at).format(),
     }),
-    uncompleted: (promptId: RitualPromptId, at: string) => ({ promptId, at }),
     setReminder: (reminder: RitualReminder) => ({ reminder }),
     dismissed: (promptId: RitualPromptId) => ({ promptId }),
     restored: (promptId: RitualPromptId) => ({ promptId }),

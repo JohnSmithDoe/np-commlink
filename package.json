@@ -99,6 +99,7 @@
     "@softarc/eslint-plugin-sheriff": "^0.19.6",
     "@softarc/sheriff-core": "^0.19.6",
     "@types/dom-chromium-ai": "^0.0.17",
+    "@types/node": "26.1.2",
     "@vendure/ngx-translate-extract": "^10.2.0",
     "@vitest/coverage-v8": "^4.1.10",
     "angular-eslint": "^21.4.0",

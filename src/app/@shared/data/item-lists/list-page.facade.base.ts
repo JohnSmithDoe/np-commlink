@@ -20,9 +20,9 @@ import { Action, Store } from '@ngrx/store';
 import { BaseItem } from '../../model/base-item.types';
 import { CategoryId } from '../../model/category.types';
 import {
+  ItemList,
   ItemListSortDirection,
   ItemListSortType,
-  ItemList,
   SearchResult,
 } from '../../model/item-list.types';
 import { ListPageFacade } from '../../util/item-lists/list-page.facade';

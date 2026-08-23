@@ -15,6 +15,7 @@ export class PillsPageFacade extends BaseListPageFacade {
   readonly items = this.#pills.items;
   readonly searchResult = this.#pills.searchResult;
   readonly sortable = signal(false);
+  readonly hasToolbar = signal(false);
 
   readonly profile = this.#profiles.routeProfile;
   readonly heading = computed(() => this.profile()?.name ?? '');

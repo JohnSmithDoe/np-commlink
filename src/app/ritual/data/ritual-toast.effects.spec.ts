@@ -38,33 +38,4 @@ describe('RitualToastEffects', () => {
       })
     );
   });
-
-  it('offers the completion back, naming the row it would remove', async () => {
-    const completed = RitualActions.completed('water');
-    actions$ = of(completed);
-
-    const toast = await firstValueFrom(effects.undoCompletionToast$);
-
-    expect(toast).toEqual(
-      expect.objectContaining({
-        message: expect.objectContaining({
-          key: 'ritual.toast.completed',
-          action: {
-            labelKey: 'ritual.toast.undo',
-            action: RitualActions.uncompleted('water', completed.at),
-          },
-        }),
-      })
-    );
-  });
-
-  it('keeps the two undos in separate groups, so neither silences the other', async () => {
-    actions$ = of(RitualActions.dismissed('water'));
-    const dismissed = await firstValueFrom(effects.undoDismissToast$);
-
-    actions$ = of(RitualActions.completed('stretch'));
-    const completed = await firstValueFrom(effects.undoCompletionToast$);
-
-    expect(dismissed.message.group).not.toBe(completed.message.group);
-  });
 });

@@ -21,29 +21,30 @@
       {{ 'item-list.exact-match.note' | translate }}
     </ion-note>
   }
-  <app-item-list-toolbar
-    [activeSort]="facade.state()?.sort"
-    [options]="facade.sortOptions?.() ?? []"
-    [sortable]="facade.sortable?.() ?? true"
-    (selectSortMode)="facade.setSortMode($event)"
-  >
-    <ng-content select="[toolbarActions]" />
-    <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd />
-    @if (canManageCategories) {
-      <ion-button
-        toolbarActionsEnd
-        (click)="manageCategories()"
-        [attr.aria-label]="'categories.a11y.manage' | translate"
-      >
-        <ion-icon
-          slot="icon-only"
-          name="pricetags-outline"
-          aria-hidden="true"
-        />
-      </ion-button>
-    }
-  </app-item-list-toolbar>
-
+  @if (facade.hasToolbar?.() ?? true) {
+    <app-item-list-toolbar
+      [activeSort]="facade.state()?.sort"
+      [options]="facade.sortOptions?.() ?? []"
+      [sortable]="facade.sortable?.() ?? true"
+      (selectSortMode)="facade.setSortMode($event)"
+    >
+      <ng-content select="[toolbarActions]" />
+      <ng-content select="[toolbarActionsEnd]" toolbarActionsEnd />
+      @if (canManageCategories) {
+        <ion-button
+          toolbarActionsEnd
+          (click)="manageCategories()"
+          [attr.aria-label]="'categories.a11y.manage' | translate"
+        >
+          <ion-icon
+            slot="icon-only"
+            name="pricetags-outline"
+            aria-hidden="true"
+          />
+        </ion-button>
+      }
+    </app-item-list-toolbar>
+  }
   @if (facade.catalog?.()?.length) {
     <app-category-filter-bar
       [catalog]="facade.catalog?.() ?? []"

@@ -51,54 +51,6 @@ describe('ritualReducer', () => {
     expect(after.completions.length).toBe(2);
   });
 
-  it('takes a completion back by the row it names', () => {
-    const state = ritualReducer(
-      mockRitualState(),
-      RitualActions.completed('water', '2026-07-20T08:00:00.000')
-    );
-    const [row] = state.completions;
-
-    const after = ritualReducer(
-      state,
-      RitualActions.uncompleted('water', row!.completedAt)
-    );
-
-    expect(after.completions).toEqual([]);
-  });
-
-  it('leaves the bonus alone when the first of two is taken back', () => {
-    const once = ritualReducer(
-      mockRitualState(),
-      RitualActions.completed('water', '2026-07-20T08:00:00.000')
-    );
-    const twice = ritualReducer(
-      once,
-      RitualActions.completed('water', '2026-07-20T20:00:00.000')
-    );
-    const [morning, evening] = twice.completions;
-
-    const after = ritualReducer(
-      twice,
-      RitualActions.uncompleted('water', morning!.completedAt)
-    );
-
-    expect(after.completions).toEqual([evening]);
-  });
-
-  it('ignores an undo for a row that is not there', () => {
-    const state = ritualReducer(
-      mockRitualState(),
-      RitualActions.completed('water', '2026-07-20T08:00:00.000')
-    );
-
-    const after = ritualReducer(
-      state,
-      RitualActions.uncompleted('stretch', state.completions[0]!.completedAt)
-    );
-
-    expect(after.completions).toEqual(state.completions);
-  });
-
   it('stores the reminder settings', () => {
     const after = ritualReducer(
       mockRitualState(),

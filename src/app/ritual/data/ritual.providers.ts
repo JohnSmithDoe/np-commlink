@@ -30,7 +30,6 @@ export const ritualContext = providePersistedContext({
   save: {
     on: [
       RitualActions.completed,
-      RitualActions.uncompleted,
       RitualActions.setReminder,
       RitualActions.dismissed,
       RitualActions.restored,

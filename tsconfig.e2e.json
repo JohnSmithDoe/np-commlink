@@ -14,22 +14,19 @@
     // `undefined` there is a red test with a TypeError, not a silent fault.
     "noUncheckedIndexedAccess": false
   },
-  // The specs only. `playwright.config.ts` reads `process.env`, which needs
-  // `@types/node`, and no project here sets `types` — so installing it would
-  // inject Node's globals into the app build too, where `setTimeout` would stop
-  // returning a number. A config file is not worth that.
+  // The specs only — `playwright.config.ts` is driven by Playwright, not built.
+  // Node's globals reach exactly the projects that name them: `types` is set on
+  // tsconfig.json and inherited here, so auto-inclusion is off everywhere and
+  // `@types/node` is inert until a project asks. Only e2e/handbook does.
   "include": ["e2e/**/*.ts"],
   // `e2e/handbook/**` is a screenshot GENERATOR, not specs: `*.shots.ts` never
   // matches `pnpm run e2e`, it writes PNGs instead of asserting, and it is
-  // driven by its own playwright.handbook.config.ts. Being checked here and run
-  // nowhere left it able only to break the build — and it wants Node's `Buffer`,
-  // which is the one thing this project exists to keep out.
+  // driven by its own playwright.handbook.config.ts. It wants Node's `Buffer`,
+  // which is the one thing this project exists to keep out, so it holds its own
+  // tsconfig instead — see the banner there.
   //
   // Excluded rather than fixed at the call site: `STATEMENT_XML` is BUILT from
   // `ENTRIES`, `IBAN` and `CLOSING`, so the notes.e2e.ts trick of passing a
   // committed file path would fork the fixture from the constants generating it.
-  // The generator's own tsconfig with `types: ["node"]` is what it actually
-  // wants; until it has one it is unchecked, which is what "temporary harness"
-  // already says out loud.
   "exclude": ["e2e/handbook/**"]
 }

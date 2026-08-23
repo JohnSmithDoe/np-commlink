@@ -32,6 +32,7 @@ export class ReadingsPageFacade extends BaseListPageFacade {
   readonly searchResult = this.#readings.searchResult;
   readonly sortable = signal(false);
   readonly searchable = signal(false);
+  readonly hasToolbar = signal(false);
 
   readonly profile = this.#profiles.routeProfile;
   readonly heading = computed(() => this.profile()?.name ?? '');

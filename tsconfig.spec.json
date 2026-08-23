@@ -17,10 +17,10 @@
     "types": ["vitest/globals", "dom-chromium-ai"]
   },
   "files": ["src/polyfills.ts"],
-  "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-    "src/app/@shared/testing/**/*.ts"
-  ],
+  // Every `testing/` dir, not just `@shared`'s: Sheriff reaches them from
+  // `*.spec.ts` alone, so a fixture is spec code and wants spec options. Nine
+  // domains held theirs under the app project, where `noUncheckedIndexedAccess`
+  // makes a fixture's own lookup of its own table an error.
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/*/testing/**/*.ts"],
   "exclude": []
 }

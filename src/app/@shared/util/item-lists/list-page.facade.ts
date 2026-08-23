@@ -2,10 +2,10 @@ import { InjectionToken, Signal } from '@angular/core';
 import { BaseItem } from '../../model/base-item.types';
 import { Category, CategoryId } from '../../model/category.types';
 import {
-  SearchResult,
+  ItemList,
   ItemListSortOption,
   ItemListSortType,
-  ItemList,
+  SearchResult,
 } from '../../model/item-list.types';
 
 export interface ListPageFacade {
@@ -16,6 +16,7 @@ export interface ListPageFacade {
   readonly sortOptions?: Signal<readonly ItemListSortOption[]>;
   readonly sortable?: Signal<boolean>;
   readonly searchable?: Signal<boolean>;
+  readonly hasToolbar?: Signal<boolean>;
 
   search(term?: string): void;
   addItemFromSearch(): void;

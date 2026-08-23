@@ -23,7 +23,6 @@ import { RitualActions } from './ritual.actions';
 
 const UNDO_TOAST_MS = 6000;
 const DISMISS_TOAST_GROUP = 'ritual-dismiss';
-const COMPLETE_TOAST_GROUP = 'ritual-complete';
 
 @Injectable({ providedIn: 'root' })
 export class RitualToastEffects {
@@ -40,23 +39,6 @@ export class RitualToastEffects {
           action: {
             labelKey: marker('ritual.toast.undo'),
             action: RitualActions.restored(promptId),
-          },
-        })
-      )
-    );
-  });
-
-  undoCompletionToast$ = createEffect(() => {
-    return this.#actions$.pipe(
-      ofType(RitualActions.completed),
-      map(({ promptId, at }) =>
-        NotificationsActions.toast({
-          key: marker('ritual.toast.completed'),
-          durationMs: UNDO_TOAST_MS,
-          group: COMPLETE_TOAST_GROUP,
-          action: {
-            labelKey: marker('ritual.toast.undo'),
-            action: RitualActions.uncompleted(promptId, at),
           },
         })
       )

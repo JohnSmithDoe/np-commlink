@@ -270,10 +270,6 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 - **The card commits in place; the task modal is gone.** Its *Später* button was the tell — a control
   whose only job was to unwind the container it lived in, answering a need the modal created. A modal
   earns its place with a form, a choice, or a destructive confirm.
-- **Removing the modal required adding an undo** — it was silently buying protection against a mis-tap on
-  an irreversible act. `RitualActions.uncompleted` matches prompt id **and** stamp, never "the last row":
-  a bonus puts two completions on one day. It has no persistent path, and that is accepted — a completion
-  is visible on the page it happens on and re-completing is one tap, unlike a dismissal.
 - **The card must never become a button** — its accessible name would be the task text, so it would
   announce *"…, button"* without saying what pressing does, and the largest target on screen would commit
   the day.

@@ -35,7 +35,16 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": ["**/*.spec.ts", "src/app/@shared/testing/**/*.ts"],
+  // What this project must NOT claim. The implicit `**/*` include reaches the
+  // whole repo, and every file it claims is checked under *app* options — so
+  // anything wanting different ones is owned by another tsconfig, and stays
+  // listed here or the two programs disagree about the same file.
+  "exclude": [
+    "**/*.spec.ts",
+    "src/app/*/testing/**/*.ts",
+    "eslint-plugin-commlink/**",
+    "e2e/handbook/**"
+  ],
   // Not for `tsc -b` — no child sets `composite`, so a build refuses at this
   // project with one TS6306 per reference (after emitting the three children).
   // `tsc -p tsconfig.json` refuses the same way, plus 30× TS6305: the implicit
@@ -52,9 +61,10 @@
   // here. A reference wins only where the child lists the file as its own root:
   // `**/*.spec.ts` is excluded here, and dropping the list once turned 178 specs
   // into "not found by the project service"; `e2e/**/*.ts` resolves the same way.
-  // So a new tsconfig belongs here only if its files fall outside this project's
-  // globs or into its `exclude` — eslint-plugin-commlink's needs no entry, being
-  // found by the directory walk.
+  // So a new tsconfig belongs here only when the walk would reach *this* file
+  // first and find its files excluded. A tsconfig sitting in their own directory
+  // is found before this one and needs no entry — eslint-plugin-commlink's and
+  // e2e/handbook's both.
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.spec.json" },
