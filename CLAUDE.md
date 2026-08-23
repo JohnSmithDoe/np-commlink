@@ -18,7 +18,7 @@ that has to outlive its commit belongs in one of the three documents below.
 
 | File | Holds |
 | --- | --- |
-| [decisions.md](docs/decisions.md) | settled questions, so they are not re-flagged as work. **Append; never re-weave.** |
+| [decisions.md](docs/decisions.md) | settled questions, so they are not re-flagged as work. **Append while a decision stands; collapse it into its successor once one supersedes it.** |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, and what is owed before the next major |
 | [next-version.md](docs/next-version.md) | work triaged into the next major, with the reasoning that put it there |

@@ -1,7 +1,10 @@
 # Decisions
 
-Settled — do not re-flag as work. **Append; never re-weave.** Live work is in [state.md](./state.md).
+Settled — do not re-flag as work. Blocked and before-the-next-major work is in [state.md](./state.md);
+the next major's scope is in [next-version.md](./next-version.md).
 No entry cites a commit SHA: a history rewrite invalidates every one. A claim carries its own evidence.
+**Append while a decision stands; collapse it into its successor once one supersedes it** — a superseded
+entry that is merely left standing is how this file reached 955 lines and started carrying false claims.
 
 ## Declined extractions — read as duplication, are not
 
@@ -19,18 +22,19 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 - **Scoping the list dialogs' field tree to the bound `name`** — `childrenMap` is a `linkedSignal`
   reusing child nodes, `valid()` is memoized, `reduceChildren` short-circuits. The tree **is** the
   write-back channel and `canSave` comes from the schema. Revisit only with a measurement.
-- **Specs over facades** — a facade method is one line; a mis-wire is either an argument swap (needs
-  branded ids — rejected: an `as` at every mint point *including every IndexedDB read*, in an app with
-  zero `any`) or a same-payload wrong dispatch, which nothing types. The exception it was granted —
-  `DeckFacade.configuredEntries`, deriving two booleans from two `string[]`, where a swap compiles — died
-  with the module axis: one flag cannot be swapped with anything. **No facade currently earns a spec.**
 - **`addCategory`/`showEditDialog` onto `LIST_FACADE`** — forces `tracking` to implement operations it
   has no concept of.
+- **A 24-line banner ceiling, measured and declined.** Three files pay a FACT rather than a word there:
+  `e2e/helpers.ts` loses `openRowSwipe`'s off-screen parking, `ionic-a11y-assumptions.spec.ts` the
+  rejected `toString()` regex, `configs.ts` half its per-scope bullets. 32 is the gate
+  (`commlink/comments-header-only`, whose banner carries the rest of the reasoning); **6–14 lines is the
+  guideline for a new one**.
 
 ## Keep, despite looking unused
 
-- **`@capacitor/app`, `haptics`, `keyboard`** — native plugins; removing `app` changes Android's back
-  button, and no gate sees it. "No import" is not "unused" for a Capacitor plugin.
+- **`@capacitor/app` and `keyboard`** — native plugins; removing `app` changes Android's back button,
+  and no gate sees it. "No import" is not "unused" for a Capacitor plugin. `haptics` was the third and is
+  no longer here on that argument: it is scheduled ([next-version.md](./next-version.md)).
 - **`sonar-project.properties`, `qodana.yaml`** — Sonar runs on demand, natively (the CLI image is
   amd64-only; a container mount breaks coverage import). Not for CI without deciding gate semantics: it
   asserts on *new* code only, so a first analysis passes vacuously.
@@ -56,8 +60,10 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   `Dayjs` values. What stops them being confused is the **value** type — two `Record<string, Dayjs>`
   would have compiled. The shape also carries the one-row-per-day invariant a hand-written guard used
   to, and never covered on the whole-array writes the picker actually uses.
-- **`DayKey` is a template-literal type, and does not reopen branded ids** — one mint (`dayjsToString`),
-  and the disk read re-mints rather than casting, so junk on disk is normalized instead of trusted.
+- **`DayKey` is a template-literal type, and does not reopen branded ids.** Branded ids were rejected
+  for their cost — an `as` at every mint point *including every IndexedDB read*, in an app with zero
+  `any`. `DayKey` avoids reopening that: one mint (`dayjsToString`), and the disk read re-mints rather
+  than casting, so junk on disk is normalized instead of trusted.
 - **Comparing by name is legitimate in exactly one shape** — the recipe matcher's fallback for a storage
   row with no `productId`. Resolution of last resort, never identity.
 - **A slice key is declared once** — `<SLICE>_STATE_KEY`, read by both the descriptor and
@@ -121,6 +127,12 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   green-against-red **encodes a value's sign**. `accent` aliases `success` on plain and `primary` under
   cyberpunk, so a toast follows the user's swatch and no new hex entered the stylesheet. Explicit
   `color: 'danger'` is untouched: a refusal should not look like the deck.
+- **A hand-picked accent is DROPPED when the brightness changes, and both skins' picks go with it.** The
+  default swatches read skin AND mode, but an override is one inline style on `<html>`, so it outranks the
+  compound block that exists precisely because neither hue survives the other ground — amber falls to
+  2.3:1 on paper, blue to 2.6:1 on ink. Nesting the stored map by mode was the alternative and was
+  declined: a shape change on a slice every install holds, to preserve a colour that is two taps to pick
+  again. The other skin's pick goes too, because it was made on the old ground as well.
 
 ## Router and navigation
 
@@ -189,6 +201,22 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   shapes still change for the price of a cleared browser. Which slices those are is a fact about people
   rather than about code, so it is **asked, never inferred**, and the roster lives in
   [CLAUDE.md](../CLAUDE.md) where a changing fact belongs — not restated here, where it would rot.
+- **Every exemption taken, in one place.** Each was asked and answered; none is a precedent, because
+  cost is a fact about the roster rather than about the change. `APP_VERSION` is still **1**.
+  - `groceries → household` — persisted key renamed before the first tag, when the dev browser was the
+    only holder. `npc-groceries` and an `AppModule` member knowingly abandoned.
+  - cash's `bank` → `iban` + `bankRef` — a breaking field change, free because cash has no users: no v1
+    data exists anywhere for a step to migrate. The exemption is **spent**; the next cash shape change
+    once it holds real data owes the first real rung.
+  - `excludedFromAllowance`, and `pills` + `intakes` — additive and optional, so a missing key hydrates
+    to initial state and `runMigrations` walks past a missing step. Free by shape, not by roster.
+  - deck entry id `barcode` → `notes` — the **first taken against a slice real users hold**. Under the
+    polarity of the day an id the catalog gained read as visible, so every install switched NOTES on by
+    itself. Cheap only because switching one program back off is a tap; the failure mode is now gone by
+    construction (*The deck stores what is VISIBLE*).
+  - `deck`'s pre-flip document — RESET, not migrated, because its meaning inverted.
+  - `settings`' `theme` → `skin` + `mode` — the cheapest: the same two strings under a new field name,
+    `loaded` spreading over `initialSettings`. Worst case is one re-pick for a boomer-skin holder.
 - **A reset is a legitimate answer to a moved shape, and v1.1.0 gave it twice.** `deck` and `settings` both
   changed shape under real holders and neither got a rung: the deck **discards** a pre-flip document because
   its stored field named the ids to _hide_, which the new reading would show — migrating it would invert
@@ -196,14 +224,17 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   `{...initialSettings, ...settings}`, costing a boomer-skin holder one re-pick. The precedent is narrow and
   worth naming: a rung is owed to data whose **meaning** survives the change, and a reset is honest when it
   does not. Cost is what decides between them, and cost is a fact about the roster.
-- **The deck's stored field is now `visibleEntries`, which supersedes how "empty deck" is described under
-  *Scope and defaults*** — an empty deck is no entry _listed_, not every entry _hidden_. Same rule, opposite
-  polarity: absence means hidden, so a catalog entry nobody has seen is off rather than on, and renaming an
-  id can no longer switch a program on for everyone.
+- **The 09:00 office nudge is cancelled once at boot, from the notifications slice, which records that it
+  happened.** The policy moved into `office-time`, but that slice hydrates on route: a deck with OFFICE
+  switched off never reaches the effect that would clear the cron the old app-initializer left with the OS.
+  The kernel hydrates at boot and does reach it. It runs ONCE — cancelling on every boot would disarm
+  anyone who has since switched the reminder on, since only the office page re-arms — and running it costs
+  nothing, because the switch that replaced the initializer did not exist when that cron was placed.
+  It is not a rung: what is stale is a schedule the OS owns, not a shape on disk.
 
 ## Scope and defaults
 
-- **A cold install ships an empty deck** — every catalog entry hidden, one `@empty` node pointing at
+- **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at
   `/commlink/deck`. The curated four it replaced were not wrong, they were unmaintainable in a specific
   way: every new feature re-opened "does this one belong in the default?", a question with no checkable
   answer, paid for by whoever adds the next module. Empty is a rule instead of a list. **No entry is ever
@@ -216,11 +247,12 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   its children's toggles to stay coherent. The module survives as a **label on the program row** — dim
   eyebrow under the page title — and only where it names a group: `groupingModules` gives it to the
   modules the catalog uses more than once, because on a module of one it repeats the row's own title.
-  `hiddenModules` leaving `DeckState` is owed no rung, and `deck` **is** a slice real users hold: the
-  leftover key is read by nothing, and the one behaviour it could still carry — a module switched off —
-  resolves to those programs appearing again, which is the change asking for itself.
+  Dropping the axis from `DeckState` was owed no rung: the leftover key is read by nothing, and the one
+  behaviour it could still carry — a module switched off — resolves to those programs appearing again,
+  which is the change asking for itself.
 - **Household is the first MVP feature.** Declined against that scope, not to be re-proposed before a tag:
-  - **SOYKAF / recipes are v2** ([state.md](./state.md)); the deck entry is hidden by default.
+  - **SOYKAF / recipes are v2** ([next-version.md](./next-version.md)); the deck entry is hidden by
+    default.
   - **The bulk `storage → shopping` sweep** — the loop closes by hand already (start-swipe copies a row to
     shopping, `moveToStorage` brings bought ones back). Missing is only the *automatic* "everything below
     its minimum", and `minAmount` has never been driven against a real pantry. Automating an unexercised
@@ -233,9 +265,21 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   the three household lists and nothing else, so its entrance is their toolbar
   (`app-household-list-settings-button`, beside the categories button). A drawer row was a second,
   weaker answer to a question the toolbar answers better — and one a hidden program could switch off,
-  leaving a page reachable only by URL. A stale id in a stored `hiddenEntries` is inert, since
-  `visibleEntries` reads the catalog rather than the config, so no rung is owed; the one visible effect
-  is that an untouched deck no longer compares equal to the factory one.
+  leaving a page reachable only by URL. A stale id left in a stored deck is inert, since the deck reads
+  the catalog rather than the config, so no rung is owed.
+- **`DeckState.hiddenEntries` became `visibleEntries`, and absence now means HIDDEN.** Held the other way
+  round, "a cold install ships an empty deck" was a RULE in the prose and a LIST in the code —
+  `DECK_CATALOG.map(id)`, the whole catalog restated — so the one invariant the deck has was maintained by
+  copying. Three things fall out of the flip and none of them needed arguing separately: a catalog entry
+  nobody has ever seen arrives OFF instead of on, renaming a deck entry id can no longer switch a
+  program on for everyone, and `initialDeck` is `[]`.
+- **A pre-flip document is DISCARDED, not migrated.** Its ids name what to hide, which under the new
+  reading are the only ones that would show — so reading it is worse than not. The reducer's shape guard
+  is what makes that a reset rather than a crash: `loaded` is handed whatever was on disk under a
+  `DeckState` cast, and the old shape has no `visibleEntries` for `.includes` to reach.
+- **The `visibleEntries` FUNCTION became `entriesOnDeck`.** It resolves order and visibility into entries;
+  the field is a set of ids. One name for both would have made `state.visibleEntries` and
+  `visibleEntries(catalog, state)` read as the same thing at a glance, which they are not.
 
 ## Destructive actions
 
@@ -365,50 +409,22 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 
 ## CI and deployment
 
-- **No Codeberg fallback workflow is kept.** The Forgejo file was deleted rather than parked beside the
-  GitHub one. It had never executed on any runner, so every constraint it encoded was reasoned rather than
-  observed, and nothing in the repo can gate a workflow file — it would have rotted while reading as
-  insurance. `git show` recovers it, and it would need testing at that point regardless.
-- **CI is one serial job, and that is not a capacity concession.** `lefthook`'s pre-push runs the same
-  suite, so nothing in CI is on anyone's critical path. Fanning out would buy wall-clock nobody waits on
-  and cost a `pnpm install` per job plus an artifact hand-off at the deploy.
-- **Pages deploys through the artifact API, not a `pages` branch.** `upload-pages-artifact` →
-  `deploy-pages`, authenticated by a short-lived OIDC token, so no long-lived repo-write credential
-  exists. `deploy` is a *separate* job only because `environment:` fails a job outright on a ref the
-  environment does not permit, and a `pull_request` ref never is.
-- **`actions/configure-pages` is deliberately absent.** It injects a base path, which this repo pins in
-  `package.json`'s `build:pages` and asserts in `scripts/check-pages-build.mjs` — a third writer for a
-  constant that is deliberately duplicated *and gated* would be the regression, not the duplication.
-- **The release shape is asserted in shell, not in `on.push.tags`.** GitHub's glob dialect could express
-  `v[0-9]+.[0-9]+.[0-9]+`, but putting it in the trigger would stop pre-release tags from being *verified*.
-  The trigger is `v*` and the publish decision is a job output.
+The workflow file is the documentation for what CI does, and every choice in it is enforced by the run
+itself — one serial job, Pages through the artifact API on a short-lived OIDC token, `configure-pages`
+absent because the base path is pinned and gated, `contents: write` scoped to the release job, the digest
+printed rather than attached, and a release re-asserted `--draft` so a retry cannot publish an APK-less
+one. One decision is not visible there, because it is about what CI deliberately CANNOT do:
+
 - **The signing key does not go into GitHub secrets, and CI builds no APK.** Weighed and declined: it
   would have saved three minutes a few times a year against a credential that *cannot be rotated* — a
   leak has no recovery story except abandoning the app identity and asking every user to uninstall,
   which takes their data. The exposure is also wider than "someone steals the repo": anyone with write
   access, any later workflow edit, and every third-party action sharing the job (`checkout`,
   `setup-node`, `cache`) would run beside it. The general shape is **automate up to the trust boundary
-  and stop** — the same instinct that put Pages on a short-lived OIDC token instead of a PAT.
-- **So the release is drafted by CI and published by hand.** The `release` job takes it as far as a
-  runner can without the key — tag, title, install and verify notes — and the two assets are attached
-  in the web UI. Draft rather than published is what makes a re-run harmless: the job re-asserts
-  `--draft`, so a retry can never publish a release with no APK on it.
-- **No script wraps that upload.** A `gh release upload` wrapper was written and deleted: `gh` is not
-  installed here and is not wanted, so the script would have been a file that reads like the supported
-  path while failing on its first line — the same reason no Codeberg fallback workflow is kept. Two
-  files dragged into a draft, a few times a year, needs no abstraction.
-- **`contents: write` lives only in that job.** Nothing else in the workflow can alter the repository,
-  and it needs no checkout — `gh` addresses the repo through `GH_REPO`.
-- **The tag must equal `package.json`'s version, and CI fails the run if it does not.** Nothing
-  downstream reads the tag: `versionName`/`versionCode` come from `package.json` (postsync patch 4)
-  and `NPC_RELEASE` from `$npm_package_version`. A tag running ahead would publish `v1.0.1` carrying
-  `versionCode 10000`, which Android rejects as a downgrade — the only way in being an uninstall that
-  takes every tracked session, the pantry and the ledger. Invisible at build time, so it is a gate.
-- **The digest stays a printed line, not a second release asset.** A `.sha256` sidecar was written and
-  reverted: it would be published by the same hand that published the APK, so it proves only "this is
-  the file that was uploaded" — which the signature already proves, and proves better, against a
-  fingerprint pinned once in the README rather than re-published each release. `collect-apk.sh` prints
-  the digest, it is pasted into the notes, and the check that carries the weight is `apksigner`.
+  and stop** — the same instinct that put Pages on a short-lived OIDC token instead of a PAT. So the
+  release job goes as far as a runner can without the key, and the two assets are attached by hand.
+
+## The camt import — one parser, one key space, two views
 
 - **Bank statements are imported as camt, and only as camt.** The per-bank CSV parsers are gone —
   `volksbank.parser.ts`, `dkb.parser.ts`, the registry that chose between them, and the `Bank` field on
@@ -464,14 +480,6 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   and not the only path. It is the one import path that needs inflate, and the bundle should not carry
   it for the case that never happens. A zip is recognised by its magic bytes rather than its
   extension, so an archive a download manager renamed still opens.
-- **The stored shape changed without a rung, and `APP_VERSION` stays 1.** Dropping `bank` and adding
-  `iban` and `bankRef` is exactly what the ladder exists for, but the cash feature has no users yet:
-  there is no v1 data anywhere that a step could migrate. A stale `bank` key left in a dev browser is
-  read by nothing. The ladder therefore remains unexercised, and the next stored-shape change made
-  after cash has real data still owes it a first real step.
-
-## Structured camt, and the two views it pays for
-
 - **Every camt field becomes its own property, and `description` survives beside them.** They answer
   different questions: `name` is what the list searches and what a row reads as, the parts are what a
   rule matches and what the cashboard groups by. Neither derives from the other — a joined string
@@ -531,9 +539,6 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   month and answers "what can I spend today"; the cashboard (`/cash/report`) is across accounts and
   months and answers "where does it go". They are not three renderings of one dataset, which is why
   they are not segments of one page.
-- **`excludedFromAllowance` needs no `APP_VERSION` rung.** It is additive and optional — absent means
-  not excluded — and `runMigrations` skips a missing step, so every slice is simply re-stamped. A bump
-  here would be ceremony. The ladder still owes its first real step to the first *breaking* change.
 - **`todayISO` is a signal the burn-down facade owns.** A computed that reads the clock has no
   dependency to invalidate, so the allowance would keep yesterday's denominator until something else
   in the store changed.
@@ -647,8 +652,7 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 
 - **`pills` and `intakes` are the third and fourth keys of the vitals slice**, for the reason the blood
   pressure entry already gives: profiles are the spine, domains are sealed, and a `pills` domain could not
-  import them. Adding both keys is additive — a missing key hydrates to initial state — so no rung was owed
-  and `APP_VERSION` did not move.
+  import them.
 - **A pill's `slot` is a block of eight OS notification ids, and `nextSlot` only counts up.** The OS keys a
   notification by one integer while a pill needs up to seven (one weekly cron per due weekday), so
   `pillReminder` carries `idBase` instead of `id` and owns everything above it. Slot 0 of each block stays
@@ -675,24 +679,12 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 
 ## Notes (SIGIL), and what the rename cost
 
-- **The deck entry id moved `barcode` → `notes` with no rung, and the consequence was accepted rather than
-  paid for.** `hiddenEntries` lists what is OFF, so an id the catalog gained is not in anyone's stored set
-  and reads as visible: every existing install has NOTES switched on by itself, and the dead `barcode` id
-  sits inertly in their `order`. Asked and answered — `APP_VERSION` stays **1** and the ladder is still
-  unexercised. This is the second exemption taken (cash was the first), and unlike that one it was taken
-  against a slice real users DO hold. It buys no precedent: it is cheap only because switching one program
-  back off is a tap.
 - **The badge picture was abandoned, not migrated.** `npc-barcode` is left on disk, read by nothing. The
   feature it held survives as a note that happens to carry an image, which is why `rotateBase64` moved into
   `notes/util` intact — the at-the-checkout gesture is the same one, reached from a row's start swipe.
 - **One note type, never two.** "Image note" and "text note" would need a discriminator, a convert action
   and a branch in every renderer, to describe the difference "this one has no body". Keep has one type too;
   the distinction it draws is in the CREATE affordance, not in the data.
-- **Notes are ARRANGED, not sorted, so the page left `ListPageComponent`.** A sort toolbar over a
-  hand-dragged order offers to silently discard it — the argument `cash-rules.page` already carries. That
-  page is also the precedent for the exit itself: `ion-reorder-group` must be an ancestor of every
-  `ion-reorder`, and `app-item-list` owns the element rows project into. The searchbar and the empty state
-  are still the shared ones; only the list body is the page's own.
 - **`items` is one array and the two sections are a partition of it.** Pinning is therefore a one-field
   change and never a move between collections, and `reorderSection` writes a section's new order back into
   the slots that section already occupied. It REFUSES an order shorter than its section, because that is
@@ -710,224 +702,57 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   nothing else in the app offers "move this note up". `cash-rules` already ships the same gap where order is
   *semantic*; here it is cosmetic, since every note stays reachable, searchable and openable without a drag.
 
-## The deck stores what is VISIBLE
+## The shared list page, and what governs the next caller
 
-Supersedes both entries above that reason about `hiddenEntries` — they record what was true while the
-set was inverted, and are left standing rather than re-woven.
+Twelve `BaseItem` lists render `ListPageComponent`. What follows is the half a read of the source does
+not give you; the selector names and file paths it would.
 
-- **`DeckState.hiddenEntries` became `visibleEntries`, and absence now means HIDDEN.** Held the other way
-  round, "a cold install ships an empty deck" was a RULE in the prose and a LIST in the code —
-  `DECK_CATALOG.map(id)`, the whole catalog restated — so the one invariant the deck has was maintained by
-  copying. Three things fall out of the flip and none of them needed arguing separately: a catalog entry
-  nobody has ever seen arrives OFF instead of on, renaming a deck entry id can no longer switch a
-  program on for everyone, and `initialDeck` is `[]`.
-- **A pre-flip document is DISCARDED, not migrated, and `APP_VERSION` stays 1.** Its ids name what to
-  hide, which under the new reading are the only ones that would show — so reading it is worse than not.
-  Every holder lands on the cold-install deck and picks their programs again; asked and answered. The
-  reducer's shape guard is what makes that a reset rather than a crash: `loaded` is handed whatever was
-  on disk under a `DeckState` cast, and the old shape has no `visibleEntries` for `.includes` to reach.
-- **The `visibleEntries` FUNCTION became `entriesOnDeck`.** It resolves order and visibility into entries;
-  the field is a set of ids. One name for both would have made `state.visibleEntries` and
-  `visibleEntries(catalog, state)` read as the same thing at a glance, which they are not.
-- **This is what the notes rename should have cost and did not.** The entry above accepted NOTES
-  switching itself on for every install because absence meant shown. That failure mode is now gone by
-  construction — which is the argument for the flip, not a reason the earlier call was wrong given the
-  shape it was made under.
-
-## The theme split, and the accent that cannot cross a ground
-
-- **`theme` became `skin` + `mode` with no rung and no `APP_VERSION` bump.** The stored `theme` values and
-  the new `Skin` values are the same two strings, so a document written by the previous build reads as a
-  skin carrying the default brightness — only the field NAME moved, and `loaded` spreads over
-  `initialSettings`. Asked and answered. It is the third exemption taken and the cheapest of them: the
-  worst case is someone who ran the light theme landing on ink once and tapping a segment.
-- **A hand-picked accent is DROPPED when the brightness changes, and both skins' picks go with it.** The
-  default swatches read skin AND mode, but an override is one inline style on `<html>`, so it outranks the
-  compound block that exists precisely because neither hue survives the other ground — amber falls to
-  2.3:1 on paper, blue to 2.6:1 on ink. Nesting the stored map by mode was the alternative and was
-  declined: a shape change on a slice every install holds, to preserve a colour that is two taps to pick
-  again. The other skin's pick goes too, because it was made on the old ground as well.
-
-## A cron the kernel armed, the kernel cancels
-
-- **The 09:00 office nudge is cancelled once at boot, from the notifications slice, which records that it
-  happened.** The policy moved into `office-time`, but that slice hydrates on route: a deck with OFFICE
-  switched off never reaches the effect that would clear the cron the old app-initializer left with the OS.
-  The kernel hydrates at boot and does reach it. It runs ONCE — cancelling on every boot would disarm
-  anyone who has since switched the reminder on, since only the office page re-arms — and running it costs
-  nothing, because the switch that replaced the initializer did not exist when that cron was placed.
-- **This is not a migration rung.** What is stale is a schedule the OS owns, not a shape on disk.
-  `runMigrations` never sees it and `APP_VERSION` has no opinion about it.
-
-## A header block is bounded at 32 lines
-
-- **`commlink/comments-header-only` counts the banner's lines now, and 32 is the ceiling.** Presence stays
-  unjudgeable — no rule can tell a file whose decisions are non-derivable from one whose code already reads
-  as its own summary — but length is checkable, and it is the half review kept letting through: prose
-  arrives a paragraph at a time, each one defensible. Seven banners were over, one at 74. What came out was
-  footguns.md restated, narration of the expression underneath, and history ("reversing the old rule set",
-  "no longer closes on a pick"). The check runs after the shape checks, so a malformed block still gets the
-  accurate diagnosis rather than a length complaint.
-- **24 was measured and declined.** Three files pay a FACT rather than a word there: `e2e/helpers.ts` loses
-  `openRowSwipe`'s off-screen parking, `ionic-a11y-assumptions.spec.ts` the rejected `toString()` regex,
-  `configs.ts` half its per-scope bullets. Moving those three into this document was the alternative — a
-  short banner bought with a growing doc. The guideline for a NEW banner is still 6–14 lines: 32 is the
-  gate, not the target.
-
-## Reorder and sections are the shared list's, so notes is a list page
-
-Supersedes the two entries above that argue notes and cash-rules out of `ListPageComponent` — they
-record why the exit was right while the shared list could not hold a drag handle.
-
-- **The reorder group belongs inside `app-item-list`.** The old argument was true and narrow:
-  `ion-reorder-group` must be an ancestor of every `ion-reorder`, and the shared list owns the element
-  rows project into. So it renders the group itself, behind a `reorderable` input, and passes the flag
-  down through `ItemListTemplateContext` — the handle is drawn by `app-list-item` in the host page's
-  row template, which is the only half the shared component cannot reach.
-- **A reorder-capable list is one whose facade offers `reorder(ids, sectionId?)`, and a sectioned one
-  offers `sections()`.** Absence is the declaration, as it already is for `catalog` and
-  `manageCategories`. A flat list is the same code path with one unnamed section, so there is no
-  second rendering branch to keep in step, and `CashRulesFacade.reorder(ids)` already fits the
-  signature unchanged.
-- **A section carries an i18n KEY and the facade builds it**, because `@shared` owns no wording. Notes
-  drops the empty side rather than sending an empty section, and a lone section renders no header —
-  one statement of the rule, in the component, instead of a per-page `@if` over the other section's
-  length.
-- **The handle is withdrawn under a search, an armed filter or a truncating window.** A reorder
-  reports the ids it can SEE and the reducer writes them back over the whole collection, so a drag
-  over a partial view silently drops every row the view hid. Notes carried this for its own page; it
-  is now the shared component's, which is what stops the next caller re-discovering it. The reducer's
-  refusal of a short order stays the backstop it always was.
-- **The sort toolbar needed no new mechanism.** `hasToolbar = signal(false)` already existed for
-  vitals, and `setSortMode` became an optional command: no sort axis means the list is ARRANGED, and
-  nothing calls it.
-- **Cash rules did not follow, and reorder is no longer why.** What holds it out is page chrome — no
-  searchbar, no toolbar, a trailing header button, and add-and-apply in the content beside a header
-  that offers its own add. state.md carries it.
-
-## Cash rules followed, and the deck config cannot
-
-- **`CashRulesFacade` extends `BaseListPageFacade` and its state was already an `ItemList`.**
-  `CashRulesState` **is** `ItemList<CashRule>`, so `state` and `searchResult` came from selectors that
-  existed. What did not exist was `items`: `selectRulesListItems` ran `filterAndSortItemList`, which
-  with no `sort` set falls back to comparing by NAME — the one order a rules list must not render.
-  `selectArrangedRules` sorts by `order` instead, and nothing read the name-sorted one.
-- **The add affordance moved to the header, and the in-content button went.** `app-page-header`'s add
-  is what the other eleven list pages use; keeping the outline button meant a `hideAdd` input on the
-  shared page for a single caller, which is the seam this refactor exists to close. The apply button
-  stays, in `afterList` — it acts on the whole list rather than adding to it. `cash.rule.add`,
-  `cash.rules.empty`, `cash.section.rules` and `cash.a11y.delete-rule` left with it: the header
-  carries the add, the shared empty state carries the copy, the page title already said "Regeln", and
-  a row's delete option is the shared text one.
-- **`cash-rule-row` was replaced by `list-row`, not renamed.** `no-testid-on-component-element`
-  forbids a testid on `app-list-item`, and the row it wraps already declares one. Two e2e files and
-  the handbook shots read it.
-- **The deck config is NOT a `BaseItem` list and is not a candidate.** A `DeckEntry` has no `name` —
-  its label is `labels[skin].nameKey`, a marker resolved per skin — so there is nothing for the shared
-  list's title, search or comparator to read. Its rows are toggles rather than navigable items, its
-  state is `visibleEntries` plus an order rather than an `ItemList`, and the arrangement is the whole
-  content. Migrating it would mean inventing a stored `name` the theme owns instead.
-
-## The recipe book is RANKED, and the ranking is a sort mode
-
-- **`RecipesActions` was the last hand-rolled list action group and now comes from
-  `createItemListActionEvents`.** It carried only add/remove/update, so `RecipesState` was typed as an
-  `ItemList<Recipe>` whose `searchQuery` and `sort` no writer ever set. The reducer handles all three
-  view events the way `products` does, `hydratedList` clears the transient pair on the way in, and the
-  page is a `ListPageComponent`.
-- **`rankRecipesByMissing` is a sort MODE, not a pinned order.** It answers "what can I cook right
-  now", which no field on a `Recipe` can, so `itemComparator` cannot express it — but pinning it in
-  the selector (the ledger's answer, `sortable: false`) would have made the toolbar's first tap a
-  one-way door out of the page's whole point. `cookable` is therefore a `sortOptions` entry, it is
-  what an absent `sort` means, and `desc` reverses it rather than discarding it. `prepMinutes` and
-  `servings` are real fields and ride the shared comparator for free.
-- **Search narrows the ranking instead of re-ordering it.** `selectRecipesListItems` filters the
-  ranked matches by the shared `SearchResult`'s ids, so a query never silently re-sorts the list it
-  is narrowing.
-- **A row reads `missing` from a Map, not from the item.** `selectRecipeMatches` returns
-  `{recipe, missing}` and `ItemListComponent` tracks `item.id`, so the wrapper cannot be the item.
-  The page keys the matches by recipe id and looks each row up; `missing` stays derived from products
-  and storage rather than being flattened onto a stored `Recipe`.
-- **`sort` is the one field this adds to a stored household document.** `updateSearch` and
-  `updateFilter` no longer trigger a save at all and `hydratedList` clears both, so only a chosen sort
-  persists — optional, absent on every stored row, and absence reads as the ranking. Asked and
-  answered; no rung.
-
-## The schedules page followed the rules page
-
-- **Same shape, one detail apart.** `CashSchedulesState` is an `ItemList<CashSchedule>`, its actions
-  come from `createItemListActionEvents`, and `selectSchedulesListItems` → `facade.listItems` was dead
-  in precisely the way rules' was: name-sorted by `filterAndSortItemList`'s fallback and read by
-  nobody, while the page rendered a `nextDueISO` order of its own. `selectSchedulesByDueDate` is that
-  order, and it is what `items` hands the shared list.
-- **The order is PINNED here and a sort MODE in the recipe book, and the difference is the toolbar.**
-  Pinning is only a one-way door when a toolbar exists to override it. Schedules declare
-  `hasToolbar: false`, so there is no door: due-date order is the only order, stated once in the
-  selector. Offering amount or name sorts later costs what recipes now demonstrates — a sort option
-  standing for "the default" — and nothing else.
-- **The summary block is `beforeList`, in two projected nodes.** `ng-content` projects every matching
-  node, so the strip-plus-breakdown `div` and the `ion-list-header` under it both carry `beforeList`
-  and land in order. That keeps the header out of the `div`'s inline padding, which would have
-  double-indented it.
-- **The row stays the page's own.** It carries a trailing amount and a mark-seen button, and
-  `app-list-item` has slots for neither — but `itemTemplate` never required `app-list-item`, so the
-  row moved across untouched, testids included. `cash-schedule-row` survives for exactly that reason:
-  it sits on a plain `ion-item`, where `no-testid-on-component-element` has no opinion.
-- **`cash.schedule.add` and `cash.schedules.empty` left with the chrome**, the same trade rules made:
-  the header carries the add, the shared empty state carries the copy.
-
-## Four seams closed, structure chosen over behaviour each time
-
-- **Cash rules and schedules joined `createItemListEffects` with `create: null`.** The factory's
-  banner used to read their absence as a reason to stay off it; `create: null` says the same thing
-  in the call — `addItemFromSearch` stays inert, so a rule with no conditions still cannot be minted
-  from a search term, and the base facade opens the create dialog instead. What they gain is the
-  half that was hand-rolled: `saveItem` is one `addOrUpdateItem` dispatch, and `syncSearchOnRename$`
-  and the add-failure toast come along.
-- **That changed what a duplicate name does, deliberately.** The hand-rolled `saveItem` matched by
-  `id` alone; `findMatchingItem` matches by id and then by exact name, which is what accounts,
-  categories and every household list already do — so saving a NEW rule or schedule named exactly
-  like an existing one now updates that one. Uniform beats the private answer: `updateListItem`
-  keyed off the same matcher all along, so the two halves disagreed before.
-- **`itemListCommands`' `updateSort` became optional, so absence is the declaration.** Wiring the two
-  arranged lists through it handed them a live `setSortMode` that reached a reducer which really does
-  handle `updateSort` — rules read in `order` and `categorize` returns the first match, so a sort
-  would have overwritten the semantics. `updateSort` now joins `addItemFromSearch` and `updateFilter`
-  as present-or-absent, matching what the base facade's banner already claimed.
-- **`CashImportFacade` owns `plan(parsed, accountId)` and `commit(preview)`.** The page reads files
-  and shows the spinner; the modal renders one `preview` prop and says yes. `hasWork` is on the
-  preview because deciding what counts as work was the modal's, and the preview carries resolved
-  category and schedule NAMES beside the ids so the modal needs no collection of its own.
-- **`ImportPlan` and `ImportConfirmation` moved to `cash/model/import.types.ts`** — Sheriff seals
-  `model → util`, so a preview type in `model` could not reference them where they were.
-- **`windowSize` is declared on the facade, and the show-more button became `ion-infinite-scroll`.**
-  Two opt-outs at two layers were one too many; the slicing stays in the component for the reason its
-  banner gives. The tap is gone, `item-list.window.show-more` retired from both bundles, and
-  `hiddenCount() === 0` still disables the scroll and withdraws the drag handle.
-- **That is LAZY LOADING, not virtualization, and the distinction is why it is safe here.**
-  `ion-infinite-scroll` only changes what triggers the next slice — a scroll instead of a tap. It
-  measures nothing and recycles nothing, so variable row heights are irrelevant to it and the DOM
-  still grows exactly as the button made it grow. Not a performance change, then, and it retires
-  neither `#shown` nor the reset-on-search rule. The seams entry that proposed this swap claimed it
-  would need "no second items signal and no reset rule"; that was only ever true of the OTHER option,
-  and the wrong half of the claim is what makes this worth writing down.
-- **The deprecated component is `ion-virtual-scroll`**, deprecated in Ionic 6 and **removed** in 7,
-  with Angular's CDK named as its successor — `ion-infinite-scroll` was never its replacement and is
-  current in Ionic 8. Real windowing therefore stays unbuilt rather than superseded, and costs what it
-  always did: the CDK strategy wants a fixed `itemSize`, which sliding rows of two and three lines
-  with section headers between them do not offer, and `cdk-experimental`'s autosize is where the
-  variable-height answer lives. Undated on purpose — a render cap is the answer until a real ledger
-  makes it not one.
-- **The route-scoped list selector factory lives in `@shared/data/item-lists/`, not beside
-  `list.selector.ts`.** Its scope is `selectRouteEntityId`, which is `data`, and `util → data` is
-  sealed. Readings and pills keep their public selector names by re-exporting the four it returns.
-- **`app-settings-segment` is `commlink/ui`, one caller, and `display: contents`.** The options stay
-  projected because each picker labels its own differently — two through i18n keys, the languages by
-  their own untranslated names — and the `*-picker-label` ids are unchanged, so both the language
-  e2e's testid and the handbook shots' `ion-segment[aria-labelledby=…]` selectors still read.
-- **Importing `@shared/util/charts/chart-options.ts` is what registers chart.js.** Three hosts each
-  called `Chart.register(...registerables)`; a fourth that forgot would have rendered an empty canvas
-  rather than failed. Drawing the options from the same module makes the registration unforgettable.
+- **Absence is the declaration, for every axis.** No `catalog` means no chip bar, no `manageCategories`
+  means no button, no `reorder` means no drag handle, no `sections` means one unnamed section, no
+  `updateSort` command means the list is ARRANGED and `setSortMode` is never called. One statement of
+  each fact, with nothing empty to keep in step and nothing to read as "not loaded yet".
+- **`itemTemplate` never required `app-list-item`.** Tracking passes its own row, and so do schedules and
+  the uncategorized view — a trailing amount or a second action is a reason to write a row, not a reason
+  to leave the shared page. This is what made four migrations cheap, and it is the first thing to check
+  when a page looks like it cannot join.
+- **The drag handle is withdrawn under a search, an armed filter or a truncating window.** A reorder
+  reports the ids it can SEE and the reducer writes them back over the whole collection, so a drag over
+  a partial view silently drops every row the view hid. The reducer's refusal of a short order is the
+  backstop, not the UI.
+- **Whether an order is PINNED or a sort MODE turns on the toolbar, not on the domain.** Pinning an
+  order in the selector is only a one-way door when a toolbar exists to override it. Schedules and the
+  ledger pin (`hasToolbar: false`); the recipe book made its cookability ranking a `sortOptions` entry,
+  because there a first tap would otherwise have been a one-way door out of the page's whole point. A
+  ranking no field can express — `rankRecipesByMissing` — is expressible as "what an absent sort means".
+- **A section carries an i18n KEY and the facade builds it**, because `@shared` owns no wording. An empty
+  side is dropped rather than sent as an empty section, and a lone section renders no header.
+- **A sort fallback is not a pinned order.** `filterAndSortItemList` compares by NAME when `sort` is
+  absent, so three "list items" selectors were quietly alphabetising lists whose order is semantic. Each
+  was dead code pointing the wrong way. **A list with a meaningful order needs its own selector**, and
+  the absence of a toolbar is not what pins it.
+- **Structure over behaviour, where a private answer disagreed with the shared one.** Joining
+  `createItemListEffects` changed what a duplicate name does: the hand-rolled `saveItem` matched by `id`
+  alone, `findMatchingItem` matches id then exact name — so saving a new rule named like an existing one
+  now updates it, as it already did for accounts, categories and every household list. `updateListItem`
+  keyed off the same matcher all along, so the two halves disagreed before. Uniform beats the private
+  answer unless the private answer is load-bearing.
+- **The show-more tap became `ion-infinite-scroll`, and that is LAZY LOADING, not virtualization.** It
+  changes only what triggers the next slice. It measures nothing and recycles nothing, so variable row
+  heights are irrelevant and the DOM grows exactly as the button made it grow — it retires neither
+  `#shown` nor the reset-on-search rule. The seams note that proposed the swap claimed it would need "no
+  second items signal and no reset rule"; that was only true of the OTHER option, and the wrong half of
+  the claim is the part worth writing down.
+- **Real windowing stays unbuilt rather than superseded.** `ion-virtual-scroll` was deprecated in Ionic 6
+  and **removed** in 7, with Angular's CDK named as its successor; `ion-infinite-scroll` was never its
+  replacement. The CDK strategy wants a fixed `itemSize`, which sliding rows of two and three lines with
+  section headers between them do not offer. Undated on purpose — a render cap is the answer until a real
+  ledger makes it not one.
+- **The deck config is NOT a `BaseItem` list and is not a candidate.** A `DeckEntry` has no `name` — its
+  label is `labels[skin].nameKey`, resolved per skin — so nothing exists for a title, a search or a
+  comparator to read. Its rows are toggles, its state is a visible set plus an order rather than an
+  `ItemList`, and the arrangement is the whole content. Migrating it would mean inventing a stored `name`
+  the theme owns. Likewise cash's uncategorized view keeps its own empty state, because there an empty
+  list is a SUCCESS and the shared one offers to create a transaction.
 
 ## Triaged out of state.md — measured, and the answer is no
 
