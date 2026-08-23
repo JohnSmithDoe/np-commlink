@@ -20,7 +20,7 @@ that has to outlive its commit belongs in one of the three documents below.
 | --- | --- |
 | [decisions.md](docs/decisions.md) | settled questions, so they are not re-flagged as work. **Append; never re-weave.** |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
-| [state.md](docs/state.md) | blocked work, one-way doors, what waits on upstream |
+| [state.md](docs/state.md) | blocked work, one-way doors, and what is owed before the next major |
 | [next-version.md](docs/next-version.md) | work triaged into the next major, with the reasoning that put it there |
 
 **These four are the whole set, and a doc is updated only when a decision, a footgun, a one-way door

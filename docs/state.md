@@ -1,7 +1,8 @@
-# State — blocked, one-way doors, waiting on upstream
+# State — blocked, one-way doors, and what is owed before v2
 
-**Check before proposing work.** Nothing here is merely undone: each needs a secret, an upstream release,
-a human reading the result, or a product decision. Settled questions are in [decisions.md](./decisions.md).
+**Check before proposing work.** Each entry either needs a secret, an upstream release, a human reading
+the result — or it has been triaged to ship before the next major. Settled questions are in
+[decisions.md](./decisions.md); the next major's own scope is in [next-version.md](./next-version.md).
 
 ## One-way doors
 
@@ -90,9 +91,12 @@ second app that cannot reach the first one's data.
     `@ngx-translate/*` 18, Sheriff.
   - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit — a
     framework major on top of other changes makes a red gate unattributable.
-- **An Angular bug worth filing:** the `pattern=""` default in [footguns.md](./footguns.md).
 
-## Deferred on a decision, not on effort
+## Owed before v2.0.0 — decided, not yet done
+
+Triaged deliberately: each of these ships before the next major. What was triaged INTO v2.0.0 is in
+[next-version.md](./next-version.md), and an entry leaves this section by being done rather than by
+being re-argued.
 
 - **Which lists opt into undo.** The mechanism is built — `ToastMessage` carries `action`, `durationMs`
   and `group`, and `@shared/data/undo/` holds a ten-deep stack the shared toast effect offers at 5 s. Only
@@ -119,21 +123,18 @@ second app that cannot reach the first one's data.
   and pills plus cash's rules all render `app-list-page` with `searchable` false. Splitting the note
   needs a second key and a `searchable` read inside `app-item-list-empty`, for copy nobody has
   complained about.
-- **Six shipping controls below the touch target.** `size="small"` is 32 px in Ionic MD; ten sites, four
-  `isDevMode()`-gated. The six that ship include the household scan button. The emoji picker's grid is
-  `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.
+- **Seventeen shipping controls below the touch target, and two debug buttons that should not exist.**
+  `size="small"` is 32 px in Ionic MD against WCAG 2.5.8's 44 px floor. Twenty sites carry it: one is an
+  `ion-title` and not a target at all, two are the `@if (isDev)` debug-notification buttons in
+  `notifications.page.html` — **those get deleted, not resized** — and the other seventeen ship, across
+  ritual (3), notifications (2), tracking's daily-sessions (2), the two handbook retries, the vitals
+  weekday picker, cash's spend-quick-add, the emoji-picker retry, `category-input`, `note-image-input`,
+  the note editor and settings' accent reset. The emoji picker's grid is `minmax(2.75rem, 1fr)` with a
+  banner saying why — the care is here, it is not uniform. Gateable once the dev exemption is gone: a
+  rule can match `size="small"` on an `ion-button` outright.
 - **`durable-storage.ts` still swallows a denied `persist()` grant.** Deliberate: eviction _risk_, not data
   loss, resolved inside `provideAppInitializer` — before translations load, and on every launch under
   Firefox and Safari. The only honest surface is a passive status row in settings. The _write_ half toasts.
-- **Multi-list household is not what `:listId` offered.** `HouseholdListId` is a closed three-literal
-  union over structurally different item types, named as three fields of
-  `HouseholdState` through `combineReducers`, with six `Record<HouseholdListId, …>` maps keyed off it. Real
-  multi-list means turning one field into a keyed collection, and two things refuse it: `ListSettings` is
-  six booleans naming the lists pairwise (`showProductsInStorage`, …) with no answer for _which_ shopping
-  list, and the segment switcher is deliberately unrolled because `testid-is-static` forbids a bound
-  `data-testid` inside `@for`. **Categories already deliver the use case** — a shared catalog plus a
-  route-state filter gives "Freezer" or "Aldi" separation, filtering and a bookmarkable URL at no
-  structural cost. The param survives on `categories/:listId`, carrying which list opened the catalog.
 - **One glyph per program, read by both the menu and the page header.** The six list pages each pass their
   own `icon="…"` to `app-page-header` while `DECK_CATALOG` carries the same string — two copies agreeing by
   review only. The fix is small: the icon is a static const, not slice state, and `app.component` already
@@ -146,18 +147,6 @@ second app that cannot reach the first one's data.
 - **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.
-- **The emoji picker's `ion-input` `end` slot is experimental** — Ionic 8 implements `start`/`end` with
-  _simulated_ slots. It renders and clicks correctly in e2e and on the web build; the Android WebView is
-  the one target no gate covers. The fallback needs no redesign: the identical `ion-button` moves one level
-  out, to the wrapping `ion-item`.
-- **`emoji:build` runs by hand, not in CI.** The output is committed, so the build never needs the network
-  and a stale artifact can only miss emoji from a newer Unicode release. A gate would need `emojibase-data`
-  in CI for a check that fires once a year.
-- **No skin-tone choice in the picker.** CLDR nests tone variants under each base emoji; keeping them turns
-  1644 entries into several thousand, for a picker that decorates an item name. A name pasted _with_ a tone
-  modifier survives the round-trip.
-- **The PWA icons declare `"purpose": "maskable any"` at every size** — one bitmap for both wastes the
-  maskable safe-zone padding in the `any` context. Worth splitting only if a real device's crop looks wrong.
 
 
 ## Known cost, not yet paid

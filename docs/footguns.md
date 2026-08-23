@@ -151,6 +151,11 @@ that is the entry criterion.
 
 ## Ionic behaviour worth not re-deriving
 
+- **`ion-input`'s `start`/`end` slots are SIMULATED in Ionic 8**, which is why the emoji picker's trigger
+  button is a watch item rather than a settled one: it renders and clicks correctly in e2e and on the web
+  build, and the Android WebView is the one target no gate covers. The fallback needs no redesign — the
+  identical `ion-button` moves one level out, to the wrapping `ion-item`.
+
 R1–R9 are the a11y rule set; each gated rule's banner carries its argument. Below are the ones whose
 *underlying fact* is invisible from the source. **R5 and R9 can never be gated.**
 
@@ -266,7 +271,8 @@ Ionic styles those children.
   above every real date and can never be reconciled.
 - **`@angular/forms` writes every control binding onto a same-named directive input**, and
   `FieldState.pattern` defaults to a shared `computed(() => [])`, so a bound `ion-input` gets `pattern=""`
-  — permanently `:invalid`. Harmless here; latent anywhere reading native validity.
+  — permanently `:invalid`. Harmless here; latent anywhere reading native validity. **Worth filing
+  upstream and nobody has**, so treat it as current until an Angular release says otherwise.
 
 ## Layout units that lie
 

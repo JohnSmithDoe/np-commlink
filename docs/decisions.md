@@ -924,3 +924,27 @@ record why the exit was right while the shared list could not hold a drag handle
 - **Importing `@shared/util/charts/chart-options.ts` is what registers chart.js.** Three hosts each
   called `Chart.register(...registerables)`; a fourth that forgot would have rendered an empty canvas
   rather than failed. Drawing the options from the same module makes the registration unforgettable.
+
+## Triaged out of state.md — measured, and the answer is no
+
+Four entries argued themselves to a conclusion and then sat in [state.md](./state.md) as though still
+open. The conclusions are the decisions; they are recorded here so the arguing is not repeated.
+
+- **Multi-list household is not what `:listId` offered, and categories already deliver the use case.**
+  `HouseholdListId` is a closed three-literal union over structurally different item types, named as
+  three fields of `HouseholdState` through `combineReducers`, with six `Record<HouseholdListId, …>` maps
+  keyed off it. Real multi-list means turning one field into a keyed collection, and two things refuse
+  it: `ListSettings` is six booleans naming the lists pairwise (`showProductsInStorage`, …) with no
+  answer for _which_ shopping list, and the segment switcher is deliberately unrolled because
+  `testid-is-static` forbids a bound `data-testid` inside `@for`. A shared catalog plus a route-state
+  filter already gives "Freezer" or "Aldi" separation, filtering and a bookmarkable URL at no structural
+  cost. The param survives on `categories/:listId`, carrying which list opened the catalog.
+- **`emoji:build` stays out of CI.** The output is committed, so the build never needs the network and a
+  stale artifact can only miss emoji from a newer Unicode release. A gate would need `emojibase-data` in
+  CI for a check that fires once a year.
+- **No skin-tone choice in the picker.** CLDR nests tone variants under each base emoji; keeping them
+  turns 1644 entries into several thousand, for a picker that decorates an item name. A name pasted
+  _with_ a tone modifier survives the round-trip regardless.
+- **The PWA icons stay `"purpose": "maskable any"` at every size.** One bitmap for both wastes the
+  maskable safe-zone padding in the `any` context, and that is the accepted trade: splitting is worth it
+  only if a real device's crop looks wrong, which makes it a trigger rather than a task.
