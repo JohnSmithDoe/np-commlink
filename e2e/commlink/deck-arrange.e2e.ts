@@ -35,6 +35,19 @@ test.describe('deck arrange', () => {
     await deck(page).getByTestId('deck-arrange').click();
 
     await expect(deck(page).getByTestId('deck-move-later')).toHaveCount(2);
+    await expect(deck(page).getByTestId('deck-move-earlier')).toHaveCount(2);
+  });
+
+  test('offers no move off either end of the deck', async ({ page }) => {
+    await openDeck(page);
+    await deck(page).getByTestId('deck-arrange').click();
+
+    await expect(
+      deck(page).getByTestId('deck-move-earlier').first()
+    ).toHaveAttribute('aria-disabled', 'true');
+    await expect(
+      deck(page).getByTestId('deck-move-later').last()
+    ).toHaveAttribute('aria-disabled', 'true');
   });
 
   test('moves a program one slot and keeps it there across a reload', async ({

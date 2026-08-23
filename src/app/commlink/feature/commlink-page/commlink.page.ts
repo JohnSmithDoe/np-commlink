@@ -20,6 +20,8 @@ import { addIcons } from 'ionicons';
 import {
   chevronBackOutline,
   chevronForwardOutline,
+  hardwareChipOutline,
+  optionsOutline,
   swapHorizontalOutline,
 } from 'ionicons/icons';
 import dayjs from 'dayjs';
@@ -162,6 +164,8 @@ export class CommlinkPage {
       ...DECK_ICONS,
       chevronBackOutline,
       chevronForwardOutline,
+      hardwareChipOutline,
+      optionsOutline,
       swapHorizontalOutline,
     });
   }
