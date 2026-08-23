@@ -907,13 +907,17 @@ record why the exit was right while the shared list could not hold a drag handle
 - **That is LAZY LOADING, not virtualization, and the distinction is why it is safe here.**
   `ion-infinite-scroll` only changes what triggers the next slice — a scroll instead of a tap. It
   measures nothing and recycles nothing, so variable row heights are irrelevant to it and the DOM
-  still grows exactly as the button made it grow. It is therefore not a performance change, and it
-  does NOT retire `#shown` or the reset-on-search rule: [state.md](./state.md) claimed it would need
-  "no second items signal and no reset rule", and that was only ever true of the other option.
-  **The deprecated component is `ion-virtual-scroll`** (v6) — **removed** in v7, with the CDK named as
-  its successor. Real windowing is still open and still costs what it always did: the CDK strategy
-  wants a fixed `itemSize`, which sliding rows of two and three lines and the section headers between
-  them do not offer, and `cdk-experimental`'s autosize is where the variable-height answer lives.
+  still grows exactly as the button made it grow. Not a performance change, then, and it retires
+  neither `#shown` nor the reset-on-search rule. The seams entry that proposed this swap claimed it
+  would need "no second items signal and no reset rule"; that was only ever true of the OTHER option,
+  and the wrong half of the claim is what makes this worth writing down.
+- **The deprecated component is `ion-virtual-scroll`**, deprecated in Ionic 6 and **removed** in 7,
+  with Angular's CDK named as its successor — `ion-infinite-scroll` was never its replacement and is
+  current in Ionic 8. Real windowing therefore stays unbuilt rather than superseded, and costs what it
+  always did: the CDK strategy wants a fixed `itemSize`, which sliding rows of two and three lines
+  with section headers between them do not offer, and `cdk-experimental`'s autosize is where the
+  variable-height answer lives. Undated on purpose — a render cap is the answer until a real ledger
+  makes it not one.
 - **The route-scoped list selector factory lives in `@shared/data/item-lists/`, not beside
   `list.selector.ts`.** Its scope is `selectRouteEntityId`, which is `data`, and `util → data` is
   sealed. Readings and pills keep their public selector names by re-exporting the four it returns.
