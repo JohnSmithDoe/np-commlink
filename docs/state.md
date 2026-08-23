@@ -225,18 +225,11 @@ or a bill that only a phone with a few hundred rows actually presents.
   it, so it is carried in every vitals write forever — five pills over two years is ~3 600 entries. Pruning
   past ~90 days is a few lines, but `vitals` is a slice real users hold, so the shape change is a question
   for Martin and not a cleanup.
-- **A keystroke in a searchbar rewrites a whole slice.** `save.sources` matches on the action source, so
-  `updateSearch` and `updateSort` are mutations as far as the save effect is concerned — worst in `cash`
-  (the entire ledger) and `vitals`. `notes.providers.ts` shows the fix: enumerate the mutations under `on:`
-  and leave search and sort out. Five domains use the source form, so it is a convention to change once.
 - **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new RegExp
   per transaction and the amount threshold is re-parsed per transaction, then the whole matched set is
   sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running top-five
   and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes when the
   preview updates, which is why it is not a silent cleanup.
-- **`inScope` walks the ledger twice per report.** `report` and `uncategorizedOutflows` each filter the full
-  ledger and each allocate a dayjs per row. One shared `computed` in the facade fixes it, and the cutoff
-  compare can be a string slice — the same trick `burndown.utils` and `balance-check` already use.
 
 ## Known duplication and shallow seams
 
