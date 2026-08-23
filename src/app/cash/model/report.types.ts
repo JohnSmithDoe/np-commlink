@@ -5,6 +5,7 @@
  * ───────────────────────────────────────────────────────────────── */
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
+import { CashTransaction } from './transaction.types';
 
 export const REPORT_SCOPES = ['month', 'quarter', 'year', 'all'] as const;
 export type ReportScope = (typeof REPORT_SCOPES)[number];
@@ -61,4 +62,5 @@ export interface CashReport {
   biggest: ExpenseRow[];
   byCounterparty: CounterpartySpend[];
   uncategorized: UncategorizedShare;
+  unfiled: CashTransaction[];
 }

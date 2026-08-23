@@ -2,7 +2,10 @@
  * One pass, not six. The figures were six selectors that each walked every
  * booking and each re-decided what counts, so the window had to be added in
  * six places to be added at all — and a seventh figure would have re-derived
- * that predicate a seventh time.
+ * that predicate a seventh time. The unfiled rows the uncategorized page
+ * lists ARE that seventh: they come off the same loop, because a second
+ * function taking a scope would have walked the ledger again to find the
+ * spending this one already stepped over.
  *
  * A window is a CALENDAR span, not a rolling day count: "this month" is the
  * month you are in, so the number stops moving under you every midnight and
@@ -49,27 +52,18 @@ export function windowStartISO(
   }
 }
 
+const onOrAfter = (dateISO: string, cutoffISO: string): boolean =>
+  dateISO.slice(0, 10) >= cutoffISO.slice(0, 10);
+
 export function inScope(
   transactions: readonly CashTransaction[],
   scope: ReportScope,
   todayISO: string
 ): CashTransaction[] {
   const start = windowStartISO(scope, todayISO);
-  const from = start ? dayjs(start) : undefined;
   return transactions.filter(
-    (txn) =>
-      isHouseholdMoney(txn) && (!from || !dayjs(txn.dateISO).isBefore(from))
+    (txn) => isHouseholdMoney(txn) && (!start || onOrAfter(txn.dateISO, start))
   );
-}
-
-export function uncategorizedOutflows(
-  transactions: readonly CashTransaction[],
-  scope: ReportScope,
-  todayISO: string
-): CashTransaction[] {
-  return inScope(transactions, scope, todayISO)
-    .filter((txn) => txn.amountCents < 0 && !categoryIdOf(txn))
-    .toSorted((a, b) => a.amountCents - b.amountCents);
 }
 
 export function reportFor(
@@ -85,6 +79,7 @@ export function reportFor(
   const byMonth = new Map<string, MonthTotals>();
   const byCategory = new Map<string, number>();
   const byIban = new Map<string, CounterpartySpend>();
+  const unfiled: CashTransaction[] = [];
   let uncategorizedCents = 0;
 
   for (const txn of rows) {
@@ -104,7 +99,10 @@ export function reportFor(
 
       const key = categoryIdOf(txn) ?? '';
       byCategory.set(key, (byCategory.get(key) ?? 0) + magnitude);
-      if (!key) uncategorizedCents += magnitude;
+      if (!key) {
+        uncategorizedCents += magnitude;
+        unfiled.push(txn);
+      }
 
       const iban = txn.counterpartyIban;
       if (iban) {
@@ -147,6 +145,7 @@ export function reportFor(
         category: categoryName(categoryIdOf(txn) ?? ''),
       })),
     byCounterparty: [...byIban.values()].toSorted((a, b) => b.cents - a.cents),
+    unfiled: unfiled.toSorted((a, b) => a.amountCents - b.amountCents),
     uncategorized: {
       totalCents: totals.spendCents,
       uncategorizedCents,

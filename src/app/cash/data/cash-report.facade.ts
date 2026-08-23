@@ -9,7 +9,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TodayService } from '../../@shared/data/services/today.service';
 import { ReportScope } from '../model/report.types';
-import { reportFor, uncategorizedOutflows } from '../util/report.utils';
+import { reportFor } from '../util/report.utils';
 import { selectAllTransactions } from './cash.selector';
 import { selectCashCategories } from './categories/cash-categories.selector';
 
@@ -40,9 +40,7 @@ export class CashReportFacade {
   readonly spendByCounterparty = computed(() => this.report().byCounterparty);
   readonly uncategorized = computed(() => this.report().uncategorized);
 
-  readonly uncategorizedOutflows = computed(() =>
-    uncategorizedOutflows(this.#transactions(), this.#scope(), this.#todayISO())
-  );
+  readonly uncategorizedOutflows = computed(() => this.report().unfiled);
 
   setScope(scope: ReportScope): void {
     this.#scope.set(scope);

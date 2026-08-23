@@ -1,11 +1,6 @@
 import { mockCategory } from '../../@shared/testing/test-data';
 import { mockCashTransaction } from '../testing/cash.test-data';
-import {
-  inScope,
-  reportFor,
-  uncategorizedOutflows,
-  windowStartISO,
-} from './report.utils';
+import { inScope, reportFor, windowStartISO } from './report.utils';
 
 const TODAY = '2026-08-20T12:00:00+02:00';
 const CATEGORIES = [mockCategory({ id: 'cat-food', name: 'Food' })];
@@ -172,9 +167,9 @@ describe('reportFor', () => {
   });
 });
 
-describe('uncategorizedOutflows', () => {
+describe('unfiled', () => {
   it('lists unfiled spending biggest first, never income', () => {
-    const rows = uncategorizedOutflows(
+    const { unfiled } = reportFor(
       [
         mockCashTransaction({ id: 'small', amountCents: -1000 }),
         mockCashTransaction({ id: 'big', amountCents: -90_000 }),
@@ -185,10 +180,11 @@ describe('uncategorizedOutflows', () => {
           categoryIds: ['cat-food'],
         }),
       ],
+      CATEGORIES,
       'all',
       TODAY
     );
 
-    expect(rows.map(({ id }) => id)).toEqual(['big', 'small']);
+    expect(unfiled.map(({ id }) => id)).toEqual(['big', 'small']);
   });
 });
