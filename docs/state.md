@@ -235,10 +235,6 @@ or a bill that only a phone with a few hundred rows actually presents.
 
 ## Known duplication and shallow seams
 
-- **Cash's dialog hosts are pasted per page.** "Which dialogs can open anywhere in CREDSTICK" is restated
-  in five templates and five `imports:` arrays, and forgetting one produces a dead button rather than a
-  compile error. One `feature/cash-dialogs` component, or better a routed cash shell hosting them beside
-  the outlet, ends the checklist.
 - **Import policy is split between a page and a modal.** The page reads files, plans and hands the modal
   eight loose props; the modal then decides what counts as work and calls two facades. A `CashImportFacade`
   owning `plan(parsed)` and `commit(preview)` would put one transaction in one place.
