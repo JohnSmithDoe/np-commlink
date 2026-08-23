@@ -8,10 +8,13 @@
  * one import path that needs inflate, and a bundle should not carry it for
  * the case that never happens.
  *
- * Members sort by name because pages are numbered, and a statement read
- * out of order still imports, but reads wrong in the preview.
+ * Members sort by name because pages are numbered — NUMERICALLY, because a
+ * bank that does not zero-pad puts page 10 before page 2 under an ordinary
+ * string compare, and the last page read is the one whose closing balance
+ * the preview checks itself against.
  * ───────────────────────────────────────────────────────────────── */
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04];
+const byPage = new Intl.Collator('en', { numeric: true });
 
 export function decodeBankFile(bytes: ArrayBuffer | Uint8Array): string {
   try {
@@ -33,7 +36,7 @@ async function unzipXml(bytes: Uint8Array): Promise<string[]> {
     filter: (file) => isXmlMember(file.name),
   });
   return Object.entries(members)
-    .toSorted(([left], [right]) => left.localeCompare(right))
+    .toSorted(([left], [right]) => byPage.compare(left, right))
     .map(([, bytes]) => decodeBankFile(bytes));
 }
 

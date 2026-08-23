@@ -19,7 +19,7 @@
     </span>
     <span class="spending-headline__note">
       {{ 'cash.burndown.spent-today' | translate }}
-      {{ today.spentTodayCents | moneyEur }}
+      {{ -today.spentTodayCents | moneyEur }}
     </span>
   </div>
 

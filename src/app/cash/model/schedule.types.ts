@@ -14,7 +14,9 @@
  *
  * `nextDueISO` is a date, not a day-of-month — that is what lets a quarterly
  * premium name its actual month rather than the reserve guessing which of
- * three it falls in.
+ * three it falls in. `dueDay` is the day the reader CHOSE, kept beside it
+ * because advancing a date clamps one: a 31st lands on the 28th in February,
+ * and without the anchor every later advance starts from the 28th.
  * ───────────────────────────────────────────────────────────────── */
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { CategoryId } from '../../@shared/model/category.types';
@@ -27,6 +29,7 @@ export interface CashSchedule extends BaseItem {
   amountCents: number;
   periodMonths: number;
   nextDueISO: Timestamp;
+  dueDay?: number;
   categoryId?: CategoryId;
   lastSeenISO?: Timestamp;
 }

@@ -35,6 +35,8 @@ changing one does not migrate an install, it stands up a second app that cannot 
   `importKey`, and the first camt import will not recognise them: **clear the cash slice there rather than
   reading the duplicate count as truth**. And the exemption does not generalise — the next stored-shape
   change made once cash holds real data owes the first genuine rung, with no precedent in the repo to copy.
+  `CashSchedule.dueDay` was added under the same exemption, asked and answered: optional, absent on every
+  stored row, and `advanced()` falls back to the day its `nextDueISO` already carries.
 - **v1.1.0 published `vitals` and `notes`, so their shapes are somebody's data from this tag on.** Neither
   domain exists at v1.0.1 — the released app had no BIOMON and no SIGIL notes — so the free window for
   `VitalsState` with its `profiles`, `readings` and `pills` sub-slices, and for `notes`, closes **here** and
@@ -265,16 +267,8 @@ or a bill that only a phone with a few hundred rows actually presents.
 ## Findings from the review that are still open
 
 Ranked below the fifteen that were fixed, and none of them blocking. Kept here so they are not re-found.
+The five cash ones are gone from this list because they are fixed, not because they were dropped.
 
-- **`advanced()` clamps a month-end due date and never recovers it** — a 31st becomes the 28th in February
-  and stays there.
-- **Zip members are read in `localeCompare` order**, so page 10 sorts before page 2 and `lastClosingBalance`
-  can take the wrong page's figure. A corrupt zip also throws out of `importStatement` unreported.
-- **`remittanceOf` joins `Ustrd` lines with a space**, which inserts one into an IBAN the 140-character
-  split broke apart.
-- **`cash-report` tracks a derived category NAME**, so two categories sharing a name collide into an NG0955.
-- **The burn-down renders outflow magnitudes unnegated**, so the same €900 reads `+` on one page and `−` on
-  another.
 - **`removeNote` pushes history**, leaving a dead editor one back-tap away.
 - **The household `ion-tab-bar` ignores `--app-content-max-width`**, and `list-page`'s `sortable` flag
   empties its toolbar instead of removing it, leaving an empty bar on the vitals pages.

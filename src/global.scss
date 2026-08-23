@@ -15,7 +15,11 @@
 // relative path breaks silently on move.
 //
 // --app-content-max-width caps `ion-content > *`, every child independently, so
-// a page changes width by re-declaring the property on :host.
+// a page changes width by re-declaring the property on :host. The `:not(:root)`
+// is specificity, not a filter: Ionic injects a component's CSS at RUNTIME,
+// after this sheet, and `ion-list` zeroes margin-left/right on its own host — at
+// equal specificity the later rule won, so the cap applied and the centring did
+// not, and every hand-rolled list sat flush left of its own header rows.
 //
 // The last three rules answer to Android, not to this file: the WebView never
 // populates env(safe-area-inset-*), Android 16 draws behind transparent bars,
@@ -39,7 +43,7 @@
   --app-content-bg: transparent;
 }
 
-ion-content > * {
+ion-content > *:not(:root) {
   max-width: var(--app-content-max-width);
   margin-inline: auto;
   background: var(--app-content-bg);

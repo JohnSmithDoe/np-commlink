@@ -47,6 +47,20 @@ describe('readStatementDocuments', () => {
     expect(documents).toEqual(['<one/>', '<two/>', '<three/>']);
   });
 
+  it('orders unpadded page numbers numerically, not as strings', async () => {
+    const zip = zipOf({
+      'page10.xml': '<ten/>',
+      'page2.xml': '<two/>',
+      'page1.xml': '<one/>',
+    });
+
+    expect(await readStatementDocuments([fileOf(zip, 'export.zip')])).toEqual([
+      '<one/>',
+      '<two/>',
+      '<ten/>',
+    ]);
+  });
+
   it('detects a zip by its magic bytes, not by the name it was saved under', async () => {
     const zip = zipOf({ 'report.xml': '<one/>' });
 
@@ -65,6 +79,14 @@ describe('readStatementDocuments', () => {
     expect(await readStatementDocuments([fileOf(zip, 'export.zip')])).toEqual([
       '<one/>',
     ]);
+  });
+
+  it('rejects a truncated archive rather than importing the half it read', async () => {
+    const truncated = zipOf({ 'report.xml': '<one/>' }).slice(0, 20);
+
+    await expect(
+      readStatementDocuments([fileOf(truncated, 'export.zip')])
+    ).rejects.toThrow();
   });
 
   it('flattens a mixed pick of loose files and archives', async () => {

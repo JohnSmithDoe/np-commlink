@@ -94,9 +94,34 @@ describe('reportFor', () => {
 
   it('names categories through the catalog and files the rest under ""', () => {
     expect(report.byCategory).toEqual([
-      { category: 'Food', cents: 4299 },
-      { category: '', cents: 1000 },
+      { categoryId: 'cat-food', category: 'Food', cents: 4299 },
+      { categoryId: '', category: '', cents: 1000 },
     ]);
+  });
+
+  it('keeps two same-named categories apart, which is what a row is keyed by', () => {
+    const twins = [
+      mockCategory({ id: 'cat-a', name: 'Essen' }),
+      mockCategory({ id: 'cat-b', name: 'Essen' }),
+    ];
+    const spends = [
+      mockCashTransaction({
+        id: 'a',
+        amountCents: -100,
+        categoryIds: ['cat-a'],
+      }),
+      mockCashTransaction({
+        id: 'b',
+        amountCents: -200,
+        categoryIds: ['cat-b'],
+      }),
+    ];
+
+    expect(
+      reportFor(spends, twins, 'all', TODAY).byCategory.map(
+        ({ categoryId }) => categoryId
+      )
+    ).toEqual(['cat-b', 'cat-a']);
   });
 
   it('ranks outflows by magnitude, ignoring income', () => {

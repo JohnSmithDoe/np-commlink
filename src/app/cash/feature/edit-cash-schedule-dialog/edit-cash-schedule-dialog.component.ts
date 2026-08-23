@@ -170,6 +170,7 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
       amountCents: -(draft.amountCents ?? 0),
       periodMonths: draft.periodMonths,
       nextDueISO: dayjs(draft.nextDue).format(),
+      dueDay: dayjs(draft.nextDue).date(),
       conditions: draft.conditions.map((condition) =>
         toCondition(condition, this.#language())
       ),

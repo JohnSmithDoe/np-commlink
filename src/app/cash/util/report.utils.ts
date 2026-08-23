@@ -129,7 +129,11 @@ export function reportFor(
       a.month.localeCompare(b.month)
     ),
     byCategory: [...byCategory.entries()]
-      .map(([id, cents]) => ({ category: categoryName(id), cents }))
+      .map(([id, cents]) => ({
+        categoryId: id,
+        category: categoryName(id),
+        cents,
+      }))
       .toSorted((a, b) => b.cents - a.cents),
     biggest: rows
       .filter((txn) => txn.amountCents < 0)

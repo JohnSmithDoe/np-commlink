@@ -97,6 +97,27 @@ describe('parseCamt', () => {
     expect(report?.entries[0].description).toBe('Teil A Teil B');
   });
 
+  it('resumes a full Ustrd line without a space, so a split IBAN survives', () => {
+    const iban = 'DE00123456789012345678';
+    const head = 'RECHNUNG 4711 IBAN '.padEnd(140 - 8, 'X') + iban.slice(0, 8);
+    const split = [
+      '<Ntry>',
+      '<Amt Ccy="EUR">30.00</Amt><CdtDbtInd>DBIT</CdtDbtInd>',
+      '<BookgDt><Dt>2026-01-06</Dt></BookgDt>',
+      '<NtryDtls><TxDtls><RmtInf>',
+      `<Ustrd>${head}</Ustrd>`,
+      `<Ustrd>${iban.slice(8)} DANKE</Ustrd>`,
+      '</RmtInf></TxDtls></NtryDtls>',
+      '</Ntry>',
+    ].join('');
+
+    expect(head).toHaveLength(140);
+    expect(parseOne(split)?.remittanceInfo).toBe(
+      `${head}${iban.slice(8)} DANKE`
+    );
+    expect(parseOne(split)?.remittanceInfo).toContain(iban);
+  });
+
   it('counts an entry it cannot read instead of dropping it silently', () => {
     const broken = '<Ntry><Amt Ccy="EUR">nonsense</Amt></Ntry>';
     const report = parseCamt(camtDocument([camtEntry(), broken]));

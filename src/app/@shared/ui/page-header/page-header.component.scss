@@ -3,8 +3,31 @@
 // projected row sat on a transparent band and an outgoing page showed through
 // mid-transition. The band goes on the HEADER, not the rows: a row caps itself
 // at --app-content-max-width, leaving the gutters see-through past the cap.
+//
+// The toolbar's CONTENTS have to cap too, and they cannot cap the same way: the
+// band is the one thing that must stay full-bleed, and ion-toolbar is shadow, so
+// only its --padding-* props reach the container the title and buttons sit in.
+// Untouched, the menu button and the add button kept the viewport's edges while
+// everything below them centred — 84px out on a list page and 288px on a 900px
+// one, which reads as the header belonging to a different layout. Ionic's own
+// default for both props is 0, so max() leaves every narrow viewport untouched.
+//
+// The reference is $content-wide and NOT --app-content-max-width, which is the
+// whole point: the property is page-scoped, so reading it put the menu button
+// somewhere different on every route — a list page, a 900px one and ritual's
+// 30rem each moving app furniture that the user tracks by position. One fixed
+// column for the chrome, whatever the page below it does with its own measure.
 // ────────────────────────────────────────────────────────────────
+
+@use 'theme/layout';
 
 ion-header {
   background: var(--ion-toolbar-background);
+}
+
+ion-toolbar {
+  --sr-header-gutter: max(0px, calc((100% - #{layout.$content-wide}) / 2));
+
+  --padding-start: var(--sr-header-gutter);
+  --padding-end: var(--sr-header-gutter);
 }

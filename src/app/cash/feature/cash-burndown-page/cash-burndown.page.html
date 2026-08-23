@@ -47,7 +47,7 @@
     <ion-item>
       <ion-label>{{ 'cash.burndown.spent-today' | translate }}</ion-label>
       <ion-note slot="end" data-testid="burndown-spent-today">
-        {{ today.spentTodayCents | moneyEur }}
+        {{ -today.spentTodayCents | moneyEur }}
       </ion-note>
     </ion-item>
     <ion-item>
@@ -73,12 +73,12 @@
     <ion-item>
       <ion-label>{{ 'cash.burndown.reserve' | translate }}</ion-label>
       <ion-note slot="end" data-testid="burndown-reserve">
-        {{ today.reserveCents | moneyEur }}
+        {{ -today.reserveCents | moneyEur }}
       </ion-note>
     </ion-item>
     <ion-item>
       <ion-label>{{ 'cash.burndown.still-due' | translate }}</ion-label>
-      <ion-note slot="end">{{ today.stillDueCents | moneyEur }}</ion-note>
+      <ion-note slot="end">{{ -today.stillDueCents | moneyEur }}</ion-note>
     </ion-item>
     <ion-item>
       <ion-label>{{ 'cash.burndown.spendable' | translate }}</ion-label>
@@ -88,7 +88,9 @@
     </ion-item>
     <ion-item>
       <ion-label>{{ 'cash.burndown.spent' | translate }}</ion-label>
-      <ion-note slot="end">{{ today.spentThisMonthCents | moneyEur }}</ion-note>
+      <ion-note slot="end">
+        {{ -today.spentThisMonthCents | moneyEur }}
+      </ion-note>
     </ion-item>
   </ion-list>
 

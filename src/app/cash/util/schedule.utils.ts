@@ -164,11 +164,12 @@ export function advanced(
   schedule: CashSchedule,
   seenISO: string
 ): CashSchedule {
+  const dueDay = schedule.dueDay ?? dayjs(schedule.nextDueISO).date();
+  const month = dayjs(schedule.nextDueISO).add(schedule.periodMonths, 'month');
   return {
     ...schedule,
+    dueDay,
     lastSeenISO: seenISO,
-    nextDueISO: dayjs(schedule.nextDueISO)
-      .add(schedule.periodMonths, 'month')
-      .format(),
+    nextDueISO: month.date(Math.min(dueDay, month.daysInMonth())).format(),
   };
 }

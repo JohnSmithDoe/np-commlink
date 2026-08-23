@@ -29,6 +29,7 @@ export interface MonthTotals {
 }
 
 interface CategorySpend {
+  categoryId: string;
   category: string;
   cents: number;
 }

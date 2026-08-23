@@ -15,4 +15,8 @@ describe('formatEur', () => {
   it('formats zero', () => {
     expect(formatEur(0)).toContain('0,00');
   });
+
+  it('spells a negated nothing as zero, not as minus zero', () => {
+    expect(formatEur(-0)).not.toContain('-');
+  });
 });

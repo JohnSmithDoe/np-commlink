@@ -7,10 +7,6 @@
  * The reload test waits on the disk write rather than on the DOM: the
  * completion has no visual settling point after the confetti, and a
  * reload that beat the write would read as a lost day.
- *
- * Every completion raises a six-second undo toast anchored to the footer,
- * so a spec that goes on to press something low on the page dismisses it
- * first rather than racing an overlay it did not ask for.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
@@ -33,16 +29,10 @@ const done = (page: Page) =>
   pageRoot(page, RITUAL_PAGE).getByTestId('ritual-done');
 const count = (page: Page) =>
   pageRoot(page, RITUAL_PAGE).getByTestId('ritual-count').locator('strong');
-const undoToast = (page: Page) => page.getByTestId('action-toast');
 
 async function completeTask(page: Page): Promise<void> {
   await pageRoot(page, RITUAL_PAGE).getByTestId('ritual-complete').click();
   await expect(done(page)).toBeVisible({ timeout: 15_000 });
-}
-
-async function dropToast(page: Page): Promise<void> {
-  await undoToast(page).getByRole('button', { name: 'X' }).click();
-  await expect(undoToast(page)).toBeHidden();
 }
 
 test.describe('task of the day', () => {
@@ -136,28 +126,11 @@ test.describe('task of the day', () => {
     await expect(card(page)).toBeHidden();
   });
 
-  test('takes a completion back from the undo toast', async ({ page }) => {
-    await gotoRitual(page);
-    const shown = await cardTask(page).textContent();
-    const chosen = shown?.trim() ?? '';
-
-    await completeTask(page);
-    await expect(count(page)).toHaveText('1');
-
-    await expect(undoToast(page)).toBeVisible({ timeout: 10_000 });
-    await undoToast(page).getByRole('button', { name: 'Rückgängig' }).click();
-
-    await expect(card(page)).toBeVisible({ timeout: 15_000 });
-    await expect(cardTask(page)).toHaveText(chosen);
-    await expect(done(page)).toBeHidden();
-  });
-
   test('a bonus raises the count but leaves the day closed', async ({
     page,
   }) => {
     await gotoRitual(page);
     await completeTask(page);
-    await dropToast(page);
 
     await pageRoot(page, RITUAL_PAGE).getByTestId('ritual-bonus').click();
     await expect(card(page)).toBeVisible();

@@ -88,6 +88,18 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
   to escape the grid. Row heights are content, not layout: no column count fixes it, and masonry or
   fixed-height rows are not worth what they cost a touch list. `e2e/desktop/list-layout.e2e.ts` asserts
   no two rows share a line.
+- **The header chrome anchors to `$content-wide`, never to `--app-content-max-width`.** The toolbar's
+  contents cap so they stop floating in the gutter above a centred page, but reading the *page's* cap put
+  the menu button somewhere different on every route — 190px in on settings, 0 on a list, half the screen
+  in on ritual's 30rem — and app furniture that moves per route is worse than furniture at the edge. One
+  fixed column for the chrome; a page keeps its own measure below it. Gated by *the menu button holds one
+  position across every cap* in `e2e/desktop/list-layout.e2e.ts`.
+- **`space-between` in a row detail needs a measure, or it is only a phone layout.** A list row caps at
+  `$content-wide`, so the label kept the left edge and its value the right one, ~800px apart, and the pair
+  stopped reading as a pair. `theme/_item-rows.scss` caps `.second-line` at `$content-measure`; the
+  leftover width is slack to the right of the pair, not between its halves. **Not** a row-height or
+  font-size change — shrinking a touch row to fix a desktop gap pays on the platform that was already
+  right.
 - **The list's own header row is the filter caption and nothing else** — it used to repeat the page name
   two rows under `app-page-header`, and renders now only when a filter is armed. `[listActions]` is
   retired into `[toolbarActionsEnd]`: one action slot per side, not two competing for the same buttons.

@@ -294,6 +294,18 @@ wrapped yet. `e2e/cash/derive.e2e.ts` locks the fixed one by asserting document 
 - **A measure must not be expressed in `ch`.** `1ch` is the advance width of `0` in the current font, and
   `--sr-deck-font` flips between a proportional sans and JetBrains Mono — so a `ch` width silently changes
   with the theme. `theme/_layout.scss` keeps `$content-measure` in `rem`.
+- **Ionic injects a component's CSS at RUNTIME, after `global.scss`, so at equal specificity Ionic wins
+  and an app rule half-applies.** `ion-content > *` and `ion-list` are both `(0,0,1)`, and `list.md.css`
+  zeroes `margin-left`/`margin-right` on its own host: the `max-width` from the app rule applied, the
+  `margin-inline: auto` beside it did not, and every hand-rolled list page rendered capped but flush
+  LEFT while its own header rows centred. Half a rule landing is the tell — a rule that loses outright
+  is easy to spot, one that loses a single declaration reads as a layout bug somewhere else entirely.
+  `global.scss` buys the specificity with `:not(:root)`, which matches every child (no `ion-content`
+  child is ever the root) and costs `(0,1,1)`.
+- **A shadow Ionic element is reachable only through the custom properties it documents.** `ion-toolbar`
+  is `encapsulation: "shadow"`, so nothing selects the `.toolbar-container` its title and buttons sit
+  in; `--padding-start`/`--padding-end` are the only way in, and Ionic's own default for both is `0`,
+  which is what makes a `max(0px, …)` gutter free on every narrow viewport.
 
 ## Build
 

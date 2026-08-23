@@ -204,4 +204,27 @@ describe('advanced', () => {
     expect(advanced(quarterly, JANUARY_6).nextDueISO).toContain('2026-04-01');
     expect(advanced(quarterly, JANUARY_6).lastSeenISO).toBe(JANUARY_6);
   });
+
+  it('clamps a 31st into February and recovers it in March', () => {
+    const monthly = mockCashSchedule({
+      nextDueISO: '2026-01-31T00:00:00+01:00',
+      dueDay: 31,
+    });
+
+    const february = advanced(monthly, JANUARY_6);
+    expect(february.nextDueISO).toContain('2026-02-28');
+
+    expect(advanced(february, JANUARY_6).nextDueISO).toContain('2026-03-31');
+  });
+
+  it('anchors on the stored date when a schedule carries no day yet', () => {
+    const monthly = mockCashSchedule({
+      nextDueISO: '2026-01-30T00:00:00+01:00',
+    });
+
+    const february = advanced(monthly, JANUARY_6);
+    expect(february.dueDay).toBe(30);
+    expect(february.nextDueISO).toContain('2026-02-28');
+    expect(advanced(february, JANUARY_6).nextDueISO).toContain('2026-03-30');
+  });
 });

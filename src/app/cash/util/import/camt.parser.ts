@@ -13,6 +13,11 @@
  * under `Pty`, and on whether a BIC is `BICFI` or `BIC` — pinning any of it
  * rejects half the exports.
  *
+ * A FULL `Ustrd` line is a continuation, not a sentence: the schema caps one
+ * at 140 characters, so a bank splits an IBAN mid-string to fit and the next
+ * line resumes it. Joining every line with a space put one inside that IBAN;
+ * the space goes only where the previous line stopped short.
+ *
  * A `CdtDbtInd` that reads as neither CRDT nor DBIT REJECTS its entry rather
  * than defaulting to one: it is the one field whose failure doubles the
  * error, since a 900 debit read as a credit misses the balance by 1800.
@@ -42,6 +47,7 @@ const REPORT_ROOTS = [
 const STATEMENTS = ['Rpt', 'Stmt', 'Ntfctn'];
 const DECIMAL = /^(\d+)(?:\.(\d+))?$/;
 const CLOSING_BALANCE = 'CLBD';
+const USTRD_MAX_LENGTH = 140;
 
 const normalize = (value: string | null): string =>
   (value ?? '').replaceAll(/\s+/g, ' ').trim();
@@ -141,18 +147,29 @@ const counterpartyBicOf = (
   );
 };
 
+const joinRemittance = (lines: readonly string[]): string => {
+  let joined = '';
+  let continues = false;
+  for (const line of lines) {
+    joined += continues || joined.length === 0 ? line : ` ${line}`;
+    continues = line.length >= USTRD_MAX_LENGTH;
+  }
+  return joined;
+};
+
 const remittanceOf = (details: Element[]): string =>
-  details
-    .flatMap((detail) => {
-      const info = descend(detail, 'RmtInf');
-      return info
-        ? childrenNamed(info, 'Ustrd').map((line) =>
-            normalize(line.textContent)
-          )
-        : [];
-    })
-    .filter((line) => line.length > 0)
-    .join(' ');
+  joinRemittance(
+    details
+      .flatMap((detail) => {
+        const info = descend(detail, 'RmtInf');
+        return info
+          ? childrenNamed(info, 'Ustrd').map((line) =>
+              normalize(line.textContent)
+            )
+          : [];
+      })
+      .filter((line) => line.length > 0)
+  );
 
 const bankTxCodeOf = (entry: Element): string | undefined =>
   textAt(entry, 'BkTxCd', 'Prtry', 'Cd') ||

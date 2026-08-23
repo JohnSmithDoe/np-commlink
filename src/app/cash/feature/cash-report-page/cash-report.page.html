@@ -87,7 +87,7 @@
       </div>
 
       <ion-list lines="full">
-        @for (row of spendByCategory(); track row.category) {
+        @for (row of spendByCategory(); track row.categoryId) {
           <ion-item>
             <ion-label>{{
               row.category || ('cash.report.uncategorized' | translate)

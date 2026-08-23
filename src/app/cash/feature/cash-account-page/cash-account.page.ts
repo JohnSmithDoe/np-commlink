@@ -154,7 +154,11 @@ export class CashAccountPage {
     files: File[],
     account: CashAccount
   ): Promise<StatementRead> {
-    return readStatement(await readStatementDocuments(files), account.iban);
+    try {
+      return readStatement(await readStatementDocuments(files), account.iban);
+    } catch {
+      return { kind: 'unreadable' };
+    }
   }
 
   async #whileLoading<T>(work: () => Promise<T>): Promise<T> {

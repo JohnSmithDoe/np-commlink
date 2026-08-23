@@ -6,7 +6,13 @@
 // same widget with different content, and their stylesheets were
 // byte-identical copies. label-secondary is one declaration and is here
 // anyway: it was the whole content of two of them.
+//
+// space-between needs a MEASURE or it is only a phone layout: a list row is
+// capped at $content-wide, so on a desktop the label kept its left edge and the
+// value the right one, 800px away, and nothing read as a pair any more.
 // ────────────────────────────────────────────────────────────────
+
+@use 'theme/layout';
 
 @mixin label-secondary {
   ion-label p {
@@ -20,6 +26,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
+    max-width: layout.$content-measure;
   }
 
   .value {
