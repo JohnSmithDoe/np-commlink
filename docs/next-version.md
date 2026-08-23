@@ -4,9 +4,9 @@
 the decision does not have to be re-made. Nothing here is blocked — [state.md](./state.md) holds what is,
 and settled questions are in [decisions.md](./decisions.md).
 
-`APP_VERSION` is still **1** and `runMigrations` has never run a step. Three entries below change a
-persisted shape, so the first genuine rung is owed by whichever ships first — see
-[state.md](./state.md)'s one-way doors for the roster of who is holding what.
+Three entries below change a persisted shape, so the first genuine rung is owed by whichever ships
+first — see [state.md](./state.md) for the ladder's current position, the roster of who is holding what,
+and every exemption taken so far.
 
 ## Cash — the numbers, then the keyboard
 
@@ -28,7 +28,8 @@ persisted shape, so the first genuine rung is owed by whichever ships first — 
 - **The cascade half of the destructive-action policy.** The row half is settled
   ([decisions.md](./decisions.md)). Left: a category delete strips three reducers, tracking's _Reset all_
   discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what
-  the user was not looking at. Cash's `deleteConfirmAlert` is the one row-level confirm still standing.
+  the user was not looking at. Cash's `deleteConfirmAlert` is the row-level confirm still standing, at
+  four sites: accounts, the ledger, rules and schedules.
 - **Trackplay joins the undo stack, per entity.** `restoreSnapshot` writes the pre-delete `players`,
   `games` and `gameTypes` arrays back wholesale, so delete → add player → undo loses the new player.
   Per-entity restore actions fix it and let trackplay pass `undoableDelete` like shopping, storage and

@@ -6,9 +6,6 @@ entry is **v2.0.0 scope** ([next-version.md](../next-version.md)).
 
 - **The check is presence-only** ("in storage" / "missing"), never "you are 200 ml short" — storage
   counts packages while a recipe asks for a measure. That constraint shapes everything below.
-The constraint shaping all of it: the check is **presence-only** ("in storage" / "missing"), never "you
-are 200 ml short" — storage counts packages while a recipe asks for a measure.
-
 - **Cook → subtract** ingredients from storage, missing ones pushed into `_shopping`. A product decision:
   it makes cooking mutate stock.
 - **Base unit on `Product` + pack sizes.** Open **only if presence-only proves too weak**: making

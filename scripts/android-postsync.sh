@@ -3,11 +3,15 @@
 # android-postsync.sh — re-apply the native edits that Capacitor regenerates
 # away on every `cap add android` / `cap sync`.
 #
-# The android/ project is intentionally NOT committed (see .gitignore); it is
-# regenerated on demand. Run this immediately after generating/syncing it:
+# The android/ project IS committed (see .gitignore) — `cap add` is not
+# reproducible across CLI versions, so the native tree is source. Run this
+# immediately after every sync, and after a from-scratch generate:
 #
-#   pnpm run build && npx cap add android && npx cap sync android
+#   pnpm run build && npx cap sync android
 #   ./scripts/android-postsync.sh
+#
+# Patches 4-6 are DERIVED PER BUILD and must keep running. The rest is also
+# committed file state; they stay so a from-scratch `cap add` lands correct.
 #
 # Idempotent: safe to run repeatedly. Patches:
 #   1. CAMERA / FLASHLIGHT permissions        — mlkit EAN-13 scanner

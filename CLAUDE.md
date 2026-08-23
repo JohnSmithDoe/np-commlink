@@ -91,7 +91,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | Never compose a `data-testid`; an `app-*` element is already a contract | `commlink/testid-is-static`, `no-testid-on-component-element`, `verify:testids` |
 | Action-group event keys are camelCase identifiers, and nothing matches on the type string | `commlink/action-event-keys-are-identifiers`, `no-action-type-literal` |
 | At most one comment per file — a `why` banner above the first code token | `commlink/comments-header-only` |
-| **A banner is the exception, not the header** — write none unless the code cannot say it, then a few lines, never a dozen | review |
+| **A banner is the exception, not the header** — write none unless the code cannot say it, then 6–14 lines ([decisions.md](docs/decisions.md)); 32 is the gate | review |
 | Every `ion-icon`, icon-only control, form control and overlay carries its own name (R1–R9) | eight `commlink/a11y-*` rules |
 | Every `ion-icon` name is registered with `addIcons` by the component that renders it — an unregistered name is an invisible control, not an error | `verify:icons` |
 | `@shared` uses no domain-owned **i18n key** — it owns no wording | `commlink/i18n-key-ownership` |

@@ -50,12 +50,27 @@ second app that cannot reach the first one's data.
   `runMigrations` has never run a step**: the first genuine rung is unwritten, and has no precedent in the
   repo to copy.
 
+## Every exemption taken, in one place
+
+None is a precedent, because cost is a fact about the roster rather than about the change. What a rung
+owes once one IS needed is in [decisions.md](./decisions.md).
+
+- `groceries → household` — key renamed before the first tag, when the dev browser was the only holder.
+- cash's `bank` → `iban` + `bankRef` — breaking, free because cash has no users. **Spent**: the next
+  cash shape change once it holds real data owes the first real rung.
+- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort` — additive and optional, so a missing
+  key hydrates to initial state. Free by shape, not by roster.
+- deck entry id `barcode` → `notes` — the **first taken against a slice real users hold**. Under the
+  polarity of the day an id the catalog gained read as visible, so every install switched NOTES on by
+  itself. Cheap only because switching one program back off is a tap.
+- `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — the same two strings under
+  a new field name; worst case one re-pick for a boomer-skin holder.
+- The 09:00 office nudge is cancelled once at boot, from the notifications slice — **not a rung**: what
+  is stale is a schedule the OS owns, not a shape on disk. `legacy-reminders.effects.ts` argues why once
+  and not per boot.
+
 ## Blocked — needs something only the owner can supply
 
-- **Every release attaches its APK by hand.** CI builds none — the signing key never reaches a runner — so
-  the tag run gates, deploys Pages and drafts the release, and `pnpm apk:signed` plus an upload finishes it.
-  The two GitHub settings the deploy depends on are in the README, not here: they are configuration, not a
-  decision anyone still has to make.
 - **Any camt import driven live, against a file a bank actually produced.** The parser is unit-tested
   against synthetic documents only. The exports in `docs/cash/` import, and their values are internally
   coherent — booking dates ascending through the period, entry and detail amounts agreeing, a balance
@@ -147,6 +162,10 @@ being re-argued.
 - **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.
+- **The categories dialog's swipe is not `expandable`, and nobody has confirmed that was deliberate.**
+  [decisions.md](./decisions.md) now reads it as the cascade carve-out — a category delete strips three
+  reducers — which fits, but it was written to match the code rather than from a decision anyone
+  remembers making. Cash's non-expandable swipe IS deliberate. Confirm or fix this one.
 
 
 ## Known cost, not yet paid
