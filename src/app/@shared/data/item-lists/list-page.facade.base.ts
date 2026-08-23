@@ -9,7 +9,8 @@
  * chip bar — one statement of the fact, with no empty catalog to keep in
  * step and nothing to read as "not loaded yet". `selectCategory` cannot
  * drift from it, since no chips means no caller. No `addItemFromSearch`
- * means typing-then-adding opens the create dialog seeded with the query.
+ * means typing-then-adding opens the create dialog seeded with the query. No
+ * `setSortMode` means the list is ARRANGED and not sorted.
  *
  * `manageCategories` must NOT move here. `ListPageComponent` reads
  * `!!facade.manageCategories` to decide the button exists at all, so
@@ -29,7 +30,7 @@ import { ListPageFacade } from '../../util/item-lists/list-page.facade';
 
 interface ListPageCommands {
   search(term?: string): void;
-  setSortMode(
+  setSortMode?(
     type: ItemListSortType,
     direction?: ItemListSortDirection | 'toggle'
   ): void;
@@ -80,7 +81,7 @@ export abstract class BaseListPageFacade implements ListPageFacade {
   }
 
   setSortMode(type: ItemListSortType): void {
-    this.commands.setSortMode(type, 'toggle');
+    this.commands.setSortMode?.(type, 'toggle');
   }
 
   addItemFromSearch(): void {

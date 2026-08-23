@@ -13,12 +13,30 @@
       </ion-toolbar>
     }
   }
-  @for (item of items(); track item.id) {
-    <ng-container
-      *ngTemplateOutlet="
-        itemTemplate();
-        context: { $implicit: item, ionList: ionList, categories: catalog() }
-      "
-    />
+  @if (reorderable()) {
+    <ion-reorder-group
+      [disabled]="false"
+      (ionReorderEnd)="onReorderEnd($any($event))"
+    >
+      <ng-container *ngTemplateOutlet="rows" />
+    </ion-reorder-group>
+  } @else {
+    <ng-container *ngTemplateOutlet="rows" />
   }
+
+  <ng-template #rows>
+    @for (item of items(); track item.id) {
+      <ng-container
+        *ngTemplateOutlet="
+          itemTemplate();
+          context: {
+            $implicit: item,
+            ionList: ionList,
+            categories: catalog(),
+            reorderable: reorderable(),
+          }
+        "
+      />
+    }
+  </ng-template>
 </ion-list>

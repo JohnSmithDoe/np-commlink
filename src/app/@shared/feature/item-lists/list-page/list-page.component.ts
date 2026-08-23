@@ -24,6 +24,11 @@
  * the armed filter changes: expanding to reach one old row and then clearing
  * the search would otherwise render the whole collection at once, which is
  * the render the window exists to prevent.
+ *
+ * The drag handle is WITHDRAWN under a search, an armed filter or a window
+ * that truncates: a reorder reports the ids it can SEE and the reducer
+ * writes them back over the whole collection, so a drag over a partial view
+ * silently drops every row the view hid.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -45,7 +50,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, pricetagsOutline, remove } from 'ionicons/icons';
 import { CategoryFilterFacade } from '../../../data/item-lists/category-filter.facade';
-import { LIST_FACADE } from '../../../util/item-lists/list-page.facade';
+import {
+  LIST_FACADE,
+  ListSection,
+} from '../../../util/item-lists/list-page.facade';
 import { ITEM_FILTERS } from '../../../util/item-lists/list-filter';
 import { CategoryFilterBarComponent } from '../../../ui/base-item/category-filter-bar/category-filter-bar.component';
 import { ItemListEmptyComponent } from '../../../ui/base-item/item-list-empty/item-list-empty.component';
@@ -89,6 +97,7 @@ export class ListPageComponent {
   readonly windowSize = input<number>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
+  readonly canReorder = !!this.facade.reorder;
 
   readonly isKnownEmpty = computed(() => this.facade.items()?.length === 0);
 
@@ -113,6 +122,20 @@ export class ListPageComponent {
     if (shown === undefined) return 0;
     return Math.max(0, (this.facade.items()?.length ?? 0) - shown);
   });
+
+  readonly sections = computed<readonly ListSection[]>(
+    () => this.facade.sections?.() ?? [{ id: '', items: this.windowedItems() }]
+  );
+
+  readonly showSectionHeaders = computed(() => this.sections().length > 1);
+
+  readonly reorderArmed = computed(
+    () =>
+      this.canReorder &&
+      !this.facade.searchResult() &&
+      !this.facade.state()?.filterBy &&
+      this.hiddenCount() === 0
+  );
 
   showMore(): void {
     const step = this.windowSize();

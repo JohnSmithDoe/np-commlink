@@ -1,76 +1,22 @@
-<app-page-header
+<app-list-page
+  class="ion-page"
   icon="document-text-outline"
-  label="page-title.notes"
-  (addItem)="facade.createNote()"
+  pageHeader="page-title.notes"
+  [itemTemplate]="noteRow"
+/>
+
+<ng-template
+  #noteRow
+  let-item
+  let-ionList="ionList"
+  let-reorderable="reorderable"
 >
-  <app-item-list-searchbar
-    [query]="facade.state().searchQuery"
-    (queryChange)="facade.search($event)"
-    (hitEnter)="facade.createNote()"
-  />
-</app-page-header>
-
-<ion-content>
-  @if (facade.pinned().length) {
-    <ion-list #pinnedList lines="full">
-      <ion-list-header>{{
-        'notes.section.pinned' | translate
-      }}</ion-list-header>
-      <ion-reorder-group
-        [disabled]="isSearching()"
-        (ionReorderEnd)="reorder($any($event), true)"
-      >
-        @for (item of facade.pinned(); track item.id) {
-          <ng-container
-            *ngTemplateOutlet="
-              noteRow;
-              context: { $implicit: item, ionList: pinnedList }
-            "
-          />
-        }
-      </ion-reorder-group>
-    </ion-list>
-  }
-
-  @if (facade.unpinned().length) {
-    <ion-list #otherList lines="full">
-      @if (facade.pinned().length) {
-        <ion-list-header>{{
-          'notes.section.others' | translate
-        }}</ion-list-header>
-      }
-      <ion-reorder-group
-        [disabled]="isSearching()"
-        (ionReorderEnd)="reorder($any($event), false)"
-      >
-        @for (item of facade.unpinned(); track item.id) {
-          <ng-container
-            *ngTemplateOutlet="
-              noteRow;
-              context: { $implicit: item, ionList: otherList }
-            "
-          />
-        }
-      </ion-reorder-group>
-    </ion-list>
-  }
-
-  <app-item-list-empty
-    [isEmptyList]="isEmpty()"
-    [isSearching]="isSearching()"
-    [searchTerm]="facade.searchResult()?.searchTerm"
-    (emptyList)="facade.createNote()"
-    (emptySearch)="facade.createNote()"
-  />
-</ion-content>
-
-<ng-template #noteRow let-item let-ionList="ionList">
   <app-list-item
     [item]="item"
     [title]="item.name || ('notes.item.untitled' | translate)"
     [ionList]="ionList"
     [leadingIcon]="item.pinned ? 'pin' : undefined"
-    [reorderable]="!isSearching()"
+    [reorderable]="reorderable"
     [startSwipeAction]="swipeActionFor(item)"
     (selectItem)="facade.openNote(item)"
     (startSwipe)="viewImages(item)"

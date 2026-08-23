@@ -24,7 +24,7 @@ export const selectNotesSearchResult = createSelector(
   (list): SearchResult<Note> | undefined => searchNotes(list)
 );
 
-const selectVisibleNotes = createSelector(
+export const selectVisibleNotes = createSelector(
   selectNotes,
   selectNotesSearchResult,
   (notes, result): Note[] => result?.listItems ?? notes

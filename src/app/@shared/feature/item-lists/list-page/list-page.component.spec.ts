@@ -3,13 +3,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
   ListPageFacade,
+  ListSection,
   LIST_FACADE,
 } from '../../../util/item-lists/list-page.facade';
 import { CategoryFilterFacade } from '../../../data/item-lists/category-filter.facade';
 import { ListPageComponent } from './list-page.component';
 import { BaseItem } from '../../../model/base-item.types';
 import { Category } from '../../../model/category.types';
-import { ItemList } from '../../../model/item-list.types';
+import { ItemList, SearchResult } from '../../../model/item-list.types';
 import { ITEM_FILTERS } from '../../../util/item-lists/list-filter';
 
 const mockListState = (
@@ -29,13 +30,16 @@ const fakeFacade = (
   state: WritableSignal<ItemList<BaseItem> | undefined>
 ): ListPageFacade & {
   managed: number;
+  reordered: { ids: string[]; sectionId?: string }[];
   catalog: WritableSignal<Category[]>;
   items: WritableSignal<BaseItem[] | undefined>;
+  searchResult: WritableSignal<SearchResult<BaseItem> | undefined>;
+  sections?: WritableSignal<ListSection[]>;
 } => {
   const facade = {
     state,
     items: signal<BaseItem[] | undefined>(undefined),
-    searchResult: signal(undefined),
+    searchResult: signal<SearchResult<BaseItem> | undefined>(undefined),
     catalog: signal<Category[]>([]),
     search: () => {},
     setSortMode: () => {},
@@ -45,6 +49,10 @@ const fakeFacade = (
     managed: 0,
     manageCategories: () => {
       facade.managed += 1;
+    },
+    reordered: [] as { ids: string[]; sectionId?: string }[],
+    reorder: (ids: string[], sectionId?: string) => {
+      facade.reordered.push({ ids, sectionId });
     },
   };
   return facade;
@@ -198,6 +206,77 @@ describe('ListPageComponent', () => {
     facade.items.set([{ id: 'a', name: 'Milk', categoryIds: ['c-1'] }]);
 
     expect(component.extraFilters()).toEqual(ITEM_FILTERS);
+  });
+
+  it('renders the window as one unnamed section while the facade names none', () => {
+    fixture.componentRef.setInput('windowSize', 2);
+    facade.items.set(manyItems(5));
+
+    expect(component.sections()).toEqual([
+      { id: '', items: component.windowedItems() },
+    ]);
+    expect(component.showSectionHeaders()).toBe(false);
+  });
+
+  it('heads the facade sections only once there is more than one', () => {
+    facade.sections = signal<ListSection[]>([
+      { id: 'pinned', labelKey: 'a.pinned', items: [] },
+    ]);
+    expect(component.showSectionHeaders()).toBe(false);
+
+    facade.sections.update((sections) => [
+      ...sections,
+      { id: 'others', labelKey: 'a.others', items: [] },
+    ]);
+
+    expect(component.showSectionHeaders()).toBe(true);
+  });
+
+  it('arms the drag handle while the whole list is on screen', () => {
+    expect(component.reorderArmed()).toBe(true);
+  });
+
+  it('withdraws the drag handle from every partial view', () => {
+    facade.searchResult.set({ searchTerm: 'mi', listItems: [] });
+    expect(component.reorderArmed()).toBe(false);
+
+    facade.searchResult.set(undefined);
+    state.set(mockListState({ filterBy: 'c-1' }));
+    expect(component.reorderArmed()).toBe(false);
+
+    state.set(mockListState());
+    fixture.componentRef.setInput('windowSize', 2);
+    facade.items.set(manyItems(5));
+    expect(component.reorderArmed()).toBe(false);
+  });
+
+  it('reports a reorder under the section it happened in', () => {
+    component.facade.reorder?.(['b', 'a'], 'pinned');
+
+    expect(facade.reordered).toEqual([
+      { ids: ['b', 'a'], sectionId: 'pinned' },
+    ]);
+  });
+});
+
+describe('ListPageComponent without a reorder command', () => {
+  it('never arms the drag handle', async () => {
+    const facade = fakeFacade(signal(mockListState()));
+    delete (facade as Partial<ListPageFacade>).reorder;
+
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [ListPageComponent],
+      providers: [
+        ...COMMON_TEST_PROVIDERS,
+        { provide: LIST_FACADE, useValue: facade },
+        { provide: CategoryFilterFacade, useValue: { clear: () => {} } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(ListPageComponent);
+
+    expect(fixture.componentInstance.canReorder).toBe(false);
+    expect(fixture.componentInstance.reorderArmed()).toBe(false);
   });
 });
 

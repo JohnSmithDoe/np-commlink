@@ -773,3 +773,34 @@ set was inverted, and are left standing rather than re-woven.
   `configs.ts` half its per-scope bullets. Moving those three into this document was the alternative — a
   short banner bought with a growing doc. The guideline for a NEW banner is still 6–14 lines: 32 is the
   gate, not the target.
+
+## Reorder and sections are the shared list's, so notes is a list page
+
+Supersedes the two entries above that argue notes and cash-rules out of `ListPageComponent` — they
+record why the exit was right while the shared list could not hold a drag handle.
+
+- **The reorder group belongs inside `app-item-list`.** The old argument was true and narrow:
+  `ion-reorder-group` must be an ancestor of every `ion-reorder`, and the shared list owns the element
+  rows project into. So it renders the group itself, behind a `reorderable` input, and passes the flag
+  down through `ItemListTemplateContext` — the handle is drawn by `app-list-item` in the host page's
+  row template, which is the only half the shared component cannot reach.
+- **A reorder-capable list is one whose facade offers `reorder(ids, sectionId?)`, and a sectioned one
+  offers `sections()`.** Absence is the declaration, as it already is for `catalog` and
+  `manageCategories`. A flat list is the same code path with one unnamed section, so there is no
+  second rendering branch to keep in step, and `CashRulesFacade.reorder(ids)` already fits the
+  signature unchanged.
+- **A section carries an i18n KEY and the facade builds it**, because `@shared` owns no wording. Notes
+  drops the empty side rather than sending an empty section, and a lone section renders no header —
+  one statement of the rule, in the component, instead of a per-page `@if` over the other section's
+  length.
+- **The handle is withdrawn under a search, an armed filter or a truncating window.** A reorder
+  reports the ids it can SEE and the reducer writes them back over the whole collection, so a drag
+  over a partial view silently drops every row the view hid. Notes carried this for its own page; it
+  is now the shared component's, which is what stops the next caller re-discovering it. The reducer's
+  refusal of a short order stays the backstop it always was.
+- **The sort toolbar needed no new mechanism.** `hasToolbar = signal(false)` already existed for
+  vitals, and `setSortMode` became an optional command: no sort axis means the list is ARRANGED, and
+  nothing calls it.
+- **Cash rules did not follow, and reorder is no longer why.** What holds it out is page chrome — no
+  searchbar, no toolbar, a trailing header button, and add-and-apply in the content beside a header
+  that offers its own add. state.md carries it.

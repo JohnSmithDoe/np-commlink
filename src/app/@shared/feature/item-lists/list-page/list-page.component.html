@@ -61,11 +61,21 @@
 <ion-content>
   <ng-content select="[beforeList]"></ng-content>
 
-  <app-item-list
-    [items]="windowedItems()"
-    [catalog]="facade.catalog?.() ?? []"
-    [itemTemplate]="itemTemplate()"
-  />
+  @for (section of sections(); track section.id) {
+    <app-item-list
+      [items]="section.items"
+      [header]="
+        showSectionHeaders() && section.labelKey
+          ? (section.labelKey | translate)
+          : ''
+      "
+      listHeader
+      [catalog]="facade.catalog?.() ?? []"
+      [itemTemplate]="itemTemplate()"
+      [reorderable]="reorderArmed()"
+      (reorder)="facade.reorder?.($event, section.id)"
+    />
+  }
   @if (hiddenCount(); as hidden) {
     <div class="list-window">
       <ion-button fill="clear" size="small" (click)="showMore()">
