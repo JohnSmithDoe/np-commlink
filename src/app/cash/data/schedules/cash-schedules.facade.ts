@@ -4,7 +4,10 @@ import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
 import {
@@ -44,10 +47,9 @@ export class CashSchedulesFacade extends BaseListPageFacade {
   readonly searchable = signal(false);
   readonly hasToolbar = signal(false);
 
-  protected readonly commands = {
-    search: (term?: string) =>
-      this.#store.dispatch(CashSchedulesActions.updateSearch(term)),
-  };
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: CashSchedulesActions.updateSearch,
+  });
 
   readonly allItems = this.#store.selectSignal(selectScheduleItems);
   readonly #transactions = this.#store.selectSignal(selectAllTransactions);
@@ -92,12 +94,7 @@ export class CashSchedulesFacade extends BaseListPageFacade {
   }
 
   saveItem(item: CashSchedule): void {
-    const isKnown = this.allItems().some(({ id }) => id === item.id);
-    this.#store.dispatch(
-      isKnown
-        ? CashSchedulesActions.updateItem(item)
-        : CashSchedulesActions.addItem(item)
-    );
+    this.#store.dispatch(CashSchedulesActions.addOrUpdateItem(item));
   }
 
   removeItem(item: CashSchedule): void {

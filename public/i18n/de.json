@@ -506,7 +506,6 @@
   "item-list.filter.all": "Alle",
   "item-list.filter.uncategorized": "Ohne Kategorie",
   "item-list.toolbar.sort-az": "A-Z",
-  "item-list.window.show-more": "{{count}} weitere anzeigen",
   "notes.action.cancel": "Abbrechen",
   "notes.action.delete": "Löschen",
   "notes.action.view-images": "Bilder ansehen",

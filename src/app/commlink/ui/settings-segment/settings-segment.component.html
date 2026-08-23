@@ -1,0 +1,12 @@
+<ion-item lines="none">
+  <ion-label [id]="labelId()">{{ labelKey() | translate }}</ion-label>
+</ion-item>
+<ion-item lines="none">
+  <ion-segment
+    [value]="value()"
+    (ionChange)="pick($event)"
+    [attr.aria-labelledby]="labelId()"
+  >
+    <ng-content />
+  </ion-segment>
+</ion-item>

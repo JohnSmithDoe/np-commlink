@@ -16,7 +16,7 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
 import { RouterLink } from '@angular/router';
 import { CashReportFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -28,10 +28,13 @@ import {
 } from '../../model/report.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
+import {
+  BASE_CHART_OPTIONS,
+  COMPACT_AXIS,
+  LEGEND_BOTTOM,
+} from '../../../@shared/util/charts/chart-options';
 import { localizedShortMonthYear } from '../../../@shared/util/formatting/date-format.utils';
 import { centsToEur } from '../../util/money.utils';
-
-Chart.register(...registerables);
 
 @Component({
   selector: 'app-page-cash-report',
@@ -119,22 +122,16 @@ export class CashReportPage {
   });
 
   readonly barOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
-    },
+    ...BASE_CHART_OPTIONS,
+    plugins: { legend: LEGEND_BOTTOM },
     scales: {
       y: { beginAtZero: true, ticks: { callback: (v) => `${v} €` } },
-      x: { ticks: { autoSkip: true, maxRotation: 0 } },
+      x: COMPACT_AXIS,
     },
   };
 
   readonly doughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
-    },
+    ...BASE_CHART_OPTIONS,
+    plugins: { legend: LEGEND_BOTTOM },
   };
 }

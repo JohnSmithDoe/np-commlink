@@ -10,7 +10,9 @@
  * step and nothing to read as "not loaded yet". `selectCategory` cannot
  * drift from it, since no chips means no caller. No `addItemFromSearch`
  * means typing-then-adding opens the create dialog seeded with the query. No
- * `setSortMode` means the list is ARRANGED and not sorted.
+ * `updateSort` means the list is ARRANGED and not sorted — rules read in
+ * `order` and schedules by due date, and a `setSortMode` that reached the
+ * reducer would overwrite the arrangement the domain depends on.
  *
  * `manageCategories` must NOT move here. `ListPageComponent` reads
  * `!!facade.manageCategories` to decide the button exists at all, so
@@ -40,7 +42,7 @@ interface ListPageCommands {
 
 interface ItemListCommandActions {
   updateSearch: (searchQuery?: string) => Action;
-  updateSort: (
+  updateSort?: (
     sortBy?: ItemListSortType,
     sortDirection?: ItemListSortDirection | 'keep' | 'toggle'
   ) => Action;
@@ -55,8 +57,12 @@ export function itemListCommands(
   const { updateSearch, updateSort, addItemFromSearch, updateFilter } = actions;
   return {
     search: (term) => store.dispatch(updateSearch(term)),
-    setSortMode: (type, direction = 'toggle') =>
-      store.dispatch(updateSort(type, direction)),
+    ...(updateSort && {
+      setSortMode: (
+        type: ItemListSortType,
+        direction: ItemListSortDirection | 'toggle' = 'toggle'
+      ) => store.dispatch(updateSort(type, direction)),
+    }),
     ...(addItemFromSearch && {
       addItemFromSearch: () => store.dispatch(addItemFromSearch()),
     }),

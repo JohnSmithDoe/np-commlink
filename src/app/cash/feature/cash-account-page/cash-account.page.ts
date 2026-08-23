@@ -19,13 +19,11 @@ import {
 } from 'ionicons/icons';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { CashTransaction } from '../../model/transaction.types';
-import { uuidv4 } from '../../../@shared/util/app.utils';
 import {
   AccountTransaction,
   CashAccountsFacade,
   CashAccountTransactionsPageFacade,
-  CashRulesFacade,
-  CashSchedulesFacade,
+  CashImportFacade,
   CashTransactionsFacade,
 } from '../../data';
 import { ParseResult } from '../../util/import/parsed-row';
@@ -37,9 +35,6 @@ import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { readStatementDocuments } from '../../util/import/read-bank-file';
 import { readStatement, StatementRead } from '../../util/import/read-statement';
-import { ImportPlan, planImport } from '../../util/import/plan-import';
-import { lastEntryDateISO } from '../../util/import/balance-check';
-import { scheduleSightingsFor } from '../../util/schedule.utils';
 import { takePickedFiles } from '../../../@shared/util/forms/picked-file.utils';
 import { CashAccount } from '../../model/account.types';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
@@ -55,8 +50,6 @@ const DETACH: StartSwipeAction = {
   icon: 'unlink-outline',
   color: 'medium',
 };
-
-const LEDGER_WINDOW = 200;
 
 @Component({
   selector: 'app-page-cash-account',
@@ -79,13 +72,10 @@ const LEDGER_WINDOW = 200;
   ],
 })
 export class CashAccountPage {
-  protected readonly LEDGER_WINDOW = LEDGER_WINDOW;
-
   readonly facade = inject(CashAccountTransactionsPageFacade);
   readonly #transactions = inject(CashTransactionsFacade);
   readonly #accounts = inject(CashAccountsFacade);
-  readonly #rulesFacade = inject(CashRulesFacade);
-  readonly #schedulesFacade = inject(CashSchedulesFacade);
+  readonly #import = inject(CashImportFacade);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
   readonly #loadingCtrl = inject(LoadingController);
@@ -136,9 +126,7 @@ export class CashAccountPage {
       this.#accounts.reportWrongAccount(read.found);
       return;
     }
-    if (read.iban && !account.iban) {
-      this.#accounts.saveItem({ ...account, iban: read.iban });
-    }
+    if (read.iban) this.#import.adoptIban(account.id, read.iban);
     await this.#presentImportPreview(read.parsed);
   }
 
@@ -165,36 +153,12 @@ export class CashAccountPage {
     }
   }
 
-  #planFrom(parsed: ParseResult): ImportPlan {
-    return planImport(
-      parsed,
-      this.facade.accountId(),
-      this.#rulesFacade.allItems(),
-      this.#transactions.allItems(),
-      uuidv4(),
-      uuidv4
-    );
-  }
-
   async #presentImportPreview(parsed: ParseResult): Promise<void> {
-    const plan = this.#planFrom(parsed);
     await presentModal(
       this.#modalCtrl,
       CashImportPreviewModalComponent,
       this.#translate.instant(marker('cash.import.title')),
-      {
-        transactions: plan.toImport,
-        confirmations: plan.toConfirm,
-        duplicates: plan.duplicates,
-        rejected: plan.rejected,
-        accountId: this.facade.accountId(),
-        closingBalanceCents: parsed.closingBalanceCents,
-        asOfISO: lastEntryDateISO(parsed.rows),
-        sightings: scheduleSightingsFor(
-          plan.toImport,
-          this.#schedulesFacade.allItems()
-        ),
-      }
+      { preview: this.#import.plan(parsed, this.facade.accountId()) }
     );
   }
 

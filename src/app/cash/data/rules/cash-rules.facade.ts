@@ -3,7 +3,10 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { CASH_RULES_LIST_ID } from '../../model/cash.types';
 import { CashRule } from '../../model/rule.types';
 import { CashTransaction } from '../../model/transaction.types';
@@ -30,10 +33,9 @@ export class CashRulesFacade extends BaseListPageFacade {
   readonly searchable = signal(false);
   readonly hasToolbar = signal(false);
 
-  protected readonly commands = {
-    search: (term?: string) =>
-      this.#store.dispatch(CashRulesActions.updateSearch(term)),
-  };
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: CashRulesActions.updateSearch,
+  });
 
   showCreateDialog(): void {
     this.#openCreate(createCashRule('', '', this.#nextOrder()));
@@ -67,12 +69,7 @@ export class CashRulesFacade extends BaseListPageFacade {
   readonly stats = this.#store.selectSignal(selectRuleStats);
 
   saveItem(item: CashRule): void {
-    const isKnown = this.allItems().some(({ id }) => id === item.id);
-    this.#store.dispatch(
-      isKnown
-        ? CashRulesActions.updateItem(item)
-        : CashRulesActions.addItem(item)
-    );
+    this.#store.dispatch(CashRulesActions.addOrUpdateItem(item));
   }
 
   removeItem(item: CashRule): void {

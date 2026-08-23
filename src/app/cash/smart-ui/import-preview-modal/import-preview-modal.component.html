@@ -9,7 +9,7 @@
     <ion-buttons slot="end">
       <ion-button
         strong="true"
-        [disabled]="!transactions.length && !confirmations.length"
+        [disabled]="!preview.hasWork"
         (click)="confirm()"
       >
         {{ 'cash.import.confirm' | translate }}
@@ -22,25 +22,28 @@
   <ion-note class="cash-import__summary">
     {{
       'cash.import.summary'
-        | translate: { count: transactions.length, duplicates: duplicates }
+        | translate
+          : { count: preview.rows.length, duplicates: preview.plan.duplicates }
     }}
   </ion-note>
 
-  @if (rejected) {
+  @if (preview.plan.rejected) {
     <ion-note class="cash-import__rejected" color="danger">
-      {{ 'cash.import.rejected' | translate: { rejected: rejected } }}
+      {{
+        'cash.import.rejected' | translate: { rejected: preview.plan.rejected }
+      }}
     </ion-note>
   }
 
-  @if (amountChanges.length) {
+  @if (preview.amountChanges.length) {
     <ion-list lines="full" class="cash-import__changes">
       <ion-list-header>
         {{ 'cash.import.amount-changes' | translate }}
       </ion-list-header>
-      @for (change of amountChanges; track change.scheduleId) {
+      @for (change of preview.amountChanges; track change.scheduleId) {
         <ion-item>
           <ion-label>
-            <h2>{{ scheduleName(change.scheduleId) }}</h2>
+            <h2>{{ change.scheduleName }}</h2>
             <p>
               {{ change.fromCents | moneyEur }} →
               {{ change.toCents | moneyEur }}
@@ -51,26 +54,26 @@
     </ion-list>
   }
 
-  @if (transactions.length) {
+  @if (preview.rows.length) {
     <ion-list lines="full">
-      @for (txn of transactions; track txn.id) {
+      @for (row of preview.rows; track row.transaction.id) {
         <ion-item>
           <ion-label>
-            <h2>{{ txn.name }}</h2>
+            <h2>{{ row.transaction.name }}</h2>
             <p>
-              {{ txn.dateISO | localizedDate }}
-              @if (categoryIdOf(txn); as categoryId) {
-                · {{ categoryName(categoryId) }}
+              {{ row.transaction.dateISO | localizedDate }}
+              @if (row.categoryName) {
+                · {{ row.categoryName }}
               }
             </p>
           </ion-label>
           <ion-note
             slot="end"
             class="cash-txn__amount"
-            [class.cash-txn__amount--out]="txn.amountCents < 0"
-            [class.cash-txn__amount--in]="txn.amountCents > 0"
+            [class.cash-txn__amount--out]="row.transaction.amountCents < 0"
+            [class.cash-txn__amount--in]="row.transaction.amountCents > 0"
           >
-            {{ txn.amountCents | moneyEur }}
+            {{ row.transaction.amountCents | moneyEur }}
           </ion-note>
         </ion-item>
       }

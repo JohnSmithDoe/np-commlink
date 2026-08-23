@@ -6,7 +6,7 @@ import { CASH_TRANSACTIONS_LIST_ID } from '../../model/cash.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { createCashTransaction } from '../../util/cash.factory';
 import { CashRecategorization } from '../../util/categorize.utils';
-import { ImportConfirmation } from '../../util/import/plan-import';
+import { ImportConfirmation } from '../../model/import.types';
 import { CashTransactionsActions } from './cash-transactions.actions';
 import { selectAllTransactions } from '../cash.selector';
 

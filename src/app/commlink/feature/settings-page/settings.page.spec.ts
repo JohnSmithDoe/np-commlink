@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 
-import type { SegmentCustomEvent } from '@ionic/core';
 import { AccentColors, Mode, Skin } from '../../../@shared/model/app.types';
 import { SettingsFacade } from '../../data';
 import { SettingsPage } from './settings.page';
@@ -52,7 +51,7 @@ describe('SettingsPage', () => {
 
     it('sets the skin the segment reports', () => {
       const page = setup();
-      page.changeSkin({ detail: { value: 'boomer' } } as SegmentCustomEvent);
+      page.changeSkin('boomer');
       expect(settings.setSkin).toHaveBeenCalledWith('boomer');
     });
   });
@@ -68,7 +67,7 @@ describe('SettingsPage', () => {
 
     it('sets the mode the segment reports, leaving the skin alone', () => {
       const page = setup();
-      page.changeMode({ detail: { value: 'light' } } as SegmentCustomEvent);
+      page.changeMode('light');
       expect(settings.setMode).toHaveBeenCalledWith('light');
       expect(settings.setSkin).not.toHaveBeenCalled();
     });

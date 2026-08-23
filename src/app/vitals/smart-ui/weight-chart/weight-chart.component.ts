@@ -16,15 +16,18 @@ import {
 } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
+import {
+  BASE_CHART_OPTIONS,
+  COMPACT_AXIS,
+  HOVER_BY_INDEX,
+} from '../../../@shared/util/charts/chart-options';
 import { localizedDayMonth } from '../../../@shared/util/formatting/date-format.utils';
 import { ReadingsFacade } from '../../data';
 import { formatKg, gramsToKg } from '../../util/weight.utils';
-
-Chart.register(...registerables);
 
 const SERIES_LABEL = marker('vitals.chart.weight');
 
@@ -62,9 +65,8 @@ export class WeightChartComponent {
   });
 
   readonly chartOptions: ChartConfiguration<'line'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
+    ...BASE_CHART_OPTIONS,
+    interaction: HOVER_BY_INDEX,
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -80,7 +82,7 @@ export class WeightChartComponent {
         beginAtZero: false,
         ticks: { precision: 1 },
       },
-      x: { ticks: { autoSkip: true, maxRotation: 0 } },
+      x: COMPACT_AXIS,
     },
   };
 }

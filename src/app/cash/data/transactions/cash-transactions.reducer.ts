@@ -19,7 +19,7 @@ import {
 } from '../../model/cash.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { categoryIdOf, withCategory } from '../../util/cash-category.utils';
-import { ImportConfirmation } from '../../util/import/plan-import';
+import { ImportConfirmation } from '../../model/import.types';
 import { CashActions } from '../cash.actions';
 import { CashTransactionsActions } from './cash-transactions.actions';
 

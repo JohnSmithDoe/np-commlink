@@ -13,6 +13,7 @@ import {
 import { categoryIdOf } from '../../util/cash-category.utils';
 import { CashTransactionsActions } from '../../data';
 import { CashState } from '../../model/cash.types';
+import { CashImportPreview } from '../../model/import.types';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
 import {
@@ -49,21 +50,20 @@ const importState = (transactions: CashTransaction[] = []): CashState =>
     transactions,
   });
 
-interface PreviewProperties {
-  transactions: CashTransaction[];
-  duplicates: number;
-  rejected: number;
-}
-
 describe('CashAccountPage', () => {
   let component: CashAccountPage;
   let create: ReturnType<typeof vi.spyOn>;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const previewProperties = (): PreviewProperties =>
+  const previewed = (): CashImportPreview =>
     (
-      create.mock.lastCall as unknown as [{ componentProps: PreviewProperties }]
-    )[0].componentProps;
+      create.mock.lastCall as unknown as [
+        { componentProps: { preview: CashImportPreview } },
+      ]
+    )[0].componentProps.preview;
+
+  const previewedTransactions = (): CashTransaction[] =>
+    previewed().rows.map((row) => row.transaction);
 
   const setup = (state: CashState) => {
     TestBed.configureTestingModule({
@@ -148,7 +148,8 @@ describe('CashAccountPage', () => {
     expect(create).toHaveBeenCalledWith(
       expect.objectContaining({ component: CashImportPreviewModalComponent })
     );
-    const { transactions, duplicates, rejected } = previewProperties();
+    const { plan } = previewed();
+    const transactions = previewedTransactions();
     expect(transactions).toEqual([
       expect.objectContaining({
         accountId: ACCOUNT_ID,
@@ -164,8 +165,8 @@ describe('CashAccountPage', () => {
       'cash-cat-stuff',
       undefined,
     ]);
-    expect(duplicates).toBe(0);
-    expect(rejected).toBe(0);
+    expect(plan.duplicates).toBe(0);
+    expect(plan.rejected).toBe(0);
   });
 
   it('stamps one batch id across the statement and a distinct id per row', async () => {
@@ -175,7 +176,7 @@ describe('CashAccountPage', () => {
       filePicked(camtFile(NORDKAUF_ENTRY, SALARY_ENTRY))
     );
 
-    const [first, second] = previewProperties().transactions;
+    const [first, second] = previewedTransactions();
     expect(first.importBatchId).toEqual(expect.any(String));
     expect(second.importBatchId).toBe(first.importBatchId);
     expect(second.id).not.toBe(first.id);
@@ -199,9 +200,10 @@ describe('CashAccountPage', () => {
       filePicked(camtFile(NORDKAUF_ENTRY, SALARY_ENTRY))
     );
 
-    const { transactions, duplicates } = previewProperties();
-    expect(transactions.map((txn) => txn.amountCents)).toEqual([357_000]);
-    expect(duplicates).toBe(1);
+    expect(previewedTransactions().map((txn) => txn.amountCents)).toEqual([
+      357_000,
+    ]);
+    expect(previewed().plan.duplicates).toBe(1);
   });
 
   it('carries unreadable entries through to the preview as rejected', async () => {
@@ -211,9 +213,8 @@ describe('CashAccountPage', () => {
       filePicked(camtFile(NORDKAUF_ENTRY, UNREADABLE_ENTRY))
     );
 
-    const { transactions, rejected } = previewProperties();
-    expect(transactions).toHaveLength(1);
-    expect(rejected).toBe(1);
+    expect(previewedTransactions()).toHaveLength(1);
+    expect(previewed().plan.rejected).toBe(1);
   });
 
   it('clears the file input so the same file can be picked again', async () => {
@@ -303,7 +304,7 @@ describe('CashAccountPage', () => {
       filePicked(camtFile(NORDKAUF_ENTRY), camtFile(SALARY_ENTRY))
     );
 
-    expect(previewProperties().transactions).toHaveLength(2);
+    expect(previewedTransactions()).toHaveLength(2);
   });
 
   it('detaches the manual leg a reconciliation absorbed', () => {

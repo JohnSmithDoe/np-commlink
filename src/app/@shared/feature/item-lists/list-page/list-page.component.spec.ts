@@ -1,5 +1,6 @@
 import { signal, TemplateRef, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { InfiniteScrollCustomEvent } from '@ionic/angular/standalone';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
   ListPageFacade,
@@ -26,21 +27,28 @@ const manyItems = (count: number): BaseItem[] =>
     name: `Entry ${index}`,
   }));
 
+const scrolledToEnd = () =>
+  ({
+    target: { complete: () => Promise.resolve() },
+  }) as InfiniteScrollCustomEvent;
+
 const fakeFacade = (
   state: WritableSignal<ItemList<BaseItem> | undefined>
-): ListPageFacade & {
+): Omit<ListPageFacade, 'windowSize'> & {
   managed: number;
   reordered: { ids: string[]; sectionId?: string }[];
   catalog: WritableSignal<Category[]>;
   items: WritableSignal<BaseItem[] | undefined>;
   searchResult: WritableSignal<SearchResult<BaseItem> | undefined>;
   sections?: WritableSignal<ListSection[]>;
+  windowSize: WritableSignal<number | undefined>;
 } => {
   const facade = {
     state,
     items: signal<BaseItem[] | undefined>(undefined),
     searchResult: signal<SearchResult<BaseItem> | undefined>(undefined),
     catalog: signal<Category[]>([]),
+    windowSize: signal<number | undefined>(undefined),
     search: () => {},
     setSortMode: () => {},
     selectCategory: () => {},
@@ -150,7 +158,7 @@ describe('ListPageComponent', () => {
   });
 
   it('renders only the window once one is asked for', () => {
-    fixture.componentRef.setInput('windowSize', 200);
+    facade.windowSize.set(200);
     facade.items.set(manyItems(500));
 
     expect(component.windowedItems()).toHaveLength(200);
@@ -158,27 +166,27 @@ describe('ListPageComponent', () => {
   });
 
   it('leaves a list shorter than the window whole', () => {
-    fixture.componentRef.setInput('windowSize', 200);
+    facade.windowSize.set(200);
     facade.items.set(manyItems(12));
 
     expect(component.windowedItems()).toHaveLength(12);
     expect(component.hiddenCount()).toBe(0);
   });
 
-  it('widens the window by one step at a time', () => {
-    fixture.componentRef.setInput('windowSize', 200);
+  it('widens the window by one step at a time', async () => {
+    facade.windowSize.set(200);
     facade.items.set(manyItems(500));
 
-    component.showMore();
+    await component.showMore(scrolledToEnd());
 
     expect(component.windowedItems()).toHaveLength(400);
     expect(component.hiddenCount()).toBe(100);
   });
 
-  it('collapses a widened window when the search changes', () => {
-    fixture.componentRef.setInput('windowSize', 200);
+  it('collapses a widened window when the search changes', async () => {
+    facade.windowSize.set(200);
     facade.items.set(manyItems(500));
-    component.showMore();
+    await component.showMore(scrolledToEnd());
 
     state.set(mockListState({ searchQuery: 'milk' }));
 
@@ -186,7 +194,7 @@ describe('ListPageComponent', () => {
   });
 
   it('keeps the list unknown rather than empty while no items have arrived', () => {
-    fixture.componentRef.setInput('windowSize', 200);
+    facade.windowSize.set(200);
     facade.items.set(undefined);
 
     expect(component.windowedItems()).toBeUndefined();
@@ -209,7 +217,7 @@ describe('ListPageComponent', () => {
   });
 
   it('renders the window as one unnamed section while the facade names none', () => {
-    fixture.componentRef.setInput('windowSize', 2);
+    facade.windowSize.set(2);
     facade.items.set(manyItems(5));
 
     expect(component.sections()).toEqual([
@@ -245,7 +253,7 @@ describe('ListPageComponent', () => {
     expect(component.reorderArmed()).toBe(false);
 
     state.set(mockListState());
-    fixture.componentRef.setInput('windowSize', 2);
+    facade.windowSize.set(2);
     facade.items.set(manyItems(5));
     expect(component.reorderArmed()).toBe(false);
   });

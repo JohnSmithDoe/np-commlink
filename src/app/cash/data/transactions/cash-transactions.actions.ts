@@ -2,7 +2,7 @@ import { createActionGroup } from '@ngrx/store';
 import { createItemListActionEvents } from '../../../@shared/data/item-lists/item-list.actions.factory';
 import { CashTransaction } from '../../model/transaction.types';
 import { CashRecategorization } from '../../util/categorize.utils';
-import { ImportConfirmation } from '../../util/import/plan-import';
+import { ImportConfirmation } from '../../model/import.types';
 
 export const CashTransactionsActions = createActionGroup({
   source: 'Cash Transactions',

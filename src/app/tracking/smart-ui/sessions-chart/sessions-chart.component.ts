@@ -7,13 +7,17 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartData, registerables } from 'chart.js';
+import { ChartConfiguration, ChartData } from 'chart.js';
 import { TrackingFacade } from '../../data';
 import { chartColors } from '../../../@shared/util/charts/chart-colors';
+import {
+  BASE_CHART_OPTIONS,
+  COMPACT_AXIS,
+  HOVER_BY_INDEX,
+  LEGEND_BOTTOM,
+} from '../../../@shared/util/charts/chart-options';
 import { localizedDayMonth } from '../../../@shared/util/formatting/date-format.utils';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
-
-Chart.register(...registerables);
 
 const REMAINDER_LABEL = marker('tracking.chart.other');
 
@@ -49,11 +53,10 @@ export class SessionsChartComponent {
   });
 
   readonly chartOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
+    ...BASE_CHART_OPTIONS,
+    interaction: HOVER_BY_INDEX,
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } },
+      legend: LEGEND_BOTTOM,
       tooltip: {
         filter: (item) => (item.parsed.y ?? 0) > 0,
         callbacks: {
@@ -69,10 +72,7 @@ export class SessionsChartComponent {
         beginAtZero: true,
         ticks: { precision: 1 },
       },
-      x: {
-        stacked: true,
-        ticks: { autoSkip: true, maxRotation: 0 },
-      },
+      x: { ...COMPACT_AXIS, stacked: true },
     },
   };
 }

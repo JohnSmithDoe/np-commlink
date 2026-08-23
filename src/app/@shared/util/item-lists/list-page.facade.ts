@@ -25,6 +25,7 @@ export interface ListPageFacade {
   readonly sortable?: Signal<boolean>;
   readonly searchable?: Signal<boolean>;
   readonly hasToolbar?: Signal<boolean>;
+  readonly windowSize?: Signal<number>;
 
   search(term?: string): void;
   addItemFromSearch(): void;

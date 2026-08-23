@@ -16,14 +16,12 @@
  * register a listener, and the two that never did had a chip that stripped
  * the URL and left the list exactly as it was.
  *
- * `windowSize` caps what is RENDERED, and it lives here rather than in a
- * facade because `items()` is also what `isKnownEmpty`, the search count and
- * a page's own totals read — a facade that handed back a slice would make
- * those answer for the slice. Absent means uncapped, so only a list that can
- * grow without bound asks for one. The cap resets when the search query or
- * the armed filter changes: expanding to reach one old row and then clearing
- * the search would otherwise render the whole collection at once, which is
- * the render the window exists to prevent.
+ * `windowSize` is DECLARED on the facade beside `searchable`, but the
+ * slicing stays here: `items()` is also what `isKnownEmpty`, the search
+ * count and a page's own totals read, so a facade handing back a slice would
+ * make those answer for the slice. The cap resets when the search query or
+ * the armed filter changes — expanding to reach one old row and then
+ * clearing the search would otherwise render the whole collection at once.
  *
  * The drag handle is WITHDRAWN under a search, an armed filter or a window
  * that truncates: a reorder reports the ids it can SEE and the reducer
@@ -41,9 +39,12 @@ import {
   TemplateRef,
 } from '@angular/core';
 import {
+  InfiniteScrollCustomEvent,
   IonButton,
   IonContent,
   IonIcon,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
   IonNote,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -74,6 +75,8 @@ import { PageHeaderComponent } from '../../../ui/page-header/page-header.compone
     IonButton,
     IonIcon,
     IonContent,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
     IonNote,
     CategoryFilterBarComponent,
     ItemListComponent,
@@ -94,7 +97,6 @@ export class ListPageComponent {
   readonly pageHeader = input('');
   readonly heading = input('');
   readonly backHref = input('');
-  readonly windowSize = input<number>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
   readonly canReorder = !!this.facade.reorder;
@@ -106,7 +108,7 @@ export class ListPageComponent {
       const state = this.facade.state();
       return JSON.stringify([state?.searchQuery, state?.filterBy]);
     },
-    computation: () => this.windowSize(),
+    computation: () => this.facade.windowSize?.(),
   });
 
   readonly windowedItems = computed(() => {
@@ -137,9 +139,10 @@ export class ListPageComponent {
       this.hiddenCount() === 0
   );
 
-  showMore(): void {
-    const step = this.windowSize();
+  async showMore(event: InfiniteScrollCustomEvent): Promise<void> {
+    const step = this.facade.windowSize?.();
     if (step) this.#shown.update((shown) => (shown ?? step) + step);
+    await event.target.complete();
   }
 
   readonly extraFilters = computed(() => {

@@ -32,6 +32,8 @@ import {
   selectRoutedAccountTransactionsState,
 } from './cash-transactions.selector';
 
+const LEDGER_WINDOW = 200;
+
 @Injectable({ providedIn: 'root' })
 export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
@@ -58,6 +60,7 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
 
   readonly catalog = this.#categories.allItems;
   readonly sortable = signal(false);
+  readonly windowSize = signal(LEDGER_WINDOW);
 
   readonly account = computed(() =>
     this.#accounts.allItems().find(({ id }) => id === this.accountId())

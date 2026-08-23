@@ -19,24 +19,12 @@
  * confirm read as a wall. The paragraph is not lost: it is `remittanceInfo`,
  * shown under the name and matchable by its own field.
  * ───────────────────────────────────────────────────────────────── */
+import { ImportConfirmation, ImportPlan } from '../../model/import.types';
 import { CashRule } from '../../model/rule.types';
 import { CamtDetails, CashTransaction } from '../../model/transaction.types';
 import { withCategory } from '../cash-category.utils';
 import { categorizeOrdered, rulesByOrder } from '../categorize.utils';
 import { importKeyOf, ParsedRow, ParseResult } from './parsed-row';
-
-export interface ImportConfirmation {
-  id: string;
-  importKey: string;
-  dateISO: string;
-}
-
-export interface ImportPlan {
-  toImport: CashTransaction[];
-  toConfirm: ImportConfirmation[];
-  duplicates: number;
-  rejected: number;
-}
 
 const scopedKey = (accountId: string, importKey: string): string =>
   `${accountId}|${importKey}`;

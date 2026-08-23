@@ -1,9 +1,5 @@
 import { createSelector } from '@ngrx/store';
-import { SearchResult } from '../../../@shared/model/item-list.types';
-import {
-  filterAndSortItemList,
-  filterListBySearchQuery,
-} from '../../../@shared/util/item-lists/list.selector';
+import { createRouteScopedListSelectors } from '../../../@shared/data/item-lists/route-scoped-list.selector';
 import {
   ProfileSummary,
   Reading,
@@ -14,41 +10,21 @@ import {
   readingsOf,
   summaryFor,
 } from '../../util/vitals.utils';
-import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { selectReadingsList } from '../vitals.selector';
 
-export const selectReadingItems = createSelector(
+const routeScoped = createRouteScopedListSelectors<Reading, ReadingsState>(
   selectReadingsList,
-  (list): Reading[] => list.items
+  readingsOf
 );
+
+export const selectReadingItems = routeScoped.selectItems;
+export const selectRouteProfileReadings = routeScoped.selectScopedItems;
+export const selectReadingsSearchResult = routeScoped.selectSearchResult;
+export const selectReadingsListItems = routeScoped.selectListItems;
 
 export const selectReadingsCount = createSelector(
   selectReadingItems,
   (readings): number => readings.length
-);
-
-export const selectRouteProfileReadings = createSelector(
-  selectReadingItems,
-  selectRouteEntityId,
-  (readings, profileId): Reading[] =>
-    profileId ? readingsOf(readings, profileId) : []
-);
-
-const selectRouteProfileList = createSelector(
-  selectReadingsList,
-  selectRouteProfileReadings,
-  (list, items): ReadingsState => ({ ...list, items })
-);
-
-export const selectReadingsSearchResult = createSelector(
-  selectRouteProfileList,
-  (list): SearchResult<Reading> | undefined => filterListBySearchQuery(list)
-);
-
-export const selectReadingsListItems = createSelector(
-  selectRouteProfileList,
-  selectReadingsSearchResult,
-  (list, result): Reading[] => filterAndSortItemList(list, result)
 );
 
 export const selectRouteProfileSummary = createSelector(

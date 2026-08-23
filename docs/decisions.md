@@ -875,3 +875,52 @@ record why the exit was right while the shared list could not hold a drag handle
   it sits on a plain `ion-item`, where `no-testid-on-component-element` has no opinion.
 - **`cash.schedule.add` and `cash.schedules.empty` left with the chrome**, the same trade rules made:
   the header carries the add, the shared empty state carries the copy.
+
+## Four seams closed, structure chosen over behaviour each time
+
+- **Cash rules and schedules joined `createItemListEffects` with `create: null`.** The factory's
+  banner used to read their absence as a reason to stay off it; `create: null` says the same thing
+  in the call — `addItemFromSearch` stays inert, so a rule with no conditions still cannot be minted
+  from a search term, and the base facade opens the create dialog instead. What they gain is the
+  half that was hand-rolled: `saveItem` is one `addOrUpdateItem` dispatch, and `syncSearchOnRename$`
+  and the add-failure toast come along.
+- **That changed what a duplicate name does, deliberately.** The hand-rolled `saveItem` matched by
+  `id` alone; `findMatchingItem` matches by id and then by exact name, which is what accounts,
+  categories and every household list already do — so saving a NEW rule or schedule named exactly
+  like an existing one now updates that one. Uniform beats the private answer: `updateListItem`
+  keyed off the same matcher all along, so the two halves disagreed before.
+- **`itemListCommands`' `updateSort` became optional, so absence is the declaration.** Wiring the two
+  arranged lists through it handed them a live `setSortMode` that reached a reducer which really does
+  handle `updateSort` — rules read in `order` and `categorize` returns the first match, so a sort
+  would have overwritten the semantics. `updateSort` now joins `addItemFromSearch` and `updateFilter`
+  as present-or-absent, matching what the base facade's banner already claimed.
+- **`CashImportFacade` owns `plan(parsed, accountId)` and `commit(preview)`.** The page reads files
+  and shows the spinner; the modal renders one `preview` prop and says yes. `hasWork` is on the
+  preview because deciding what counts as work was the modal's, and the preview carries resolved
+  category and schedule NAMES beside the ids so the modal needs no collection of its own.
+- **`ImportPlan` and `ImportConfirmation` moved to `cash/model/import.types.ts`** — Sheriff seals
+  `model → util`, so a preview type in `model` could not reference them where they were.
+- **`windowSize` is declared on the facade, and the show-more button became `ion-infinite-scroll`.**
+  Two opt-outs at two layers were one too many; the slicing stays in the component for the reason its
+  banner gives. The tap is gone, `item-list.window.show-more` retired from both bundles, and
+  `hiddenCount() === 0` still disables the scroll and withdraws the drag handle.
+- **That is LAZY LOADING, not virtualization, and the distinction is why it is safe here.**
+  `ion-infinite-scroll` only changes what triggers the next slice — a scroll instead of a tap. It
+  measures nothing and recycles nothing, so variable row heights are irrelevant to it and the DOM
+  still grows exactly as the button made it grow. It is therefore not a performance change, and it
+  does NOT retire `#shown` or the reset-on-search rule: [state.md](./state.md) claimed it would need
+  "no second items signal and no reset rule", and that was only ever true of the other option.
+  **The deprecated component is `ion-virtual-scroll`** (v6) — **removed** in v7, with the CDK named as
+  its successor. Real windowing is still open and still costs what it always did: the CDK strategy
+  wants a fixed `itemSize`, which sliding rows of two and three lines and the section headers between
+  them do not offer, and `cdk-experimental`'s autosize is where the variable-height answer lives.
+- **The route-scoped list selector factory lives in `@shared/data/item-lists/`, not beside
+  `list.selector.ts`.** Its scope is `selectRouteEntityId`, which is `data`, and `util → data` is
+  sealed. Readings and pills keep their public selector names by re-exporting the four it returns.
+- **`app-settings-segment` is `commlink/ui`, one caller, and `display: contents`.** The options stay
+  projected because each picker labels its own differently — two through i18n keys, the languages by
+  their own untranslated names — and the `*-picker-label` ids are unchanged, so both the language
+  e2e's testid and the handbook shots' `ion-segment[aria-labelledby=…]` selectors still read.
+- **Importing `@shared/util/charts/chart-options.ts` is what registers chart.js.** Three hosts each
+  called `Chart.register(...registerables)`; a fourth that forgot would have rendered an empty canvas
+  rather than failed. Drawing the options from the same module makes the registration unforgettable.

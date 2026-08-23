@@ -76,13 +76,12 @@
       (reorder)="facade.reorder?.($event, section.id)"
     />
   }
-  @if (hiddenCount(); as hidden) {
-    <div class="list-window">
-      <ion-button fill="clear" size="small" (click)="showMore()">
-        {{ 'item-list.window.show-more' | translate: { count: hidden } }}
-      </ion-button>
-    </div>
-  }
+  <ion-infinite-scroll
+    [disabled]="hiddenCount() === 0"
+    (ionInfinite)="showMore($event)"
+  >
+    <ion-infinite-scroll-content />
+  </ion-infinite-scroll>
   <app-item-list-empty
     [isEmptyList]="isKnownEmpty()"
     [isSearching]="!!facade.searchResult()"

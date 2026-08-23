@@ -6,62 +6,44 @@
 
 <ion-content>
   <ion-list>
-    <ion-item lines="none">
-      <ion-label id="theme-picker-label">
-        {{ 'settings.theme.title' | translate }}
-      </ion-label>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-segment
-        [value]="skin()"
-        (ionChange)="changeSkin($event)"
-        [attr.aria-labelledby]="'theme-picker-label'"
-      >
-        @for (option of skins; track option) {
-          <ion-segment-button [value]="option">
-            <ion-label>{{ skinLabelKeys[option] | translate }}</ion-label>
-          </ion-segment-button>
-        }
-      </ion-segment>
-    </ion-item>
+    <app-settings-segment
+      labelKey="settings.theme.title"
+      labelId="theme-picker-label"
+      [value]="skin()"
+      (valueChange)="changeSkin($event)"
+    >
+      @for (option of skins; track option) {
+        <ion-segment-button [value]="option">
+          <ion-label>{{ skinLabelKeys[option] | translate }}</ion-label>
+        </ion-segment-button>
+      }
+    </app-settings-segment>
 
-    <ion-item lines="none">
-      <ion-label id="mode-picker-label">
-        {{ 'settings.mode.title' | translate }}
-      </ion-label>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-segment
-        [value]="mode()"
-        (ionChange)="changeMode($event)"
-        [attr.aria-labelledby]="'mode-picker-label'"
-      >
-        @for (option of modes; track option) {
-          <ion-segment-button [value]="option">
-            <ion-label>{{ modeLabelKeys[option] | translate }}</ion-label>
-          </ion-segment-button>
-        }
-      </ion-segment>
-    </ion-item>
+    <app-settings-segment
+      labelKey="settings.mode.title"
+      labelId="mode-picker-label"
+      [value]="mode()"
+      (valueChange)="changeMode($event)"
+    >
+      @for (option of modes; track option) {
+        <ion-segment-button [value]="option">
+          <ion-label>{{ modeLabelKeys[option] | translate }}</ion-label>
+        </ion-segment-button>
+      }
+    </app-settings-segment>
 
-    <ion-item lines="none">
-      <ion-label id="language-picker-label">
-        {{ 'settings.language.title' | translate }}
-      </ion-label>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-segment
-        [value]="language()"
-        (ionChange)="changeLanguage($event)"
-        [attr.aria-labelledby]="'language-picker-label'"
-      >
-        @for (option of languages; track option) {
-          <ion-segment-button data-testid="language-option" [value]="option">
-            <ion-label>{{ languageLabels[option] }}</ion-label>
-          </ion-segment-button>
-        }
-      </ion-segment>
-    </ion-item>
+    <app-settings-segment
+      labelKey="settings.language.title"
+      labelId="language-picker-label"
+      [value]="language()"
+      (valueChange)="changeLanguage($event)"
+    >
+      @for (option of languages; track option) {
+        <ion-segment-button data-testid="language-option" [value]="option">
+          <ion-label>{{ languageLabels[option] }}</ion-label>
+        </ion-segment-button>
+      }
+    </app-settings-segment>
     <ion-item lines="none">
       <ion-note>{{ 'settings.language.restart-hint' | translate }}</ion-note>
     </ion-item>

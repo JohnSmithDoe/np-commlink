@@ -4,6 +4,8 @@ import { CashActions } from './cash.actions';
 import {
   cashAccountsListEffects,
   cashCategoriesListEffects,
+  cashRulesListEffects,
+  cashSchedulesListEffects,
 } from './cash-list.effects';
 import { cashReducer } from './cash.reducer';
 import { cashRulesEffects } from './rules/cash-rules.effects';
@@ -21,6 +23,8 @@ export const cashContext = providePersistedContext({
   effects: [
     cashAccountsListEffects,
     cashCategoriesListEffects,
+    cashRulesListEffects,
+    cashSchedulesListEffects,
     cashRulesEffects,
   ],
   save: {

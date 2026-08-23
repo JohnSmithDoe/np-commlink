@@ -1,0 +1,9 @@
+// ─── why ────────────────────────────────────────────────────────
+// The two rows must stay DIRECT layout children of the enclosing ion-list:
+// a box of our own between them and the list is a box Ionic's item styling
+// does not expect.
+// ────────────────────────────────────────────────────────────────
+
+:host {
+  display: contents;
+}

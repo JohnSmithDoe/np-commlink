@@ -17,6 +17,7 @@ export { CashCategoryTransactionsPageFacade } from './transactions/cash-category
 export { CashRulesFacade } from './rules/cash-rules.facade';
 export { CashSchedulesFacade } from './schedules/cash-schedules.facade';
 export { CashTransactionsFacade } from './transactions/cash-transactions.facade';
+export { CashImportFacade } from './import/cash-import.facade';
 export { CashReportFacade } from './cash-report.facade';
 export { CashBurndownFacade } from './cash-burndown.facade';
 export { CashCategoriesPageFacade } from './categories/cash-categories-page.facade';

@@ -13,12 +13,11 @@ import {
   IonLabel,
   IonList,
   IonNote,
-  IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
-import type { SegmentCustomEvent } from '@ionic/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { SettingsSegmentComponent } from '../../ui/settings-segment/settings-segment.component';
 import {
   AccentColors,
   Language,
@@ -84,12 +83,12 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
     IonList,
     IonItem,
     IonLabel,
-    IonSegment,
     IonNote,
     IonSegmentButton,
     IonButton,
     IonIcon,
     RouterLink,
+    SettingsSegmentComponent,
   ],
 })
 export class SettingsPage {
@@ -133,16 +132,16 @@ export class SettingsPage {
     () => this.#activeAccents()?.secondary ?? this.#defaultAccents().secondary
   );
 
-  changeSkin(event: SegmentCustomEvent) {
-    this.#settings.setSkin(event.detail.value as Skin);
+  changeSkin(value: string) {
+    this.#settings.setSkin(value as Skin);
   }
 
-  changeMode(event: SegmentCustomEvent) {
-    this.#settings.setMode(event.detail.value as Mode);
+  changeMode(value: string) {
+    this.#settings.setMode(value as Mode);
   }
 
-  changeLanguage(event: SegmentCustomEvent) {
-    this.#settings.setLanguage(event.detail.value as Language);
+  changeLanguage(value: string) {
+    this.#settings.setLanguage(value as Language);
   }
 
   changePrimaryAccent(hex: string) {
