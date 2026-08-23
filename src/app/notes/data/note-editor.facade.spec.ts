@@ -118,4 +118,13 @@ describe('NoteEditorFacade', () => {
     expect(dispatch).toHaveBeenCalledWith(NotesActions.removeItem(mockNote()));
     expect(lastUpdate()).toBeUndefined();
   });
+
+  it('leaves no back-tap to the deleted note', () => {
+    setup();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+
+    facade.removeNote();
+
+    expect(navigate).toHaveBeenCalledWith(['/notes'], { replaceUrl: true });
+  });
 });

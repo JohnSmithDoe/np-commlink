@@ -15,6 +15,10 @@
  * is destroyed after the router has already moved on, so by then the
  * route carries no `:id` and the route-derived note is undefined. The
  * caller is the only one that still knows.
+ *
+ * `removeNote` REPLACES the URL rather than pushing one: the editor's own
+ * route is what the user is standing on, and a push leaves it one
+ * back-tap away, resolving a `:id` no note answers to any more.
  * ───────────────────────────────────────────────────────────────── */
 
 import { computed, inject, Injectable } from '@angular/core';
@@ -113,7 +117,7 @@ export class NoteEditorFacade {
     this.#pending = undefined;
     if (!note) return;
     this.#store.dispatch(NotesActions.removeItem(note));
-    void this.#router.navigate(['/notes']);
+    void this.#router.navigate(['/notes'], { replaceUrl: true });
   }
 
   reportUploadFailure(): void {
