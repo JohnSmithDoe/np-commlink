@@ -24,6 +24,7 @@ import {
   stopCircle,
   trashOutline,
 } from 'ionicons/icons';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { NotificationsFacade } from '../../data';
 import { InboxNotification } from '../../../@shared/model/notifications.types';
@@ -34,6 +35,7 @@ import { InboxNotification } from '../../../@shared/model/notifications.types';
   styleUrls: ['notifications.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     PageHeaderComponent,
     TranslatePipe,
     IonContent,

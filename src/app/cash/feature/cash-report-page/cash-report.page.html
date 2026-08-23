@@ -143,6 +143,6 @@
       </ion-list>
     }
   } @else {
-    <p class="cash-empty">{{ 'cash.report.empty' | translate }}</p>
+    <app-empty-state [label]="'cash.report.empty' | translate" />
   }
 </ion-content>

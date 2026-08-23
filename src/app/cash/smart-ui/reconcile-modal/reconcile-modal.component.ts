@@ -23,6 +23,7 @@ import { CashTransaction } from '../../model/transaction.types';
 import { CashTransactionsFacade } from '../../data';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { findReconciliationCandidates } from '../../util/reconcile.utils';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-cash-reconcile-modal',
@@ -30,6 +31,7 @@ import { findReconciliationCandidates } from '../../util/reconcile.utils';
   styleUrls: ['./reconcile-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     IonHeader,
     IonToolbar,
     IonTitle,

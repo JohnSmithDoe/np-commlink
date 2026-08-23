@@ -76,9 +76,7 @@ test.describe('cash daily spending', () => {
     await createAccount(page, 'BARGELD', '200,00');
     await openSpending(page);
 
-    await expect(
-      spendingPage(page).getByTestId('spending-empty')
-    ).toBeVisible();
+    await expect(spendingPage(page).locator('app-empty-state')).toBeVisible();
 
     await book(page, '10,00');
 

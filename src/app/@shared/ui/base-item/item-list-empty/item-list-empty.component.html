@@ -17,7 +17,12 @@
     } @else {
       <app-text-item
         [label]="'item-list.empty.isempty' | translate"
-        [note]="'item-list.empty.isempty.note' | translate"
+        [note]="
+          (isSearchable()
+            ? 'item-list.empty.isempty.note'
+            : 'item-list.empty.isempty.note.searchless'
+          ) | translate
+        "
         (selectItem)="emptyList.emit()"
       />
     }

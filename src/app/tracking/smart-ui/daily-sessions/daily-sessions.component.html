@@ -51,7 +51,5 @@
     }
   </ion-list>
 } @else {
-  <p class="daily-sessions-empty ion-padding ion-text-center">
-    {{ 'tracking.daily-sessions.empty' | translate }}
-  </p>
+  <app-empty-state [label]="'tracking.daily-sessions.empty' | translate" />
 }

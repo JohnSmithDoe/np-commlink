@@ -109,6 +109,14 @@ it was measured against.
 - **Nesting the stored accent map by mode was declined** — a shape change on a slice every install holds,
   to preserve a colour that is two taps to pick again. Why a hand-picked accent is dropped at all is on
   `settings.reducer.ts`.
+- **Two empty-state shapes, and one rule that picks between them.** Inside a list whose job is to be
+  added to, the empty state is a ROW that creates on tap — `app-item-list-empty` over `app-text-item`,
+  looking like the rows it stands in for. Everywhere else it is prose: `app-empty-state`, an optional
+  glyph over a dim label and note, inert. That retired eight hand-rolled copies and the
+  `cash.empty-state` mixin, and gave one to the two surfaces that had none — the tracking archive and
+  the office-time day lists. Deck config still has none and never can: its rows are a static catalog.
+  The searchless lists — vitals' readings and pills, cash's rules — read their own note, the shared one
+  having pointed at a searchbar they do not render.
 
 ## Router and navigation
 
@@ -286,7 +294,7 @@ Every `BaseItem` list renders `ListPageComponent`. This is the half a read of th
   sliding rows of two and three lines with section headers between them do not offer.
 - **Two lists are deliberately not candidates.** A `DeckEntry` has no `name` — its label is a per-skin
   marker — so nothing exists for a title, a search or a comparator to read, and its rows are toggles over
-  a visible set rather than an `ItemList`. And cash's uncategorized view keeps its own empty state,
+  a visible set rather than an `ItemList`. And cash's uncategorized view keeps the inert empty state,
   because there an empty list is a SUCCESS while the shared one offers to create a transaction.
 
 ## Features and gates weighed, and declined

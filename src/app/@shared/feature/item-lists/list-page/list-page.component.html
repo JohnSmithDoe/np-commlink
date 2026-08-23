@@ -88,6 +88,7 @@
   </ion-infinite-scroll>
   <app-item-list-empty
     [isEmptyList]="isKnownEmpty()"
+    [isSearchable]="facade.searchable?.() ?? true"
     [isSearching]="!!facade.searchResult()"
     [isFiltered]="!!facade.state()?.filterBy"
     [searchTerm]="facade.searchResult()?.searchTerm"

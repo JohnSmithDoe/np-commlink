@@ -35,6 +35,7 @@ import {
 } from '../../../@shared/util/charts/chart-options';
 import { localizedShortMonthYear } from '../../../@shared/util/formatting/date-format.utils';
 import { centsToEur } from '../../util/money.utils';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-page-cash-report',
@@ -42,6 +43,7 @@ import { centsToEur } from '../../util/money.utils';
   styleUrls: ['./cash-report.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     PageHeaderComponent,
     RouterLink,
     IonContent,

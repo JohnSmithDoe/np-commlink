@@ -34,8 +34,6 @@
       }
     </ion-list>
   } @else {
-    <p class="cash-uncategorized__empty">
-      {{ 'cash.uncategorized.empty' | translate }}
-    </p>
+    <app-empty-state [label]="'cash.uncategorized.empty' | translate" />
   }
 </ion-content>

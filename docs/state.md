@@ -122,15 +122,6 @@ being re-argued.
   dialog, and a manual spend is edited the same way. The other half was already handled: a row carries
   its derived key as well as the bank's, so a `PDNG` entry arriving again under the `AcctSvcrRef` it
   gained when it booked confirms the stored pending row in place (`plan-import.ts`).
-- **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
-  notifications, the burn-down, schedules and the uncategorized surface hand-roll inert copy; the
-  tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
-  what carries the useful one for trackplay, cash and the household lists — the argument for the rest.
-- **The shared empty state names a searchbar that a searchless list does not have.**
-  `item-list.empty.isempty.note` reads "…oder gib etwas in die Suchleiste ein", and vitals' readings
-  and pills plus cash's rules all render `app-list-page` with `searchable` false. Splitting the note
-  needs a second key and a `searchable` read inside `app-item-list-empty`, for copy nobody has
-  complained about.
 - **One glyph per program, read by both the menu and the page header.** The six list pages each pass their
   own `icon="…"` to `app-page-header` while `DECK_CATALOG` carries the same string — two copies agreeing by
   review only. The fix is small: the icon is a static const, not slice state, and `app.component` already

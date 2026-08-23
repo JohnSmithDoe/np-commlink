@@ -34,6 +34,12 @@
         [canDelete]="viewMode() === 'raw'"
         (deleteItem)="deleteItem(item)"
       />
+    } @empty {
+      <app-empty-state
+        icon="documents-outline"
+        [label]="'data.page.empty' | translate"
+        [note]="'data.page.empty.note' | translate"
+      />
     }
   </ion-list>
 </ion-content>

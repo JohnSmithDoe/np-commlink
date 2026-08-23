@@ -68,8 +68,3 @@
 .cash-report__cat-amount {
   font-family: var(--sr-deck-font);
 }
-
-.cash-empty {
-  @include cash.empty-state;
-  @include consts.vertical-cut;
-}

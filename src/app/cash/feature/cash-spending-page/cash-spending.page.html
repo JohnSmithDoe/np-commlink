@@ -53,8 +53,6 @@
       }
     </ion-list>
   } @else {
-    <ion-note class="cash-hint" data-testid="spending-empty">
-      {{ 'cash.spend.empty' | translate }}
-    </ion-note>
+    <app-empty-state [label]="'cash.spend.empty' | translate" />
   }
 </ion-content>

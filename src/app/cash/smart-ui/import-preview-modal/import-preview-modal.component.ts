@@ -18,6 +18,7 @@ import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { CashImportFacade } from '../../data';
 import { CashImportPreview } from '../../model/import.types';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-cash-import-preview-modal',
@@ -25,6 +26,7 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   styleUrls: ['./import-preview-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     IonHeader,
     IonToolbar,
     IonTitle,

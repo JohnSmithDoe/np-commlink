@@ -19,6 +19,7 @@ import { CashTransaction } from '../../model/transaction.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { CashSpendQuickAddComponent } from '../spend-quick-add/spend-quick-add.component';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-page-cash-spending',
@@ -26,6 +27,7 @@ import { CashSpendQuickAddComponent } from '../spend-quick-add/spend-quick-add.c
   styleUrls: ['./cash-spending.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     PageHeaderComponent,
     IonContent,
     IonItem,

@@ -17,6 +17,7 @@ import { TextItemComponent } from '../text-item/text-item.component';
 })
 export class ItemListEmptyComponent {
   readonly isEmptyList = input(true, { transform: booleanAttribute });
+  readonly isSearchable = input(true, { transform: booleanAttribute });
   readonly isSearching = input(false, { transform: booleanAttribute });
   readonly isFiltered = input(false, { transform: booleanAttribute });
   readonly searchTerm = input<string>();

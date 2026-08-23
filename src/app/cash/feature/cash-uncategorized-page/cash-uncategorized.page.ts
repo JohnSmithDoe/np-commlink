@@ -27,6 +27,7 @@ import { CashReportFacade, CashTransactionsFacade } from '../../data';
 import { CashTransaction } from '../../model/transaction.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-page-cash-uncategorized',
@@ -34,6 +35,7 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   styleUrls: ['./cash-uncategorized.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     PageHeaderComponent,
     IonContent,
     IonItem,

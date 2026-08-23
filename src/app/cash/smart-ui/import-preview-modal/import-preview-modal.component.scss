@@ -8,8 +8,3 @@
 .cash-txn__amount {
   @include cash.txn-amount;
 }
-
-.cash-empty {
-  @include cash.empty-state;
-  padding-top: var(--space-6);
-}

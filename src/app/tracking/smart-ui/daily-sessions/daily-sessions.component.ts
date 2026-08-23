@@ -23,6 +23,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { TrackingFacade } from '../../data';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-daily-sessions',
@@ -30,6 +31,7 @@ import { TrackingTimePipe } from '../../util/tracking-time.pipe';
   styleUrls: ['./daily-sessions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     DatePipe,
     IonBadge,
     IonButton,

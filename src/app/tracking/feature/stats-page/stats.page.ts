@@ -22,6 +22,7 @@ import {
   TrackingViewId,
 } from '../../model/tracking.types';
 import { StatsItemComponent } from '../../ui/stats-item/stats-item.component';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 const VIEW_LABEL_KEYS: Record<TrackingViewId, Marker> = {
   raw: marker('data.page.title.raw'),
@@ -36,6 +37,7 @@ const VIEW_LABEL_KEYS: Record<TrackingViewId, Marker> = {
   templateUrl: 'stats.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    EmptyStateComponent,
     TranslatePipe,
     StatsItemComponent,
     IonButton,

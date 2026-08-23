@@ -4,17 +4,10 @@
 //
 // Each mixin parameterises what legitimately differed between the copies it
 // replaced, and nothing else — every extra knob is a licence to drift apart
-// again. empty-state takes no position for that reason: it says how an empty
-// state READS, and where it sits depends on what shares its container.
+// again.
 // ────────────────────────────────────────────────────────────────
 
 @use 'deck';
-
-@mixin empty-state {
-  text-align: center;
-  letter-spacing: var(--sr-label-tracking);
-  color: var(--sr-text-dim);
-}
 
 @mixin hint($padding) {
   display: block;

@@ -20,16 +20,10 @@
     </ion-item>
 
     @if (!openItems?.length) {
-      <ion-item lines="none" class="empty">
-        <ion-icon
-          slot="start"
-          name="notifications-off-outline"
-          aria-hidden="true"
-        />
-        <ion-label>
-          <p>{{ 'notifications.empty.new' | translate }}</p>
-        </ion-label>
-      </ion-item>
+      <app-empty-state
+        icon="notifications-off-outline"
+        [label]="'notifications.empty.new' | translate"
+      />
     }
 
     @for (n of openItems; track n.id) {
@@ -114,16 +108,10 @@
     @if (!collapsed) {
       <div id="notifications-done-list">
         @if (!doneItems?.length) {
-          <ion-item lines="none" class="empty">
-            <ion-icon
-              slot="start"
-              name="notifications-off-outline"
-              aria-hidden="true"
-            />
-            <ion-label>
-              <p>{{ 'notifications.empty.done' | translate }}</p>
-            </ion-label>
-          </ion-item>
+          <app-empty-state
+            icon="notifications-off-outline"
+            [label]="'notifications.empty.done' | translate"
+          />
         }
 
         @for (n of doneItems; track n.id) {
