@@ -32,7 +32,6 @@ import { recategorizations } from '../../util/categorize.utils';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
-import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 
 import { CategoryId } from '../../../@shared/model/category.types';
@@ -44,7 +43,6 @@ import { Marker } from '../../../@shared/model/app.types';
   styleUrls: ['./cash-rules.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    EditCashRuleDialogComponent,
     ListPageComponent,
     ListItemComponent,
     IonButtons,

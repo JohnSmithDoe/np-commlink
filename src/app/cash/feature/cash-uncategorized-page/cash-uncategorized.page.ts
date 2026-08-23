@@ -27,9 +27,6 @@ import { CashReportFacade, CashTransactionsFacade } from '../../data';
 import { CashTransaction } from '../../model/transaction.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
-import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
-import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/edit-cash-schedule-dialog.component';
-import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dialog/edit-cash-transaction-dialog.component';
 
 @Component({
   selector: 'app-page-cash-uncategorized',
@@ -38,9 +35,6 @@ import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dia
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
-    EditCashRuleDialogComponent,
-    EditCashScheduleDialogComponent,
-    EditCashTransactionDialogComponent,
     IonContent,
     IonItem,
     IonLabel,

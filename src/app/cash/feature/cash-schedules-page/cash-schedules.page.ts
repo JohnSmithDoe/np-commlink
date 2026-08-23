@@ -40,7 +40,6 @@ import { CashSchedule } from '../../model/schedule.types';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
-import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/edit-cash-schedule-dialog.component';
 
 @Component({
   selector: 'app-page-cash-schedules',
@@ -49,7 +48,6 @@ import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/ed
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
-    EditCashScheduleDialogComponent,
     IonButton,
     IonButtons,
     IonContent,

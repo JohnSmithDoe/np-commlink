@@ -42,10 +42,6 @@ import { lastEntryDateISO } from '../../util/import/balance-check';
 import { scheduleSightingsFor } from '../../util/schedule.utils';
 import { takePickedFiles } from '../../../@shared/util/forms/picked-file.utils';
 import { CashAccount } from '../../model/account.types';
-import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
-import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
-import { EditCashScheduleDialogComponent } from '../edit-cash-schedule-dialog/edit-cash-schedule-dialog.component';
-import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dialog/edit-cash-transaction-dialog.component';
 import { CashImportPreviewModalComponent } from '../../smart-ui/import-preview-modal/import-preview-modal.component';
 import { CashReconcileModalComponent } from '../../smart-ui/reconcile-modal/reconcile-modal.component';
 import { presentModal } from '../../../@shared/util/app.modal.utils';
@@ -70,10 +66,6 @@ const LEDGER_WINDOW = 200;
   imports: [
     ListPageComponent,
     ListItemComponent,
-    EditCashAccountDialogComponent,
-    EditCashRuleDialogComponent,
-    EditCashScheduleDialogComponent,
-    EditCashTransactionDialogComponent,
     IonButtons,
     IonButton,
     IonIcon,

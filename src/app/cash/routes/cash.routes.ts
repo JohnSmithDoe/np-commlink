@@ -7,6 +7,10 @@ export const cashRoutes: Routes = [
   {
     path: '',
     ...cashContext,
+    loadComponent: () =>
+      import('../feature/cash-shell/cash-shell.component').then(
+        (m) => m.CashShellComponent
+      ),
     children: [
       {
         path: '',

@@ -4,7 +4,8 @@ import { DECK_CATALOG } from './commlink/model/deck.catalog';
 
 const segmentsOf = (path: string): string[] => path.split('/').filter(Boolean);
 const isTerminal = (route: Route): boolean =>
-  !!route.component || !!route.loadComponent || !!route.redirectTo;
+  !route.children?.length &&
+  (!!route.component || !!route.loadComponent || !!route.redirectTo);
 
 const childrenOf = async (route: Route): Promise<Routes> => {
   if (route.children) return route.children;

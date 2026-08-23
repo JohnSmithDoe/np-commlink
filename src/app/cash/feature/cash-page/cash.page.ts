@@ -42,7 +42,6 @@ import {
 } from '../../data';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
-import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
 import { CashTransferModalComponent } from '../transfer-modal/transfer-modal.component';
 import { presentModal } from '../../../@shared/util/app.modal.utils';
 
@@ -61,7 +60,6 @@ const KIND_ICON: Record<AccountKind, string> = {
   imports: [
     ListPageComponent,
     ListItemComponent,
-    EditCashAccountDialogComponent,
     IonButton,
     IonButtons,
     IonIcon,
