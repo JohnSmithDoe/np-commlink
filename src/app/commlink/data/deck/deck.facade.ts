@@ -8,6 +8,7 @@ import {
   entriesOnDeck,
   groupingModules,
   isFactoryDeck,
+  moveOnDeck,
   orderEntries,
   resolveLabels,
 } from '../../util/deck.utils';
@@ -57,6 +58,14 @@ export class DeckFacade {
 
   reorder(order: DeckEntryId[]): void {
     this.#store.dispatch(DeckActions.reorder(order));
+  }
+
+  moveProgram(id: DeckEntryId, delta: -1 | 1): void {
+    const config = this.#config();
+    const order = orderEntries(DECK_CATALOG, config.order).map(
+      (entry) => entry.id
+    );
+    this.reorder(moveOnDeck(order, config.visibleEntries, id, delta));
   }
 
   toggleEntry(id: DeckEntryId): void {

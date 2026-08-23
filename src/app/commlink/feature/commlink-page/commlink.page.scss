@@ -119,6 +119,20 @@
   margin-top: var(--space-5);
 }
 
+.cl-slot {
+  display: flex;
+  flex-direction: column;
+
+  > .cl-node {
+    flex: 1;
+  }
+}
+
+.cl-slot__arrange {
+  display: flex;
+  justify-content: space-between;
+}
+
 .cl-node {
   position: relative;
   display: flex;

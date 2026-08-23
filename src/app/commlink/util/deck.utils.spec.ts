@@ -11,6 +11,7 @@ import {
   resonanceRatingOf,
   isEntryVisible,
   isFactoryDeck,
+  moveOnDeck,
   orderEntries,
   resolveLabels,
   toggleIn,
@@ -101,6 +102,34 @@ describe('entriesOnDeck', () => {
 
   it('is empty on a cold deck, whatever the catalog holds', () => {
     expect(entriesOnDeck(CATALOG, state())).toEqual([]);
+  });
+});
+
+describe('moveOnDeck', () => {
+  const order = ['cash', 'storage', 'shopping', 'tasks'];
+  const visible = ['cash', 'shopping', 'tasks'];
+
+  it('swaps a program with the next one the deck actually shows', () => {
+    expect(moveOnDeck(order, visible, 'cash', 1)).toEqual([
+      'shopping',
+      'storage',
+      'cash',
+      'tasks',
+    ]);
+  });
+
+  it('leaves a hidden entry where it sits, so the config order does not shift', () => {
+    expect(moveOnDeck(order, visible, 'shopping', -1)[1]).toBe('storage');
+  });
+
+  it('refuses to move the first program earlier or the last one later', () => {
+    expect(moveOnDeck(order, visible, 'cash', -1)).toEqual(order);
+    expect(moveOnDeck(order, visible, 'tasks', 1)).toEqual(order);
+  });
+
+  it('is inert for an id the deck is not showing', () => {
+    expect(moveOnDeck(order, visible, 'storage', 1)).toEqual(order);
+    expect(moveOnDeck(order, visible, 'nothing', -1)).toEqual(order);
   });
 });
 

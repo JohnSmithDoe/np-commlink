@@ -77,6 +77,21 @@ export function orderEntries(
   return [...configured, ...added];
 }
 
+export function moveOnDeck(
+  order: readonly DeckEntryId[],
+  visible: readonly DeckEntryId[],
+  id: DeckEntryId,
+  delta: -1 | 1
+): DeckEntryId[] {
+  const onDeck = order.filter((entry) => visible.includes(entry));
+  const neighbour = onDeck[onDeck.indexOf(id) + delta];
+  if (!onDeck.includes(id) || neighbour === undefined) return [...order];
+
+  return order.map((entry) =>
+    entry === id ? neighbour : entry === neighbour ? id : entry
+  );
+}
+
 export const badgeValue = (
   telemetry: DashboardState,
   entry: DeckEntry
