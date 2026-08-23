@@ -134,6 +134,11 @@ that is the entry criterion.
   it as clustered `-f -i` and dies with `Unknown format: json,json`; `--trailing-newline` plus that
   indentation keep a four-figure line churn against prettier out of the diff. **Acceptance:**
   `pnpm run i18n:extract` → `git diff --exit-code public/i18n/` is clean.
+- **A key passed as a STATIC attribute is invisible to the extractor, and `--clean` deletes it.**
+  `labelKey="settings.theme.title"` reads as a plain string to every scanner: the key is in use, has a
+  translation, and the next extract drops both. It fails silently — the acceptance check above is what
+  catches it, one run later, as a deletion nobody made. Pass such a key through a `marker()` constant
+  and bind it, which is also what the marker rules already ask for everywhere else.
 - **pnpm withholds releases hours old** (11.9 default `minimumReleaseAge`) and it looks exactly like a
   stuck resolver. The escape hatch is the trap: `pnpm add <pkg>@<version>` bypasses it by appending to
   `minimumReleaseAgeExclude` — a supply-chain control widened to win a patch bump. Prefer waiting.
