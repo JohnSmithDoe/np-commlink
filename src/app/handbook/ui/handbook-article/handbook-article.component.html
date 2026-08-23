@@ -4,6 +4,17 @@
   </h1>
   <p class="hb-article__summary">{{ page().summary }}</p>
 
+  @if (page().shotsStale) {
+    <aside class="hb-article__stale">
+      <ion-icon
+        class="hb-article__stale-icon"
+        name="warning-outline"
+        aria-hidden="true"
+      />
+      <span>{{ 'handbook.shots.stale' | translate }}</span>
+    </aside>
+  }
+
   @for (section of page().sections; track $index) {
     <section class="hb-section" [attr.data-kind]="section.kind">
       <h2 class="hb-section__heading">

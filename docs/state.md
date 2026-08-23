@@ -69,6 +69,13 @@ second app that cannot reach the first one's data.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
+- **Two handbook pages carry stale screenshots, and they say so themselves.** `credstick-import` (the
+  rules list lost its in-content add button and its section header; the swipe reveals a text delete
+  now) and `soykaf` (the recipe list gained a searchbar and a sort row). Both page JSONs carry
+  `"shotsStale": true`, which paints a warning above the article, so a reader is told rather than
+  misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
+  flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and
+  no gate can see it — **whoever changes a screen sets it on the pages that show that screen.**
 
 ## Waiting on upstream
 

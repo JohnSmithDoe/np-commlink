@@ -50,5 +50,6 @@ export interface HandbookPageContent {
   plain: string;
   route: string;
   summary: string;
+  shotsStale?: boolean;
   sections: HandbookSection[];
 }

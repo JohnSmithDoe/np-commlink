@@ -17,6 +17,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
+import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { handLeftOutline, warningOutline } from 'ionicons/icons';
 import { HANDBOOK_SECTION_ICON } from '../../model/handbook.consts';
@@ -33,7 +34,7 @@ import { HandbookTitleComponent } from '../handbook-title/handbook-title.compone
   styleUrls: ['handbook-article.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [IonIcon, HandbookTitleComponent],
+  imports: [IonIcon, TranslatePipe, HandbookTitleComponent],
 })
 export class HandbookArticleComponent {
   readonly page = input.required<HandbookPageContent>();

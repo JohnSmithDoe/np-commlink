@@ -60,6 +60,11 @@ anything a template or AOT catches.
 regenerated **on release only, by Martin**. Keep the shots *source* in step by hand when a selector
 it reads changes, and stop there; never run that config to check your edit.
 
+**Instead, mark what your change made stale.** A UI change dates every handbook figure that shows
+that screen, so set `"shotsStale": true` on each `public/handbook/pages/*.json` that does — the
+article then paints a warning above itself, telling the reader rather than misleading them. No gate
+can see this; [state.md](docs/state.md) carries which pages are flagged and who clears them.
+
 `android/` is **committed** — `cap add` is not reproducible across Capacitor versions, so the native
 project is source. `android/.gitignore` (shipped by Capacitor) excludes the generated half. Never
 hand-edit what `scripts/android-postsync.sh` writes; add a patch there instead.
