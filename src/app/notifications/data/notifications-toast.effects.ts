@@ -84,7 +84,7 @@ export class NotificationsToastEffects {
       positionAnchor: 'footer',
       htmlAttributes: { 'data-testid': 'action-toast' },
       buttons: [
-        // eslint-disable-next-line commlink/a11y-no-actionable-toast-button -- Accepted gap, not a false positive: ion-toast is role="status" + aria-live="polite", so this button is never announced. Any caller setting `ToastMessage.action` therefore owes a persistent path to the same action, and neither caller — trackplay's undo, the household lists' — has one. Remove this line the moment every caller does.
+        // eslint-disable-next-line commlink/a11y-no-actionable-toast-button -- Accepted gap, not a false positive: ion-toast is role="status" + aria-live="polite", so this button is never announced. Any caller setting `ToastMessage.action` therefore owes a persistent path to the same action. The undo stack now has one — `app-undo-button` in every list page's header — leaving trackplay's own `lastDeleted` toast as the last caller without one. Remove this line the moment trackplay joins the stack (docs/next-version.md).
         {
           side: 'start',
           text: label,

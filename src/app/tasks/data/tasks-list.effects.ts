@@ -20,6 +20,7 @@ export const tasksListEffects = {
     actions: TasksActions,
     select: selectTasksList,
     create: (name, filterBy) => createTaskItem(name, filterBy),
+    undoableDelete: TasksActions.removeItem,
   }),
 
   clearSearch$: clearSearchAfter(TasksActions.updateSearch, [

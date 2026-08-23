@@ -11,6 +11,7 @@ export const trackingListEffects = {
     actions: TrackingActions,
     select: selectTrackingState,
     create: (name) => createTrackingItem(name),
+    undoableDelete: TrackingActions.removeItem,
   }),
 
   clearSearch$: clearSearchAfter(TrackingActions.updateSearch, [

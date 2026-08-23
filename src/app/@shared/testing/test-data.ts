@@ -1,6 +1,8 @@
 import { RouterReducerState } from '@ngrx/router-store';
+import { initialUndoState } from '../data/undo/undo.reducer';
 import { BaseItem } from '../model/base-item.types';
 import { Category } from '../model/category.types';
+import { UndoState } from '../model/undo.types';
 
 export const TEST_TIMESTAMP = '2024-01-01T12:00:00.000Z';
 
@@ -54,6 +56,7 @@ export function mockBaseItem(overrides: Partial<BaseItem> = {}): BaseItem {
 
 type MockKernelState = {
   router: RouterReducerState;
+  undo: UndoState;
 };
 
 export type MockState = Partial<MockKernelState> & Record<string, unknown>;
@@ -61,6 +64,7 @@ export type MockState = Partial<MockKernelState> & Record<string, unknown>;
 export function mockKernelState(overrides: MockState = {}): MockKernelState {
   return {
     router: mockRouterState(),
+    undo: initialUndoState,
     ...overrides,
   };
 }

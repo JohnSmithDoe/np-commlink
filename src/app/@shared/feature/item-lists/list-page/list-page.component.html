@@ -6,6 +6,10 @@
   [disabled]="!!facade.searchResult()?.exactMatch"
   (addItem)="facade.showCreateDialog()"
 >
+  <ion-buttons toolbar slot="end">
+    <app-undo-button />
+  </ion-buttons>
+
   @if (facade.searchable?.() ?? true) {
     <app-item-list-searchbar
       [query]="facade.state()?.searchQuery"

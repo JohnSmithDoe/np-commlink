@@ -1,0 +1,9 @@
+@if (canUndo()) {
+  <ion-button
+    (click)="undo()"
+    [attr.aria-label]="'undo.a11y.restore' | translate: { name: pendingName() }"
+    data-testid="undo-button"
+  >
+    <ion-icon slot="icon-only" name="arrow-undo-outline" aria-hidden="true" />
+  </ion-button>
+}

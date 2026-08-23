@@ -23,9 +23,9 @@
  * ONE `<ng-content select="[beforeList]">`. It enables both flags first,
  * because every `ListSettings` flag ships `false`.
  *
- * The undo test lives here because it proves what trackplay's does not:
- * that a list opting in through `undoableDelete` gets the toast and its
- * row back. Only the three household lists opt in.
+ * The undo tests live here because they prove what trackplay's does not: a
+ * list opting in through `undoableDelete` gets its row back from the toast,
+ * and from the header button for the entry the toast has replaced.
  *
  * The emoji test asserts ABSENCE: an always-mounted `ion-modal` would
  * make every overlay locator on this route ambiguous, app-wide.
@@ -259,6 +259,26 @@ test.describe('storage list', () => {
 
     await toast.getByRole('button', { name: 'Rückgängig' }).click();
     await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('reaches an entry the toast has already replaced', async ({ page }) => {
+    await addViaSearch(page, 'Butter');
+    await addViaSearch(page, 'Cheese');
+
+    await slideDelete(listRow(page, /Butter/));
+    await expect(listRow(page, /Butter/)).toHaveCount(0);
+    await slideDelete(listRow(page, /Cheese/));
+    await expect(listRow(page, /Cheese/)).toHaveCount(0);
+
+    const undo = page.getByTestId('undo-button');
+    await expect(undo).toBeVisible({ timeout: 10_000 });
+
+    await undo.click();
+    await expect(listRow(page, /Cheese/)).toBeVisible({ timeout: 10_000 });
+
+    await undo.click();
+    await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
+    await expect(undo).toHaveCount(0);
   });
 
   test('offers no emoji picker on mobile', async ({ page }) => {

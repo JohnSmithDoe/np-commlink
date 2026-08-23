@@ -30,6 +30,13 @@ and every exemption taken so far.
   discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what
   the user was not looking at. Cash's `deleteConfirmAlert` is the row-level confirm still standing, at
   four sites: accounts, the ledger, rules and schedules.
+- **A cascading delete needs a restore action before it can join the undo stack.** The stack replays
+  `addItem(item)`, which is exactly wrong for a delete that also touched other slices: a category comes
+  back with every item it was stripped from still untagged, a profile without its readings and pills,
+  and products — which already opted in — leave the recipe lines they emptied empty. Each needs a
+  restore action carrying what the cascade removed, computed where the cascade runs. Until then the
+  categories dialog's full swipe is the sharpest gesture in the app, having been made `expandable` on
+  the promise of an undo that does not cover it yet.
 - **Trackplay joins the undo stack, per entity.** `restoreSnapshot` writes the pre-delete `players`,
   `games` and `gameTypes` arrays back wholesale, so delete → add player → undo loses the new player.
   Per-entity restore actions fix it and let trackplay pass `undoableDelete` like shopping, storage and

@@ -115,13 +115,6 @@ Triaged deliberately: each of these ships before the next major. What was triage
 [next-version.md](./next-version.md), and an entry leaves this section by being done rather than by
 being re-argued.
 
-- **Which lists opt into undo.** The mechanism is built — `ToastMessage` carries `action`, `durationMs`
-  and `group`, and `@shared/data/undo/` holds a ten-deep stack the shared toast effect offers at 5 s. Only
-  shopping, storage and products pass `undoableDelete`; tasks, recipes, categories, tracking and
-  trackplay's four lists delete silently. **The stack has no persistent consumer** — only the toast pops
-  it, so entries below the top are unreachable until a toolbar undo button exists, which also retires the
-  `a11y-no-actionable-toast-button` suppression for both callers at once. Trackplay's own half is
-  scheduled ([next-version.md](./next-version.md)).
 - **A transaction is not deletable, which is how the re-import stays idempotent.** Keying off statement
   content means nothing can distinguish "deleted on purpose" from "not imported yet", so a delete plus a
   re-import brought the row back — and the alternative was a tombstone store keyed the same way the rows
@@ -129,8 +122,6 @@ being re-argued.
   dialog, and a manual spend is edited the same way. The other half was already handled: a row carries
   its derived key as well as the bank's, so a `PDNG` entry arriving again under the `AcctSvcrRef` it
   gained when it booked confirms the stored pending row in place (`plan-import.ts`).
-- **Write confirmations are arbitrary, not absent.** Tracking toasts its writes; tasks, the three household
-  lists, recipes, cash, categories and trackplay create/edit are silent.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
   notifications, the burn-down, schedules and the uncategorized surface hand-roll inert copy; the
   tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is

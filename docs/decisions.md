@@ -164,10 +164,28 @@ it was measured against.
   `ion-item-option`: a list whose job is a pantry or a task pile must be as cheap to remove from as to add
   to, and a confirm on every row taxes the common case to insure the rare one. **Cash is the only swipe
   deliberately not expandable**, on the grounds below. The categories dialog expands like the rest: its
-  delete cascades through three reducers, and a cascade is answered by undo, not by a harder gesture.
-- **Undo over confirm, and a confirm is not to come back as a substitute for one.** Undo is opt-in per
-  list. Cascades and bulk wipes are a different class and are not settled by this — destroying what the
-  user was not looking at is scheduled ([next-version.md](./next-version.md)).
+  delete cascades through three reducers, and a cascade is answered by undo, not by a harder gesture —
+  which is a debt until the cascade restore lands ([next-version.md](./next-version.md)).
+- **Undo over confirm, and a confirm is not to come back as a substitute for one.** Cascades and bulk
+  wipes are a different class and are not settled by this — destroying what the user was not looking at
+  is scheduled ([next-version.md](./next-version.md)).
+- **Who opts into undo is decided by the round trip, not by taste.** `undoableDelete` pushes
+  `addItem(item)`, so a list qualifies only where the delete took nothing but that item: shopping,
+  storage, products, tasks, tracking, recipes, vitals' readings. The abstainers each have a reason —
+  categories and vitals' profiles CASCADE, so `addItem` would restore the row and not what it took with
+  it; cash confirms instead; trackplay stashes one snapshot where the stack holds ten. **Products is the
+  one that slipped through**: deleting a product also strips it from every recipe, and restoring the
+  product does not bring those ingredient lines back.
+- **The stack's persistent path is `app-undo-button`, in every list page's header.** A toast is
+  `role="status"`, so its button is never announced and it lives five seconds; the header button lives as
+  long as the stack is not empty and is what makes entries below the top reachable at all. It is also
+  what earns the `a11y-no-actionable-toast-button` suppression — the rule stays suppressed only while
+  trackplay, the last caller with no such path, keeps its own toast.
+- **A write confirms only where its result is off screen.** A create lands in the list being looked at
+  and an edit changes the row behind the dialog, so neither toasts anywhere in the app; a delete is an
+  absence, and what it raises is the undo offer rather than a receipt. Tracking kept four toasts under
+  the old arbitrary answer and keeps one: `saveAndResetTracking`, whose result is an archive entry on
+  another page. Failures always toast.
 - **Cash confirms, and not only at the ledger** — accounts, the ledger, rules and schedules all route
   through `deleteConfirmAlert`. The ledger is imported bank history and re-adding a row by hand is not
   the cheap gesture this policy buys elsewhere; the other three inherit that, being the definitions the

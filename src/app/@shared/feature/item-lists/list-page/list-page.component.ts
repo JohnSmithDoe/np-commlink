@@ -41,6 +41,7 @@ import {
 import {
   InfiniteScrollCustomEvent,
   IonButton,
+  IonButtons,
   IonContent,
   IonIcon,
   IonInfiniteScroll,
@@ -65,6 +66,7 @@ import {
   ItemListTemplateContext,
 } from '../../../ui/base-item/item-list/item-list.component';
 import { PageHeaderComponent } from '../../../ui/page-header/page-header.component';
+import { UndoButtonComponent } from '../../../smart-ui/undo-button/undo-button.component';
 
 @Component({
   selector: 'app-list-page',
@@ -73,6 +75,7 @@ import { PageHeaderComponent } from '../../../ui/page-header/page-header.compone
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
+    IonButtons,
     IonIcon,
     IonContent,
     IonInfiniteScroll,
@@ -85,6 +88,7 @@ import { PageHeaderComponent } from '../../../ui/page-header/page-header.compone
     ItemListToolbarComponent,
     PageHeaderComponent,
     TranslatePipe,
+    UndoButtonComponent,
   ],
 })
 export class ListPageComponent {

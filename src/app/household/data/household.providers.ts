@@ -20,6 +20,7 @@ import {
   selectHouseholdState,
 } from './household.selector';
 import { selectProductCount } from './products/products.selector';
+import { recipesListEffects } from './recipes/recipes.effects';
 import { selectRecipeCount } from './recipes/recipes.selector';
 import { selectActiveShoppingCount } from './shopping/shopping.selector';
 import { selectLowStockCount } from './storage/storage.selector';
@@ -68,6 +69,7 @@ export const householdContext = providePersistedContext({
     shoppingListEffects,
     storageListEffects,
     productsListEffects,
+    recipesListEffects,
     householdCategoriesListEffects,
   ],
 });
