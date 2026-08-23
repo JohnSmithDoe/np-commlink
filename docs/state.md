@@ -140,12 +140,14 @@ second app that cannot reach the first one's data.
 - **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
   using it. On the APK it is the cheapest upgrade available to how the app feels.
 - **Three empty-state treatments, one of them useful.** The shared one explains and creates on tap;
-  notifications, cash-rules, the burn-down, schedules and the uncategorized surface hand-roll inert copy;
-  the tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
+  notifications, the burn-down, schedules and the uncategorized surface hand-roll inert copy; the
+  tracking stats page, deck config and the office-time dashboard have none. `ListPageComponent` is
   what carries the useful one for trackplay, cash and the household lists — the argument for the rest.
-  Cash **rules** stays hand-rolled, but no longer over reorder — the shared list carries that now. What
-  is left is page chrome: no searchbar and no toolbar, a trailing header button, and an add-and-apply
-  pair in the content that `app-page-header`'s own add affordance would duplicate.
+- **The shared empty state names a searchbar that a searchless list does not have.**
+  `item-list.empty.isempty.note` reads "…oder gib etwas in die Suchleiste ein", and vitals' readings
+  and pills plus cash's rules all render `app-list-page` with `searchable` false. Splitting the note
+  needs a second key and a `searchable` read inside `app-item-list-empty`, for copy nobody has
+  complained about.
 - **Six shipping controls below the touch target.** `size="small"` is 32 px in Ionic MD; ten sites, four
   `isDevMode()`-gated. The six that ship include the household scan button. The emoji picker's grid is
   `minmax(2.75rem, 1fr)` with a banner saying why — the care is here, it is not uniform.

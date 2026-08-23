@@ -204,7 +204,7 @@ async function createRule(
   value: string
 ) {
   const rules = pageRoot(page, 'app-page-cash-rules');
-  await rules.getByRole('button', { name: 'Regel hinzufügen' }).click();
+  await addButton(rules).click();
   const modal = createDialog(page);
   await expect(modal).toBeVisible();
   await nameInput(modal).fill(name);
@@ -306,7 +306,7 @@ test.describe('handbook · credstick import', () => {
     await page.goto('/#/cash/rules');
     const rules = pageRoot(page, 'app-page-cash-rules');
     await expect(rules).toBeVisible({ timeout: 60_000 });
-    await expect(rules.getByTestId('cash-rule-row')).toHaveCount(3);
+    await expect(rules.getByTestId('list-row')).toHaveCount(3);
     await toastGone(page);
     await shot(page, 'credstick-import-rules');
 
@@ -320,7 +320,7 @@ test.describe('handbook · credstick import', () => {
       element.close()
     );
 
-    await rules.getByTestId('cash-rule-row').nth(1).click();
+    await rules.getByTestId('list-row').nth(1).click();
     const ruleDialog = page
       .locator('ion-modal.show-modal')
       .filter({ hasText: 'Eintrag bearbeiten' });

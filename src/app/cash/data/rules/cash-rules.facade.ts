@@ -1,8 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
+import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { CASH_RULES_LIST_ID } from '../../model/cash.types';
 import { CashRule } from '../../model/rule.types';
 import { CashTransaction } from '../../model/transaction.types';
@@ -10,15 +11,29 @@ import { createCashRule } from '../../util/cash.factory';
 import { ruleFrom } from '../../util/derive.utils';
 import { CashRulesActions } from './cash-rules.actions';
 import {
+  selectArrangedRules,
   selectRuleItems,
-  selectRulesListItems,
+  selectRulesSearchResult,
+  selectRulesState,
   selectRuleStats,
 } from './cash-rules.selector';
 
 @Injectable({ providedIn: 'root' })
-export class CashRulesFacade {
+export class CashRulesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+
+  readonly state = this.#store.selectSignal(selectRulesState);
+  readonly items = this.#store.selectSignal(selectArrangedRules);
+  readonly searchResult = this.#store.selectSignal(selectRulesSearchResult);
+
+  readonly searchable = signal(false);
+  readonly hasToolbar = signal(false);
+
+  protected readonly commands = {
+    search: (term?: string) =>
+      this.#store.dispatch(CashRulesActions.updateSearch(term)),
+  };
 
   showCreateDialog(): void {
     this.#openCreate(createCashRule('', '', this.#nextOrder()));
@@ -49,7 +64,6 @@ export class CashRulesFacade {
   }
 
   readonly allItems = this.#store.selectSignal(selectRuleItems);
-  readonly listItems = this.#store.selectSignal(selectRulesListItems);
   readonly stats = this.#store.selectSignal(selectRuleStats);
 
   saveItem(item: CashRule): void {

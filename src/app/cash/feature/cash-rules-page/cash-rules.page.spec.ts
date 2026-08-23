@@ -90,16 +90,29 @@ describe('CashRulesPage', () => {
     expect(reportRulesApplied).toHaveBeenCalledWith(0);
   });
 
-  it('re-prioritises on a drop, in the order the list renders', () => {
-    const first = mockCashRule({ id: 'r1', order: 0 });
-    const second = mockCashRule({ id: 'r2', order: 1 });
-    const third = mockCashRule({ id: 'r3', order: 2 });
-    setup(mockCashState({ rules: [third, first, second] }));
+  it('hands the shared list the arrangement, not the alphabet', () => {
+    setup(
+      mockCashState({
+        rules: [
+          mockCashRule({ id: 'r3', name: 'Aldi', order: 2 }),
+          mockCashRule({ id: 'r1', name: 'Zoo', order: 0 }),
+          mockCashRule({ id: 'r2', name: 'Miete', order: 1 }),
+        ],
+      })
+    );
 
-    const complete = vi.fn();
-    component.reorder({ detail: { from: 2, to: 1, complete } } as never);
+    expect(component.facade.items().map((rule) => rule.id)).toEqual([
+      'r1',
+      'r2',
+      'r3',
+    ]);
+  });
 
-    expect(complete).toHaveBeenCalledWith(false);
+  it('re-prioritises on a drop', () => {
+    setup(mockCashState({ rules: [mockCashRule({ id: 'r1', order: 0 })] }));
+
+    component.facade.reorder(['r1', 'r3', 'r2']);
+
     expect(dispatch).toHaveBeenCalledWith(
       CashRulesActions.reorder(['r1', 'r3', 'r2'])
     );
@@ -108,7 +121,7 @@ describe('CashRulesPage', () => {
   it('asks for a blank rule editor, ordered after the last rule', () => {
     setup(mockCashState({ rules: [mockCashRule({ id: 'r1', order: 4 })] }));
 
-    component.openNewRule();
+    component.facade.showCreateDialog();
 
     const request = TestBed.inject(ItemDialogService).request();
     expect(request?.listId).toBe(CASH_RULES_LIST_ID);
@@ -125,5 +138,15 @@ describe('CashRulesPage', () => {
     const request = TestBed.inject(ItemDialogService).request();
     expect(request?.editMode).toBe('update');
     expect(request?.item.id).toBe('r1');
+  });
+
+  it('offers no sort, so the shared toolbar never renders', () => {
+    setup(mockCashState({ rules: [mockCashRule({ id: 'r1' })] }));
+
+    component.facade.setSortMode('name');
+
+    expect(component.facade.hasToolbar()).toBe(false);
+    expect(component.facade.searchable()).toBe(false);
+    expect(dispatch).not.toHaveBeenCalled();
   });
 });

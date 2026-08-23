@@ -804,3 +804,26 @@ record why the exit was right while the shared list could not hold a drag handle
 - **Cash rules did not follow, and reorder is no longer why.** What holds it out is page chrome — no
   searchbar, no toolbar, a trailing header button, and add-and-apply in the content beside a header
   that offers its own add. state.md carries it.
+
+## Cash rules followed, and the deck config cannot
+
+- **`CashRulesFacade` extends `BaseListPageFacade` and its state was already an `ItemList`.**
+  `CashRulesState` **is** `ItemList<CashRule>`, so `state` and `searchResult` came from selectors that
+  existed. What did not exist was `items`: `selectRulesListItems` ran `filterAndSortItemList`, which
+  with no `sort` set falls back to comparing by NAME — the one order a rules list must not render.
+  `selectArrangedRules` sorts by `order` instead, and nothing read the name-sorted one.
+- **The add affordance moved to the header, and the in-content button went.** `app-page-header`'s add
+  is what the other eleven list pages use; keeping the outline button meant a `hideAdd` input on the
+  shared page for a single caller, which is the seam this refactor exists to close. The apply button
+  stays, in `afterList` — it acts on the whole list rather than adding to it. `cash.rule.add`,
+  `cash.rules.empty`, `cash.section.rules` and `cash.a11y.delete-rule` left with it: the header
+  carries the add, the shared empty state carries the copy, the page title already said "Regeln", and
+  a row's delete option is the shared text one.
+- **`cash-rule-row` was replaced by `list-row`, not renamed.** `no-testid-on-component-element`
+  forbids a testid on `app-list-item`, and the row it wraps already declares one. Two e2e files and
+  the handbook shots read it.
+- **The deck config is NOT a `BaseItem` list and is not a candidate.** A `DeckEntry` has no `name` —
+  its label is `labels[skin].nameKey`, a marker resolved per skin — so there is nothing for the shared
+  list's title, search or comparator to read. Its rows are toggles rather than navigable items, its
+  state is `visibleEntries` plus an order rather than an `ItemList`, and the arrangement is the whole
+  content. Migrating it would mean inventing a stored `name` the theme owns instead.

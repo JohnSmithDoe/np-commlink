@@ -1,7 +1,5 @@
-@use '../../../../theme/cash';
-
-.cash-hint {
-  @include cash.hint(var(--space-3) var(--space-4));
+.cash-rules__apply {
+  margin: var(--space-4);
 }
 
 .cash-rule__stat {

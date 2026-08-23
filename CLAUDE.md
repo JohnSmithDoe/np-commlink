@@ -8,6 +8,8 @@ Operating manual for Claude Code in this repository: what to run, and what not t
 No backend — all state is local (NgRx in memory, `@ionic/storage` on disk). Ships as a PWA and an
 Android APK.
 
+**Keep comments to a minimum**, speaking human readable code first. no history, no war stories, max one header comment see below
+
 **Trunk-based: work on `main`.** If you must isolate, prefer a worktree over a branch. Commit messages
 explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
 that has to outlive its commit belongs in one of the three documents below.
@@ -52,6 +54,11 @@ rule's rationale in its own.
 whole Playwright run, ~90 s where the answer usually costs four. Match the check to the blast radius:
 `pnpm test` for a spec or logic edit, `pnpm run lint` for a lint-shaped one, `pnpm run build` for
 anything a template or AOT catches.
+
+**Never regenerate the handbook.** `e2e/handbook/*.shots.ts` runs under its own
+`playwright.handbook.config.ts` and is deliberately outside `verify:all` — the screenshots are
+regenerated **on release only, by Martin**. Keep the shots *source* in step by hand when a selector
+it reads changes, and stop there; never run that config to check your edit.
 
 `android/` is **committed** — `cap add` is not reproducible across Capacitor versions, so the native
 project is source. `android/.gitignore` (shipped by Capacitor) excludes the generated half. Never

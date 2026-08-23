@@ -25,7 +25,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
-import { pageRoot, waitForPersisted } from '../helpers';
+import { addButton, listRow, pageRoot, waitForPersisted } from '../helpers';
 
 const RULES = '/#/cash/rules';
 
@@ -76,9 +76,7 @@ test.describe('cash rule builder', () => {
     await page.goto(RULES);
     await expect(rulesPage(page)).toBeVisible({ timeout: 30_000 });
 
-    await rulesPage(page)
-      .getByRole('button', { name: 'Regel hinzufügen' })
-      .click();
+    await addButton(rulesPage(page)).click();
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
 
     await expect(saveButton(page)).toBeDisabled();
@@ -115,7 +113,7 @@ test.describe('cash rule builder', () => {
     ).toBeVisible({ timeout: 10_000 });
     await waitForPersisted(page, 'cash', 'Soykaf');
 
-    await rulesPage(page).getByTestId('cash-rule-row').click();
+    await listRow(page, /Kaffee/).click();
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
     await expect(valueInput(page, 0)).toHaveValue('-25,00');
     await expect(valueInput(page, 1)).toHaveValue('Soykaf');
