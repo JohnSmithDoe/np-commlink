@@ -8,10 +8,10 @@
  * idempotent. The fallback only has to OUTLAST the stylesheet's duration,
  * not match it — an inequality, hence not derived from it.
  *
- * The card itself is inert. As a button its accessible name would be the
- * task text, so it would announce "Trink ein Glas Wasser, button" and never
- * say what pressing does — and the largest target on screen would close the
- * day. The undo toast is what replaces the confirm that used to guard it.
+ * The card itself is inert, which is also what guards the day: as a button
+ * its accessible name would be the task text, so it would announce "Trink
+ * ein Glas Wasser, button" and never say what pressing does — and the
+ * largest target on screen would be the one that closes the day.
  * ───────────────────────────────────────────────────────────────── */
 import {
   ChangeDetectionStrategy,
