@@ -6,6 +6,16 @@ No entry cites a commit SHA: a history rewrite invalidates every one. A claim ca
 **Append while a decision stands; collapse it into its successor once one supersedes it** — a superseded
 entry left standing grows this file and eventually contradicts the code.
 
+## Per-domain decisions
+
+A module's own reasoning lives beside the module, so this file stays about what crosses them.
+
+- [CREDSTICK](domains/credstick.md) — the camt import, the key space, the ledger, rules and schedules
+- [BIOMON](domains/biomon.md) — weight, profiles, pills and the notification slots
+- [DAILY RUN](domains/ritual.md) — prompts, completions and why there is no streak
+- [SIGIL](domains/notes.md) — one note type, the editor with no save button, images
+- [The deck](domains/deck.md) — what ships on, and what stays reachable
+
 ## Declined extractions — read as duplication, are not
 
 Do not re-propose these; each was measured.
@@ -62,6 +72,10 @@ Do not re-propose these; each was measured.
   row with no `productId`. Resolution of last resort, never identity.
 ## Architecture, rejected and re-rejected
 
+- **A control the user can operate must change something the user can observe, and a page the user can
+  reach must be reachable without a URL bar.** The flags page is why: `list-settings` left `DECK_CATALOG`
+  entirely, because a drawer row was a second, weaker answer to a question its own toolbar answers
+  better — and one a hidden program could switch off, leaving a page reachable only by URL.
 - **No root-state type** — selectors and facades are `type:data` and cannot reach the shell, and the
   context bundle erases key and state type before the kernel sees it. Self-enforcement needs a phantom
   type through three functions for a five-entry list.
@@ -180,34 +194,7 @@ Do not re-propose these; each was measured.
   effect that would clear the cron the old app-initializer left with the OS. It runs ONCE — cancelling on
   every boot would disarm anyone who has since switched the reminder on. Not a rung: what is stale is a
   schedule the OS owns, not a shape on disk.
-## Scope and defaults
 
-- **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at
-  `/commlink/deck`. The curated four it replaced were not wrong, they were unmaintainable in a specific
-  way: every new feature re-opened "does this one belong in the default?", a question with no checkable
-  answer, paid for by whoever adds the next module. Empty is a rule instead of a list. **No entry is ever
-  added back as a special case.**
-- **The deck stores what is VISIBLE, and absence means HIDDEN.** Held the other way round, "a cold
-  install ships an empty deck" was a RULE in the prose and a LIST in the code — the whole catalog
-  restated — so the one invariant the deck has was maintained by copying. Three things fall out of the
-  polarity and none needed arguing separately: an entry nobody has seen arrives OFF, renaming an id can
-  no longer switch a program on for everyone, and `initialDeck` is `[]`.
-- **Legal only because nothing is stranded — re-check before any entry claims to be reachable "from the
-  deck".** Two unconditional entrances: the drawer's static `/settings` button and the grid's `@empty`
-  link. An `onDeck: false` entry is why they are needed.
-- **One switch per program, and no module axis at all.** A module toggle gated the same visibility a
-  program toggle already gated, so two controls answered one question and a hidden module had to disable
-  its children's toggles to stay coherent. The module survives as a **label on the program row**, and
-  only where it names a group — on a module of one it repeats the row's own title.
-- **Household is the first MVP feature.** Declined against that scope: the bulk `storage → shopping`
-  sweep, because the loop already closes by hand and `minAmount` has never been driven against a real
-  pantry — automating an unexercised judgement is how you get a list you stop trusting. And `bestBefore`
-  stays plain text, printed and sortable, never coloured: `storageStatusColor` on two axes would have to
-  rank which one wins.
-- **A control the user can operate must change something the user can observe, and a page the user can
-  reach must be reachable without a URL bar.** The flags page is why: `list-settings` left `DECK_CATALOG`
-  entirely, because a drawer row was a second, weaker answer to a question its own toolbar answers
-  better — and one a hidden program could switch off, leaving a page reachable only by URL.
 ## Destructive actions
 
 - **A swipe deletes and does not ask.** Every destructive `ion-item-option` is `expandable`. A list whose
@@ -218,36 +205,6 @@ Do not re-propose these; each was measured.
   user was not looking at is scheduled ([next-version.md](./next-version.md)).
 - **Cash still confirms** — the ledger is imported bank history, and re-adding a row by hand is not the
   cheap gesture this policy buys elsewhere.
-## Ritual
-
-- **There is no streak.** A lifetime total and a seven-day dot row; no counter a gap sets to zero. A
-  streak protects an asset for someone already consistent and manufactures one to destroy for someone
-  who is not — and the second is who this is for. A gap costs nothing that existed, and two good days
-  visibly repair it.
-- **Completions are an append-only log, never a stored count** — the total, "is today closed" and every
-  date statistic are selectors. A bonus completion is just another row, and the *day* is closed by any
-  row dated today.
-- **The reminder is a cron the OS owns and will nudge on days already finished.** The cron branch re-arms
-  itself, so the nudge survives an app never opened again — which means today's occurrence cannot be
-  suppressed. The right way to be wrong: a redundant nudge costs a glance, a reminder that quietly
-  stopped costs the habit. Hence neutral wording, since copy assuming the task is undone would be wrong
-  on the days the user did best.
-- **It is `ritual`, not a page inside `tasks`** — `tasks` means `TaskItem`, with categories, an edit
-  dialog and a sort. A prompt catalog and a completion log share none of that state.
-- **The catalog lives in the translation bundle** — ~100 prompts, ~7.5 KB on a 31 KB boot fetch, keeping
-  de/en in lockstep. **Past ~250 entries**, copy the emoji catalog's per-language dynamic imports.
-- **Adjacency is the complaint, not recurrence** — the draw excludes the last twenty *distinct* completed
-  prompts, bounded by count rather than a day window (bonus completions put five rows on one day), and
-  falls back to the whole catalog when the pool would empty.
-- **A prompt can be dismissed for good** — "open a window" is trivial in June and wrong in a January flat
-  with a sleeping baby. *Not for me* is deliberately not a rating, a snooze or a per-day skip, and it
-  ships with two ways back because `ion-toast` is `role="status"` and its button is never announced.
-- **Every prompt passes one test: it cannot be half-done.** "Put one book back" has a moment it is
-  finished; "tidy the shelf" does not. The three-minute ceiling is a proxy for that property, not a rule.
-- **The card commits in place, and must never become a button.** The task modal's *Später* button was the
-  tell — a control whose only job was to unwind the container it lived in. As a button the card's
-  accessible name would be the task text, so it would announce *"…, button"* without saying what pressing
-  does, and the largest target on screen would commit the day.
 ## Accessibility
 
 - **The eight `commlink/a11y-*` rules stay, and what was wrong was measurement, not size.** R6 was inert
@@ -329,169 +286,6 @@ one. One decision is not visible there, because it is about what CI deliberately
   and stop** — the same instinct that put Pages on a short-lived OIDC token instead of a PAT. So the
   release job goes as far as a runner can without the key, and the two assets are attached by hand.
 
-## CREDSTICK — the import, the keys, and what the ledger reads like
-
-- **Bank statements are imported as camt, and only as camt.** A CSV export is a positional format whose
-  column order is the bank's private business: Volksbank's real download is 18 columns with `Buchungstag`
-  at index 4, and the parser written against a 10-column sample found no header, returned zero rows and
-  reported zero rejected — a silent empty import with nothing on screen to explain it. camt states what a
-  CSV makes you guess, so ONE parser serves every bank. The general shape is **prefer a self-describing
-  payload over out-of-band configuration**.
-- **`AcctSvcrRef` is ASSUMED to be intrinsic to the entry, and that assumption is load-bearing.**
-  Volksbank's looks like `2026043042104045000` — nineteen digits opening with the booking date. Two
-  readings fit one sample: a booking timestamp plus a counter, which is stable across exports, or a
-  sequence assigned when the *file* was generated, which is not. The second would make every re-import
-  duplicate the whole statement. **Falsifying it costs two minutes:** export one date range twice and diff
-  the references. If they differ, the derived key becomes primary and the reference a tiebreaker.
-- **One key space, no branch.** The schema permits a bank to omit the reference, and a key that is
-  *sometimes* present forces every consumer to hold two notions of duplicate at once — so the gap closes
-  before anything downstream sees a row. A derived key carries four `|`-delimited segments, which no
-  plausible reference has; matching a reference's length and all-digit charset too would have manufactured
-  the one collision the two shapes exist to prevent. It counts occurrences AFTER the pages are joined, so
-  two €4.20 coffees on one Tuesday are `…|1` and `…|2` — numbering per document would restart at `1`
-  wherever a pagination boundary fell between them.
-- **The parser reads `<Ntry>`, never `<TxDtls>`, and matches on `localName` throughout.** A collective
-  booking is one entry holding many details, and the balance moves once. Versions disagree on the
-  namespace URI, on whether `<Sts>` holds a code or wraps one, and on whether a party sits under `<Pty>` —
-  pinning any of it rejects half the exports in the wild. `fflate` is imported dynamically inside the
-  unzip branch, and a zip is recognised by its magic bytes rather than its extension.
-- **`<Bal>`/`CLBD` is read as a checksum, not adopted as the balance.** Comparing the bank's own closing
-  figure against the derived one turns a silent import gap into a number, as of the statement's last
-  entry. Adopting it would paper over exactly the gap it exists to reveal.
-- **`name` is the counterparty; the statement line is not.** The line is counterparty and purpose run
-  together and a purpose is a paragraph, so it read as a wall in the ledger, the report and every delete
-  confirm. Every camt field became its own property and the joined string survives beside them, because
-  they answer different questions — `name` is what the list searches, the parts are what a rule matches
-  and what the cashboard groups by, and neither derives from the other. The joined line keeps one job:
-  building a derived key, where telling two unreferenced rows apart wants everything the bank wrote. The
-  cost of the split was a **re-import**, not a ladder step.
-- **No table, and no column toggles.** A table compares many rows on one dimension and nobody scans forty
-  IBANs — the camt fields are looked up on one booking or matched on in bulk, so they disclose behind one
-  control and only date, amount and counterparty stay in the row. One layout at 393 px and at 1440 px.
-  One map names those fields for both readers, because two would be two wordings for `MndtId` waiting to
-  disagree; a field cannot be offered as filterable without being matchable, and an absent field never
-  matches — an unwritten IBAN is not the empty one.
-- **A booking is derived from, not retyped, and deriving COMMITS it first.** The entry point is the
-  transaction dialog rather than the row, whose two swipe slots are already reconcile and delete (R5
-  forbids a third gesture-only path). A rule filing everything except the booking it came from is a split
-  brain, and the category on screen is the one the rule must carry.
-- **The condition ladder is ordered by stability, not by information.** `mandateId` (one creditor, one
-  contract — the definition of a fixed cost), then `counterpartyIban` (survives a rename), then
-  `counterpartyName` (survives a new branch), then a one-token stem of the description. ONE token on
-  purpose: the original may separate two by anything, so a `contains` built from a guess about the gap
-  matches nothing, while one token cannot be wrong about the string it came from — only too broad. Too
-  broad is answered by feedback: the dialogs show what the draft catches and render nothing until every
-  condition has a value, because `contains ''` matches the whole ledger.
-- **A rule says what it catches and what it never will.** Per rule, `matched` and `claimed` are different
-  numbers: zero matched is dead, matched-but-never-claimed is **shadowed** by an earlier rule. First-match
-  ordering is otherwise invisible, and shadowing is the only bug an arrangement can have — which is also
-  why the apply effect fires on **reorder**, the arrangement being part of what a rule means.
-- **`categoryManual` is stamped only when the category CHANGED in the dialog.** Stamping it on every save
-  froze a booking against every future rule because somebody corrected its date — and it made the derive
-  flow refuse to file the very booking it came from.
-- **A schedule is its own entity, not a `CashRule` with extra fields.** Every transaction wants a category
-  while only a dozen are fixed costs, so merged most rules would carry dead fields; two schedules claiming
-  one booking is a bug to SHOW where first-match-wins is a rule's whole semantics; and `recategorizations`
-  is pure and re-runnable, while a schedule learning its amount holds state. Merging would turn a
-  re-derivation into a write path. Its period is read off the history — the median month gap over the
-  bookings its own conditions match, snapped to 1/3/6/12.
-- **A schedule's `amountCents` is an estimate that learns, and learning is ONE action with advancing the
-  due date.** They are one fact: the booking arrived. Split, a confirmed amount could land on a schedule
-  still claiming last month's due date, which the reserve would then divide by zero months.
-- **The reserve is `amount ÷ monthsUntilDue`, and nothing is stored.** Dividing by `periodMonths` is wrong
-  in a schedule's first month: it claims €50 of a €600 premium is set aside when nothing is. Dividing by
-  the months REMAINING needs no accumulation history and no first-month case — installed in January, a
-  March premium reserves €300 a month, which is steep and true. A **storable** pot waits for something a
-  number cannot do. An overdue schedule stays committed and is shown: its money has not left, so releasing
-  it would report spendable cash a late direct debit is about to take.
-- **A forecast is never `status: 'pending'`.** That value belongs to camt's `PDNG` and the reconcile path
-  keys off exactly that field, so a projection and an unsettled bank booking would be indistinguishable.
-- **Three views, three scopes, three routes.** The ledger is per-account and answers "what happened"; the
-  burn-down is across accounts over a calendar month and answers "what can I spend today"; the cashboard
-  is across accounts and months and answers "where does it go". Not three renderings of one dataset, which
-  is why they are not segments of one page. The report window is a facade signal rather than stored state —
-  a question the reader is asking, not a fact about the ledger — and a calendar span, so the number stops
-  moving at midnight. `todayISO` is a signal for the same reason: a computed that reads the clock has no
-  dependency to invalidate.
-- **The cashboard reports its own trustworthiness, and the figure is a route.** The uncategorized share is
-  the one number saying how much of "where did it go" is actually answered, because "where" *is* the
-  category — so it leads to a list of its bookings biggest-first, weighted by amount so the order matches
-  what it is trying to fix. Counterparty grouping is by IBAN and skips typed rows, which name no account.
-- **`importKey` stays optional on `CashTransaction`.** Expressing "required only when `source` is
-  `imported`" needs a split union that eleven unrelated call sites would have to narrow, for a fact the
-  import path already guarantees at the only place it matters.
-
-## BIOMON — weight, and the profiles it hangs off
-
-- **One domain, one slice: `{ profiles, readings }`.** Blood pressure, when it comes, is a third key in
-  the same slice rather than a `bloodpressure` domain — domains are sealed, so a second one could not
-  import the profiles, and they are the spine. Promoting profiles into `@shared` later is the expensive,
-  irreversible half. Generic `value`/`unit`/`kind` records were rejected for the reason reversed: they buy
-  a union, a unit formatter and an axis-switching chart to serve a metric that does not exist.
-- **A reading's `name` IS its date, `YYYY-MM-DD`.** The shared list machinery keys a row on `name`, so
-  `requireUniqueName` over the profile's own readings *is* the "one reading per profile per day" rule,
-  with no second spelling of the date to keep in step. What `name` does not buy is identity —
-  `findMatchingItem` falls back to matching names across a whole list, and two profiles weighed on one
-  day share one — which is why readings carry an id-only add-or-update of their own.
-- **The tripwire on that: a fifth suppression means the altitude was wrong.** Four of the shared
-  machinery's name-flavoured behaviours meet a reading; two are answered and two are harmless. A fifth
-  would mean the date is fighting the mechanism rather than riding it, and the answer then is a real
-  `date` field plus a generalized unique-field rule in `@shared`.
-- **Weight is stored as integer `grams`**, rounded at the input edge rather than in the type, so a later
-  two-decimal scale needs no migration. `cents` already proved the unit belongs in the field name.
-- **Tapping add on a date already logged opens that reading instead of refusing it.** The consequence is
-  worth knowing: once today is logged, the add button no longer offers a create dialog, so a forgotten
-  past day is reached by editing today's rather than by adding beside it.
-- **Subtracting the person from a co-weighed pet is a calculator, not data.** The holder picker writes the
-  difference into the weight field and nothing about the holder is stored, so either side can be
-  corrected afterwards with no stale link. The suggestion is the holder's nearest reading **at or before**
-  the date — back-dating must not subtract a body weight from the future.
-- **The deck badge is a count of readings, not a weight.** A kg figure needs a designated self profile
-  and the module deliberately seeds none; a delta would need a sentinel for "no reading yet", and `-1` is
-  a perfectly good delta.
-- **Deleting a profile takes its readings with it, and the undo entry is built in the command.** An effect
-  runs after the reducer and would snapshot a profile whose history is already gone, so the facade pushes
-  the restore before dispatching the delete — the last place that can still see both.
-## BIOMON — pills, and one id per weekday
-
-- **A pill's `slot` is a block of eight OS notification ids, and `nextSlot` only counts up.** The OS keys
-  a notification by one integer while a pill needs up to seven (one weekly cron per due weekday). Never
-  reusing a freed slot costs one integer in the slice and removes the need to establish that no cancel
-  and schedule can ever race over one id.
-- **The reminder effect reconciles the whole domain, not the pill that moved.** An effect runs after the
-  reducer, so a deleted pill is already gone from state and nothing can read its ids back off — the same
-  for every pill a deleted profile took. `nextSlot` bounds the sweep. That one path also covers a weekday
-  being unticked, a profile rename changing the reminder body, and an undo.
-- **`weekdays` is ISO (Monday 1), never the plugin's `Weekday`.** Capacitor numbers from Sunday; that
-  enum is a runtime import and a dependency's detail, and this shape is persisted. Conversion happens at
-  the platform edge, which is also where the cron lives.
-- **An intake is a fact about a day, so it is a separate collection keyed by `(pillId, takenOn)`** — not
-  a field on the pill, which would leave yesterday's tick reading as today's. "Taken today" is a
-  comparison against `TodayService.today`, so the daily reset needs no timer and no midnight action.
-- **Both switches live in the edit dialog, not the row.** No list row in this app carries a toggle, and a
-  row that owned the taken-tick would have to answer "taken when" on every render. It also keeps R5 free.
-- **Pills match on the id, like readings, but for the neighbouring reason.** Their uniqueness rule is
-  scoped to one profile — two profiles may each hold an "Ibuprofen" — and default name-matching would
-  edit the wrong one.
-## Notes (SIGIL), and what the rename cost
-
-- **One note type, never two.** "Image note" and "text note" would need a discriminator, a convert action
-  and a branch in every renderer, to describe the difference "this one has no body". The distinction it
-  draws is in the CREATE affordance, not in the data.
-- **`items` is one array and the two sections are a partition of it.** Pinning is therefore a one-field
-  change and never a move between collections, and a reorder writes a section's new order back into the
-  slots that section already occupied. It REFUSES an order shorter than its section, because that is
-  exactly what a drag under an armed search would send.
-- **The editor has no save button.** Every keystroke is a candidate write and a write serialises the whole
-  slice, images included, so the facade debounces and flushes on destroy. Destroy is also why the note id
-  is captured on the way IN: by the time the page is torn down the router has moved on and a route-derived
-  note reads as undefined — which is how the discard-a-blank-note path first failed.
-- **A picked image is re-encoded to a 1600px JPEG before it is stored.** The budget is about the write,
-  not the display: the whole slice is rewritten on each save, so one untouched camera photo would be paid
-  for again on every keystroke of the body beneath it.
-- **Reorder is pointer-only, and that is a known R5 gap.** `ion-reorder-group` ships no keyboard support
-  and nothing else offers "move this note up". Here it is cosmetic — every note stays reachable,
-  searchable and openable without a drag — where in `cash-rules` the same gap sits on a *semantic* order.
 ## The shared list page, and what governs the next caller
 
 Twelve `BaseItem` lists render `ListPageComponent`. This is the half a read of the source does not give.
@@ -534,6 +328,11 @@ Twelve `BaseItem` lists render `ListPageComponent`. This is the half a read of t
   because there an empty list is a SUCCESS while the shared one offers to create a transaction.
 ## Features and gates weighed, and declined
 
+- **Household is the first MVP feature.** Declined against that scope: the bulk `storage → shopping`
+  sweep, because the loop already closes by hand and `minAmount` has never been driven against a real
+  pantry — automating an unexercised judgement is how you get a list you stop trusting. And `bestBefore`
+  stays plain text, printed and sortable, never coloured: `storageStatusColor` on two axes would have to
+  rank which one wins.
 - **Multi-list household is not what `:listId` offered, and categories already deliver the use case.**
   Real multi-list means turning one `HouseholdState` field into a keyed collection, against six
   `Record<HouseholdListId, …>` maps and a `ListSettings` of six booleans naming the lists pairwise with no

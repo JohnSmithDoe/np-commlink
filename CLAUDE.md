@@ -14,19 +14,22 @@ Android APK.
 explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
 that has to outlive its commit belongs in one of the three documents below.
 
-## Four documents, and the rule that keeps them small
+## Four documents plus one per domain, and the rule that keeps them small
 
 | File | Holds |
 | --- | --- |
-| [decisions.md](docs/decisions.md) | settled questions, so they are not re-flagged as work. **Append while a decision stands; collapse it into its successor once one supersedes it.** |
+| [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work. **Append while a decision stands; collapse it into its successor once one supersedes it.** |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, and what is owed before the next major |
 | [next-version.md](docs/next-version.md) | work triaged into the next major, with the reasoning that put it there |
+| [domains/*.md](docs/domains/) | one module's own settled reasoning — CREDSTICK, BIOMON, DAILY RUN, SIGIL, the deck |
 
-**These four are the whole set, and a doc is updated only when a decision, a footgun, a one-way door
-or the next version's scope changes — never as a follow-up to a code change.** `state.md` holds what
-is BLOCKED and `next-version.md` what is SCHEDULED: an item that only needed a date leaves the first
-for the second, and nothing belongs in both. An inventory that mirrors the tree needs
+**These four plus the domain set are the whole list, and a doc is updated only when a decision, a
+footgun, a one-way door or the next version's scope changes — never as a follow-up to a code change.**
+The four are about what crosses modules; a decision only one module can act on goes in its own file,
+and `decisions.md` indexes them. `state.md` holds what is BLOCKED and `next-version.md` what is
+SCHEDULED: an item that only needed a date leaves the first for the second, and nothing belongs in
+both. An inventory that mirrors the tree needs
 rewriting every time the tree moves, so this repo keeps none; each fact lives where it cannot drift
 from itself: gates in `scripts/verify-all.sh` (`GATES=(`), boundaries in `sheriff.config.ts`, compiler
 flags in `tsconfig.json`, budgets and coverage floors in `angular.json`, CI steps in
