@@ -17,6 +17,7 @@
 import { IsoWeekday, Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
+import { ZodiacSign } from './astro.types';
 
 export type VitalsId = string;
 export type ISODate = string;
@@ -30,6 +31,9 @@ export type ProfileType = 'person' | 'pet';
 export interface Profile extends BaseItem {
   createdAt: Timestamp;
   type: ProfileType;
+  birthDate?: ISODate;
+  sun?: ZodiacSign;
+  ascendant?: ZodiacSign;
 }
 
 export interface Reading extends BaseItem {

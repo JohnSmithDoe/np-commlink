@@ -19,6 +19,28 @@
     headerEnd
     slot="end"
     fill="clear"
+    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/zodiac'"
+    [attr.aria-label]="'vitals.a11y.zodiac' | translate"
+    data-testid="vitals-zodiac-link"
+  >
+    <ion-icon slot="icon-only" name="planet-outline" aria-hidden="true" />
+  </ion-button>
+
+  <ion-button
+    headerEnd
+    slot="end"
+    fill="clear"
+    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/iching'"
+    [attr.aria-label]="'vitals.a11y.iching' | translate"
+    data-testid="vitals-iching-link"
+  >
+    <ion-icon slot="icon-only" name="layers-outline" aria-hidden="true" />
+  </ion-button>
+
+  <ion-button
+    headerEnd
+    slot="end"
+    fill="clear"
     (click)="facade.showEditProfileDialog()"
     [attr.aria-label]="'a11y.edit' | translate"
   >

@@ -1,0 +1,103 @@
+<app-page-header
+  label="page-title.vitals-zodiac"
+  icon="planet-outline"
+  [backHref]="backHref()"
+  hideButtons="true"
+/>
+
+<ion-content>
+  <div class="zd sr-scanlines">
+    <ion-item class="zd-date">
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'vitals.label.birth-date' | translate }}"
+        [value]="date()"
+        (ionChange)="setDate($event)"
+        data-testid="vitals-zodiac-date"
+      />
+    </ion-item>
+
+    @if (sign(); as record) {
+      <section class="zd-panel sr-panel sr-corners">
+        <p class="sr-hud">{{ 'vitals.zodiac.heading.you' | translate }}</p>
+        <p class="zd-glyph" aria-hidden="true">{{ record.glyph }}</p>
+        <h1 class="zd-name">{{ record.nameKey | translate }}</h1>
+        <p class="zd-element">
+          {{ elementKeys[record.element] | translate }}
+        </p>
+        <p class="zd-trait">{{ record.traitKey | translate }}</p>
+
+        <p class="zd-row">
+          <span class="sr-hud">
+            {{ 'vitals.zodiac.ascendant' | translate }}
+          </span>
+          @if (ascendant(); as rising) {
+            <span class="zd-row__value">
+              {{ rising.glyph }} {{ rising.nameKey | translate }}
+            </span>
+          } @else {
+            <span class="zd-row__value zd-row__value--unset">
+              {{ 'vitals.astro.unset' | translate }}
+            </span>
+          }
+        </p>
+
+        @if (storedSun(); as stored) {
+          <p class="zd-note">
+            {{ 'vitals.zodiac.profile-sun' | translate }} {{ stored.glyph }}
+            {{ stored.nameKey | translate }}
+          </p>
+        }
+      </section>
+    } @else {
+      <section class="zd-panel sr-panel sr-corners">
+        <p class="zd-note">{{ 'vitals.astro.no-date' | translate }}</p>
+      </section>
+    }
+
+    <section class="zd-panel sr-panel sr-corners">
+      <p class="sr-hud">{{ 'vitals.zodiac.heading.today' | translate }}</p>
+      <ol class="zd-timeline">
+        @for (season of timeline(); track season.phase) {
+          <li
+            class="zd-step"
+            [class.zd-step--current]="season.phase === 'current'"
+          >
+            <span class="zd-step__phase">
+              {{ phaseKeys[season.phase] | translate }}
+            </span>
+            <span class="zd-step__title">
+              {{ season.sign.glyph }} {{ season.sign.nameKey | translate }}
+            </span>
+            <span class="zd-step__meta">
+              {{ season.fromISO | date }} – {{ season.toISO | date }}
+            </span>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="zd-panel sr-panel sr-corners">
+      <p class="sr-hud">{{ 'vitals.zodiac.heading.ages' | translate }}</p>
+      <ol class="zd-timeline">
+        @for (age of ages; track age.sign) {
+          @let record = signs[age.sign];
+          <li
+            class="zd-step"
+            [class.zd-step--current]="age.sign === currentAge()?.sign"
+          >
+            <span class="zd-step__phase zd-step__phase--years">
+              {{ age.fromYear | eraYear }} – {{ age.toYear | eraYear }}
+            </span>
+            <span class="zd-step__title">
+              {{ record.glyph }} {{ record.nameKey | translate }}
+            </span>
+            <span class="zd-step__meta">{{ age.effectKey | translate }}</span>
+          </li>
+        }
+      </ol>
+      <p class="zd-note">{{ 'vitals.zodiac.age-estimate' | translate }}</p>
+    </section>
+  </div>
+</ion-content>

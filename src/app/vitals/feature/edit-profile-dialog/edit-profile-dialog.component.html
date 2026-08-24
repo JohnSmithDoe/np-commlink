@@ -17,4 +17,61 @@
       {{ 'vitals.profile.pet' | translate }}
     </ion-segment-button>
   </ion-segment>
+
+  <ion-item>
+    <ion-input
+      labelPlacement="stacked"
+      type="date"
+      label="{{ 'vitals.label.birth-date' | translate }}"
+      [formField]="form.birthDate"
+      data-testid="vitals-profile-birth-date"
+    />
+  </ion-item>
+
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      label="{{ 'vitals.label.sun' | translate }}"
+      [formField]="form.sun"
+      data-testid="vitals-profile-sun"
+    >
+      <ion-select-option value="">
+        {{ 'vitals.astro.unset' | translate }}
+      </ion-select-option>
+      @for (record of signs; track record.sign) {
+        <ion-select-option [value]="record.sign">
+          {{ record.glyph }} {{ record.nameKey | translate }}
+        </ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  @if (derivedSign(); as derived) {
+    <ion-note class="sr-field-note">
+      {{ 'vitals.astro.derived-sun' | translate }} {{ derived.glyph }}
+      {{ derived.nameKey | translate }}
+    </ion-note>
+  }
+
+  <ion-item>
+    <ion-select
+      labelPlacement="stacked"
+      label="{{ 'vitals.label.ascendant' | translate }}"
+      [formField]="form.ascendant"
+      data-testid="vitals-profile-ascendant"
+    >
+      <ion-select-option value="">
+        {{ 'vitals.astro.unset' | translate }}
+      </ion-select-option>
+      @for (record of signs; track record.sign) {
+        <ion-select-option [value]="record.sign">
+          {{ record.glyph }} {{ record.nameKey | translate }}
+        </ion-select-option>
+      }
+    </ion-select>
+  </ion-item>
+
+  <ion-note class="sr-field-note">
+    {{ 'vitals.astro.ascendant-hint' | translate }}
+  </ion-note>
 </app-item-edit-modal>

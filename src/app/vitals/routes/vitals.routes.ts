@@ -31,6 +31,30 @@ export const vitalsRoutes: Routes = [
             (m) => m.VitalsPillsPage
           ),
       },
+      {
+        path: 'profile/:id/zodiac',
+        title: marker('page-title.vitals-zodiac'),
+        loadComponent: () =>
+          import('../feature/zodiac-page/zodiac.page').then(
+            (m) => m.VitalsZodiacPage
+          ),
+      },
+      {
+        path: 'profile/:id/iching',
+        title: marker('page-title.vitals-iching'),
+        loadComponent: () =>
+          import('../feature/iching-page/iching.page').then(
+            (m) => m.VitalsIChingPage
+          ),
+      },
+      {
+        path: 'profile/:id/iching/cast',
+        title: marker('page-title.vitals-iching-cast'),
+        loadComponent: () =>
+          import('../feature/iching-cast-page/iching-cast.page').then(
+            (m) => m.VitalsIChingCastPage
+          ),
+      },
     ],
   },
 ];

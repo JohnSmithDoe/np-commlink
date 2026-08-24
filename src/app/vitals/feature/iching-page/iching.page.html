@@ -1,0 +1,108 @@
+<app-page-header
+  label="page-title.vitals-iching"
+  icon="layers-outline"
+  [backHref]="backHref()"
+  hideButtons="true"
+>
+  <ion-buttons toolbar slot="end">
+    <ion-button
+      [routerLink]="castHref()"
+      [attr.aria-label]="'vitals.a11y.iching-cast' | translate"
+      data-testid="vitals-iching-cast-link"
+    >
+      <ion-icon slot="icon-only" name="disc-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
+
+<ion-content>
+  <div class="ich sr-scanlines">
+    <ion-item class="ich-date">
+      <ion-input
+        labelPlacement="stacked"
+        type="date"
+        label="{{ 'vitals.label.birth-date' | translate }}"
+        [value]="date()"
+        (ionChange)="setDate($event)"
+        data-testid="vitals-iching-date"
+      />
+    </ion-item>
+
+    @if (star(); as own) {
+      <section class="ich-panel sr-panel sr-corners">
+        <p class="sr-hud">{{ 'vitals.iching.heading.you' | translate }}</p>
+
+        <div class="ich-crest">
+          <span class="ich-crest__number">{{ own.number }}</span>
+          <span class="ich-crest__trigram" aria-hidden="true">
+            {{ own.trigram }}
+          </span>
+        </div>
+
+        <h1 class="ich-name">{{ own.nameKey | translate }}</h1>
+        <p class="ich-body">{{ own.personalityKey | translate }}</p>
+
+        <p class="ich-row">
+          <span class="sr-hud">{{ 'vitals.iching.element' | translate }}</span>
+          <span class="ich-row__value">{{ own.elementKey | translate }}</span>
+        </p>
+        <p class="ich-row">
+          <span class="sr-hud">{{ 'vitals.iching.strength' | translate }}</span>
+          <span class="ich-row__value">{{ own.strengthKey | translate }}</span>
+        </p>
+        <p class="ich-row">
+          <span class="sr-hud">{{ 'vitals.iching.shadow' | translate }}</span>
+          <span class="ich-row__value">{{ own.shadowKey | translate }}</span>
+        </p>
+
+        @if (kiYear(); as year) {
+          <p class="ich-note">
+            {{ 'vitals.iching.ki-year' | translate: { year: year } }}
+          </p>
+        }
+        <p class="ich-note">{{ 'vitals.iching.year-start' | translate }}</p>
+      </section>
+    } @else {
+      <section class="ich-panel sr-panel sr-corners">
+        <p class="ich-note">{{ 'vitals.astro.no-date' | translate }}</p>
+      </section>
+    }
+
+    @if (lifeNumber(); as life) {
+      <section class="ich-panel sr-panel sr-corners">
+        <p class="sr-hud">{{ 'vitals.iching.heading.life' | translate }}</p>
+
+        <div class="ich-crest">
+          <span class="ich-crest__number">{{ life.number }}</span>
+        </div>
+
+        <h2 class="ich-name">{{ life.nameKey | translate }}</h2>
+        <p class="ich-body">{{ life.traitKey | translate }}</p>
+
+        @if (digitSum(); as sum) {
+          <p class="ich-note">
+            {{ 'vitals.iching.life-sum' | translate: { sum: sum } }}
+          </p>
+        }
+        <p class="ich-note">{{ 'vitals.iching.life-reduced' | translate }}</p>
+      </section>
+    }
+
+    @if (todayStar(); as running) {
+      <section class="ich-panel sr-panel sr-corners">
+        <p class="sr-hud">{{ 'vitals.iching.heading.today' | translate }}</p>
+        <p class="ich-row">
+          <span class="ich-row__value">{{ today() | date }}</span>
+          <span class="ich-row__value">
+            {{ running.trigram }} {{ running.nameKey | translate }}
+          </span>
+        </p>
+        @if (todayKiYear(); as year) {
+          <p class="ich-note">
+            {{ 'vitals.iching.ki-year' | translate: { year: year } }}
+          </p>
+        }
+      </section>
+    }
+  </div>
+</ion-content>

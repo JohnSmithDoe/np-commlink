@@ -112,6 +112,80 @@ and every exemption taken so far.
   the import preview. Two hundred lines and a registration path that can brick a PWA install, against
   roughly two taps saved over the file input the account page already has.
 
+## BIOMON — the astro pages become browsable
+
+- **Both pages answer one question and refuse the next one.** The zodiac page names your sign and where
+  the sun stands today; it cannot show you Scorpio unless you were born in November. The oracle shows the
+  hexagram you threw and nothing about the other sixty-three, and the Ki and life tables are only ever
+  read at your own number. So: tap a row in either timeline to read that sign, step through the twelve in
+  calendar order, open a hexagram index and read any of the 64, and browse the nine Ki stars and nine life
+  numbers as tables rather than as a single verdict. **It adds no content and no shape.** Every string is
+  already shipped — twelve signs with glyph, element and trait, sixty-four hexagrams with a Wilhelm title
+  and a judgement, nine stars with five facets each — so this is navigation over data that exists, and the
+  only cost is UI.
+- **The one real design risk is letting a browse overwrite the date.** Today one date drives everything,
+  and the obvious cheap implementation — tap Scorpio, set the date to 1 November — destroys the thing the
+  page is for: your own sign stops being on screen the moment you look at somebody else's. Browsing must
+  therefore be a SECOND selection beside the date, defaulting to the date's own sign and resettable to it,
+  with the date field untouched. That also settles what the ascendant does while browsing: it belongs to
+  the profile's birthday, so it stays hidden under any other selection, exactly as it already does under a
+  foreign date.
+- **Route or signal decides whether a reading can be shared or survive a reload.** A signal is a dozen
+  lines and loses the selection on refresh; a route param (`.../iching/hexagram/:number`,
+  `.../zodiac/:sign`) gives a deep link, a working back button and a title per reading, at the price of
+  four more route entries and a guard for a number outside 1..64 or a sign outside the twelve. The route
+  is probably right — the pages are read-only and a hexagram is exactly the kind of thing worth sending
+  to somebody — but it is the decision to make first, because it determines whether the selection lives
+  in the component or in the URL.
+- **The hexagram index is a plain `@for`, not an `ItemList`.** The shared list machinery is NgRx-backed
+  and keyed on a slice; a 64-row static catalog has no items to add, sort, search or delete, and giving it
+  a slice to reuse a searchbar would be the tail wagging the dog. Filtering by trigram — "show me
+  everything with Water below" — is a computed over `HEXAGRAMS` if it is wanted, which is the one place a
+  search box would genuinely earn itself.
+- **It makes the world-age caveat load-bearing.** Today the ages are one panel most readers scroll past;
+  browsing them invites the question of where the boundaries come from, and the answer is still a pick
+  rather than a source ([state.md](./state.md)). Worth settling that entry before this one ships, or the
+  feature advertises the weakest data on the page.
+
+## BIOMON — the astro pages explain themselves
+
+Ships with the entry above, on purpose: browsing invites "why does it say that", and an explanation
+nobody can reach from the screen holding the question is not one.
+
+- **The pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr
+  1980`, a life number of 4 from the same birthday, and `Nr. 31` under six drawn lines. Nothing on screen
+  says why the Ki year turned in February, why one digit sum gives 2 and the other 4, what three coins
+  have to do with a broken line, or which of those numbers follows a rule you could check against a book.
+  That knowledge exists only in [domains/biomon.md](domains/biomon.md) and in the source banners —
+  developer-facing, and the reader is the one holding the question.
+- **Being straight about it matters more here than in the rest of the app.** Everywhere else a number is
+  arithmetic over the user's own data and the worst case is a bug. These pages carry divination, where the
+  honest distinction is between what is DERIVED by a stated rule — the Ki number, the life number, the
+  hexagram and its transformation, all deterministic and checkable — and what rests on a convention
+  somebody picked: the world-age boundaries, and cusp dates taken as fixed calendar days rather than the
+  true solar ingress that moves up to two days a year. The explanation is what turns "the app says so"
+  into "here is the rule, check it", and it is also where the existing `vitals.astro.age-estimate` and
+  `vitals.iching.source` notes stop being orphan disclaimers and become part of an account.
+- **The handbook is the existing home, and screenshots are what defers it.** Every other module explains
+  itself as an article under `public/handbook/pages/` with an entry in
+  `public/handbook/pages/catalog.json`, so a BIOMON astro article is the shape that already fits. The
+  catch is figures: shots are regenerated on release by Martin alone
+  ([CLAUDE.md](../CLAUDE.md)), so the article either ships figure-free or waits for a shots run — and
+  `biomon` is already flagged `shotsStale`, so it is waiting on one regardless.
+- **The alternative is per-panel disclosure, and it is not obviously worse.** A tappable "wie wird das
+  berechnet?" under each readout needs no screenshots, sits against the number it explains rather than
+  three taps away in a separate article, and survives a reader who never opens the handbook. It costs more
+  i18n and more page height on screens already three and four panels long. The two are not exclusive: the
+  short form belongs on the page, the long form in the handbook, and the decision to make first is whether
+  the handbook article is worth writing twice over.
+- **What has to be in it either way.** The cusp table and why a date before 20 January reaches back into
+  the previous year's Capricorn; the 2150-year age table and its lack of consensus; the 4 February Ki-year
+  boundary and the number descending one per year, wrapping 1 to 9; the full-date digit sum reduced to a
+  single figure, and that it answers to numerology rather than to the Ki cycle; and the coins — three per
+  line, heads 3 and tails 2, so the sum is 6 to 9, its parity carries yang and 6 or 9 additionally marks
+  the line as changing, read bottom to top. None of that drifts with a refactor, which is why it is worth
+  writing down for a reader rather than only for whoever edits the table.
+
 ## SOYKAF recipe book
 
 Its scope lives with the domain: [domains/soykaf.md](domains/soykaf.md).

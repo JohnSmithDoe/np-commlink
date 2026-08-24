@@ -1,0 +1,154 @@
+// ─── why ────────────────────────────────────────────────────────
+// A line is TWO half-bars in a flex row, and yin is the same markup with a
+// gap opened between them. One element per line with a background gradient
+// would have to place the break in percentages that drift with the width.
+// ────────────────────────────────────────────────────────────────
+
+.cast {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.cast-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.cast-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cast-line {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cast-line__bar {
+  display: flex;
+  gap: 0;
+  flex: 1 1 auto;
+  height: 0.75rem;
+  min-width: 0;
+}
+.cast-line__bar i {
+  flex: 1 1 0;
+  background: var(--sr-amber);
+  border-radius: 1px;
+}
+.cast-line__bar--yin {
+  gap: var(--space-5);
+}
+
+.cast-line--changing .cast-line__bar i {
+  background: var(--sr-cyan);
+  box-shadow: var(--sr-glow);
+}
+
+.cast-line__label {
+  flex: 0 0 auto;
+  width: 9rem;
+  font-size: var(--fs-xsmall);
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-text-dim);
+}
+.cast-line--changing .cast-line__label {
+  color: var(--sr-cyan);
+}
+
+.cast-coins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.cast-coin {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-xsmall);
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-text-dim);
+  border: 1px solid var(--sr-line);
+  border-radius: var(--sr-radius);
+}
+.cast-coin--heads {
+  color: var(--sr-amber);
+  border-color: var(--sr-amber);
+}
+
+.cast-actions {
+  padding-top: var(--space-2);
+}
+
+.cast-glyph {
+  margin: 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 4.5rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow-lg);
+}
+.cast-glyph--changed {
+  color: var(--sr-cyan);
+}
+
+.cast-number {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-text-dim);
+}
+
+.cast-name {
+  margin: 0;
+  font-size: var(--fs-xlarge);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: var(--sr-heading-tracking);
+  text-transform: var(--sr-heading-transform);
+  color: var(--sr-amber);
+}
+
+.cast-trigrams {
+  margin: 0;
+  font-size: var(--fs-small);
+  text-align: center;
+  color: var(--sr-text);
+}
+
+.cast-note {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}
+
+.cast-urteil__label {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--sr-line);
+}
+
+.cast-urteil {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.65;
+  color: var(--sr-text);
+}
+
+.cast-source {
+  text-align: center;
+}

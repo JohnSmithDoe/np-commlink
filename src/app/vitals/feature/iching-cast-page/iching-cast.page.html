@@ -1,0 +1,168 @@
+<app-page-header
+  label="page-title.vitals-iching-cast"
+  icon="disc-outline"
+  [backHref]="backHref()"
+  hideButtons="true"
+/>
+
+<ion-content>
+  <div class="cast sr-scanlines">
+    <section class="cast-panel sr-panel sr-corners">
+      <p class="sr-hud">
+        {{ 'vitals.iching.cast.heading.lines' | translate }}
+      </p>
+
+      @if (rows().length === 0) {
+        <p class="cast-note">{{ 'vitals.iching.cast.idle' | translate }}</p>
+      } @else {
+        <ol class="cast-lines">
+          @for (row of rows(); track row.position) {
+            <li class="cast-line" [class.cast-line--changing]="row.changing">
+              <span
+                class="cast-line__bar"
+                [class.cast-line__bar--yin]="!row.yang"
+              >
+                <i></i><i></i>
+              </span>
+              <span class="cast-line__label">
+                {{ row.value }} · {{ lineKeys[row.value] | translate }}
+              </span>
+            </li>
+          }
+        </ol>
+      }
+
+      @if (lastThrow(); as thrown) {
+        <p class="cast-coins">
+          @for (coin of thrown.coins; track $index) {
+            <span class="cast-coin" [class.cast-coin--heads]="coin === 'heads'">
+              {{ coinKeys[coin] | translate }}
+            </span>
+          }
+        </p>
+      }
+
+      <p class="cast-note">
+        {{
+          'vitals.iching.cast.progress'
+            | translate: { cast: rows().length, total: totalLines }
+        }}
+      </p>
+
+      <div class="cast-actions">
+        @if (complete()) {
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="reset()"
+            data-testid="iching-cast-reset"
+          >
+            <ion-icon slot="start" name="refresh-outline" aria-hidden="true" />
+            {{ 'vitals.iching.cast.again' | translate }}
+          </ion-button>
+        } @else {
+          <ion-button
+            expand="block"
+            (click)="throwCoins()"
+            data-testid="iching-cast-throw"
+          >
+            <ion-icon slot="start" name="disc-outline" aria-hidden="true" />
+            {{ 'vitals.iching.cast.throw' | translate }}
+          </ion-button>
+        }
+      </div>
+    </section>
+
+    @if (hexagram(); as view) {
+      <section
+        class="cast-panel sr-panel sr-corners"
+        data-testid="iching-cast-hexagram"
+      >
+        <p class="sr-hud">
+          {{ 'vitals.iching.cast.heading.hexagram' | translate }}
+        </p>
+        <p class="cast-glyph" aria-hidden="true">{{ view.glyph }}</p>
+        <p class="cast-number">
+          {{
+            'vitals.iching.cast.number'
+              | translate: { number: view.record.number }
+          }}
+        </p>
+        <h1 class="cast-name">{{ view.record.nameKey | translate }}</h1>
+
+        @if (view.lower && view.upper) {
+          @let lowerName = view.lower.nameKey | translate;
+          @let upperName = view.upper.nameKey | translate;
+          <p class="cast-trigrams">
+            <span aria-hidden="true">
+              {{ view.upper.glyph }} {{ view.lower.glyph }}
+            </span>
+            {{
+              'vitals.iching.cast.trigrams'
+                | translate: { upper: upperName, lower: lowerName }
+            }}
+          </p>
+        }
+
+        <p class="sr-hud cast-urteil__label">
+          {{ 'vitals.iching.judgement.heading' | translate }}
+        </p>
+        <p class="cast-urteil">{{ view.record.judgementKey | translate }}</p>
+
+        @if (changingCount() === 0) {
+          <p class="cast-note">
+            {{ 'vitals.iching.cast.no-change' | translate }}
+          </p>
+        } @else {
+          <p class="cast-note">
+            {{
+              'vitals.iching.cast.changing-count'
+                | translate: { count: changingCount() }
+            }}
+          </p>
+        }
+      </section>
+    }
+
+    @if (transformed(); as view) {
+      <section class="cast-panel sr-panel sr-corners">
+        <p class="sr-hud">
+          {{ 'vitals.iching.cast.heading.changing' | translate }}
+        </p>
+        <p class="cast-glyph cast-glyph--changed" aria-hidden="true">
+          {{ view.glyph }}
+        </p>
+        <p class="cast-number">
+          {{
+            'vitals.iching.cast.number'
+              | translate: { number: view.record.number }
+          }}
+        </p>
+        <h2 class="cast-name">{{ view.record.nameKey | translate }}</h2>
+
+        @if (view.lower && view.upper) {
+          @let lowerName = view.lower.nameKey | translate;
+          @let upperName = view.upper.nameKey | translate;
+          <p class="cast-trigrams">
+            <span aria-hidden="true">
+              {{ view.upper.glyph }} {{ view.lower.glyph }}
+            </span>
+            {{
+              'vitals.iching.cast.trigrams'
+                | translate: { upper: upperName, lower: lowerName }
+            }}
+          </p>
+        }
+
+        <p class="sr-hud cast-urteil__label">
+          {{ 'vitals.iching.judgement.heading' | translate }}
+        </p>
+        <p class="cast-urteil">{{ view.record.judgementKey | translate }}</p>
+      </section>
+    }
+
+    <p class="cast-note cast-source">
+      {{ 'vitals.iching.source' | translate }}
+    </p>
+  </div>
+</ion-content>

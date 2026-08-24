@@ -1,0 +1,127 @@
+.zd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.zd-date {
+  --background: transparent;
+}
+
+.zd-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.zd-glyph {
+  margin: 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 3.5rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow-lg);
+}
+
+.zd-name {
+  margin: 0;
+  font-size: var(--fs-xlarge);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: var(--sr-heading-tracking);
+  text-transform: var(--sr-heading-transform);
+  color: var(--sr-amber);
+}
+
+.zd-element {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-cyan);
+}
+
+.zd-trait {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--sr-text);
+}
+
+.zd-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--sr-line);
+}
+
+.zd-row__value {
+  font-size: var(--fs-small);
+  color: var(--sr-text);
+}
+.zd-row__value--unset {
+  color: var(--sr-text-dim);
+}
+
+.zd-note {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}
+
+.zd-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zd-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-left: 2px solid var(--sr-line);
+  border-radius: var(--sr-radius);
+}
+.zd-step--current {
+  background: rgba(var(--sr-amber-rgb), 0.08);
+  border-left-color: var(--sr-amber);
+}
+
+.zd-step__phase {
+  font-size: var(--fs-xsmall);
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-text-dim);
+}
+
+.zd-step__phase--years {
+  text-transform: none;
+}
+
+.zd-step__title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--sr-amber);
+}
+.zd-step--current .zd-step__title {
+  text-shadow: var(--sr-glow);
+}
+
+.zd-step__meta {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}

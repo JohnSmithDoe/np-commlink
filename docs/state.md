@@ -82,6 +82,10 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   Volksbank, DKB and ING each need their own first run: the format is one, but which optional elements a
   given bank fills is not — `AcctSvcrRef` above all, since its absence silently downgrades every key on
   the statement to a derived one.
+- **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE,
+  which reads today as late Pisces. Published schemes disagree by centuries and several put Aquarius
+  already underway; the page prints the caveat, and swapping the table in
+  `src/app/vitals/model/astro.consts.ts` is one edit once the owner names a school.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
@@ -90,7 +94,9 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row) and
   `start` (the deck header gained the arrange toggle). Seven for the 44 px touch floor, which grew a
   `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
-  section), `comms`, `dailyrun`, `chrono`, `biomon`, `credstick-auswertung` and `sigil`. Each page JSON
+  section), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
+  the profile header, and the birthday plus two sign selects in the profile dialog),
+  `credstick-auswertung` and `sigil`. Each page JSON
   carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather
   than misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
   flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and no
