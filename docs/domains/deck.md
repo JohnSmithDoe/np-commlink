@@ -42,7 +42,30 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
   glyph nobody registered — and deleting the registration turns `verify:icons` red rather than blanking
   eighteen headers quietly. The consequence accepted with it: a page inside a program now wears the
   program's glyph, so adding a route to the catalog changes a header with no edit to that page.
-- **One switch per program, and no module axis at all.** A module toggle gated the same visibility a
-  program toggle already gated, so two controls answered one question and a hidden module had to disable
-  its children's toggles to stay coherent. The module survives as a **label on the program row**, and
-  only where it names a group — on a module of one it repeats the row's own title.
+  **The override survives in exactly one shape — a component rendered under a route the catalog does not
+  cover.** The I Ching pages are the case: `/vitals/iching` and `/vitals/iching/cast` are entries, their
+  `/vitals/profile/:id/…` twins are not and do not prefix-match either, so dropping `icon` would give one
+  component two glyphs depending on how it was reached. **Picking a different glyph cannot fix that** —
+  the disagreement is between two ROUTES, so a new icon only changes which two disagree; the sole
+  agreeing choice is BIOMON's own `pulse-outline`, which puts two identical tiles on a grid meant to be
+  scanned by glyph. Where a component has one route and that route is an entry, the input is a second
+  copy of the catalog's answer and goes.
+- **The module axis is a bulk ACTION, never a second gate.** It was rejected outright while every module
+  held one program: a stored module flag gated what a program toggle already gated, and a hidden module
+  had to disable its children to stay coherent. Sub-page programs changed the premise, not the argument
+  — the group header switches its children and reads its state back from them, so `visibleEntries` is
+  still the only stored answer and there is nothing to keep coherent. A module of one renders no group
+  at all; it stays the plain row it was.
+- **Grouping and ordering are two questions, so the config page has two lenses, not one list.**
+  `ion-reorder-group` needs a flat list and `DeckState.order` is global, and every fusion costs
+  something real: nesting the drag forces a module's programs to stay contiguous on the deck, splitting
+  the page by on/off scatters a module across two sections. An `ion-segment` picks between them —
+  **programs** (grouped, the default) and **order**. The lens is component state, never persisted: a
+  lens is not a preference.
+- **The order lens lists only what is ON.** A hidden entry's position is unobservable, so offering to
+  drag one was a control that changed nothing — and the same reasoning says it needs no toggle here,
+  because switching off belongs where you can see what you are switching off. `ion-split-pane` is what
+  makes the drag worth keeping at all: the drawer beside it renders the same list in the same order, so
+  a drag is watched live rather than confirmed by navigating away.
+- **This is the one list on the page that can be empty**, which is why it carries `app-empty-state`
+  where the catalog beside it never can.

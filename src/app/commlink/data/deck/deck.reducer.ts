@@ -27,7 +27,7 @@
 
 import { createReducer, on } from '@ngrx/store';
 import { DeckState } from '../../model/deck.types';
-import { toggleIn } from '../../util/deck.utils';
+import { setIn, toggleIn } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
 
 export const initialDeck: DeckState = {
@@ -52,6 +52,10 @@ export const deckReducer = createReducer(
   on(DeckActions.toggleEntry, (state, { id }): DeckState => ({
     ...state,
     visibleEntries: toggleIn(state.visibleEntries, id),
+  })),
+  on(DeckActions.setEntries, (state, { ids, visible }): DeckState => ({
+    ...state,
+    visibleEntries: setIn(state.visibleEntries, ids, visible),
   })),
   on(DeckActions.reset, (): DeckState => initialDeck)
 );

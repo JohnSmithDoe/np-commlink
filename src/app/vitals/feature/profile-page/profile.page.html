@@ -37,6 +37,23 @@
     <ion-icon slot="icon-only" name="layers-outline" aria-hidden="true" />
   </ion-button>
 
+  @if (canPickFavorite()) {
+    <ion-button
+      headerEnd
+      slot="end"
+      fill="clear"
+      (click)="markFavorite()"
+      [attr.aria-label]="'vitals.a11y.favorite' | translate"
+      data-testid="vitals-favorite-toggle"
+    >
+      <ion-icon
+        slot="icon-only"
+        [name]="isFavorite() ? 'star' : 'star-outline'"
+        aria-hidden="true"
+      />
+    </ion-button>
+  }
+
   <ion-button
     headerEnd
     slot="end"

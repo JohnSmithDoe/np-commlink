@@ -3,13 +3,19 @@ import { Store } from '@ngrx/store';
 import { ThemeService } from '../theme.service';
 import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
-import { DeckProgramConfig, DeckEntryId } from '../../model/deck.types';
+import {
+  AppModule,
+  DeckProgramConfig,
+  DeckEntryId,
+} from '../../model/deck.types';
 import {
   entriesOnDeck,
+  groupByModule,
   groupingModules,
   isFactoryDeck,
   moveOnDeck,
   orderEntries,
+  reorderVisible,
   resolveLabels,
 } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
@@ -52,12 +58,30 @@ export class DeckFacade {
       }));
   });
 
+  readonly orderedPrograms = computed(() =>
+    this.configuredEntries().filter((entry) => !entry.hidden)
+  );
+
+  readonly configuredModules = computed(() => {
+    const config = this.#config();
+    return groupByModule(
+      DECK_CATALOG.map(this.#labelled()).map((entry) => ({
+        ...entry,
+        hidden: !config.visibleEntries.includes(entry.id),
+      }))
+    );
+  });
+
   readonly hasCustomConfig = computed(
     () => !isFactoryDeck(this.#config(), initialDeck)
   );
 
   reorder(order: DeckEntryId[]): void {
     this.#store.dispatch(DeckActions.reorder(order));
+  }
+
+  reorderShown(visibleOrder: DeckEntryId[]): void {
+    this.reorder(reorderVisible(this.#config().order, visibleOrder));
   }
 
   moveProgram(id: DeckEntryId, delta: -1 | 1): void {
@@ -70,6 +94,19 @@ export class DeckFacade {
 
   toggleEntry(id: DeckEntryId): void {
     this.#store.dispatch(DeckActions.toggleEntry(id));
+  }
+
+  toggleModule(module: AppModule): void {
+    const group = this.configuredModules().find(
+      (entry) => entry.module === module
+    );
+    if (!group) return;
+    this.#store.dispatch(
+      DeckActions.setEntries(
+        group.programs.map((program) => program.id),
+        !group.allVisible
+      )
+    );
   }
 
   reset(): void {

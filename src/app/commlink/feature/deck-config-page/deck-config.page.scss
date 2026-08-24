@@ -5,3 +5,17 @@ ion-label p.deck-config__module {
   font-size: var(--fs-xsmall);
   color: var(--sr-text-dim);
 }
+
+ion-label h2.deck-config__group {
+  @include deck.hud-label;
+}
+
+ion-accordion [slot='content'] ion-item {
+  --padding-start: var(--space-6);
+  --inner-border-width: 0 0 1px 0;
+  border-inline-start: 1px solid var(--sr-border);
+}
+
+.deck-config__lens {
+  margin-block: var(--space-3);
+}

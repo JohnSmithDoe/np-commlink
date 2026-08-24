@@ -2,6 +2,7 @@ import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
   gotoFeature,
+  openOrderLens,
   ROUTE,
   waitForListPage,
   waitForPersisted,
@@ -44,6 +45,11 @@ test('cold deck ships empty', async ({ page }) => {
 
 test('deck config with toggles and handles', async ({ page }) => {
   await page.goto('/#/commlink/deck');
+  const config = page.locator('app-page-deck-config');
+  await expect(config.getByTestId('deck-config-lens')).toBeVisible({
+    timeout: 60_000,
+  });
+  await openOrderLens(config);
   await expect(configRow(page, 'CHRONO')).toBeVisible({ timeout: 60_000 });
   await switchOn(page, 'CHRONO', 'tracking');
   await switchOn(page, 'MEATSPACE', 'office-time');

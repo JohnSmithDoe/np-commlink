@@ -9,11 +9,26 @@ describe('programIconFor', () => {
   });
 
   it('answers nothing for a route no program owns', () => {
-    expect(programIconFor(DECK_CATALOG, '/data')).toBeUndefined();
+    expect(programIconFor(DECK_CATALOG, '/nowhere')).toBeUndefined();
   });
 
   it('matches whole segments, so a longer name is not the same program', () => {
     expect(programIconFor(DECK_CATALOG, '/cashflow')).toBeUndefined();
+  });
+
+  it('does not lend a sub-page program its glyph on the profile-scoped path', () => {
+    expect(programIconFor(DECK_CATALOG, '/vitals/iching')).toBe(
+      'layers-outline'
+    );
+    expect(programIconFor(DECK_CATALOG, '/vitals/iching/cast')).toBe(
+      'disc-outline'
+    );
+    expect(programIconFor(DECK_CATALOG, '/vitals/profile/x/iching')).toBe(
+      'pulse-outline'
+    );
+    expect(programIconFor(DECK_CATALOG, '/vitals/profile/x/iching/cast')).toBe(
+      'pulse-outline'
+    );
   });
 
   it('ignores the query and the fragment', () => {

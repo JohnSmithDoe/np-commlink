@@ -13,7 +13,7 @@ import {
   ItemListSortDirection,
   ItemListSortType,
 } from '../../../@shared/model/item-list.types';
-import { Profile, PROFILES_LIST_ID } from '../../model/vitals.types';
+import { Profile, PROFILES_LIST_ID, VitalsId } from '../../model/vitals.types';
 import { createProfile } from '../../util/vitals.factory';
 import { pillsOf } from '../../util/pill.utils';
 import { readingsOf } from '../../util/vitals.utils';
@@ -23,6 +23,7 @@ import { selectIntakes, selectProfilesList } from '../vitals.selector';
 import { VitalsActions } from '../vitals.actions';
 import { ProfilesActions } from './profiles.actions';
 import {
+  selectFavoriteProfile,
   selectPersonProfiles,
   selectProfileItems,
   selectProfileSummaries,
@@ -46,6 +47,7 @@ export class ProfilesFacade {
   readonly summaries = this.#store.selectSignal(selectProfileSummaries);
   readonly persons = this.#store.selectSignal(selectPersonProfiles);
   readonly routeProfile = this.#store.selectSignal(selectRouteProfile);
+  readonly favoriteProfile = this.#store.selectSignal(selectFavoriteProfile);
 
   showCreateDialog(): void {
     this.#dialogs.open({
@@ -61,6 +63,10 @@ export class ProfilesFacade {
 
   saveItem(profile: Profile): void {
     this.#store.dispatch(ProfilesActions.addOrUpdateItem(profile));
+  }
+
+  setFavorite(id: VitalsId): void {
+    this.#store.dispatch(ProfilesActions.setFavorite(id));
   }
 
   search(searchQuery?: string): void {

@@ -1,9 +1,24 @@
 import {
   ISODate,
+  Profile,
   ProfileSummary,
   Reading,
   VitalsId,
 } from '../model/vitals.types';
+
+export const withSoleFavorite = (
+  profiles: readonly Profile[],
+  favoriteId: VitalsId
+): Profile[] =>
+  profiles.map(({ favorite, ...profile }) =>
+    profile.id === favoriteId ? { ...profile, favorite: true } : profile
+  );
+
+export const favoriteAmong = (
+  persons: readonly Profile[]
+): Profile | undefined =>
+  persons.find((person) => person.favorite) ??
+  (persons.length === 1 ? persons[0] : undefined);
 
 export const readingsOf = (
   readings: readonly Reading[],

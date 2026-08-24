@@ -9,6 +9,7 @@ export const DeckActions = createActionGroup({
 
     reorder: (order: DeckEntryId[]) => ({ order }),
     toggleEntry: (id: DeckEntryId) => ({ id }),
+    setEntries: (ids: DeckEntryId[], visible: boolean) => ({ ids, visible }),
     reset: emptyProps(),
   },
 });

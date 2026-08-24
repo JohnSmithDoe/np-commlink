@@ -7,3 +7,14 @@
 @use 'theme/item-rows';
 
 @include item-rows.list-row-second-line;
+
+p.vitals-profiles__favorite {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  ion-icon {
+    color: var(--sr-amber);
+    font-size: var(--fs-small);
+  }
+}

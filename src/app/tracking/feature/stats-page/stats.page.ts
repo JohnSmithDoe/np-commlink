@@ -10,7 +10,7 @@ import {
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { documentsOutline, ellipse, square, triangle } from 'ionicons/icons';
+import { ellipse, square, triangle } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { Marker } from '../../../@shared/model/app.types';
@@ -59,7 +59,7 @@ export class StatsPage {
   readonly viewLabelKeys = VIEW_LABEL_KEYS;
 
   constructor() {
-    addIcons({ triangle, ellipse, square, documentsOutline });
+    addIcons({ triangle, ellipse, square });
   }
 
   shareCSV() {

@@ -69,6 +69,24 @@ describe('deckReducer', () => {
     });
   });
 
+  describe('setEntries', () => {
+    it('adds a whole module without disturbing what is already shown', () => {
+      expect(
+        deckReducer(
+          stored,
+          DeckActions.setEntries(['cash', 'spending', 'burndown'], true)
+        ).visibleEntries
+      ).toEqual(['cash', 'shopping', 'spending', 'burndown']);
+    });
+
+    it('removes a whole module, ignoring the ids it never held', () => {
+      expect(
+        deckReducer(stored, DeckActions.setEntries(['cash', 'spending'], false))
+          .visibleEntries
+      ).toEqual(['shopping']);
+    });
+  });
+
   it('resets to the factory deck', () => {
     expect(deckReducer(stored, DeckActions.reset())).toEqual(initialDeck);
   });

@@ -5,7 +5,9 @@ import {
   badgeLabel,
   badgeValue,
   entriesOnDeck,
+  groupByModule,
   groupingModules,
+  setIn,
   nodeStatusKey,
   programStatus,
   resonanceRatingOf,
@@ -298,6 +300,54 @@ describe('isFactoryDeck', () => {
     expect(isFactoryDeck({ ...factory, order: ['storage'] }, factory)).toBe(
       false
     );
+  });
+});
+
+describe('setIn', () => {
+  it('adds every id that is missing and keeps the rest untouched', () => {
+    expect(setIn(['cash'], ['shopping', 'cash', 'storage'], true)).toEqual([
+      'cash',
+      'shopping',
+      'storage',
+    ]);
+  });
+
+  it('removes every id it is handed', () => {
+    expect(
+      setIn(['cash', 'shopping', 'storage'], ['cash', 'storage'], false)
+    ).toEqual(['shopping']);
+  });
+});
+
+const configured = (hidden: string[] = []) =>
+  groupByModule(
+    CATALOG.map(resolveLabels('cyberpunk')).map((program) => ({
+      ...program,
+      hidden: hidden.includes(program.id),
+    }))
+  );
+
+describe('groupByModule', () => {
+  it('keeps catalog order and collects a module into one group', () => {
+    expect(configured().map((group) => group.module)).toEqual([
+      'household',
+      'cash',
+    ]);
+    expect(configured()[0].programs.map((p) => p.id)).toEqual([
+      'shopping',
+      'storage',
+    ]);
+  });
+
+  it('marks a module of one as ungrouped, so it stays a plain row', () => {
+    expect(configured().map((group) => group.grouped)).toEqual([true, false]);
+  });
+
+  it('derives the module state from its children', () => {
+    const [household] = configured(['storage']);
+    expect(household.visibleCount).toBe(1);
+    expect(household.allVisible).toBe(false);
+    expect(configured()[0].allVisible).toBe(true);
   });
 });
 

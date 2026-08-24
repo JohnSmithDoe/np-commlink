@@ -65,6 +65,9 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   itself. Cheap only because switching one program back off is a tap.
 - `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — the same two strings under
   a new field name; worst case one re-pick for a boomer-skin holder.
+- `Profile.favorite` — additive and optional, and never written on install: the sole person is the
+  favorite by DERIVATION, so an existing document hydrates unchanged and nothing on disk moves. Free by
+  shape, like `excludedFromAllowance` above, not by roster — `vitals` has real holders.
 - The 09:00 office nudge is cancelled once at boot, from the notifications slice — **not a rung**: what
   is stale is a schedule the OS owns, not a shape on disk. `legacy-reminders.effects.ts` argues why once
   and not per boot.
@@ -92,7 +95,9 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **Eleven handbook pages carry stale screenshots, and they say so themselves.** Four for content that
   moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
   swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
-  `start` (the deck header gained the arrange toggle) and `credstick` (the ledger and the uncategorized
+  `start` (the deck header gained the arrange toggle, and the deck config now opens on a **grouped**
+  lens with an order lens beside it — the figure shows neither, so the prose was rewritten and the shot
+  was not) and `credstick` (the ledger and the uncategorized
   list now carry CREDSTICK's own glyph in the header, which the deck's catalog supplies to every page
   inside a program). Seven for the 44 px touch floor, which grew a
   `size="small"` control on every screen they show: `sysop` (which also gained the whole storage

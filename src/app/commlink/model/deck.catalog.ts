@@ -43,6 +43,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.count'),
   },
   {
+    id: 'stats',
+    module: 'tracking',
+    icon: 'documents-outline',
+    route: '/data',
+    titleKey: marker('page-title.data'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.stats.name'),
+        descKey: marker('deck.cyberpunk.stats.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.stats.name'),
+        descKey: marker('deck.boomer.stats.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'office-time',
     module: 'office-time',
     icon: 'business-outline',
@@ -233,6 +252,44 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     currency: true,
   },
   {
+    id: 'spending',
+    module: 'cash',
+    icon: 'receipt-outline',
+    route: '/cash/spending',
+    titleKey: marker('page-title.cash-spending'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.spending.name'),
+        descKey: marker('deck.cyberpunk.spending.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.spending.name'),
+        descKey: marker('deck.boomer.spending.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'burndown',
+    module: 'cash',
+    icon: 'speedometer-outline',
+    route: '/cash/burndown',
+    titleKey: marker('page-title.cash-burndown'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.burndown.name'),
+        descKey: marker('deck.cyberpunk.burndown.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.burndown.name'),
+        descKey: marker('deck.boomer.burndown.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'trackplay',
     module: 'trackplay',
     icon: 'dice-outline',
@@ -273,6 +330,44 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     source: 'vitals',
     metric: 'count',
     metricKey: marker('deck.metric.count'),
+  },
+  {
+    id: 'iching',
+    module: 'vitals',
+    icon: 'layers-outline',
+    route: '/vitals/iching',
+    titleKey: marker('page-title.vitals-iching'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.iching.name'),
+        descKey: marker('deck.cyberpunk.iching.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.iching.name'),
+        descKey: marker('deck.boomer.iching.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'cast',
+    module: 'vitals',
+    icon: 'disc-outline',
+    route: '/vitals/iching/cast',
+    titleKey: marker('page-title.vitals-iching-cast'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.cast.name'),
+        descKey: marker('deck.cyberpunk.cast.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.cast.name'),
+        descKey: marker('deck.boomer.cast.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
   },
   {
     id: 'ritual',

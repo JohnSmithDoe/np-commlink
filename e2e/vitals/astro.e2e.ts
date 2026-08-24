@@ -10,7 +10,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { pickSelectOption } from '../helpers';
+import { pickSelectOption, waitForPersisted } from '../helpers';
 import {
   createProfile,
   editDialog,
@@ -156,5 +156,41 @@ test.describe('BIOMON · astro', () => {
 
     await expect(cast.getByTestId('iching-cast-hexagram')).toHaveCount(0);
     await expect(cast.getByText('Linie 0 von 6')).toBeVisible();
+  });
+});
+
+test.describe('BIOMON · the go-to profile', () => {
+  test('seeds the profile-free oracle from the only person', async ({
+    page,
+  }) => {
+    await openProfileBornOn(page, '1980-08-05');
+
+    await page.goto('/#/vitals/iching');
+    const iching = pageRoot(page, ICHING_PAGE);
+    await expect(iching).toBeVisible({ timeout: 15_000 });
+    await expect(
+      iching.getByTestId('vitals-iching-date').locator('input')
+    ).toHaveValue('1980-08-05');
+  });
+
+  test('follows the star once a second person makes it a choice', async ({
+    page,
+  }) => {
+    await openProfileBornOn(page, '1980-08-05');
+
+    await gotoPage(page, 'vitals', PROFILES_PAGE);
+    await createProfile(page, 'Rita');
+    await openProfile(page, 'Rita');
+
+    const rita = pageRoot(page, PROFILE_PAGE);
+    await rita.getByTestId('vitals-favorite-toggle').click();
+    await waitForPersisted(page, 'vitals', '"favorite"');
+
+    await page.goto('/#/vitals/iching');
+    const iching = pageRoot(page, ICHING_PAGE);
+    await expect(iching).toBeVisible({ timeout: 15_000 });
+    await expect(
+      iching.getByTestId('vitals-iching-date').locator('input')
+    ).not.toHaveValue('1980-08-05');
   });
 });

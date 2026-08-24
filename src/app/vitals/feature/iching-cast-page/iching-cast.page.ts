@@ -94,9 +94,10 @@ export class VitalsIChingCastPage {
     () => this.lines().filter((line) => isChangingLine(line.value)).length
   );
 
-  readonly backHref = computed(
-    () => `/vitals/profile/${this.#profiles.routeProfile()?.id ?? ''}/iching`
-  );
+  readonly backHref = computed(() => {
+    const id = this.#profiles.routeProfile()?.id;
+    return id ? `/vitals/profile/${id}/iching` : '/vitals/iching';
+  });
 
   constructor() {
     addIcons({ discOutline, refreshOutline });

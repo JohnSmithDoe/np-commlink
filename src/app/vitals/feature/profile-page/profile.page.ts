@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { IonButton, IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -7,13 +12,15 @@ import {
   layersOutline,
   medkitOutline,
   planetOutline,
+  star,
+  starOutline,
 } from 'ionicons/icons';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
-import { ReadingsPageFacade } from '../../data';
+import { ProfilesFacade, ReadingsPageFacade } from '../../data';
 import { Reading } from '../../model/vitals.types';
 import { WeightChartComponent } from '../../smart-ui/weight-chart/weight-chart.component';
 import { VITALS_EDIT_SWIPE_ACTION } from '../../ui/swipe-actions';
@@ -46,6 +53,16 @@ export class VitalsProfilePage {
   readonly editSwipeAction = VITALS_EDIT_SWIPE_ACTION;
 
   readonly facade = inject(ReadingsPageFacade);
+  readonly #profiles = inject(ProfilesFacade);
+
+  readonly isFavorite = computed(
+    () => this.facade.profile()?.id === this.#profiles.favoriteProfile()?.id
+  );
+  readonly canPickFavorite = computed(
+    () =>
+      this.facade.profile()?.type === 'person' &&
+      this.#profiles.persons().length > 1
+  );
 
   constructor() {
     addIcons({
@@ -53,7 +70,14 @@ export class VitalsProfilePage {
       layersOutline,
       medkitOutline,
       planetOutline,
+      star,
+      starOutline,
     });
+  }
+
+  markFavorite(): void {
+    const id = this.facade.profile()?.id;
+    if (id) this.#profiles.setFavorite(id);
   }
 
   openReadingEdit(reading: Reading): void {

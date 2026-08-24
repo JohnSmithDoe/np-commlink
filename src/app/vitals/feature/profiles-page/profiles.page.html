@@ -15,6 +15,12 @@
     (startSwipe)="openProfileEdit(item)"
     (deleteItem)="deleteProfile(item)"
   >
+    @if (isFavorite(item)) {
+      <p itemDetails class="second-line vitals-profiles__favorite">
+        <ion-icon name="star" aria-hidden="true" />
+        <ion-note>{{ 'vitals.label.favorite' | translate }}</ion-note>
+      </p>
+    }
     @let summary = summaryFor(item);
     <p itemDetails class="second-line">
       <ion-note>{{ 'vitals.label.latest' | translate }}</ion-note>

@@ -1,9 +1,11 @@
-import { mockReading } from '../testing/vitals.test-data';
+import { mockProfile, mockReading } from '../testing/vitals.test-data';
 import {
+  favoriteAmong,
   nearestReadingUpTo,
   readingOn,
   readingsOf,
   summaryFor,
+  withSoleFavorite,
 } from './vitals.utils';
 
 const readings = [
@@ -62,5 +64,52 @@ describe('summaryFor', () => {
 
   it('counts nothing for a profile that has never been weighed', () => {
     expect(summaryFor([])).toEqual({ count: 0 });
+  });
+});
+
+describe('withSoleFavorite', () => {
+  const profiles = [
+    mockProfile({ id: 'ann' }),
+    mockProfile({ id: 'bo', favorite: true }),
+    mockProfile({ id: 'cat', type: 'pet' }),
+  ];
+
+  it('moves the flag rather than adding a second one', () => {
+    const moved = withSoleFavorite(profiles, 'ann');
+    expect(
+      moved.filter(({ favorite }) => favorite).map(({ id }) => id)
+    ).toEqual(['ann']);
+  });
+
+  it('drops the key instead of writing false', () => {
+    expect(withSoleFavorite(profiles, 'ann')[1]).not.toHaveProperty('favorite');
+  });
+
+  it('leaves nobody starred when the id is gone', () => {
+    expect(withSoleFavorite(profiles, 'nobody').some((p) => p.favorite)).toBe(
+      false
+    );
+  });
+});
+
+describe('favoriteAmong', () => {
+  it('is the sole person, with nothing stored', () => {
+    const ann = mockProfile({ id: 'ann' });
+    expect(favoriteAmong([ann])?.id).toBe('ann');
+  });
+
+  it('is nobody once there is more than one and none is starred', () => {
+    expect(
+      favoriteAmong([mockProfile({ id: 'ann' }), mockProfile({ id: 'bo' })])
+    ).toBeUndefined();
+  });
+
+  it('is the starred one whenever there is one', () => {
+    expect(
+      favoriteAmong([
+        mockProfile({ id: 'ann' }),
+        mockProfile({ id: 'bo', favorite: true }),
+      ])?.id
+    ).toBe('bo');
   });
 });

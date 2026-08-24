@@ -132,3 +132,12 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
 - **Pills match on the id, like readings, but for the neighbouring reason.** Their uniqueness rule is
   scoped to one profile — two profiles may each hold an "Ibuprofen" — and default name-matching would
   edit the wrong one.
+- **One person is the go-to profile, and the sole person holds that by DERIVATION.** The star is a
+  radio, not a checkbox: `withSoleFavorite` clears every other row in the reducer, so "only one" is an
+  invariant of the state rather than a rule the UI is trusted to keep. Nothing is written when there is
+  one person — `favoriteAmong` falls back to them — which is what makes the flag additive on a slice
+  real users hold, and why the star renders only once a second person makes it a choice.
+- **The fallback stops at routes that name no profile.** `/vitals/iching` and `/vitals/iching/cast` read
+  it, and the coin oracle can live outside a profile because it holds none: `iching-cast.page.ts` says
+  the cast survives no navigation. `/vitals/profile/:id` and its children deliberately do NOT fall back
+  — a stale or wrong id must render nothing, never quietly render somebody else's readings.

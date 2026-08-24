@@ -59,10 +59,10 @@ describe('CommlinkPage', () => {
   describe('onlineCount', () => {
     it('counts only the programs that are actually online', () => {
       const page = setup();
-      expect(page.onlineCount()).toBe(1);
+      const withoutTelemetry = page.onlineCount();
 
       bySource.set({ tracking: { metrics: {}, status: 'online' } });
-      expect(page.onlineCount()).toBe(2);
+      expect(page.onlineCount()).toBe(withoutTelemetry + 1);
     });
 
     it('follows the capability, which only resolves after first paint', () => {

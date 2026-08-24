@@ -16,6 +16,22 @@ export const vitalsRoutes: Routes = [
           ),
       },
       {
+        path: 'iching',
+        title: marker('page-title.vitals-iching'),
+        loadComponent: () =>
+          import('../feature/iching-page/iching.page').then(
+            (m) => m.VitalsIChingPage
+          ),
+      },
+      {
+        path: 'iching/cast',
+        title: marker('page-title.vitals-iching-cast'),
+        loadComponent: () =>
+          import('../feature/iching-cast-page/iching-cast.page').then(
+            (m) => m.VitalsIChingCastPage
+          ),
+      },
+      {
         path: 'profile/:id',
         title: marker('page-title.vitals-profile'),
         loadComponent: () =>

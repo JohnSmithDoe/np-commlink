@@ -47,6 +47,15 @@ export type DeckProgramConfig = DeckProgram & {
   moduleKey?: Marker;
 };
 
+export type DeckModuleConfig = {
+  module: AppModule;
+  labelKey: Marker;
+  programs: DeckProgramConfig[];
+  visibleCount: number;
+  allVisible: boolean;
+  grouped: boolean;
+};
+
 export type DeckState = {
   order: DeckEntryId[];
   visibleEntries: DeckEntryId[];

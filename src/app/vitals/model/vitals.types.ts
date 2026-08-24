@@ -34,6 +34,7 @@ export interface Profile extends BaseItem {
   birthDate?: ISODate;
   sun?: ZodiacSign;
   ascendant?: ZodiacSign;
+  favorite?: true;
 }
 
 export interface Reading extends BaseItem {

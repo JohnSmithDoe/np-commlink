@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonNote } from '@ionic/angular/standalone';
+import { IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline, paw, person } from 'ionicons/icons';
+import { createOutline, paw, person, star } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -21,6 +21,7 @@ const NO_SUMMARY: ProfileSummary = { count: 0 };
   styleUrls: ['./profiles.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    IonIcon,
     IonNote,
     TranslatePipe,
     ListPageComponent,
@@ -37,13 +38,18 @@ export class VitalsProfilesPage {
   readonly #router = inject(Router);
 
   readonly summaries = this.#profiles.summaries;
+  readonly favorite = this.#profiles.favoriteProfile;
 
   constructor() {
-    addIcons({ createOutline, paw, person });
+    addIcons({ createOutline, paw, person, star });
   }
 
   summaryFor(profile: Profile): ProfileSummary {
     return this.summaries()[profile.id] ?? NO_SUMMARY;
+  }
+
+  isFavorite(profile: Profile): boolean {
+    return profile.id === this.favorite()?.id;
   }
 
   goToProfile(id: VitalsId): void {

@@ -5,7 +5,7 @@ import {
   filterListBySearchQuery,
 } from '../../../@shared/util/item-lists/list.selector';
 import { Profile, ProfileSummary, VitalsId } from '../../model/vitals.types';
-import { readingsOf, summaryFor } from '../../util/vitals.utils';
+import { favoriteAmong, readingsOf, summaryFor } from '../../util/vitals.utils';
 import { selectReadingItems } from '../readings/readings.selector';
 import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { selectProfilesList } from '../vitals.selector';
@@ -19,6 +19,11 @@ export const selectPersonProfiles = createSelector(
   selectProfileItems,
   (profiles): Profile[] =>
     profiles.filter((profile) => profile.type === 'person')
+);
+
+export const selectFavoriteProfile = createSelector(
+  selectPersonProfiles,
+  (persons): Profile | undefined => favoriteAmong(persons)
 );
 
 export const selectProfilesSearchResult = createSelector(

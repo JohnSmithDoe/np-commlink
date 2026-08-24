@@ -29,7 +29,8 @@
           "items": [
             "Die App startet auf <strong>COMMLINK</strong>. Statt Kacheln steht dort eine gestrichelte Fläche <em>KEINE PROGRAMME GELADEN</em> mit dem Hinweis <em>&gt; DECK KONFIGURIEREN</em>.",
             "Tippe diese Fläche an. Zweiter Weg: Zahnrad oben rechts im Seitenmenü → <strong>Einstellungen</strong> → Abschnitt <em>Deck</em> → <strong>Deck-Konfiguration</strong>.",
-            "Schalte die Programme ein, die du willst — der Schalter rechts in jeder Zeile. Jede Zeile nennt den Codenamen (<strong>MARKET</strong>), darunter den bürgerlichen Namen (<em>Einkaufsliste</em>) und, wenn mehrere Programme aus demselben Bereich kommen, den Bereich (<em>HAUSHALT</em>).",
+            "Die Konfiguration öffnet auf <strong>Programme</strong>: eine Liste der Bereiche (<em>HAUSHALT</em>, <em>FINANZEN</em> …). Ein Bereich mit mehreren Programmen klappt auf; sein eigener Schalter schaltet alle darin auf einmal. Jede Zeile nennt den Codenamen (<strong>MARKET</strong>) und darunter den bürgerlichen Namen (<em>Einkaufsliste</em>).",
+            "Unter <strong>Reihenfolge</strong> stehen nur die eingeschalteten Programme — dort ziehst du sie am Griff links in die Reihenfolge, in der Deck und Seitenmenü sie zeigen.",
             "Zurück auf COMMLINK: für jedes eingeschaltete Programm steht jetzt eine Kachel da."
           ]
         },
@@ -41,7 +42,7 @@
         {
           "type": "figure",
           "img": "start-deck-konfiguration.webp",
-          "caption": "Deck-Konfiguration: Schalter rechts, Ziehgriff links, Bereich unter dem Namen"
+          "caption": "Deck-Konfiguration: Bereiche zum Aufklappen, ein Schalter je Programm und einer je Bereich"
         }
       ]
     },

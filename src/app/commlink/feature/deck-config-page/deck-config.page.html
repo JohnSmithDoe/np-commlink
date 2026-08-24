@@ -7,35 +7,89 @@
 <ion-content class="ion-padding">
   <ion-note>{{ 'deck.config.intro' | translate }}</ion-note>
 
-  <ion-list lines="full">
-    <ion-list-header>{{ 'deck.config.entries' | translate }}</ion-list-header>
-    <ion-reorder-group
-      [disabled]="false"
-      (ionReorderEnd)="reorder($any($event))"
-    >
-      @for (entry of entries(); track entry.id) {
-        <ion-item data-testid="deck-config-row">
-          <ion-reorder slot="start" />
-          <ion-label>
-            <h2>{{ entry.nameKey | translate }}</h2>
-            <p>{{ entry.titleKey | translate }}</p>
-            @if (entry.moduleKey) {
-              <p class="deck-config__module">
-                {{ entry.moduleKey | translate }}
-              </p>
-            }
-          </ion-label>
-          <ion-toggle
-            slot="end"
-            [attr.aria-label]="entry.titleKey | translate"
-            [checked]="!entry.hidden"
-            (ionChange)="toggleEntry(entry.id)"
-            data-testid="deck-config-row-toggle"
-          />
-        </ion-item>
+  <ion-segment
+    class="deck-config__lens"
+    [value]="lens()"
+    (ionChange)="selectLens($any($event).detail.value)"
+    data-testid="deck-config-lens"
+  >
+    @for (option of lenses; track option) {
+      <ion-segment-button [value]="option">
+        {{ lensLabelKeys[option] | translate }}
+      </ion-segment-button>
+    }
+  </ion-segment>
+
+  @if (lens() === 'programs') {
+    <ion-accordion-group [multiple]="true">
+      @for (group of modules(); track group.module) {
+        @if (group.grouped) {
+          <ion-accordion [value]="group.module">
+            <ion-item slot="header" data-testid="deck-config-module">
+              <ion-label>
+                <h2 class="deck-config__group">
+                  {{ group.labelKey | translate }}
+                </h2>
+                <p>{{ group.visibleCount }} / {{ group.programs.length }}</p>
+              </ion-label>
+              <ion-toggle
+                slot="end"
+                [attr.aria-label]="
+                  'deck.config.module-toggle'
+                    | translate: { name: group.labelKey | translate }
+                "
+                [checked]="group.allVisible"
+                (click)="$event.stopPropagation()"
+                (ionChange)="toggleModule(group.module)"
+                data-testid="deck-config-module-toggle"
+              />
+            </ion-item>
+
+            <ion-list slot="content" lines="full">
+              @for (entry of group.programs; track entry.id) {
+                <ng-container
+                  *ngTemplateOutlet="programRow; context: { $implicit: entry }"
+                />
+              }
+            </ion-list>
+          </ion-accordion>
+        } @else {
+          @for (entry of group.programs; track entry.id) {
+            <ng-container
+              *ngTemplateOutlet="programRow; context: { $implicit: entry }"
+            />
+          }
+        }
       }
-    </ion-reorder-group>
-  </ion-list>
+    </ion-accordion-group>
+  } @else {
+    <ion-list lines="full">
+      <ion-reorder-group
+        [disabled]="false"
+        (ionReorderEnd)="reorder($any($event))"
+      >
+        @for (entry of shown(); track entry.id) {
+          <ion-item data-testid="deck-config-order-row">
+            <ion-reorder slot="start" />
+            <ion-label>
+              <h2>{{ entry.nameKey | translate }}</h2>
+              <p>{{ entry.titleKey | translate }}</p>
+              @if (entry.moduleKey) {
+                <p class="deck-config__module">
+                  {{ entry.moduleKey | translate }}
+                </p>
+              }
+            </ion-label>
+          </ion-item>
+        } @empty {
+          <app-empty-state
+            [label]="'deck.config.order-empty' | translate"
+            [note]="'deck.config.order-empty-note' | translate"
+          />
+        }
+      </ion-reorder-group>
+    </ion-list>
+  }
 
   <ion-button
     expand="block"
@@ -47,3 +101,19 @@
     {{ 'deck.config.reset' | translate }}
   </ion-button>
 </ion-content>
+
+<ng-template #programRow let-entry>
+  <ion-item data-testid="deck-config-row">
+    <ion-label>
+      <h2>{{ entry.nameKey | translate }}</h2>
+      <p>{{ entry.titleKey | translate }}</p>
+    </ion-label>
+    <ion-toggle
+      slot="end"
+      [attr.aria-label]="entry.titleKey | translate"
+      [checked]="!entry.hidden"
+      (ionChange)="toggleEntry(entry.id)"
+      data-testid="deck-config-row-toggle"
+    />
+  </ion-item>
+</ng-template>

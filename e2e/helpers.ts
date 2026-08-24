@@ -4,31 +4,31 @@
  * so what follows is only what these signatures add.
  *
  * `searchInput` filters on `:visible`, which stops being enough once a
- * domain has two list pages in ONE stack: the departed page still
- * measures non-zero and `.first()` takes it in document order, so the
- * click lands on a router outlet. That is what `scope` is for.
+ * domain has two list pages in ONE stack: the departed page still measures
+ * non-zero and `.first()` takes it first. That is what `scope` is for.
  *
  * `listRow` matches the row element, not its text — `getByText(/Milk/)`
  * also matches every ancestor containing it.
  *
- * `openRowSwipe` calls the component's own `open()` because Ionic parks
- * an `ion-item-sliding`'s options translated off-screen, where a
- * synthesized gesture never reaches them.
+ * `openRowSwipe` calls the component's own `open()` because Ionic parks an
+ * `ion-item-sliding`'s options off-screen, where a gesture never reaches.
  *
- * `addViaSearch` waits twice against the searchbar's 250 ms debounce:
- * once so the Enter handler reads the query just typed, and once after
- * clearing the box so the new row is not still filtered out of view.
+ * `addViaSearch` waits twice against the searchbar's 250 ms debounce: once
+ * so the Enter handler reads the query just typed, and once after clearing
+ * the box so the new row is not still filtered out of view.
  *
  * `persistedDocument` opens the database only once `databases()` says it
- * exists, so probing cannot beat the app's localforage init by creating
- * an empty one first. A slice's write emits no DOM signal at all, so the
- * store is the only honest condition a following reload can synchronize
- * on — and for a write that REMOVES, absence of the id is the signal.
+ * exists, so probing cannot beat the app's localforage init by creating an
+ * empty one first. A slice's write emits no DOM signal, so the store is the
+ * only condition a reload can synchronize on — and for a write that
+ * REMOVES, absence of the id is the signal.
  *
  * `enableDeckProgram` exists because a cold deck ships EMPTY: any spec
- * touching a tile or a drawer row switches its program on first. It
- * needs the entry id too — the codename is theme-resolved copy the
- * store never sees, and the store is what the reload waits on.
+ * touching a tile or a drawer row switches its program on first. It needs
+ * the entry id too — the codename is theme-resolved copy the store never
+ * sees, and the store is what the reload waits on. Only the grouped lens
+ * can switch one on, so `programRow` asks the DOM which accordion holds a
+ * codename rather than keeping a table of that.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';
@@ -223,17 +223,45 @@ export async function pickSelectOption(
   await expect(alert).toBeHidden();
 }
 
+const ORDER_LENS = 'Reihenfolge';
+
+export async function openOrderLens(config: Locator): Promise<void> {
+  await config
+    .getByTestId('deck-config-lens')
+    .locator('ion-segment-button')
+    .filter({ hasText: ORDER_LENS })
+    .click();
+}
+
+export async function programRow(
+  page: Page,
+  codename: string
+): Promise<Locator> {
+  const config = page.locator('app-page-deck-config');
+  const row = config
+    .getByTestId('deck-config-row')
+    .filter({ hasText: codename });
+  const group = config.locator('ion-accordion').filter({
+    has: page.getByTestId('deck-config-row').filter({ hasText: codename }),
+  });
+  if (await group.count()) {
+    await group.getByTestId('deck-config-module').click();
+  }
+  await expect(row).toBeVisible({ timeout: 30_000 });
+  return row;
+}
+
 export async function enableDeckProgram(
   page: Page,
   codename: string,
   id: string
 ): Promise<void> {
   await page.goto('/#/commlink/deck');
-  const row = page
-    .locator('app-page-deck-config')
-    .getByTestId('deck-config-row')
-    .filter({ hasText: codename });
-  await expect(row).toBeVisible({ timeout: 30_000 });
+  const config = page.locator('app-page-deck-config');
+  await expect(config.getByTestId('deck-config-lens')).toBeVisible({
+    timeout: 30_000,
+  });
+  const row = await programRow(page, codename);
   await row.getByTestId('deck-config-row-toggle').click();
   await waitForPersisted(page, 'deck', `"${id}"`);
 }

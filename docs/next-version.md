@@ -189,3 +189,21 @@ nobody can reach from the screen holding the question is not one.
 ## SOYKAF recipe book
 
 Its scope lives with the domain: [domains/soykaf.md](domains/soykaf.md).
+
+## Navigation — back, once a deep page is a program
+
+- **A sub-page program can be entered from the deck, and its back arrow still points at the parent it
+  used to be reached through.** `/cash/spending` is the clear case: it hard-codes
+  `backHref="/cash/burndown"` because that link was the only way in, so arriving from a deck tile and
+  tapping back lands on a page the visitor never saw. The I Ching pages already branch — `iching.page.ts`
+  and `iching-cast.page.ts` compute `backHref` from whether the route carried a profile id — which shows
+  the shape of an answer but also that the answer is currently per page, written by hand, and easy to
+  forget on the next sub-page program.
+- **What has to be decided first is what back MEANS on a program.** A program is a top-level
+  destination, so the honest options are: no back arrow at all when the URL is the entry's own route
+  (the deck and the drawer are the way out, exactly as for `/cash` today), or a back that walks history
+  rather than a static parent. The second is not free — Ionic's `ion-back-button` `defaultHref` exists
+  because history can be empty on a cold launch or a shared link, which is the case a static `backHref`
+  was chosen to cover in the first place. `PROGRAM_ICON` is the precedent for the shape: the catalog
+  already knows which routes are entries, and a page header could ask it the same way it asks for a
+  glyph, instead of each page restating it.

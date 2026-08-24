@@ -1,10 +1,13 @@
 import { LanguageModelAvailability, Skin } from '../../@shared/model/app.types';
 import { DashboardState } from '../model/dashboard.types';
 import { DeckChrome, DeckChromeField } from '../model/deck.catalog';
+import { DECK_MODULE_LABELS } from '../model/deck.labels';
 import {
   AppModule,
   DeckEntry,
+  DeckModuleConfig,
   DeckProgram,
+  DeckProgramConfig,
   DeckState,
   DeckEntryId,
   ProgramStatus,
@@ -142,3 +145,48 @@ export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)
     ? list.filter((entry) => entry !== value)
     : [...list, value];
+
+export const reorderVisible = (
+  order: readonly DeckEntryId[],
+  visibleOrder: readonly DeckEntryId[]
+): DeckEntryId[] => [
+  ...visibleOrder,
+  ...order.filter((id) => !visibleOrder.includes(id)),
+];
+
+export const setIn = <T>(
+  list: readonly T[],
+  values: readonly T[],
+  present: boolean
+): T[] =>
+  present
+    ? [...list, ...values.filter((value) => !list.includes(value))]
+    : list.filter((entry) => !values.includes(entry));
+
+export const groupByModule = (
+  programs: readonly DeckProgramConfig[]
+): DeckModuleConfig[] => {
+  const order: AppModule[] = [];
+  const byModule = new Map<AppModule, DeckProgramConfig[]>();
+  for (const program of programs) {
+    const group = byModule.get(program.module);
+    if (group) group.push(program);
+    else {
+      order.push(program.module);
+      byModule.set(program.module, [program]);
+    }
+  }
+
+  return order.map((module) => {
+    const group = byModule.get(module) ?? [];
+    const visibleCount = group.filter((program) => !program.hidden).length;
+    return {
+      module,
+      labelKey: DECK_MODULE_LABELS[module],
+      programs: group,
+      visibleCount,
+      allVisible: visibleCount === group.length,
+      grouped: group.length > 1,
+    };
+  });
+};
