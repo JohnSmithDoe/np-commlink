@@ -15,7 +15,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonNote, IonThumbnail } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, documentTextOutline, expand, pin, remove } from 'ionicons/icons';
+import { add, expand, pin, remove } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
@@ -64,7 +64,7 @@ export class NotesPage {
   );
 
   constructor() {
-    addIcons({ add, documentTextOutline, expand, pin, remove });
+    addIcons({ add, expand, pin, remove });
   }
 
   snippet(note: Note): string {

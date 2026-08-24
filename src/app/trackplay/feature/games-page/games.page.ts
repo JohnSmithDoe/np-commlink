@@ -3,14 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import {
-  create,
-  diceOutline,
-  eye,
-  eyeOff,
-  peopleOutline,
-  playCircle,
-} from 'ionicons/icons';
+import { create, eye, eyeOff, peopleOutline, playCircle } from 'ionicons/icons';
 import { Game, TrackplayId } from '../../model/trackplay.types';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -40,7 +33,7 @@ export class TrackplayGamesPage {
   readonly #router = inject(Router);
 
   constructor() {
-    addIcons({ create, diceOutline, eye, eyeOff, peopleOutline, playCircle });
+    addIcons({ create, eye, eyeOff, peopleOutline, playCircle });
   }
 
   goToGame(id: TrackplayId): void {

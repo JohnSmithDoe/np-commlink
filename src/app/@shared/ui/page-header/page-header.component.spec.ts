@@ -1,7 +1,26 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { getByTestId, queryByTestId } from '../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
+import { PROGRAM_ICON } from '../../util/program-icon.token';
 import { PageHeaderComponent } from './page-header.component';
+
+const glyphOf = (icon?: string) => {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    imports: [PageHeaderComponent],
+    providers: [
+      ...COMMON_TEST_PROVIDERS,
+      { provide: PROGRAM_ICON, useValue: signal('wallet-outline') },
+    ],
+  });
+  const header = TestBed.createComponent(PageHeaderComponent);
+  header.componentRef.setInput('label', 'page-title.cash');
+  if (icon) header.componentRef.setInput('icon', icon);
+  header.detectChanges();
+
+  return header.nativeElement.querySelector('ion-icon.sr-brand__icon');
+};
 
 describe('PageHeaderComponent', () => {
   let fixture: ComponentFixture<PageHeaderComponent>;
@@ -65,6 +84,16 @@ describe('PageHeaderComponent', () => {
     fixture.detectChanges();
 
     expect(getByTestId(fixture, 'page-header-add')['disabled']).toBe(true);
+  });
+
+  describe('the glyph', () => {
+    it("falls back to the route's program", () => {
+      expect(glyphOf()['name']).toBe('wallet-outline');
+    });
+
+    it('yields to a page that names its own', () => {
+      expect(glyphOf('options-outline')['name']).toBe('options-outline');
+    });
   });
 
   it('emits addItem when the add button is clicked', () => {

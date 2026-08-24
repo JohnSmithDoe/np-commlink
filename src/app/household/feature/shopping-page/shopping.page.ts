@@ -3,7 +3,7 @@ import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { bagAdd, barcodeOutline, cart, cartOutline } from 'ionicons/icons';
+import { bagAdd, barcodeOutline, cart } from 'ionicons/icons';
 import { ShoppingItem } from '../../model/household-list.types';
 import { HouseholdListPageFacade, ShoppingFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -48,7 +48,7 @@ export class ShoppingPage {
   };
 
   constructor() {
-    addIcons({ bagAdd, barcodeOutline, cart, cartOutline });
+    addIcons({ bagAdd, barcodeOutline, cart });
   }
 
   removeItem(item: ShoppingItem) {

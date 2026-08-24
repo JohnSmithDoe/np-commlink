@@ -14,7 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { bookOutline, refreshOutline } from 'ionicons/icons';
+import { refreshOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { HandbookService } from '../../data/handbook.service';
 import { groupHandbookEntries } from '../../util/handbook-content';
@@ -55,7 +55,7 @@ export class HandbookPage {
   );
 
   constructor() {
-    addIcons({ bookOutline, refreshOutline });
+    addIcons({ refreshOutline });
     this.#handbook.loadIndex();
   }
 

@@ -21,7 +21,7 @@ import { DashDaysListComponent } from '../../ui/dash-days-list/dash-days-list.co
 import { DashFreedaysEditComponent } from '../../smart-ui/dash-freedays-edit/dash-freedays-edit.component';
 import { DashHolidaysComponent } from '../../ui/dash-holidays/dash-holidays.component';
 import { DashOfficeDaysEditComponent } from '../../smart-ui/dash-office-days-edit/dash-office-days-edit.component';
-import { add, businessOutline, remove, settingsSharp } from 'ionicons/icons';
+import { add, remove, settingsSharp } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { OfficeTimeFacade } from '../../data';
 import { DASHBOARD_CARD_VISIBILITY } from '../../model/office-time.types';
@@ -77,7 +77,7 @@ export class OfficeTimePage implements ViewWillEnter {
   });
 
   constructor() {
-    addIcons({ add, remove, settingsSharp, businessOutline });
+    addIcons({ add, remove, settingsSharp });
   }
 
   ionViewWillEnter(): void {

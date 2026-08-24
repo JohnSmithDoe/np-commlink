@@ -3,6 +3,7 @@
   "title": "CREDSTICK",
   "plain": "Finanzen",
   "route": "/cash",
+  "shotsStale": true,
   "summary": "Konten, Kontostände und Buchungen — das Kassenbuch des Decks.",
   "sections": [
     {

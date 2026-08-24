@@ -90,6 +90,15 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
   the one number saying how much of "where did it go" is actually answered, because "where" *is* the
   category — so it leads to a list of its bookings biggest-first, weighted by amount so the order matches
   what it is trying to fix. Counterparty grouping is by IBAN and skips typed rows, which name no account.
+- **An imported booking is not deletable; a typed one is.** A row is recognised by statement content, so
+  nothing distinguishes "deleted on purpose" from "not imported yet" and a delete plus a re-import brought
+  it back — the alternative being a tombstone store keyed the same way the rows are. A manual row has no
+  import identity, so nothing can resurrect it and its delete is safe. The veto is `canDelete` on the row
+  (`source === 'manual'`), which removes the swipe reveal rather than leaving a dead button; the correction
+  path for a wrong imported row is the edit dialog. A reconciled manual leg is not reachable either — it
+  carries `matchedTxnId` and the selector hides it, leaving the imported survivor on screen. The pending
+  half needs nothing: a row carries its derived key as well as the bank's, so a `PDNG` entry arriving again
+  under the `AcctSvcrRef` it gained when it booked confirms the stored row in place (`plan-import.ts`).
 - **`importKey` stays optional on `CashTransaction`.** Expressing "required only when `source` is
   `imported`" needs a split union that eleven unrelated call sites would have to narrow, for a fact the
   import path already guarantees at the only place it matters.

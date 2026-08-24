@@ -18,7 +18,6 @@ import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
-  bookOutline,
   chevronBackOutline,
   chevronForwardOutline,
   refreshOutline,
@@ -68,12 +67,7 @@ export class HandbookArticlePage {
   readonly next = computed(() => this.#neighbours().next);
 
   constructor() {
-    addIcons({
-      bookOutline,
-      chevronBackOutline,
-      chevronForwardOutline,
-      refreshOutline,
-    });
+    addIcons({ chevronBackOutline, chevronForwardOutline, refreshOutline });
     this.#handbook.loadIndex();
     effect(() => {
       const slug = this.slug();

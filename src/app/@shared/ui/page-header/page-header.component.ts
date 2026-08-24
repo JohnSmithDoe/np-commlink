@@ -2,6 +2,8 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  inject,
   input,
   output,
 } from '@angular/core';
@@ -17,6 +19,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
+import { PROGRAM_ICON } from '../../util/program-icon.token';
 
 @Component({
   selector: 'app-page-header',
@@ -35,6 +38,8 @@ import { add } from 'ionicons/icons';
   ],
 })
 export class PageHeaderComponent {
+  readonly #programIcon = inject(PROGRAM_ICON);
+
   readonly label = input('');
   readonly heading = input('');
   readonly icon = input<string>();
@@ -42,6 +47,8 @@ export class PageHeaderComponent {
   readonly backHref = input('');
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();
+
+  readonly glyph = computed(() => this.icon() ?? this.#programIcon());
 
   constructor() {
     addIcons({ add });

@@ -4,7 +4,7 @@ import { IonNote } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { barcodeOutline, cart, fileTrayStackedOutline } from 'ionicons/icons';
+import { barcodeOutline, cart } from 'ionicons/icons';
 import { StorageItem } from '../../model/household-list.types';
 import { storageStatusColor } from '../../util/household-list.utils';
 import { HouseholdListPageFacade, StorageFacade } from '../../data';
@@ -49,7 +49,7 @@ export class StoragePage {
   readonly statusColor = storageStatusColor;
 
   constructor() {
-    addIcons({ barcodeOutline, cart, fileTrayStackedOutline });
+    addIcons({ barcodeOutline, cart });
   }
 
   removeItem(item: StorageItem) {

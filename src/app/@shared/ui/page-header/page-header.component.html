@@ -12,8 +12,12 @@
     </ion-buttons>
     @if (label() || heading()) {
       <div class="sr-brand">
-        @if (icon()) {
-          <ion-icon [name]="icon()" class="sr-brand__icon" aria-hidden="true" />
+        @if (glyph()) {
+          <ion-icon
+            [name]="glyph()"
+            class="sr-brand__icon"
+            aria-hidden="true"
+          />
         }
         <span class="sr-brand__name" data-testid="page-header-title">{{
           label() ? (label() | translate) : heading()

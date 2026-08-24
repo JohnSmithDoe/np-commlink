@@ -17,6 +17,16 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
 - **Legal only because nothing is stranded — re-check before any entry claims to be reachable "from the
   deck".** Two unconditional entrances: the drawer's static `/settings` button and the grid's `@empty`
   link. An `onDeck: false` entry is why they are needed.
+- **The catalog's glyph reaches the page header through a token, and the header keeps `icon` as an
+  override.** `@shared/ui` may import no domain, so the header cannot read `DECK_CATALOG` however the data
+  is shaped — that edge, not the app shell's, is what forces the inversion. `PROGRAM_ICON` is the port
+  (`@shared/util`, empty-defaulted); `commlink/data` fulfils it as the longest catalog route prefixing
+  `selectUrl`. A route→glyph map in `@shared` would settle the lookup but not the URL, which only `data/`
+  may read, and it would make `@shared` name every domain's routes. Registration needs nothing: `DeckIcon`
+  is `keyof typeof DECK_ICONS` and the root component registers that map, so a catalog entry cannot name a
+  glyph nobody registered — and deleting the registration turns `verify:icons` red rather than blanking
+  eighteen headers quietly. The consequence accepted with it: a page inside a program now wears the
+  program's glyph, so adding a route to the catalog changes a header with no edit to that page.
 - **One switch per program, and no module axis at all.** A module toggle gated the same visibility a
   program toggle already gated, so two controls answered one question and a hidden module had to disable
   its children's toggles to stay coherent. The module survives as a **label on the program row**, and

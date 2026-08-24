@@ -7,7 +7,7 @@ import {
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, remove, restaurantOutline } from 'ionicons/icons';
+import { add, remove } from 'ionicons/icons';
 import { Recipe } from '../../model/recipe.types';
 import { RecipesFacade } from '../../data';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
@@ -40,7 +40,7 @@ export class RecipesPage {
   );
 
   constructor() {
-    addIcons({ add, remove, restaurantOutline });
+    addIcons({ add, remove });
   }
 
   missing(recipe: Recipe): string[] {

@@ -89,10 +89,12 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Ten handbook pages carry stale screenshots, and they say so themselves.** Three for content that
+- **Eleven handbook pages carry stale screenshots, and they say so themselves.** Four for content that
   moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
-  swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row) and
-  `start` (the deck header gained the arrange toggle). Seven for the 44 px touch floor, which grew a
+  swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
+  `start` (the deck header gained the arrange toggle) and `credstick` (the ledger and the uncategorized
+  list now carry CREDSTICK's own glyph in the header, which the deck's catalog supplies to every page
+  inside a program). Seven for the 44 px touch floor, which grew a
   `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
   section), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
   the profile header, and the birthday plus two sign selects in the profile dialog),
@@ -121,22 +123,6 @@ Triaged deliberately: each of these ships before the next major. What was triage
 [next-version.md](./next-version.md), and an entry leaves this section by being done rather than by
 being re-argued.
 
-- **A transaction is not deletable, which is how the re-import stays idempotent.** Keying off statement
-  content means nothing can distinguish "deleted on purpose" from "not imported yet", so a delete plus a
-  re-import brought the row back — and the alternative was a tombstone store keyed the same way the rows
-  are. Removing the affordance removes the question: the correction path for a wrong row is the edit
-  dialog, and a manual spend is edited the same way. The other half was already handled: a row carries
-  its derived key as well as the bank's, so a `PDNG` entry arriving again under the `AcctSvcrRef` it
-  gained when it booked confirms the stored pending row in place (`plan-import.ts`).
-- **One glyph per program, read by both the menu and the page header.** The six list pages each pass their
-  own `icon="…"` to `app-page-header` while `DECK_CATALOG` carries the same string — two copies agreeing by
-  review only. The fix is small: the icon is a static const, not slice state, and `app.component` already
-  `addIcons(DECK_ICONS)` eagerly, so per-page registrations are redundant. **Not a shared selector** —
-  `@shared` does not name another domain's store key. The shape is `RECENT_EMOJIS`': a read-only
-  `InjectionToken<Signal<string | undefined>>` in `@shared/util`,
-  empty-defaulted, fulfilled by `commlink/data` as the longest catalog route prefixing the URL, with
-  `icon` surviving as the override for pages with no deck entry. **What defers it is the consequence:** the
-  header's glyph becomes route-derived, so adding a route to the catalog later silently changes a header.
 - **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
   surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
   `ion-menu-button` that would have to disappear above the breakpoint.

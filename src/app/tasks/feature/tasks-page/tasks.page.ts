@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, checkboxOutline, remove } from 'ionicons/icons';
+import { add, remove } from 'ionicons/icons';
 import { IonColor } from '../../../@shared/model/app.types';
 import { TaskItem } from '../../model/task.types';
 import { dueStatusColor } from '../../util/task.utils';
@@ -31,7 +31,7 @@ export class TasksPage {
   readonly #facade = inject(TasksListPageFacade);
 
   constructor() {
-    addIcons({ add, checkboxOutline, remove });
+    addIcons({ add, remove });
   }
 
   removeItem(item: TaskItem) {

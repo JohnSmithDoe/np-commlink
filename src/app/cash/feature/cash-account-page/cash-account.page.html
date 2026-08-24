@@ -61,6 +61,7 @@
     [ionList]="ionList"
     [categories]="categories"
     [startSwipeAction]="reconcileAction(item)"
+    [canDelete]="item.source === 'manual'"
     (selectItem)="facade.showEditDialog(item)"
     (startSwipe)="reconcileOrDetach(item)"
     (deleteItem)="confirmDelete(item)"

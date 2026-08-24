@@ -49,7 +49,6 @@ import {
   informationCircleOutline,
   personOutline,
   serverOutline,
-  settingsOutline,
 } from 'ionicons/icons';
 
 const SKIN_LABEL_KEYS: Record<Skin, Marker> = {
@@ -116,7 +115,6 @@ export class SettingsPage {
 
   constructor() {
     addIcons({
-      settingsOutline,
       gridOutline,
       documentTextOutline,
       codeSlashOutline,

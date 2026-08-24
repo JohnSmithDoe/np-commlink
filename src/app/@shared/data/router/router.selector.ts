@@ -29,10 +29,10 @@ import { CATEGORY_FILTER_PARAM } from '../../util/item-lists/category-filter.rou
 
 const selectRouter = createFeatureSelector<RouterReducerState>('router');
 
-const { selectRouteParams, selectRouteData, selectQueryParam } =
+const { selectRouteParams, selectRouteData, selectQueryParam, selectUrl } =
   getRouterSelectors(selectRouter);
 
-export { selectRouteParams, selectRouteData };
+export { selectRouteParams, selectRouteData, selectUrl };
 
 export const selectRouteEntityId = createSelector(
   selectRouteParams,

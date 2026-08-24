@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline, paw, person, pulseOutline } from 'ionicons/icons';
+import { createOutline, paw, person } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -39,7 +39,7 @@ export class VitalsProfilesPage {
   readonly summaries = this.#profiles.summaries;
 
   constructor() {
-    addIcons({ createOutline, paw, person, pulseOutline });
+    addIcons({ createOutline, paw, person });
   }
 
   summaryFor(profile: Profile): ProfileSummary {

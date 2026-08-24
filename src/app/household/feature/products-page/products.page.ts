@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { addIcons } from 'ionicons';
-import { pricetagsOutline } from 'ionicons/icons';
 import { Product } from '../../model/household-list.types';
 import { HouseholdListPageFacade, ProductsFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -28,10 +26,6 @@ import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-
 export class ProductsPage {
   readonly facade = inject(HouseholdListPageFacade);
   readonly #products = inject(ProductsFacade);
-
-  constructor() {
-    addIcons({ pricetagsOutline });
-  }
 
   removeItem(item: Product) {
     this.#products.removeItem(item);

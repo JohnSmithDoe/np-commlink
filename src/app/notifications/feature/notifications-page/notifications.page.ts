@@ -18,7 +18,6 @@ import {
   chevronDown,
   chevronUp,
   notificationsOffOutline,
-  notificationsOutline,
   pauseCircle,
   playCircle,
   stopCircle,
@@ -70,7 +69,6 @@ export class NotificationsPage implements ViewWillEnter {
       'stop-circle': stopCircle,
       'trash-outline': trashOutline,
       'notifications-off-outline': notificationsOffOutline,
-      notificationsOutline,
     });
   }
 

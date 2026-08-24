@@ -25,7 +25,6 @@ import {
   speedometerOutline,
   swapHorizontalOutline,
   trendingUpOutline,
-  walletOutline,
 } from 'ionicons/icons';
 import {
   ACCOUNT_KIND_LABEL_KEYS,
@@ -83,7 +82,6 @@ export class CashPage {
 
   constructor() {
     addIcons({
-      walletOutline,
       cardOutline,
       trendingUpOutline,
       cashOutline,
