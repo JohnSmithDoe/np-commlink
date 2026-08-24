@@ -17,6 +17,21 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
 - **Legal only because nothing is stranded — re-check before any entry claims to be reachable "from the
   deck".** Two unconditional entrances: the drawer's static `/settings` button and the grid's `@empty`
   link. An `onDeck: false` entry is why they are needed.
+- **Past 992px the drawer stays open as a pane, and Ionic's own default is the breakpoint.** The catalog
+  behind the drawer already served both surfaces, so nothing about the navigation model changed — only
+  whether the surface is modal. `when` is deliberately unwritten: `lg` IS Ionic's default, and a copied
+  default is a value that can silently diverge from the framework's. Two facts make it cheap where
+  [state.md](../state.md) predicted reach. The page header needed no edit at all — an `ion-menu-button`
+  hides itself once its menu sits in a visible pane — and `[autoHide]="false"` on the three
+  `ion-menu-toggle`s is Ionic's **documented** override for the same rule, which otherwise blanks every
+  row the pane exists to show. Without it the open pane is a wordmark over an empty column, measured
+  rather than reasoned. What it costs is two desktop assertions restated, both premise rather than
+  product: the menu-button claim is made at 980 because above the breakpoint there is no button, and
+  gutters are measured against `#main-content` because the content no longer starts at x=0. The width is
+  **300px measured, and `--side-max-width` is the property that sets it** — Ionic's default for it is
+  `28%`, which is what made the pane 392px at 1400, so `--side-width` is not the knob it reads like and
+  setting it changes nothing. A 300px pane puts the content area under `$content-wide` at every common
+  desktop width, so a list runs full-bleed there exactly as it does on a phone.
 - **The catalog's glyph reaches the page header through a token, and the header keeps `icon` as an
   override.** `@shared/ui` may import no domain, so the header cannot read `DECK_CATALOG` however the data
   is shaped — that edge, not the app shell's, is what forces the inversion. `PROGRAM_ICON` is the port

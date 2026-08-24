@@ -1,7 +1,7 @@
-# State — blocked, one-way doors, and what is owed before v2
+# State — blocked, one-way doors, and costs left standing
 
 **Check before proposing work.** Each entry either needs a secret, an upstream release, a human reading
-the result — or it has been triaged to ship before the next major. Settled questions are in
+the result — or is a measured cost left standing on purpose. Settled questions are in
 [decisions.md](./decisions.md); the next major's own scope is in [next-version.md](./next-version.md).
 
 ## One-way doors
@@ -116,16 +116,6 @@ owes once one IS needed is in [decisions.md](./decisions.md).
     `@ngx-translate/*` 18, Sheriff.
   - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit — a
     framework major on top of other changes makes a red gate unattributable.
-
-## Owed before v2.0.0 — decided, not yet done
-
-Triaged deliberately: each of these ships before the next major. What was triaged INTO v2.0.0 is in
-[next-version.md](./next-version.md), and an entry leaves this section by being done rather than by
-being re-argued.
-
-- **A persistent desktop side menu (`ion-split-pane`).** The catalog behind the drawer already serves both
-  surfaces, so the navigation model needs nothing; what defers it is reach — every page header renders an
-  `ion-menu-button` that would have to disappear above the breakpoint.
 
 ## Known cost, not yet paid
 

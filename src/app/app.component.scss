@@ -8,6 +8,10 @@
 // visible over the toolbar of the page being navigated *away* from.
 // ────────────────────────────────────────────────────────────────
 
+ion-split-pane {
+  --side-max-width: 300px;
+}
+
 .app-navigating {
   position: absolute;
   inset-block-start: 0;

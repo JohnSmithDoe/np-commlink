@@ -1,33 +1,32 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The desktop layout facts that CSS alone cannot keep honest, all only
- * observable on a wide viewport: `desktop-chromium` is the only project
- * wide enough (Playwright's Desktop Chrome default is 1280×720) and
- * `e2e/desktop/**` the only path it matches, so on the Pixel 5 the rest
- * of the suite emulates, every assertion here would be vacuously true.
+ * The desktop layout facts CSS alone cannot keep honest. `desktop-chromium`
+ * is the only project wide enough (Desktop Chrome defaults to 1280×720) and
+ * `e2e/desktop/**` the only path it matches, so on the Pixel 5 the rest of
+ * the suite emulates, every assertion here would be vacuously true.
  *
- * The second describe runs on SETTINGS, not on a list, and the viewport
- * is the reason: a list page caps at $content-wide, which IS 1280, so
- * its gutters are 0 and an alignment claim proves nothing. Settings caps
- * at $content-default, leaving 190px a side for a misalignment to show
- * in. Both facts there fail only past the cap — the centring is defeated
- * by CSS Ionic injects at runtime, and the header's controls answer to
- * --padding-* props no other page style touches. The header claim is
- * anchored on the CAP rather than on the list because the two break
- * together, and any header at all satisfies a flush-left list.
+ * The second describe runs on SETTINGS, not on a list: a list caps at
+ * $content-wide, which IS 1280, so its gutters are 0 and an alignment claim
+ * proves nothing, while settings caps at $content-default and leaves room a
+ * misalignment can show in. Both facts fail only past the cap — the centring
+ * is defeated by CSS Ionic injects at runtime, and the header's controls
+ * answer to --padding-* props no other page style touches. The claim is
+ * anchored on the CAP because the two break together.
  *
- * The shared edge: `--app-content-max-width` is capped on
- * `ion-content > *` — every child, INDEPENDENTLY — and the header's rows
- * cap themselves. So the searchbar, the sort toolbar and the list agree
- * only as long as all three read the same property, and nothing in the
- * type system says they do. The searchbar used to take 420px hard-right
- * and disagreed with both.
+ * Above 992 the split pane is open, so the menu button does not exist and
+ * the content no longer starts at x=0: that claim is made at 980, where the
+ * caps are still apart, and gutters are measured against #main-content.
+ *
+ * The shared edge: `--app-content-max-width` is capped on `ion-content > *`
+ * — every child, INDEPENDENTLY — and the header's rows cap themselves. So
+ * the searchbar, the sort toolbar and the list agree only as long as all
+ * three read the same property, and nothing in the type system says they do.
+ * The searchbar used to take 420px hard-right and disagreed with both.
  *
  * One row per line: a multi-column list was tried and reverted
- * (decisions.md), and the CSS that did it was one `@include layout.wide`
- * away from returning. Rows are compared by bounding box because an
- * auto-fit grid has no DOM signal at all — "no two items share a row" is
- * the actual claim, and it is the inverse of what this spec asserted
- * while the grid existed.
+ * (decisions.md), one `@include layout.wide` away from returning. Rows are
+ * compared by bounding box because an auto-fit grid has no DOM signal —
+ * "no two items share a row" is the claim, and it is the inverse of what
+ * this spec asserted while the grid existed.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page, test } from '@playwright/test';
@@ -101,11 +100,11 @@ test.describe('desktop page chrome', () => {
 
     const box = await settingsList(page).boundingBox();
     expect(box).not.toBeNull();
-    const viewport = page.viewportSize();
-    expect(viewport).not.toBeNull();
+    const area = await page.locator('#main-content').boundingBox();
+    expect(area).not.toBeNull();
 
-    const left = box!.x;
-    const right = viewport!.width - (box!.x + box!.width);
+    const left = box!.x - area!.x;
+    const right = area!.x + area!.width - (box!.x + box!.width);
 
     expect(left).toBeGreaterThan(0);
     expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
@@ -114,6 +113,7 @@ test.describe('desktop page chrome', () => {
   test('the menu button holds one position across every cap', async ({
     page,
   }) => {
+    await page.setViewportSize({ width: 980, height: 900 });
     const seen: number[] = [];
 
     for (const route of CAPS_APART) {

@@ -1,72 +1,78 @@
 <ion-app>
-  <ion-menu contentId="main-content">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{ wordmark }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-menu-toggle>
-            <ion-button
-              routerLink="/handbook"
-              [attr.aria-label]="'page-title.handbook' | translate"
-            >
-              <ion-icon
-                slot="icon-only"
-                name="book-outline"
-                aria-hidden="true"
-              />
-            </ion-button>
-          </ion-menu-toggle>
-          <ion-menu-toggle>
-            <ion-button
-              routerLink="/settings"
-              [attr.aria-label]="'page-title.settings' | translate"
-            >
-              <ion-icon
-                slot="icon-only"
-                name="settings-outline"
-                aria-hidden="true"
-              />
-            </ion-button>
-          </ion-menu-toggle>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <nav>
-        <ion-list>
-          @for (entry of menuEntries(); track entry.id) {
-            <ion-menu-toggle>
-              <ion-item
-                [button]="true"
-                [routerLink]="entry.route"
-                lines="none"
-                data-testid="menu-row"
+  <ion-split-pane contentId="main-content">
+    <ion-menu contentId="main-content">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ wordmark }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-menu-toggle [autoHide]="false">
+              <ion-button
+                routerLink="/handbook"
+                [attr.aria-label]="'page-title.handbook' | translate"
               >
-                <ion-icon slot="start" [name]="entry.icon" aria-hidden="true" />
-                <ion-label>{{ entry.nameKey | translate }}</ion-label>
-                @let badge = menuBadge(entry);
-                @if (badge > 0) {
-                  <ion-badge slot="end" [color]="menuBadgeColor(entry)">{{
-                    badge
-                  }}</ion-badge>
-                }
-              </ion-item>
+                <ion-icon
+                  slot="icon-only"
+                  name="book-outline"
+                  aria-hidden="true"
+                />
+              </ion-button>
             </ion-menu-toggle>
-          }
-        </ion-list>
-      </nav>
-    </ion-content>
-  </ion-menu>
-  <div class="ion-page" id="main-content">
-    @if (navigating()) {
-      <ion-progress-bar
-        type="indeterminate"
-        class="app-navigating"
-        [attr.aria-label]="'a11y.loading' | translate"
-      />
-    }
-    <ion-router-outlet></ion-router-outlet>
-  </div>
+            <ion-menu-toggle [autoHide]="false">
+              <ion-button
+                routerLink="/settings"
+                [attr.aria-label]="'page-title.settings' | translate"
+              >
+                <ion-icon
+                  slot="icon-only"
+                  name="settings-outline"
+                  aria-hidden="true"
+                />
+              </ion-button>
+            </ion-menu-toggle>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <nav>
+          <ion-list>
+            @for (entry of menuEntries(); track entry.id) {
+              <ion-menu-toggle [autoHide]="false">
+                <ion-item
+                  [button]="true"
+                  [routerLink]="entry.route"
+                  lines="none"
+                  data-testid="menu-row"
+                >
+                  <ion-icon
+                    slot="start"
+                    [name]="entry.icon"
+                    aria-hidden="true"
+                  />
+                  <ion-label>{{ entry.nameKey | translate }}</ion-label>
+                  @let badge = menuBadge(entry);
+                  @if (badge > 0) {
+                    <ion-badge slot="end" [color]="menuBadgeColor(entry)">{{
+                      badge
+                    }}</ion-badge>
+                  }
+                </ion-item>
+              </ion-menu-toggle>
+            }
+          </ion-list>
+        </nav>
+      </ion-content>
+    </ion-menu>
+    <div class="ion-page" id="main-content">
+      @if (navigating()) {
+        <ion-progress-bar
+          type="indeterminate"
+          class="app-navigating"
+          [attr.aria-label]="'a11y.loading' | translate"
+        />
+      }
+      <ion-router-outlet></ion-router-outlet>
+    </div>
+  </ion-split-pane>
   <ion-toast
     [isOpen]="updateReady()"
     [message]="'app.update.ready' | translate"
