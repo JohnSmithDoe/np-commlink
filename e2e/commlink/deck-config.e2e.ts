@@ -19,7 +19,7 @@
  * Hiding a program is a navigation choice, not an uninstall, so the
  * status strip keeps reporting the grid's full complement — it counts
  * `onDeck` entries in the catalog, which is why an empty deck still
- * reports twenty, and why that literal is re-read when the catalog
+ * reports twenty-one, and why that literal is re-read when the catalog
  * gains an entry. Only the denominator is asserted, because the copy
  * around it is theme-cased.
  *
@@ -141,13 +141,13 @@ test.describe('deck configuration', () => {
     page,
   }) => {
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/20');
+    await expect(statusStrip(page)).toContainText('/21');
 
     await openDeckConfig(page);
     await switchOn(page, MARKET, '"shopping"');
 
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/20');
+    await expect(statusStrip(page)).toContainText('/21');
   });
 
   test('orders only what is switched on, and names its module', async ({

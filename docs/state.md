@@ -97,11 +97,12 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
   `start` (the deck header gained the arrange toggle, and the deck config now opens on a **grouped**
   lens with an order lens beside it — the figure shows neither, so the prose was rewritten and the shot
-  was not) and `credstick` (the ledger and the uncategorized
+  was not; the config page is now a program itself, so it wears the grid glyph and sits under
+  *Einstellungen* beside SYSOP) and `credstick` (the ledger and the uncategorized
   list now carry CREDSTICK's own glyph in the header, which the deck's catalog supplies to every page
   inside a program). Seven for the 44 px touch floor, which grew a
   `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
-  section), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
+  section, and moved the deck link up under the language picker), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
   the profile header, and the birthday plus two sign selects in the profile dialog),
   `credstick-auswertung` and `sigil`. Each page JSON
   carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather

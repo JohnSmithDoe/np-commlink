@@ -23,8 +23,6 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
-import { addIcons } from 'ionicons';
-import { settingsOutline } from 'ionicons/icons';
 import { Marker } from '../../../@shared/model/app.types';
 import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -94,9 +92,5 @@ export class DeckConfigPage {
 
   reorder(event: ReorderEndCustomEvent): void {
     this.#deck.reorderShown(reorderedIds(event, this.shown()));
-  }
-
-  constructor() {
-    addIcons({ settingsOutline });
   }
 }

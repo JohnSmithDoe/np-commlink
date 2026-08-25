@@ -50,6 +50,14 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
   agreeing choice is BIOMON's own `pulse-outline`, which puts two identical tiles on a grid meant to be
   scanned by glyph. Where a component has one route and that route is an entry, the input is a second
   copy of the catalog's answer and goes.
+- **The config page is a program too, including the right to switch itself off.** It is a route like any
+  other, so the catalog covering it costs nothing new and settles two things at once: the page header's
+  `icon="settings-outline"` goes by the rule above, and the config stops being something only the deck
+  and a buried settings row lead to. Switching it off cannot strand it — the drawer's `/settings` button
+  is unconditional, and SYSOP carries the link directly under its three pickers rather than below the
+  accents. It ships OFF like every other entry, so it is not the special case an empty deck
+  forbids. Its arrival is why SYSOP stopped describing itself as "deck config": the subtitle named a page
+  it no longer owns.
 - **The module axis is a bulk ACTION, never a second gate.** It was rejected outright while every module
   held one program: a stored module flag gated what a program toggle already gated, and a hidden module
   had to disable its children to stay coherent. Sub-page programs changed the premise, not the argument

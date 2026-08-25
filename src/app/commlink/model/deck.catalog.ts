@@ -428,6 +428,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     status: 'online',
   },
   {
+    id: 'deck',
+    module: 'settings',
+    icon: 'grid-outline',
+    route: '/commlink/deck',
+    titleKey: marker('page-title.deck-config'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.deck.name'),
+        descKey: marker('deck.cyberpunk.deck.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.deck.name'),
+        descKey: marker('deck.boomer.deck.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'geist',
     module: 'geist',
     icon: 'sparkles-outline',

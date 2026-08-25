@@ -48,6 +48,14 @@
     </ion-item>
 
     <ion-item lines="none">
+      <ion-label>{{ 'settings.deck.title' | translate }}</ion-label>
+    </ion-item>
+    <ion-item [button]="true" routerLink="/commlink/deck" lines="none">
+      <ion-icon slot="start" name="grid-outline" aria-hidden="true" />
+      <ion-label>{{ 'settings.deck.link' | translate }}</ion-label>
+    </ion-item>
+
+    <ion-item lines="none">
       <ion-label>{{ 'settings.accent.title' | translate }}</ion-label>
     </ion-item>
     <ion-item lines="none">
@@ -70,14 +78,6 @@
       <ion-button fill="outline" size="small" (click)="resetAccents()">
         {{ 'settings.accent.reset' | translate }}
       </ion-button>
-    </ion-item>
-
-    <ion-item lines="none">
-      <ion-label>{{ 'settings.deck.title' | translate }}</ion-label>
-    </ion-item>
-    <ion-item [button]="true" routerLink="/commlink/deck" lines="none">
-      <ion-icon slot="start" name="grid-outline" aria-hidden="true" />
-      <ion-label>{{ 'settings.deck.link' | translate }}</ion-label>
     </ion-item>
 
     @let persistence = storagePersistence();
