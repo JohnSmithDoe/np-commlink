@@ -26,8 +26,10 @@
 // remove X opts back out — it is inline inside a 32px chip whose own row is the
 // target, and flooring it inflates every form that shows a category.
 //
-// The last three rules answer to Android, not to this file: the WebView never
-// populates env(safe-area-inset-*), Android 16 draws behind transparent bars,
+// The Android rules answer to the platform: --safe-area-inset-* leads (the WebView
+// populates env() only from v140); Ionic insets toolbar, footer and tab bar but never
+// a page's ion-content, and its scroll padding already composes keyboard and offset —
+// so the bottom inset is a MARGIN on the last child, never an override of that calc;
 // and shadowrun's `ion-content { --background }` out-specifies body.
 // ────────────────────────────────────────────────────────────────
 
@@ -88,6 +90,15 @@ button.alert-button.alert-button-danger {
     env(safe-area-inset-bottom)
   );
   --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left));
+}
+
+ion-content > *:last-child {
+  margin-bottom: var(--ion-safe-area-bottom, 0);
+}
+
+ion-tabs ion-content > *:last-child,
+ion-content:has(~ ion-footer) > *:last-child {
+  margin-bottom: 0;
 }
 
 html,
