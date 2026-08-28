@@ -101,10 +101,6 @@ export class VitalsZodiacPage {
   );
   readonly currentAge = computed(() => astroAgeFor(this.today()));
 
-  readonly backHref = computed(
-    () => `/vitals/profile/${this.profile()?.id ?? ''}`
-  );
-
   constructor() {
     addIcons({ planetOutline });
   }

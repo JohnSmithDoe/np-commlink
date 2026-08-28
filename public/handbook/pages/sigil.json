@@ -27,7 +27,7 @@
             "Oben rechts auf <strong>+</strong>. Der Editor öffnet sich sofort — die Notiz existiert damit schon.",
             "Oben <strong>Titel</strong>, darunter <strong>Notiz…</strong> ausfüllen. Es gibt keinen Speichern-Knopf; getippt ist gesichert (rund eine halbe Sekunde nach dem letzten Zeichen).",
             "Optional <strong>BILD HINZUFÜGEN</strong> antippen und ein Bild wählen.",
-            "Mit dem <strong>←</strong> oben links zurück. Wer nichts eingetippt hat, hinterlässt keine Zeile: eine vollständig leere Notiz wird beim Verlassen still verworfen."
+            "Mit der Zurück-Geste des Geräts oder des Browsers zurück in die Liste. Wer nichts eingetippt hat, hinterlässt keine Zeile: eine vollständig leere Notiz wird beim Verlassen still verworfen."
           ]
         },
         {
@@ -130,7 +130,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Es gibt keinen Speichern-Knopf.</strong> Das ist Absicht — wer den Editor sucht und nichts speichert, hat trotzdem alles. Umgekehrt: eine Notiz, in die nichts eingetippt wurde, ist nach dem Zurück weg.",
+            "<strong>Es gibt keinen Speichern-Knopf.</strong> Das ist Absicht — wer den Editor sucht und nichts speichert, hat trotzdem alles. Umgekehrt: eine Notiz, in die nichts eingetippt wurde, ist nach dem Verlassen weg.",
             "<strong>Löschen nimmt die Bilder mit.</strong> <em>Rückgängig</em> holt beides zurück, aber nur solange der Hinweis unten steht.",
             "<strong>Sortieren und Suchen schließen sich aus.</strong> Während gefiltert wird, gibt es keinen Griff: eine Umsortierung würde alle ausgeblendeten Notizen aus der Reihenfolge werfen.",
             "<strong>Anheften findet man nicht in der Liste.</strong> Es sitzt oben im Editor.",

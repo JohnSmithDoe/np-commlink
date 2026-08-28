@@ -210,9 +210,13 @@ R1–R9 are the a11y rule set; each gated rule's banner carries its argument. Be
 - **`ion-content` already sets `role="main"`** (unless inside a menu/popover/modal), so a hand-placed
   `<main>` produces two landmarks.
 - **`ion-back-button` is `display:none` until `:host(.show-back-button)`**, set from
-  `defaultHref !== undefined` — passing `backHref` is what makes it appear. Its click is
-  `canGoBack() ? pop() : navigateBack(defaultHref)`, so a hand-rolled `router.navigate` is the fallback
-  branch only, taken even when the user had somewhere to go back to.
+  `defaultHref !== undefined` and from nothing else. The docs say it "appears only when there is history in
+  the navigation stack", which describes `ion-nav`, not the Angular router: `@ionic/angular`'s directive
+  overrides the CLICK — `canGoBack() ? pop() : navigateBack(defaultHref)`, against the NEAREST
+  `IonRouterOutlet` — and never the visibility. So there is no such thing as an arrow that shows itself
+  when back is possible; it is always-on or hand-computed. That, plus a hand-rolled `router.navigate`
+  landing in the fallback branch even when the user had somewhere to go back to, is why the app ships no
+  back button at all ([decisions.md](./decisions.md)).
 - **Route-change focus is opt-in.** Without `focusManagerPriority`, a click-navigation leaves focus on the
   anchor, the outlet puts `aria-hidden` on the leaving page, and Chrome drops focus to `<body>`. `main.ts`
   boots `['heading','banner']`, dropping the usual `'content'` on purpose: it would match every page's own

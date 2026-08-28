@@ -133,6 +133,17 @@ it was measured against.
   through an action and an effect adds a type, an effect and a spec to call the same `Router` method.
 - **A controller never appears in a reducer** — a reducer runs synchronously and possibly twice per
   dispatch, so a `ModalController` there presents per call and re-fires on replay.
+- **No page carries a back button; the platform's back IS back.** The drawer button is the only chrome in
+  the header's start slot, on every page. Android's hardware back and the browser's back both pop Ionic's
+  view stack already — Ionic's default `startHardwareBackButton` is live, which is why `@capacitor/app` is
+  kept above — so an in-app arrow was a second control with the same behaviour. It could not even be made
+  to appear consistently: `ion-back-button` renders on `defaultHref !== undefined` alone, so visibility is
+  either always-on or something we compute from `IonRouterOutlet.canGoBack()`, and that is a fact about
+  **how you arrived**, not about the page. The same screen then has an arrow or not depending on the route
+  in, which is chrome nobody can learn. The static `backHref` it replaced was worse still: once a deep page
+  became a deck program, its hard-coded parent pointed at a sibling program the visitor never opened.
+  Moving between a parent and a child page needs its own answer, and
+  [next-version.md](./next-version.md) holds it as open design rather than an arrow restored by default.
 
 ## Reducer purity
 

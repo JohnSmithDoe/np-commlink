@@ -4,6 +4,7 @@
   "plain": "Aufgaben",
   "route": "/tasks/list",
   "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien — erledigt heißt hier gelöscht.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -94,7 +95,7 @@
         },
         {
           "type": "p",
-          "html": "Das Etiketten-Symbol rechts in der Werkzeugzeile (<em>Kategorien verwalten</em>) führt nach <code>/tasks/categories</code>. Diese Seite hat ihre eigene Suchleiste: Name tippen, Enter, Kategorie angelegt. Unter jedem Namen steht, wie viele Aufgaben daran hängen (<code>2 Einträge</code>). <strong>Antippen</strong> einer Kategorie springt zurück in die Liste, gefiltert auf genau diese Kategorie. Der Pfeil oben links kommt zurück."
+          "html": "Das Etiketten-Symbol rechts in der Werkzeugzeile (<em>Kategorien verwalten</em>) führt nach <code>/tasks/categories</code>. Diese Seite hat ihre eigene Suchleiste: Name tippen, Enter, Kategorie angelegt. Unter jedem Namen steht, wie viele Aufgaben daran hängen (<code>2 Einträge</code>). <strong>Antippen</strong> einer Kategorie springt zurück in die Liste, gefiltert auf genau diese Kategorie. Wer keine wählen will, kommt mit der Zurück-Geste des Geräts oder des Browsers in die ungefilterte Liste zurück."
         },
         {
           "type": "p",

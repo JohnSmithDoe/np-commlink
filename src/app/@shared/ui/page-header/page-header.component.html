@@ -1,14 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      @if (backHref()) {
-        <ion-back-button
-          [defaultHref]="backHref()"
-          [attr.aria-label]="'a11y.back' | translate"
-        />
-      } @else {
-        <ion-menu-button [attr.aria-label]="'a11y.menu' | translate" />
-      }
+      <ion-menu-button [attr.aria-label]="'a11y.menu' | translate" />
     </ion-buttons>
     @if (label() || heading()) {
       <div class="sr-brand">

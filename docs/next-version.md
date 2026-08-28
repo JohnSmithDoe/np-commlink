@@ -190,20 +190,33 @@ nobody can reach from the screen holding the question is not one.
 
 Its scope lives with the domain: [domains/soykaf.md](domains/soykaf.md).
 
-## Navigation — back, once a deep page is a program
+## Navigation — how a child page returns to its parent
 
-- **A sub-page program can be entered from the deck, and its back arrow still points at the parent it
-  used to be reached through.** `/cash/spending` is the clear case: it hard-codes
-  `backHref="/cash/burndown"` because that link was the only way in, so arriving from a deck tile and
-  tapping back lands on a page the visitor never saw. The I Ching pages already branch — `iching.page.ts`
-  and `iching-cast.page.ts` compute `backHref` from whether the route carried a profile id — which shows
-  the shape of an answer but also that the answer is currently per page, written by hand, and easy to
-  forget on the next sub-page program.
-- **What has to be decided first is what back MEANS on a program.** A program is a top-level
-  destination, so the honest options are: no back arrow at all when the URL is the entry's own route
-  (the deck and the drawer are the way out, exactly as for `/cash` today), or a back that walks history
-  rather than a static parent. The second is not free — Ionic's `ion-back-button` `defaultHref` exists
-  because history can be empty on a cold launch or a shared link, which is the case a static `backHref`
-  was chosen to cover in the first place. `PROGRAM_ICON` is the precedent for the shape: the catalog
-  already knows which routes are entries, and a page header could ask it the same way it asks for a
-  glyph, instead of each page restating it.
+The back arrow is **gone**, and why is settled in [decisions.md](./decisions.md). What is owed is the
+thing it was standing in for. This is the one entry here that names a gap the app currently has rather
+than a capability it lacks.
+
+- **A child page reached from a parent's toolbar has no on-screen way back.** The categories page is the
+  sharpest case: it is opened from a list's own toolbar, it is not a deck program, and its only return was
+  the arrow — the two `manage-categories` e2e tests now walk `page.goBack()` because nothing in the app
+  does it. Platform back covers it on both targets (Android's hardware back, the browser's back), so the
+  user is never trapped; what is missing is anything on screen saying so. The same holds for cash's
+  account, category, report, rules, schedules and uncategorized pages, household's list-settings, ritual's
+  settings, the notes editor, trackplay's game-play, game-types and player pages, and BIOMON's profile,
+  pills, zodiac and I Ching pages.
+- **The distinction to draw first is that these are three different things wearing one control.** A
+  **program** has no parent at all — the deck and the drawer are its way out, and an arrow there pointed at
+  a launcher or, worse, at a sibling program. An **editor** (the notes editor, list-settings, ritual
+  settings) wants *done*, not *back*: it is modal in spirit and its parent is wherever you opened it. A
+  **child list** (categories, cash's report and rules, BIOMON's pills) genuinely has one parent worth
+  naming. Restoring a single static arrow re-merges all three, which is how the old `backHref` came to
+  point at pages nobody had visited.
+- **The likeliest shape is content, not chrome.** A "Zurück zu …" row inside the page reads the same
+  whatever route you arrived on, needs no stack, survives a cold deep link, and has precedent in the
+  handbook's own `handbook.nav.previous`. It costs page height and one i18n key per parent. The
+  alternative is a derived breadcrumb: `PROGRAM_ICON` already resolves a URL against `DECK_CATALOG`
+  longest-route-first, and the same lookup answers "which program am I inside", so a header could name the
+  program without any page restating it.
+- **What must not come back is a per-page static parent.** That is the exact construct that broke when
+  deep pages became deck programs, and nothing about a new arrow stops it breaking the same way the next
+  time an entry joins the catalog.

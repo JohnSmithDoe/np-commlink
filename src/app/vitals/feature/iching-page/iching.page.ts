@@ -65,10 +65,6 @@ export class VitalsIChingPage {
   readonly todayStar = computed(() => kiStarFor(this.today()));
   readonly todayKiYear = computed(() => kiYearFor(this.today()));
 
-  readonly backHref = computed(() => {
-    const id = this.#routeProfile()?.id;
-    return id ? `/vitals/profile/${id}` : '/vitals';
-  });
   readonly castHref = computed(() => {
     const id = this.#routeProfile()?.id;
     return id ? `/vitals/profile/${id}/iching/cast` : '/vitals/iching/cast';

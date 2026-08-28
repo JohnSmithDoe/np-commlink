@@ -100,7 +100,6 @@ export class ListPageComponent {
   readonly icon = input<string>();
   readonly pageHeader = input('');
   readonly heading = input('');
-  readonly backHref = input('');
 
   readonly canManageCategories = !!this.facade.manageCategories;
   readonly canReorder = !!this.facade.reorder;

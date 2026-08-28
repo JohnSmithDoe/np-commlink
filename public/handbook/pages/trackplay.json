@@ -4,6 +4,7 @@
   "plain": "Spielstände",
   "route": "/trackplay",
   "summary": "Der Punkteblock: Spieler, Spielarten und Partien mit Runde-für-Runde-Wertung, Sieger und Bilanz.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -24,7 +25,7 @@
           "items": [
             "TRACKPLAY/<strong>Spielstände</strong> auf dem Deck antippen oder im Menü <strong>Spiele</strong> wählen.",
             "Oben rechts das <strong>Personen-Symbol</strong> → <strong>Spieler</strong>. Dort <strong>+</strong>, Name, <strong>ANLEGEN</strong> — für jeden Mitspieler einmal. Schneller: Namen in die Suchleiste tippen und Enter.",
-            "Mit <strong>←</strong> zurück zu <strong>Spiele</strong>, dann <strong>+</strong>: <strong>Name</strong> der Partie, <strong>Spielart</strong> wählen, Spieler anhaken.",
+            "Zurück zu <strong>Spiele</strong> — mit der Zurück-Geste des Geräts oder über das Menü —, dann <strong>+</strong>: <strong>Name</strong> der Partie, <strong>Spielart</strong> wählen, Spieler anhaken.",
             "<strong>WEITER</strong> speichert und öffnet direkt den Punkteblock; <strong>ANLEGEN</strong> speichert nur."
           ]
         },

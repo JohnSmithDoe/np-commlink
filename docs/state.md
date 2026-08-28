@@ -92,7 +92,7 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Eleven handbook pages carry stale screenshots, and they say so themselves.** Four for content that
+- **Fourteen handbook pages carry stale screenshots, and they say so themselves.** Four for content that
   moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
   swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
   `start` (the deck header gained the arrange toggle, and the deck config now opens on a **grouped**
@@ -104,7 +104,11 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
   section, and moved the deck link up under the language picker), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
   the profile header, and the birthday plus two sign selects in the profile dialog),
-  `credstick-auswertung` and `sigil`. Each page JSON
+  `credstick-auswertung` and `sigil`. Three for the back arrow, which every page header has now
+  dropped ([decisions.md](./decisions.md)): `agenda` (the categories page), `catalog` (the list-options
+  page) and `trackplay` (the game-play and player pages) each show a child page that used to carry one.
+  That change dates figures across the already-flagged pages too, which is why it adds three rather than
+  eleven. Each page JSON
   carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather
   than misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
   flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and no

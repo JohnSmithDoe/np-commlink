@@ -56,18 +56,13 @@ describe('PageHeaderComponent', () => {
     );
   });
 
-  it('swaps the menu button for a back button, and the page names only the fallback', () => {
+  it('offers the drawer as the only chrome in the start slot', () => {
     fixture.detectChanges();
+
     expect(
       fixture.nativeElement.querySelector('ion-menu-button')
     ).not.toBeNull();
-
-    fixture.componentRef.setInput('backHref', '/cash');
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('ion-menu-button')).toBeNull();
-    const back = fixture.nativeElement.querySelector('ion-back-button');
-    expect(back['defaultHref']).toBe('/cash');
+    expect(fixture.nativeElement.querySelector('ion-back-button')).toBeNull();
   });
 
   it('shows the add button by default and hides it when hideButtons is set', () => {

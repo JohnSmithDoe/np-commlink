@@ -15,7 +15,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  inject,
   signal,
 } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -23,7 +22,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { discOutline, refreshOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { ProfilesFacade } from '../../data';
 import { COIN_LABEL_KEYS, LINE_LABEL_KEYS } from '../../model/iching.consts';
 import { CastLine, HexagramRecord, LineValue } from '../../model/iching.types';
 import {
@@ -74,8 +72,6 @@ export class VitalsIChingCastPage {
   readonly lineKeys = LINE_LABEL_KEYS;
   readonly coinKeys = COIN_LABEL_KEYS;
 
-  readonly #profiles = inject(ProfilesFacade);
-
   readonly lines = signal<readonly CastLine[]>([]);
 
   readonly complete = computed(() => this.lines().length === HEXAGRAM_LINES);
@@ -93,11 +89,6 @@ export class VitalsIChingCastPage {
   readonly changingCount = computed(
     () => this.lines().filter((line) => isChangingLine(line.value)).length
   );
-
-  readonly backHref = computed(() => {
-    const id = this.#profiles.routeProfile()?.id;
-    return id ? `/vitals/profile/${id}/iching` : '/vitals/iching';
-  });
 
   constructor() {
     addIcons({ discOutline, refreshOutline });

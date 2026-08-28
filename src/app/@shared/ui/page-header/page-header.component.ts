@@ -8,7 +8,6 @@ import {
   output,
 } from '@angular/core';
 import {
-  IonBackButton,
   IonButton,
   IonButtons,
   IonHeader,
@@ -27,7 +26,6 @@ import { PROGRAM_ICON } from '../../util/program-icon.token';
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.scss',
   imports: [
-    IonBackButton,
     IonToolbar,
     IonHeader,
     IonButtons,
@@ -44,7 +42,6 @@ export class PageHeaderComponent {
   readonly heading = input('');
   readonly icon = input<string>();
   readonly hideButtons = input(false, { transform: booleanAttribute });
-  readonly backHref = input('');
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();
 

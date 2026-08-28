@@ -1,8 +1,4 @@
-<app-page-header
-  [heading]="game()?.name ?? ''"
-  backHref="/trackplay"
-  hideButtons
->
+<app-page-header [heading]="game()?.name ?? ''" hideButtons>
   <ion-buttons slot="end" toolbar>
     <ion-button (click)="toggleEnded()" color="primary">
       <ion-icon
