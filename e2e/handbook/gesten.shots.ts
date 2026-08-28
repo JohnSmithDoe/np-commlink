@@ -97,19 +97,4 @@ test('shared interaction surface', async ({ page }) => {
 
   await filterBar.getByTestId('clear-category-filter').click();
   await expect(listRow(page, /Zahnpasta/)).toBeVisible();
-
-  const boughtRow = listRow(page, /Kaffeebohnen/);
-  await openRowSwipe(boughtRow, 'start');
-  await boughtRow
-    .locator('ion-item-options[side="start"] ion-item-option')
-    .click();
-  await page.waitForTimeout(500);
-
-  await page
-    .locator('app-page-shopping')
-    .getByRole('button', { name: 'Aktionen' })
-    .click();
-  const sheet = page.locator('ion-action-sheet');
-  await expect(sheet).toBeVisible({ timeout: 15_000 });
-  await shot(page, 'gesten-aktionsmenue');
 });
