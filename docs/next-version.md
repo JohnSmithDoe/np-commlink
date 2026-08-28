@@ -111,6 +111,23 @@ and every exemption taken so far.
   hook. It also arrives with no account context, so the receiving flow needs an account chooser before
   the import preview. Two hundred lines and a registration path that can brick a PWA install, against
   roughly two taps saved over the file input the account page already has.
+- **Edge-to-edge draws under the navigation bar, and the strip that reads well is also a dead zone.** The
+  paint is right and stays: `SystemBars.insetsHandling` defaults to `'css'` and injects
+  `--safe-area-inset-*`, which `global.scss` maps onto Ionic's variables, and toolbar, footer, tab bar,
+  toast, action sheet and modal inset themselves — `ion-content` and `ion-fab` never do, which is what the
+  `margin-bottom` on `ion-content > *:last-child` answers. Touch is the second question and nothing in CSS
+  settles it: under gesture navigation the bottom ~24dp keeps swipes and drags while letting most taps
+  through, under three-button navigation the ~48dp strip is a system window that takes everything, so a
+  control sitting in the inset fails intermittently rather than visibly. Two places the existing rule
+  cannot reach. `ion-modal`'s `applyFullscreenSafeArea()` returns early on `isSheetModal || isCardModal`,
+  so the date picker — an `initialBreakpoint: 0.65` sheet holding an `ion-datetime` with its default and
+  clear buttons, and no `ion-content` for the last-child rule to bite on — puts three buttons on the
+  bottom edge with neither Ionic nor this repo padding them. And a bottom margin is inert wherever that
+  last child is a component host with no declared `display`, since an Angular host defaults to
+  `display: inline` and an inline box drops it: `app-item-list` and `app-item-list-empty` both declare
+  `flex`, so list pages hold, and a page ending in an undeclared host does not. What defers it is which
+  control actually fails — switching the phone to three-button navigation turns the intermittent case into
+  a reproducible one, and is the cheapest confirmation available before anything moves.
 
 ## BIOMON — what browsing left behind
 
