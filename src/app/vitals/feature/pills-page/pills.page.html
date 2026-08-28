@@ -2,6 +2,8 @@
   class="ion-page"
   [heading]="facade.heading()"
   [itemTemplate]="pillRow"
+  [returnRoute]="'/vitals/profile/' + (facade.profile()?.id ?? '')"
+  returnLabel="page-title.vitals-profile"
 />
 
 <ng-template #pillRow let-item let-ionList="ionList">

@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseCategoryListPageFacade } from '../../@shared/data/categories/category-list-page.facade.base';
 import { itemListCommands } from '../../@shared/data/item-lists/list-page.facade.base';
 import { TASK_CATEGORIES_LIST_ID } from '../model/task.types';
@@ -28,4 +29,5 @@ export class TaskCategoriesPageFacade extends BaseCategoryListPageFacade {
   );
   readonly countById = this.store.selectSignal(selectTaskCountByCategory);
   readonly listHref = signal('/tasks/list');
+  readonly listTitleKey = signal(marker('page-title.tasks'));
 }

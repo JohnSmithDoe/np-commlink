@@ -34,6 +34,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircle, pin, pinOutline, trashOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { NoteEditorFacade } from '../../data';
 import { NoteImageId } from '../../model/notes.types';
 import { NoteImageInputComponent } from '../../smart-ui/note-image-input/note-image-input.component';
@@ -55,6 +56,7 @@ import { NoteImageViewerComponent } from '../../ui/note-image-viewer/note-image-
     IonIcon,
     IonAlert,
     PageHeaderComponent,
+    PageReturnComponent,
     NoteImageInputComponent,
     NoteImageViewerComponent,
   ],

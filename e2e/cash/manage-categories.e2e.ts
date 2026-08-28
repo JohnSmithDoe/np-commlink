@@ -31,7 +31,7 @@ async function openOverview(page: Page) {
 }
 
 test.describe('cash manage categories', () => {
-  test('adds a category from the catalog page, and the platform back returns', async ({
+  test('adds a category from the catalog page, and the return row leads back', async ({
     page,
   }) => {
     await openOverview(page);
@@ -45,7 +45,7 @@ test.describe('cash manage categories', () => {
     await expect(listRow(page, 'Miete')).toBeVisible({ timeout: 10_000 });
     await expect(listRow(page, 'Miete')).toContainText('0');
 
-    await page.goBack();
+    await catalog.getByTestId('page-return').click();
     await expect(page).toHaveURL(/#\/cash$/);
   });
 

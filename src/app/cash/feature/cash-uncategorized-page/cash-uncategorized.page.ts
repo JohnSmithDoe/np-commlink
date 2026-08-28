@@ -23,6 +23,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { CashReportFacade, CashTransactionsFacade } from '../../data';
 import { CashTransaction } from '../../model/transaction.types';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
@@ -37,6 +38,7 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   imports: [
     EmptyStateComponent,
     PageHeaderComponent,
+    PageReturnComponent,
     IonContent,
     IonItem,
     IonLabel,

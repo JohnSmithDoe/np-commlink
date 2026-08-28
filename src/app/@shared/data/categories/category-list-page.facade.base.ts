@@ -43,6 +43,7 @@ export abstract class BaseCategoryListPageFacade extends BaseListPageFacade {
 
   abstract readonly countById: Signal<Map<CategoryId, number>>;
   abstract readonly listHref: Signal<string>;
+  abstract readonly listTitleKey: Signal<string>;
 
   showCreateDialog(): void {
     this.#dialogs.open({

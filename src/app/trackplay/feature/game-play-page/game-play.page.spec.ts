@@ -36,7 +36,9 @@ describe('TrackplayGamePlayPage', () => {
         provideTestingProviders({ trackplay: state }),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ id }) } },
+          useValue: {
+            snapshot: { paramMap: convertToParamMap({ id }), pathFromRoot: [] },
+          },
         },
       ],
     });

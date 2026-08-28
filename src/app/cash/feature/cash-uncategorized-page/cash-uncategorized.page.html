@@ -1,6 +1,8 @@
 <app-page-header label="page-title.cash-uncategorized" hideButtons />
 
 <ion-content class="ion-padding">
+  <app-page-return route="/cash/report" label="page-title.cash-report" />
+
   @if (rows().length) {
     <div class="cash-networth">
       <span class="cash-networth__label">

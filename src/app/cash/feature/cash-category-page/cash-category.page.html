@@ -2,6 +2,8 @@
   class="ion-page"
   [heading]="facade.heading()"
   [itemTemplate]="transactionItem"
+  returnRoute="/cash/categories"
+  returnLabel="page-title.categories"
 >
   <span toolbarActionsEnd class="cash-networth__value">
     {{ facade.totalCents() | moneyEur }}

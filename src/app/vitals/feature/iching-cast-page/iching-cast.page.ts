@@ -15,6 +15,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -22,6 +23,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { discOutline, refreshOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
+import { ProfilesFacade } from '../../data';
 import { COIN_LABEL_KEYS, LINE_LABEL_KEYS } from '../../model/iching.consts';
 import { CastLine, HexagramRecord, LineValue } from '../../model/iching.types';
 import {
@@ -65,9 +68,23 @@ const rowOf = (line: CastLine, index: number): CastRow => ({
   templateUrl: './iching-cast.page.html',
   styleUrls: ['./iching-cast.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonButton, IonContent, IonIcon, TranslatePipe, PageHeaderComponent],
+  imports: [
+    IonButton,
+    IonContent,
+    IonIcon,
+    TranslatePipe,
+    PageHeaderComponent,
+    PageReturnComponent,
+  ],
 })
 export class VitalsIChingCastPage {
+  readonly #profiles = inject(ProfilesFacade);
+
+  readonly returnRoute = computed(() => {
+    const id = this.#profiles.routeProfile()?.id;
+    return id ? `/vitals/profile/${id}/iching` : undefined;
+  });
+
   readonly totalLines = HEXAGRAM_LINES;
   readonly lineKeys = LINE_LABEL_KEYS;
   readonly coinKeys = COIN_LABEL_KEYS;

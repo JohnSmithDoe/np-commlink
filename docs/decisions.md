@@ -142,8 +142,20 @@ it was measured against.
   **how you arrived**, not about the page. The same screen then has an arrow or not depending on the route
   in, which is chrome nobody can learn. The static `backHref` it replaced was worse still: once a deep page
   became a deck program, its hard-coded parent pointed at a sibling program the visitor never opened.
-  Moving between a parent and a child page needs its own answer, and
-  [next-version.md](./next-version.md) holds it as open design rather than an arrow restored by default.
+- **A child page names its parent in CONTENT, and the deck catalog decides whether it has one.**
+  `app-page-return` is a row at the top of `ion-content` — "Zurück · Cash", one key with the parent's name
+  as a parameter, so no German case agreement has to be invented per parent. It reads the same whatever
+  route you arrived on and survives a cold deep link, which is what an arrow could not do. Two things make
+  it safe where `backHref` was not. `PROGRAM_RETURN` resolves the page's URL against `DECK_CATALOG`, so a
+  page that IS an entry's own route renders nothing at all — promoting a deep page to a program withdraws
+  its row rather than leaving it pointing at a sibling. And a page may still name a narrower parent
+  (`/cash/uncategorized` → the report), but `isProgram` outranks it, so that override can never outlive
+  the catalog. The lookup takes the page's OWN `ActivatedRoute`, never "where is the app now": Ionic keeps
+  the leaving page mounted through a transition, so a live signal makes a program render its successor's
+  row for the length of the slide. The three-way split this was triaged as — program, editor, child list —
+  collapsed to two on contact: every page that looked like an editor here (the notes editor,
+  list-settings, both settings pages) writes on every keystroke or toggle, so *done* and *back* are the
+  same act and there is nothing for a second control to mean.
 
 ## Reducer purity
 

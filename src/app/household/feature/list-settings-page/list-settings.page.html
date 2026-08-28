@@ -5,6 +5,8 @@
 ></app-page-header>
 
 <ion-content>
+  <app-page-return [route]="listHref()" [label]="listTitleKey()" />
+
   <ion-list>
     <ion-list-header>{{
       'household.list-settings.section.quick-add' | translate

@@ -20,7 +20,10 @@ describe('TrackingPage', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { queryParamMap: convertToParamMap(queryParameters) },
+            snapshot: {
+              queryParamMap: convertToParamMap(queryParameters),
+              pathFromRoot: [],
+            },
           },
         },
       ],

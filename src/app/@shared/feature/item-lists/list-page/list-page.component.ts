@@ -66,6 +66,7 @@ import {
   ItemListTemplateContext,
 } from '../../../ui/base-item/item-list/item-list.component';
 import { PageHeaderComponent } from '../../../ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../ui/page-return/page-return.component';
 import { UndoButtonComponent } from '../../../smart-ui/undo-button/undo-button.component';
 
 @Component({
@@ -87,6 +88,7 @@ import { UndoButtonComponent } from '../../../smart-ui/undo-button/undo-button.c
     ItemListSearchbarComponent,
     ItemListToolbarComponent,
     PageHeaderComponent,
+    PageReturnComponent,
     TranslatePipe,
     UndoButtonComponent,
   ],
@@ -100,6 +102,8 @@ export class ListPageComponent {
   readonly icon = input<string>();
   readonly pageHeader = input('');
   readonly heading = input('');
+  readonly returnRoute = input<string>();
+  readonly returnLabel = input<string>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
   readonly canReorder = !!this.facade.reorder;

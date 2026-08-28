@@ -3,9 +3,10 @@
  * `?filter=<id>` query param, which is how tasks and household narrow their
  * own list; cash has a dedicated `/cash/category/:categoryId` route with its
  * own page and its own totals, so it drills there instead. `listHref` is
- * still the back target, and only that.
+ * still the return target, and only that.
  * ───────────────────────────────────────────────────────────────── */
 import { inject, Injectable, signal } from '@angular/core';
+import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Router } from '@angular/router';
 import { BaseCategoryListPageFacade } from '../../../@shared/data/categories/category-list-page.facade.base';
 import { itemListCommands } from '../../../@shared/data/item-lists/list-page.facade.base';
@@ -39,6 +40,7 @@ export class CashCategoriesPageFacade extends BaseCategoryListPageFacade {
   );
   readonly countById = this.store.selectSignal(selectCashCountByCategory);
   readonly listHref = signal('/cash');
+  readonly listTitleKey = signal(marker('page-title.cash'));
 
   override drillTo(id: CategoryId): void {
     void this.#router.navigate(['/cash/category', id]);

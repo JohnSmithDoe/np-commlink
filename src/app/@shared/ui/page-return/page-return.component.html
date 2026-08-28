@@ -1,0 +1,12 @@
+@if (target(); as parent) {
+  <a class="sr-return" [routerLink]="parent.route" data-testid="page-return">
+    <ion-icon
+      class="sr-return__icon"
+      name="chevron-back-outline"
+      aria-hidden="true"
+    />
+    <span class="sr-return__name">{{
+      'nav.return' | translate: { name: parent.titleKey | translate }
+    }}</span>
+  </a>
+}

@@ -92,7 +92,7 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Fourteen handbook pages carry stale screenshots, and they say so themselves.** Four for content that
+- **Fifteen handbook pages carry stale screenshots, and they say so themselves.** Four for content that
   moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
   swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
   `start` (the deck header gained the arrange toggle, and the deck config now opens on a **grouped**
@@ -108,10 +108,13 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   dropped ([decisions.md](./decisions.md)): `agenda` (the categories page), `catalog` (the list-options
   page) and `trackplay` (the game-play and player pages) each show a child page that used to carry one.
   That change dates figures across the already-flagged pages too, which is why it adds three rather than
-  eleven. Each page JSON
+  eleven. One more for the return row that replaced it ([decisions.md](./decisions.md)): every child page
+  gained a "Zurück · …" line at the top of its content, which dates `meatspace` (the office-time settings
+  figure) on top of the fourteen already flagged. Each page JSON
   carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather
-  than misled. Clearing it is a **release** step: re-run `playwright.handbook.config.ts`, then drop the
-  flag. [CLAUDE.md](../CLAUDE.md) forbids an agent regenerating them, so the flag is set by hand and no
+  than misled. Clearing it is a **release** step, and now one command: `pnpm run handbook:shots` shoots,
+  converts and drops the flag from every page whose figures it refreshed in full.
+  [CLAUDE.md](../CLAUDE.md) still forbids an agent running it, so SETTING the flag stays manual and no
   gate can see it — **whoever changes a screen sets it on the pages that show that screen.**
 
 ## Waiting on upstream

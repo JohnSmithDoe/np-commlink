@@ -5,6 +5,8 @@
 />
 
 <ion-content>
+  <app-page-return />
+
   @let settings = dashboardSettings();
   @let targetDays = targetOfficeDaysPerWeek();
   @if (targetDays !== null && settings) {

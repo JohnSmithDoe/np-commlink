@@ -21,6 +21,7 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import {
   clockTime,
   parseClock,
@@ -39,6 +40,7 @@ import { settingsOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
+    PageReturnComponent,
     TranslatePipe,
     IonContent,
     IonList,

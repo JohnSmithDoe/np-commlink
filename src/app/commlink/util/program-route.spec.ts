@@ -1,6 +1,6 @@
 import { DECK_CATALOG } from '../model/deck.catalog';
 import { DeckEntry } from '../model/deck.types';
-import { programIconFor } from './program-icon';
+import { programIconFor, programReturnFor } from './program-route';
 
 describe('programIconFor', () => {
   it('gives a program its catalog glyph, on its own route and inside it', () => {
@@ -44,5 +44,29 @@ describe('programIconFor', () => {
     ] as unknown as readonly DeckEntry[];
 
     expect(programIconFor(nested, '/a/b/c')).toBe('deep');
+  });
+});
+
+describe('programReturnFor', () => {
+  it('marks a program own route, so nothing offers to leave it', () => {
+    expect(programReturnFor(DECK_CATALOG, '/cash')).toEqual({
+      isProgram: true,
+    });
+    expect(programReturnFor(DECK_CATALOG, '/cash/spending')).toEqual({
+      isProgram: true,
+    });
+  });
+
+  it('names the program a child page sits inside', () => {
+    expect(programReturnFor(DECK_CATALOG, '/cash/report')).toEqual({
+      isProgram: false,
+      parent: { route: '/cash', titleKey: 'page-title.cash' },
+    });
+  });
+
+  it('leaves a page the catalog does not know free to name its own parent', () => {
+    expect(programReturnFor(DECK_CATALOG, '/tasks/categories')).toEqual({
+      isProgram: false,
+    });
   });
 });

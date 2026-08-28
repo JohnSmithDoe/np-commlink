@@ -18,6 +18,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { settingsOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { padClock } from '../../../@shared/util/formatting/date-format.utils';
 import { RitualPageFacade } from '../../data';
 
@@ -27,6 +28,7 @@ import { RitualPageFacade } from '../../data';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
+    PageReturnComponent,
     IonContent,
     IonList,
     IonItem,

@@ -12,6 +12,7 @@ import { optionsOutline } from 'ionicons/icons';
 import { BooleanKeys, ListSettings } from '../../model/list-settings.types';
 import { ListSettingsFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 
 @Component({
   selector: 'app-page-list-settings',
@@ -19,6 +20,7 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
+    PageReturnComponent,
     IonContent,
     TranslatePipe,
     IonList,
@@ -30,6 +32,8 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
 export class ListSettingsPage {
   readonly #facade = inject(ListSettingsFacade);
   readonly settings = this.#facade.settings;
+  readonly listHref = this.#facade.listHref;
+  readonly listTitleKey = this.#facade.listTitleKey;
 
   constructor() {
     addIcons({ optionsOutline });

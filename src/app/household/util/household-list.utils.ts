@@ -34,6 +34,12 @@ export const ROUTE_BY_LIST_ID: Record<HouseholdListId, string> = {
   _products: '/household/products',
 };
 
+export const TITLE_KEY_BY_LIST_ID: Record<HouseholdListId, string> = {
+  _storage: marker('page-title.household-storage'),
+  _shopping: marker('page-title.household-shopping'),
+  _products: marker('page-title.household-products'),
+};
+
 export const storageStatusColor = ({
   minAmount,
   quantity,

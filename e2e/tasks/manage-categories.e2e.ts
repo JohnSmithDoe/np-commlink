@@ -76,7 +76,7 @@ test.describe('manage categories', () => {
 
     await expect(catalogRow(page, 'Arbeit')).toContainText('0');
 
-    await page.goBack();
+    await page.getByTestId('page-return').click();
     await expect(page).toHaveURL(/tasks\/list$/);
   });
 

@@ -20,6 +20,7 @@ import { ChartConfiguration, ChartData } from 'chart.js';
 import { RouterLink } from '@angular/router';
 import { CashReportFacade } from '../../data';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import {
   REPORT_SCOPES,
@@ -45,6 +46,7 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   imports: [
     EmptyStateComponent,
     PageHeaderComponent,
+    PageReturnComponent,
     RouterLink,
     IonContent,
     IonList,

@@ -21,6 +21,7 @@ import { addIcons } from 'ionicons';
 import { discOutline, layersOutline } from 'ionicons/icons';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { ProfilesFacade } from '../../data';
 import {
   birthDigitSumFor,
@@ -45,6 +46,7 @@ import {
     RouterLink,
     TranslatePipe,
     PageHeaderComponent,
+    PageReturnComponent,
   ],
 })
 export class VitalsIChingPage {
@@ -68,6 +70,10 @@ export class VitalsIChingPage {
   readonly castHref = computed(() => {
     const id = this.#routeProfile()?.id;
     return id ? `/vitals/profile/${id}/iching/cast` : '/vitals/iching/cast';
+  });
+  readonly returnRoute = computed(() => {
+    const id = this.#routeProfile()?.id;
+    return id ? `/vitals/profile/${id}` : undefined;
   });
 
   constructor() {

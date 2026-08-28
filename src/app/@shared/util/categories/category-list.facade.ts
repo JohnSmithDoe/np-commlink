@@ -22,6 +22,7 @@ interface CatalogFacade extends ListPageFacade {
   readonly catalogListId: ItemListId;
   readonly countById: Signal<Map<CategoryId, number>>;
   readonly listHref: Signal<string>;
+  readonly listTitleKey: Signal<string>;
 
   saveCategory(category: Category): void;
   removeCategory(category: Category): void;

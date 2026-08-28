@@ -62,6 +62,8 @@
 </app-page-header>
 
 <ion-content>
+  <app-page-return [route]="returnRoute()" [label]="returnLabel()" />
+
   <ng-content select="[beforeList]"></ng-content>
 
   @for (section of sections(); track section.id) {

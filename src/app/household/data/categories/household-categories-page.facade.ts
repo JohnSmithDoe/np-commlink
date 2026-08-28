@@ -4,7 +4,10 @@ import { itemListCommands } from '../../../@shared/data/item-lists/list-page.fac
 import { Category, CategoryId } from '../../../@shared/model/category.types';
 import { categoryById } from '../../../@shared/util/categories/category.utils';
 import { HOUSEHOLD_CATEGORIES_LIST_ID } from '../../model/household-list.types';
-import { ROUTE_BY_LIST_ID } from '../../util/household-list.utils';
+import {
+  ROUTE_BY_LIST_ID,
+  TITLE_KEY_BY_LIST_ID,
+} from '../../util/household-list.utils';
 import { HouseholdCategoriesActions } from './household-categories.actions';
 import { selectActiveHouseholdListId } from '../list/household-list.selector';
 import {
@@ -36,6 +39,9 @@ export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   readonly categories = this.store.selectSignal(selectHouseholdCategories);
   readonly countById = this.store.selectSignal(selectHouseholdCountByCategory);
   readonly listHref = computed(() => ROUTE_BY_LIST_ID[this.#activeListId()]);
+  readonly listTitleKey = computed(
+    () => TITLE_KEY_BY_LIST_ID[this.#activeListId()]
+  );
 
   addCategory(category: Category): void {
     this.store.dispatch(HouseholdCategoriesActions.addItem(category));

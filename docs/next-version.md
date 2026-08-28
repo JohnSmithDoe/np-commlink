@@ -112,45 +112,27 @@ and every exemption taken so far.
   the import preview. Two hundred lines and a registration path that can brick a PWA install, against
   roughly two taps saved over the file input the account page already has.
 
-## BIOMON — the astro pages become browsable
+## BIOMON — what browsing left behind
 
-- **Both pages answer one question and refuse the next one.** The zodiac page names your sign and where
-  the sun stands today; it cannot show you Scorpio unless you were born in November. The oracle shows the
-  hexagram you threw and nothing about the other sixty-three, and the Ki and life tables are only ever
-  read at your own number. So: tap a row in either timeline to read that sign, step through the twelve in
-  calendar order, open a hexagram index and read any of the 64, and browse the nine Ki stars and nine life
-  numbers as tables rather than as a single verdict. **It adds no content and no shape.** Every string is
-  already shipped — twelve signs with glyph, element and trait, sixty-four hexagrams with a Wilhelm title
-  and a judgement, nine stars with five facets each — so this is navigation over data that exists, and the
-  only cost is UI.
-- **The one real design risk is letting a browse overwrite the date.** Today one date drives everything,
-  and the obvious cheap implementation — tap Scorpio, set the date to 1 November — destroys the thing the
-  page is for: your own sign stops being on screen the moment you look at somebody else's. Browsing must
-  therefore be a SECOND selection beside the date, defaulting to the date's own sign and resettable to it,
-  with the date field untouched. That also settles what the ascendant does while browsing: it belongs to
-  the profile's birthday, so it stays hidden under any other selection, exactly as it already does under a
-  foreign date.
-- **Route or signal decides whether a reading can be shared or survive a reload.** A signal is a dozen
-  lines and loses the selection on refresh; a route param (`.../iching/hexagram/:number`,
-  `.../zodiac/:sign`) gives a deep link, a working back button and a title per reading, at the price of
-  four more route entries and a guard for a number outside 1..64 or a sign outside the twelve. The route
-  is probably right — the pages are read-only and a hexagram is exactly the kind of thing worth sending
-  to somebody — but it is the decision to make first, because it determines whether the selection lives
-  in the component or in the URL.
-- **The hexagram index is a plain `@for`, not an `ItemList`.** The shared list machinery is NgRx-backed
-  and keyed on a slice; a 64-row static catalog has no items to add, sort, search or delete, and giving it
-  a slice to reuse a searchbar would be the tail wagging the dog. Filtering by trigram — "show me
-  everything with Water below" — is a computed over `HEXAGRAMS` if it is wanted, which is the one place a
-  search box would genuinely earn itself.
-- **It makes the world-age caveat load-bearing.** Today the ages are one panel most readers scroll past;
-  browsing them invites the question of where the boundaries come from, and the answer is still a pick
-  rather than a source ([state.md](./state.md)). Worth settling that entry before this one ships, or the
-  feature advertises the weakest data on the page.
+The tree itself **shipped**: `/vitals/browse` with the twelve signs, the 64 hexagrams, the nine Ki stars
+and the nine life numbers, its own deck program, and both detail routes deep-linkable. Why it is a
+separate tree rather than a second selection on the reading pages is settled in
+[domains/biomon.md](domains/biomon.md). Two things it deliberately did not do:
+
+- **The world ages are still not browsable, and that was the point.** Browsing them invites the question
+  of where the boundaries come from, and the answer is a pick rather than a source
+  ([state.md](./state.md)). The sign detail names the age a sign rules and prints the existing caveat
+  beside it; making the table itself walkable would advertise the weakest data on the page. Settle the
+  source first.
+- **Filtering the 64 by trigram** — "show me everything with Water below" — is a `computed` over
+  `HEXAGRAMS` and the one place a search box would genuinely earn itself. The index ships unfiltered
+  because 64 cells fit a grid; it stops fitting the moment a reader wants a subset.
 
 ## BIOMON — the astro pages explain themselves
 
-Ships with the entry above, on purpose: browsing invites "why does it say that", and an explanation
-nobody can reach from the screen holding the question is not one.
+Owed by the entry above, which shipped without it: browsing invites "why does it say that", and an
+explanation nobody can reach from the screen holding the question is not one. The browse tree makes this
+sharper rather than softer — a reader who can now open all 64 hexagrams has 64 more occasions to ask.
 
 - **The pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr
   1980`, a life number of 4 from the same birthday, and `Nr. 31` under six drawn lines. Nothing on screen
@@ -189,34 +171,3 @@ nobody can reach from the screen holding the question is not one.
 ## SOYKAF recipe book
 
 Its scope lives with the domain: [domains/soykaf.md](domains/soykaf.md).
-
-## Navigation — how a child page returns to its parent
-
-The back arrow is **gone**, and why is settled in [decisions.md](./decisions.md). What is owed is the
-thing it was standing in for. This is the one entry here that names a gap the app currently has rather
-than a capability it lacks.
-
-- **A child page reached from a parent's toolbar has no on-screen way back.** The categories page is the
-  sharpest case: it is opened from a list's own toolbar, it is not a deck program, and its only return was
-  the arrow — the two `manage-categories` e2e tests now walk `page.goBack()` because nothing in the app
-  does it. Platform back covers it on both targets (Android's hardware back, the browser's back), so the
-  user is never trapped; what is missing is anything on screen saying so. The same holds for cash's
-  account, category, report, rules, schedules and uncategorized pages, household's list-settings, ritual's
-  settings, the notes editor, trackplay's game-play, game-types and player pages, and BIOMON's profile,
-  pills, zodiac and I Ching pages.
-- **The distinction to draw first is that these are three different things wearing one control.** A
-  **program** has no parent at all — the deck and the drawer are its way out, and an arrow there pointed at
-  a launcher or, worse, at a sibling program. An **editor** (the notes editor, list-settings, ritual
-  settings) wants *done*, not *back*: it is modal in spirit and its parent is wherever you opened it. A
-  **child list** (categories, cash's report and rules, BIOMON's pills) genuinely has one parent worth
-  naming. Restoring a single static arrow re-merges all three, which is how the old `backHref` came to
-  point at pages nobody had visited.
-- **The likeliest shape is content, not chrome.** A "Zurück zu …" row inside the page reads the same
-  whatever route you arrived on, needs no stack, survives a cold deep link, and has precedent in the
-  handbook's own `handbook.nav.previous`. It costs page height and one i18n key per parent. The
-  alternative is a derived breadcrumb: `PROGRAM_ICON` already resolves a URL against `DECK_CATALOG`
-  longest-route-first, and the same lookup answers "which program am I inside", so a header could name the
-  program without any page restating it.
-- **What must not come back is a per-page static parent.** That is the exact construct that broke when
-  deep pages became deck programs, and nothing about a new arrow stops it breaking the same way the next
-  time an entry joins the catalog.

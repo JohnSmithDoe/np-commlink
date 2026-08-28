@@ -3,6 +3,8 @@
   pageHeader="page-title.categories"
   icon="pricetags-outline"
   [itemTemplate]="categoryItem"
+  [returnRoute]="facade.listHref()"
+  [returnLabel]="facade.listTitleKey()"
 >
 </app-list-page>
 
