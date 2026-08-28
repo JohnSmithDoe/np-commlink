@@ -4,7 +4,6 @@
   "plain": "Bürozeit",
   "route": "/office-time",
   "summary": "Anwesenheitstage antippen, Feiertage und Urlaub abziehen, und sehen wie weit du von der Büropflicht entfernt bist.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

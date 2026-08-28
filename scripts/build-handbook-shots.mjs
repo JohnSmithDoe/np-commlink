@@ -17,10 +17,21 @@
  * a test would otherwise clear a warning it did not earn, and the flag is the
  * one thing telling a reader the picture predates the screen.
  *
+ * There is no such thing as re-shooting one file: `SHOT_DIR` sits inside
+ * Playwright's own `test-results/`, which it EMPTIES at the start of every run,
+ * so a two-file run leaves only those two files' figures and the rest convert
+ * to nothing. It is one whole green run or none, and `--skip-shots` is only
+ * safe with no Playwright invocation in between.
+ *
+ * It starts and stops `ng serve` itself rather than leaving that to the config's
+ * `webServer`: a server Playwright spawns here dies partway through a run of
+ * this length, and every test after it fails on ERR_CONNECTION_REFUSED. An
+ * already-answering port is reused and left running.
+ *
  * Not a gate, and deliberately not in `verify:all` — it drives a browser over
  * the whole app and rewrites ~100 binaries.
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import {
   existsSync,
   mkdirSync,
@@ -35,6 +46,9 @@ const SHOT_DIR = 'test-results/handbook-shots';
 const IMG_DIR = 'public/handbook/img';
 const PAGE_DIR = 'public/handbook/pages';
 const WIDTH = 620;
+const PORT = 4321;
+const BASE_URL = `http://localhost:${PORT}`;
+const SERVE_TIMEOUT_MS = 240_000;
 
 const run = (command, args) =>
   execFileSync(command, args, { stdio: 'inherit', encoding: 'utf8' });
@@ -51,15 +65,52 @@ function requireCwebp() {
   }
 }
 
-function shoot() {
+const reachable = async () => {
+  try {
+    return (await fetch(BASE_URL)).ok;
+  } catch {
+    return false;
+  }
+};
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function serve() {
+  if (await reachable()) return undefined;
+
+  const server = spawn(
+    'pnpm',
+    ['exec', 'ng', 'serve', '--port', String(PORT)],
+    {
+      stdio: 'ignore',
+    }
+  );
+  const deadline = Date.now() + SERVE_TIMEOUT_MS;
+
+  while (Date.now() < deadline) {
+    await sleep(2000);
+    if (await reachable()) return server;
+    if (server.exitCode !== null) break;
+  }
+  server.kill();
+  throw new Error(`dev server never answered on ${BASE_URL}`);
+}
+
+async function shoot() {
   rmSync(SHOT_DIR, { recursive: true, force: true });
-  run('pnpm', [
-    'exec',
-    'playwright',
-    'test',
-    '--config',
-    'playwright.handbook.config.ts',
-  ]);
+  const server = await serve();
+
+  try {
+    run('pnpm', [
+      'exec',
+      'playwright',
+      'test',
+      '--config',
+      'playwright.handbook.config.ts',
+    ]);
+  } finally {
+    server?.kill();
+  }
 }
 
 function convert() {
@@ -146,7 +197,7 @@ if (!existsSync('playwright.handbook.config.ts')) {
   process.exit(1);
 }
 
-if (!process.argv.includes('--skip-shots')) shoot();
+if (!process.argv.includes('--skip-shots')) await shoot();
 else if (!existsSync(SHOT_DIR)) {
   console.error(`--skip-shots given but ${SHOT_DIR}/ holds no run to convert.`);
   process.exit(1);

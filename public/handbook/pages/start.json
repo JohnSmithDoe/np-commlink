@@ -4,7 +4,6 @@
   "plain": "Startdeck",
   "route": "/commlink",
   "summary": "Die Startseite: ein Deck aus Kacheln, das du dir selbst zusammenschaltest — und das Seitenmenü daneben.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -134,7 +133,7 @@
             "<strong>Vom linken Bildschirmrand nach rechts wischen</strong> → Seitenmenü öffnet sich, auf jeder Seite.",
             "<strong>Ziehgriff (≡) links in der Deck-Konfiguration</strong> halten und schieben → Reihenfolge ändern.",
             "<strong>Kacheln wischen nicht.</strong> Ein Tipp öffnet, mehr gibt es hier nicht — kein Lang-Druck, kein Kontextmenü.",
-            "Auf <strong>Unterseiten</strong> ersetzt der Zurück-Pfeil das Hamburger-Symbol. Dann erst zurück, dann Menü."
+            "Auf <strong>Unterseiten</strong> bleibt das Hamburger-Symbol stehen — es gibt keinen Zurück-Pfeil. Wohin eine Unterseite gehört, steht als Zeile <em>Zurück · …</em> oben im Inhalt; sonst führt die Zurück-Geste des Geräts bzw. des Browsers zurück."
           ]
         }
       ]

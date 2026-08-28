@@ -316,10 +316,6 @@ test('dailyrun', async ({ page }) => {
 
   await waitForPersisted(page, 'ritual', 'completions');
 
-  const toast = page.getByTestId('action-toast');
-  await toast.getByRole('button', { name: 'X' }).click();
-  await expect(toast).toBeHidden();
-
   await ritual.getByTestId('ritual-settings-link').click();
   const settings = pageRoot(page, 'app-page-ritual-settings');
   await expect(settings).toBeVisible();

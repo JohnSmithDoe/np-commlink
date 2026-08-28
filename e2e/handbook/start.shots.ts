@@ -2,7 +2,6 @@ import { expect, Page, test } from '@playwright/test';
 import {
   addViaSearch,
   gotoFeature,
-  openOrderLens,
   ROUTE,
   waitForListPage,
   waitForPersisted,
@@ -49,7 +48,10 @@ test('deck config with toggles and handles', async ({ page }) => {
   await expect(config.getByTestId('deck-config-lens')).toBeVisible({
     timeout: 60_000,
   });
-  await openOrderLens(config);
+  const groups = config.getByTestId('deck-config-module');
+  for (let index = 0; index < (await groups.count()); index++) {
+    await groups.nth(index).locator('ion-label').click();
+  }
   await expect(configRow(page, 'CHRONO')).toBeVisible({ timeout: 60_000 });
   await switchOn(page, 'CHRONO', 'tracking');
   await switchOn(page, 'MEATSPACE', 'office-time');

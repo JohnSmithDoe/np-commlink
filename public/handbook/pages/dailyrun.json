@@ -4,7 +4,6 @@
   "plain": "Tagesaufgabe",
   "route": "/ritual",
   "summary": "Eine kleine Aufgabe pro Tag, zufällig gezogen, abhakbar — und bewusst ohne Serienzähler.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -38,7 +37,7 @@
         {
           "type": "figure",
           "img": "dailyrun-erledigt.webp",
-          "caption": "Nach dem Abhaken: Aufgabe, Gesamtzähler, sieben Tagespunkte — und der Undo-Toast"
+          "caption": "Nach dem Abhaken: Aufgabe, Gesamtzähler und die sieben Tagespunkte"
         }
       ]
     },
@@ -134,7 +133,7 @@
           "items": [
             "<strong>Keine — hier wischt nichts.</strong> DAILY RUN hat keine Liste, keine Zeilen, keinen Langdruck und kein Options-Menü.",
             "<strong>Die Karte selbst ist absichtlich kein Knopf.</strong> Nur <strong>HAB ICH GEMACHT</strong> schließt den Tag; ein versehentlicher Tipp auf den Text tut nichts.",
-            "<strong>Der Toast unten ist die Rückgängig-Funktion</strong> — sechs Sekunden, danach ist die Erledigung fest. Das <strong>X</strong> am Toast schiebt ihn weg, ohne etwas zurückzunehmen.",
+            "<strong>Der Rückgängig-Toast gehört zu MAG ICH NICHT</strong>, nicht zum Abhaken — sechs Sekunden, danach hilft nur noch <strong>ZURÜCKHOLEN</strong> in den Einstellungen. Das <strong>X</strong> am Toast schiebt ihn weg, ohne etwas zurückzunehmen. <strong>HAB ICH GEMACHT</strong> wirft keinen Toast: die Erledigung steht sofort.",
             "<strong>NOCH EINE</strong> ist die einzige Möglichkeit, an einem geschlossenen Tag noch eine Karte zu sehen."
           ]
         }

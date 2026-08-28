@@ -4,7 +4,6 @@
   "plain": "Aufgaben",
   "route": "/tasks/list",
   "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien — erledigt heißt hier gelöscht.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

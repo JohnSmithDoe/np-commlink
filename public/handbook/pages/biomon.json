@@ -4,7 +4,6 @@
   "plain": "Gesundheit",
   "route": "/vitals",
   "summary": "Gewichtsverlauf für Menschen und Tiere, plus Medikamentenpläne mit Wochentagen, Uhrzeit und Erinnerung.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

@@ -4,7 +4,6 @@
   "plain": "Notizen",
   "route": "/notes",
   "summary": "Notizen aus Titel, Freitext und Fotos — ohne Speichern-Knopf, mit angehefteter Spitze.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

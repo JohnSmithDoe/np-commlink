@@ -4,7 +4,6 @@
   "plain": "Nachrichten",
   "route": "/notifications",
   "summary": "Der Posteingang, in den die App sich selbst schreibt — plus die echten Erinnerungen des Betriebssystems.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

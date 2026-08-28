@@ -4,7 +4,6 @@
   "plain": "Zeiterfassung",
   "route": "/tracking",
   "summary": "Stoppuhr pro Aufgabe, ein Tagesprotokoll darunter und ein Archiv mit Diagramm und CSV-Export.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

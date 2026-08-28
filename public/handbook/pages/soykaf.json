@@ -4,7 +4,6 @@
   "plain": "Rezepte",
   "route": "/soykaf",
   "summary": "Rezeptbuch, das jedes Rezept gegen deine Vorräte hält und sagt, was heute ohne Einkauf geht.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
