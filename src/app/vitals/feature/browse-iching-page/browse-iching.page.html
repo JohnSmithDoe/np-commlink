@@ -1,0 +1,26 @@
+<app-page-header label="page-title.vitals-browse-iching" hideButtons="true" />
+
+<ion-content>
+  <app-page-return route="/vitals/browse" label="page-title.vitals-browse" />
+
+  <div class="bri sr-scanlines">
+    <ol class="bri-grid" data-testid="vitals-browse-iching-list">
+      @for (entry of hexagrams; track entry.record.number) {
+        <li>
+          <a
+            class="bri-cell sr-panel sr-corners"
+            [routerLink]="['/vitals/browse/iching', entry.record.number]"
+          >
+            <span class="bri-cell__glyph" aria-hidden="true">
+              {{ entry.glyph }}
+            </span>
+            <span class="bri-cell__number">{{ entry.record.number }}</span>
+            <span class="bri-cell__name">
+              {{ entry.record.nameKey | translate }}
+            </span>
+          </a>
+        </li>
+      }
+    </ol>
+  </div>
+</ion-content>

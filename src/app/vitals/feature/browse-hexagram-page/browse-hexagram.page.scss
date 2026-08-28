@@ -1,0 +1,62 @@
+.brh {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.brh-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.brh-glyph {
+  margin: 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 4rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow-lg);
+}
+
+.brh-number {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+  color: var(--sr-cyan);
+}
+
+.brh-name {
+  margin: 0;
+  font-size: var(--fs-xlarge);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: var(--sr-heading-tracking);
+  text-transform: var(--sr-heading-transform);
+  color: var(--sr-amber);
+}
+
+.brh-trigrams {
+  margin: 0;
+  font-size: var(--fs-small);
+  text-align: center;
+  color: var(--sr-text-dim);
+}
+
+.brh-judgement {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+  color: var(--sr-text);
+}
+
+.brh-note {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}

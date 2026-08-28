@@ -52,6 +52,7 @@ rule's rationale in its own.
 | `pnpm exec sheriff verify src/main.ts` | module boundaries |
 | `pnpm run i18n:extract` | rewrite both bundles from the `marker(...)` literals, `--clean` included |
 | `pnpm run emoji:build` | regenerate the emoji catalog from CLDR (output is committed; not in CI) |
+| `pnpm run handbook:shots` | the whole figure pipeline: shoot, convert to WebP, clear the stale flags (release only — see below) |
 | `pnpm run apk:build` | web build + `cap sync android` + postsync patches |
 | `pnpm run apk:debug` / `apk:release` / `apk:open` | Gradle assemble (release collects to `releases/`) / Android Studio |
 | `pnpm run apk:signed` | `apk:release` with the signing identity resolved — keystore found, passwords prompted |
@@ -65,6 +66,14 @@ anything a template or AOT catches.
 `playwright.handbook.config.ts` and is deliberately outside `verify:all` — the screenshots are
 regenerated **on release only, by Martin**. Keep the shots *source* in step by hand when a selector
 it reads changes, and stop there; never run that config to check your edit.
+
+**When that release run comes, it is one command:** `pnpm run handbook:shots`
+(`scripts/build-handbook-shots.mjs`) shoots every figure, converts each 786×1454 PNG to the committed
+620px WebP with `cwebp` at its default quality, and drops `"shotsStale"` from every page whose figures
+were **all** refreshed by that run — naming the ones it left flagged. `--skip-shots` re-converts the
+last run without re-shooting. It needs `cwebp` on PATH (`brew install webp`) and a clean tree: the
+suite drives the real app, so an edit landing mid-run yields a figure set that is half old and half
+new.
 
 **Instead, mark what your change made stale.** A UI change dates every handbook figure that shows
 that screen, so set `"shotsStale": true` on each `public/handbook/pages/*.json` that does — the

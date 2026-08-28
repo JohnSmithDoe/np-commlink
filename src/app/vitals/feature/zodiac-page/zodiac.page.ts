@@ -19,6 +19,7 @@ import {
   linkedSignal,
   Signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   InputCustomEvent,
   IonContent,
@@ -31,6 +32,7 @@ import { planetOutline } from 'ionicons/icons';
 import { Marker } from '../../../@shared/model/app.types';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ProfilesFacade } from '../../data';
 import {
@@ -63,8 +65,10 @@ const PHASE_LABEL_KEYS: Record<SeasonPhase, Marker> = {
     IonContent,
     IonInput,
     IonItem,
+    RouterLink,
     TranslatePipe,
     PageHeaderComponent,
+    PageReturnComponent,
     EraYearPipe,
   ],
 })
@@ -79,6 +83,10 @@ export class VitalsZodiacPage {
   readonly today = inject(TodayService).today;
   readonly profile = this.#profiles.routeProfile;
   readonly date = linkedSignal(() => this.profile()?.birthDate ?? this.today());
+  readonly returnRoute = computed(() => {
+    const id = this.profile()?.id;
+    return id ? `/vitals/profile/${id}` : undefined;
+  });
 
   readonly sign = computed(() => zodiacSignFor(this.date()));
   readonly ascendant = computed(() => {

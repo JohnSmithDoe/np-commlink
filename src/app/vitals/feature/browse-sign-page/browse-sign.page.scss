@@ -1,0 +1,64 @@
+.brs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.brs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.brs-glyph {
+  margin: 0;
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 3.5rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow-lg);
+}
+
+.brs-name {
+  margin: 0;
+  font-size: var(--fs-xlarge);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: var(--sr-heading-tracking);
+  text-transform: var(--sr-heading-transform);
+  color: var(--sr-amber);
+}
+
+.brs-element {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  color: var(--sr-cyan);
+}
+
+.brs-window {
+  margin: 0;
+  font-size: var(--fs-small);
+  text-align: center;
+  color: var(--sr-text-dim);
+}
+
+.brs-trait {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--sr-text);
+}
+
+.brs-note {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}

@@ -370,6 +370,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     status: 'online',
   },
   {
+    id: 'browse',
+    module: 'vitals',
+    icon: 'library-outline',
+    route: '/vitals/browse',
+    titleKey: marker('page-title.vitals-browse'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.browse.name'),
+        descKey: marker('deck.cyberpunk.browse.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.browse.name'),
+        descKey: marker('deck.boomer.browse.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'ritual',
     module: 'ritual',
     icon: 'sunny-outline',

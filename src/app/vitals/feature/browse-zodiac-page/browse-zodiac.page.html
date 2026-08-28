@@ -1,0 +1,35 @@
+<app-page-header label="page-title.vitals-browse-zodiac" hideButtons="true" />
+
+<ion-content>
+  <app-page-return route="/vitals/browse" label="page-title.vitals-browse" />
+
+  <div class="brz sr-scanlines">
+    <ol class="brz-list" data-testid="vitals-browse-zodiac-list">
+      @for (window of windows(); track window.sign.sign) {
+        <li>
+          <a
+            class="brz-row sr-panel sr-corners"
+            [class.brz-row--current]="window.sign.sign === currentSign()"
+            [routerLink]="['/vitals/browse/zodiac', window.sign.sign]"
+          >
+            <span class="brz-row__glyph" aria-hidden="true">
+              {{ window.sign.glyph }}
+            </span>
+            <span class="brz-row__text">
+              <span class="brz-row__name">
+                {{ window.sign.nameKey | translate }}
+              </span>
+              <span class="brz-row__meta">
+                {{ window.fromISO | date: 'd. MMMM' }} –
+                {{ window.toISO | date: 'd. MMMM' }}
+              </span>
+            </span>
+            <span class="brz-row__element">
+              {{ elementKeys[window.sign.element] | translate }}
+            </span>
+          </a>
+        </li>
+      }
+    </ol>
+  </div>
+</ion-content>

@@ -1,0 +1,45 @@
+.bri {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.bri-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bri-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  height: 100%;
+  min-height: var(--sr-touch);
+  padding: var(--space-3);
+  text-align: center;
+  text-decoration: none;
+}
+
+.bri-cell__glyph {
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--sr-amber);
+}
+
+.bri-cell__number {
+  font-size: var(--fs-xsmall);
+  color: var(--sr-cyan);
+}
+
+.bri-cell__name {
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--sr-text);
+}

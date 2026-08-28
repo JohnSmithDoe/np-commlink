@@ -77,6 +77,32 @@ Settled decisions for this domain — do not re-flag as work. Cross-cutting deci
   Star Ki never assigned to it. The life number reduces all the way to 1–9; numerology's master numbers
   (11, 22) are not kept apart, which the page states rather than hides.
 
+## BIOMON — the browse tree, beside the reading pages rather than inside them
+
+- **Browsing is its OWN route tree under `/vitals/browse`, not a second selection on the reading pages.**
+  The cheap implementation — tap Scorpio, set the date to 1 November — destroys what the reading pages are
+  for: your own sign leaves the screen the moment you look at somebody else's. A separate tree cannot
+  collide with the date at all, so `zodiac.page.ts` and `iching.page.ts` were not touched, and no
+  `linkedSignal`, profile or slice reaches the catalog pages.
+- **The selection lives in the URL, so a reading can be sent.** `/vitals/browse/iching/:number` and
+  `/vitals/browse/zodiac/:sign` each give a deep link, a working platform back and a title per reading —
+  which a signal would have lost on refresh. A hexagram is exactly the kind of thing worth sending to
+  somebody, and the pages are read-only, so there is nothing a URL can desynchronise.
+- **An unknown parameter is a page saying so, never a guard.** `hexagramNumbered` and `zodiacSignNamed`
+  take the raw string and answer `undefined`, and the page paints `app-empty-state` with its return row.
+  A guard would need a route entry and a redirect target to argue about; this needs neither, and
+  `/browse/iching/99` reads as an answer rather than a bounce.
+- **Both catalogs are CYCLES, so stepping has no edge case.** Hexagram 1's previous is 64 and Capricorn's
+  next is Aquarius. `cycle` leans on `Array.prototype.at` taking a negative index, so the wrap is the
+  language's rather than an arithmetic that has to be re-read.
+- **Only the two catalogs with 12 and 64 entries earn a detail route.** A Ki star and a life number are
+  two paragraphs that fit on their own index, so they are flat tables. The 64-row index is a plain `@for`
+  grid, not an `ItemList` — the shared list machinery is NgRx-backed and keyed on a slice, and a static
+  catalog has nothing to add, sort or delete.
+- **The deck entry is what makes it reachable, and costs nothing to add.** `visibleEntries` means absence
+  is HIDDEN, so `browse` is off for every existing install until one tap switches it on — see
+  `deck.reducer.ts`'s banner. No rung, and no program appearing unasked.
+
 ## BIOMON — the coin oracle
 
 - **The cast holds no slice and survives no navigation.** It is the only thing in BIOMON not derived

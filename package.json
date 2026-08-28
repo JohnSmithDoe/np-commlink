@@ -41,6 +41,7 @@
     "lint:styles": "stylelint \"src/**/*.{scss,css}\"",
     "lint:plugin-types": "tsc -p eslint-plugin-commlink/tsconfig.json",
     "emoji:build": "node scripts/build-emoji-data.mjs",
+    "handbook:shots": "node scripts/build-handbook-shots.mjs",
     "i18n:extract": "ngx-translate-extract --input ./src -o 'public/i18n/{de,en}.json' --clean --sort --format-indentation '  ' --trailing-newline --format json",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"public/i18n/*.json\" \"eslint-plugin-commlink/**/*.{ts,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"public/i18n/*.json\" \"eslint-plugin-commlink/**/*.{ts,json}\"",

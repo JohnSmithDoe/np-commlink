@@ -5,6 +5,8 @@
 />
 
 <ion-content>
+  <app-page-return [route]="returnRoute()" label="page-title.vitals-profile" />
+
   <div class="zd sr-scanlines">
     <ion-item class="zd-date">
       <ion-input
@@ -59,19 +61,22 @@
       <p class="sr-hud">{{ 'vitals.zodiac.heading.today' | translate }}</p>
       <ol class="zd-timeline">
         @for (season of timeline(); track season.phase) {
-          <li
-            class="zd-step"
-            [class.zd-step--current]="season.phase === 'current'"
-          >
-            <span class="zd-step__phase">
-              {{ phaseKeys[season.phase] | translate }}
-            </span>
-            <span class="zd-step__title">
-              {{ season.sign.glyph }} {{ season.sign.nameKey | translate }}
-            </span>
-            <span class="zd-step__meta">
-              {{ season.fromISO | date }} – {{ season.toISO | date }}
-            </span>
+          <li>
+            <a
+              class="zd-step"
+              [class.zd-step--current]="season.phase === 'current'"
+              [routerLink]="['/vitals/browse/zodiac', season.sign.sign]"
+            >
+              <span class="zd-step__phase">
+                {{ phaseKeys[season.phase] | translate }}
+              </span>
+              <span class="zd-step__title">
+                {{ season.sign.glyph }} {{ season.sign.nameKey | translate }}
+              </span>
+              <span class="zd-step__meta">
+                {{ season.fromISO | date }} – {{ season.toISO | date }}
+              </span>
+            </a>
           </li>
         }
       </ol>

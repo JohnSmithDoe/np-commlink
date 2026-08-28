@@ -1,0 +1,63 @@
+<app-page-header label="page-title.vitals-browse-hexagram" hideButtons="true" />
+
+<ion-content>
+  <app-page-return
+    route="/vitals/browse/iching"
+    label="page-title.vitals-browse-iching"
+  />
+
+  <div class="brh sr-scanlines">
+    @if (hexagram(); as view) {
+      <section
+        class="brh-panel sr-panel sr-corners"
+        data-testid="vitals-browse-hexagram"
+      >
+        <p class="brh-glyph" aria-hidden="true">{{ view.glyph }}</p>
+        <p class="brh-number">
+          {{
+            'vitals.iching.cast.number'
+              | translate: { number: view.record.number }
+          }}
+        </p>
+        <h1 class="brh-name">{{ view.record.nameKey | translate }}</h1>
+
+        @if (view.lower && view.upper) {
+          @let lowerName = view.lower.nameKey | translate;
+          @let upperName = view.upper.nameKey | translate;
+          <p class="brh-trigrams">
+            <span aria-hidden="true">
+              {{ view.upper.glyph }} {{ view.lower.glyph }}
+            </span>
+            {{
+              'vitals.iching.cast.trigrams'
+                | translate: { upper: upperName, lower: lowerName }
+            }}
+          </p>
+        }
+
+        <p class="sr-hud">
+          {{ 'vitals.iching.judgement.heading' | translate }}
+        </p>
+        <p class="brh-judgement">
+          {{ view.record.judgementKey | translate }}
+        </p>
+      </section>
+
+      @if (steps(); as walk) {
+        <app-browse-steps
+          [previousLink]="walk.previousLink"
+          [previousKey]="walk.previousKey"
+          [nextLink]="walk.nextLink"
+          [nextKey]="walk.nextKey"
+        />
+      }
+
+      <p class="brh-note">{{ 'vitals.iching.source' | translate }}</p>
+    } @else {
+      <app-empty-state
+        label="{{ 'vitals.browse.unknown-hexagram' | translate }}"
+        note="{{ 'vitals.browse.unknown-note' | translate }}"
+      />
+    }
+  </div>
+</ion-content>

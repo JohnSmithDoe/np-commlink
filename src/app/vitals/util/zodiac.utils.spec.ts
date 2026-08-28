@@ -2,7 +2,34 @@ import {
   astroAgeFor,
   zodiacSignFor,
   zodiacTimelineAround,
+  zodiacYear,
 } from './zodiac.utils';
+
+describe('zodiacYear', () => {
+  it('lays out all twelve windows back to back', () => {
+    const windows = zodiacYear('2026-08-23');
+
+    expect(windows).toHaveLength(12);
+    expect(windows[0]?.sign.sign).toBe('aquarius');
+    expect(windows[0]?.fromISO).toBe('2026-01-20');
+    expect(windows.at(-1)?.sign.sign).toBe('capricorn');
+  });
+
+  it('closes each window the day before the next one opens', () => {
+    const windows = zodiacYear('2026-08-23');
+
+    expect(windows[0]?.toISO).toBe('2026-02-18');
+    expect(windows[1]?.fromISO).toBe('2026-02-19');
+  });
+
+  it('carries the last window into the following January', () => {
+    expect(zodiacYear('2026-08-23').at(-1)?.toISO).toBe('2027-01-19');
+  });
+
+  it('is empty for an unparseable date', () => {
+    expect(zodiacYear('not-a-date')).toEqual([]);
+  });
+});
 
 describe('zodiacSignFor', () => {
   it('names the sign of a date inside a season', () => {

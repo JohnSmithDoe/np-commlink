@@ -22,12 +22,13 @@ import { ISODate } from '../model/vitals.types';
 
 export type SeasonPhase = 'previous' | 'current' | 'next';
 
-export interface ZodiacSeason {
+interface ZodiacWindow {
   sign: ZodiacSignRecord;
   fromISO: ISODate;
   toISO: ISODate;
-  phase: SeasonPhase;
 }
+
+export type ZodiacSeason = ZodiacWindow & { phase: SeasonPhase };
 
 interface SeasonStart {
   sign: ZodiacSignRecord;
@@ -69,6 +70,28 @@ export const zodiacTimelineAround = (iso: ISODate): readonly ZodiacSeason[] => {
             fromISO: season.startISO,
             toISO: dayBefore(following.startISO),
             phase,
+          },
+        ]
+      : [];
+  });
+};
+
+export const zodiacYear = (iso: ISODate): readonly ZodiacWindow[] => {
+  const date = dayjs(iso);
+  if (!date.isValid()) return [];
+
+  const starts = seasonStarts(date.year());
+  const anchor = ZODIAC_SIGNS.length;
+
+  return ZODIAC_SIGNS.flatMap((_, index) => {
+    const season = starts[anchor + index];
+    const following = starts[anchor + index + 1];
+    return season && following
+      ? [
+          {
+            sign: season.sign,
+            fromISO: season.startISO,
+            toISO: dayBefore(following.startISO),
           },
         ]
       : [];

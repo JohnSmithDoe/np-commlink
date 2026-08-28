@@ -1,0 +1,55 @@
+<app-page-header label="page-title.vitals-browse-sign" hideButtons="true" />
+
+<ion-content>
+  <app-page-return
+    route="/vitals/browse/zodiac"
+    label="page-title.vitals-browse-zodiac"
+  />
+
+  <div class="brs sr-scanlines">
+    @if (sign(); as record) {
+      <section
+        class="brs-panel sr-panel sr-corners"
+        data-testid="vitals-browse-sign"
+      >
+        <p class="brs-glyph" aria-hidden="true">{{ record.glyph }}</p>
+        <h1 class="brs-name">{{ record.nameKey | translate }}</h1>
+        <p class="brs-element">{{ elementKeys[record.element] | translate }}</p>
+
+        @if (window(); as season) {
+          <p class="brs-window">
+            {{ season.fromISO | date: 'd. MMMM' }} –
+            {{ season.toISO | date: 'd. MMMM' }}
+          </p>
+        }
+
+        <p class="brs-trait">{{ record.traitKey | translate }}</p>
+      </section>
+
+      @if (age(); as era) {
+        <section class="brs-panel sr-panel sr-corners">
+          <p class="sr-hud">{{ 'vitals.zodiac.heading.ages' | translate }}</p>
+          <p class="brs-window">
+            {{ era.fromYear | eraYear }} – {{ era.toYear | eraYear }}
+          </p>
+          <p class="brs-trait">{{ era.effectKey | translate }}</p>
+          <p class="brs-note">{{ 'vitals.zodiac.age-estimate' | translate }}</p>
+        </section>
+      }
+
+      @if (steps(); as walk) {
+        <app-browse-steps
+          [previousLink]="walk.previousLink"
+          [previousKey]="walk.previousKey"
+          [nextLink]="walk.nextLink"
+          [nextKey]="walk.nextKey"
+        />
+      }
+    } @else {
+      <app-empty-state
+        label="{{ 'vitals.browse.unknown-sign' | translate }}"
+        note="{{ 'vitals.browse.unknown-note' | translate }}"
+      />
+    }
+  </div>
+</ion-content>

@@ -1,0 +1,46 @@
+<app-page-header label="page-title.vitals-browse-ki" hideButtons="true" />
+
+<ion-content>
+  <app-page-return route="/vitals/browse" label="page-title.vitals-browse" />
+
+  <div class="brk sr-scanlines">
+    <p class="brk-note">{{ 'vitals.iching.year-start' | translate }}</p>
+
+    <ol class="brk-list" data-testid="vitals-browse-ki-list">
+      @for (star of stars; track star.number) {
+        <li class="brk-panel sr-panel sr-corners">
+          <p class="brk-crest">
+            <span class="brk-crest__number">{{ star.number }}</span>
+            <span class="brk-crest__trigram" aria-hidden="true">
+              {{ star.trigram }}
+            </span>
+          </p>
+
+          <h2 class="brk-name">{{ star.nameKey | translate }}</h2>
+          <p class="brk-body">{{ star.personalityKey | translate }}</p>
+
+          <p class="brk-row">
+            <span class="sr-hud">{{
+              'vitals.iching.element' | translate
+            }}</span>
+            <span class="brk-row__value">{{
+              star.elementKey | translate
+            }}</span>
+          </p>
+          <p class="brk-row">
+            <span class="sr-hud">
+              {{ 'vitals.iching.strength' | translate }}
+            </span>
+            <span class="brk-row__value">
+              {{ star.strengthKey | translate }}
+            </span>
+          </p>
+          <p class="brk-row">
+            <span class="sr-hud">{{ 'vitals.iching.shadow' | translate }}</span>
+            <span class="brk-row__value">{{ star.shadowKey | translate }}</span>
+          </p>
+        </li>
+      }
+    </ol>
+  </div>
+</ion-content>

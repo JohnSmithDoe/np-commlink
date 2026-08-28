@@ -1,0 +1,62 @@
+.br {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-5);
+}
+
+.br-intro {
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--sr-text-dim);
+}
+
+.br-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.br-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--sr-touch);
+  padding: var(--space-4);
+  text-decoration: none;
+}
+
+.br-card__glyph {
+  /* stylelint-disable-next-line commlink/font-size-uses-scale -- glyph box size, not type. */
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--sr-amber);
+  text-shadow: var(--sr-glow);
+}
+
+.br-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.br-card__title {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  letter-spacing: var(--sr-heading-tracking);
+  text-transform: var(--sr-heading-transform);
+  color: var(--sr-amber);
+}
+
+.br-card__desc {
+  font-size: var(--fs-xsmall);
+  line-height: 1.5;
+  color: var(--sr-text-dim);
+}
+
+.br-card__count {
+  font-size: var(--fs-small);
+  color: var(--sr-cyan);
+}

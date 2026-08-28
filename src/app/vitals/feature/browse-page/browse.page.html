@@ -1,0 +1,24 @@
+<app-page-header label="page-title.vitals-browse" hideButtons="true" />
+
+<ion-content>
+  <div class="br sr-scanlines">
+    <p class="br-intro">{{ 'vitals.browse.intro' | translate }}</p>
+
+    <nav class="br-sections" data-testid="vitals-browse-sections">
+      @for (section of sections; track section.route) {
+        <a class="br-card sr-panel sr-corners" [routerLink]="section.route">
+          <span class="br-card__glyph" aria-hidden="true">
+            {{ section.glyph }}
+          </span>
+          <span class="br-card__text">
+            <span class="br-card__title">
+              {{ section.titleKey | translate }}
+            </span>
+            <span class="br-card__desc">{{ section.descKey | translate }}</span>
+          </span>
+          <span class="br-card__count">{{ section.count }}</span>
+        </a>
+      }
+    </nav>
+  </div>
+</ion-content>

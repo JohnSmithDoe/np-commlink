@@ -3,7 +3,15 @@
  * every program switched on, a settled animation, and a file on disk rather
  * than an assertion. `bootDeck` reads each toggle's own `checked` property
  * instead of counting rows, so it is idempotent and survives a catalog that
- * grows. Shots land OUTSIDE the repo — binaries in a doc tree rot faster
+ * grows.
+ *
+ * It switches MODULES on before rows because the programs lens nests a
+ * multi-program module in a collapsed accordion: its row toggles are in the
+ * DOM but not visible, and a module toggle turns the whole group on without
+ * expanding anything. The row pass then catches the single-program modules,
+ * which render no accordion at all.
+ *
+ * Shots land OUTSIDE the repo — binaries in a doc tree rot faster
  * than the doc does.
  * ───────────────────────────────────────────────────────────────── */
 import { expect, Locator, Page } from '@playwright/test';
@@ -23,17 +31,25 @@ export async function shotOf(target: Locator, name: string): Promise<void> {
   await target.screenshot({ path: `${SHOT_DIR}/${name}.png` });
 }
 
-export async function bootDeck(page: Page): Promise<void> {
-  await page.goto('/#/commlink/deck');
-  const toggles = page.getByTestId('deck-config-row-toggle');
-  await expect(toggles.first()).toBeVisible({ timeout: 60_000 });
-
-  for (const toggle of await toggles.all()) {
+async function switchOn(toggles: Locator): Promise<void> {
+  for (let index = 0; index < (await toggles.count()); index++) {
+    const toggle = toggles.nth(index);
+    if (!(await toggle.isVisible())) continue;
     const on = await toggle.evaluate(
       (element: HTMLElement & { checked: boolean }) => element.checked
     );
     if (!on) await toggle.click();
   }
+}
+
+export async function bootDeck(page: Page): Promise<void> {
+  await page.goto('/#/commlink/deck');
+  await expect(page.getByTestId('deck-config-lens')).toBeVisible({
+    timeout: 60_000,
+  });
+
+  await switchOn(page.getByTestId('deck-config-module-toggle'));
+  await switchOn(page.getByTestId('deck-config-row-toggle'));
   await waitForPersisted(page, 'deck');
 }
 

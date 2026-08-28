@@ -1,0 +1,18 @@
+<nav class="steps">
+  <a
+    class="steps__link"
+    [routerLink]="previousLink()"
+    data-testid="vitals-browse-step-previous"
+  >
+    <ion-icon name="chevron-back-outline" aria-hidden="true" />
+    <span>{{ previousKey() | translate }}</span>
+  </a>
+  <a
+    class="steps__link steps__link--next"
+    [routerLink]="nextLink()"
+    data-testid="vitals-browse-step-next"
+  >
+    <span>{{ nextKey() | translate }}</span>
+    <ion-icon name="chevron-forward-outline" aria-hidden="true" />
+  </a>
+</nav>
