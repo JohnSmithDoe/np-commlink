@@ -1,0 +1,25 @@
+ion-list-header {
+  --inner-padding-end: 0;
+  margin-top: var(--space-4);
+
+  ion-label {
+    font-size: var(--fs-small);
+  }
+}
+
+.sysop-status {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.sysop-status__value {
+  font-family: var(--sr-deck-font);
+  white-space: nowrap;
+}
+
+.sysop-note {
+  color: var(--sr-text-dim);
+  font-size: var(--fs-small);
+}

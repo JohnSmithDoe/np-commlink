@@ -13,6 +13,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonListHeader,
   IonNote,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
@@ -92,6 +93,7 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
 @Component({
   selector: 'app-page-settings',
   templateUrl: 'settings.page.html',
+  styleUrls: ['settings.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
@@ -100,6 +102,7 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
     IonList,
     IonItem,
     IonLabel,
+    IonListHeader,
     IonNote,
     IonSegmentButton,
     IonButton,

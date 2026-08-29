@@ -99,11 +99,15 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   before any toast, and so are NOT flagged. [CLAUDE.md](../CLAUDE.md) forbids an agent running the
   suite, so SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a
   screen sets it on the pages that show that screen**, and the next release run clears it.
-- **`credstick`, `chrono`, `trackplay` and `start` joined them on 2026-08-29** with the Pixel 8 walk's
-  defect and consistency batches: the sort toolbar no longer clips or wraps, the ledger row wears the
-  report's shape, CHRONO speaks one duration and one state chip, the round column counts from 1, an
-  undated task shows no status bar, and the deck config's count says what it counts. Figures are shot at
-  a 393 px viewport, narrower than the 412 px the walk used, so an over-capacity toolbar shows in them.
+- **`credstick`, `chrono`, `trackplay`, `start` and `sysop` joined them on 2026-08-29** with the Pixel 8
+  walk's defect and consistency batches: the sort toolbar no longer clips or wraps, the ledger row wears
+  the report's shape, CHRONO speaks one duration and one state chip, the round column counts from 1, an
+  undated task shows no status bar, the deck config's count says what it counts, and every SYSOP heading
+  is a heading. Figures are shot at a 393 px viewport, narrower than the 412 px the walk used, so an
+  over-capacity toolbar shows in them.
+- **`agenda` joined them on 2026-08-29** — a task now carries `doneAt`, so the list splits into Offen and
+  Erledigt and all four of its figures show a screen that no longer exists. Its prose and `gesten`'s
+  right-swipe roster are already corrected; `gesten`'s own figure shows MARKET and is not flagged.
 
 ## Waiting on upstream
 
@@ -209,16 +213,17 @@ page rather than a widget, and is scheduled in [next-version.md](./next-version.
 
 ### Structure
 
-- **SYSOP has one row idiom doing three jobs.** `<ion-item lines="none"><ion-label>text</ion-label>` is a
-  section header at _Deck_, _Akzentfarben_, _Speicher_ and _Über_, a field label at _Helligkeit_ and
-  _Sprache_ — `settings-segment` emits its own label row in exactly that markup — and a value row at
-  _Primärfarbe_. Nothing distinguishes the three, so the hierarchy reads flat. **The walk's "two pages
-  stacked" reading was wrong about its own evidence** and should not be carried forward: the page is a
-  single `ion-list` of `ion-item`s throughout, `settings-segment` being `display: contents` so its two
-  rows are direct list children. What differs between the halves is the row's CONTENT, not its box.
-  Separately real: _Dauerhafter Speicher_ puts a wrapping `ion-text-wrap` label with a nested note beside
-  a right-aligned status note, so the description is squeezed into three short lines with the space under
-  the status left empty.
+- **SYSOP had one row idiom doing three jobs, and the walk misread why.** `<ion-item
+  lines="none"><ion-label>text</ion-label>` was a section header at _Deck_, _Akzentfarben_, _Speicher_ and
+  _Über_, a field label at _Helligkeit_ and _Sprache_, and a value row at _Primärfarbe_ — nothing
+  distinguished the three, so the hierarchy read flat. **The "two pages stacked" reading was wrong about
+  its own evidence**: the page was always a single `ion-list` of `ion-item`s throughout, `settings-segment`
+  being `display: contents` so its rows are direct list children. What differed between the halves was the
+  row's CONTENT, never its box. **Fixed 2026-08-29** — every heading is an `ion-list-header` wearing the
+  global `.sr-hud` eyebrow, including the segment's own label, because a picker's label IS its section
+  heading here. That needed no new wording and no reordering. _Dauerhafter Speicher_ was separately real
+  and is fixed with it: the status moved onto the title line, which gives the description the full row
+  instead of the ~28 characters it had beside a right-aligned note.
 - **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
   `app-empty-state` exists and cash already uses it five times — and neither says what a rule is or that
   `+` makes one. _Regeln anwenden_ is offered, full-width and solid, with zero rules to apply.

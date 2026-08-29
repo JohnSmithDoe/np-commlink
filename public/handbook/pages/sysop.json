@@ -3,6 +3,7 @@
   "title": "SYSOP",
   "plain": "Einstellungen",
   "route": "/settings",
+  "shotsStale": true,
   "summary": "Skin, Helligkeit, Sprache und Akzentfarben — plus Version, Lizenz und der Link auf den Quellcode.",
   "sections": [
     {
