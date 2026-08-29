@@ -29,7 +29,7 @@ import { addIcons } from 'ionicons';
 import {
   chevronBackOutline,
   chevronForwardOutline,
-  close,
+  closeOutline,
   syncOutline,
 } from 'ionicons/icons';
 import { NoteImage, NoteImageId } from '../../model/notes.types';
@@ -66,7 +66,12 @@ export class NoteImageViewerComponent {
   readonly hasPages = computed(() => this.images().length > 1);
 
   constructor() {
-    addIcons({ chevronBackOutline, chevronForwardOutline, close, syncOutline });
+    addIcons({
+      chevronBackOutline,
+      chevronForwardOutline,
+      closeOutline,
+      syncOutline,
+    });
   }
 
   step(by: number): void {

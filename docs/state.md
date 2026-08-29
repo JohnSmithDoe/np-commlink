@@ -198,7 +198,9 @@ page rather than a widget, and is scheduled in [next-version.md](./next-version.
 - **Filled buttons appear twice and outline everywhere else**: cash's _Regeln anwenden_ and the shopping
   toolbar's bag are solid amber; every other button in the walk is an outline. **Fixed 2026-08-29** — and
   they were two different faults wearing one look: _Regeln anwenden_ was a genuine `fill="solid"` default,
-  while the bag was the SOLID `bag-add` glyph where the app uses outline variants.
+  while the bag was the SOLID `bag-add` glyph where the app uses outline variants. The glyph half then
+  turned out to be 27 names across 47 files rather than one, so it is a rule with a gate now
+  ([decisions.md](./decisions.md)).
 - **Green carries four meanings** — income in the ledger, _Ohne Kategorie_ in the report donut, both
   priority 3 and no priority in AGENDA, and a healthy MHD in STASH. **Fixed 2026-08-29**; two of the four
   were accidents rather than meanings, and what green is allowed to say is in

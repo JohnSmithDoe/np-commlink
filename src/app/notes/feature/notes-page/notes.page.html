@@ -14,7 +14,7 @@
     [item]="item"
     [title]="item.name || ('notes.item.untitled' | translate)"
     [ionList]="ionList"
-    [leadingIcon]="item.pinned ? 'pin' : undefined"
+    [leadingIcon]="item.pinned ? 'pin-outline' : undefined"
     [reorderable]="reorderable"
     [startSwipeAction]="swipeActionFor(item)"
     (selectItem)="facade.openNote(item)"

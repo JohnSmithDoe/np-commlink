@@ -13,7 +13,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircleOutline } from 'ionicons/icons';
 import { Category, CategoryId } from '../../../model/category.types';
 
 @Component({
@@ -29,6 +29,6 @@ export class CategoryInputComponent {
   readonly openDialog = output<void>();
 
   constructor() {
-    addIcons({ closeCircle });
+    addIcons({ closeCircleOutline });
   }
 }

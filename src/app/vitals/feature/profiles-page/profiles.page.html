@@ -9,7 +9,7 @@
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
-    [leadingIcon]="item.type === 'pet' ? 'paw' : 'person'"
+    [leadingIcon]="item.type === 'pet' ? 'paw-outline' : 'person-outline'"
     [startSwipeAction]="editSwipeAction"
     (selectItem)="goToProfile(item.id)"
     (startSwipe)="openProfileEdit(item)"

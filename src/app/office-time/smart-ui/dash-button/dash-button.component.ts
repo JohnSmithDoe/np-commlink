@@ -14,7 +14,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { beer, business } from 'ionicons/icons';
+import { beerOutline, businessOutline } from 'ionicons/icons';
 import { OfficeTimeFacade } from '../../data';
 
 @Component({
@@ -39,7 +39,7 @@ export class DashButtonComponent {
   readonly title = input<string | undefined>();
 
   constructor() {
-    addIcons({ beer, business });
+    addIcons({ beerOutline, businessOutline });
   }
 
   addOfficeDay() {

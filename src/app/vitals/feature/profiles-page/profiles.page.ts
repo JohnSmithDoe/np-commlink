@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline, paw, person, star } from 'ionicons/icons';
+import { createOutline, pawOutline, personOutline, star } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -41,7 +41,7 @@ export class VitalsProfilesPage {
   readonly favorite = this.#profiles.favoriteProfile;
 
   constructor() {
-    addIcons({ createOutline, paw, person, star });
+    addIcons({ createOutline, pawOutline, personOutline, star });
   }
 
   summaryFor(profile: Profile): ProfileSummary {

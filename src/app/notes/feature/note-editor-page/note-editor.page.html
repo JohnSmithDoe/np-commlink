@@ -8,7 +8,7 @@
     >
       <ion-icon
         slot="icon-only"
-        [name]="note()?.pinned ? 'pin' : 'pin-outline'"
+        [name]="note()?.pinned ? 'pin-outline' : 'pin-outline'"
         aria-hidden="true"
       />
     </ion-button>
@@ -71,7 +71,11 @@
             [attr.aria-label]="'notes.editor.remove-image' | translate"
             (click)="removeImage(image.id)"
           >
-            <ion-icon slot="icon-only" name="close-circle" aria-hidden="true" />
+            <ion-icon
+              slot="icon-only"
+              name="close-circle-outline"
+              aria-hidden="true"
+            />
           </ion-button>
         </figure>
       }

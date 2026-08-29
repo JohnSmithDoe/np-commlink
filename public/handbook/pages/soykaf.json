@@ -3,6 +3,7 @@
   "title": "SOYKAF",
   "plain": "Rezepte",
   "route": "/soykaf",
+  "shotsStale": true,
   "summary": "Rezeptbuch, das jedes Rezept gegen deine Vorräte hält und sagt, was heute ohne Einkauf geht.",
   "sections": [
     {

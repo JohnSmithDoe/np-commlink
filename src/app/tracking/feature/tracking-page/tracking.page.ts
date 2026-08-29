@@ -7,7 +7,14 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, flask, remove, save, settingsSharp, trash } from 'ionicons/icons';
+import {
+  addOutline,
+  flaskOutline,
+  removeOutline,
+  saveOutline,
+  settingsOutline,
+  trashOutline,
+} from 'ionicons/icons';
 import { TrackingItem } from '../../model/tracking.types';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
@@ -51,7 +58,14 @@ export class TrackingPage implements ViewWillEnter {
   readonly isDev = isDevMode();
 
   constructor() {
-    addIcons({ add, flask, remove, save, settingsSharp, trash });
+    addIcons({
+      addOutline,
+      flaskOutline,
+      removeOutline,
+      saveOutline,
+      settingsOutline,
+      trashOutline,
+    });
   }
 
   ionViewWillEnter(): void {

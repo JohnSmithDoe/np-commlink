@@ -14,13 +14,13 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
-  checkmarkCircle,
-  chevronDown,
-  chevronUp,
+  checkmarkCircleOutline,
+  chevronDownOutline,
+  chevronUpOutline,
   notificationsOffOutline,
-  pauseCircle,
-  playCircle,
-  stopCircle,
+  pauseCircleOutline,
+  playCircleOutline,
+  stopCircleOutline,
   trashOutline,
 } from 'ionicons/icons';
 import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
@@ -61,14 +61,14 @@ export class NotificationsPage implements ViewWillEnter {
 
   constructor() {
     addIcons({
-      'chevron-down': chevronDown,
-      'chevron-up': chevronUp,
-      'checkmark-circle': checkmarkCircle,
-      'pause-circle': pauseCircle,
-      'play-circle': playCircle,
-      'stop-circle': stopCircle,
-      'trash-outline': trashOutline,
-      'notifications-off-outline': notificationsOffOutline,
+      checkmarkCircleOutline,
+      chevronDownOutline,
+      chevronUpOutline,
+      notificationsOffOutline,
+      pauseCircleOutline,
+      playCircleOutline,
+      stopCircleOutline,
+      trashOutline,
     });
   }
 

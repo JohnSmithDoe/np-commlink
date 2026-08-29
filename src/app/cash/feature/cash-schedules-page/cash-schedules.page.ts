@@ -32,9 +32,9 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
 import {
-  add,
+  addOutline,
   checkmarkDoneOutline,
-  remove,
+  removeOutline,
   trashOutline,
 } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
@@ -87,7 +87,7 @@ export class CashSchedulesPage {
   );
 
   constructor() {
-    addIcons({ add, remove, checkmarkDoneOutline, trashOutline });
+    addIcons({ addOutline, removeOutline, checkmarkDoneOutline, trashOutline });
   }
 
   categoryName(schedule: CashSchedule): string {

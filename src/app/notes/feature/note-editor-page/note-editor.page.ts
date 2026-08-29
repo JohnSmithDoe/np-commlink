@@ -32,7 +32,7 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { closeCircle, pin, pinOutline, trashOutline } from 'ionicons/icons';
+import { closeCircleOutline, pinOutline, trashOutline } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { NoteEditorFacade } from '../../data';
@@ -84,7 +84,7 @@ export class NoteEditorPage implements OnDestroy {
   ];
 
   constructor() {
-    addIcons({ closeCircle, pin, pinOutline, trashOutline });
+    addIcons({ closeCircleOutline, pinOutline, trashOutline });
   }
 
   ngOnDestroy(): void {

@@ -3,5 +3,5 @@ import { StartSwipeAction } from '../../@shared/ui/base-item/base-swipe-row';
 
 export const TRACKPLAY_EDIT_SWIPE_ACTION: StartSwipeAction = {
   labelKey: marker('trackplay.action.edit'),
-  icon: 'create',
+  icon: 'create-outline',
 };

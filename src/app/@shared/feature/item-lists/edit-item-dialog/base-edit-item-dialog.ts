@@ -19,7 +19,7 @@ import { computed, inject, linkedSignal, Signal, signal } from '@angular/core';
 import { form, SchemaPathTree } from '@angular/forms/signals';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircleOutline } from 'ionicons/icons';
 import { Marker } from '../../../model/app.types';
 import { BaseItem, EditItemMode } from '../../../model/base-item.types';
 import { Category, CategoryId } from '../../../model/category.types';
@@ -114,7 +114,7 @@ export abstract class BaseEditItemDialog<
   readonly canSave = computed(() => this.form().valid());
 
   constructor() {
-    addIcons({ closeCircle });
+    addIcons({ closeCircleOutline });
   }
 
   protected patch(partial: Partial<TForm>) {

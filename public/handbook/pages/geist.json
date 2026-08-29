@@ -3,6 +3,7 @@
   "title": "GEIST",
   "plain": "Assistent",
   "route": "/geist",
+  "shotsStale": true,
   "summary": "Ein Sprachmodell, das im Browser auf dem Gerät läuft — ohne Konto, ohne Schlüssel, ohne Anfrage nach außen.",
   "sections": [
     {

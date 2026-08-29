@@ -1,7 +1,7 @@
 <app-list-page
   class="ion-page"
   pageHeader="page-title.trackplay-game-types"
-  icon="dice"
+  icon="dice-outline"
   [itemTemplate]="gameTypeRow"
 />
 
@@ -10,7 +10,7 @@
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
-    [leadingIcon]="'dice'"
+    [leadingIcon]="'dice-outline'"
     [canDelete]="item.id !== defaultTypeId"
     [startSwipeAction]="editSwipeAction"
     (selectItem)="openEdit(item)"

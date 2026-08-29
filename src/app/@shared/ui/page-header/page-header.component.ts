@@ -17,7 +17,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add } from 'ionicons/icons';
+import { addOutline } from 'ionicons/icons';
 import { PROGRAM_ICON } from '../../util/program-icon.token';
 
 @Component({
@@ -48,6 +48,6 @@ export class PageHeaderComponent {
   readonly glyph = computed(() => this.icon() ?? this.#programIcon());
 
   constructor() {
-    addIcons({ add });
+    addIcons({ addOutline });
   }
 }

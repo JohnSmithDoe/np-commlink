@@ -15,7 +15,12 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonNote, IonThumbnail } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, expand, pin, remove } from 'ionicons/icons';
+import {
+  addOutline,
+  expandOutline,
+  pinOutline,
+  removeOutline,
+} from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
@@ -27,7 +32,7 @@ import { NoteImageViewerComponent } from '../../ui/note-image-viewer/note-image-
 
 const VIEW_IMAGES_SWIPE: StartSwipeAction = {
   labelKey: marker('notes.action.view-images'),
-  icon: 'expand',
+  icon: 'expand-outline',
   color: 'secondary',
 };
 
@@ -64,7 +69,7 @@ export class NotesPage {
   );
 
   constructor() {
-    addIcons({ add, expand, pin, remove });
+    addIcons({ addOutline, expandOutline, pinOutline, removeOutline });
   }
 
   snippet(note: Note): string {

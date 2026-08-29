@@ -5,7 +5,11 @@
     (click)="prevDay()"
     [attr.aria-label]="'tracking.a11y.prev-day' | translate"
   >
-    <ion-icon slot="icon-only" [icon]="'chevron-back'" aria-hidden="true" />
+    <ion-icon
+      slot="icon-only"
+      [icon]="'chevron-back-outline'"
+      aria-hidden="true"
+    />
   </ion-button>
   <div class="daily-sessions-title">
     @if (isToday()) {
@@ -21,7 +25,11 @@
     (click)="nextDay()"
     [attr.aria-label]="'tracking.a11y.next-day' | translate"
   >
-    <ion-icon slot="icon-only" [icon]="'chevron-forward'" aria-hidden="true" />
+    <ion-icon
+      slot="icon-only"
+      [icon]="'chevron-forward-outline'"
+      aria-hidden="true"
+    />
   </ion-button>
 </div>
 

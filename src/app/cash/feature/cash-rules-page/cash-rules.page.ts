@@ -20,7 +20,12 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';
-import { add, playOutline, pricetagsOutline, remove } from 'ionicons/icons';
+import {
+  addOutline,
+  playOutline,
+  pricetagsOutline,
+  removeOutline,
+} from 'ionicons/icons';
 import { CashRule } from '../../model/rule.types';
 import {
   CashCategoriesFacade,
@@ -89,7 +94,7 @@ export class CashRulesPage {
   }
 
   constructor() {
-    addIcons({ add, remove, playOutline, pricetagsOutline });
+    addIcons({ addOutline, removeOutline, playOutline, pricetagsOutline });
   }
 
   conditionSummaryLabel(rule: CashRule): string {

@@ -12,7 +12,7 @@ const fakeIonList = () =>
 const dragEvent = (amount: number): IonDragEvent =>
   ({ detail: { amount, ratio: 0 } }) as IonDragEvent;
 
-const EDIT: StartSwipeAction = { labelKey: 'a.edit', icon: 'create' };
+const EDIT: StartSwipeAction = { labelKey: 'a.edit', icon: 'create-outline' };
 
 @Component({ selector: 'app-swipe-row-probe', template: '' })
 class SwipeRowProbeComponent extends BaseSwipeRow {}

@@ -50,7 +50,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { add, pricetagsOutline, remove } from 'ionicons/icons';
+import { addOutline, pricetagsOutline, removeOutline } from 'ionicons/icons';
 import { CategoryFilterFacade } from '../../../data/item-lists/category-filter.facade';
 import {
   LIST_FACADE,
@@ -158,7 +158,7 @@ export class ListPageComponent {
   });
 
   constructor() {
-    addIcons({ add, remove, pricetagsOutline });
+    addIcons({ addOutline, removeOutline, pricetagsOutline });
   }
 
   manageCategories() {

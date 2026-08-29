@@ -22,7 +22,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { playCircle } from 'ionicons/icons';
+import { playCircleOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
@@ -70,7 +70,7 @@ export class EditGameDialogComponent extends BaseEditItemDialog<Game> {
 
   constructor() {
     super();
-    addIcons({ playCircle });
+    addIcons({ playCircleOutline });
   }
 
   protected blank(): Game {

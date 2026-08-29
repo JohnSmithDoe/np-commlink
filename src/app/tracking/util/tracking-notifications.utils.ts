@@ -34,21 +34,21 @@ export const TRACKING_NOTIFICATION_PRESETS: Record<
   TrackingNotificationPreset
 > = {
   running: {
-    icon: 'play-circle',
+    icon: 'play-circle-outline',
     color: 'success',
     titleKey: 'notifications.tracking.running.title',
     bodyKey: 'notifications.tracking.running.body',
     cta: { type: 'tracking.pause', labelKey: 'notifications.action.pause' },
   },
   paused: {
-    icon: 'pause-circle',
+    icon: 'pause-circle-outline',
     color: 'warning',
     titleKey: 'notifications.tracking.paused.title',
     bodyKey: 'notifications.tracking.paused.body',
     cta: { type: 'tracking.start', labelKey: 'notifications.action.start' },
   },
   stopped: {
-    icon: 'stop-circle',
+    icon: 'stop-circle-outline',
     color: 'medium',
     titleKey: 'notifications.tracking.stopped.title',
     bodyKey: 'notifications.tracking.stopped.body',

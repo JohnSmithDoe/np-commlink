@@ -18,7 +18,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { play, square } from 'ionicons/icons';
+import { playOutline, squareOutline } from 'ionicons/icons';
 import { Round, TrackplayId } from '../../model/trackplay.types';
 import { GamePlayFacade, GamesFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
@@ -70,7 +70,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   #prevRoundCount = 0;
 
   constructor() {
-    addIcons({ play, square });
+    addIcons({ playOutline, squareOutline });
 
     effect(() => {
       const count = this.rounds().length;

@@ -4,7 +4,7 @@ import { IonNote } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { barcodeOutline, cart } from 'ionicons/icons';
+import { barcodeOutline, cartOutline } from 'ionicons/icons';
 import { StorageItem } from '../../model/household-list.types';
 import { storageStatusColor } from '../../util/household-list.utils';
 import { HouseholdListPageFacade, StorageFacade } from '../../data';
@@ -43,13 +43,13 @@ export class StoragePage {
 
   readonly startSwipeAction: StartSwipeAction = {
     labelKey: marker('household.a11y.to-shopping-list'),
-    icon: 'cart',
+    icon: 'cart-outline',
   };
 
   readonly statusColor = storageStatusColor;
 
   constructor() {
-    addIcons({ barcodeOutline, cart });
+    addIcons({ barcodeOutline, cartOutline });
   }
 
   removeItem(item: StorageItem) {

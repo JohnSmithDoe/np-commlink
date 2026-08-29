@@ -30,7 +30,7 @@ import { addIcons } from 'ionicons';
 import {
   closeOutline,
   createOutline,
-  ellipsisVertical,
+  ellipsisVerticalOutline,
   pauseOutline,
   pauseSharp,
   playOutline,
@@ -92,7 +92,7 @@ export class TrackingItemComponent {
       pauseSharp,
       trashOutline,
       closeOutline,
-      ellipsisVertical,
+      ellipsisVerticalOutline,
       refreshOutline,
     });
   }

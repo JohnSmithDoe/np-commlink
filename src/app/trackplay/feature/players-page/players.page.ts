@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { create, peopleOutline, person } from 'ionicons/icons';
+import { createOutline, peopleOutline, personOutline } from 'ionicons/icons';
 import { Player, PlayerStats, TrackplayId } from '../../model/trackplay.types';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -38,7 +38,7 @@ export class TrackplayPlayersPage {
   readonly stats = this.#players.stats;
 
   constructor() {
-    addIcons({ create, peopleOutline, person });
+    addIcons({ createOutline, peopleOutline, personOutline });
   }
 
   statsFor(player: Player): PlayerStats {

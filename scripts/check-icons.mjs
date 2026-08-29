@@ -39,6 +39,17 @@
  *
  * Neither check catches the ordering case: an icon registered only by a
  * component behind another lazy route is blank until that route is visited.
+ *
+ * Check 3 is a different question on the same set: every name ends `-outline`.
+ * Ionicons ships three variants and the app uses one, so a solid glyph beside
+ * outline ones is a mismatch a reviewer sees and a diff does not. It lives here
+ * because a name reaches an icon through five spellings — `name`, `[name]`, an
+ * `icon` input, `[leadingIcon]`, and `icon:` in a catalog or preset — and only
+ * a pass over the whole tree sees all five. It caught the notifications inbox
+ * registering outline SVGs under solid ALIASES, which no single file shows.
+ *
+ * `FILLED_BY_DESIGN` is for a glyph whose fill is STATE rather than style, and
+ * an entry nothing uses reports itself stale, on `verify:docs`'s pattern.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -53,6 +64,25 @@ const USE_HTML_BOUND = /\[name\]="([^"]*)"/;
 // A `StartSwipeAction` / deck-catalog entry names its icon from TS.
 const USE_TS = /\bicon:\s*'([a-z][a-z0-9-]*)'/g;
 const QUOTED = /'([a-z][a-z0-9-]*)'/g;
+// `item.type === 'pet' ? 'paw-outline' : …` — the compared string is a value
+// the icon is chosen BY, never an icon, and reads exactly like one.
+const COMPARED = /[!=]==?\s*'[^']*'/g;
+const iconNamesIn = (expression) =>
+  [...expression.replaceAll(COMPARED, '').matchAll(QUOTED)].map(([, n]) => n);
+
+// An icon a COMPONENT input names, which never reaches an `<ion-icon>` in the
+// template that writes it — `app-list-item` and `app-list-page` render it one
+// level down, so the two regexes above cannot see these at all.
+const USE_INPUT_STATIC = /\s(?:icon|leadingIcon)="([a-z][a-z0-9-]*)"/g;
+const USE_INPUT_BOUND = /\[(?:icon|leadingIcon)\]="([^"]*)"/g;
+
+// Filled where the fill is the STATE, not the style. Anything else is outline.
+const FILLED_BY_DESIGN = new Map([
+  [
+    'star',
+    'filled means favourite, outline means not — the pair IS the toggle',
+  ],
+]);
 
 function* walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -130,9 +160,18 @@ for (const file of sources) {
       // The string was written wherever it was written; this template only
       // interpolates it, so it cannot be held to registering it.
       const bound = USE_HTML_BOUND.exec(element)?.[1] ?? '';
-      for (const [, name] of bound.matchAll(QUOTED))
+      for (const name of iconNamesIn(bound))
         use(name, file, match.index, source, false);
     }
+  // A component input names an icon its own template never renders, so the
+  // writer cannot be held to registering it — the renderer is checked instead.
+  if (file.endsWith('.html')) {
+    for (const match of source.matchAll(USE_INPUT_STATIC))
+      use(match[1], file, match.index, source, false);
+    for (const match of source.matchAll(USE_INPUT_BOUND))
+      for (const name of iconNamesIn(match[1]))
+        use(name, file, match.index, source, false);
+  }
   if (scripts.includes(file))
     for (const match of source.matchAll(USE_TS))
       use(match[1], file, match.index, source, true);
@@ -140,13 +179,28 @@ for (const file of sources) {
 
 const missing = [...used].filter(([name]) => !registered.has(name));
 
+const filled = [...used].filter(
+  ([name]) => !name.endsWith('-outline') && !FILLED_BY_DESIGN.has(name)
+);
+const staleExemptions = [...FILLED_BY_DESIGN.keys()].filter(
+  (name) => !used.has(name)
+);
+
 for (const [name, where] of missing)
   console.log(`unregistered  ${name}  ${where}`);
 for (const { name, at } of foreign.values())
   console.log(`not registered here  ${name}  ${at}`);
+for (const [name, where] of filled)
+  console.log(`not outline  ${name}  ${where}  (use ${name}-outline)`);
+for (const name of staleExemptions)
+  console.log(`stale exemption  ${name}  (nothing uses it — drop the entry)`);
 
 console.log(
   `\n${used.size} used · ${registered.size} registered · ` +
-    `${missing.length} unregistered · ${foreign.size} registered elsewhere`
+    `${missing.length} unregistered · ${foreign.size} registered elsewhere · ` +
+    `${filled.length} not outline · ${staleExemptions.length} stale exemptions`
 );
-process.exitCode = missing.length + foreign.size > 0 ? 1 : 0;
+process.exitCode =
+  missing.length + foreign.size + filled.length + staleExemptions.length > 0
+    ? 1
+    : 0;

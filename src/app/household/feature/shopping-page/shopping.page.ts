@@ -3,7 +3,7 @@ import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { bagAddOutline, barcodeOutline, cart } from 'ionicons/icons';
+import { bagAddOutline, barcodeOutline, cartOutline } from 'ionicons/icons';
 import { ShoppingItem } from '../../model/household-list.types';
 import { HouseholdListPageFacade, ShoppingFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -44,11 +44,11 @@ export class ShoppingPage {
   readonly state = this.#shopping.state;
   readonly startSwipeAction: StartSwipeAction = {
     labelKey: marker('household.a11y.buy-item'),
-    icon: 'cart',
+    icon: 'cart-outline',
   };
 
   constructor() {
-    addIcons({ bagAddOutline, barcodeOutline, cart });
+    addIcons({ bagAddOutline, barcodeOutline, cartOutline });
   }
 
   removeItem(item: ShoppingItem) {

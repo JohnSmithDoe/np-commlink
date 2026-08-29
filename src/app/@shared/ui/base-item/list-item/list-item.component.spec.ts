@@ -146,7 +146,7 @@ describe('ListItemComponent', () => {
 
     fixture.componentRef.setInput('startSwipeAction', {
       labelKey: 'household.a11y.buy-item',
-      icon: 'cart',
+      icon: 'cart-outline',
     });
     component.onSwipe(dragEvent(-200));
     await vi.waitFor(() => expect(carted).toHaveLength(1));

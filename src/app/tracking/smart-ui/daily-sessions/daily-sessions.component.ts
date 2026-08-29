@@ -17,7 +17,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { chevronBack, chevronForward } from 'ionicons/icons';
+import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { TrackingFacade } from '../../data';
@@ -76,7 +76,7 @@ export class DailySessionsComponent {
   });
 
   constructor() {
-    addIcons({ chevronBack, chevronForward });
+    addIcons({ chevronBackOutline, chevronForwardOutline });
   }
 
   prevDay() {

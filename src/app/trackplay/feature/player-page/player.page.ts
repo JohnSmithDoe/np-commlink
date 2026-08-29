@@ -5,11 +5,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
-  create,
   createOutline,
-  eye,
-  eyeOff,
-  playCircle,
+  eyeOutline,
+  eyeOffOutline,
+  playCircleOutline,
 } from 'ionicons/icons';
 import { Game, TrackplayId } from '../../model/trackplay.types';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
@@ -40,7 +39,13 @@ export class TrackplayPlayerPage {
   readonly #router = inject(Router);
 
   constructor() {
-    addIcons({ addOutline, create, createOutline, eye, eyeOff, playCircle });
+    addIcons({
+      addOutline,
+      createOutline,
+      eyeOutline,
+      eyeOffOutline,
+      playCircleOutline,
+    });
   }
 
   goToGame(gameId: TrackplayId): void {
