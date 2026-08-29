@@ -6,6 +6,11 @@
  * so: `null` is a decision the compiler keeps asking for, where an omitted
  * input would let the next dialog forget both halves and save a blank
  * name, which `addListItem` drops while the dialog reports success.
+ *
+ * The name box takes focus on present only while it is EMPTY. A dialog
+ * opened on an existing entry is there to change a quantity or a date, and
+ * focusing a name nobody came to edit puts the phone's keyboard over the
+ * fields that were.
  * ───────────────────────────────────────────────────────────────── */
 import {
   ChangeDetectionStrategy,
@@ -54,4 +59,11 @@ export class ItemEditModalComponent {
   readonly confirmed = output<void>();
   readonly cancelled = output<void>();
   readonly dismissed = output<void>();
+
+  protected focusName(): void {
+    const name = this.nameField()?.();
+    if (name?.value().trim().length === 0) {
+      name.focusBoundControl();
+    }
+  }
 }

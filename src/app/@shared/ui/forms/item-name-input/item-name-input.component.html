@@ -6,6 +6,7 @@
     [value]="value()"
     (ionInput)="onInput($event)"
     (ionBlur)="touchedChange.emit(true)"
+    (keydown.enter)="submit()"
   >
     @if (offersEmojiPicker) {
       <ion-button

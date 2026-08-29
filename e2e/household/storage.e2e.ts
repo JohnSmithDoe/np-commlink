@@ -33,9 +33,12 @@
 
 import { expect, Locator, Page, test } from '@playwright/test';
 import {
+  addButton,
   addViaSearch,
+  createDialog,
   gotoFeature,
   listRow,
+  pageRoot,
   presentedDialog,
   ROUTE,
   searchInput,
@@ -210,6 +213,53 @@ test.describe('storage list', () => {
     await expect(
       editDialog(page).getByText('Der Name existiert bereits')
     ).toHaveCount(0);
+  });
+
+  test('opens the create dialog focused and silent', async ({ page }) => {
+    await addButton(pageRoot(page, 'app-page-storage')).click();
+    const dialog = createDialog(page);
+    const box = dialog.getByPlaceholder('Gib einen Namen ein');
+    await expect(box).toBeFocused({ timeout: 15_000 });
+    await expect(dialog.getByText('Der Name darf nicht leer sein')).toHaveCount(
+      0
+    );
+
+    await box.fill('Milk');
+    await box.fill('');
+    await expect(
+      dialog.getByText('Der Name darf nicht leer sein')
+    ).toBeVisible();
+  });
+
+  test('creates the entry from Enter in the name box', async ({ page }) => {
+    await addButton(pageRoot(page, 'app-page-storage')).click();
+    const dialog = createDialog(page);
+    const box = dialog.getByPlaceholder('Gib einen Namen ein');
+    await box.fill('Joghurt');
+    await box.press('Enter');
+
+    await expect(dialog).toBeHidden({ timeout: 10_000 });
+    await expect(listRow(page, /Joghurt/)).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('refuses Enter on an empty name, and says why', async ({ page }) => {
+    await addButton(pageRoot(page, 'app-page-storage')).click();
+    const dialog = createDialog(page);
+    await dialog.getByPlaceholder('Gib einen Namen ein').press('Enter');
+
+    await expect(dialog).toBeVisible();
+    await expect(
+      dialog.getByText('Der Name darf nicht leer sein')
+    ).toBeVisible();
+  });
+
+  test('leaves the keyboard shut on an entry that has a name', async ({
+    page,
+  }) => {
+    await addViaSearch(page, 'Milk');
+    await listRow(page, /Milk/).click();
+    await expect(nameBox(page)).toBeVisible({ timeout: 10_000 });
+    await expect(nameBox(page)).not.toBeFocused();
   });
 
   test('assigns a category via the picker', async ({ page }) => {

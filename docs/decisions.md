@@ -117,6 +117,19 @@ it was measured against.
   the office-time day lists. Deck config still has none and never can: its rows are a static catalog.
   The searchless lists — vitals' readings and pills, cash's rules — read their own note, the shared one
   having pointed at a searchbar they do not render.
+- **Green is a STATE the row is in, and a chart series is not a state.** The walk read four meanings into
+  it; two were accidents rather than designs. A missing due date was painted `success` — so "no deadline"
+  and "deadline comfortably away" wore one colour, the same conflation as a score cell pre-filled with
+  zero — and `dueStatusColor` now returns `undefined` there, which `hasStatusBar` already reads as no bar
+  at all. And the categorical `series` palette held `success` and `danger` themselves, so the report drew
+  income in green in one chart and its third category in the same green two charts below; the series is
+  now hues that carry no valence. What green legitimately means is unchanged and was never the problem:
+  money coming in, a healthy MHD, a deadline far off.
+- **One screen, one duration format, and on CHRONO that format is the clock.** The row said
+  `3 Sekunden` while the daily list said `00:00:03` for the same session. `hh:mm:ss` wins on three
+  grounds: a stopwatch is what CHRONO is, prose needs i18n for a number nobody reads as prose, and
+  variable-width text does not align in a right-aligned column. `TimeWithUnitPipe` and the four
+  `time.unit.*` keys went with it — the format was its only caller.
 
 ## Router and navigation
 
@@ -267,14 +280,16 @@ it was measured against.
   considered for deletion was deleted.
 - **Raising error toasts to `assertive` was declined** — it would mean replacing `ion-toast`. What Ionic's
   toast already announces, and the reading that dates it, are in `ionic-a11y-assumptions.spec.ts`.
-- **A field's message waits for touched OR dirty, and the create dialog opens on its first field.** Both
+- **A field's message waits for touched OR dirty, and an EMPTY name box takes focus on present.** Both
   seams are the framework's, not ours: `ItemNameInputComponent` declares `touched`/`dirty` inputs the
-  `FormField` directive fills, and implements `focus()`, which is what `focusBoundControl()` on
-  `(didPresent)` reaches. Touched alone was not enough — one box on a phone, focused on present and saved
-  from the toolbar, never blurs, so a duplicate name would refuse to save while saying nothing. The state
-  is per FIELD NODE, not per open, so `close()` resets it or the second open reopens accusing. **The
-  hand-rolled `sr-field-note`s in the vitals and cash dialogs still show on open** — they read their
-  field's errors directly, and each is its own fix.
+  `FormField` directive fills, and implements `focus()`, which is what `focusBoundControl()` reaches.
+  Touched alone was not enough — one box on a phone, focused on present and saved from the toolbar, can
+  be typed into and never blurred, so a duplicate name would refuse to save while saying nothing. The
+  state is per FIELD NODE, not per open, so `close()` resets it or the second open reopens accusing.
+  Enter in the box confirms the dialog and marks the field touched in the same breath, so hitting it on an
+  empty name refuses and says why rather than doing nothing — `confirm()`'s own `canSave()` guard is what
+  makes emitting unconditionally safe. **The hand-rolled `sr-field-note`s in the vitals and cash dialogs
+  still show on open** — they read their field's errors directly, and each is its own fix.
 
 ## Findings that were wrong about their own evidence
 

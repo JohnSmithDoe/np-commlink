@@ -34,11 +34,13 @@ describe('ItemNameInputComponent', () => {
     component = fixture.componentInstance;
   });
 
-  const reportErrors = (...kinds: string[]) =>
+  const reportErrors = (...kinds: string[]) => {
+    fixture.componentRef.setInput('dirty', true);
     fixture.componentRef.setInput(
       'errors',
       kinds.map((kind) => ({ kind }))
     );
+  };
 
   it('names the error the bound field reports', () => {
     reportErrors(BLANK_TEXT.kind);
@@ -60,6 +62,19 @@ describe('ItemNameInputComponent', () => {
   it('renders no message for a kind it does not know', () => {
     reportErrors('somethingElse');
     expect(component.errorText()).toBeUndefined();
+  });
+
+  describe('while the field is untouched', () => {
+    it('stays silent about an error it already holds', () => {
+      fixture.componentRef.setInput('errors', [{ kind: BLANK_TEXT.kind }]);
+      expect(component.errorText()).toBeUndefined();
+    });
+
+    it('speaks up once the field has been blurred', () => {
+      fixture.componentRef.setInput('errors', [{ kind: BLANK_TEXT.kind }]);
+      fixture.componentRef.setInput('touched', true);
+      expect(component.errorText()).toBe('edit.item.dialog.name.empty.error');
+    });
   });
 
   describe('the emoji picker gate', () => {

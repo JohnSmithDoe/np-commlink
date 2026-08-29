@@ -1,5 +1,6 @@
 <ion-modal
   [isOpen]="isOpen()"
+  (didPresent)="focusName()"
   (didDismiss)="dismissed.emit()"
   [attr.aria-label]="dialogTitle() | translate"
 >
@@ -24,7 +25,10 @@
       <ion-list>
         @let name = nameField();
         @if (name) {
-          <app-item-name-input [formField]="name" />
+          <app-item-name-input
+            [formField]="name"
+            (submitted)="confirmed.emit()"
+          />
         }
         <ng-content></ng-content>
       </ion-list>
