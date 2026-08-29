@@ -5,6 +5,7 @@ import {
 import { categoryFilterFromRoute } from '../../@shared/data/item-lists/category-filter.effects';
 import { selectRouteCategoryFilter } from '../../@shared/data/router/router.selector';
 import { createCategory } from '../../@shared/util/app.factory';
+import { TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import { selectTaskCategoryList, selectTasksList } from './tasks.selector';
@@ -20,7 +21,10 @@ export const tasksListEffects = {
     actions: TasksActions,
     select: selectTasksList,
     create: (name, filterBy) => createTaskItem(name, filterBy),
-    undoableDelete: TasksActions.removeItem,
+    undoableDelete: {
+      scope: TASKS_LIST_ID,
+      removeItem: TasksActions.removeItem,
+    },
   }),
 
   clearSearch$: clearSearchAfter(TasksActions.updateSearch, [

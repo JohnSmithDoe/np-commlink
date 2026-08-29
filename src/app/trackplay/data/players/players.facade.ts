@@ -1,13 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
+import { UndoActions } from '../../../@shared/data/undo/undo.actions';
 import {
   ItemListSortDirection,
   ItemListSortType,
 } from '../../../@shared/model/item-list.types';
 import { Player, PLAYERS_LIST_ID } from '../../model/trackplay.types';
+import { gamesWithPlayer } from '../../util/trackplay.cascade';
 import { createPlayer } from '../../util/trackplay.factory';
-import { selectPlayersList } from '../trackplay.selector';
+import { TrackplayActions } from '../trackplay.actions';
+import { selectGamesList, selectPlayersList } from '../trackplay.selector';
 import { PlayersActions } from './players.actions';
 import {
   selectPlayerItems,
@@ -22,6 +25,8 @@ import {
 export class PlayersFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+
+  readonly #games = this.#store.selectSignal(selectGamesList);
 
   readonly state = this.#store.selectSignal(selectPlayersList);
   readonly allItems = this.#store.selectSignal(selectPlayerItems);
@@ -66,6 +71,16 @@ export class PlayersFacade {
   }
 
   removeItem(player: Player): void {
+    this.#store.dispatch(
+      UndoActions.pushed({
+        scope: PLAYERS_LIST_ID,
+        name: player.name,
+        action: TrackplayActions.restorePlayer(
+          player,
+          gamesWithPlayer(this.#games(), player.id)
+        ),
+      })
+    );
     this.#store.dispatch(PlayersActions.removeItem(player));
   }
 }

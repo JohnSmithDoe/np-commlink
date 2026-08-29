@@ -35,6 +35,7 @@ export class TasksListPageFacade extends BaseListPageFacade {
   protected readonly commands = itemListCommands(this.#store, TasksActions);
 
   readonly state = this.#store.selectSignal(selectTasksList);
+  readonly undoScope = signal(TASKS_LIST_ID);
   readonly items = this.#store.selectSignal(selectTasksListItems);
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
   readonly catalog = this.#store.selectSignal(selectTasksCategories);

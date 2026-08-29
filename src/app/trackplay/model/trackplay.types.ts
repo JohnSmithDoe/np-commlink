@@ -70,21 +70,9 @@ export interface PlayerStats {
   open: number;
 }
 
-interface TrackplaySnapshot {
-  players: Player[];
-  games: Game[];
-  gameTypes: GameType[];
-}
-
-export interface TrackplayDeleted {
-  name: string;
-  snapshot: TrackplaySnapshot;
-}
-
 export interface TrackplayState {
   players: PlayersState;
   games: GamesState;
   gamesForPlayer: GamesView;
   gameTypes: GameTypesState;
-  lastDeleted: TrackplayDeleted | null;
 }

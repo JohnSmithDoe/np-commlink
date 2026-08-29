@@ -3,6 +3,7 @@
   "title": "STASH",
   "plain": "Vorräte",
   "route": "/household/storage",
+  "shotsStale": true,
   "summary": "Was im Haus ist — mit Mindestmenge, Farbbalken, Mindesthaltbarkeitsdatum und einem Wisch zurück auf die Einkaufsliste.",
   "sections": [
     {
@@ -131,7 +132,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort. Danach fünf Sekunden <strong>Rückgängig</strong>.",
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort. Der Hinweis unten meldet es nur — zurückholen kannst du es mit <strong>Rückgängig</strong> oben in der Kopfzeile, solange du auf dieser Liste bist.",
             "<strong>Nach rechts wischen</strong> → grün, Einkaufswagen: <em>Zur Einkaufsliste hinzufügen</em>. Weites Wischen führt es direkt aus.",
             "<strong><code>+</code> / <code>−</code> rechts in der Zeile</strong> — der <strong>einzige</strong> Weg, die Menge zu ändern; im Dialog gibt es kein Mengenfeld. Bei 0 ist Schluss, die Zeile bleibt stehen.",
             "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em>: Name, Mindestmenge, Mindesthaltbarkeitsdatum, Kategorien.",
@@ -143,7 +144,7 @@
         {
           "type": "figure",
           "img": "stash-swipe-loeschen.webp",
-          "caption": "Nach links: LÖSCHEN — mit Rückgängig-Hinweis"
+          "caption": "Nach links: LÖSCHEN — Rückgängig steht oben"
         }
       ]
     },

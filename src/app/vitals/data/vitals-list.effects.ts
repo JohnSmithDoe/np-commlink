@@ -20,6 +20,7 @@
 
 import { createItemListEffects } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { findById } from '../../@shared/util/app.utils';
+import { READINGS_LIST_ID } from '../model/vitals.types';
 import { createProfile } from '../util/vitals.factory';
 import { PillsActions } from './pills/pills.actions';
 import { ProfilesActions } from './profiles/profiles.actions';
@@ -41,7 +42,10 @@ export const readingsListEffects = createItemListEffects({
   select: selectReadingsList,
   create: null,
   match: findById,
-  undoableDelete: ReadingsActions.removeItem,
+  undoableDelete: {
+    scope: READINGS_LIST_ID,
+    removeItem: ReadingsActions.removeItem,
+  },
 });
 
 export const pillsListEffects = createItemListEffects({

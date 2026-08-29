@@ -21,20 +21,18 @@ describe('RitualToastEffects', () => {
     effects = TestBed.inject(RitualToastEffects);
   });
 
-  it('offers the dismissal back before the toast is gone', async () => {
+  it('reports the dismissal and leaves the way back to settings', async () => {
     actions$ = of(RitualActions.dismissed('water'));
 
     const toast = await firstValueFrom(effects.undoDismissToast$);
 
     expect(toast).toEqual(
       expect.objectContaining({
-        message: expect.objectContaining({
+        message: {
           key: 'ritual.toast.dismissed',
-          action: {
-            labelKey: 'ritual.toast.undo',
-            action: RitualActions.restored('water'),
-          },
-        }),
+          durationMs: 6000,
+          group: 'ritual-dismiss',
+        },
       })
     );
   });

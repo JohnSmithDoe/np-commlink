@@ -3,9 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InfiniteScrollCustomEvent } from '@ionic/angular/standalone';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
+  LIST_FACADE,
   ListPageFacade,
   ListSection,
-  LIST_FACADE,
 } from '../../../util/item-lists/list-page.facade';
 import { CategoryFilterFacade } from '../../../data/item-lists/category-filter.facade';
 import { ListPageComponent } from './list-page.component';
@@ -34,21 +34,21 @@ const scrolledToEnd = () =>
 
 const fakeFacade = (
   state: WritableSignal<ItemList<BaseItem> | undefined>
-): Omit<ListPageFacade, 'windowSize'> & {
+): Omit<ListPageFacade, 'paginatedBy'> & {
   managed: number;
   reordered: { ids: string[]; sectionId?: string }[];
   catalog: WritableSignal<Category[]>;
   items: WritableSignal<BaseItem[] | undefined>;
   searchResult: WritableSignal<SearchResult<BaseItem> | undefined>;
   sections?: WritableSignal<ListSection[]>;
-  windowSize: WritableSignal<number | undefined>;
+  paginatedBy: WritableSignal<number | undefined>;
 } => {
   const facade = {
     state,
     items: signal<BaseItem[] | undefined>(undefined),
     searchResult: signal<SearchResult<BaseItem> | undefined>(undefined),
     catalog: signal<Category[]>([]),
-    windowSize: signal<number | undefined>(undefined),
+    paginatedBy: signal<number | undefined>(undefined),
     search: () => {},
     setSortMode: () => {},
     selectCategory: () => {},
@@ -153,51 +153,51 @@ describe('ListPageComponent', () => {
   it('renders every item while no window is asked for', () => {
     facade.items.set(manyItems(500));
 
-    expect(component.windowedItems()).toHaveLength(500);
+    expect(component.paginatedItems()).toHaveLength(500);
     expect(component.hiddenCount()).toBe(0);
   });
 
   it('renders only the window once one is asked for', () => {
-    facade.windowSize.set(200);
+    facade.paginatedBy.set(200);
     facade.items.set(manyItems(500));
 
-    expect(component.windowedItems()).toHaveLength(200);
+    expect(component.paginatedItems()).toHaveLength(200);
     expect(component.hiddenCount()).toBe(300);
   });
 
   it('leaves a list shorter than the window whole', () => {
-    facade.windowSize.set(200);
+    facade.paginatedBy.set(200);
     facade.items.set(manyItems(12));
 
-    expect(component.windowedItems()).toHaveLength(12);
+    expect(component.paginatedItems()).toHaveLength(12);
     expect(component.hiddenCount()).toBe(0);
   });
 
   it('widens the window by one step at a time', async () => {
-    facade.windowSize.set(200);
+    facade.paginatedBy.set(200);
     facade.items.set(manyItems(500));
 
     await component.showMore(scrolledToEnd());
 
-    expect(component.windowedItems()).toHaveLength(400);
+    expect(component.paginatedItems()).toHaveLength(400);
     expect(component.hiddenCount()).toBe(100);
   });
 
   it('collapses a widened window when the search changes', async () => {
-    facade.windowSize.set(200);
+    facade.paginatedBy.set(200);
     facade.items.set(manyItems(500));
     await component.showMore(scrolledToEnd());
 
     state.set(mockListState({ searchQuery: 'milk' }));
 
-    expect(component.windowedItems()).toHaveLength(200);
+    expect(component.paginatedItems()).toHaveLength(200);
   });
 
   it('keeps the list unknown rather than empty while no items have arrived', () => {
-    facade.windowSize.set(200);
+    facade.paginatedBy.set(200);
     facade.items.set(undefined);
 
-    expect(component.windowedItems()).toBeUndefined();
+    expect(component.paginatedItems()).toBeUndefined();
     expect(component.hiddenCount()).toBe(0);
   });
 
@@ -217,11 +217,11 @@ describe('ListPageComponent', () => {
   });
 
   it('renders the window as one unnamed section while the facade names none', () => {
-    facade.windowSize.set(2);
+    facade.paginatedBy.set(2);
     facade.items.set(manyItems(5));
 
     expect(component.sections()).toEqual([
-      { id: '', items: component.windowedItems() },
+      { id: '', items: component.paginatedItems() },
     ]);
     expect(component.showSectionHeaders()).toBe(false);
   });
@@ -253,7 +253,7 @@ describe('ListPageComponent', () => {
     expect(component.reorderArmed()).toBe(false);
 
     state.set(mockListState());
-    facade.windowSize.set(2);
+    facade.paginatedBy.set(2);
     facade.items.set(manyItems(5));
     expect(component.reorderArmed()).toBe(false);
   });

@@ -5,7 +5,7 @@ export const UNDO_STATE_KEY = 'undo';
 
 const selectUndoState = createFeatureSelector<UndoState>(UNDO_STATE_KEY);
 
-export const selectUndoTop = createSelector(
+export const selectUndoEntries = createSelector(
   selectUndoState,
-  (state): UndoEntry | undefined => state.entries.at(-1)
+  (state): readonly UndoEntry[] => state.entries
 );

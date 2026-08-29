@@ -46,6 +46,7 @@ export class HouseholdListPageFacade extends BaseListPageFacade {
   readonly catalog = this.#store.selectSignal(selectHouseholdCategories);
 
   readonly activeListId = this.#store.selectSignal(selectActiveHouseholdListId);
+  readonly undoScope = this.activeListId;
 
   readonly sortOptions = computed<readonly ItemListSortOption[]>(() =>
     this.activeListId() === STORAGE_LIST_ID ? STORAGE_SORT_OPTIONS : []

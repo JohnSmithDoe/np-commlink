@@ -201,17 +201,38 @@ it was measured against.
   wipes are a different class and are not settled by this — destroying what the user was not looking at
   is scheduled ([next-version.md](./next-version.md)).
 - **Who opts into undo is decided by the round trip, not by taste.** `undoableDelete` pushes
-  `addItem(item)`, so a list qualifies only where the delete took nothing but that item: shopping,
-  storage, products, tasks, tracking, recipes, vitals' readings. The abstainers each have a reason —
-  categories and vitals' profiles CASCADE, so `addItem` would restore the row and not what it took with
-  it; cash confirms instead; trackplay stashes one snapshot where the stack holds ten. **Products is the
-  one that slipped through**: deleting a product also strips it from every recipe, and restoring the
-  product does not bring those ingredient lines back.
-- **The stack's persistent path is `app-undo-button`, in every list page's header.** A toast is
-  `role="status"`, so its button is never announced and it lives five seconds; the header button lives as
-  long as the stack is not empty and is what makes entries below the top reachable at all. It is also
-  what earns the `a11y-no-actionable-toast-button` suppression — the rule stays suppressed only while
-  trackplay, the last caller with no such path, keeps its own toast.
+  `addItem(item)`, so a list qualifies through it only where the delete took nothing but that item:
+  shopping, storage, products, tasks, tracking, recipes, vitals' readings, trackplay's games. **A
+  cascade qualifies too, but must build its entry in the COMMAND** — an effect runs after the reducer,
+  which has already dropped what the entry needs to carry. Vitals' pills and profiles do that, and so
+  do trackplay's players and game types. The abstainers: categories still cascade with no restore
+  action, and cash confirms instead. **Products is the one that slipped through**: deleting a product
+  also strips it from every recipe, and restoring the product does not bring those ingredient lines
+  back.
+- **The stack's ONLY path is `app-undo-button`, in the header of every list that can raise an entry —
+  the toast reports the delete and offers nothing.** A toast is `role="status"`, so a button inside it
+  is never announced, and it lived five seconds where the header button lives as long as its own list
+  has entries, reaches entries below the top, and names the item it would restore. Being the only
+  control is also what stops a five-second window and a persistent one from resolving the same entry
+  twice.
+- **An entry is offered only where undoing it is visible.** One stack, but `UndoEntry.scope` is an
+  `ItemListId`, so a stash delete is not offered from the pills page — or from shopping, one tab away,
+  where the restored row would land off screen and the only feedback would be the button vanishing.
+  Leaving a list only hides its entries; returning restores access. The scope is DECLARED, never read
+  from the router: `note-editor.facade.ts` deletes and then navigates, so a URL would record the page
+  being left. Producer and page import the same constant, so a wrong scope cannot compile; a
+  mismatched one shows up as a button that never appears, never as a wrong restore.
+- **The cap of ten counts per scope.** Once the button promises the recent deletes of the list on
+  screen, a global cap would let ten deletes in one list evict another's entry — making that button's
+  depth depend on work the user cannot see.
+- **A toast reports; it never offers.** `ToastMessage.action` is gone from the framework, not merely
+  unused: `ion-toast` is `role="status"`, so a button in one is never announced, and its handler fires
+  whenever the tap lands — against state that has since moved. Both are traps a caller cannot see, so
+  the capability was withdrawn rather than documented, and every offer now has an on-page control:
+  `app-undo-button` for the stack, ZURÜCKHOLEN in settings for ritual's dismissals. With no caller left,
+  `a11y-no-actionable-toast-button` carries no suppression anywhere and is simply enforced. **Undo
+  answers with a toast of its own** — the button is undo's only feedback, and without one a successful
+  restore reads as the control vanishing.
 - **A write confirms only where its result is off screen.** A create lands in the list being looked at
   and an edit changes the row behind the dialog, so neither toasts anywhere in the app; a delete is an
   absence, and what it raises is the undo offer rather than a receipt. Tracking kept four toasts under

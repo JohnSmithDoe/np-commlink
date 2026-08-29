@@ -60,7 +60,7 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
 
   readonly catalog = this.#categories.allItems;
   readonly sortable = signal(false);
-  readonly windowSize = signal(LEDGER_WINDOW);
+  readonly paginatedBy = signal(LEDGER_WINDOW);
 
   readonly account = computed(() =>
     this.#accounts.allItems().find(({ id }) => id === this.accountId())

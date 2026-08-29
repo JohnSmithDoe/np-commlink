@@ -14,7 +14,7 @@ import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseListPageFacade } from '../../@shared/data/item-lists/list-page.facade.base';
 import { ListSection } from '../../@shared/util/item-lists/list-page.facade';
-import { Note, NoteImageId } from '../model/notes.types';
+import { Note, NoteImageId, NOTES_LIST_ID } from '../model/notes.types';
 import { createNote } from '../util/notes.factory';
 import { NoteImageStore } from './note-image.store';
 import { NotesActions } from './notes.actions';
@@ -44,6 +44,7 @@ export class NotesListPageFacade extends BaseListPageFacade {
   readonly unpinned = this.#store.selectSignal(selectUnpinnedNotes);
 
   readonly hasToolbar = signal(false);
+  readonly undoScope = signal(NOTES_LIST_ID);
 
   readonly sections = computed<readonly ListSection[]>(() =>
     [

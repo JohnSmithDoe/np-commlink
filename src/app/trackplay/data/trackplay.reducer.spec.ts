@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 import { TrackplayState } from '../model/trackplay.types';
 import { gameTypeIdOf } from '../util/game-type.utils';
+import { gamesWithPlayer, gamesWithType } from '../util/trackplay.cascade';
 import {
   mockGame,
   mockGamesState,
@@ -44,7 +45,6 @@ describe('trackplayReducer — composition', () => {
     expect(initialState.gameTypes.items).toHaveLength(3);
     expect(initialState.players.items).toEqual([]);
     expect(initialState.games.items).toEqual([]);
-    expect(initialState.lastDeleted).toBeNull();
   });
 });
 
@@ -88,36 +88,50 @@ describe('trackplayReducer — deleting a player', () => {
     expect(gameOf(deleted, 'other')).toBe(gameOf(start, 'other'));
   });
 
-  it('restores a player the games reducer never saw removed', () => {
+  it('restores the player, their scores and the ended game that went with them', () => {
     const restored = trackplayReducer(
       deleted,
-      TrackplayActions.restoreLastDeleted()
+      TrackplayActions.restorePlayer(
+        mockPlayer({ id: 'p1', name: 'Alice' }),
+        gamesWithPlayer(start.games, 'p1')
+      )
     );
 
-    expect(deleted.lastDeleted?.name).toBe('Alice');
     expect(playerOf(restored, 'p1')).toBeDefined();
     expect(gameOf(restored, 'solo-done')).toBeDefined();
     expect(gameOf(restored, 'shared')?.rounds[0].values).toEqual({
       p1: 5,
       p2: 3,
     });
-    expect(restored.lastDeleted).toBeNull();
+  });
+
+  it('keeps a game created after the delete, which the old snapshot ate', () => {
+    const meanwhile = trackplayReducer(
+      deleted,
+      GamesActions.addItem(mockGame({ id: 'fresh', playerIds: ['p2'] }))
+    );
+    const restored = trackplayReducer(
+      meanwhile,
+      TrackplayActions.restorePlayer(
+        mockPlayer({ id: 'p1', name: 'Alice' }),
+        gamesWithPlayer(start.games, 'p1')
+      )
+    );
+
+    expect(gameOf(restored, 'fresh')).toBeDefined();
+    expect(playerOf(restored, 'p1')).toBeDefined();
   });
 });
 
 describe('trackplayReducer — deleting a game and a type', () => {
-  it('stashes a deleted game and gives it back on undo', () => {
+  it('gives a deleted game back through its own addItem', () => {
     const game = mockGame({ id: 'g', name: 'Skat' });
     const start = mockTrackplayState({ games: mockGamesState([game]) });
 
     const deleted = trackplayReducer(start, GamesActions.removeItem(game));
-    const restored = trackplayReducer(
-      deleted,
-      TrackplayActions.restoreLastDeleted()
-    );
+    const restored = trackplayReducer(deleted, GamesActions.addItem(game));
 
     expect(gameOf(deleted, 'g')).toBeUndefined();
-    expect(deleted.lastDeleted?.name).toBe('Skat');
     expect(gameOf(restored, 'g')).toBeDefined();
   });
 
@@ -128,7 +142,6 @@ describe('trackplayReducer — deleting a game and a type', () => {
     );
 
     expect(state.gameTypes.items).toHaveLength(3);
-    expect(state.lastDeleted).toBeNull();
   });
 
   it('retypes its games to the default and clears the armed chip', () => {
@@ -155,16 +168,30 @@ describe('trackplayReducer — deleting a game and a type', () => {
 
     const restored = trackplayReducer(
       trackplayReducer(start, GamesActions.removeItem(game)),
-      TrackplayActions.restoreLastDeleted()
+      GamesActions.addItem(game)
     );
 
     expect(restored.games.showEndedGames).toBe(false);
   });
 
-  it('does nothing when there is no stash to restore', () => {
-    expect(
-      trackplayReducer(initialState, TrackplayActions.restoreLastDeleted())
-    ).toBe(initialState);
+  it('gives a deleted type back with the games it had retyped', () => {
+    const custom = mockGameType({ id: 'custom', name: 'Custom' });
+    const game = mockGame({ id: 'g', categoryIds: ['custom'] });
+    const start = mockTrackplayState({
+      games: mockGamesState([game]),
+      gameTypes: mockGameTypesState([mockGameType({ id: 'default' }), custom]),
+    });
+
+    const restored = trackplayReducer(
+      trackplayReducer(start, GameTypesActions.removeItem(custom)),
+      TrackplayActions.restoreGameType(
+        custom,
+        gamesWithType(start.games, 'custom')
+      )
+    );
+
+    expect(restored.gameTypes.items).toContainEqual(custom);
+    expect(gameOf(restored, 'g')).toEqual(game);
   });
 });
 
@@ -217,20 +244,15 @@ describe('trackplayReducer — scoring stamps both aggregates', () => {
 });
 
 describe('trackplayReducer — hydration', () => {
-  it('clears the stash and re-seeds the types from an empty document', () => {
+  it('re-seeds the types from an empty document', () => {
     const state = trackplayReducer(initialState, TrackplayActions.loaded(null));
 
     expect(state.gameTypes.items).toHaveLength(3);
-    expect(state.lastDeleted).toBeNull();
   });
 
-  it('never restores a stash that reached the disk', () => {
+  it('hydrates the players that reached the disk', () => {
     const persisted = mockTrackplayState({
       players: mockPlayersState([mockPlayer({ id: 'p1' })]),
-      lastDeleted: {
-        name: 'x',
-        snapshot: { players: [], games: [], gameTypes: [] },
-      },
     });
 
     const state = trackplayReducer(
@@ -239,6 +261,5 @@ describe('trackplayReducer — hydration', () => {
     );
 
     expect(playerOf(state, 'p1')).toBeDefined();
-    expect(state.lastDeleted).toBeNull();
   });
 });

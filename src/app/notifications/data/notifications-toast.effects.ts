@@ -1,23 +1,21 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `#plainToast` and `#actionToast` are two methods rather than one with a
- * conditional `buttons` array, because `a11y-no-actionable-toast-button`
- * only sees a button object written literally inside `create({...})`. An
- * array built then passed, a spread, or a `&&` inside the array all make
- * the rule structurally blind — the suppression would go unused and the
- * gate would be inert for every future caller. Two literals keep it
- * reading both paths, and the one that earns the exception carries it.
+ * A toast REPORTS and offers nothing but dismissal. `ion-toast` is
+ * `role="status"`, so any button in one is never announced, and a handler
+ * fires whenever the tap lands — against state that has since moved. Both
+ * were live traps rather than gaps to document, so the capability is gone
+ * and `a11y-no-actionable-toast-button` now has nothing to suppress.
+ *
+ * The `buttons` array stays written literally inside `create({...})`: that
+ * is the only shape the rule can read, and an array built then passed
+ * would make the gate inert for the next caller who tries.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { concatMap, firstValueFrom } from 'rxjs';
-import {
-  ToastAction,
-  ToastMessage,
-} from '../../@shared/model/notifications.types';
+import { ToastMessage } from '../../@shared/model/notifications.types';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 
 const TOAST_DURATION_MS = 1500;
@@ -28,7 +26,6 @@ export class NotificationsToastEffects {
   readonly #actions$ = inject(Actions);
   readonly #toastController = inject(ToastController);
   readonly #translate = inject(TranslateService);
-  readonly #store = inject(Store);
 
   readonly #grouped = new Map<string, HTMLIonToastElement>();
 
@@ -47,14 +44,12 @@ export class NotificationsToastEffects {
       this.#translate.get(message.key, message.parameters)
     );
     await this.#dismissIncumbent(message.group);
-    const toast = message.action
-      ? await this.#actionToast(message, text, message.action)
-      : await this.#plainToast(message, text);
+    const toast = await this.#toast(message, text);
     this.#trackGroup(message.group, toast);
     await toast.present();
   }
 
-  async #plainToast(
+  async #toast(
     message: ToastMessage,
     text: string
   ): Promise<HTMLIonToastElement> {
@@ -62,37 +57,6 @@ export class NotificationsToastEffects {
       position: 'bottom',
       positionAnchor: 'footer',
       buttons: [
-        {
-          text: 'X',
-          role: 'cancel',
-        },
-      ],
-      duration: message.durationMs ?? TOAST_DURATION_MS,
-      color: message.color ?? DEFAULT_TOAST_COLOR,
-      message: text,
-    });
-  }
-
-  async #actionToast(
-    message: ToastMessage,
-    text: string,
-    offered: ToastAction
-  ): Promise<HTMLIonToastElement> {
-    const label = await firstValueFrom(this.#translate.get(offered.labelKey));
-    return this.#toastController.create({
-      position: 'bottom',
-      positionAnchor: 'footer',
-      htmlAttributes: { 'data-testid': 'action-toast' },
-      buttons: [
-        // eslint-disable-next-line commlink/a11y-no-actionable-toast-button -- Accepted gap, not a false positive: ion-toast is role="status" + aria-live="polite", so this button is never announced. Any caller setting `ToastMessage.action` therefore owes a persistent path to the same action. The undo stack now has one — `app-undo-button` in every list page's header — leaving trackplay's own `lastDeleted` toast as the last caller without one. Remove this line the moment trackplay joins the stack (docs/next-version.md).
-        {
-          side: 'start',
-          text: label,
-          role: 'destructive',
-          handler: () => {
-            this.#store.dispatch(offered.action);
-          },
-        },
         {
           text: 'X',
           role: 'cancel',

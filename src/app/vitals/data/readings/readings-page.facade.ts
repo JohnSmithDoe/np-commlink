@@ -14,7 +14,7 @@
 
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
-import { Reading } from '../../model/vitals.types';
+import { Reading, READINGS_LIST_ID } from '../../model/vitals.types';
 import { ProfilesFacade } from '../profiles/profiles.facade';
 import { ReadingsFacade } from './readings.facade';
 
@@ -33,6 +33,7 @@ export class ReadingsPageFacade extends BaseListPageFacade {
   readonly sortable = signal(false);
   readonly searchable = signal(false);
   readonly hasToolbar = signal(false);
+  readonly undoScope = signal(READINGS_LIST_ID);
 
   readonly profile = this.#profiles.routeProfile;
   readonly heading = computed(() => this.profile()?.name ?? '');

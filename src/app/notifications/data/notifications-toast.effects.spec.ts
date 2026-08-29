@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ToastController } from '@ionic/angular/standalone';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
-import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, lastValueFrom, Observable, of } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
@@ -34,7 +34,6 @@ const inGroup = (key: string) =>
 describe('NotificationsToastEffects', () => {
   let actions$: Observable<Action>;
   let effects: NotificationsToastEffects;
-  let store: MockStore;
   let created: ToastElement[];
   let toastController: { create: ReturnType<typeof vi.fn> };
 
@@ -62,7 +61,6 @@ describe('NotificationsToastEffects', () => {
         },
       ],
     });
-    store = TestBed.inject(MockStore);
     effects = TestBed.inject(NotificationsToastEffects);
   };
 
@@ -102,7 +100,7 @@ describe('NotificationsToastEffects', () => {
     );
   });
 
-  it('offers only a dismiss button when no action was set', async () => {
+  it('offers a dismiss button and nothing else', async () => {
     setup();
     actions$ = of(NotificationsActions.toast({ key: 'toast.saved' }));
 
@@ -124,30 +122,15 @@ describe('NotificationsToastEffects', () => {
     expect(presented().duration).toBe(8000);
   });
 
-  it('dispatches the offered action when its button is tapped', async () => {
+  it('carries no handler on any button, whatever the caller asked for', async () => {
     setup();
-    const dispatch = vi.spyOn(store, 'dispatch');
     actions$ = of(
-      NotificationsActions.toast({
-        key: 'trackplay.toast.undo-delete',
-        action: {
-          labelKey: 'trackplay.toast.undo',
-          action: { type: '[Trackplay] restoreLastDeleted' },
-        },
-      })
+      NotificationsActions.toast({ key: 'undo.toast.deleted', group: 'undo' })
     );
 
     await firstValueFrom(effects.presentToast$);
-    const offered = presented().buttons.find((button) => !!button.handler);
-    offered?.handler?.();
 
-    expect(offered?.text).toBe('trackplay.toast.undo');
-    expect(presented().htmlAttributes).toEqual({
-      'data-testid': 'action-toast',
-    });
-    expect(dispatch).toHaveBeenCalledWith({
-      type: '[Trackplay] restoreLastDeleted',
-    });
+    expect(presented().buttons.some((button) => !!button.handler)).toBe(false);
   });
 
   it('dismisses the incumbent of a group before presenting its successor', async () => {

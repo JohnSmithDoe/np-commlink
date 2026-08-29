@@ -41,6 +41,7 @@ export class RecipesFacade extends BaseListPageFacade {
   readonly items = this.#store.selectSignal(selectRecipesListItems);
   readonly searchResult = this.#store.selectSignal(selectRecipesSearchResult);
   readonly sortOptions = signal(SORT_OPTIONS);
+  readonly undoScope = signal(RECIPES_LIST_ID);
 
   readonly matches = this.#store.selectSignal(selectRecipeMatches);
   readonly allItems = this.#store.selectSignal(selectRecipes);

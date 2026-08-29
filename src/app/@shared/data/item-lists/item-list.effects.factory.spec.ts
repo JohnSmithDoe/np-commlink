@@ -18,12 +18,21 @@ const selectTestList = createFeatureSelector<ItemList<BaseItem>>('test-list');
 
 const item: BaseItem = { id: 'a', name: 'Milk' };
 
+const TEST_LIST_ID = '_test-list';
+
 const effectsFor = (undoable: boolean) =>
   createItemListEffects({
     actions: TestActions,
     select: selectTestList,
     create: (name: string) => ({ id: 'new', name }),
-    ...(undoable ? { undoableDelete: TestActions.removeItem } : {}),
+    ...(undoable
+      ? {
+          undoableDelete: {
+            scope: TEST_LIST_ID,
+            removeItem: TestActions.removeItem,
+          },
+        }
+      : {}),
   });
 
 describe('createItemListEffects — undoableDelete', () => {
@@ -35,7 +44,7 @@ describe('createItemListEffects — undoableDelete', () => {
     });
   });
 
-  it('records the removed item and its own addItem as the way back', async () => {
+  it('records the removed item under the list it was configured with', async () => {
     actions$ = of(TestActions.removeItem(item));
     const undoDelete$ = effectsFor(true).undoDelete$;
     if (!undoDelete$) throw new Error('expected an opted-in list to undo');
@@ -45,7 +54,11 @@ describe('createItemListEffects — undoableDelete', () => {
     );
 
     expect(emitted).toEqual([
-      UndoActions.pushed({ name: 'Milk', action: TestActions.addItem(item) }),
+      UndoActions.pushed({
+        scope: TEST_LIST_ID,
+        name: 'Milk',
+        action: TestActions.addItem(item),
+      }),
     ]);
   });
 

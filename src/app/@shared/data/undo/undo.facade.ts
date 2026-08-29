@@ -1,16 +1,21 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ItemListId } from '../../model/item-list.types';
+import { UndoEntry } from '../../model/undo.types';
+import { newestIn } from '../../util/undo.utils';
 import { UndoActions } from './undo.actions';
-import { selectUndoTop } from './undo.selector';
+import { selectUndoEntries } from './undo.selector';
 
 @Injectable({ providedIn: 'root' })
 export class UndoFacade {
   readonly #store = inject(Store);
+  readonly #entries = this.#store.selectSignal(selectUndoEntries);
 
-  readonly top = this.#store.selectSignal(selectUndoTop);
-  readonly canUndo = computed(() => this.top() !== undefined);
+  topIn(scope: Signal<ItemListId>): Signal<UndoEntry | undefined> {
+    return computed(() => newestIn(this.#entries(), scope()));
+  }
 
-  undo(): void {
-    this.#store.dispatch(UndoActions.performed());
+  undo(scope: ItemListId): void {
+    this.#store.dispatch(UndoActions.performed(scope));
   }
 }

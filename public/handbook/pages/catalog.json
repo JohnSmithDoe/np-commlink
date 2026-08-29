@@ -134,7 +134,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort, danach fünf Sekunden <strong>Rückgängig</strong>.",
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; weites Wischen löscht sofort. <strong>Kein Rückgängig</strong>: das Löschen nimmt die Kategorie aus allen Einträgen, und dafür gibt es noch keine Rücknahme.",
             "<strong>Nach rechts wischen: hier passiert nichts.</strong> Die Produktliste ist die einzige der drei ohne rechte Geste.",
             "<strong>Keine <code>+</code>/<code>−</code></strong> und keine Menge — ein Produkt ist kein Bestand.",
             "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em> mit den vier Feldern von oben.",

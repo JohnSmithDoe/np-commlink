@@ -3,7 +3,6 @@ import { createMetric } from '../../@shared/data/persisted-states/persisted-slic
 import { selectGameCount } from './games/games.selector';
 import { TrackplayActions } from './trackplay.actions';
 import { trackplayReducer } from './trackplay.reducer';
-import { TrackplayEffects } from './trackplay.effects';
 import {
   gamesListEffects,
   gameTypesListEffects,
@@ -37,7 +36,6 @@ export const trackplayContext = providePersistedContext({
     },
   ],
   effects: [
-    TrackplayEffects,
     playersListEffects,
     gamesListEffects,
     gameTypesListEffects,

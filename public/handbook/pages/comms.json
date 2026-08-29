@@ -62,7 +62,7 @@
         },
         {
           "type": "p",
-          "html": "Alle anderen Programme melden sich <strong>nicht</strong> hier, sondern als kurzer Hinweis am unteren Bildschirm­rand („Einträge wurden gespeichert\", „… gelöscht\" mit <em>Rückgängig</em>, Speicherfehler). Diese Hinweise sind flüchtig und werden nirgends aufbewahrt. Im Entwicklungsmodus stehen unter der Liste zusätzlich zwei Testknöpfe; in der ausgelieferten App und im APK sind sie nicht vorhanden."
+          "html": "Alle anderen Programme melden sich <strong>nicht</strong> hier, sondern als kurzer Hinweis am unteren Bildschirm­rand („Einträge wurden gespeichert\", „… gelöscht\", Speicherfehler). Diese Hinweise sind flüchtig und werden nirgends aufbewahrt. Im Entwicklungsmodus stehen unter der Liste zusätzlich zwei Testknöpfe; in der ausgelieferten App und im APK sind sie nicht vorhanden."
         },
         {
           "type": "figure",

@@ -7,10 +7,18 @@ import { UndoEntry } from '../../model/undo.types';
 import { NotificationsActions } from '../actions/notifications.actions';
 import { UndoActions } from './undo.actions';
 import { undoEffects } from './undo.effects';
-import { selectUndoTop } from './undo.selector';
+import { selectUndoEntries } from './undo.selector';
+
+const STASH = '_storage';
+const SHOPPING = '_shopping';
 
 const restoreMilk = { type: '[Shopping] add item' };
-const entry: UndoEntry = { name: 'Milk', action: restoreMilk };
+const entry: UndoEntry = { scope: STASH, name: 'Milk', action: restoreMilk };
+const butter: UndoEntry = {
+  scope: SHOPPING,
+  name: 'Butter',
+  action: { type: '[Shopping] add butter' },
+};
 
 describe('undoEffects', () => {
   let actions$: Observable<Action>;
@@ -32,7 +40,7 @@ describe('undoEffects', () => {
 
   afterEach(() => store.resetSelectors());
 
-  it('offers undo as a grouped 5 s toast naming the deleted item', async () => {
+  it('reports the delete as a grouped 5 s toast that offers no action', async () => {
     setup();
     actions$ = of(UndoActions.pushed(entry));
 
@@ -42,29 +50,39 @@ describe('undoEffects', () => {
         parameters: { name: 'Milk' },
         durationMs: 5000,
         group: 'undo',
-        action: {
-          labelKey: 'undo.action',
-          action: UndoActions.performed(),
-        },
       }),
     ]);
   });
 
-  it('runs the top entry and then pops it', async () => {
+  it('runs the newest entry of the named scope and pops that one', async () => {
     setup();
-    store.overrideSelector(selectUndoTop, entry);
-    actions$ = of(UndoActions.performed());
+    store.overrideSelector(selectUndoEntries, [entry, butter]);
+    actions$ = of(UndoActions.performed(STASH));
 
     expect(await emissions(undoEffects.performUndo$)).toEqual([
       restoreMilk,
-      UndoActions.popped(),
+      UndoActions.popped(STASH),
+      NotificationsActions.toast({
+        key: 'undo.toast.restored',
+        parameters: { name: 'Milk' },
+        durationMs: 5000,
+        group: 'undo',
+      }),
     ]);
+  });
+
+  it('stays silent for a scope the stack does not hold', async () => {
+    setup();
+    store.overrideSelector(selectUndoEntries, [butter]);
+    actions$ = of(UndoActions.performed(STASH));
+
+    expect(await emissions(undoEffects.performUndo$)).toEqual([]);
   });
 
   it('stays silent when the stack is empty', async () => {
     setup();
-    store.overrideSelector(selectUndoTop, undefined);
-    actions$ = of(UndoActions.performed());
+    store.overrideSelector(selectUndoEntries, []);
+    actions$ = of(UndoActions.performed(STASH));
 
     expect(await emissions(undoEffects.performUndo$)).toEqual([]);
   });

@@ -37,10 +37,16 @@ and every exemption taken so far.
   restore action carrying what the cascade removed, computed where the cascade runs. Until then the
   categories dialog's full swipe is the sharpest gesture in the app, having been made `expandable` on
   the promise of an undo that does not cover it yet.
-- **Trackplay joins the undo stack, per entity.** `restoreSnapshot` writes the pre-delete `players`,
-  `games` and `gameTypes` arrays back wholesale, so delete → add player → undo loses the new player.
-  Per-entity restore actions fix it and let trackplay pass `undoableDelete` like shopping, storage and
-  products already do. Nothing is broken today: delete followed straight by undo is correct.
+- **The undo scope has no gate.** Producer and page each name the list, and only a spec would prove
+  they agree; the symptom of drift is a button that never appears, which is why the gate did not ship
+  with the scoping. What is owed: a plugin rule banning a string literal in the three scope positions,
+  and a contract spec per producing list.
+- **A list scoped per page breaks where one list is shown on two pages.** Readings are one list shown
+  filtered per profile, so profile A's reading is undoable from profile B's page — the same
+  invisible-restore the scoping removed, one level down. Cash transactions and trackplay games have the
+  same shape already, each backing two page facades (by account and by category; overall and per
+  player), and would inherit it the day either opts into undo. The fix is a scope built from the
+  filter, which widens `undoableDelete.scope` to accept a function of the item.
 
 ## Measured costs
 

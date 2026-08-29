@@ -89,6 +89,7 @@ export class ProfilesFacade {
     const pillIds = new Set(pills.map((pill) => pill.id));
     this.#store.dispatch(
       UndoActions.pushed({
+        scope: PROFILES_LIST_ID,
         name: profile.name,
         action: VitalsActions.restoreProfile(
           profile,

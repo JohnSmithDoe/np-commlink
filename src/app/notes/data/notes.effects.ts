@@ -18,10 +18,15 @@ import { catchError, concatMap, EMPTY, filter, from } from 'rxjs';
 import { pushUndoOnDelete } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { rotateBase64 } from '../util/notes.utils';
 import { NoteImageStore } from './note-image.store';
+import { NOTES_LIST_ID } from '../model/notes.types';
 import { NotesActions } from './notes.actions';
 
 export const notesListEffects = {
-  undoDelete$: pushUndoOnDelete(NotesActions.removeItem, NotesActions.addItem),
+  undoDelete$: pushUndoOnDelete(
+    NOTES_LIST_ID,
+    NotesActions.removeItem,
+    NotesActions.addItem
+  ),
 
   storeImage$: createEffect(
     (actions$ = inject(Actions), images = inject(NoteImageStore)) => {

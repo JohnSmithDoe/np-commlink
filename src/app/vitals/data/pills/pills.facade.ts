@@ -75,6 +75,7 @@ export class PillsFacade {
   removeItem(pill: Pill): void {
     this.#store.dispatch(
       UndoActions.pushed({
+        scope: PILLS_LIST_ID,
         name: pill.name,
         action: VitalsActions.restorePill(
           pill,

@@ -171,7 +171,7 @@
         {
           "type": "ul",
           "items": [
-            "Weites Wischen löscht <strong>ohne Rückfrage</strong>. In <a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>, <a href=\"#/handbook/catalog\">CATALOG</a>, <a href=\"#/handbook/sigil\">SIGIL</a>, <a href=\"#/handbook/biomon\">BIOMON</a> und <a href=\"#/handbook/trackplay\">TRACKPLAY</a> erscheint danach fünf Sekunden lang ein Hinweis mit <strong>Rückgängig</strong> — in <a href=\"#/handbook/agenda\">AGENDA</a> und den übrigen Listen nicht. Dort ist weg weg.",
+            "Weites Wischen löscht <strong>ohne Rückfrage</strong>. Der Hinweis unten meldet den Löschvorgang nur. In <a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>, <a href=\"#/handbook/sigil\">SIGIL</a>, <a href=\"#/handbook/biomon\">BIOMON</a> und <a href=\"#/handbook/trackplay\">TRACKPLAY</a> steht danach <strong>Rückgängig</strong> oben in der Kopfzeile, solange die Liste etwas zurückzunehmen hat — und nur auf der Liste, von der du gelöscht hast. In <a href=\"#/handbook/agenda\">AGENDA</a>, <a href=\"#/handbook/catalog\">CATALOG</a> und den übrigen Listen ist weg weg.",
             "Wer bei gefüllter Suche wischt, wischt auf einer <em>gefilterten</em> Liste.",
             "Ein Filter überlebt das Verlassen der Seite. Eine „leere“ Liste ist oft nur eine gefilterte: steht dort <em>Kein Eintrag in dieser Kategorie</em>, tippe <code>ALLE</code>.",
             "Lange Listen zeigen nicht alles — am Ende steht <em>… weitere anzeigen</em>.",

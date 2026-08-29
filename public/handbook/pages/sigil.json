@@ -104,7 +104,7 @@
           "type": "ul",
           "items": [
             "<strong>Nach rechts wischen</strong> auf einer Zeile <em>mit</em> Bildern → türkise Fläche <strong>Bilder ansehen</strong>: öffnet die Bildansicht direkt aus der Liste, ohne den Editor. Zeilen ohne Bild haben diese Geste nicht.",
-            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten der Hinweis <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong> — die einzige Chance.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten der Hinweis <em>„… gelöscht\"</em>; <strong>Rückgängig</strong> oben in der Kopfzeile ist die einzige Chance.",
             "<strong>Griff am rechten Rand</strong> (die zwei Striche) → gedrückt halten und ziehen sortiert die Notiz innerhalb ihres Abschnitts um. Der Griff verschwindet, solange eine Suche aktiv ist.",
             "<strong>Tipp auf die Zeile</strong> öffnet den Editor, <strong>Tipp auf die Bild-Vorschau im Editor</strong> die Bildansicht.",
             "Kein Lang-Druck, kein Drei-Punkte-Menü — alles Weitere steckt im Editor."
@@ -130,7 +130,7 @@
           "type": "ul",
           "items": [
             "<strong>Es gibt keinen Speichern-Knopf.</strong> Das ist Absicht — wer den Editor sucht und nichts speichert, hat trotzdem alles. Umgekehrt: eine Notiz, in die nichts eingetippt wurde, ist nach dem Verlassen weg.",
-            "<strong>Löschen nimmt die Bilder mit.</strong> <em>Rückgängig</em> holt beides zurück, aber nur solange der Hinweis unten steht.",
+            "<strong>Löschen nimmt die Bilder mit.</strong> <em>Rückgängig</em> oben in der Kopfzeile holt beides zurück, solange du auf der Notizliste bist.",
             "<strong>Sortieren und Suchen schließen sich aus.</strong> Während gefiltert wird, gibt es keinen Griff: eine Umsortierung würde alle ausgeblendeten Notizen aus der Reihenfolge werfen.",
             "<strong>Anheften findet man nicht in der Liste.</strong> Es sitzt oben im Editor.",
             "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Notizen und Fotos löschen."

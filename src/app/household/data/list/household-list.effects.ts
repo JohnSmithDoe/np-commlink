@@ -28,7 +28,12 @@ import {
   createStorageItemFromProduct,
   createStorageItemFromShopping,
 } from '../../util/household.factory';
-import { HouseholdListId } from '../../model/household-list.types';
+import {
+  HouseholdListId,
+  PRODUCTS_LIST_ID,
+  SHOPPING_LIST_ID,
+  STORAGE_LIST_ID,
+} from '../../model/household-list.types';
 import { ProductsActions } from '../products/products.actions';
 import { selectProductsState } from '../products/products.selector';
 import { ShoppingActions } from '../shopping/shopping.actions';
@@ -159,7 +164,10 @@ export const shoppingListEffects = {
     actions: ShoppingActions,
     select: selectShoppingState,
     create: (name, filterBy) => createShoppingItem(name, filterBy),
-    undoableDelete: ShoppingActions.removeItem,
+    undoableDelete: {
+      scope: SHOPPING_LIST_ID,
+      removeItem: ShoppingActions.removeItem,
+    },
   }),
 
   clearSearch$: clearSearchAfter(ShoppingActions.updateSearch, [
@@ -173,7 +181,10 @@ export const storageListEffects = {
     actions: StorageActions,
     select: selectStorageState,
     create: (name, filterBy) => createStorageItem(name, filterBy),
-    undoableDelete: StorageActions.removeItem,
+    undoableDelete: {
+      scope: STORAGE_LIST_ID,
+      removeItem: StorageActions.removeItem,
+    },
   }),
 
   clearSearch$: clearSearchAfter(StorageActions.updateSearch, [
@@ -187,7 +198,10 @@ export const productsListEffects = {
     actions: ProductsActions,
     select: selectProductsState,
     create: (name, filterBy) => createProduct(name, filterBy),
-    undoableDelete: ProductsActions.removeItem,
+    undoableDelete: {
+      scope: PRODUCTS_LIST_ID,
+      removeItem: ProductsActions.removeItem,
+    },
   }),
 
   clearSearch$: clearSearchAfter(ProductsActions.updateSearch, [

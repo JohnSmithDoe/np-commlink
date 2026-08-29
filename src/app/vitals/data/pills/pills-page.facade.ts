@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
-import { Pill } from '../../model/vitals.types';
+import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { ProfilesFacade } from '../profiles/profiles.facade';
 import { PillsFacade } from './pills.facade';
 
@@ -16,6 +16,7 @@ export class PillsPageFacade extends BaseListPageFacade {
   readonly searchResult = this.#pills.searchResult;
   readonly sortable = signal(false);
   readonly hasToolbar = signal(false);
+  readonly undoScope = signal(PILLS_LIST_ID);
 
   readonly profile = this.#profiles.routeProfile;
   readonly heading = computed(() => this.profile()?.name ?? '');

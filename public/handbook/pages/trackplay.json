@@ -146,7 +146,7 @@
           "type": "ul",
           "items": [
             "<strong>Nach rechts wischen</strong> auf einer Zeile (Partie, Spieler, Spielart) → grüne Fläche <strong>Bearbeiten</strong>: bei einer Partie derselbe Dialog wie beim Anlegen — der Weg, Spieler nachzutragen.",
-            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong>. Bei <em>Standard</em> fehlt die Löschfläche.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Der Hinweis unten meldet es nur — <strong>Rückgängig</strong> steht oben in der Kopfzeile. Bei <em>Standard</em> fehlt die Löschfläche.",
             "<strong>Tipp auf eine Partiezeile</strong> öffnet den Punkteblock, <strong>auf eine Spielerzeile</strong> die Spielerseite, <strong>auf eine Spielart</strong> den Bearbeiten-Dialog.",
             "<strong>Enter in der Suchleiste</strong> legt sofort an: in der Spieleliste eine Partie <strong>ohne Spieler</strong> mit der Spielart des aktiven Chips, in der Spielerliste einen Spieler, in den Spielarten eine Spielart mit <em>Höchste Punktzahl gewinnt</em>.",
             "<strong>Waagerecht wischen im Punkteblock</strong>: ab vier Spielern ist die Tabelle breiter als der Schirm — Kopfzeile, Runden und Summenzeile scrollen gemeinsam.",
@@ -165,7 +165,7 @@
           "items": [
             "<strong>Eine Partie ohne Spieler lässt sich nicht öffnen</strong> — die Zeile ist grau. So entstehen die per Enter angelegten: nach rechts wischen, <strong>Bearbeiten</strong>, Spieler anhaken.",
             "<strong>Einen Spieler löschen greift in laufende Partien ein</strong>: seine Spalte und seine Punkte gehen mit. War er der letzte, wird eine laufende Partie geleert und eine beendete ganz gelöscht.",
-            "<strong>Rückgängig setzt das ganze Modul auf den Stand vor dem Löschen zurück</strong> — Spieler, Partien und Spielarten. Was in den fünf Sekunden danach noch angelegt wurde, ist damit weg.",
+            "<strong>Rückgängig holt genau das Gelöschte zurück</strong> — eine Spielart mitsamt den Partien, die auf <em>Standard</em> umgestellt wurden, und einen Spieler mitsamt seinen Punkten in jeder Partie, an der er teilgenommen hat. Was du danach angelegt hast, bleibt.",
             "<strong>Ein Unentschieden gibt es nicht.</strong> Bei gleicher Summe gewinnt, wer beim Anlegen weiter vorn angehakt wurde.",
             "<strong>Punkte gelten erst beim Verlassen des Feldes</strong> — Enter ist der sichere Weg.",
             "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Spielstände löschen."

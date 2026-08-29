@@ -1,8 +1,8 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The undo toast is located by its own id rather than by `ion-toast`,
- * because the shell mounts a toast of its own — the service-worker update
- * prompt — and an inline overlay sits in the DOM whether presented or
- * not. The element name is therefore ambiguous app-wide, not just here.
+ * The undo test drives the HEADER button: a toast reports and offers
+ * nothing, and this is the only e2e proving trackplay's per-entity
+ * restore, which replaced a snapshot that ate anything created after the
+ * delete.
  *
  * The reload test guards silent data loss: on re-entry the route
  * registers the slice at empty `initialState` and the resolver dispatches
@@ -27,7 +27,7 @@ test.describe('trackplay players', () => {
     await expect(listRow(page, 'Bob')).toBeVisible();
   });
 
-  test('deletes a player and restores it via the undo toast', async ({
+  test('deletes a player and restores it from the header button', async ({
     page,
   }) => {
     await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
@@ -41,14 +41,15 @@ test.describe('trackplay players', () => {
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })
     ).toHaveCount(0);
-    const toast = page.getByTestId('action-toast');
-    await expect(toast).toBeVisible();
-    await expect(toast).toContainText('Charlie');
 
-    await toast.getByRole('button', { name: 'Rückgängig' }).click();
+    const undo = page.getByTestId('undo-button');
+    await expect(undo).toBeVisible({ timeout: 10_000 });
+    await undo.click();
+
     await expect(
       mainContent(page).getByText('Charlie', { exact: true })
     ).toBeVisible();
+    await expect(undo).toHaveCount(0);
   });
 
   test('keeps players across a full reload (hydration must not clobber storage)', async ({

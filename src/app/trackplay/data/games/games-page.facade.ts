@@ -18,6 +18,7 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { ItemListSortOption } from '../../../@shared/model/item-list.types';
 import { GameTypesFacade } from '../game-types/game-types.facade';
+import { GAMES_LIST_ID } from '../../model/trackplay.types';
 import { GamesFacade } from './games.facade';
 
 const SORT_OPTIONS: readonly ItemListSortOption[] = [
@@ -32,6 +33,7 @@ export class GamesPageFacade extends BaseListPageFacade {
   protected readonly commands = this.#games;
 
   readonly state = this.#games.state;
+  readonly undoScope = signal(GAMES_LIST_ID);
   readonly items = this.#games.items;
   readonly searchResult = this.#games.searchResult;
   readonly catalog = inject(GameTypesFacade).allItems;

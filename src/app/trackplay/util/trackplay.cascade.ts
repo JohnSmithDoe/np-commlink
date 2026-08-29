@@ -1,14 +1,20 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * These run as a post-pass over the state `combineReducers` already
- * produced, and they read the PRE-action slice — `snapshotFor` is what
- * undo restores. That only holds while no per-aggregate reducer handles
- * the same action, because `combineReducers` returns the identical object
- * when nothing changed. The three `removeItem`s and `restoreLastDeleted`
- * therefore live here and nowhere else; `trackplay.reducer.ts` says so
- * again next to the wiring.
+ * produced, and they read the PRE-action slice — which only holds while no
+ * per-aggregate reducer handles the same action, because `combineReducers`
+ * returns the identical object when nothing changed. The three
+ * `removeItem`s and the two restores therefore live here and nowhere else;
+ * `trackplay.reducer.ts` says so again next to the wiring.
+ *
+ * `writtenBack` replaces a game by id and appends the ones that are gone,
+ * because deleting a player strips them from games that survive but takes
+ * a solo ENDED game with it — one restore has to answer both.
  * ───────────────────────────────────────────────────────────────── */
 
-import { removeListItem } from '../../@shared/util/item-lists/list.utils';
+import {
+  addListItem,
+  removeListItem,
+} from '../../@shared/util/item-lists/list.utils';
 import {
   Game,
   GamesState,
@@ -16,24 +22,32 @@ import {
   GameTypesState,
   Player,
   PlayersState,
-  TrackplayDeleted,
   TrackplayState,
   TrackplayId,
 } from '../model/trackplay.types';
 import { DEFAULT_GAME_TYPE_ID } from './trackplay.factory';
 import { gameTypeIdOf, withGameTypeId } from './game-type.utils';
 
-export const snapshotFor = (
-  state: TrackplayState,
-  name: string
-): TrackplayDeleted => ({
-  name,
-  snapshot: {
-    players: state.players.items,
-    games: state.games.items,
-    gameTypes: state.gameTypes.items,
-  },
-});
+export const gamesWithPlayer = (
+  games: GamesState,
+  playerId: TrackplayId
+): Game[] => games.items.filter((game) => game.playerIds.includes(playerId));
+
+export const gamesWithType = (games: GamesState, typeId: TrackplayId): Game[] =>
+  games.items.filter((game) => gameTypeIdOf(game) === typeId);
+
+const writtenBack = (
+  games: GamesState,
+  restored: readonly Game[]
+): GamesState => {
+  const byId = new Map(restored.map((game) => [game.id, game]));
+  const kept = games.items.map((game) => byId.get(game.id) ?? game);
+  const keptIds = new Set(kept.map((game) => game.id));
+  return {
+    ...games,
+    items: [...kept, ...restored.filter((game) => !keptIds.has(game.id))],
+  };
+};
 
 const withoutPlayer = (game: Game, playerId: TrackplayId): Game => ({
   ...game,
@@ -111,13 +125,22 @@ export const deleteGameTypeCascade = (
   gamesForPlayer: clearDeletedTypeFromFilter(state.gamesForPlayer, type.id),
 });
 
-export const restoreSnapshot = (
+export const restorePlayerCascade = (
   state: TrackplayState,
-  { snapshot }: TrackplayDeleted
+  player: Player,
+  games: readonly Game[]
 ): TrackplayState => ({
   ...state,
-  players: { ...state.players, items: snapshot.players },
-  games: { ...state.games, items: snapshot.games },
-  gameTypes: { ...state.gameTypes, items: snapshot.gameTypes },
-  lastDeleted: null,
+  players: addListItem<PlayersState, Player>(state.players, player),
+  games: writtenBack(state.games, games),
+});
+
+export const restoreGameTypeCascade = (
+  state: TrackplayState,
+  gameType: GameType,
+  games: readonly Game[]
+): TrackplayState => ({
+  ...state,
+  gameTypes: addListItem<GameTypesState, GameType>(state.gameTypes, gameType),
+  games: writtenBack(state.games, games),
 });

@@ -4,6 +4,7 @@ import { BaseItem } from '../../model/base-item.types';
 import { Category, CategoryId } from '../../model/category.types';
 import {
   ItemList,
+  ItemListId,
   ItemListSortOption,
   ItemListSortType,
   SearchResult,
@@ -25,7 +26,8 @@ export interface ListPageFacade {
   readonly sortable?: Signal<boolean>;
   readonly searchable?: Signal<boolean>;
   readonly hasToolbar?: Signal<boolean>;
-  readonly windowSize?: Signal<number>;
+  readonly paginatedBy?: Signal<number>;
+  readonly undoScope?: Signal<ItemListId>;
 
   search(term?: string): void;
   addItemFromSearch(): void;

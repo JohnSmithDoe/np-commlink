@@ -13,7 +13,6 @@ import {
   GamesView,
   GameTypesState,
   PlayersState,
-  TrackplayDeleted,
   TrackplayState,
 } from '../model/trackplay.types';
 
@@ -22,15 +21,7 @@ export const TRACKPLAY_STATE_KEY = 'trackplay';
 const selectTrackplayState =
   createFeatureSelector<TrackplayState>(TRACKPLAY_STATE_KEY);
 
-export const selectTrackplayPersisted = createSelector(
-  selectTrackplayState,
-  (state): TrackplayState => ({ ...state, lastDeleted: null })
-);
-
-export const selectLastDeleted = createSelector(
-  selectTrackplayState,
-  (state): TrackplayDeleted | null => state.lastDeleted
-);
+export const selectTrackplayPersisted = selectTrackplayState;
 
 export const selectPlayersList = createSelector(
   selectTrackplayState,

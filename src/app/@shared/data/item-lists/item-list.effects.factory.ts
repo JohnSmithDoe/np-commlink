@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
 import { EMPTY, map, withLatestFrom } from 'rxjs';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
-import { ItemList } from '../../model/item-list.types';
+import { ItemList, ItemListId } from '../../model/item-list.types';
 import { findMatchingItem } from '../../util/app.utils';
 import { updatedSearchQuery } from '../../util/item-lists/list.utils';
 import { NotificationsActions } from '../actions/notifications.actions';
@@ -44,6 +44,7 @@ const toastAddItemFailure = <T extends BaseItem>(
   );
 
 export const pushUndoOnDelete = <T extends BaseItem>(
+  scope: ItemListId,
   removeItem: Creator<[item: T], { item: T }>,
   addItem: Creator<[item: T], { item: T }>
 ) =>
@@ -52,7 +53,11 @@ export const pushUndoOnDelete = <T extends BaseItem>(
       return actions$.pipe(
         ofType(removeItem),
         map(({ item }) =>
-          UndoActions.pushed({ name: item.name, action: addItem(item) })
+          UndoActions.pushed({
+            scope,
+            name: item.name,
+            action: addItem(item),
+          })
         )
       );
     },
@@ -97,7 +102,10 @@ export const createItemListEffects = <
   select: MemoizedSelector<object, S>;
   create: ItemFromSearch<T> | null;
   match?: Matcher<T>;
-  undoableDelete?: Creator<[item: T], { item: T }>;
+  undoableDelete?: {
+    scope: ItemListId;
+    removeItem: Creator<[item: T], { item: T }>;
+  };
 }) => ({
   addItemFromSearch$: addFromSearch(
     cfg.actions,
@@ -138,7 +146,13 @@ export const createItemListEffects = <
   addItemFailure$: toastAddItemFailure(cfg.actions.addItemFailure),
 
   ...(cfg.undoableDelete
-    ? { undoDelete$: pushUndoOnDelete(cfg.undoableDelete, cfg.actions.addItem) }
+    ? {
+        undoDelete$: pushUndoOnDelete(
+          cfg.undoableDelete.scope,
+          cfg.undoableDelete.removeItem,
+          cfg.actions.addItem
+        ),
+      }
     : {}),
 });
 

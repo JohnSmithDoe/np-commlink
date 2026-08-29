@@ -11,6 +11,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { ItemListSortOption } from '../../../@shared/model/item-list.types';
+import { PLAYERS_LIST_ID } from '../../model/trackplay.types';
 import { PlayersFacade } from './players.facade';
 
 const SORT_OPTIONS: readonly ItemListSortOption[] = [
@@ -25,6 +26,7 @@ export class PlayersPageFacade extends BaseListPageFacade {
   protected readonly commands = this.#players;
 
   readonly state = this.#players.state;
+  readonly undoScope = signal(PLAYERS_LIST_ID);
   readonly items = this.#players.items;
   readonly searchResult = this.#players.searchResult;
   readonly sortOptions = signal(SORT_OPTIONS);

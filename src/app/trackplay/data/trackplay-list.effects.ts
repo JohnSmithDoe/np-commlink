@@ -17,6 +17,7 @@ import {
   createGameType,
   createPlayer,
 } from '../util/trackplay.factory';
+import { GAMES_LIST_ID } from '../model/trackplay.types';
 import { GameTypesActions } from './game-types/game-types.actions';
 import { GamesActions } from './games/games.actions';
 import { PlayersActions } from './players/players.actions';
@@ -42,6 +43,7 @@ export const gamesListEffects = createItemListEffects({
   actions: GamesActions,
   select: selectGamesList,
   create: (name, filterBy) => createGame(name, filterBy),
+  undoableDelete: { scope: GAMES_LIST_ID, removeItem: GamesActions.removeItem },
 });
 
 export const gameTypesListEffects = createItemListEffects({

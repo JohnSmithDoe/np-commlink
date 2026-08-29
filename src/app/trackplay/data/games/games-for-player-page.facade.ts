@@ -42,6 +42,7 @@ export class GamesForPlayerPageFacade extends BaseListPageFacade {
   protected readonly commands = this.#view;
 
   readonly state = this.#view.state;
+  readonly undoScope = signal(GAMES_LIST_ID);
   readonly items = this.#view.items;
   readonly searchResult = this.#view.searchResult;
   readonly catalog = inject(GameTypesFacade).allItems;

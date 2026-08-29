@@ -6,7 +6,9 @@
   (addItem)="facade.showCreateDialog()"
 >
   <ion-buttons toolbar slot="end">
-    <app-undo-button />
+    @if (facade.undoScope) {
+      <app-undo-button [scope]="facade.undoScope()" />
+    }
   </ion-buttons>
 
   @if (facade.searchable?.() ?? true) {

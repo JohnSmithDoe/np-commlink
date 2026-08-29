@@ -145,7 +145,7 @@
           "type": "ul",
           "items": [
             "<strong>Nach rechts wischen</strong> auf einer Zeile (Profil, Eintrag oder Medikament) → grüne Fläche <strong>Bearbeiten</strong>, öffnet denselben Dialog wie ein Tipp.",
-            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em> mit <strong>Rückgängig</strong>.",
+            "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em>; <strong>Rückgängig</strong> steht oben in der Kopfzeile.",
             "<strong>Tipp</strong> auf eine Profilzeile öffnet das Profil, auf eine Eintrags- oder Medikamentenzeile den Bearbeiten-Dialog.",
             "<strong>Enter in der Suchleiste</strong> der Profilliste legt eine Person mit diesem Namen an. In der Medikamentenliste filtert die Suchleiste nur — dort geht Neues ausschließlich über <strong>+</strong>.",
             "<strong>Köfferchen</strong> auf der Profilseite → Medikamente, <strong>Stift</strong> → umbenennen oder Typ wechseln.",
@@ -166,7 +166,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Ein Profil löschen löscht seine Geschichte mit</strong> — Einträge, Medikamente, Einnahme-Vermerke. <strong>Rückgängig</strong> holt alles zurück, aber nur solange der Hinweis unten steht.",
+            "<strong>Ein Profil löschen löscht seine Geschichte mit</strong> — Einträge, Medikamente, Einnahme-Vermerke. <strong>Rückgängig</strong> oben in der Kopfzeile holt alles zurück, solange du auf der Profilliste bist.",
             "<strong>Ein zweiter Eintrag am selben Tag ist nicht vorgesehen</strong>, sondern <strong>+</strong> öffnet den bestehenden.",
             "<strong>Erinnerungen im Browser sind still.</strong> Wer sie braucht, braucht die App.",
             "<strong>Die Kurve zeichnet keine Zeitachse.</strong> Eine Lücke von drei Wochen sieht aus wie ein Tag.",

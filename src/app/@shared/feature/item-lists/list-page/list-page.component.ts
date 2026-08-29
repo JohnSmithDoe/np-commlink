@@ -16,7 +16,7 @@
  * register a listener, and the two that never did had a chip that stripped
  * the URL and left the list exactly as it was.
  *
- * `windowSize` is DECLARED on the facade beside `searchable`, but the
+ * `paginatedBy` is DECLARED on the facade beside `searchable`, but the
  * slicing stays here: `items()` is also what `isKnownEmpty`, the search
  * count and a page's own totals read, so a facade handing back a slice would
  * make those answer for the slice. The cap resets when the search query or
@@ -115,10 +115,10 @@ export class ListPageComponent {
       const state = this.facade.state();
       return JSON.stringify([state?.searchQuery, state?.filterBy]);
     },
-    computation: () => this.facade.windowSize?.(),
+    computation: () => this.facade.paginatedBy?.(),
   });
 
-  readonly windowedItems = computed(() => {
+  readonly paginatedItems = computed(() => {
     const items = this.facade.items();
     const shown = this.#shown();
     return shown === undefined || !items || items.length <= shown
@@ -133,7 +133,7 @@ export class ListPageComponent {
   });
 
   readonly sections = computed<readonly ListSection[]>(
-    () => this.facade.sections?.() ?? [{ id: '', items: this.windowedItems() }]
+    () => this.facade.sections?.() ?? [{ id: '', items: this.paginatedItems() }]
   );
 
   readonly showSectionHeaders = computed(() => this.sections().length > 1);
@@ -147,7 +147,7 @@ export class ListPageComponent {
   );
 
   async showMore(event: InfiniteScrollCustomEvent): Promise<void> {
-    const step = this.facade.windowSize?.();
+    const step = this.facade.paginatedBy?.();
     if (step) this.#shown.update((shown) => (shown ?? step) + step);
     await event.target.complete();
   }

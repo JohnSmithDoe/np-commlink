@@ -81,7 +81,6 @@ export function mockTrackplayState(
     games: mockGamesState(),
     gamesForPlayer: mockGamesForPlayerView(),
     gameTypes: mockGameTypesState(),
-    lastDeleted: null,
     ...overrides,
   };
 }

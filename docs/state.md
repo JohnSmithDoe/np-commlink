@@ -92,11 +92,13 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **No handbook page is flagged stale right now** — the 2026-08-28 `handbook:shots` run refreshed every
-  figure and cleared all fifteen flags. That is the empty state, not a standing entry: the next UI change
-  puts pages back on this list, and [CLAUDE.md](../CLAUDE.md) forbids an agent running the suite, so
-  SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a screen sets it
-  on the pages that show that screen**, and the next release run clears it.
+- **`stash` and `market` are flagged stale** — the undo toast lost its button, and those are the two
+  pages whose delete figure was captioned as showing it. The 2026-08-28 `handbook:shots` run had cleared
+  all fifteen flags; these two went back on the list on 2026-08-29. Their prose is already corrected,
+  along with `sigil`, `biomon`, `catalog` and `gesten` — whose delete figures catch the row mid-swipe,
+  before any toast, and so are NOT flagged. [CLAUDE.md](../CLAUDE.md) forbids an agent running the
+  suite, so SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a
+  screen sets it on the pages that show that screen**, and the next release run clears it.
 
 ## Waiting on upstream
 

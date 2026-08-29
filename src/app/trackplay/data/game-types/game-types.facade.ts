@@ -1,14 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
+import { UndoActions } from '../../../@shared/data/undo/undo.actions';
 import { ItemListSortType } from '../../../@shared/model/item-list.types';
 import {
   GameType,
   GAME_TYPES_LIST_ID,
   TrackplayId,
 } from '../../model/trackplay.types';
-import { createGameType } from '../../util/trackplay.factory';
-import { selectGameTypesList } from '../trackplay.selector';
+import { gamesWithType } from '../../util/trackplay.cascade';
+import {
+  createGameType,
+  DEFAULT_GAME_TYPE_ID,
+} from '../../util/trackplay.factory';
+import { TrackplayActions } from '../trackplay.actions';
+import { selectGamesList, selectGameTypesList } from '../trackplay.selector';
 import { GameTypesActions } from './game-types.actions';
 import {
   selectGameTypeById,
@@ -21,6 +27,8 @@ import {
 export class GameTypesFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
+
+  readonly #games = this.#store.selectSignal(selectGamesList);
 
   readonly state = this.#store.selectSignal(selectGameTypesList);
   readonly allItems = this.#store.selectSignal(selectGameTypeItems);
@@ -64,6 +72,17 @@ export class GameTypesFacade {
   }
 
   removeItem(gameType: GameType): void {
+    if (gameType.id === DEFAULT_GAME_TYPE_ID) return;
+    this.#store.dispatch(
+      UndoActions.pushed({
+        scope: GAME_TYPES_LIST_ID,
+        name: gameType.name,
+        action: TrackplayActions.restoreGameType(
+          gameType,
+          gamesWithType(this.#games(), gameType.id)
+        ),
+      })
+    );
     this.#store.dispatch(GameTypesActions.removeItem(gameType));
   }
 }

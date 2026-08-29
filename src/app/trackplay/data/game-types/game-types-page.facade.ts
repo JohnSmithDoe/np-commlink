@@ -7,8 +7,9 @@
  * `selectCategory` is inert: a game type is not itself filed under one.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import { GAME_TYPES_LIST_ID } from '../../model/trackplay.types';
 import { GameTypesFacade } from './game-types.facade';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +19,7 @@ export class GameTypesPageFacade extends BaseListPageFacade {
   protected readonly commands = this.#gameTypes;
 
   readonly state = this.#gameTypes.state;
+  readonly undoScope = signal(GAME_TYPES_LIST_ID);
   readonly items = this.#gameTypes.items;
   readonly searchResult = this.#gameTypes.searchResult;
 

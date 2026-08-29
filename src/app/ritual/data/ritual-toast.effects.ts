@@ -1,13 +1,14 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * A dismissal is irreversible and one tap from a mis-tap, so it offers the
- * way back immediately rather than asking first — a confirm would tax every
+ * A dismissal is irreversible and one tap from a mis-tap, so it says so
+ * immediately rather than asking first — a confirm would tax every
  * dismissal to insure the rare wrong one, on the act the feature exists to
  * make cheap.
  *
- * It also has a SECOND way back, since settings restores everything. That
- * is the persistent path a caller of `ToastMessage.action` owes: `ion-toast`
- * is `role="status"`, so its button is never announced and the toast alone
- * would leave a screen reader no route at all.
+ * The way back is ZURÜCKHOLEN in settings, and that is now the only one:
+ * a toast REPORTS. Its button was never announced (`ion-toast` is
+ * `role="status"`) and its handler ran against whatever state had arrived
+ * by the time it fired, so the capability was withdrawn rather than
+ * documented.
  * ───────────────────────────────────────────────────────────────── */
 import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -26,15 +27,11 @@ export class RitualToastEffects {
   undoDismissToast$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(RitualActions.dismissed),
-      map(({ promptId }) =>
+      map(() =>
         NotificationsActions.toast({
           key: marker('ritual.toast.dismissed'),
           durationMs: UNDO_TOAST_MS,
           group: DISMISS_TOAST_GROUP,
-          action: {
-            labelKey: marker('ritual.toast.undo'),
-            action: RitualActions.restored(promptId),
-          },
         })
       )
     );

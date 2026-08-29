@@ -3,6 +3,7 @@
   "title": "MARKET",
   "plain": "Einkaufsliste",
   "route": "/household/shopping",
+  "shotsStale": true,
   "summary": "Die Einkaufsliste — schnell tippen, Mengen zählen, Gekauftes abhaken und am Ende in die Vorräte übernehmen.",
   "sections": [
     {
@@ -118,7 +119,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; antippen löscht, weites Wischen löscht sofort. Danach fünf Sekunden lang <strong>Rückgängig</strong> im Hinweis unten.",
+            "<strong>Nach links wischen</strong> → rote Fläche <em>LÖSCHEN</em>; antippen löscht, weites Wischen löscht sofort. Der Hinweis unten meldet es nur — <strong>Rückgängig</strong> steht oben in der Kopfzeile, solange du auf dieser Liste bist.",
             "<strong>Nach rechts wischen</strong> → grün, Einkaufswagen: <em>Als gekauft markieren</em>. Weites Wischen führt es direkt aus.",
             "<strong><code>+</code> / <code>−</code> rechts in der Zeile</strong> ändern die Menge ohne Dialog; bei 0 ist Schluss, die Zeile bleibt.",
             "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em> mit <strong>Name</strong>, <strong>Menge</strong> und <strong>Kategorien</strong>.",
@@ -151,7 +152,7 @@
         {
           "type": "figure",
           "img": "market-swipe-loeschen.webp",
-          "caption": "Nach links: LÖSCHEN, mit Rückgängig-Hinweis danach"
+          "caption": "Nach links: LÖSCHEN, Rückgängig steht oben"
         }
       ]
     },

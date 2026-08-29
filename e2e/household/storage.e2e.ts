@@ -24,8 +24,8 @@
  * because every `ListSettings` flag ships `false`.
  *
  * The undo tests live here because they prove what trackplay's does not: a
- * list opting in through `undoableDelete` gets its row back from the toast,
- * and from the header button for the entry the toast has replaced.
+ * list opting in through `undoableDelete` gets its row back from toast and
+ * header button, and offers it nowhere else — shopping is one tab away.
  *
  * The emoji test asserts ABSENCE: an always-mounted `ion-modal` would
  * make every overlay locator on this route ambiguous, app-wide.
@@ -245,7 +245,9 @@ test.describe('storage list', () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test('restores a deleted item from the undo toast', async ({ page }) => {
+  test('reports the delete without offering to undo it there', async ({
+    page,
+  }) => {
     await addViaSearch(page, 'Butter');
     const row = listRow(page, /Butter/);
     await expect(row).toBeVisible({ timeout: 10_000 });
@@ -253,11 +255,15 @@ test.describe('storage list', () => {
     await slideDelete(row);
     await expect(listRow(page, /Butter/)).toHaveCount(0);
 
-    const toast = page.getByTestId('action-toast');
+    const toast = page
+      .locator('ion-toast:not(.overlay-hidden)')
+      .filter({ hasText: 'Butter' });
     await expect(toast).toBeVisible({ timeout: 10_000 });
-    await expect(toast).toContainText('Butter');
+    await expect(toast.getByRole('button', { name: 'Rückgängig' })).toHaveCount(
+      0
+    );
 
-    await toast.getByRole('button', { name: 'Rückgängig' }).click();
+    await page.getByTestId('undo-button').click();
     await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
   });
 
@@ -279,6 +285,24 @@ test.describe('storage list', () => {
     await undo.click();
     await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
     await expect(undo).toHaveCount(0);
+  });
+
+  test('offers the entry only on the list it belongs to', async ({ page }) => {
+    await addViaSearch(page, 'Butter');
+    await slideDelete(listRow(page, /Butter/));
+    await expect(page.getByTestId('undo-button')).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await gotoFeature(page, ROUTE.shopping);
+    await expect(page.getByTestId('undo-button')).toHaveCount(0);
+
+    await gotoFeature(page, ROUTE.storage);
+    const undo = page.getByTestId('undo-button');
+    await expect(undo).toBeVisible({ timeout: 10_000 });
+
+    await undo.click();
+    await expect(listRow(page, /Butter/)).toBeVisible({ timeout: 10_000 });
   });
 
   test('offers no emoji picker on mobile', async ({ page }) => {

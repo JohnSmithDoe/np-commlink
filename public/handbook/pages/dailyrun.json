@@ -133,7 +133,7 @@
           "items": [
             "<strong>Keine — hier wischt nichts.</strong> DAILY RUN hat keine Liste, keine Zeilen, keinen Langdruck und kein Options-Menü.",
             "<strong>Die Karte selbst ist absichtlich kein Knopf.</strong> Nur <strong>HAB ICH GEMACHT</strong> schließt den Tag; ein versehentlicher Tipp auf den Text tut nichts.",
-            "<strong>Der Rückgängig-Toast gehört zu MAG ICH NICHT</strong>, nicht zum Abhaken — sechs Sekunden, danach hilft nur noch <strong>ZURÜCKHOLEN</strong> in den Einstellungen. Das <strong>X</strong> am Toast schiebt ihn weg, ohne etwas zurückzunehmen. <strong>HAB ICH GEMACHT</strong> wirft keinen Toast: die Erledigung steht sofort.",
+            "<strong>Der Hinweis gehört zu MAG ICH NICHT</strong>, nicht zum Abhaken — er meldet das Aussortieren nur, zurück geht es allein über <strong>ZURÜCKHOLEN</strong> in den Einstellungen. Das <strong>X</strong> am Hinweis schiebt ihn weg. <strong>HAB ICH GEMACHT</strong> wirft keinen Hinweis: die Erledigung steht sofort.",
             "<strong>NOCH EINE</strong> ist die einzige Möglichkeit, an einem geschlossenen Tag noch eine Karte zu sehen."
           ]
         }
@@ -148,7 +148,7 @@
           "items": [
             "<strong><code>5 ERLEDIGT</code> und die Deck-Zahl <code>erledigt: n</code> sind Gesamtzahlen</strong>, keine Serie und kein Monatswert.",
             "<strong>Der Zähler zählt Erledigungen, nicht Tage.</strong> Mit <strong>NOCH EINE</strong> kannst du an einem Tag mehrere sammeln; der Tagespunkt bleibt trotzdem einer.",
-            "<strong>MAG ICH NICHT ist dauerhaft.</strong> Nach dem Toast kommt die Aufgabe nur über <strong>ZURÜCKHOLEN</strong> zurück — und das holt <em>alle</em> Aussortierten gleichzeitig, einzeln geht es nicht.",
+            "<strong>MAG ICH NICHT ist dauerhaft.</strong> Die Aufgabe kommt nur über <strong>ZURÜCKHOLEN</strong> zurück — und das holt <em>alle</em> Aussortierten gleichzeitig, einzeln geht es nicht.",
             "<strong>Die Aufgabe wechselt beim Neustart.</strong> Wer die App nochmal öffnet, bekommt eine andere Karte; gemerkt wird erst, was du abhakst.",
             "<strong>Der Erinnerungsschalter tut im Browser nichts</strong> — auch nicht in der installierten Web-Version. Nur die Android-App kann den Termin beim Betriebssystem hinterlegen."
           ]

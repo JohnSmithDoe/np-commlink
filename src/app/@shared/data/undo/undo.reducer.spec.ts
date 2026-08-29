@@ -2,15 +2,19 @@ import { UndoEntry } from '../../model/undo.types';
 import { UndoActions } from './undo.actions';
 import { initialUndoState, undoReducer } from './undo.reducer';
 
-const entry = (name: string): UndoEntry => ({
+const STASH = '_storage';
+const SHOPPING = '_shopping';
+
+const entry = (name: string, scope = STASH): UndoEntry => ({
+  scope,
   name,
   action: { type: `[Test] restore ${name}` },
 });
 
-const stackOf = (...names: string[]) => {
+const stackOf = (...entries: UndoEntry[]) => {
   let state = initialUndoState;
-  for (const name of names) {
-    state = undoReducer(state, UndoActions.pushed(entry(name)));
+  for (const held of entries) {
+    state = undoReducer(state, UndoActions.pushed(held));
   }
   return state;
 };
@@ -23,25 +27,48 @@ describe('undoReducer', () => {
   });
 
   it('pushes the newest entry onto the top of the stack', () => {
-    const state = stackOf('Milk', 'Bread');
+    const state = stackOf(entry('Milk'), entry('Bread'));
     expect(state.entries.at(-1)).toEqual(entry('Bread'));
   });
 
-  it('pops the top entry', () => {
-    const state = undoReducer(stackOf('Milk', 'Bread'), UndoActions.popped());
+  it('pops the newest entry of the named scope', () => {
+    const state = undoReducer(
+      stackOf(entry('Milk'), entry('Bread')),
+      UndoActions.popped(STASH)
+    );
     expect(state.entries).toEqual([entry('Milk')]);
   });
 
-  it('pops an empty stack without failing', () => {
-    expect(undoReducer(initialUndoState, UndoActions.popped()).entries).toEqual(
-      []
+  it('leaves a newer entry of another scope in place', () => {
+    const state = undoReducer(
+      stackOf(entry('Milk'), entry('Butter', SHOPPING)),
+      UndoActions.popped(STASH)
+    );
+    expect(state.entries).toEqual([entry('Butter', SHOPPING)]);
+  });
+
+  it('pops nothing for a scope the stack does not hold', () => {
+    const state = stackOf(entry('Milk'));
+    expect(undoReducer(state, UndoActions.popped(SHOPPING)).entries).toEqual(
+      state.entries
     );
   });
 
-  it('drops the oldest entry past the cap', () => {
-    const names = Array.from({ length: 12 }, (_, index) => `item-${index}`);
-    const state = stackOf(...names);
-    expect(state.entries).toHaveLength(10);
-    expect(state.entries[0]).toEqual(entry('item-2'));
+  it('pops an empty stack without failing', () => {
+    expect(
+      undoReducer(initialUndoState, UndoActions.popped(STASH)).entries
+    ).toEqual([]);
+  });
+
+  it('caps each scope independently', () => {
+    const stash = Array.from({ length: 12 }, (_, index) =>
+      entry(`stash-${index}`)
+    );
+    const state = stackOf(...stash, entry('Butter', SHOPPING));
+
+    const held = state.entries.filter(({ scope }) => scope === STASH);
+    expect(held).toHaveLength(10);
+    expect(held[0]).toEqual(entry('stash-2'));
+    expect(state.entries).toContainEqual(entry('Butter', SHOPPING));
   });
 });
