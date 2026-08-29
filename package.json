@@ -1,6 +1,6 @@
 {
   "name": "np-commlink",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c",
   "author": "Leto the c0dem0nkey",
   "description": "np-commlink — shadowrun deck merging tracking + kitchen into one shell",
@@ -42,7 +42,7 @@
     "lint:plugin-types": "tsc -p eslint-plugin-commlink/tsconfig.json",
     "emoji:build": "node scripts/build-emoji-data.mjs",
     "handbook:shots": "node scripts/build-handbook-shots.mjs",
-    "i18n:extract": "ngx-translate-extract --input ./src -o 'public/i18n/{de,en}.json' --clean --sort --format-indentation '  ' --trailing-newline --format json",
+    "i18n:extract": "ngx-translate-extract --input ./src -o 'public/i18n/{de,en,fr}.json' --clean --sort --format-indentation '  ' --trailing-newline --format json",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"public/i18n/*.json\" \"eslint-plugin-commlink/**/*.{ts,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"public/i18n/*.json\" \"eslint-plugin-commlink/**/*.{ts,json}\"",
     "prepare": "lefthook install"

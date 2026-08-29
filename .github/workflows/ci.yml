@@ -220,6 +220,54 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           cat > notes.md <<'EOF'
+          ## Breaking
+
+          - **STASH · MARKET** — drop the barcode scanner and the 21 MB that came with it
+
+          ## New
+
+          - **SYSOP** — French joins German and English, across the whole interface
+          - **the deck** — deep pages become programs, and config gets two lenses
+          - **the deck** — the config page becomes a program of its own
+          - **the deck** — the grid arranges itself, behind a toggle that says so
+          - **the deck** — one glyph per program, and an import stops being deletable
+          - **the deck** — the drawer stays open past 992px
+          - **CREDSTICK** — the schedules page becomes a shared list
+          - **CREDSTICK** — the rules page becomes a shared list, and the deck config cannot
+          - **BIOMON** — the astro catalogs become browsable at /vitals/browse
+          - **BIOMON** — add iging and zodic pages
+          - **SOYKAF** — the recipe book joins the shared list, ranking and all
+          - **AGENDA** — a task can be done without being deleted
+          - **SYSOP** — a denied persist() grant gets an honest row
+          - **the handbook** — a page whose screenshots are dated says so
+          - a toast reports, and the list that lost the row offers it back
+          - the stack gets a consumer, and four more lists opt in
+          - a deleted category comes back wearing its old tags
+          - reorder and sections join the shared list, so notes leaves its own
+          - one inert shape, and the rule that picks it
+          - a child page names its parent in content, not in chrome
+
+          ## Fixed
+
+          - **CREDSTICK** — a due date recovers its day, and four more from the review
+          - **SIGIL** — deleting a note leaves no back-tap to its editor
+          - **SYSOP** — a heading on the settings page looks like a heading
+          - icon weight follows position — controls outline, subjects filled
+          - one icon variant, and a gate that can see all five spellings
+          - the Pixel 8 walk's defects and the vocabularies behind them
+          - the name box takes the caret, and the error waits to be earned
+          - the delete swipe expands like every other list
+          - every small control clears 44px, and the debug buttons go
+          - the three settings segment titles survive extract --clean
+          - clear the Android navigation bar at the end of a page
+
+          ## Faster
+
+          - **CREDSTICK** — the report stops walking the ledger a second time
+          - a search term stops rewriting the whole slice
+
+          ---
+
           **Android APK** — `np-commlink.apk`, signed with the release key.
 
           Android will ask you to allow installs from whatever app you open it from. The web app needs
