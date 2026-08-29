@@ -13,9 +13,10 @@
 #      covers e2e/, the plugin, JSON and markdown too), both to keep the hook fast and to
 #      keep the type-aware projectService off root-level config files.
 #   3. stylelint — the style layer, which eslint cannot read at all (it has no
-#      SCSS parser). Unlike eslint this is NOT narrowed: it is the same glob CI
-#      runs, because neither reason for narrowing applies — stylelint needs no
-#      type information and the whole style layer lints in well under a second.
+#      SCSS parser). Unlike eslint this is NOT narrowed: it is the same glob the
+#      styles gate runs, because neither reason for narrowing applies —
+#      stylelint needs no type information and the whole style layer lints in
+#      well under a second.
 # Order matters: prettier fixes formatting first, so eslint's prettier/prettier
 # rule sees already-formatted files. All three are invoked through `pnpm exec`
 # because lefthook runs commands via `sh -c` with the inherited PATH and does NOT
@@ -33,12 +34,12 @@ pre-commit:
       glob: 'src/**/*.{scss,css}'
       run: pnpm exec stylelint {staged_files}
 
-# pre-push runs the full suite — the same work CI does, ~100s cold. It belongs
-# here rather than in pre-commit because a minute per commit would be routed
-# around with --no-verify, and that flag is all-or-nothing: skip it once and
-# prettier, eslint and stylelint go with it. A push is rare enough to afford the
-# wait, a commit is not. It also makes CI a backstop rather than the place you
-# find out, which is why CI stays one serial job.
+# pre-push runs the full suite, ~100s cold, and is the ONLY place it runs — the
+# workflow file publishes a tag and verifies nothing, so there is no backstop
+# behind this hook. It belongs here rather than in pre-commit because a minute
+# per commit would be routed around with --no-verify, and that flag is
+# all-or-nothing: skip it once and prettier, eslint and stylelint go with it. A
+# push is rare enough to afford the wait, a commit is not.
 #
 # It reads the WORKING TREE, on the assumption that nothing is uncommitted at
 # push time. When that does not hold the runner says so in its header rather

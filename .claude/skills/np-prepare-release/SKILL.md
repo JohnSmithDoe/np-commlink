@@ -3,7 +3,7 @@ name: np-prepare-release
 description: >-
   Prepare a release commit for a given version: bump package.json, derive the
   changelog from the log since the last tag, and write it into the release notes
-  in ci.yml. Use when asked to "/np-prepare-release v1.2.0", "prepare the release",
+  in release.yml. Use when asked to "/np-prepare-release v1.2.0", "prepare the release",
   "cut a release", "bump the version", or "write the release notes". Prepares the
   tree only — it never commits, tags, pushes, or signs.
 ---
@@ -18,7 +18,7 @@ Takes one argument, the version, as `vMAJOR.MINOR.PATCH`:
 
 It leaves the tree ready for a release commit and **stops there**. Committing, tagging,
 pushing, `pnpm apk:signed` and publishing the draft are Martin's — the tag is what triggers
-CI, and the keystore is on one machine on purpose (README, _Release signing_).
+the workflow, and the keystore is on one machine on purpose (README, _Release signing_).
 
 **No argument: propose, never pick.** Read the commit types in the range and suggest one
 (`!` → major, `feat` → minor, otherwise patch), then wait. The number is a one-way door and
@@ -32,7 +32,7 @@ Two files, and nothing else:
 | File | Change |
 | --- | --- |
 | `package.json` | `version`, without the `v` |
-| `.github/workflows/ci.yml` | the changelog, inside the `cat > notes.md <<'EOF'` heredoc in the `release` job |
+| `.github/workflows/release.yml` | the changelog, inside the `cat > notes.md <<'EOF'` heredoc in the `release` job |
 
 `package.json` is the **only** place a version is written: the web build injects it through
 esbuild `define`, and `scripts/android-postsync.sh` patch 2 derives both `versionName` and
@@ -42,9 +42,9 @@ esbuild `define`, and `scripts/android-postsync.sh` patch 2 derives both `versio
 
 Each of these is cheaper to catch here than after a tag is pushed.
 
-- **Shape.** `^v[0-9]+\.[0-9]+\.[0-9]+$` — the same regex `ci.yml` asserts. A pre-release
-  tag (`v1.2.0-rc.1`) runs every gate and is deliberately **never published**, so preparing
-  one writes notes nothing will read.
+- **Shape.** `^v[0-9]+\.[0-9]+\.[0-9]+$` — the same regex `release.yml` asserts. A
+  pre-release tag (`v1.2.0-rc.1`) is deliberately **never published**, so preparing one
+  writes notes nothing will read.
 - **Minor and patch each below 100.** `versionCode` is `major*10000 + minor*100 + patch`, so
   `1.1.100` and `1.2.0` both compute to `10200`. Silent at build time; shows up as an APK
   Android refuses to install.
@@ -106,9 +106,9 @@ under their heading with no prefix.
 
 ## Then
 
-1. Run the gates — `np-verify-all`, or `./scripts/verify-all.sh`. CI runs them again on the
-   tag, but a red tag is a deleted tag, and a deleted tag that was already drafted needs the
-   release deleted by hand first.
+1. Run the gates — `np-verify-all`, or `./scripts/verify-all.sh`. Nothing runs them again on
+   the tag: the pre-push hook is the last check there is, and a tag pushed past a red tree
+   deploys it. Deleting that tag also means deleting the draft release by hand.
 2. Show the two diffs and stop. The notes are prose in a diff, which is the whole point of
    writing them into the workflow rather than deriving them at tag time: they get read before
    they ship.
@@ -133,7 +133,8 @@ under their heading with no prefix.
   `GH_REPO`. That is *why* the notes are literal text in the workflow. Do not "improve" this
   into a `git log` at tag time: it would need `fetch-depth: 0`, and a shallow clone renders an
   empty changelog **silently**.
-- **CI fails the tag if it disagrees with `package.json`**, before drafting anything. That
+- **The workflow fails the tag if it disagrees with `package.json`**, before it installs or
+  drafts anything — the `version` job is the only check left on that path. That
   check is the reason the bump and the notes belong in one commit.
 - **`git commit -F - <<EOF` deadlocks against lefthook** — write the message to a file and
   pass the path, with `< /dev/null`.

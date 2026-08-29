@@ -151,10 +151,11 @@ From the original, all of it still applies:
 - Pre-existing issues the diff did not introduce.
 - Something that looks like a bug and is not.
 - Pedantic nitpicks a senior engineer would not raise.
-- **Anything a linter, typechecker, compiler or test would catch.** CI runs eight gates
-  on every push — eslint, prettier, sheriff, `tsc` ×2, vitest (with coverage floors),
-  Playwright, prod build — so that whole band is noise by construction. Do not run them
-  yourself either; they are not this review's signal.
+- **Anything a linter, typechecker, compiler or test would catch.** `verify-all.sh` runs
+  seventeen gates on every push — eslint, stylelint, prettier, sheriff, `tsc` ×4, vitest
+  (with coverage floors), Playwright, prod build and the whole-repo scripts — so that band
+  is noise by construction. Do not run them yourself either; they are not this review's
+  signal.
 - General quality complaints (missing coverage, vague security, thin docs) unless a
   CLAUDE.md explicitly requires it.
 - Something a CLAUDE.md forbids but the code deliberately silences (a lint-ignore).

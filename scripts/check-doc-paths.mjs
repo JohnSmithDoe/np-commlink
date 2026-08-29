@@ -79,8 +79,8 @@ const entriesOf = (dir) => (existsSync(dir) ? readdirSync(dir) : []);
  * `docs/cash` is that same case one level down, and is why membership is a path
  * PREFIX rather than a first segment: the camt exports are gitignored, so prose
  * naming them resolves on the owner's machine and fails on a fresh clone. That
- * is the worst shape a gate can have — green everywhere it is written, red only
- * in CI. `KNOWN_ABSENT` cannot hold it for the `.keystore` reason inverted: the
+ * is the worst shape a gate can have — green where it is written, red only for
+ * whoever cloned it. `KNOWN_ABSENT` cannot hold it for the `.keystore` reason inverted: the
  * directory DOES exist here, so the exemption would report itself stale.
  */
 const GENERATED = new Set([
@@ -141,11 +141,10 @@ const ruleIds = new Set(
 /**
  * Case-EXACT existence, because `existsSync` is not.
  *
- * macOS is case-insensitive and the CI runner is not, so `existsSync`
- * answers `true` here for `@shared/Util/theme/theme.service` and `false` there —
- * a doc reference that passes locally and reddens the first CI run, which is the
- * one run nobody can bisect. Measured on this filesystem:
- * `existsSync('src/App') === true`.
+ * macOS is case-insensitive and a Linux clone is not, so `existsSync` answers
+ * `true` here for `@shared/Util/theme/theme.service` and `false` there — a doc
+ * reference that passes on the machine that wrote it and breaks for everyone
+ * who reads it. Measured on this filesystem: `existsSync('src/App') === true`.
  *
  * So each segment is matched against its parent's real directory listing. Same
  * guarantee `forceConsistentCasingInFileNames` gives imports, which this gate

@@ -28,25 +28,23 @@
 # and buys knowing whether e2e broke too, which otherwise takes a second run.
 #
 # The gate list is owned by .claude/skills/np-verify-all/SKILL.md, and by the
-# GATES=( array below. NOT by ci.yml: CI runs
-# `pnpm run lint`, which chains three separate tools behind one exit code, so a
-# runner that mirrors CI step-for-step cannot show you which of them failed.
+# GATES=( array below. There is no second copy: the workflow file publishes a
+# tag and runs no gate at all, so this script is the whole suite and a gate that
+# is not here does not run anywhere.
 #
-# Hence the split below — eslint, stylelint and the plugin type-check are three
-# gates here and one line in CI. Nothing runs that CI does not; it is the same
-# work, reported at the resolution you actually debug at. Order is fail-fast
-# (cheapest first), which is deliberately not CI's — CI is one sequential job
-# where the order is arbitrary, and here a typo should surface before Playwright
-# has had a chance to start.
+# That is also why eslint, stylelint and the plugin type-check are three gates
+# rather than the one exit code `pnpm run lint` chains them behind — the split
+# says which tool failed. Order is fail-fast, cheapest first: a typo should
+# surface before Playwright has had a chance to start.
 #
 # Three things this encodes so they cannot be forgotten:
 #   1. eslint's cache is per-file while Sheriff and the four type-aware rules are
 #      cross-file, so a verdict one file gains because another moved survives a
 #      warm run. It is kept anyway: cold, eslint is a third of this whole suite
-#      and warm it is two seconds, and the staleness is nearly double-covered —
-#      the sheriff gate runs cold over everything imported from main.ts, and CI
-#      has no cache at all. What is left is a spec file (which the sheriff CLI
-#      cannot reach) or one of those four rules. --cold buys it back.
+#      and warm it is two seconds, and the staleness is half-covered — the
+#      sheriff gate runs cold over everything imported from main.ts. What is
+#      left is a spec file (which the sheriff CLI cannot reach) or one of those
+#      four rules. --cold buys it back.
 #   2. A stale listener on :4321 makes Playwright fail with errors that have
 #      nothing to do with the code, so the port is cleared before the e2e gate.
 #   3. The expensive gates must not overlap: e2e binds :4321, the build writes

@@ -86,7 +86,7 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
 - **Coverage floors measure "of what is under test", not the app** — the builder instruments only what specs
   pull in. Templates are excluded from the denominator on purpose (with `.html` in: 39% statements, **1.4%
   functions**). `coverage.include` does not compose with `@angular/build:unit-test` — the report collapses to 0%.
-- **`maximumWarning` cannot fail CI**, so a warning is not a gate; `verify-all.sh` surfaces the count.
+- **`maximumWarning` cannot fail a build**, so a warning is not a gate; `verify-all.sh` surfaces the count.
 - **`verify:testids` sees only `.html` declarations and *literal* references.** `DECLARE_TS` matches only the
   imperative `'data-testid': '…'` overlay form; `USE_PLAYWRIGHT` matches `getByTestId('literal')`. An inline
   template and a `@for` each break the "static literal verbatim on both sides" requirement, and breaking both

@@ -33,7 +33,7 @@ BLOCKED and `next-version.md` what is SCHEDULED — nothing belongs in both.
 An inventory that mirrors the tree needs rewriting every time the tree moves, so this repo keeps none.
 Each fact lives where it cannot drift from itself: gates in `scripts/verify-all.sh` (`GATES=(`),
 boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets and coverage floors in
-`angular.json`, CI steps in `.github/workflows/ci.yml`, the style layer's contract in
+`angular.json`, the publish pipeline in `.github/workflows/release.yml`, the style layer's contract in
 `src/global.scss`'s banner, each lint rule's rationale in its own.
 
 ## Commands

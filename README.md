@@ -129,10 +129,11 @@ absent until there is something to rotate or a device asking for incremental ins
 
 ## Deployment — GitHub Pages
 
-Published by `.github/workflows/ci.yml`, but only on a **version tag**. A push to `main` runs every
-gate and publishes nothing; pushing `vMAJOR.MINOR.PATCH` runs the same gates and uploads the build as a
-Pages artifact. Pre-release tags (`v1.0.0-rc.1`) are verified but deliberately not published — the tag
-trigger is `v*` and a shell regex decides which ship.
+Published by `.github/workflows/release.yml`, and only on a **version tag**. Nothing else triggers it:
+the gates run on `git push` via lefthook, so a tag arrives already verified and the workflow only
+publishes. Pushing `vMAJOR.MINOR.PATCH` builds and uploads the Pages artifact; pre-release tags
+(`v1.0.0-rc.1`) reach the workflow and are deliberately not published — the tag trigger is `v*` and a
+shell regex decides which ship.
 
 The site is a project site, so it serves under `/np-commlink/`. That subpath is why there are two prod
 builds: `pnpm build` keeps the relative base href Capacitor needs, `pnpm build:pages` sets
@@ -157,11 +158,12 @@ No secret is involved: `deploy-pages` authenticates with a short-lived OIDC toke
 
 ## Releasing an APK
 
-Pushing the version tag runs every gate, deploys Pages, and opens the GitHub Release as a **draft**.
-The APK is built and attached from the machine that holds the keystore:
+Pushing the version tag deploys Pages and opens the GitHub Release as a **draft** — the gates already
+ran on the push that carried the commit. The APK is built and attached from the machine that holds the
+keystore:
 
 ```sh
-git tag v1.0.0 && git push origin v1.0.0   # gates, Pages, and the draft release
+git tag v1.0.0 && git push origin v1.0.0   # Pages, and the draft release
 pnpm apk:signed                            # → releases/np-commlink.apk, digest printed
 ```
 

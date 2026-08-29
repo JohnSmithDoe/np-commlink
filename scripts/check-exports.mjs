@@ -5,8 +5,8 @@
  * `tsconfig.json` sets `noUnusedLocals`, and that flag cannot see an exported
  * declaration — so `export` is the one keyword that makes dead code invisible to
  * the compiler. Every symbol this gate unexports is handed to a check that
- * already exists; that is the point, and it is why this runs in CI rather than
- * being a cleanup someone remembers to do.
+ * already exists; that is the point, and it is why this is a gate rather than a
+ * cleanup someone remembers to do.
  *
  * It cannot be an eslint rule, for the reason `verify:testids` cannot either:
  * whether `foo`'s export is necessary is a fact about every OTHER file, and

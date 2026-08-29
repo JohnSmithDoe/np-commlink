@@ -24,8 +24,8 @@ export default {
     'commlink/muted-text-uses-token': true,
 
     // Prettier owns formatting, and already runs on SCSS in the pre-commit hook
-    // and in CI. Leaving these on means two tools with opinions about blank
-    // lines, and prettier is the one that can fix them.
+    // and as its own gate. Leaving these on means two tools with opinions about
+    // blank lines, and prettier is the one that can fix them.
     'rule-empty-line-before': null,
     'at-rule-empty-line-before': null,
     'declaration-empty-line-before': null,

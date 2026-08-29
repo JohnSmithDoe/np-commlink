@@ -186,9 +186,14 @@ or a count the code owns.
 
 ## CI and deployment
 
-The workflow file documents what CI does. One decision is not visible there:
+The workflow file documents what it does. Two decisions are not visible there:
 
-- **The signing key does not go into GitHub secrets, and CI builds no APK.** It saves three minutes a few
+- **The gates run once, on pre-push, and the workflow re-runs none of them.** A tag can only exist on a
+  commit that already passed the suite, so a second run answers a question already answered — at the
+  price of every push waiting on a runner. What this gives up is the backstop: `--no-verify` now reaches
+  `main` unchecked, and a green tree on one machine is the only evidence there is. Accepted because the
+  hook is installed by `prepare` and the repo has one pusher.
+- **The signing key does not go into GitHub secrets, and no runner builds an APK.** It saves three minutes a few
   times a year against a credential that *cannot be rotated* — a leak has no recovery except abandoning
   the app identity, which takes every user's data. Exposure is wider than the repo: anyone with write
   access, any later workflow edit, and every third-party action sharing the job. **Automate up to the
