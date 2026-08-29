@@ -1,227 +1,145 @@
 # Next version — what v2.0.0 owes
 
-**Scheduled, not open.** Everything here was triaged into v2.0.0 deliberately; the reasoning is kept so
-the decision does not have to be re-made. Nothing here is blocked — [state.md](./state.md) holds what is,
-and settled questions are in [decisions.md](./decisions.md).
+**Scheduled, not open.** Nothing here is blocked — [state.md](./state.md) holds what is, and settled
+questions are in [decisions.md](./decisions.md). Three entries change a persisted shape, so the first
+genuine rung is owed by whichever ships first.
 
-Three entries below change a persisted shape, so the first genuine rung is owed by whichever ships
-first — see [state.md](./state.md) for the ladder's current position, the roster of who is holding what,
-and every exemption taken so far.
+## Cash
 
-## Cash — the numbers, then the keyboard
-
-- **Transfers between own accounts are not detected on import, and the report pays for it.** `isTransfer`
-  is set only by the transfer modal, so importing both accounts' statements books one internal move as
-  spend on one side and income on the other, inflating every figure in the report and the burn-down.
-  Detection is cheap and shaped like `findReconciliationCandidates` — opposite amount, ±3 days, a
-  different account — offered as pairs to link in the import preview. This is the one v2 entry that fixes
-  wrong numbers rather than adding a capability.
-- **The IBAN on an account is compared, never validated.** It is normalised — spaces stripped,
-  upper-cased — matched against the statement's, and an empty one adopts what it reads, so the common
-  path never needs a keyboard. A hand-typed typo is the gap: it refuses every import as `wrong-account`,
-  and the toast names the IBAN the **file** carries, which reads as the file being wrong. A mod-97
-  checksum is ten lines; what it does not settle is whether a wrong-but-well-formed IBAN earns a second
-  error state, since the checksum cannot catch that one either.
+- **Transfers between own accounts are not detected on import.** `isTransfer` is set only by the transfer
+  modal, so importing both accounts' statements books one internal move as spend on one side and income on
+  the other, inflating the report and the burn-down. Detection is shaped like
+  `findReconciliationCandidates` — opposite amount, ±3 days, a different account — offered as pairs to link
+  in the import preview. The one v2 entry that fixes wrong numbers rather than adding a capability.
+- **The IBAN on an account is compared, never validated.** A hand-typed typo refuses every import as
+  `wrong-account`, and the toast names the IBAN the **file** carries, which reads as the file being wrong. A
+  mod-97 checksum is ten lines; open question is whether a wrong-but-well-formed IBAN earns a second error state.
 
 ## Destructive actions and undo
 
-- **The cascade half of the destructive-action policy.** The row half is settled
-  ([decisions.md](./decisions.md)). Left: a category delete strips three reducers, tracking's _Reset all_
-  discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what
-  the user was not looking at. Cash's `deleteConfirmAlert` is the row-level confirm still standing, at
-  four sites: accounts, the ledger, rules and schedules.
-- **Two cascades still have no restore action.** The pattern is settled and shipped — carry what the
-  cascade removed, build it in the command ([decisions.md](./decisions.md)) — and the two left are
-  PRODUCTS, which already opted in and leaves the recipe lines it emptied empty, and CASH categories,
-  whose delete also deletes every rule pointing at the category and blanks a schedule's, so its entry
-  has to carry three collections rather than a list of ids.
-- **The undo scope has no gate.** Producer and page each name the list, and only a spec would prove
-  they agree; the symptom of drift is a button that never appears, which is why the gate did not ship
-  with the scoping. What is owed: a plugin rule banning a string literal in the three scope positions,
-  and a contract spec per producing list.
+- **The cascade half of the destructive-action policy.** The row half is settled. Left: a category delete
+  strips three reducers, tracking's _Reset all_ discards every running timer, geist's purge fires unannounced
+  on a persona switch. Cash's `deleteConfirmAlert` is the row-level confirm still standing, at four sites.
+- **Two cascades have no restore action** — PRODUCTS (leaves the recipe lines it emptied empty) and CASH
+  categories (whose delete also deletes every rule pointing at it and blanks a schedule's, so its entry has
+  to carry three collections rather than a list of ids).
+- **The undo scope has no gate.** Producer and page each name the list; drift shows as a button that never
+  appears. Owed: a plugin rule banning a string literal in the three scope positions, and a contract spec
+  per producing list.
 - **A list scoped per page breaks where one list is shown on two pages.** Readings are one list shown
-  filtered per profile, so profile A's reading is undoable from profile B's page — the same
-  invisible-restore the scoping removed, one level down. Cash transactions and trackplay games have the
-  same shape already, each backing two page facades (by account and by category; overall and per
-  player), and would inherit it the day either opts into undo. The fix is a scope built from the
-  filter, which widens `undoableDelete.scope` to accept a function of the item.
+  filtered per profile, so profile A's reading is undoable from profile B's page. Cash transactions and
+  trackplay games have the same shape already. The fix widens `undoableDelete.scope` to accept a function
+  of the item.
 
-## The shared list page — a list that says how it is ordered
+## The shared list page
 
-- **A list has to declare its own sort fallback, because only it knows what an absent sort means.** The
-  Pixel 8 walk read this as a missing indicator and it is not one: `ItemListToolbarComponent` already
-  draws an arrow on whichever button matches `activeSort`. Household shows none because shopping's stored
-  document carries no `sort` at all, while the list IS name-ordered — by `filterAndSortItemList`'s
-  comparator, which falls back to NAME when `sort` is absent. So the button is right and unmarked.
-  Two cheap fixes were tried on paper and both fail. Seeding `sort` into initial state reaches nobody who
-  has the problem, because `hydratedList` takes the stored document wholesale instead of merging it over
-  the default — it would mark the arrow for a fresh install only. And reading an absent sort as "name"
-  inside the toolbar lies on the recipe list, where absent means the cookability ranking
-  (`selectRecipesListItems` routes to `ranked(...)` on exactly that condition). What is owed is a
-  `defaultSort` the FACADE declares beside `sortOptions` and `sortable`, which the toolbar marks when
-  `activeSort` is absent — the same "absence is the declaration" axis the shared page already runs on,
-  named rather than inferred. It also retires the trap in
-  [decisions.md](./decisions.md)'s _"A sort fallback is not a pinned order"_: today the fallback is
-  knowledge held in a comparator, and three selectors already alphabetised lists whose order was semantic
-  because nothing made a list state what it meant.
-- **`/cash` is not a caller of the shared toolbar at all**, which is the other half and a bigger change:
-  the accounts page hangs its net worth in `toolbarActionsEnd` but renders no sort row, so there is
-  nothing on it for an indicator to mark. Worth doing with the entry above rather than before it — a page
-  that joins the toolbar wants the fallback axis to exist first.
+- **A list has to declare its own sort fallback.** `filterAndSortItemList` falls back to NAME when `sort` is
+  absent, so household's unmarked sort button is correct and the recipe list's absent sort means the
+  cookability ranking. Two cheap fixes fail: seeding `sort` into initial state reaches nobody who has the
+  problem (`hydratedList` takes the stored document wholesale), and reading an absent sort as "name" inside
+  the toolbar lies on the recipe list. Owed: a `defaultSort` the FACADE declares beside `sortOptions`, which
+  the toolbar marks when `activeSort` is absent.
+- **`/cash` is not a caller of the shared toolbar at all** — the accounts page hangs its net worth in
+  `toolbarActionsEnd` but renders no sort row. Worth doing after the entry above, not before.
 
 ## Measured costs
 
-- **A picture is base64 in IndexedDB, and binary is the better answer on both platforms.** The store keys
-  each image on its own, but the value is a data URL: base64 costs a third on top of the bytes and every
-  read re-parses a string. A `Blob` in IndexedDB drops both, rendered through `URL.createObjectURL` —
-  which makes revoking our problem, and only holds if the localforage driver really is IndexedDB (a
-  localStorage fallback cannot carry a Blob at all). On the APK the honest answer is a real file:
-  `@capacitor/filesystem` is not a dependency yet, so it is a plugin to add, sync and patch through
-  `android-postsync.sh`, plus `convertFileSrc` and a CSP that admits it. The PWA has no such option, so
-  either way the code carries two paths.
-- **The pill intake log is never pruned.** `intakes` gains one entry per pill per day and nothing removes
-  it, so it is carried in every vitals write forever — five pills over two years is ~3 600 entries.
-  Pruning past ~90 days is a few lines, but `vitals` is a slice real users hold, so it is a shape change
-  and owes a rung.
-- **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new
-  RegExp per transaction and the amount threshold is re-parsed per transaction, then the whole matched
-  set is sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running
-  top-five and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes
+- **A picture is base64 in IndexedDB.** base64 costs a third on top of the bytes and every read re-parses a
+  string. A `Blob` rendered through `URL.createObjectURL` drops both — makes revoking our problem, and only
+  holds if the localforage driver really is IndexedDB. On the APK the honest answer is a real file:
+  `@capacitor/filesystem` to add, sync and patch, plus `convertFileSrc` and a CSP that admits it. Either way
+  the code carries two paths.
+- **The pill intake log is never pruned.** `intakes` gains one entry per pill per day forever — five pills
+  over two years is ~3600 entries, carried in every vitals write. Pruning past ~90 days is a few lines, but
+  `vitals` is a slice real users hold, so it owes a rung.
+- **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new RegExp
+  per transaction, the amount threshold is re-parsed per transaction, and the whole matched set is sorted to
+  take five. Owed: a compiled condition set, a running top-five, and a ~250ms debounce — the debounce changes
   **when** the preview updates, which is why it is not a silent cleanup.
-- **`@angular-eslint/template/no-call-expression` is measured and REJECTED, not deferred.** It reports 688
-  hits across 119 files (2026-08-29), and the count is the reason it cannot be used: the rule matches every
-  `Call` node except `$any` and output handlers, so `facade.items()` — a memoised signal read, the
-  idiomatic thing in a zoneless signals app — is indistinguishable to it from `statusColor(item)`. Its
-  options filter by receiver NAME (`allowList`, `allowPrefix`, `allowSuffix`), which cannot express "zero
-  arguments", so there is no configuration that keeps the real finding. The rule predates signals.
-  The underlying concern is still real and now has no gate: a call WITH arguments in a `@for` body re-runs
-  per row per change detection. Finding those means a rule of our own in `eslint-plugin-commlink/`,
-  matching a `Call` with a non-empty argument list, which is where this belongs if it is ever worth paying
-  for.
+
+## Rejected, not deferred
+
+- **`@angular-eslint/template/no-call-expression`.** 688 hits across 119 files (2026-08-29), and the count
+  is the reason: the rule matches every `Call` node except `$any` and output handlers, so `facade.items()` —
+  a memoised signal read — is indistinguishable from `statusColor(item)`. Its options filter by receiver
+  NAME, which cannot express "zero arguments". The rule predates signals. The underlying concern is real and
+  now has no gate: a call WITH arguments in a `@for` body re-runs per row per change detection. That would
+  need a rule of our own matching a `Call` with a non-empty argument list.
 
 ## Platform reach
 
-- **The EAN scan works, and identifies nothing.** This is the one entry here about polishing something
-  that already ships. `#showCreateProductFromScan` hands the code to `createProduct` as the **name**, so
-  a scan yields a product called `4006381333931` that you type over — and scanning the same tin next
-  month yields a second one. The fix is a `barcode?: string` on `Product`, which turns the scan into a
-  LOOKUP: a known code adds the existing product to the list it was scanned from, an unknown one opens
-  the create dialog with the code STORED rather than spelled as a name. The shape change is free by the
-  additive-and-optional rule — a missing key hydrates to initial state — so `household` having real
-  holders costs nothing here, and the rung question is answered by the shape rather than the roster.
-  Second half of the same fix: the button sits on storage and shopping only, while every scan lands in
-  products. That leaves the unknown code still needing its name typed once — which the entry below is
-  about, and which this one does not wait for: a stored barcode is worth having whether or not a
-  catalog ever names it.
-- **An offline EAN catalog is possible, and the only open question is what it weighs.** Open Food Facts
-  publishes the whole database as one gzipped CSV — **1.19 GiB, rebuilt daily**, with a daily delta feed
-  beside it so a refresh is not a re-pull. 211 columns, of which four matter (`code`, `product_name`,
-  `brands`, `quantity`) plus `countries_tags` to cut it to the German market, at roughly 40 bytes a kept
-  row. The shape is `emoji:build`'s: a committed artifact regenerated on demand, so the app makes no
-  network call and a stale copy can only miss recent products. **What is NOT measured is the subset
-  size**, and one obvious shortcut does not work — the dump is code-ordered, so its first chunk is the
-  `000`/`001` band and contains no German EAN (400–440) at all, while gzip's single stream has no random
-  access to sample the interior. Only a full download settles it, and that number decides whether this
-  ships to the PWA or stays an APK asset. Second gate before adopting: OFF is **ODbL**, which is
-  share-alike on a derived database — cheap to satisfy in an AGPL repo, but a real term, not a
-  formality.
-- **`@capacitor/haptics` has zero call sites.** Kept on plugin-hygiene grounds, which says nothing about
-  using it. On the APK it is the cheapest upgrade available to how the app feels. What defers it is not
-  effort: WHICH events earn a buzz is taste, and it wants a settings switch, because there is nothing to
-  turn off today. The web build cannot ride along either — the plugin's web implementation THROWS
-  `unavailable` where `navigator.vibrate` is absent rather than no-opping, and Safari has none — so every
-  call site needs a platform guard or a catch.
-- **Reading the phone's own payments, by parsing the bank's and Wallet's push notifications.** No Android
-  API exposes Google Wallet or tap-to-pay history to a third-party app; the Google Pay APIs take payments,
-  they do not report them. The single hook that exists is `NotificationListenerService`. It fits the model
-  unusually well: a captured spend is `source: 'manual', status: 'pending'`, which the next camt import
-  reconciles through machinery that already ships. What it costs: a native plugin nobody maintains
-  (`capacitor-notificationlistener`'s own author says it is old and probably broken on current Android),
-  so it is a plugin to **own**; parsing that is per-bank text and breaks when a bank rewords a push; and
-  Android-only, inert on the PWA. Proper bank access is a separate wall — PSD2 needs an AISP licence plus
-  an eIDAS certificate, or an aggregator holding a client secret on a server, and FinTS needs a product
-  registration and a socket client. All three end at a backend this app does not have.
-- **The app becomes a share target, and files are why it is not one yet.** A manifest-only declaration is
-  wrong for files: a `share_target` carrying one must be `method: "POST"`, `enctype:
-  "multipart/form-data"`, and the POST has to be intercepted in the service worker — which means wrapping
-  `ngsw-worker.js` in an `importScripts` shim and registering that instead, since ngsw exposes no `fetch`
-  hook. It also arrives with no account context, so the receiving flow needs an account chooser before
-  the import preview. Two hundred lines and a registration path that can brick a PWA install, against
-  roughly two taps saved over the file input the account page already has.
-- **Edge-to-edge draws under the navigation bar, and the strip that reads well is also a dead zone.** The
-  paint is right and stays: `SystemBars.insetsHandling` defaults to `'css'` and injects
-  `--safe-area-inset-*`, which `global.scss` maps onto Ionic's variables, and toolbar, footer, tab bar,
-  toast, action sheet and modal inset themselves — `ion-content` and `ion-fab` never do, which is what the
-  `margin-bottom` on `ion-content > *:last-child` answers. Touch is the second question and nothing in CSS
-  settles it: under gesture navigation the bottom ~24dp keeps swipes and drags while letting most taps
-  through, under three-button navigation the ~48dp strip is a system window that takes everything, so a
-  control sitting in the inset fails intermittently rather than visibly. Two places the existing rule
-  cannot reach. `ion-modal`'s `applyFullscreenSafeArea()` returns early on `isSheetModal || isCardModal`,
-  so the date picker — an `initialBreakpoint: 0.65` sheet holding an `ion-datetime` with its default and
-  clear buttons, and no `ion-content` for the last-child rule to bite on — puts three buttons on the
-  bottom edge with neither Ionic nor this repo padding them. And a bottom margin is inert wherever that
-  last child is a component host with no declared `display`, since an Angular host defaults to
-  `display: inline` and an inline box drops it: `app-item-list` and `app-item-list-empty` both declare
-  `flex`, so list pages hold, and a page ending in an undeclared host does not. What defers it is which
-  control actually fails — switching the phone to three-button navigation turns the intermittent case into
-  a reproducible one, and is the cheapest confirmation available before anything moves.
+- **Barcode scanning was REMOVED, and returning means a free-software reader.** It shipped on
+  `@capacitor-mlkit/barcode-scanning`, whose `com.google.mlkit:barcode-scanning` put
+  `libbarhopper_v3.so` in the APK across four ABIs — **21 MB of a 29.8 MB artifact**, proprietary, under
+  the Google APIs / ML Kit Terms of Service rather than any open licence, and non-sublicensable, which
+  an AGPL work cannot cleanly carry. The feature never earned that: it only ever called `scan()`, and
+  fed the raw EAN to `createProduct` as the **name**, so scanning the same tin twice made two products.
+  The replacement shape, if it returns: **ZXing compiled to WebAssembly** (`zxing-wasm`, or the
+  `barcode-detector` polyfill that wraps it behind the standard `BarcodeDetector` API), Apache-2.0, a
+  few hundred KB, driven from `getUserMedia`. One code path for the PWA and the APK, no Capacitor
+  plugin, no native patch, nothing from Play Services. Two honest costs: `android.permission.CAMERA`
+  comes back (the WebView needs it for `getUserMedia`), and ZXing reads 1D codes visibly worse than
+  barhopper did at an angle or in poor light, so the UI has to help with framing rather than assume a
+  grab-and-go read. **Do it as a LOOKUP this time** — `barcode?: string` on `Product`, additive and
+  optional so it owes no rung — and put the control on all three lists, since every scan lands in
+  products.
+- **An offline EAN catalog is possible, downstream of the scanner returning.** Open Food Facts publishes the
+  database as one gzipped CSV — 1.19 GiB, rebuilt daily, with a delta feed. 211 columns, of which four matter
+  (`code`, `product_name`, `brands`, `quantity`) plus `countries_tags` to cut it to the German market, at
+  ~40 bytes a kept row. Shape is `emoji:build`'s — a committed artifact regenerated on demand. **The subset
+  size is not measured**, and sampling does not work: the dump is code-ordered, so its first chunk holds no
+  German EAN (400–440), and gzip's single stream has no random access. Second gate: OFF is **ODbL**,
+  share-alike on a derived database.
+- **`@capacitor/haptics` has zero call sites.** What defers it is taste — WHICH events earn a buzz — and it
+  wants a settings switch. The web build cannot ride along: the plugin's web implementation THROWS
+  `unavailable` where `navigator.vibrate` is absent rather than no-opping, so every call site needs a guard.
+- **Reading the phone's own payments by parsing the bank's and Wallet's push notifications.** No Android API
+  exposes Wallet or tap-to-pay history; `NotificationListenerService` is the single hook. It fits the model
+  — a captured spend is `source: 'manual', status: 'pending'`, which the next camt import reconciles through
+  machinery that already ships. Costs: a native plugin nobody maintains (so one to **own**), per-bank text
+  parsing that breaks when a bank rewords a push, and Android-only. Proper bank access is a separate wall —
+  PSD2 needs an AISP licence plus an eIDAS certificate, FinTS a product registration and a socket client;
+  all three end at a backend this app does not have.
+- **The app becomes a share target.** A `share_target` carrying a file must be `method: "POST"`,
+  `enctype: "multipart/form-data"`, and the POST intercepted in the service worker — wrapping
+  `ngsw-worker.js` in an `importScripts` shim, since ngsw exposes no `fetch` hook. It also arrives with no
+  account context. ~200 lines and a registration path that can brick a PWA install, against two taps saved.
+- **Edge-to-edge draws under the navigation bar.** The paint is right and stays. Touch is the second
+  question and CSS does not settle it: under gesture navigation the bottom ~24dp keeps swipes while letting
+  most taps through, under three-button navigation the ~48dp strip takes everything — so a control in the
+  inset fails intermittently rather than visibly. Two places the existing rule cannot reach:
+  `ion-modal`'s `applyFullscreenSafeArea()` returns early on `isSheetModal || isCardModal`, so the date
+  picker puts three buttons on the bottom edge unpadded; and a bottom margin is inert wherever the last
+  child is a component host with no declared `display` (an Angular host defaults to `inline`).
+  Switching the phone to three-button navigation is the cheapest confirmation available.
 
-## BIOMON — what browsing left behind
+## BIOMON
 
-The tree itself **shipped**: `/vitals/browse` with the twelve signs, the 64 hexagrams, the nine Ki stars
-and the nine life numbers, its own deck program, and both detail routes deep-linkable. Why it is a
-separate tree rather than a second selection on the reading pages is settled in
-[domains/biomon.md](domains/biomon.md). Two things it deliberately did not do:
+The browse tree **shipped** — `/vitals/browse`, twelve signs, 64 hexagrams, nine Ki stars, nine life
+numbers, own deck program, both detail routes deep-linkable. Left:
 
-- **The world ages are still not browsable, and that was the point.** Browsing them invites the question
-  of where the boundaries come from, and the answer is a pick rather than a source
-  ([state.md](./state.md)). The sign detail names the age a sign rules and prints the existing caveat
-  beside it; making the table itself walkable would advertise the weakest data on the page. Settle the
+- **The world ages are still not browsable, deliberately.** Browsing them invites the question of where the
+  boundaries come from, and the answer is a pick rather than a source ([state.md](./state.md)). Settle the
   source first.
-- **Filtering the 64 by trigram** — "show me everything with Water below" — is a `computed` over
-  `HEXAGRAMS` and the one place a search box would genuinely earn itself. The index ships unfiltered
-  because 64 cells fit a grid; it stops fitting the moment a reader wants a subset.
-
-## BIOMON — the astro pages explain themselves
-
-Owed by the entry above, which shipped without it: browsing invites "why does it say that", and an
-explanation nobody can reach from the screen holding the question is not one. The browse tree makes this
-sharper rather than softer — a reader who can now open all 64 hexagrams has 64 more occasions to ask.
-
-- **The pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr
-  1980`, a life number of 4 from the same birthday, and `Nr. 31` under six drawn lines. Nothing on screen
-  says why the Ki year turned in February, why one digit sum gives 2 and the other 4, what three coins
-  have to do with a broken line, or which of those numbers follows a rule you could check against a book.
-  That knowledge exists only in [domains/biomon.md](domains/biomon.md) and in the source banners —
-  developer-facing, and the reader is the one holding the question.
-- **Being straight about it matters more here than in the rest of the app.** Everywhere else a number is
-  arithmetic over the user's own data and the worst case is a bug. These pages carry divination, where the
-  honest distinction is between what is DERIVED by a stated rule — the Ki number, the life number, the
-  hexagram and its transformation, all deterministic and checkable — and what rests on a convention
-  somebody picked: the world-age boundaries, and cusp dates taken as fixed calendar days rather than the
-  true solar ingress that moves up to two days a year. The explanation is what turns "the app says so"
-  into "here is the rule, check it", and it is also where the existing `vitals.astro.age-estimate` and
-  `vitals.iching.source` notes stop being orphan disclaimers and become part of an account.
-- **The handbook is the existing home, and screenshots are what defers it.** Every other module explains
-  itself as an article under `public/handbook/pages/` with an entry in
-  `public/handbook/pages/catalog.json`, so a BIOMON astro article is the shape that already fits. The
-  catch is figures: shots are regenerated on release by Martin alone
-  ([CLAUDE.md](../CLAUDE.md)), so the article either ships figure-free or waits for a shots run of its own —
-  `biomon`'s figures are current as of the 2026-08-28 run, so nothing is pending to ride along on.
-- **The alternative is per-panel disclosure, and it is not obviously worse.** A tappable "wie wird das
-  berechnet?" under each readout needs no screenshots, sits against the number it explains rather than
-  three taps away in a separate article, and survives a reader who never opens the handbook. It costs more
-  i18n and more page height on screens already three and four panels long. The two are not exclusive: the
-  short form belongs on the page, the long form in the handbook, and the decision to make first is whether
-  the handbook article is worth writing twice over.
-- **What has to be in it either way.** The cusp table and why a date before 20 January reaches back into
-  the previous year's Capricorn; the 2150-year age table and its lack of consensus; the 4 February Ki-year
+- **Filtering the 64 by trigram** — a `computed` over `HEXAGRAMS`, and the one place a search box would earn
+  itself. The index ships unfiltered because 64 cells fit a grid.
+- **The astro pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr
+  1980`, a life number of 4 from the same birthday, `Nr. 31` under six drawn lines — and nothing on screen
+  says which follows a rule you could check against a book. The honest distinction is between what is
+  DERIVED by a stated rule (Ki number, life number, hexagram and its transformation) and what rests on a
+  convention somebody picked (the world-age boundaries; cusp dates taken as fixed calendar days rather than
+  the true solar ingress, which moves up to two days a year).
+  Two homes, not exclusive: a handbook article under `public/handbook/pages/` (the shape every other module
+  uses, but figures are regenerated on release by Martin alone), or per-panel disclosure — a tappable "wie
+  wird das berechnet?" under each readout, which needs no screenshots and sits against the number it
+  explains, at the cost of more i18n and more page height.
+  **What has to be in it either way:** the cusp table and why a date before 20 January reaches back into the
+  previous year's Capricorn; the 2150-year age table and its lack of consensus; the 4 February Ki-year
   boundary and the number descending one per year, wrapping 1 to 9; the full-date digit sum reduced to a
-  single figure, and that it answers to numerology rather than to the Ki cycle; and the coins — three per
-  line, heads 3 and tails 2, so the sum is 6 to 9, its parity carries yang and 6 or 9 additionally marks
-  the line as changing, read bottom to top. None of that drifts with a refactor, which is why it is worth
-  writing down for a reader rather than only for whoever edits the table.
+  single figure and that it answers to numerology rather than the Ki cycle; and the coins — three per line,
+  heads 3 and tails 2, sum 6 to 9, parity carrying yang and 6 or 9 marking the line as changing, read bottom
+  to top.
 
-## SOYKAF recipe book
+## SOYKAF
 
-Its scope lives with the domain: [domains/soykaf.md](domains/soykaf.md).
+Recipe-book scope lives with the domain: [domains.md](./domains.md).

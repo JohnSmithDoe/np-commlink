@@ -12,29 +12,29 @@ Android APK.
 
 **Trunk-based: work on `main`.** If you must isolate, prefer a worktree over a branch. Commit messages
 explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
-that has to outlive its commit belongs in one of the three documents below.
+that has to outlive its commit belongs in one of the five documents below.
 
-## Four documents plus one per domain, and the rule that keeps them small
+## Five documents, and the rule that keeps them small
 
 | File | Holds |
 | --- | --- |
-| [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work. **Append while a decision stands; collapse it into its successor once one supersedes it.** |
+| [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work |
+| [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, BIOMON, DAILY RUN, SIGIL, SOYKAF, the deck |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
-| [state.md](docs/state.md) | blocked work, one-way doors, and what is owed before the next major |
-| [next-version.md](docs/next-version.md) | work triaged into the next major, with the reasoning that put it there |
-| [domains/*.md](docs/domains/) | one module's own settled reasoning — CREDSTICK, BIOMON, DAILY RUN, SIGIL, the deck |
+| [state.md](docs/state.md) | blocked work, one-way doors, open defects, costs left standing |
+| [next-version.md](docs/next-version.md) | work triaged into the next major |
 
-**These four plus the domain set are the whole list, and a doc is updated only when a decision, a
-footgun, a one-way door or the next version's scope changes — never as a follow-up to a code change.**
-The four are about what crosses modules; a decision only one module can act on goes in its own file,
-and `decisions.md` indexes them. `state.md` holds what is BLOCKED and `next-version.md` what is
-SCHEDULED: an item that only needed a date leaves the first for the second, and nothing belongs in
-both. An inventory that mirrors the tree needs
-rewriting every time the tree moves, so this repo keeps none; each fact lives where it cannot drift
-from itself: gates in `scripts/verify-all.sh` (`GATES=(`), boundaries in `sheriff.config.ts`, compiler
-flags in `tsconfig.json`, budgets and coverage floors in `angular.json`, CI steps in
-`.github/workflows/ci.yml`, the style layer's contract in `src/global.scss`'s banner, each lint
-rule's rationale in its own.
+**These five are the whole list.** A doc is updated only when a decision, a footgun, a one-way door or
+the next version's scope changes — **never as a follow-up to a code change**. Write the current state,
+not the story that reached it: **append while a decision stands, collapse it into its successor once
+one supersedes it**, and drop an entry outright once the code says it. `state.md` holds what is
+BLOCKED and `next-version.md` what is SCHEDULED — nothing belongs in both.
+
+An inventory that mirrors the tree needs rewriting every time the tree moves, so this repo keeps none.
+Each fact lives where it cannot drift from itself: gates in `scripts/verify-all.sh` (`GATES=(`),
+boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets and coverage floors in
+`angular.json`, CI steps in `.github/workflows/ci.yml`, the style layer's contract in
+`src/global.scss`'s banner, each lint rule's rationale in its own.
 
 ## Commands
 
@@ -63,22 +63,20 @@ whole Playwright run, ~90 s where the answer usually costs four. Match the check
 anything a template or AOT catches.
 
 **Never regenerate the handbook.** `e2e/handbook/*.shots.ts` runs under its own
-`playwright.handbook.config.ts` and is deliberately outside `verify:all` — the screenshots are
-regenerated **on release only, by Martin**. Keep the shots *source* in step by hand when a selector
-it reads changes, and stop there; never run that config to check your edit.
+`playwright.handbook.config.ts`, outside `verify:all` — the screenshots are regenerated **on release
+only, by Martin**. Keep the shots *source* in step by hand when a selector it reads changes, and stop
+there; never run that config to check your edit.
 
-**When that release run comes, it is one command:** `pnpm run handbook:shots`
+**Instead, mark what your change made stale**: set `"shotsStale": true` on each
+`public/handbook/pages/*.json` showing a screen you changed, and the article paints a warning above
+itself. No gate can see this; [state.md](docs/state.md) carries which pages are flagged.
+
+**The release run is one command:** `pnpm run handbook:shots`
 (`scripts/build-handbook-shots.mjs`) shoots every figure, converts each 786×1454 PNG to the committed
-620px WebP with `cwebp` at its default quality, and drops `"shotsStale"` from every page whose figures
-were **all** refreshed by that run — naming the ones it left flagged. `--skip-shots` re-converts the
-last run without re-shooting. It needs `cwebp` on PATH (`brew install webp`) and a clean tree: the
-suite drives the real app, so an edit landing mid-run yields a figure set that is half old and half
-new.
-
-**Instead, mark what your change made stale.** A UI change dates every handbook figure that shows
-that screen, so set `"shotsStale": true` on each `public/handbook/pages/*.json` that does — the
-article then paints a warning above itself, telling the reader rather than misleading them. No gate
-can see this; [state.md](docs/state.md) carries which pages are flagged and who clears them.
+620px WebP with `cwebp`, and drops `"shotsStale"` from every page whose figures were **all** refreshed
+— naming the ones it left flagged. `--skip-shots` re-converts the last run. Needs `cwebp` on PATH
+(`brew install webp`) and a clean tree: the suite drives the real app, so an edit landing mid-run
+yields a figure set half old and half new.
 
 `android/` is **committed** — `cap add` is not reproducible across Capacitor versions, so the native
 project is source. `android/.gitignore` (shipped by Capacitor) excludes the generated half. Never
@@ -138,10 +136,9 @@ Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGEND
 (BIOMON)**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
 three means having switched programs on. Every other slice — `cash`, `tracking`, `officeTime`,
 `trackplay`, `notes`, `notifications`, `dashboard` — is dev-only, and its shape changes for the price
-of a cleared browser.
-The user base is small enough that most changes are still free; that is what makes the question worth
-asking rather than assuming, in either direction. What a rung owes when one *is* needed, and what has
-been shipped without one, is in [decisions.md](docs/decisions.md) and [state.md](docs/state.md).
+of a cleared browser. The user base is small enough that most changes are still free, which is what
+makes the question worth asking rather than assuming, in either direction. What a rung owes, and what
+has shipped without one, is in [decisions.md](docs/decisions.md) and [state.md](docs/state.md).
 
 ## Testing shape
 

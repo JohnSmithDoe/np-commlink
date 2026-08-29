@@ -1,244 +1,122 @@
 # State — blocked, one-way doors, and costs left standing
 
-**Check before proposing work.** Each entry either needs a secret, an upstream release, a human reading
-the result — or is a measured cost left standing on purpose. Settled questions are in
-[decisions.md](./decisions.md); the next major's own scope is in [next-version.md](./next-version.md).
+**Check before proposing work.** Each entry needs a secret, an upstream release, a human reading the
+result — or is a measured cost left standing on purpose. Settled questions are in
+[decisions.md](./decisions.md); the next major's scope in [next-version.md](./next-version.md).
 
 ## One-way doors
 
-Each field below is one a distribution channel compares to decide _same app or different app_, and the
-published tags have closed every one of them: changing one does not migrate an install, it stands up a
-second app that cannot reach the first one's data.
+Each field below is one a distribution channel compares to decide _same app or different app_. The
+published tags have closed every one: changing one stands up a second app that cannot reach the first
+one's data.
 
-- **The signing key exists and custody is the whole task.** The `signingConfig` is postsync patch 5,
-  reading four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The shipped APK
-  verifies v2 + v3 and its signer SHA-256 is pinned in the README. **Back the keystore up in two
-  places**, 25+ year validity — an expired cert cannot sign upgrades, and an APK signed with a different key
-  can **never** upgrade one signed with this one, at any version; the only way in is an uninstall that wipes
-  every tracked session, the pantry and the ledger. Losing the keystore therefore ends the APK line, and no
-  amount of source access undoes it. Deliberately **not** in the repo despite AGPL: publishing the source is
-  the licence's demand, publishing the identity would let anyone ship a build that upgrades over a real
-  install and inherits its data.
-- **`enableV3Signing = true` shipped on** — set explicitly against AGP's default at `minSdk 24`, and
-  confirmed on the released APK. v3 carries the proof-of-rotation lineage, which is what keeps rotation
-  reachable at all.
+- **The signing key exists and custody is the whole task.** `signingConfig` is postsync patch 5, reading
+  four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The shipped APK verifies v2 + v3
+  and its signer SHA-256 is pinned in the README. **Back the keystore up in two places**, 25+ year
+  validity. An APK signed with a different key can **never** upgrade one signed with this one; the only way
+  in is an uninstall that wipes every tracked session, the pantry and the ledger. Deliberately not in the
+  repo despite AGPL.
+- **`enableV3Signing = true` shipped on** — set explicitly against AGP's default at `minSdk 24`. v3 carries
+  the proof-of-rotation lineage, which is what keeps rotation reachable at all.
 - **`manifest.id` shipped as `"np-commlink"`**, parsed as a URL against the **origin** — a leading or
-  trailing slash is a _different_ identity, giving the browser a second app with its own IndexedDB and no
-  route to the first one's data. Never touch.
-- **Renaming a persisted key or a deck entry id costs a ladder rung wherever somebody is holding one** —
-  the tag closed the free window for the slices that have users, not for the app at large.
-  [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer;
-  [decisions.md](./decisions.md) says what a rung owes once one is.
-- **Cash's shape has moved without a rung, and that exemption is spent.** `APP_VERSION` stays **1** on the
-  single ground that cash has no users — no v1 cash data exists anywhere for a step to migrate, so a rung
-  would be a file that runs against nothing. Two consequences. A dev browser holding pre-camt cash rows has
-  them with no `importKey`, and a camt import will not recognise them: **clear the cash slice there rather
-  than reading the duplicate count as truth**. And the exemption does not generalise — the next
-  stored-shape change once cash holds real data owes the first genuine rung, with no precedent in the repo
-  to copy. `CashSchedule.dueDay` rides the same exemption, asked and answered: optional, absent on every
-  stored row, and `advanced()` falls back to the day its `nextDueISO` already carries.
-- **`vitals` and `notes` are published from v1.1.0 on, so their shapes are somebody's data.** The free
-  window is closed for `VitalsState` with its `profiles`, `readings` and `pills` sub-slices, and for
-  `notes`. Anything holding either from before that tag came from a locally built debug APK, which a
-  release-key install cannot upgrade and therefore never sees.
-- **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` — a pre-v1.1.0
-  document carries `hiddenEntries` + `hiddenModules` — and discards that shape deliberately:
-  `isCurrentShape` in `deck.reducer.ts`, whose banner argues why migrating it would invert every holder's
-  choice. `settings` splits `theme` into `skin` and `mode` and falls through
-  `{...initialSettings, ...settings}`, which is invisible on cyberpunk/dark, one re-pick for a boomer-skin
-  holder, and a dead `theme` key riding along until the next write. So **`APP_VERSION` is 1 and
-  `runMigrations` has never run a step**: the first genuine rung is unwritten, and has no precedent in the
-  repo to copy.
+  trailing slash is a different identity with its own IndexedDB. Never touch.
+- **Renaming a persisted key or a deck entry id costs a ladder rung wherever somebody holds one.**
+  [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer.
+- **`APP_VERSION` is 1 and `runMigrations` has never run a step.** The first genuine rung is unwritten and
+  has no precedent in the repo to copy.
+- **`vitals` and `notes` are published from v1.1.0 on**, so `VitalsState` (`profiles`, `readings`, `pills`)
+  and `notes` are somebody's data. Anything holding either from before that tag came from a locally built
+  debug APK, which a release-key install cannot upgrade.
+- **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` where a pre-v1.1.0
+  document carries `hiddenEntries` + `hiddenModules` (`isCurrentShape` in `deck.reducer.ts`). `settings`
+  splits `theme` into `skin` and `mode` and falls through `{...initialSettings, ...settings}`.
 
-## Every exemption taken, in one place
+## Exemptions taken
 
-None is a precedent, because cost is a fact about the roster rather than about the change. What a rung
-owes once one IS needed is in [decisions.md](./decisions.md).
+None is a precedent — cost is a fact about the roster, not about the change.
 
-- `groceries → household` — key renamed before the first tag, when the dev browser was the only holder.
-- cash's `bank` → `iban` + `bankRef` — breaking, free because cash has no users. **Spent**: the next
-  cash shape change once it holds real data owes the first real rung.
-- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort` — additive and optional, so a missing
-  key hydrates to initial state. Free by shape, not by roster.
-- deck entry id `barcode` → `notes` — the **first taken against a slice real users hold**. Under the
-  polarity of the day an id the catalog gained read as visible, so every install switched NOTES on by
-  itself. Cheap only because switching one program back off is a tap.
-- `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — the same two strings under
-  a new field name; worst case one re-pick for a boomer-skin holder.
-- `Profile.favorite` — additive and optional, and never written on install: the sole person is the
-  favorite by DERIVATION, so an existing document hydrates unchanged and nothing on disk moves. Free by
-  shape, like `excludedFromAllowance` above, not by roster — `vitals` has real holders.
-- The 09:00 office nudge is cancelled once at boot, from the notifications slice — **not a rung**: what
-  is stale is a schedule the OS owns, not a shape on disk. `legacy-reminders.effects.ts` argues why once
-  and not per boot.
+- `groceries → household` — renamed before the first tag, dev browser the only holder.
+- cash's `bank` → `iban` + `bankRef` — breaking, free because cash has no users. **Spent**: the next cash
+  shape change once it holds real data owes the first real rung. `CashSchedule.dueDay` rides the same one.
+- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort`, `Profile.favorite` — additive and optional,
+  so a missing key hydrates to initial state. Free by shape, not by roster.
+- deck entry id `barcode` → `notes` — the first taken against a slice real users hold. Cheap only because
+  switching one program back off is a tap.
+- `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — worst case one re-pick.
+- The 09:00 office nudge is cancelled once at boot — **not a rung**: what is stale is a schedule the OS
+  owns, not a shape on disk (`legacy-reminders.effects.ts`).
+
+**A dev browser holding pre-camt cash rows has them with no `importKey`**, and a camt import will not
+recognise them: clear the cash slice there rather than reading the duplicate count as truth.
 
 ## Blocked — needs something only the owner can supply
 
 - **Any camt import driven live, against a file a bank actually produced.** The parser is unit-tested
-  against synthetic documents only. The exports in `docs/cash/` import, and their values are internally
-  coherent — booking dates ascending through the period, entry and detail amounts agreeing, a balance
-  chain that adds up across the three pages, mod-97 IBANs, `AcctSvcrRef` unique over all 311 rows. What
-  they are is Volksbank's real **shape** — tag nesting, ISO-8859-1 bytes, the 150-entry pagination, the
-  140-character `Ustrd` truncation that splits an IBAN across two of them — carrying invented **value**.
-  So they drive the import end to end and prove nothing about what a bank emits. A real run needs the
-  owner's own download, and `docs/cash/` is gitignored, so nothing committable comes out of it either way.
-  Volksbank, DKB and ING each need their own first run: the format is one, but which optional elements a
-  given bank fills is not — `AcctSvcrRef` above all, since its absence silently downgrades every key on
-  the statement to a derived one.
-- **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE,
-  which reads today as late Pisces. Published schemes disagree by centuries and several put Aquarius
-  already underway; the page prints the caveat, and swapping the table in
-  `src/app/vitals/model/astro.consts.ts` is one edit once the owner names a school.
+  against synthetic documents only. The exports in `docs/cash/` (gitignored) carry Volksbank's real
+  **shape** — tag nesting, ISO-8859-1 bytes, 150-entry pagination, the 140-character `Ustrd` truncation
+  that splits an IBAN across two — with invented **value**. Volksbank, DKB and ING each need their own
+  first run: which optional elements a bank fills is not part of the format, `AcctSvcrRef` above all, since
+  its absence silently downgrades every key on the statement to a derived one.
+- **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE.
+  Published schemes disagree by centuries. Swapping the table in `src/app/vitals/model/astro.consts.ts` is
+  one edit once the owner names a school.
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
-  (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
-  is the first proofread.
-- **`stash` and `market` are flagged stale** — the undo toast lost its button, and those are the two
-  pages whose delete figure was captioned as showing it. The 2026-08-28 `handbook:shots` run had cleared
-  all fifteen flags; these two went back on the list on 2026-08-29. Their prose is already corrected,
-  along with `sigil`, `biomon`, `catalog` and `gesten` — whose delete figures catch the row mid-swipe,
-  before any toast, and so are NOT flagged. [CLAUDE.md](../CLAUDE.md) forbids an agent running the
-  suite, so SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a
-  screen sets it on the pages that show that screen**, and the next release run clears it.
-- **`credstick`, `chrono`, `trackplay`, `start` and `sysop` joined them on 2026-08-29** with the Pixel 8
-  walk's defect and consistency batches: the sort toolbar no longer clips or wraps, the ledger row wears
-  the report's shape, CHRONO speaks one duration and one state chip, the round column counts from 1, an
-  undated task shows no status bar, the deck config's count says what it counts, and every SYSOP heading
-  is a heading. Figures are shot at a 393 px viewport, narrower than the 412 px the walk used, so an
-  over-capacity toolbar shows in them.
-- **`agenda` joined them on 2026-08-29** — a task now carries `doneAt`, so the list splits into Offen and
-  Erledigt and all four of its figures show a screen that no longer exists. Its prose and `gesten`'s
-  right-swipe roster are already corrected; `gesten`'s own figure shows MARKET and is not flagged.
+  (measured 2026-08-02 — recount before citing). The first English session is the first proofread.
+
+## Handbook figures flagged stale
+
+`"shotsStale": true` is set by hand on `public/handbook/pages/*.json` and cleared by the next release
+`handbook:shots` run. [CLAUDE.md](../CLAUDE.md) forbids an agent running the suite, so no gate sees this —
+**whoever changes a screen sets it on the pages showing that screen.**
+
+The flags themselves are the list — restating it here only drifts:
+
+```sh
+grep -l '"shotsStale": true' public/handbook/pages/*.json
+```
+
+Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them. Two seeding traps:
+**a reading keeps its date in `name`**, not `createdAt` (an empty `name` paints "Invalid Date" ticks), and
+**Playwright wipes `outputDir` on every run**, so shots must be written outside it.
 
 ## Waiting on upstream
 
 - **Angular 22 is gated on NgRx.** On `21.2.18` (`v21-lts`, supported, not urgent); `@ngrx/*` latest is
-  `21.1.1` peering `@angular/core: ^21.0.0`, `next` only `22.0.0-beta.0`. NgRx is the spine here, so
-  forcing it means pnpm overrides on an untested combination. **Bump when `@ngrx/*@22` is stable.**
+  `21.1.1` peering `@angular/core: ^21.0.0`, `next` only `22.0.0-beta.0`. **Bump when `@ngrx/*@22` is stable.**
   - **Lockstep, one atomic commit or none:** `@angular/*` + `@angular/cli` + `@angular/build` +
     `angular-eslint` + `@ngrx/*`. Peer ranges are mutually exclusive across the v21/v22 boundary and
     Angular's intra-family peers are **exact**, so one held-back member pins the set.
-  - Already compatible: `@ionic/angular` 8.8.x, `@ionic/storage-angular`, `ng2-charts` 9,
-    `@ngx-translate/*` 18, Sheriff.
-  - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit — a
-    framework major on top of other changes makes a red gate unattributable.
+  - Already compatible: `@ionic/angular` 8.8.x, `@ionic/storage-angular`, `ng2-charts` 9, `@ngx-translate/*` 18, Sheriff.
+  - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit.
+
+## Open defects
+
+- **Two household header actions are vertically clipped** — the cart on STASH and the tray on MARKET are
+  sliced by the toolbar's top edge, while the tab bar renders the same glyphs whole. **The cause is not in
+  the source**: Ionic's `.toolbar-container` carries `contain: content` and `overflow: hidden`, but does so
+  on every page. Needs the app on screen at 412px to diagnose.
+- **The birthdate field prints `05/14/1980`.** A native `<input type="date">` follows the DEVICE locale, not
+  the app's language, against `dd.MM.yyyy` everywhere else.
+- **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches and BIOMON's date field,
+  the only unskinned chrome in the app. Replacing the native input answers this and the entry above, and
+  drags in the sheet-modal safe-area entry in [next-version.md](./next-version.md).
+- **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
+  `app-empty-state` exists and cash already uses it five times. _Regeln anwenden_ is offered, full-width and
+  solid, with zero rules to apply.
+- **Trackplay's totals row is pinned to the bottom of the viewport**, so a three-round grid puts the summary
+  a screenful of emptiness below its own table.
 
 ## Known cost, not yet paid
 
-Measured, understood and left standing on purpose — a shape question, a wording question, or a bill that
-only a phone with a few hundred rows actually presents. The ones that got a date are in
-[next-version.md](./next-version.md).
-
-- **The notes list decodes a full picture into a 48 px box.** `MAX_EDGE` is two screens, so every thumbnail
+- **The notes list decodes a full picture into a 48px box.** `MAX_EDGE` is two screens, so every thumbnail
   costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
-  canvas pass at import — the canvas is already there — would store a ~192 px `thumbUrl` beside the
-  picture for a few KB. It is a persisted-shape change on the image document, which is free (`notes` is
-  dev-only), and the list is also unwindowed, so the two belong in one pass.
+  canvas pass at import would store a ~192px `thumbUrl` beside the picture. Free as a shape change (`notes`
+  is dev-only), and the list is also unwindowed — the two belong in one pass.
 
-## The Pixel 8 walk, and what it found
+## Measured, not worth touching
 
-A pre-release visual pass drove the real app at **412 × 915, DPR 2.625** (Playwright's own `Pixel 8`
-descriptor) and shot every program's screens — 130 figures, seeded through the persisted documents and
-the UI the way `e2e/handbook/*.shots.ts` does. It was a **walk, not a suite**: nothing asserted, so it
-could not go red, and it earned no place in `verify:all`. **The harness is deleted** — a Pixel 8 clone of
-`e2e/handbook/` that duplicated its seeding to assert nothing, and a second copy of that seeding is a
-cost paid on every later change to it. Re-shooting the set is a `devices['Pixel 8']` project pointed at
-the handbook shots, not a second suite.
-
-What it settled first is that the **nav sweep landed**: every page in `DECK_CATALOG` correctly shows no
-return row, and every genuine child page has one, derived from the catalog rather than hardcoded. The
-findings below are what the screens showed instead. Each fix dates handbook figures, so whichever ones
-get paid, set `"shotsStale": true` on the pages that show those screens.
-
-Two traps the walk itself paid for, so the next run does not: **a reading keeps its date in `name`**, not
-in `createdAt` (`weight-chart` labels off `localizedDayMonth(reading.name)`), so a seed leaving `name`
-empty paints five "Invalid Date" ticks that are the seed's fault and not the chart's. And **Playwright
-wipes `outputDir` on every run**, which ate a copy of the shots parked under `test-results/` — whatever
-shoots them next must write outside that directory.
-
-### Wrong, not a matter of taste
-
-**Six of the eight were fixed on 2026-08-29.** The one that governs later callers — what the sort
-toolbar does when it runs out of room — is in [decisions.md](./decisions.md). Two are left.
-
-- **Two household header actions are vertically clipped**: the cart on STASH and the tray on MARKET are
-  sliced by the toolbar's top edge, while the tab bar renders the same two glyphs whole. Not a fluke —
-  both list pages show it. **The cause is not in the source**: Ionic's `.toolbar-container` carries
-  `contain: content` and `overflow: hidden`, which clips to the padding box, but it does that on every
-  page, and nothing the household pages add is in that row. It needs the app on screen at 412 px to
-  diagnose, which is why it outlived the batch around it.
-- **The birthdate field prints `05/14/1980`.** A native `<input type="date">` follows the DEVICE locale,
-  not the app's language, so US order appears on a German UI and no language switch touches it, against
-  `dd.MM.yyyy` everywhere else. Left with **"native controls ignore the skin"** below: replacing the
-  native input is one fix for both, and it drags in the sheet-modal safe-area entry in
-  [next-version.md](./next-version.md).
-
-### One thing, two treatments
-
-**Most of these were fixed on 2026-08-29.** The sort indicator turned out to need an axis on the shared
-page rather than a widget, and is scheduled in [next-version.md](./next-version.md).
-
-- **The ledger row is twice the height of the row that shows the same data better.** A booking spends
-  three or four lines — title, category, date, amount each on their own — so five rows fill a phone
-  screen, while `cash-report`'s _Größte Ausgaben_ already carries title-with-amount plus one dim
-  `date · category` subline. Same domain, same fields, two layouts. **Fixed 2026-08-29** — the row wears
-  the report's shape: `app-list-item` gained an `[itemTrailing]` slot so the amount sits beside the title
-  instead of under it, and the ledger stopped passing `[categories]` so it can print `date · category`
-  itself. Absence was already the declaration there — a row given no catalog renders no category note.
-- **CHRONO spells one state three ways on one screen** — a `LÄUFT` chip, a lowercase `läuft` chip, and
-  `GESTOPPT` as bare amber text — and one duration two ways, `3 Sekunden` beside `00:00:03`. **Fixed
-  2026-08-29**: the chip is one `app-tracking-state-badge` both lists render, which retired the duplicate
-  `tracking.daily-sessions.running` key, and the screen speaks one duration format
-  ([decisions.md](./decisions.md)).
-- **Two different colours mean "secondary".** In cyberpunk `--sr-text-dim` IS the amber at 85 %
-  (`_shadowrun.scss:119`), so the notes snippet, which sets the token, is amber, while `list-item`'s
-  `list-row-category` and the deck-config intro never set it and inherit Ionic's grey step. Neither
-  breaks `commlink/muted-text-uses-token` — the rule sees a hardcoded colour, not an unthemed default.
-  **Fixed 2026-08-29** by setting the token at both. No gate follows: the grey is Ionic's own default and
-  there is no declaration in this repo's source for a rule to match.
-- **Filled buttons appear twice and outline everywhere else**: cash's _Regeln anwenden_ and the shopping
-  toolbar's bag are solid amber; every other button in the walk is an outline. **Fixed 2026-08-29** — and
-  they were two different faults wearing one look: _Regeln anwenden_ was a genuine `fill="solid"` default,
-  while the bag was the SOLID `bag-add` glyph where the app uses outline variants. The glyph half then
-  turned out to be 27 names across 47 files rather than one, so it is a rule with a gate now
-  ([decisions.md](./decisions.md)).
-- **Green carries four meanings** — income in the ledger, _Ohne Kategorie_ in the report donut, both
-  priority 3 and no priority in AGENDA, and a healthy MHD in STASH. **Fixed 2026-08-29**; two of the four
-  were accidents rather than meanings, and what green is allowed to say is in
-  [decisions.md](./decisions.md).
-- **Native controls ignore the skin entirely**: SYSOP's two `<input type="color">` swatches wear grey
-  browser bezels and BIOMON's date field a white calendar glyph, the only unskinned chrome in the app.
-  Carries the birthdate-locale defect above with it — one replacement answers both.
-- **The deck config's subline is a label for some rows and a count for others** — "Bürozeiten" and
-  "Notizen" against a bare "4 / 4", in the same slot, with nothing saying the count is programs.
-  **Fixed 2026-08-29**: the count says what it counts. The slot holding different kinds of subline is
-  fine as long as each names itself.
-
-### Structure
-
-- **SYSOP had one row idiom doing three jobs, and the walk misread why.** `<ion-item
-  lines="none"><ion-label>text</ion-label>` was a section header at _Deck_, _Akzentfarben_, _Speicher_ and
-  _Über_, a field label at _Helligkeit_ and _Sprache_, and a value row at _Primärfarbe_ — nothing
-  distinguished the three, so the hierarchy read flat. **The "two pages stacked" reading was wrong about
-  its own evidence**: the page was always a single `ion-list` of `ion-item`s throughout, `settings-segment`
-  being `display: contents` so its rows are direct list children. What differed between the halves was the
-  row's CONTENT, never its box. **Fixed 2026-08-29** — every heading is an `ion-list-header` wearing the
-  global `.sr-hud` eyebrow, including the segment's own label, because a picker's label IS its section
-  heading here. That needed no new wording and no reordering. _Dauerhafter Speicher_ was separately real
-  and is fixed with it: the status moved onto the title line, which gives the description the full row
-  instead of the ~28 characters it had beside a right-aligned note.
-- **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
-  `app-empty-state` exists and cash already uses it five times — and neither says what a rule is or that
-  `+` makes one. _Regeln anwenden_ is offered, full-width and solid, with zero rules to apply.
-- **Trackplay's totals row is pinned to the bottom of the viewport**, so a three-round grid puts the
-  summary a screenful of emptiness below its own table.
-
-## Open review findings
-
-Not blocking; kept here so they are not re-found.
-
-- **Neither the vitals toolbar nor the household `ion-tab-bar` is worth touching**, both halves measured
-  rather than argued. `list-page` guards the toolbar on `facade.hasToolbar?.() ?? true` and both vitals
-  facades set it `false`, so there is no empty bar to remove. And the tab-bar has nothing to cap: Ionic
-  gives it `justify-content: center` with `max-width: 168px` per button, so the three are already a centred
-  504px cluster — padding the host moves them 0px (measured at a 1600px viewport, buttons at 548/716/884
-  either way). Its band is full-bleed on the same grounds the header's is.
+- **Neither the vitals toolbar nor the household `ion-tab-bar`.** `list-page` guards the toolbar on
+  `facade.hasToolbar?.() ?? true` and both vitals facades set it `false`, so there is no empty bar to
+  remove. The tab-bar has nothing to cap: Ionic gives it `justify-content: center` with `max-width: 168px`
+  per button, so the three are already a centred 504px cluster — padding the host moves them 0px (measured
+  at 1600px). Its band is full-bleed on the same grounds the header's is.
