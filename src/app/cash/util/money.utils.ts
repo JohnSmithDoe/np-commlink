@@ -3,6 +3,7 @@ import { Language, LOCALE_BY_LANGUAGE } from '../../@shared/model/app.types';
 const SEPARATORS: Record<Language, { group: string; decimal: string }> = {
   de: { group: '.', decimal: ',' },
   en: { group: ',', decimal: '.' },
+  fr: { group: ' ', decimal: ',' },
 };
 
 export function centsToEur(cents: number): number {

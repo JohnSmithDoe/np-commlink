@@ -2,6 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/de';
 import 'dayjs/locale/en';
+import 'dayjs/locale/fr';
 import { IsoWeekday, Language } from '../../model/app.types';
 
 dayjs.extend(localizedFormat);
@@ -29,6 +30,7 @@ export const localizedDateTime = (value: string | Dayjs): string =>
 const DAY_MONTH_FORMAT: Record<Language, string> = {
   de: 'DD.MM.',
   en: 'MMM D',
+  fr: 'DD/MM',
 };
 
 export const localizedDayMonth = (

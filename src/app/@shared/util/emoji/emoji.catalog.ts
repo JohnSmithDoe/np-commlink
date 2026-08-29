@@ -53,6 +53,7 @@ type EmojiDataByGroup = Readonly<Record<string, readonly EmojiData[]>>;
 const DATA_BY_LANGUAGE: Record<Language, () => Promise<EmojiDataByGroup>> = {
   de: () => import('./emoji.data.de').then((module) => module.EMOJI_DATA_DE),
   en: () => import('./emoji.data.en').then((module) => module.EMOJI_DATA_EN),
+  fr: () => import('./emoji.data.fr').then((module) => module.EMOJI_DATA_FR),
 };
 
 const toEntry = (data: EmojiData): EmojiEntry => ({

@@ -11,6 +11,7 @@
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
+import localeFr from '@angular/common/locales/fr';
 import { InjectionToken } from '@angular/core';
 import { Language, LANGUAGES, LOCALE_BY_LANGUAGE } from '../../model/app.types';
 import { setDayjsLocale } from '../formatting/date-format.utils';
@@ -38,6 +39,7 @@ export const applyDocumentLanguage = (language: Language): void => {
 const ANGULAR_LOCALE_DATA: Record<Language, unknown> = {
   de: localeDe,
   en: localeEn,
+  fr: localeFr,
 };
 
 for (const data of Object.values(ANGULAR_LOCALE_DATA)) registerLocaleData(data);

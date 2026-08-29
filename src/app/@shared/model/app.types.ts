@@ -11,12 +11,17 @@ export type LanguageModelAvailability = Availability | 'probing';
 export const SKINS = ['cyberpunk', 'boomer'] as const satisfies readonly Skin[];
 export const MODES = ['light', 'dark'] as const satisfies readonly Mode[];
 
-export type Language = 'de' | 'en';
-export const LANGUAGES = ['de', 'en'] as const satisfies readonly Language[];
+export type Language = 'de' | 'en' | 'fr';
+export const LANGUAGES = [
+  'de',
+  'en',
+  'fr',
+] as const satisfies readonly Language[];
 
 export const LOCALE_BY_LANGUAGE: Record<Language, string> = {
   de: 'de-DE',
   en: 'en-US',
+  fr: 'fr-FR',
 };
 
 export interface AccentColors {

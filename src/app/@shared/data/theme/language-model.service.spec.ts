@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { LANGUAGES } from '../../model/app.types';
 import { LanguageModelService } from './language-model.service';
+
+const allLanguages = [...LANGUAGES];
 
 type GlobalWithModel = typeof globalThis & { LanguageModel?: unknown };
 
@@ -54,7 +57,7 @@ describe('LanguageModelService', () => {
 
     expect(availability).toHaveBeenCalledWith(
       expect.objectContaining({
-        expectedOutputs: [{ type: 'text', languages: ['de', 'en'] }],
+        expectedOutputs: [{ type: 'text', languages: allLanguages }],
       })
     );
   });
@@ -70,7 +73,7 @@ describe('LanguageModelService', () => {
 
     expect(create).toHaveBeenCalledWith(
       expect.objectContaining({
-        expectedInputs: [{ type: 'text', languages: ['de', 'en'] }],
+        expectedInputs: [{ type: 'text', languages: allLanguages }],
         expectedOutputs: [{ type: 'text', languages: ['en'] }],
       })
     );

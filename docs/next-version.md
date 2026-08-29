@@ -100,6 +100,15 @@ genuine rung is owed by whichever ships first.
   parsing that breaks when a bank rewords a push, and Android-only. Proper bank access is a separate wall —
   PSD2 needs an AISP licence plus an eIDAS certificate, FinTS a product registration and a socket client;
   all three end at a backend this app does not have.
+- **The handbook has no language axis, and French shipped without one.** The UI speaks three languages;
+  `public/handbook/pages/*.json` is 19 pages of German prose, and `handbook.service.ts` fetches
+  `./handbook/pages/<slug>.json` flat — no language in the path, so there is nothing to fall back *from*.
+  Adding one is a directory level, a fallback rule per page, and 19 pages of long-form prose per language.
+  The figures are the harder half: every screenshot is of a German UI, so a translated page either shows
+  German figures or `handbook:shots` grows a language axis — and that suite already runs on release only,
+  by hand. Falling back to German is the current behaviour by accident rather than by design; making it
+  deliberate (a page declaring which languages it has, and saying so in the reader's language) is the
+  cheap half and can land alone.
 - **The app becomes a share target.** A `share_target` carrying a file must be `method: "POST"`,
   `enctype: "multipart/form-data"`, and the POST intercepted in the service worker — wrapping
   `ngsw-worker.js` in an `importScripts` shim, since ngsw exposes no `fetch` hook. It also arrives with no

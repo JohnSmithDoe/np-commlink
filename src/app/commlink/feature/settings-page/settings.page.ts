@@ -77,6 +77,7 @@ const SEGMENT_LABEL_KEYS = {
 const LANGUAGE_LABELS: Record<Language, string> = {
   de: 'Deutsch',
   en: 'English',
+  fr: 'Français',
 };
 
 const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
