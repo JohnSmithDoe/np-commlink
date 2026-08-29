@@ -97,9 +97,10 @@ test.describe('deriving a rule from a booking', () => {
     await rule.getByRole('button', { name: /Anlegen|Übernehmen/ }).click();
     await expect(dialog(page)).toBeHidden({ timeout: 10_000 });
 
-    await expect(
-      account.getByTestId('list-row-category').first()
-    ).toContainText('Kaffee', { timeout: 10_000 });
+    await expect(account.getByTestId('list-row-label').first()).toContainText(
+      'Kaffee',
+      { timeout: 10_000 }
+    );
     await waitForPersisted(page, 'cash', 'Kaffee');
 
     await page.goto('/#/cash/rules');

@@ -59,6 +59,6 @@ test.describe('cash transaction category', () => {
 
     const row = listRow(page, 'Soykaf refill');
     await expect(row).toBeVisible({ timeout: 10_000 });
-    await expect(row.getByTestId('list-row-category')).toHaveText('Kaffee');
+    await expect(row.getByTestId('list-row-label')).toContainText('Kaffee');
   });
 });

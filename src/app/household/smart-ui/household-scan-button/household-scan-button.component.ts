@@ -18,8 +18,8 @@ import { HouseholdListPageFacade } from '../../data';
   template: `
     @if (facade.showScanButton) {
       <ion-button
-        (click)="facade.scan()"
         [attr.aria-label]="'household.a11y.scan' | translate"
+        (click)="facade.scan()"
       >
         <ion-icon slot="icon-only" name="barcode-outline" aria-hidden="true" />
       </ion-button>

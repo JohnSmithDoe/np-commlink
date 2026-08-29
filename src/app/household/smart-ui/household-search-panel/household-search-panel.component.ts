@@ -23,7 +23,7 @@ import { HouseholdSearchResultComponent } from '../../ui/household-search-result
       (selectProduct)="copy.addProduct($event)"
       (selectStorageItem)="copy.addStorageItem($event)"
       (selectShoppingItem)="copy.addShoppingItem($event)"
-    ></app-household-search-result>
+    />
   `,
   styles: `
     :host {
