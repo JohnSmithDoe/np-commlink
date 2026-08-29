@@ -7,5 +7,17 @@
     ion-toolbar {
       --min-height: 3rem;
     }
+    ion-list-header {
+      --background: var(--sr-bg-lo);
+      min-height: auto;
+      padding-block: var(--space-2) var(--space-1);
+      border-bottom: 1px solid var(--sr-line);
+
+      ion-label {
+        margin: 0;
+        font-size: var(--fs-xsmall);
+        line-height: 1.2;
+      }
+    }
   }
 }

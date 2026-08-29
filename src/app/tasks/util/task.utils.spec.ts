@@ -27,4 +27,12 @@ describe('dueStatusColor', () => {
     expect(colorOf(NOW.add(3, 'days').toISOString())).toBe('success');
     expect(colorOf(NOW.add(1, 'year').toISOString())).toBe('success');
   });
+
+  it('drops the status once the task is done, however overdue it was', () => {
+    const done = mockTaskItem({
+      dueAt: NOW.subtract(1, 'year').toISOString(),
+      doneAt: NOW.toISOString(),
+    });
+    expect(dueStatusColor(done, NOW)).toBeUndefined();
+  });
 });

@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
@@ -17,6 +17,8 @@ import {
 import { UndoActions } from '../../@shared/data/undo/undo.actions';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import {
+  selectDoneTasks,
+  selectOpenTasks,
   selectTaskItems,
   selectTaskTaggedByCategory,
   selectTasksCategories,
@@ -26,11 +28,15 @@ import {
 } from './tasks.selector';
 import { Category, CategoryId } from '../../@shared/model/category.types';
 import { ItemListSortOption } from '../../@shared/model/item-list.types';
+import { ListSection } from '../../@shared/util/item-lists/list-page.facade';
 
 const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'prio', labelKey: marker('tasks.list-toolbar.prio') },
   { type: 'dueAt', labelKey: marker('tasks.list-toolbar.due') },
 ];
+
+const OPEN_SECTION = 'open';
+const DONE_SECTION = 'done';
 
 @Injectable({ providedIn: 'root' })
 export class TasksListPageFacade extends BaseListPageFacade {
@@ -50,6 +56,38 @@ export class TasksListPageFacade extends BaseListPageFacade {
   readonly sortOptions = signal(SORT_OPTIONS);
 
   readonly allItems = this.#store.selectSignal(selectTaskItems);
+
+  readonly #open = this.#store.selectSignal(selectOpenTasks);
+  readonly #done = this.#store.selectSignal(selectDoneTasks);
+
+  readonly sections = computed<readonly ListSection[]>(() => {
+    const open = this.#open();
+    const done = this.#done();
+    if (open.length + done.length === 0) return [];
+    return [
+      { id: OPEN_SECTION, labelKey: marker('tasks.section.open'), items: open },
+      { id: DONE_SECTION, labelKey: marker('tasks.section.done'), items: done },
+    ];
+  });
+
+  toggleDone(item: TaskItem): void {
+    this.#store.dispatch(
+      UndoActions.pushed({
+        scope: TASKS_LIST_ID,
+        name: item.name,
+        action: TasksActions.addOrUpdateItem(item),
+        toastKey: item.doneAt
+          ? marker('tasks.toast.reopened')
+          : marker('tasks.toast.done'),
+      })
+    );
+    this.#store.dispatch(
+      TasksActions.addOrUpdateItem({
+        ...item,
+        doneAt: item.doneAt ? undefined : new Date().toISOString(),
+      })
+    );
+  }
 
   showCreateDialog(): void {
     const state = this.state();

@@ -8,7 +8,7 @@ export const dueStatusColor = (
   item: TaskItem,
   now: Dayjs = dayjs()
 ): IonColor | undefined => {
-  if (!item.dueAt) return undefined;
+  if (item.doneAt || !item.dueAt) return undefined;
   const dueAt = dayjs(item.dueAt);
   if (dueAt.isBefore(now)) return 'danger';
   return dueAt.isBefore(now.add(DUE_SOON_DAYS, 'days')) ? 'warning' : 'success';

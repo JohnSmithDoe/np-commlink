@@ -3,7 +3,9 @@ import {
   filterListBySearchQuery,
 } from '../../@shared/util/item-lists/list.selector';
 import {
+  selectDoneTasks,
   selectOpenTaskCount,
+  selectOpenTasks,
   selectTasksListItems,
   selectTasksListSearchResult,
   selectTasksState,
@@ -117,12 +119,37 @@ describe('tasks.selector', () => {
   });
 });
 
+describe('open and done', () => {
+  const items = [
+    mockTaskItem({ id: 'a' }),
+    mockTaskItem({ id: 'b', doneAt: '2026-08-01' }),
+  ];
+
+  it('partitions the visible list on doneAt', () => {
+    expect(selectOpenTasks.projector(items).map((task) => task.id)).toEqual([
+      'a',
+    ]);
+    expect(selectDoneTasks.projector(items).map((task) => task.id)).toEqual([
+      'b',
+    ]);
+  });
+
+  it('survives a list that has not loaded', () => {
+    expect(selectOpenTasks.projector(undefined)).toEqual([]);
+    expect(selectDoneTasks.projector(undefined)).toEqual([]);
+  });
+});
+
 describe('selectOpenTaskCount', () => {
-  it('counts every item, since a done task is deleted rather than flagged', () => {
+  it('counts what is still open, not what is on the list', () => {
     expect(
       selectOpenTaskCount.projector(
         mockTasksList({
-          items: [mockTaskItem({ id: 'a' }), mockTaskItem({ id: 'b' })],
+          items: [
+            mockTaskItem({ id: 'a' }),
+            mockTaskItem({ id: 'b' }),
+            mockTaskItem({ id: 'c', doneAt: '2026-08-01' }),
+          ],
         })
       )
     ).toBe(2);

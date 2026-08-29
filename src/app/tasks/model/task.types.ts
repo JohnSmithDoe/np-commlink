@@ -8,6 +8,7 @@ export const TASK_CATEGORIES_LIST_ID = '_task-categories';
 
 export interface TaskItem extends BaseItem {
   dueAt?: Timestamp;
+  doneAt?: Timestamp;
   prio?: number;
 }
 

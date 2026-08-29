@@ -13,19 +13,27 @@
     [label]="'tasks.item.prio' | translate"
     [value]="draft().prio"
     (updateValue)="updatePrio($event)"
-  ></app-number-input>
+  />
 
   <app-date-input
     [label]="'edit.item.dialog.dueAt' | translate"
     [value]="draft().dueAt ?? null"
     (valueChange)="updateDueAt($event)"
-  ></app-date-input>
+  />
 
   <app-category-input
     [categories]="selectedCategories()"
     (removeCategory)="removeCategory($event)"
     (openDialog)="openCategoriesDialog()"
-  ></app-category-input>
+  />
+
+  <ion-item>
+    <ion-toggle
+      [checked]="!!draft().doneAt"
+      (ionChange)="updateDone($event.detail.checked)"
+      >{{ 'tasks.item.done' | translate }}</ion-toggle
+    >
+  </ion-item>
 
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
@@ -37,5 +45,5 @@
     (addNew)="addCategory($event)"
     (deleted)="deleteCategory($event)"
     (renamed)="renameCategory($event)"
-  ></app-categories-dialog>
+  />
 </app-item-edit-modal>

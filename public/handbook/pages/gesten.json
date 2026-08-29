@@ -3,7 +3,6 @@
   "title": "BEDIENUNG",
   "plain": "Gesten & Bedienung",
   "route": "—",
-  "shotsStale": true,
   "summary": "Wischen, Tippen, Suchen, Sortieren — die versteckten Handgriffe, die in jedem Modul gleich funktionieren.",
   "sections": [
     {
@@ -142,7 +141,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Nach rechts wischen</strong> → die Aktion des Moduls, farbig mit Symbol, ebenfalls sofort bei weitem Wischen: <em>Als gekauft markieren</em> (<a href=\"#/handbook/market\">MARKET</a>), <em>Zur Einkaufsliste hinzufügen</em> (<a href=\"#/handbook/stash\">STASH</a>), <em>Bearbeiten</em> (<a href=\"#/handbook/biomon\">BIOMON</a>, <a href=\"#/handbook/trackplay\">TRACKPLAY</a>), <em>Umbenennen</em> (Kategorielisten), <em>Bilder ansehen</em> (<a href=\"#/handbook/sigil\">SIGIL</a>, nur bei Notizen mit Bild), <em>Abgleichen</em> / <em>Abgleich aufheben</em> (<a href=\"#/handbook/credstick\">CREDSTICK</a>)."
+            "<strong>Nach rechts wischen</strong> → die Aktion des Moduls, farbig mit Symbol, ebenfalls sofort bei weitem Wischen: <em>Als gekauft markieren</em> (<a href=\"#/handbook/market\">MARKET</a>), <em>Zur Einkaufsliste hinzufügen</em> (<a href=\"#/handbook/stash\">STASH</a>), <em>Als erledigt markieren</em> / <em>Wieder öffnen</em> (<a href=\"#/handbook/agenda\">AGENDA</a>), <em>Bearbeiten</em> (<a href=\"#/handbook/biomon\">BIOMON</a>, <a href=\"#/handbook/trackplay\">TRACKPLAY</a>), <em>Umbenennen</em> (Kategorielisten), <em>Bilder ansehen</em> (<a href=\"#/handbook/sigil\">SIGIL</a>, nur bei Notizen mit Bild), <em>Abgleichen</em> / <em>Abgleich aufheben</em> (<a href=\"#/handbook/credstick\">CREDSTICK</a>)."
           ]
         },
         {
@@ -172,7 +171,7 @@
         {
           "type": "ul",
           "items": [
-            "Weites Wischen löscht <strong>ohne Rückfrage</strong>. Der Hinweis unten meldet den Löschvorgang nur. In <a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>, <a href=\"#/handbook/sigil\">SIGIL</a>, <a href=\"#/handbook/biomon\">BIOMON</a> und <a href=\"#/handbook/trackplay\">TRACKPLAY</a> steht danach <strong>Rückgängig</strong> oben in der Kopfzeile, solange die Liste etwas zurückzunehmen hat — und nur auf der Liste, von der du gelöscht hast. Auch <a href=\"#/handbook/catalog\">CATALOG</a> und die Aufgaben-Kategorien holen so die Kategorie samt ihrer Zuordnungen zurück. In <a href=\"#/handbook/agenda\">AGENDA</a> und den übrigen Listen ist weg weg.",
+            "Weites Wischen löscht <strong>ohne Rückfrage</strong>. Der Hinweis unten meldet den Löschvorgang nur. In <a href=\"#/handbook/market\">MARKET</a>, <a href=\"#/handbook/stash\">STASH</a>, <a href=\"#/handbook/sigil\">SIGIL</a>, <a href=\"#/handbook/biomon\">BIOMON</a>, <a href=\"#/handbook/agenda\">AGENDA</a> und <a href=\"#/handbook/trackplay\">TRACKPLAY</a> steht danach <strong>Rückgängig</strong> oben in der Kopfzeile, solange die Liste etwas zurückzunehmen hat — und nur auf der Liste, von der du gelöscht hast. Auch <a href=\"#/handbook/catalog\">CATALOG</a> und die Aufgaben-Kategorien holen so die Kategorie samt ihrer Zuordnungen zurück. In <a href=\"#/handbook/agenda\">AGENDA</a> nimmt derselbe Knopf auch ein versehentliches <em>Erledigt</em> zurück. In den übrigen Listen ist weg weg.",
             "Wer bei gefüllter Suche wischt, wischt auf einer <em>gefilterten</em> Liste.",
             "Ein Filter überlebt das Verlassen der Seite. Eine „leere“ Liste ist oft nur eine gefilterte: steht dort <em>Kein Eintrag in dieser Kategorie</em>, tippe <code>ALLE</code>.",
             "Lange Listen zeigen nicht alles — am Ende steht <em>… weitere anzeigen</em>.",

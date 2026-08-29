@@ -48,6 +48,16 @@ export const selectTasksListItems = createSelector(
   (list, result): TaskItem[] | undefined => filterAndSortItemList(list, result)
 );
 
+export const selectOpenTasks = createSelector(
+  selectTasksListItems,
+  (items): TaskItem[] => (items ?? []).filter((item) => !item.doneAt)
+);
+
+export const selectDoneTasks = createSelector(
+  selectTasksListItems,
+  (items): TaskItem[] => (items ?? []).filter((item) => item.doneAt)
+);
+
 export const selectTaskCategoriesSearchResult = createSelector(
   selectTaskCategoryList,
   (catalog): SearchResult<Category> | undefined =>
@@ -75,5 +85,5 @@ export const selectTaskTaggedByCategory = createSelector(
 
 export const selectOpenTaskCount = createSelector(
   selectTasksList,
-  (list) => list?.items.length ?? 0
+  (list) => (list?.items ?? []).filter((item) => !item.doneAt).length
 );

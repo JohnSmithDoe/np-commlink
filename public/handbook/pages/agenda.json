@@ -3,7 +3,8 @@
   "title": "AGENDA",
   "plain": "Aufgaben",
   "route": "/tasks/list",
-  "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien — erledigt heißt hier gelöscht.",
+  "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien, geteilt in Offen und Erledigt.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -24,8 +25,9 @@
           "items": [
             "<code>/tasks/list</code> öffnen. In die Suchleiste <strong>Suchen oder neu anlegen</strong> den Namen tippen und <strong>Enter</strong> drücken — die Aufgabe ist angelegt und das Feld leert sich wieder.",
             "Alternativ <strong>+</strong> oben rechts. Der Dialog <em>Neuen Eintrag anlegen</em> übernimmt dabei den Text aus der Suchleiste und den gerade aktiven Kategoriefilter als Vorbelegung.",
-            "Die Zeile <strong>antippen</strong> öffnet <em>Eintrag bearbeiten</em>: <strong>Name</strong>, <strong>Priorität</strong> (freie Zahl), <strong>Erledigen bis</strong> (öffnet einen Kalender) und <strong>Kategorien</strong>.",
-            "Erledigt? Es gibt keinen Haken — die Zeile <strong>nach links wischen</strong> und löschen."
+            "Die Zeile <strong>antippen</strong> öffnet <em>Eintrag bearbeiten</em>: <strong>Name</strong>, <strong>Priorität</strong> (freie Zahl), <strong>Erledigen bis</strong> (öffnet einen Kalender), der Schalter <strong>Erledigt</strong> und <strong>Kategorien</strong>.",
+            "Erledigt? Die Zeile <strong>nach rechts wischen</strong> — sie wandert durchgestrichen in den Abschnitt <strong>Erledigt</strong>. Dieselbe Geste dort holt sie zurück.",
+            "Endgültig weg? Die Zeile <strong>nach links wischen</strong> und löschen."
           ]
         },
         {
@@ -46,11 +48,11 @@
       "blocks": [
         {
           "type": "h3",
-          "html": "Es gibt kein \"erledigt\""
+          "html": "Offen und Erledigt"
         },
         {
           "type": "p",
-          "html": "Eine Aufgabe hat keinen Zustand. Sie steht auf der Liste oder sie ist gelöscht. Deshalb bedeutet die Zahl auf der Deck-Kachel — <code>offen: n</code> — schlicht <strong>alle Aufgaben in der Liste</strong>. Sie kann nicht zwischen offen und fertig unterscheiden, weil die App das nicht speichert."
+          "html": "Die Liste zerfällt in zwei Abschnitte: <strong>Offen</strong> oben, <strong>Erledigt</strong> darunter mit durchgestrichenen Zeilen. Eine Aufgabe merkt sich <em>wann</em> sie erledigt wurde, nicht bloß <em>dass</em>. Erledigte Zeilen tragen keinen Farbstreifen mehr — ein abgehakter Termin mahnt nicht. Die Zahl auf der Deck-Kachel — <code>offen: n</code> — zählt nur den oberen Abschnitt. Ein Archiv gibt es weiter nicht: <strong>Erledigt</strong> wächst, bis du die Zeilen löschst."
         },
         {
           "type": "h3",
@@ -139,8 +141,8 @@
         {
           "type": "ul",
           "items": [
-            "<strong><code>offen: n</code> ist keine Zählung offener Aufgaben</strong>, sondern die Länge der Liste.",
-            "<strong>Der Vollwisch löscht ohne Rückfrage und ohne Rückgängig.</strong> Das ist der gewollte Weg, eine Aufgabe abzuhaken — nur ist er nicht umkehrbar.",
+            "<strong>Der Vollwisch löscht ohne Rückfrage.</strong> <strong>Rückgängig</strong> oben in der Kopfzeile holt die Zeile zurück, solange du auf dieser Liste bleibst — verlässt du sie, ist die Aufgabe weg.",
+            "<strong>Erledigt ist nicht gelöscht.</strong> Eine abgehakte Aufgabe bleibt im Abschnitt <strong>Erledigt</strong> stehen und zählt nicht mehr zu <code>offen: n</code>; erst der Wisch nach links entfernt sie.",
             "<strong>Eine Kategorie löschen löscht keine Aufgaben</strong>, entfernt sie aber aus allen. Die Zuordnung ist danach weg, die Aufgaben bleiben.",
             "<strong>Umbenennen auf einen bereits vorhandenen Namen verschmilzt</strong> die beiden Kategorien: die umbenannte verschwindet, ihre Aufgaben hängen danach an der bestehenden.",
             "<strong>Vor dem ersten Antippen eines Sortierknopfs steht die Liste rückwärts</strong> (Z nach A). Der erste Druck auf einen Knopf ist immer aufsteigend, jeder weitere dreht.",

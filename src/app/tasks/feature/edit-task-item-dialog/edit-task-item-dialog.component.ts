@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { IonItem, IonToggle } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { TaskItem, TASKS_LIST_ID } from '../../model/task.types';
@@ -15,6 +16,8 @@ import { Category, CategoryId } from '../../../@shared/model/category.types';
   selector: 'app-edit-task-item-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    IonItem,
+    IonToggle,
     TranslatePipe,
     CategoryInputComponent,
     CategoriesDialogComponent,
@@ -53,5 +56,13 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
 
   updateDueAt(value: string | null) {
     this.patch({ dueAt: value ?? undefined });
+  }
+
+  updateDone(done: boolean) {
+    this.patch({
+      doneAt: done
+        ? (this.draft().doneAt ?? new Date().toISOString())
+        : undefined,
+    });
   }
 }

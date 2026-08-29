@@ -2,7 +2,7 @@
   @if (header()) {
     @if (listHeader()) {
       <ion-list-header [color]="headerColor()">
-        <ion-label>{{ header() }}</ion-label>
+        <ion-label class="sr-hud">{{ header() }}</ion-label>
       </ion-list-header>
     } @else {
       <ion-toolbar [color]="headerColor()">

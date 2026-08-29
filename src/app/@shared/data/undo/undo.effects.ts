@@ -33,7 +33,7 @@ export const undoEffects = {
         ofType(UndoActions.pushed),
         map(({ entry }) =>
           NotificationsActions.toast({
-            key: marker('undo.toast.deleted'),
+            key: entry.toastKey ?? marker('undo.toast.deleted'),
             parameters: { name: entry.name },
             durationMs: UNDO_TOAST_MS,
             group: UNDO_TOAST_GROUP,
