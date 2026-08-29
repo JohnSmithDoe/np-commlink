@@ -92,30 +92,11 @@ owes once one IS needed is in [decisions.md](./decisions.md).
 - **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
   (measured 2026-08-02 — recount before citing), so most are real translations. The first English session
   is the first proofread.
-- **Fifteen handbook pages carry stale screenshots, and they say so themselves.** Four for content that
-  moved: `credstick-import` (the rules list lost its in-content add button and its section header; the
-  swipe reveals a text delete now), `soykaf` (the recipe list gained a searchbar and a sort row),
-  `start` (the deck header gained the arrange toggle, and the deck config now opens on a **grouped**
-  lens with an order lens beside it — the figure shows neither, so the prose was rewritten and the shot
-  was not; the config page is now a program itself, so it wears the grid glyph and sits under
-  *Einstellungen* beside SYSOP) and `credstick` (the ledger and the uncategorized
-  list now carry CREDSTICK's own glyph in the header, which the deck's catalog supplies to every page
-  inside a program). Seven for the 44 px touch floor, which grew a
-  `size="small"` control on every screen they show: `sysop` (which also gained the whole storage
-  section, and moved the deck link up under the language picker), `comms`, `dailyrun`, `chrono`, `biomon` (which also gained the zodiac and I Ching links on
-  the profile header, and the birthday plus two sign selects in the profile dialog),
-  `credstick-auswertung` and `sigil`. Three for the back arrow, which every page header has now
-  dropped ([decisions.md](./decisions.md)): `agenda` (the categories page), `catalog` (the list-options
-  page) and `trackplay` (the game-play and player pages) each show a child page that used to carry one.
-  That change dates figures across the already-flagged pages too, which is why it adds three rather than
-  eleven. One more for the return row that replaced it ([decisions.md](./decisions.md)): every child page
-  gained a "Zurück · …" line at the top of its content, which dates `meatspace` (the office-time settings
-  figure) on top of the fourteen already flagged. Each page JSON
-  carries `"shotsStale": true`, which paints a warning above the article, so a reader is told rather
-  than misled. Clearing it is a **release** step, and now one command: `pnpm run handbook:shots` shoots,
-  converts and drops the flag from every page whose figures it refreshed in full.
-  [CLAUDE.md](../CLAUDE.md) still forbids an agent running it, so SETTING the flag stays manual and no
-  gate can see it — **whoever changes a screen sets it on the pages that show that screen.**
+- **No handbook page is flagged stale right now** — the 2026-08-28 `handbook:shots` run refreshed every
+  figure and cleared all fifteen flags. That is the empty state, not a standing entry: the next UI change
+  puts pages back on this list, and [CLAUDE.md](../CLAUDE.md) forbids an agent running the suite, so
+  SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a screen sets it
+  on the pages that show that screen**, and the next release run clears it.
 
 ## Waiting on upstream
 
@@ -141,6 +122,87 @@ only a phone with a few hundred rows actually presents. The ones that got a date
   canvas pass at import — the canvas is already there — would store a ~192 px `thumbUrl` beside the
   picture for a few KB. It is a persisted-shape change on the image document, which is free (`notes` is
   dev-only), and the list is also unwindowed, so the two belong in one pass.
+
+## The Pixel 8 walk, and what it found
+
+A pre-release visual pass drove the real app at **412 × 915, DPR 2.625** (Playwright's own `Pixel 8`
+descriptor) and shot every program's screens — 130 figures, seeded through the persisted documents and
+the UI the way `e2e/handbook/*.shots.ts` does. It was a **walk, not a suite**: nothing asserted, so it
+could not go red, and it earned no place in `verify:all`. **The harness is deleted** — a Pixel 8 clone of
+`e2e/handbook/` that duplicated its seeding to assert nothing, and a second copy of that seeding is a
+cost paid on every later change to it. Re-shooting the set is a `devices['Pixel 8']` project pointed at
+the handbook shots, not a second suite.
+
+What it settled first is that the **nav sweep landed**: every page in `DECK_CATALOG` correctly shows no
+return row, and every genuine child page has one, derived from the catalog rather than hardcoded. The
+findings below are what the screens showed instead. Each fix dates handbook figures, so whichever ones
+get paid, set `"shotsStale": true` on the pages that show those screens.
+
+Two traps the walk itself paid for, so the next run does not: **a reading keeps its date in `name`**, not
+in `createdAt` (`weight-chart` labels off `localizedDayMonth(reading.name)`), so a seed leaving `name`
+empty paints five "Invalid Date" ticks that are the seed's fault and not the chart's. And **Playwright
+wipes `outputDir` on every run**, which ate a copy of the shots parked under `test-results/` — whatever
+shoots them next must write outside that directory.
+
+### Wrong, not a matter of taste
+
+- **`/cash` clips its own total.** The sort row's right-aligned sum runs past the right edge at 412 px —
+  the `€` glyph is cut in half on the accounts page. The clearest defect in the set.
+- **Two household header actions are vertically clipped**: the cart on STASH and the tray on MARKET are
+  sliced by the toolbar's top edge, while the tab bar renders the same two glyphs whole. Not a fluke —
+  both list pages show it.
+- **CHRONO's toolbar is over capacity at 412 px** and wraps the sort label onto two lines, `A-` over `Z`.
+  The dev-only flask (`@if (isDev)`, `tracking.page.html:32`) additionally clips at the right edge, so
+  what ships is the wrap alone.
+- **Trackplay numbers its rounds from 0** — the `#` column prints the array index, so a card game opens
+  at round 0 — and a fresh round pre-fills `0 / 0 / 0`, which makes "not entered yet" and "scored
+  nothing" the same cell.
+- **`1 SESSIONS · 0M`** — a plural on one, and a three-second session rounded to zero minutes.
+- **AGENDA runs two facts together with no separator**: `Arbeit Fällig am: 26.08.2026` reads as the
+  broken phrase "Arbeit Fällig". The report's `28.08.2026 · Wohnen` is the shape to copy.
+- **The birthdate field prints `05/14/1980`.** A native `<input type="date">` follows the DEVICE locale,
+  not the app's language, so US order appears on a German UI and no language switch touches it, against
+  `dd.MM.yyyy` everywhere else.
+
+### One thing, two treatments
+
+- **The ledger row is twice the height of the row that shows the same data better.** A booking spends
+  three or four lines — title, category, date, amount each on their own — so five rows fill a phone
+  screen, while `cash-report`'s _Größte Ausgaben_ already carries title-with-amount plus one dim
+  `date · category` subline. Same domain, same fields, two layouts.
+- **Only AGENDA says which sort is active** (an arrow beside `TERMIN`); `/cash` and the household lists
+  print their sort keys with nothing marking the live one.
+- **CHRONO spells one state three ways on one screen** — a `LÄUFT` chip, a lowercase `läuft` chip, and
+  `GESTOPPT` as bare amber text — and one duration two ways, `3 Sekunden` beside `00:00:03`.
+- **Two different colours mean "secondary".** In cyberpunk `--sr-text-dim` IS the amber at 85 %
+  (`_shadowrun.scss:119`), so the notes snippet, which sets the token, is amber, while `list-item`'s
+  `list-row-category` and the deck-config intro never set it and inherit Ionic's grey step. Neither
+  breaks `commlink/muted-text-uses-token` — the rule sees a hardcoded colour, not an unthemed default.
+- **Filled buttons appear twice and outline everywhere else**: cash's _Regeln anwenden_ and the shopping
+  toolbar's bag are solid amber; every other button in the walk is an outline.
+- **Green carries four meanings** — income in the ledger, _Ohne Kategorie_ in the report donut, both
+  priority 3 and no priority in AGENDA, and a healthy MHD in STASH.
+- **Native controls ignore the skin entirely**: SYSOP's two `<input type="color">` swatches wear grey
+  browser bezels and BIOMON's date field a white calendar glyph, the only unskinned chrome in the app.
+- **The deck config's subline is a label for some rows and a count for others** — "Bürozeiten" and
+  "Notizen" against a bare "4 / 4", in the same slot, with nothing saying the count is programs.
+
+### Structure
+
+- **SYSOP is two pages stacked.** Its top half is plain divs, its storage and about halves are `ion-item`
+  rows on their own band, and section headers render exactly like field labels — _Deck_, _Akzentfarben_
+  and _Speicher_ carry no more weight than _Helligkeit_ — so the hierarchy reads flat. Its worst row is
+  _Dauerhafter Speicher_, where a right-aligned status squeezes the description into three lines of ~28
+  characters with 40 % of the row empty beneath it.
+- **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
+  `app-empty-state` exists and cash already uses it five times — and neither says what a rule is or that
+  `+` makes one. _Regeln anwenden_ is offered, full-width and solid, with zero rules to apply.
+- **The handbook article is the one child page with no way back at the top.** Its header is `hideButtons`
+  and names the program rather than the article, and the only parent link is `hb-pager__overview` BELOW
+  the whole article — the longest scroll in the app, left by the OS gesture or not at all.
+  `app-page-return` needs no inputs there; `PROGRAM_RETURN` already derives `/handbook`.
+- **Trackplay's totals row is pinned to the bottom of the viewport**, so a three-round grid puts the
+  summary a screenful of emptiness below its own table.
 
 ## Open review findings
 

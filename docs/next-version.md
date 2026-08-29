@@ -169,8 +169,8 @@ sharper rather than softer — a reader who can now open all 64 hexagrams has 64
   itself as an article under `public/handbook/pages/` with an entry in
   `public/handbook/pages/catalog.json`, so a BIOMON astro article is the shape that already fits. The
   catch is figures: shots are regenerated on release by Martin alone
-  ([CLAUDE.md](../CLAUDE.md)), so the article either ships figure-free or waits for a shots run — and
-  `biomon` is already flagged `shotsStale`, so it is waiting on one regardless.
+  ([CLAUDE.md](../CLAUDE.md)), so the article either ships figure-free or waits for a shots run of its own —
+  `biomon`'s figures are current as of the 2026-08-28 run, so nothing is pending to ride along on.
 - **The alternative is per-panel disclosure, and it is not obviously worse.** A tappable "wie wird das
   berechnet?" under each readout needs no screenshots, sits against the number it explains rather than
   three taps away in a separate article, and survives a reader who never opens the handbook. It costs more
