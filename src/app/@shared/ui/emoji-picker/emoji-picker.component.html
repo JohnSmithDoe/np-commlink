@@ -1,8 +1,8 @@
 <ion-modal
   [isOpen]="isOpen()"
+  [attr.aria-label]="'emoji-picker.dialog' | translate"
   (didDismiss)="dismissed.emit()"
   (didPresent)="presented()"
-  [attr.aria-label]="'emoji-picker.dialog' | translate"
 >
   <ng-template>
     <ion-header>
@@ -19,18 +19,18 @@
           #preview
           class="emoji-picker__preview"
           labelPlacement="stacked"
-          label="{{ 'emoji-picker.text' | translate }}"
+          data-testid="emoji-picker-preview"
+          [label]="'emoji-picker.text' | translate"
           [value]="text()"
           (ionInput)="previewInput($event)"
-          data-testid="emoji-picker-preview"
-        ></ion-input>
+        />
         <ion-buttons slot="end">
           <ion-button
             fill="clear"
+            data-testid="emoji-picker-backspace"
             [disabled]="!text()"
             [attr.aria-label]="'emoji-picker.delete' | translate"
             (click)="backspace()"
-            data-testid="emoji-picker-backspace"
           >
             <ion-icon
               slot="icon-only"
@@ -42,19 +42,19 @@
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar
-          [value]="query()"
-          (ionInput)="searchbarInput($event)"
-          [debounce]="150"
-          placeholder="{{ 'emoji-picker.search' | translate }}"
           data-testid="emoji-picker-search"
-        ></ion-searchbar>
+          [placeholder]="'emoji-picker.search' | translate"
+          [value]="query()"
+          [debounce]="150"
+          (ionInput)="searchbarInput($event)"
+        />
       </ion-toolbar>
       @if (!query().trim()) {
         <ion-toolbar>
           <ion-segment
             [value]="activeGroup()"
-            (ionChange)="segmentChange($event)"
             [scrollable]="true"
+            (ionChange)="segmentChange($event)"
           >
             @for (group of groupIds; track group) {
               <ion-segment-button [value]="group">
@@ -76,9 +76,9 @@
             <button
               type="button"
               class="emoji-picker__cell"
+              data-testid="emoji-recent"
               [attr.aria-label]="entry.label"
               (click)="pick(entry.glyph)"
-              data-testid="emoji-recent"
             >
               {{ entry.glyph }}
             </button>
@@ -91,9 +91,9 @@
           <button
             type="button"
             class="emoji-picker__cell"
+            data-testid="emoji-option"
             [attr.aria-label]="entry.label"
             (click)="pick(entry.glyph)"
-            data-testid="emoji-option"
           >
             {{ entry.glyph }}
           </button>

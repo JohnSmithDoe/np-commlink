@@ -2,13 +2,13 @@
   <ion-button
     fill="clear"
     size="small"
-    (click)="prevDay()"
     [attr.aria-label]="'tracking.a11y.prev-day' | translate"
+    (click)="prevDay()"
   >
     <ion-icon
       slot="icon-only"
-      [icon]="'chevron-back-outline'"
       aria-hidden="true"
+      [icon]="'chevron-back-outline'"
     />
   </ion-button>
   <div class="daily-sessions-title">
@@ -22,13 +22,13 @@
     fill="clear"
     size="small"
     [disabled]="isToday()"
-    (click)="nextDay()"
     [attr.aria-label]="'tracking.a11y.next-day' | translate"
+    (click)="nextDay()"
   >
     <ion-icon
       slot="icon-only"
-      [icon]="'chevron-forward-outline'"
       aria-hidden="true"
+      [icon]="'chevron-forward-outline'"
     />
   </ion-button>
 </div>

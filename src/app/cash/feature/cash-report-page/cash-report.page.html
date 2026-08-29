@@ -5,9 +5,9 @@
 
   <ion-segment
     class="cash-report__scope"
+    data-testid="report-scope"
     [value]="scope()"
     (ionChange)="selectScope($any($event).detail.value)"
-    data-testid="report-scope"
   >
     @for (option of scopes; track option) {
       <ion-segment-button [value]="option">

@@ -5,10 +5,10 @@
     }}</ion-list-header>
     @for (hit of hits(); track hit.entry.slug) {
       <ion-item
+        data-testid="handbook-search-hit"
         [button]="true"
         [detail]="true"
         [routerLink]="['/handbook', hit.entry.slug]"
-        data-testid="handbook-search-hit"
       >
         <ion-label>
           <app-handbook-title

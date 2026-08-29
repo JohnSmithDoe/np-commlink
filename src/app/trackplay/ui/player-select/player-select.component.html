@@ -3,10 +3,10 @@
     <ion-item data-testid="player-select-row">
       <ion-checkbox
         slot="start"
+        data-testid="player-select-checkbox"
         [attr.aria-label]="player.name"
         [checked]="isChecked(player.id)"
         (ionChange)="onToggle(player.id, $event)"
-        data-testid="player-select-checkbox"
       />
       <ion-label>{{ player.name }}</ion-label>
     </ion-item>

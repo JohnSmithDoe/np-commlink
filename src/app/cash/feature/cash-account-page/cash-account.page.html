@@ -6,8 +6,8 @@
   <ion-buttons headerEnd slot="end">
     @if (facade.canImport()) {
       <ion-button
-        (click)="statement.click()"
         [attr.aria-label]="'cash.a11y.import-statement' | translate"
+        (click)="statement.click()"
       >
         <ion-icon
           slot="icon-only"
@@ -17,8 +17,8 @@
       </ion-button>
     }
     <ion-button
-      (click)="facade.showEditAccountDialog()"
       [attr.aria-label]="'cash.a11y.edit-account' | translate"
+      (click)="facade.showEditAccountDialog()"
     >
       <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
     </ion-button>
@@ -37,8 +37,8 @@
   </span>
 
   <input
-    beforeList
     #statement
+    beforeList
     type="file"
     multiple
     accept=".xml,.zip,text/xml,application/xml,application/zip"

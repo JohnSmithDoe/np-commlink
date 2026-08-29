@@ -5,7 +5,7 @@
 />
 
 <ion-content>
-  <app-page-return [route]="returnRoute()" label="page-title.vitals-iching" />
+  <app-page-return label="page-title.vitals-iching" [route]="returnRoute()" />
 
   <div class="cast sr-scanlines">
     <section class="cast-panel sr-panel sr-corners">
@@ -55,8 +55,8 @@
           <ion-button
             expand="block"
             fill="outline"
-            (click)="reset()"
             data-testid="iching-cast-reset"
+            (click)="reset()"
           >
             <ion-icon slot="start" name="refresh-outline" aria-hidden="true" />
             {{ 'vitals.iching.cast.again' | translate }}
@@ -64,8 +64,8 @@
         } @else {
           <ion-button
             expand="block"
-            (click)="throwCoins()"
             data-testid="iching-cast-throw"
+            (click)="throwCoins()"
           >
             <ion-icon slot="start" name="disc-outline" aria-hidden="true" />
             {{ 'vitals.iching.cast.throw' | translate }}

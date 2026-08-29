@@ -43,10 +43,10 @@
 <ng-template #scheduleRow let-schedule>
   <ion-item-sliding>
     <ion-item
+      data-testid="cash-schedule-row"
       [button]="true"
       [detail]="false"
       (click)="openEdit(schedule)"
-      data-testid="cash-schedule-row"
     >
       <ion-label class="ion-text-wrap">
         <h2>{{ schedule.name }}</h2>
@@ -73,9 +73,9 @@
       </ion-note>
       <ion-buttons slot="end">
         <ion-button
-          (click)="markSeen(schedule); $event.stopPropagation()"
-          [attr.aria-label]="'cash.a11y.mark-seen' | translate"
           data-testid="schedule-mark-seen"
+          [attr.aria-label]="'cash.a11y.mark-seen' | translate"
+          (click)="markSeen(schedule); $event.stopPropagation()"
         >
           <ion-icon
             slot="icon-only"
@@ -88,8 +88,8 @@
     <ion-item-options side="end">
       <ion-item-option
         color="danger"
-        (click)="confirmDelete(schedule)"
         [attr.aria-label]="'cash.a11y.delete-schedule' | translate"
+        (click)="confirmDelete(schedule)"
       >
         <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
       </ion-item-option>

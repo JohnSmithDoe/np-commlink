@@ -9,7 +9,7 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
-  <ion-segment [formField]="form.type" data-testid="vitals-profile-type">
+  <ion-segment data-testid="vitals-profile-type" [formField]="form.type">
     <ion-segment-button value="person">
       {{ 'vitals.profile.person' | translate }}
     </ion-segment-button>
@@ -22,18 +22,18 @@
     <ion-input
       labelPlacement="stacked"
       type="date"
-      label="{{ 'vitals.label.birth-date' | translate }}"
-      [formField]="form.birthDate"
       data-testid="vitals-profile-birth-date"
+      [label]="'vitals.label.birth-date' | translate"
+      [formField]="form.birthDate"
     />
   </ion-item>
 
   <ion-item>
     <ion-select
       labelPlacement="stacked"
-      label="{{ 'vitals.label.sun' | translate }}"
-      [formField]="form.sun"
       data-testid="vitals-profile-sun"
+      [label]="'vitals.label.sun' | translate"
+      [formField]="form.sun"
     >
       <ion-select-option value="">
         {{ 'vitals.astro.unset' | translate }}
@@ -56,9 +56,9 @@
   <ion-item>
     <ion-select
       labelPlacement="stacked"
-      label="{{ 'vitals.label.ascendant' | translate }}"
-      [formField]="form.ascendant"
       data-testid="vitals-profile-ascendant"
+      [label]="'vitals.label.ascendant' | translate"
+      [formField]="form.ascendant"
     >
       <ion-select-option value="">
         {{ 'vitals.astro.unset' | translate }}

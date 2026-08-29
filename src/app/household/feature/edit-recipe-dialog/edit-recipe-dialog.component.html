@@ -60,8 +60,8 @@
         slot="end"
         fill="clear"
         color="danger"
-        (click)="removeIngredient(row.line.id)"
         [attr.aria-label]="'household.a11y.delete-ingredient' | translate"
+        (click)="removeIngredient(row.line.id)"
       >
         <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
       </ion-button>
@@ -78,10 +78,10 @@
     <ion-select
       labelPlacement="stacked"
       interface="popover"
+      data-testid="recipe-product-select"
       [label]="'household.recipe.add-ingredient' | translate"
       [value]="pickerValue()"
       (ionChange)="addIngredient($event)"
-      data-testid="recipe-product-select"
     >
       @for (product of ingredientCatalog(); track product.id) {
         <ion-select-option [value]="product.id">{{
@@ -99,6 +99,6 @@
       [label]="'household.recipe.steps' | translate"
       [value]="draft().steps"
       (ionInput)="setSteps($event)"
-    ></ion-textarea>
+    />
   </ion-item>
 </app-item-edit-modal>

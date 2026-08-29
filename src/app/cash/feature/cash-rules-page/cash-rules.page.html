@@ -46,8 +46,8 @@
       </p>
       <p
         class="cash-rule__stat"
-        [class.cash-rule__stat--inert]="inert(item)"
         data-testid="cash-rule-stat"
+        [class.cash-rule__stat--inert]="inert(item)"
       >
         {{ statLabelKey(item) | translate: { count: claimed(item) } }}
       </p>

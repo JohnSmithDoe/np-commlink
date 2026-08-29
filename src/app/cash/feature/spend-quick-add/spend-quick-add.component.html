@@ -2,9 +2,9 @@
   <ion-segment [value]="method()">
     @for (option of methods; track option) {
       <ion-segment-button
+        data-testid="spend-method-option"
         [value]="option"
         (click)="setMethod(option)"
-        data-testid="spend-method-option"
       >
         {{ methodLabelKeys[option] | translate }}
       </ion-segment-button>
@@ -20,9 +20,9 @@
       @for (preset of presets; track preset) {
         <ion-button
           size="small"
+          data-testid="spend-preset"
           [fill]="amountCents() === preset ? 'solid' : 'outline'"
           (click)="pickPreset(preset)"
-          data-testid="spend-preset"
         >
           {{ preset | moneyEur }}
         </ion-button>
@@ -30,7 +30,7 @@
     </div>
 
     <app-money-input
-      label="{{ 'cash.label.amount' | translate }}"
+      [label]="'cash.label.amount' | translate"
       [(value)]="amountCents"
     />
 
@@ -40,10 +40,10 @@
       <ion-item>
         <ion-select
           labelPlacement="stacked"
-          label="{{ 'cash.spend.account' | translate }}"
+          data-testid="spend-account"
+          [label]="'cash.spend.account' | translate"
           [value]="account()?.id"
           (ionChange)="chooseAccount($event.detail.value)"
-          data-testid="spend-account"
         >
           @for (option of accounts(); track option.id) {
             <ion-select-option [value]="option.id">
@@ -67,9 +67,9 @@
 
     <ion-button
       expand="block"
+      data-testid="spend-book"
       [disabled]="!canBook()"
       (click)="book()"
-      data-testid="spend-book"
     >
       {{ 'cash.spend.book' | translate }}
     </ion-button>

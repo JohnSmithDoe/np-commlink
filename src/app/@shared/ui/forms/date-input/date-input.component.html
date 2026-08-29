@@ -1,13 +1,13 @@
 <ion-item>
   <ion-input
     labelPlacement="stacked"
-    [label]="label()"
-    [disabled]="disabled()"
     class="trigger"
-    [value]="value() ?? '' | date"
     type="text"
     id="open_cal"
-  ></ion-input>
+    [label]="label()"
+    [disabled]="disabled()"
+    [value]="value() ?? '' | date"
+  />
   <ion-modal
     trigger="open_cal"
     [attr.aria-label]="'a11y.date-picker' | translate"
@@ -18,11 +18,11 @@
       <ion-datetime
         presentation="date"
         mode="md"
-        (ionChange)="updateInputValue($event)"
         [value]="value()"
         [showDefaultButtons]="true"
         [showClearButton]="true"
-      ></ion-datetime>
+        (ionChange)="updateInputValue($event)"
+      />
     </ng-template>
   </ion-modal>
 </ion-item>

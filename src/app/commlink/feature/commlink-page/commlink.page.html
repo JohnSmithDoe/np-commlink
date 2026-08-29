@@ -10,11 +10,11 @@
   </div>
   <ion-buttons toolbar slot="end">
     <ion-button
-      (click)="toggleArrange()"
+      data-testid="deck-arrange"
       [fill]="arranging() ? 'solid' : 'clear'"
       [attr.aria-pressed]="arranging()"
       [attr.aria-label]="arrangeLabelKey() | translate"
-      data-testid="deck-arrange"
+      (click)="toggleArrange()"
     >
       <ion-icon
         slot="icon-only"
@@ -67,12 +67,12 @@
         <div class="cl-slot">
           <a
             class="cl-node sr-panel sr-corners"
+            data-testid="deck-tile"
             [class.cl-node--standby]="tile.status === 'standby'"
             [class.cl-node--offline]="tile.dark"
             [attr.aria-disabled]="tile.dark ? 'true' : null"
             [attr.tabindex]="tile.dark ? '-1' : null"
             [routerLink]="tile.program.route"
-            data-testid="deck-tile"
           >
             <span class="cl-node__scan"></span>
             <div class="cl-node__top">
@@ -82,12 +82,12 @@
                   <span
                     class="cl-node__badge"
                     role="img"
+                    data-testid="deck-tile-badge"
                     [class.cl-node__badge--currency]="tile.program.currency"
                     [attr.aria-label]="
                       tile.program.metricKey ?? ''
                         | translate: { value: tile.badgeText }
                     "
-                    data-testid="deck-tile-badge"
                     >{{ tile.badgeText }}</span
                   >
                 }
@@ -101,8 +101,8 @@
             </div>
             <ion-icon
               class="cl-node__icon"
-              [name]="tile.program.icon"
               aria-hidden="true"
+              [name]="tile.program.icon"
             />
             <div class="cl-node__name" data-testid="deck-tile-name">
               {{ tile.program.nameKey | translate }}
@@ -116,10 +116,10 @@
             <div class="cl-slot__arrange">
               <ion-button
                 fill="clear"
-                [disabled]="slot === 0"
-                (click)="moveEarlier(tile.program.id)"
-                [attr.aria-label]="tile.moveEarlierLabel"
                 data-testid="deck-move-earlier"
+                [disabled]="slot === 0"
+                [attr.aria-label]="tile.moveEarlierLabel"
+                (click)="moveEarlier(tile.program.id)"
               >
                 <ion-icon
                   slot="icon-only"
@@ -129,10 +129,10 @@
               </ion-button>
               <ion-button
                 fill="clear"
-                [disabled]="slot === tiles().length - 1"
-                (click)="moveLater(tile.program.id)"
-                [attr.aria-label]="tile.moveLaterLabel"
                 data-testid="deck-move-later"
+                [disabled]="slot === tiles().length - 1"
+                [attr.aria-label]="tile.moveLaterLabel"
+                (click)="moveLater(tile.program.id)"
               >
                 <ion-icon
                   slot="icon-only"

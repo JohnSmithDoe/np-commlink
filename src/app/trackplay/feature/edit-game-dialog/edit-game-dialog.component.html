@@ -12,10 +12,10 @@
   <ion-item>
     <ion-select
       labelPlacement="stacked"
-      label="{{ 'trackplay.label.game-type' | translate }}"
+      data-testid="game-type-select"
+      [label]="'trackplay.label.game-type' | translate"
       [value]="gameTypeId()"
       (ionChange)="setGameType($event)"
-      data-testid="game-type-select"
     >
       @for (type of gameTypes(); track type.id) {
         <ion-select-option [value]="type.id">{{ type.name }}</ion-select-option>

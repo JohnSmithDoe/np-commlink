@@ -10,7 +10,7 @@
   (dismissed)="close()"
 >
   <ion-item>
-    <ion-toggle [formField]="form.winHigh" data-testid="win-high-toggle">
+    <ion-toggle data-testid="win-high-toggle" [formField]="form.winHigh">
       <ion-label class="ion-text-wrap">
         <h2>{{ 'trackplay.gametype.win-high' | translate }}</h2>
         <p>{{ 'trackplay.gametype.win-high-hint' | translate }}</p>

@@ -3,10 +3,10 @@
     <ion-list-header>{{ groupLabel[view.group] | translate }}</ion-list-header>
     @for (entry of view.entries; track entry.slug) {
       <ion-item
+        data-testid="handbook-toc-entry"
         [button]="true"
         [detail]="true"
         [routerLink]="['/handbook', entry.slug]"
-        data-testid="handbook-toc-entry"
       >
         <ion-label>
           <app-handbook-title [deck]="entry.title" [plain]="entry.plain" />

@@ -1,9 +1,9 @@
 <app-list-page
   class="ion-page"
-  [heading]="facade.heading()"
-  [itemTemplate]="transactionItem"
   returnRoute="/cash/categories"
   returnLabel="page-title.categories"
+  [heading]="facade.heading()"
+  [itemTemplate]="transactionItem"
 >
   <span toolbarActionsEnd class="cash-networth__value">
     {{ facade.totalCents() | moneyEur }}

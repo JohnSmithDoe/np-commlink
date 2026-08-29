@@ -38,8 +38,8 @@
       @if (canManageCategories) {
         <ion-button
           toolbarActionsEnd
-          (click)="manageCategories()"
           [attr.aria-label]="'categories.a11y.manage' | translate"
+          (click)="manageCategories()"
         >
           <ion-icon
             slot="icon-only"
@@ -60,23 +60,23 @@
     />
   }
 
-  <ng-content select="[headerEnd]" toolbar></ng-content>
+  <ng-content select="[headerEnd]" toolbar />
 </app-page-header>
 
 <ion-content>
   <app-page-return [route]="returnRoute()" [label]="returnLabel()" />
 
-  <ng-content select="[beforeList]"></ng-content>
+  <ng-content select="[beforeList]" />
 
   @for (section of sections(); track section.id) {
     <app-item-list
+      listHeader
       [items]="section.items"
       [header]="
         showSectionHeaders() && section.labelKey
           ? (section.labelKey | translate)
           : ''
       "
-      listHeader
       [catalog]="facade.catalog?.() ?? []"
       [itemTemplate]="itemTemplate()"
       [reorderable]="reorderArmed()"
@@ -100,5 +100,5 @@
     (clearFilter)="clearFilter()"
   />
 
-  <ng-content select="[afterList]"></ng-content>
+  <ng-content select="[afterList]" />
 </ion-content>

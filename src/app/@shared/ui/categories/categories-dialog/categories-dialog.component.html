@@ -1,7 +1,7 @@
 <ion-modal
   [isOpen]="isOpen()"
-  (didDismiss)="dismissed.emit()"
   [attr.aria-label]="'category-picker.dialog' | translate"
+  (didDismiss)="dismissed.emit()"
 >
   <ng-template>
     <ion-header>
@@ -21,29 +21,29 @@
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar
-          placeholder="{{ 'category-picker.search' | translate }}"
+          data-testid="category-picker-search"
+          [placeholder]="'category-picker.search' | translate"
           [value]="searchQuery()"
+          [debounce]="250"
           (ionInput)="searchbarInput($event)"
           (keyup.enter)="addNewCategory()"
-          [debounce]="250"
-          data-testid="category-picker-search"
-        ></ion-searchbar>
+        />
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
       <ion-list
         #list
-        [inset]="true"
         role="listbox"
+        [inset]="true"
         [attr.aria-multiselectable]="multiple()"
       >
         @if (searchQuery().length && !searchContained()) {
           <ion-item
-            [button]="true"
-            (click)="addNewCategory()"
-            [detail]="true"
             color="primary"
+            [button]="true"
+            [detail]="true"
+            (click)="addNewCategory()"
           >
             <ion-label>
               {{
@@ -61,21 +61,21 @@
             @if (editing() === category.id) {
               <ion-item>
                 <ion-input
+                  [placeholder]="
+                    'category-picker.rename-placeholder' | translate
+                  "
                   [attr.aria-label]="'categories.a11y.rename' | translate"
                   [value]="renameText()"
                   (ionInput)="renameText.set($any($event.target).value ?? '')"
                   (keyup.enter)="commitEdit()"
                   (keyup.escape)="cancelEdit()"
                   (ionBlur)="commitEdit()"
-                  placeholder="{{
-                    'category-picker.rename-placeholder' | translate
-                  }}"
                 />
               </ion-item>
             } @else {
               <ion-item
-                [button]="true"
                 role="option"
+                [button]="true"
                 [attr.aria-selected]="isChecked(category)"
                 (click)="rowClick(category)"
               >
@@ -86,32 +86,32 @@
                   [style.visibility]="
                     isChecked(category) ? 'visible' : 'hidden'
                   "
-                ></ion-icon>
+                />
                 <ion-label class="ion-text-wrap">{{ category.name }}</ion-label>
               </ion-item>
             }
             <ion-item-options side="end">
               <ion-item-option
-                (click)="startEdit(category)"
                 [attr.aria-label]="'category-picker.edit' | translate"
+                (click)="startEdit(category)"
               >
                 <ion-icon
                   slot="icon-only"
                   name="create-outline"
                   aria-hidden="true"
-                ></ion-icon>
+                />
               </ion-item-option>
               <ion-item-option
                 color="danger"
                 [expandable]="true"
-                (click)="deleteCategory(category)"
                 [attr.aria-label]="'category-picker.delete' | translate"
+                (click)="deleteCategory(category)"
               >
                 <ion-icon
                   slot="icon-only"
                   name="trash-outline"
                   aria-hidden="true"
-                ></ion-icon>
+                />
               </ion-item-option>
             </ion-item-options>
           </ion-item-sliding>

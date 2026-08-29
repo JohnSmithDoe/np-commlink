@@ -1,31 +1,31 @@
 <app-list-page
   class="ion-page"
-  [heading]="facade.heading()"
-  [itemTemplate]="gameRow"
   returnRoute="/trackplay/players"
   returnLabel="page-title.trackplay-players"
+  [heading]="facade.heading()"
+  [itemTemplate]="gameRow"
 >
   <ion-button
     headerEnd
     slot="end"
-    (click)="facade.showEditPlayerDialog()"
     color="primary"
     [attr.aria-label]="'a11y.edit' | translate"
+    (click)="facade.showEditPlayerDialog()"
   >
     <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
   </ion-button>
 
   <ion-button
     toolbarActions
-    (click)="facade.toggleShowEnded()"
+    data-testid="games-show-ended"
     [attr.aria-pressed]="facade.showEndedGames()"
     [attr.aria-label]="'trackplay.settings.show-ended' | translate"
-    data-testid="games-show-ended"
+    (click)="facade.toggleShowEnded()"
   >
     <ion-icon
       slot="icon-only"
-      [name]="facade.showEndedGames() ? 'eye-outline' : 'eye-off-outline'"
       aria-hidden="true"
+      [name]="facade.showEndedGames() ? 'eye-outline' : 'eye-off-outline'"
     />
   </ion-button>
 

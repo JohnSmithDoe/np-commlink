@@ -1,10 +1,10 @@
-<app-page-header [heading]="game()?.name ?? ''" hideButtons>
+<app-page-header hideButtons [heading]="game()?.name ?? ''">
   <ion-buttons slot="end" toolbar>
-    <ion-button (click)="toggleEnded()" color="primary">
+    <ion-button color="primary" (click)="toggleEnded()">
       <ion-icon
         slot="start"
-        [name]="ended() ? 'play-outline' : 'square-outline'"
         aria-hidden="true"
+        [name]="ended() ? 'play-outline' : 'square-outline'"
       />
       {{
         (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
@@ -21,8 +21,8 @@
     @if (!ended()) {
       <div class="tp-grid sr-scanlines">
         <div
-          class="tp-row tp-row--header"
           #headerRow
+          class="tp-row tp-row--header"
           (scroll)="onScroll($event)"
         >
           <div class="tp-cell tp-cell--head tp-cell--round">#</div>
@@ -33,7 +33,7 @@
           }
         </div>
 
-        <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
+        <div #bodyRegion class="tp-body" (scroll)="onScroll($event)">
           @for (round of rounds(); track round.id; let roundIndex = $index) {
             <div class="tp-row tp-row--data" data-testid="score-row">
               <div class="tp-cell tp-cell--round">{{ roundIndex + 1 }}</div>
@@ -41,12 +41,12 @@
                 <div class="tp-cell tp-cell--edit" data-testid="score-cell">
                   <ion-input
                     type="number"
+                    inputmode="numeric"
                     [attr.aria-label]="
                       'trackplay.a11y.score-cell'
                         | translate
                           : { round: roundIndex + 1, player: playerName(pid) }
                     "
-                    inputmode="numeric"
                     [value]="valueFor(round, pid)"
                     (ionBlur)="onValue(round.id, pid, $event)"
                     (keyup.enter)="blurInput($event)"
@@ -58,9 +58,9 @@
         </div>
 
         <div
+          #footerRow
           class="tp-row tp-row--footer"
           data-testid="score-total-row"
-          #footerRow
           (scroll)="onScroll($event)"
         >
           <div class="tp-cell tp-cell--foot tp-cell--round">&sum;</div>

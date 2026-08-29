@@ -4,7 +4,7 @@
     [note]="item | categories: catalog()"
     [helper]="'household.list-header.product.search' | translate"
     (selectItem)="selectProduct.emit(item)"
-  ></app-text-item>
+  />
 }
 @for (item of results()?.shoppingItems ?? []; track item.id) {
   <app-text-item
@@ -12,7 +12,7 @@
     [note]="item | categories: catalog()"
     [helper]="'household.list-header.shopping.search' | translate"
     (selectItem)="selectShoppingItem.emit(item)"
-  ></app-text-item>
+  />
 }
 @for (item of results()?.storageItems ?? []; track item.id) {
   <app-text-item
@@ -20,5 +20,5 @@
     [note]="item | categories: catalog()"
     [helper]="'household.list-header.storage.search' | translate"
     (selectItem)="selectStorageItem.emit(item)"
-  ></app-text-item>
+  />
 }

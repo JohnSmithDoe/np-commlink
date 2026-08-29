@@ -10,9 +10,9 @@
   <ion-list lines="none">
     <ion-item>
       <ion-toggle
+        data-testid="ritual-reminder-toggle"
         [checked]="reminder().enabled"
         (ionChange)="toggleReminder($event.detail.checked)"
-        data-testid="ritual-reminder-toggle"
       >
         {{ 'ritual.reminder.label' | translate }}
       </ion-toggle>
@@ -23,10 +23,10 @@
         <ion-input
           type="time"
           labelPlacement="start"
+          data-testid="ritual-reminder-time"
           [label]="'ritual.reminder.time' | translate"
           [value]="reminderTime()"
           (ionChange)="setReminderTime($event.detail.value)"
-          data-testid="ritual-reminder-time"
         />
       </ion-item>
     }
@@ -50,9 +50,9 @@
         slot="end"
         fill="outline"
         size="small"
+        data-testid="ritual-restore-dismissed"
         [disabled]="dismissedCount() === 0"
         (click)="restoreAll()"
-        data-testid="ritual-restore-dismissed"
       >
         {{ 'ritual.dismissed.restore' | translate }}
       </ion-button>

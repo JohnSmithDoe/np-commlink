@@ -19,7 +19,7 @@
     <ion-item>
       <ion-select
         labelPlacement="stacked"
-        label="{{ 'cash.transfer.from' | translate }}"
+        [label]="'cash.transfer.from' | translate"
         [formField]="form.fromId"
       >
         @for (account of accounts(); track account.id) {
@@ -33,7 +33,7 @@
     <ion-item>
       <ion-select
         labelPlacement="stacked"
-        label="{{ 'cash.transfer.to' | translate }}"
+        [label]="'cash.transfer.to' | translate"
         [formField]="form.toId"
       >
         @for (account of accounts(); track account.id) {
@@ -50,7 +50,7 @@
     }
 
     <app-money-input
-      label="{{ 'cash.label.amount' | translate }}"
+      [label]="'cash.label.amount' | translate"
       [formField]="form.amountCents"
     />
     @if (amountInvalid()) {
@@ -63,7 +63,7 @@
       <ion-input
         labelPlacement="stacked"
         type="date"
-        label="{{ 'cash.label.date' | translate }}"
+        [label]="'cash.label.date' | translate"
         [formField]="form.date"
       />
     </ion-item>
@@ -71,7 +71,7 @@
     <ion-item>
       <ion-input
         labelPlacement="stacked"
-        label="{{ 'cash.label.description' | translate }}"
+        [label]="'cash.label.description' | translate"
         [clearInput]="true"
         [formField]="form.description"
       />

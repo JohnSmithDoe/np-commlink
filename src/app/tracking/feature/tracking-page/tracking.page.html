@@ -8,8 +8,8 @@
     slot="end"
     fill="clear"
     routerLink="/data"
-    [attr.aria-label]="'tracking.a11y.daily-view' | translate"
     data-testid="tracking-daily-view-link"
+    [attr.aria-label]="'tracking.a11y.daily-view' | translate"
   >
     <ion-icon
       slot="icon-only"
@@ -22,20 +22,20 @@
   <ng-container toolbarActionsEnd>
     <span class="tracking-total">{{ total() }}</span>
     <ion-button (click)="resetAll()"
-      ><ion-icon [icon]="'trash-outline'" slot="start" aria-hidden="true" />
+      ><ion-icon slot="start" aria-hidden="true" [icon]="'trash-outline'" />
       {{ 'tracking.action.reset-all' | translate }}</ion-button
     >
     <ion-button (click)="saveAndResetAll()"
-      ><ion-icon [icon]="'save-outline'" slot="start" aria-hidden="true" />
+      ><ion-icon slot="start" aria-hidden="true" [icon]="'save-outline'" />
       {{ 'tracking.action.save-and-reset' | translate }}</ion-button
     >
     @if (isDev) {
       <ion-button color="warning" (click)="seedDemoSessions()"
-        ><ion-icon [icon]="'flask-outline'" slot="start" aria-hidden="true" />
+        ><ion-icon slot="start" aria-hidden="true" [icon]="'flask-outline'" />
         {{ 'tracking.action.generate-dummy-data' | translate }}</ion-button
       >
       <ion-button color="warning" (click)="generateTaskByTicket()"
-        ><ion-icon [icon]="'flask-outline'" slot="start" aria-hidden="true" />
+        ><ion-icon slot="start" aria-hidden="true" [icon]="'flask-outline'" />
         add ticket</ion-button
       >
     }

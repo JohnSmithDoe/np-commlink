@@ -19,7 +19,7 @@
     <section class="hb-section" [attr.data-kind]="section.kind">
       <h2 class="hb-section__heading">
         @if (sectionIcon(section.kind); as icon) {
-          <ion-icon class="hb-section__icon" [name]="icon" aria-hidden="true" />
+          <ion-icon class="hb-section__icon" aria-hidden="true" [name]="icon" />
         }
         <span>{{ section.heading }}</span>
       </h2>
@@ -49,10 +49,10 @@
           @case ('figure') {
             <figure class="hb-block__figure">
               <img
-                [src]="figureUrl(block.img)"
-                [alt]="captionText(block.caption)"
                 loading="lazy"
                 decoding="async"
+                [src]="figureUrl(block.img)"
+                [alt]="captionText(block.caption)"
               />
               <figcaption [innerHTML]="block.caption"></figcaption>
             </figure>

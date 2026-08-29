@@ -2,7 +2,7 @@
   label="page-title.household-list-settings"
   icon="options-outline"
   hideButtons="true"
-></app-page-header>
+/>
 
 <ion-content>
   <app-page-return [route]="listHref()" [label]="listTitleKey()" />
@@ -13,17 +13,17 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-quick-add"
         [checked]="!!settings().showQuickAdd"
         (ionChange)="toggleFlag('showQuickAdd')"
-        data-testid="list-settings-flag-show-quick-add"
         >{{ 'household.list-settings.show-quick-add' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-quick-add-product"
         [checked]="!!settings().showQuickAddProduct"
         (ionChange)="toggleFlag('showQuickAddProduct')"
-        data-testid="list-settings-flag-show-quick-add-product"
         >{{
           'household.list-settings.show-quick-add-product' | translate
         }}</ion-toggle
@@ -34,17 +34,17 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-products-in-storage"
         [checked]="!!settings().showProductsInStorage"
         (ionChange)="toggleFlag('showProductsInStorage')"
-        data-testid="list-settings-flag-show-products-in-storage"
         >{{ 'household.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-shopping-in-storage"
         [checked]="!!settings().showShoppingInStorage"
         (ionChange)="toggleFlag('showShoppingInStorage')"
-        data-testid="list-settings-flag-show-shopping-in-storage"
         >{{ 'household.list-settings.show-shopping' | translate }}</ion-toggle
       >
     </ion-item>
@@ -53,17 +53,17 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-products-in-shopping"
         [checked]="!!settings().showProductsInShopping"
         (ionChange)="toggleFlag('showProductsInShopping')"
-        data-testid="list-settings-flag-show-products-in-shopping"
         >{{ 'household.list-settings.show-products' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-storage-in-shopping"
         [checked]="!!settings().showStorageInShopping"
         (ionChange)="toggleFlag('showStorageInShopping')"
-        data-testid="list-settings-flag-show-storage-in-shopping"
         >{{ 'household.list-settings.show-storage' | translate }}</ion-toggle
       >
     </ion-item>
@@ -72,17 +72,17 @@
     }}</ion-list-header>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-storage-in-products"
         [checked]="!!settings().showStorageInProducts"
         (ionChange)="toggleFlag('showStorageInProducts')"
-        data-testid="list-settings-flag-show-storage-in-products"
         >{{ 'household.list-settings.show-storage' | translate }}</ion-toggle
       >
     </ion-item>
     <ion-item>
       <ion-toggle
+        data-testid="list-settings-flag-show-shopping-in-products"
         [checked]="!!settings().showShoppingInProducts"
         (ionChange)="toggleFlag('showShoppingInProducts')"
-        data-testid="list-settings-flag-show-shopping-in-products"
         >{{ 'household.list-settings.show-shopping' | translate }}</ion-toggle
       >
     </ion-item>

@@ -9,17 +9,17 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
-  <app-number-input
-    [label]="'household.item.quantity' | translate"
-    [value]="draft().quantity"
-    (updateValue)="setQuantity($event)"
-  ></app-number-input>
-
   <app-category-input
     [categories]="selectedCategories()"
     (removeCategory)="removeCategory($event)"
     (openDialog)="openCategoriesDialog()"
-  ></app-category-input>
+  />
+
+  <app-number-input
+    [label]="'household.item.quantity' | translate"
+    [value]="draft().quantity"
+    (updateValue)="setQuantity($event)"
+  />
 
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
@@ -31,5 +31,5 @@
     (addNew)="addCategory($event)"
     (deleted)="deleteCategory($event)"
     (renamed)="renameCategory($event)"
-  ></app-categories-dialog>
+  />
 </app-item-edit-modal>

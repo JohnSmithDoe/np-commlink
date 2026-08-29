@@ -1,7 +1,7 @@
 <ion-searchbar
-  placeholder="{{ 'searchbar.placeholder' | translate }}"
+  [placeholder]="'searchbar.placeholder' | translate"
   [value]="query()"
+  [debounce]="250"
   (ionInput)="searchTermChange($event)"
   (keyup.enter)="hitEnter.emit()"
-  [debounce]="250"
 />

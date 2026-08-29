@@ -1,7 +1,7 @@
 @let glyph = icon();
 <div class="empty-state">
   @if (glyph) {
-    <ion-icon class="empty-state__icon" [name]="glyph" aria-hidden="true" />
+    <ion-icon class="empty-state__icon" aria-hidden="true" [name]="glyph" />
   }
   <p class="empty-state__label">{{ label() }}</p>
   @if (note()) {

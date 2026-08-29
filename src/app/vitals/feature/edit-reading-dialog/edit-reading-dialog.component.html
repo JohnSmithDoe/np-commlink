@@ -13,9 +13,9 @@
     <ion-input
       labelPlacement="stacked"
       type="date"
-      label="{{ 'vitals.label.date' | translate }}"
-      [formField]="form.name"
       data-testid="vitals-reading-date"
+      [label]="'vitals.label.date' | translate"
+      [formField]="form.name"
     />
   </ion-item>
   @if (dateTaken()) {
@@ -25,7 +25,7 @@
   }
 
   <app-weight-input
-    label="{{ 'vitals.label.weight' | translate }}"
+    [label]="'vitals.label.weight' | translate"
     [formField]="form.grams"
   />
 
@@ -36,10 +36,10 @@
     <ion-item>
       <ion-select
         labelPlacement="stacked"
-        label="{{ 'vitals.label.holder' | translate }}"
+        data-testid="vitals-holder-select"
+        [label]="'vitals.label.holder' | translate"
         [value]="holderId()"
         (ionChange)="setHolder($event)"
-        data-testid="vitals-holder-select"
       >
         @for (holder of holders(); track holder.id) {
           <ion-select-option [value]="holder.id">{{
@@ -49,12 +49,12 @@
       </ion-select>
     </ion-item>
     <app-weight-input
-      label="{{ 'vitals.label.holder-weight' | translate }}"
+      [label]="'vitals.label.holder-weight' | translate"
       [value]="holderGrams()"
       (valueChange)="setHolderGrams($event)"
     />
     <app-weight-input
-      label="{{ 'vitals.label.combined-weight' | translate }}"
+      [label]="'vitals.label.combined-weight' | translate"
       [value]="combinedGrams()"
       (valueChange)="setCombinedGrams($event)"
     />

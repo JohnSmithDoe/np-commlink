@@ -92,15 +92,6 @@ module.exports = defineConfig(
         'error',
         { type: 'attribute', prefix: 'app', style: 'camelCase' },
       ],
-      // The type-aware rules. The expensive half — `projectService` above — was
-      // already being paid for by @ngrx's config; nothing was reading the types
-      // it produced. These four are the ones with something to catch in an app
-      // built on `void p.then().catch()` and on Ionic controllers that all return
-      // promises: an un-awaited promise is how a rejection becomes an
-      // unhandled-rejection instead of the GlobalErrorHandler's alert, and a
-      // promise-returning handler passed where void is expected is how a failure
-      // vanishes entirely. Enabled by id rather than via `recommendedTypeChecked`
-      // so the set is a decision, not a default that shifts under a minor bump.
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
@@ -116,24 +107,6 @@ module.exports = defineConfig(
       ],
       'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
       'unicorn/prefer-export-from': ['error', { checkUsedVariables: false }],
-      // A published subpath is fine — `@angular/core/testing`, `dayjs/plugin/*`,
-      // `ionicons/icons` and `@ionic/angular/standalone` are the supported way
-      // in. A path into a package's BUILD OUTPUT is not, and neither resolution
-      // nor tsc will say so: `@ionic/core` declares no `exports` map at all, and
-      // rxjs publishes `./internal/*` deliberately, so both deep paths resolved
-      // silently. Two were here — `@ionic/core/dist/types/interface` (three
-      // sites, one of them backing `TColor`) and `rxjs/internal/observable/
-      // innerFrom` for a `fromPromise` the public `from()` already does.
-      //
-      // The denylist is segment names that mean "not an entry point" rather
-      // than an attempt to resolve each specifier: `lib` is deliberately absent,
-      // because plenty of packages publish `pkg/lib/x` as real API.
-      //
-      // Verified against all 15 deep specifiers in the repo: only those two are
-      // caught. Extending this to specs or e2e means EDITING THIS LIST, not
-      // adding the rule to a later block — flat config replaces a rule's options
-      // rather than merging them, so a second `no-restricted-imports` anywhere
-      // below would silently drop these patterns for the files it matches.
       'no-restricted-imports': [
         'error',
         {
@@ -150,16 +123,6 @@ module.exports = defineConfig(
     },
   },
   {
-    // Two of the four type-aware rules fire only on test doubles here, and on
-    // correct ones: a stub satisfying a promise-returning signature
-    // (`availability: async () => 'available'`) has nothing to await, and a
-    // `mockImplementation` is passed through parameter types loose enough that a
-    // returned promise reads as misused. Neither is a defect, and there were 16
-    // of them against **zero** in application code.
-    //
-    // The other two stay on, deliberately: a forgotten `await` on an assertion is
-    // exactly the bug that makes a spec pass without testing anything, and
-    // `no-floating-promises` is the rule this whole set was worth enabling for.
     files: ['**/*.spec.ts'],
     rules: {
       '@typescript-eslint/require-await': 'off',
@@ -205,6 +168,17 @@ module.exports = defineConfig(
       ...angular.configs.templateAccessibility,
       ...commlink.configs.templateRecommended,
     ],
+    rules: {
+      '@angular-eslint/template/prefer-self-closing-tags': 'error',
+      '@angular-eslint/template/attributes-order': 'error',
+      '@angular-eslint/template/no-interpolation-in-attributes': 'error',
+      '@angular-eslint/template/no-inline-styles': [
+        'error',
+        { allowBindToStyle: true },
+      ],
+      '@angular-eslint/template/no-duplicate-attributes': 'error',
+      '@angular-eslint/template/prefer-control-flow': 'error',
+    },
   },
   {
     files: ['**/*.{js,mjs,cjs}'],

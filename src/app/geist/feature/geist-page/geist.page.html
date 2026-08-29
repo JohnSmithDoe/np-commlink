@@ -176,10 +176,10 @@
         <div class="gs-input">
           <ion-textarea
             class="gs-input__field"
-            [attr.aria-label]="'geist.placeholder' | translate"
             fill="outline"
             autoGrow="true"
             rows="1"
+            [attr.aria-label]="'geist.placeholder' | translate"
             [value]="query()"
             [placeholder]="'geist.placeholder' | translate"
             (ionInput)="typeQuery($event)"

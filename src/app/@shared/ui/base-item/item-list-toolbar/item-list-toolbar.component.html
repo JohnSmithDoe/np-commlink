@@ -2,25 +2,25 @@
   <ion-buttons slot="start">
     @if (sortable()) {
       <ion-button
-        (click)="selectSortMode.emit(sortByName.type)"
-        [attr.aria-pressed]="isActive(sortByName.type)"
         data-testid="list-toolbar-sort-az"
+        [attr.aria-pressed]="isActive(sortByName.type)"
+        (click)="selectSortMode.emit(sortByName.type)"
       >
         {{ sortByName.labelKey | translate }}
         @let nameDirection = directionIcon(sortByName.type);
         @if (nameDirection) {
-          <ion-icon [name]="nameDirection" slot="end" aria-hidden="true" />
+          <ion-icon slot="end" aria-hidden="true" [name]="nameDirection" />
         }
       </ion-button>
       @for (option of options(); track option.type) {
         <ion-button
-          (click)="selectSortMode.emit(option.type)"
           [attr.aria-pressed]="isActive(option.type)"
+          (click)="selectSortMode.emit(option.type)"
         >
           {{ option.labelKey | translate }}
           @let optionDirection = directionIcon(option.type);
           @if (optionDirection) {
-            <ion-icon [name]="optionDirection" slot="end" aria-hidden="true" />
+            <ion-icon slot="end" aria-hidden="true" [name]="optionDirection" />
           }
         </ion-button>
       }

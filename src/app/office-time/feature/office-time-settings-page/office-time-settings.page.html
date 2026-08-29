@@ -1,7 +1,7 @@
 <app-page-header
   icon="settings-outline"
-  [label]="'page-title.office-time-settings' | translate"
   hideButtons="true"
+  [label]="'page-title.office-time-settings' | translate"
 />
 
 <ion-content>
@@ -29,9 +29,9 @@
       </ion-item>
       <ion-item>
         <ion-toggle
+          data-testid="office-reminder-toggle"
           [checked]="reminder().enabled"
           (ionChange)="toggleReminder($event.detail.checked)"
-          data-testid="office-reminder-toggle"
         >
           {{ 'office-time.reminder.label' | translate }}
         </ion-toggle>
@@ -41,10 +41,10 @@
           <ion-input
             type="time"
             labelPlacement="stacked"
+            data-testid="office-reminder-time"
             [label]="'office-time.reminder.time' | translate"
             [value]="reminderTime()"
             (ionChange)="setReminderTime($event.detail.value)"
-            data-testid="office-reminder-time"
           />
         </ion-item>
       }

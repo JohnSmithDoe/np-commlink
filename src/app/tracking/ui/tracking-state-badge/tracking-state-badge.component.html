@@ -1,3 +1,8 @@
-<span class="tracking-badge tracking-badge--{{ state() }}">
+<span
+  class="tracking-badge"
+  [class.tracking-badge--running]="state() === 'running'"
+  [class.tracking-badge--paused]="state() === 'paused'"
+  [class.tracking-badge--stopped]="state() === 'stopped'"
+>
   {{ labelKeys[state()] | translate }}
 </span>

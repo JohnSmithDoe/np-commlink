@@ -55,8 +55,8 @@
       <p class="brh-note">{{ 'vitals.iching.source' | translate }}</p>
     } @else {
       <app-empty-state
-        label="{{ 'vitals.browse.unknown-hexagram' | translate }}"
-        note="{{ 'vitals.browse.unknown-note' | translate }}"
+        [label]="'vitals.browse.unknown-hexagram' | translate"
+        [note]="'vitals.browse.unknown-note' | translate"
       />
     }
   </div>

@@ -1,45 +1,45 @@
-<ion-item-sliding (ionDrag)="onSwipe($event)" data-testid="list-row">
+<ion-item-sliding data-testid="list-row" (ionDrag)="onSwipe($event)">
   @let startSwipe = startSwipeAction();
   @if (startSwipe) {
     <ion-item-options side="start">
       <ion-item-option
         [color]="startSwipe.color ?? 'success'"
         [expandable]="true"
-        (click)="emitStartSwipe()"
         [attr.aria-label]="startSwipe.labelKey | translate"
+        (click)="emitStartSwipe()"
       >
         <ion-icon
-          [name]="startSwipe.icon"
           slot="icon-only"
           aria-hidden="true"
-        ></ion-icon>
+          [name]="startSwipe.icon"
+        />
       </ion-item-option>
     </ion-item-options>
   }
 
   <ion-item
+    lines="full"
+    data-testid="list-row-select"
     [button]="true"
     [disabled]="disabled()"
-    (click)="selectItem.emit()"
-    lines="full"
     [class.with-status]="hasStatusBar()"
-    data-testid="list-row-select"
+    (click)="selectItem.emit()"
   >
     @if (hasStatusBar()) {
       <div class="sr-status-bar" data-testid="list-row-status">
-        <ion-text [color]="statusColor()"></ion-text>
+        <ion-text [color]="statusColor()" />
       </div>
     }
 
     @let leading = leadingIcon();
     @if (leading) {
-      <ion-icon slot="start" [name]="leading" aria-hidden="true"></ion-icon>
+      <ion-icon slot="start" aria-hidden="true" [name]="leading" />
     }
 
     <ion-label
       class="ion-text-wrap"
-      [class.bought]="crossedOut()"
       data-testid="list-row-label"
+      [class.bought]="crossedOut()"
     >
       <h2 data-testid="list-row-title">{{ title() }}</h2>
       @if (categoryNote()) {
@@ -47,10 +47,10 @@
           categoryNote()
         }}</ion-note>
       }
-      <ng-content select="[itemDetails]"></ng-content>
+      <ng-content select="[itemDetails]" />
     </ion-label>
 
-    <ng-content select="[itemTrailing]"></ng-content>
+    <ng-content select="[itemTrailing]" />
 
     @if (reorderable()) {
       <ion-reorder slot="end" />
@@ -59,16 +59,16 @@
     @if (showQuantityActions()) {
       <ion-buttons slot="end">
         <ion-button
-          (click)="incrementQuantity($event)"
           [attr.aria-label]="'a11y.increase-quantity' | translate"
+          (click)="incrementQuantity($event)"
         >
-          <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+          <ion-icon name="add-outline" aria-hidden="true" />
         </ion-button>
         <ion-button
-          (click)="decrementQuantity($event)"
           [attr.aria-label]="'a11y.decrease-quantity' | translate"
+          (click)="decrementQuantity($event)"
         >
-          <ion-icon name="remove-outline" aria-hidden="true"></ion-icon>
+          <ion-icon name="remove-outline" aria-hidden="true" />
         </ion-button>
       </ion-buttons>
     }
@@ -78,9 +78,9 @@
     <ion-item-options side="end" data-testid="list-row-delete-options">
       <ion-item-option
         color="danger"
+        data-testid="list-row-delete"
         [expandable]="true"
         (click)="emitDeleteItem()"
-        data-testid="list-row-delete"
       >
         {{ 'item-list.action.delete' | translate }}
       </ion-item-option>

@@ -6,8 +6,8 @@
 <ion-item lines="none">
   <ion-segment
     [value]="value()"
-    (ionChange)="pick($event)"
     [attr.aria-labelledby]="labelId()"
+    (ionChange)="pick($event)"
   >
     <ng-content />
   </ion-segment>

@@ -88,6 +88,13 @@ and every exemption taken so far.
   set is sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running
   top-five and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes
   **when** the preview updates, which is why it is not a silent cleanup.
+- **688 method calls sit in templates, across 119 files** (measured 2026-08-29 by enabling
+  `@angular-eslint/template/no-call-expression` and counting; recount before citing). Every one re-runs on
+  each change detection of its view, and `statusColor(item)` in a `@for` pays that per row. The five
+  template rules taken alongside it were all one autofix; **this one is not** — each call is a `computed`
+  the component does not have yet, and some take the row as an argument, so they become a signal keyed by
+  id rather than a straight lift. Enable the rule at the END of that work, not before: as a warning it is
+  688 lines of noise that trains the eye to skip template lint.
 
 ## Platform reach
 

@@ -22,8 +22,8 @@
     </ion-button>
     @if (canTransfer()) {
       <ion-button
-        (click)="openTransfer()"
         [attr.aria-label]="'cash.a11y.transfer' | translate"
+        (click)="openTransfer()"
       >
         <ion-icon
           slot="icon-only"

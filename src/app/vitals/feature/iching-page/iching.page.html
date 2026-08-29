@@ -5,9 +5,9 @@
 >
   <ion-buttons toolbar slot="end">
     <ion-button
+      data-testid="vitals-iching-cast-link"
       [routerLink]="castHref()"
       [attr.aria-label]="'vitals.a11y.iching-cast' | translate"
-      data-testid="vitals-iching-cast-link"
     >
       <ion-icon slot="icon-only" name="disc-outline" aria-hidden="true" />
     </ion-button>
@@ -15,17 +15,17 @@
 </app-page-header>
 
 <ion-content>
-  <app-page-return [route]="returnRoute()" label="page-title.vitals-profile" />
+  <app-page-return label="page-title.vitals-profile" [route]="returnRoute()" />
 
   <div class="ich sr-scanlines">
     <ion-item class="ich-date">
       <ion-input
         labelPlacement="stacked"
         type="date"
-        label="{{ 'vitals.label.birth-date' | translate }}"
+        data-testid="vitals-iching-date"
+        [label]="'vitals.label.birth-date' | translate"
         [value]="date()"
         (ionChange)="setDate($event)"
-        data-testid="vitals-iching-date"
       />
     </ion-item>
 

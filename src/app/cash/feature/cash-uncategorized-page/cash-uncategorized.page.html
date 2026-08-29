@@ -16,10 +16,10 @@
     <ion-list lines="full">
       @for (txn of rows(); track txn.id) {
         <ion-item
+          data-testid="uncategorized-row"
           [button]="true"
           [detail]="false"
           (click)="openTransaction(txn)"
-          data-testid="uncategorized-row"
         >
           <ion-label class="ion-text-wrap">
             <h2>{{ txn.name }}</h2>

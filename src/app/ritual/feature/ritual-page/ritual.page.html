@@ -2,8 +2,8 @@
   <ion-buttons slot="end" toolbar>
     <ion-button
       routerLink="/ritual/settings"
-      [attr.aria-label]="'ritual.a11y.settings' | translate"
       data-testid="ritual-settings-link"
+      [attr.aria-label]="'ritual.a11y.settings' | translate"
     >
       <ion-icon slot="icon-only" name="settings-outline" aria-hidden="true" />
     </ion-button>
@@ -28,9 +28,9 @@
           <ion-button
             class="ritual-card__action"
             expand="block"
+            data-testid="ritual-complete"
             [disabled]="leaving()"
             (click)="complete()"
-            data-testid="ritual-complete"
           >
             {{ 'ritual.action.done' | translate }}
           </ion-button>
@@ -41,9 +41,9 @@
             fill="clear"
             size="small"
             color="medium"
+            data-testid="ritual-reroll"
             [disabled]="leaving()"
             (click)="reroll()"
-            data-testid="ritual-reroll"
           >
             {{ 'ritual.action.reroll' | translate }}
           </ion-button>
@@ -51,9 +51,9 @@
             fill="clear"
             size="small"
             color="medium"
+            data-testid="ritual-dismiss"
             [disabled]="leaving()"
             (click)="dismiss()"
-            data-testid="ritual-dismiss"
           >
             {{ 'ritual.action.dismiss' | translate }}
           </ion-button>
@@ -84,11 +84,11 @@
         <div
           class="ritual-dots"
           role="img"
+          data-testid="ritual-dots"
           [attr.aria-label]="
             'ritual.done.recent-days'
               | translate: { done: recentDayCount(), days: recentDays().length }
           "
-          data-testid="ritual-dots"
         >
           @for (done of recentDays(); track $index) {
             <span class="ritual-dots__dot" [class.ritual-dots__dot--on]="done">
@@ -99,8 +99,8 @@
         <ion-button
           fill="outline"
           size="small"
-          (click)="takeBonus()"
           data-testid="ritual-bonus"
+          (click)="takeBonus()"
         >
           {{ 'ritual.done.one-more' | translate }}
         </ion-button>

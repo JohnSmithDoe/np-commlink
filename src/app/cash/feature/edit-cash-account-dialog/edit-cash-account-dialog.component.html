@@ -12,9 +12,9 @@
   <ion-item>
     <ion-select
       labelPlacement="stacked"
-      label="{{ 'cash.label.kind' | translate }}"
-      [formField]="form.kind"
       data-testid="account-kind"
+      [label]="'cash.label.kind' | translate"
+      [formField]="form.kind"
     >
       @for (k of kinds; track k) {
         <ion-select-option [value]="k">
@@ -28,8 +28,8 @@
     <ion-input
       labelPlacement="stacked"
       autocapitalize="characters"
-      label="{{ 'cash.label.iban' | translate }}"
-      placeholder="{{ 'cash.account-dialog.iban-placeholder' | translate }}"
+      [label]="'cash.label.iban' | translate"
+      [placeholder]="'cash.account-dialog.iban-placeholder' | translate"
       [formField]="form.iban"
     />
   </ion-item>
@@ -38,7 +38,7 @@
   </ion-note>
 
   <app-money-input
-    label="{{ 'cash.label.opening-balance' | translate }}"
+    [label]="'cash.label.opening-balance' | translate"
     [formField]="form.openingBalanceCents"
   />
   @if (balanceInvalid()) {
@@ -51,15 +51,15 @@
     <ion-input
       labelPlacement="stacked"
       type="date"
-      label="{{ 'cash.label.opening-date' | translate }}"
+      [label]="'cash.label.opening-date' | translate"
       [formField]="form.openingDate"
     />
   </ion-item>
 
   <ion-item>
     <ion-toggle
-      [formField]="form.excludedFromAllowance"
       data-testid="account-excluded-toggle"
+      [formField]="form.excludedFromAllowance"
     >
       {{ 'cash.account.excluded-from-allowance' | translate }}
     </ion-toggle>

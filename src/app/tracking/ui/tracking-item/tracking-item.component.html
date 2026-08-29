@@ -1,8 +1,8 @@
 @let trackingItem = item();
 
-<ion-item [button]="true" lines="full" (click)="selectItem.emit()">
+<ion-item lines="full" [button]="true" (click)="selectItem.emit()">
   <div class="sr-status-bar">
-    <ion-text [color]="stateColor[trackingItem.state]"></ion-text>
+    <ion-text [color]="stateColor[trackingItem.state]" />
   </div>
   <ion-label class="ion-text-wrap">
     <h2 class="tracking-item-title">
@@ -12,7 +12,9 @@
 
     @if (trackingItem.state !== 'stopped') {
       <div
-        class="tracking-item-timer tracking-item-timer-{{ trackingItem.state }}"
+        class="tracking-item-timer"
+        [class.tracking-item-timer-running]="trackingItem.state === 'running'"
+        [class.tracking-item-timer-paused]="trackingItem.state === 'paused'"
       >
         {{ trackingItem | trackingTime }}
       </div>
@@ -55,10 +57,10 @@
     (click)="$event.stopPropagation()"
   >
     <ion-button
-      [id]="'kebab-' + trackingItem.id"
       data-testid="tracking-item-kebab"
       fill="clear"
       color="medium"
+      [id]="'kebab-' + trackingItem.id"
       [attr.aria-label]="'tracking.a11y.more-actions' | translate"
     >
       <ion-icon
@@ -70,8 +72,8 @@
   </ion-buttons>
 
   <ion-popover
-    [trigger]="'kebab-' + trackingItem.id"
     triggerAction="click"
+    [trigger]="'kebab-' + trackingItem.id"
     [dismissOnSelect]="true"
     (click)="$event.stopPropagation()"
   >
@@ -80,8 +82,8 @@
         <ion-item button (click)="selectItem.emit()">
           <ion-icon
             slot="start"
-            [name]="toggleIcon[trackingItem.state]"
             aria-hidden="true"
+            [name]="toggleIcon[trackingItem.state]"
           />
           <ion-label>{{
             (trackingItem.state === 'running'

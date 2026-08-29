@@ -1,7 +1,7 @@
 <ion-item
+  data-testid="category-input-trigger"
   [button]="true"
   (click)="openDialog.emit()"
-  data-testid="category-input-trigger"
 >
   <ion-label class="ion-text-wrap">
     <span>{{ 'category-picker.label' | translate }}</span>
@@ -19,7 +19,7 @@
               name="close-circle-outline"
               slot="icon-only"
               aria-hidden="true"
-            ></ion-icon>
+            />
           </ion-button>
         </ion-chip>
       } @empty {

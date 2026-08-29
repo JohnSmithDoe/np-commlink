@@ -5,17 +5,17 @@
 />
 
 <ion-content>
-  <app-page-return [route]="returnRoute()" label="page-title.vitals-profile" />
+  <app-page-return label="page-title.vitals-profile" [route]="returnRoute()" />
 
   <div class="zd sr-scanlines">
     <ion-item class="zd-date">
       <ion-input
         labelPlacement="stacked"
         type="date"
-        label="{{ 'vitals.label.birth-date' | translate }}"
+        data-testid="vitals-zodiac-date"
+        [label]="'vitals.label.birth-date' | translate"
         [value]="date()"
         (ionChange)="setDate($event)"
-        data-testid="vitals-zodiac-date"
       />
     </ion-item>
 

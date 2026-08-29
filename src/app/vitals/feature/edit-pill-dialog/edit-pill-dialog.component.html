@@ -16,9 +16,9 @@
       inputmode="decimal"
       step="0.5"
       min="0.5"
-      label="{{ 'vitals.label.dose' | translate }}"
-      [formField]="form.dose"
       data-testid="vitals-pill-dose"
+      [label]="'vitals.label.dose' | translate"
+      [formField]="form.dose"
     />
   </ion-item>
   @if (doseInvalid()) {
@@ -31,9 +31,9 @@
     <ion-input
       labelPlacement="stacked"
       type="time"
-      label="{{ 'vitals.label.time' | translate }}"
-      [formField]="form.time"
       data-testid="vitals-pill-time"
+      [label]="'vitals.label.time' | translate"
+      [formField]="form.time"
     />
   </ion-item>
 
@@ -48,13 +48,13 @@
   }
 
   <ion-item>
-    <ion-toggle [formField]="form.remind" data-testid="vitals-pill-remind">
+    <ion-toggle data-testid="vitals-pill-remind" [formField]="form.remind">
       {{ 'vitals.label.remind' | translate }}
     </ion-toggle>
   </ion-item>
 
   <ion-item>
-    <ion-toggle [formField]="form.takenToday" data-testid="vitals-pill-taken">
+    <ion-toggle data-testid="vitals-pill-taken" [formField]="form.takenToday">
       {{ 'vitals.label.taken-today' | translate }}
     </ion-toggle>
   </ion-item>

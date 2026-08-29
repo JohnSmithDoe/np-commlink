@@ -7,12 +7,12 @@
   }
   <ion-card-content>
     <ion-button
-      (click)="addOfficeDay()"
-      [disabled]="isOfficeDay ?? false"
       class="dash-button"
       expand="block"
-      [color]="isOfficeDay ? 'dark' : 'secondary'"
       size="large"
+      [disabled]="isOfficeDay ?? false"
+      [color]="isOfficeDay ? 'dark' : 'secondary'"
+      (click)="addOfficeDay()"
     >
       <div flex-col flex-center-center>
         @if (isOfficeDay) {
@@ -21,7 +21,7 @@
             size="large"
             class="ion-margin-bottom"
             aria-hidden="true"
-          ></ion-icon>
+          />
           <p>{{ 'office-time.page.add-office-day.done' | translate }}</p>
         } @else {
           <ion-icon
@@ -29,7 +29,7 @@
             size="large"
             class="ion-margin-bottom"
             aria-hidden="true"
-          ></ion-icon>
+          />
           <p>{{ 'office-time.page.add-office-day' | translate }}</p>
         }
       </div>

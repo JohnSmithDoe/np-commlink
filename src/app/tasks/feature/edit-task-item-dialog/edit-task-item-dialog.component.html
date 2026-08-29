@@ -9,6 +9,12 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
+  <app-category-input
+    [categories]="selectedCategories()"
+    (removeCategory)="removeCategory($event)"
+    (openDialog)="openCategoriesDialog()"
+  />
+
   <app-number-input
     [label]="'tasks.item.prio' | translate"
     [value]="draft().prio"
@@ -19,12 +25,6 @@
     [label]="'edit.item.dialog.dueAt' | translate"
     [value]="draft().dueAt ?? null"
     (valueChange)="updateDueAt($event)"
-  />
-
-  <app-category-input
-    [categories]="selectedCategories()"
-    (removeCategory)="removeCategory($event)"
-    (openDialog)="openCategoriesDialog()"
   />
 
   <ion-item>

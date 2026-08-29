@@ -38,15 +38,15 @@
             @for (entry of menuEntries(); track entry.id) {
               <ion-menu-toggle [autoHide]="false">
                 <ion-item
-                  [button]="true"
-                  [routerLink]="entry.route"
                   lines="none"
                   data-testid="menu-row"
+                  [button]="true"
+                  [routerLink]="entry.route"
                 >
                   <ion-icon
                     slot="start"
-                    [name]="entry.icon"
                     aria-hidden="true"
+                    [name]="entry.icon"
                   />
                   <ion-label>{{ entry.nameKey | translate }}</ion-label>
                   @let badge = menuBadge(entry);
@@ -70,10 +70,11 @@
           [attr.aria-label]="'a11y.loading' | translate"
         />
       }
-      <ion-router-outlet></ion-router-outlet>
+      <ion-router-outlet />
     </div>
   </ion-split-pane>
   <ion-toast
+    position="bottom"
     [isOpen]="updateReady()"
     [message]="'app.update.ready' | translate"
     [buttons]="
@@ -82,7 +83,6 @@
         'app.update.later' | translate
       )
     "
-    position="bottom"
     (ionToastDidDismiss)="dismissUpdate()"
   />
 </ion-app>

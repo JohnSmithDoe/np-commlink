@@ -12,8 +12,8 @@
       @for (col of row; track $index; let colIdx = $index) {
         <span
           flex-item
-          [class.active]="isActive(row, col, colIdx, rowIdx)"
           class="char"
+          [class.active]="isActive(row, col, colIdx, rowIdx)"
           >{{ col }}</span
         >
       }

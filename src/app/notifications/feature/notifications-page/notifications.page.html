@@ -1,6 +1,6 @@
 <app-page-header
-  [label]="'page-title.notifications' | translate"
   hideButtons="true"
+  [label]="'page-title.notifications' | translate"
 />
 
 <ion-content>
@@ -33,9 +33,9 @@
       >
         <ion-icon
           slot="start"
+          aria-hidden="true"
           [name]="n.icon"
           [style.color]="'var(--ion-color-' + n.color + ')'"
-          aria-hidden="true"
         />
         <ion-label>
           <h3>{{ n.name }}</h3>
@@ -71,9 +71,9 @@
     <ion-item
       lines="full"
       class="section-header"
+      aria-controls="notifications-done-list"
       [button]="true"
       [attr.aria-expanded]="!collapsed"
-      aria-controls="notifications-done-list"
       (click)="toggleDoneSection()"
     >
       <ion-label>
@@ -98,8 +98,8 @@
           </ion-button>
         }
         <ion-icon
-          [name]="collapsed ? 'chevron-down-outline' : 'chevron-up-outline'"
           aria-hidden="true"
+          [name]="collapsed ? 'chevron-down-outline' : 'chevron-up-outline'"
         />
       </ion-buttons>
     </ion-item>
@@ -121,9 +121,9 @@
           >
             <ion-icon
               slot="start"
+              aria-hidden="true"
               [name]="n.icon"
               [style.color]="'var(--ion-color-' + n.color + ')'"
-              aria-hidden="true"
             />
             <ion-label>
               <h3>{{ n.name }}</h3>

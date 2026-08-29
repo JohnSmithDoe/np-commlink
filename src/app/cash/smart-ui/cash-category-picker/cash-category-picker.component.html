@@ -2,7 +2,7 @@
   [categories]="selectedCategories()"
   (removeCategory)="clear()"
   (openDialog)="open()"
-></app-category-input>
+/>
 
 <app-categories-dialog
   [multiple]="false"
@@ -15,4 +15,4 @@
   (addNew)="onAdd($event)"
   (deleted)="onDelete($event)"
   (renamed)="onRename($event)"
-></app-categories-dialog>
+/>

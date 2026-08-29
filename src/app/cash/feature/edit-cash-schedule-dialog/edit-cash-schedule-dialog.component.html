@@ -10,7 +10,7 @@
   (dismissed)="close()"
 >
   <app-money-input
-    label="{{ 'cash.label.amount' | translate }}"
+    [label]="'cash.label.amount' | translate"
     [formField]="form.amountCents"
   />
   @if (amountInvalid()) {
@@ -22,7 +22,7 @@
   <ion-item>
     <ion-select
       labelPlacement="stacked"
-      label="{{ 'cash.label.period' | translate }}"
+      [label]="'cash.label.period' | translate"
       [formField]="form.periodMonths"
     >
       @for (period of periods; track period) {
@@ -37,9 +37,9 @@
     <ion-input
       labelPlacement="stacked"
       type="date"
-      label="{{ 'cash.label.next-due' | translate }}"
-      [formField]="form.nextDue"
       data-testid="schedule-next-due"
+      [label]="'cash.label.next-due' | translate"
+      [formField]="form.nextDue"
     />
   </ion-item>
 

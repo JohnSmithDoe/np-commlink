@@ -1,10 +1,10 @@
 <ion-item
-  [button]="true"
-  (click)="selectCurrent()"
-  [color]="color()"
-  [detail]="false"
   lines="full"
   data-testid="text-item"
+  [button]="true"
+  [color]="color()"
+  [detail]="false"
+  (click)="selectCurrent()"
 >
   <ion-label class="ion-text-wrap">
     <h2 data-testid="text-item-label">{{ label() }}</h2>

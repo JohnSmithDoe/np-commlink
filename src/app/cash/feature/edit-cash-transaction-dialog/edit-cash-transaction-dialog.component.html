@@ -19,7 +19,7 @@
   </ion-segment>
 
   <app-money-input
-    label="{{ 'cash.label.amount' | translate }}"
+    [label]="'cash.label.amount' | translate"
     [formField]="form.amountCents"
   />
   @if (amountInvalid()) {
@@ -32,7 +32,7 @@
     <ion-input
       labelPlacement="stacked"
       type="date"
-      label="{{ 'cash.label.date' | translate }}"
+      [label]="'cash.label.date' | translate"
       [formField]="form.date"
     />
   </ion-item>
@@ -52,8 +52,8 @@
     <ion-button
       expand="block"
       fill="outline"
-      (click)="deriveRule()"
       data-testid="derive-rule"
+      (click)="deriveRule()"
     >
       <ion-icon slot="start" name="funnel-outline" aria-hidden="true" />
       {{ 'cash.derive.rule' | translate }}
@@ -62,8 +62,8 @@
       expand="block"
       fill="outline"
       class="ion-margin-top"
-      (click)="deriveSchedule()"
       data-testid="derive-schedule"
+      (click)="deriveSchedule()"
     >
       <ion-icon slot="start" name="repeat-outline" aria-hidden="true" />
       {{ 'cash.derive.schedule' | translate }}

@@ -1,9 +1,9 @@
 <div class="filter-bar">
   <ion-button
     shape="round"
+    data-testid="clear-category-filter"
     [fill]="active() ? 'outline' : 'solid'"
     [attr.aria-pressed]="!active()"
-    data-testid="clear-category-filter"
     (click)="clearFilter.emit()"
   >
     {{ 'item-list.filter.all' | translate }}

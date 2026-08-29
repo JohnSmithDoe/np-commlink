@@ -47,8 +47,8 @@
       }
     } @else {
       <app-empty-state
-        label="{{ 'vitals.browse.unknown-sign' | translate }}"
-        note="{{ 'vitals.browse.unknown-note' | translate }}"
+        [label]="'vitals.browse.unknown-sign' | translate"
+        [note]="'vitals.browse.unknown-note' | translate"
       />
     }
   </div>

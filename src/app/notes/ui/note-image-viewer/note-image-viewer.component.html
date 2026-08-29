@@ -1,7 +1,7 @@
 <ion-modal
   [isOpen]="isOpen()"
-  (didDismiss)="dismiss.emit()"
   [attr.aria-label]="'notes.viewer.dialog' | translate"
+  (didDismiss)="dismiss.emit()"
 >
   <ng-template>
     <ion-header>
@@ -9,16 +9,16 @@
         <ion-title>{{ 'notes.viewer.dialog' | translate }}</ion-title>
         <ion-buttons slot="end">
           <ion-button
-            (click)="rotateCurrent()"
-            [attr.aria-label]="'notes.viewer.rotate' | translate"
             data-testid="note-image-rotate"
+            [attr.aria-label]="'notes.viewer.rotate' | translate"
+            (click)="rotateCurrent()"
           >
             <ion-icon slot="icon-only" name="sync-outline" aria-hidden="true" />
           </ion-button>
           <ion-button
-            (click)="dismiss.emit()"
-            [attr.aria-label]="'notes.viewer.close' | translate"
             data-testid="note-image-close"
+            [attr.aria-label]="'notes.viewer.close' | translate"
+            (click)="dismiss.emit()"
           >
             <ion-icon
               slot="icon-only"
@@ -46,9 +46,9 @@
         <ion-toolbar class="note-image-pager">
           <ion-buttons slot="start">
             <ion-button
-              (click)="step(-1)"
-              [attr.aria-label]="'notes.viewer.previous' | translate"
               data-testid="note-image-prev"
+              [attr.aria-label]="'notes.viewer.previous' | translate"
+              (click)="step(-1)"
             >
               <ion-icon
                 slot="icon-only"
@@ -65,9 +65,9 @@
           </ion-title>
           <ion-buttons slot="end">
             <ion-button
-              (click)="step(1)"
-              [attr.aria-label]="'notes.viewer.next' | translate"
               data-testid="note-image-next"
+              [attr.aria-label]="'notes.viewer.next' | translate"
+              (click)="step(1)"
             >
               <ion-icon
                 slot="icon-only"

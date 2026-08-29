@@ -28,10 +28,10 @@
     <ion-list lines="full">
       @for (spend of spends(); track spend.id) {
         <ion-item
+          data-testid="spending-row"
           [button]="true"
           [detail]="true"
           (click)="editSpend(spend)"
-          data-testid="spending-row"
         >
           <ion-label>
             <h2>{{ spend.name }}</h2>

@@ -1,6 +1,6 @@
 <app-page-header
-  [label]="'page-title.deck-config' | translate"
   hideButtons="true"
+  [label]="'page-title.deck-config' | translate"
 />
 
 <ion-content class="ion-padding">
@@ -10,9 +10,9 @@
 
   <ion-segment
     class="deck-config__lens"
+    data-testid="deck-config-lens"
     [value]="lens()"
     (ionChange)="selectLens($any($event).detail.value)"
-    data-testid="deck-config-lens"
   >
     @for (option of lenses; track option) {
       <ion-segment-button [value]="option">
@@ -44,6 +44,7 @@
               </ion-label>
               <ion-toggle
                 slot="end"
+                data-testid="deck-config-module-toggle"
                 [attr.aria-label]="
                   'deck.config.module-toggle'
                     | translate: { name: group.labelKey | translate }
@@ -51,7 +52,6 @@
                 [checked]="group.allVisible"
                 (click)="$event.stopPropagation()"
                 (ionChange)="toggleModule(group.module)"
-                data-testid="deck-config-module-toggle"
               />
             </ion-item>
 
@@ -120,10 +120,10 @@
     </ion-label>
     <ion-toggle
       slot="end"
+      data-testid="deck-config-row-toggle"
       [attr.aria-label]="entry.titleKey | translate"
       [checked]="!entry.hidden"
       (ionChange)="toggleEntry(entry.id)"
-      data-testid="deck-config-row-toggle"
     />
   </ion-item>
 </ng-template>

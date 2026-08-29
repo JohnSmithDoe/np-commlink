@@ -7,9 +7,9 @@
       <div class="sr-brand">
         @if (glyph()) {
           <ion-icon
-            [name]="glyph()"
             class="sr-brand__icon"
             aria-hidden="true"
+            [name]="glyph()"
           />
         }
         <span class="sr-brand__name" data-testid="page-header-title">{{
@@ -21,10 +21,10 @@
     @if (!hideButtons()) {
       <ion-buttons slot="end">
         <ion-button
-          (click)="addItem.emit()"
+          data-testid="page-header-add"
           [disabled]="disabled()"
           [attr.aria-label]="'a11y.add-item' | translate"
-          data-testid="page-header-add"
+          (click)="addItem.emit()"
         >
           <ion-icon name="add-outline" slot="icon-only" aria-hidden="true" />
         </ion-button>
