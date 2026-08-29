@@ -38,8 +38,9 @@ None is a precedent — cost is a fact about the roster, not about the change.
 - `groceries → household` — renamed before the first tag, dev browser the only holder.
 - cash's `bank` → `iban` + `bankRef` — breaking, free because cash has no users. **Spent**: the next cash
   shape change once it holds real data owes the first real rung. `CashSchedule.dueDay` rides the same one.
-- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort`, `Profile.favorite` — additive and optional,
-  so a missing key hydrates to initial state. Free by shape, not by roster.
+- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort`, `Profile.favorite`, `TaskItem.doneAt` —
+  additive and optional, so a missing key hydrates to initial state. Free by shape, not by roster:
+  `tasks` and `vitals` both have real holders.
 - deck entry id `barcode` → `notes` — the first taken against a slice real users hold. Cheap only because
   switching one program back off is a tap.
 - `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — worst case one re-pick.
