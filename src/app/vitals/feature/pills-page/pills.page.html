@@ -1,9 +1,9 @@
 <app-list-page
   class="ion-page"
+  returnLabel="page-title.vitals-profile"
   [heading]="facade.heading()"
   [itemTemplate]="pillRow"
   [returnRoute]="'/vitals/profile/' + (facade.profile()?.id ?? '')"
-  returnLabel="page-title.vitals-profile"
 />
 
 <ng-template #pillRow let-item let-ionList="ionList">
@@ -12,9 +12,7 @@
     [title]="item.name"
     [ionList]="ionList"
     [crossedOut]="facade.isTakenToday(item)"
-    [leadingIcon]="
-      item.remind ? 'notifications-outline' : 'notifications-off-outline'
-    "
+    [leadingIcon]="item.remind ? 'notifications' : 'notifications-off'"
     [startSwipeAction]="editSwipeAction"
     (selectItem)="openPillEdit(item)"
     (startSwipe)="openPillEdit(item)"

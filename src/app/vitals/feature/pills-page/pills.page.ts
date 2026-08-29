@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IonNote } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notificationsOffOutline, notificationsOutline } from 'ionicons/icons';
+import { notifications, notificationsOff } from 'ionicons/icons';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -33,7 +33,7 @@ export class VitalsPillsPage {
   readonly facade = inject(PillsPageFacade);
 
   constructor() {
-    addIcons({ notificationsOutline, notificationsOffOutline });
+    addIcons({ notifications, notificationsOff });
   }
 
   time(pill: Pill): string {

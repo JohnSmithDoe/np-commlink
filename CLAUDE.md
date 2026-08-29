@@ -103,7 +103,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | **A banner is the exception, not the header** — write none unless the code cannot say it, then 6–14 lines ([decisions.md](docs/decisions.md)); 32 is the gate | review |
 | Every `ion-icon`, icon-only control, form control and overlay carries its own name (R1–R9) | eight `commlink/a11y-*` rules |
 | Every `ion-icon` name is registered with `addIcons` by the component that renders it — an unregistered name is an invisible control, not an error | `verify:icons` |
-| Every icon name ends `-outline`; a filled glyph needs a `FILLED_BY_DESIGN` entry saying what its fill MEANS | `verify:icons` |
+| Icon weight follows position — a control is `-outline`, a `[leadingIcon]` subject is filled; a filled CONTROL needs a `FILLED_BY_DESIGN` entry saying what its fill MEANS | `verify:icons` |
 | `@shared` uses no domain-owned **i18n key** — it owns no wording | `commlink/i18n-key-ownership` |
 | Muted text is `var(--sr-text-dim)`, never the accent at an alpha | `commlink/muted-text-uses-token` |
 | A spec calling `overrideSelector` also calls `resetSelectors` | `commlink/spec-resets-mock-selectors` |

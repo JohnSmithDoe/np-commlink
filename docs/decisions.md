@@ -130,16 +130,25 @@ it was measured against.
   grounds: a stopwatch is what CHRONO is, prose needs i18n for a number nobody reads as prose, and
   variable-width text does not align in a right-aligned column. `TimeWithUnitPipe` and the four
   `time.unit.*` keys went with it — the format was its only caller.
-- **The app uses outline icons, and a filled one has to say what its fill MEANS.** Ionicons ships three
-  variants per glyph; using one is the whole rule, and `verify:icons` holds it. The walk read this as two
-  filled buttons and it was 27 names across 47 files — invisible in review because a name reaches an icon
+- **Icon weight follows POSITION: a control is outline, a subject is filled.** The subject slot is
+  `[leadingIcon]` — the glyph saying what a row IS (a pet, a person, a game type, an account kind) rather
+  than what tapping it does. Everything else is a control and is outline. Both directions are gated in
+  `verify:icons`, because either alone lets the weight drift back to whatever the last author felt like.
+  **"Outline everywhere" was tried first and was wrong**, in a way worth keeping: it read as one rule and
+  it flattened two different things, since a subject glyph is competing with a row of text for the eye
+  while a control is competing with nothing. Ionicons ships three variants per glyph and this app now
+  spends two of them on a distinction it can state.
+  The sweep to get here was 27 names across 47 files, invisible in review because a name reaches an icon
   through five spellings (`name`, `[name]`, an `icon` input, `[leadingIcon]`, and `icon:` in a catalog or
-  preset), so no single diff shows the mismatch. Widening the gate to see all five found two bugs the
-  narrower one could not: the notifications inbox was registering outline SVGs under SOLID alias keys, and
-  `[leadingIcon]` names were never checked for registration at all — the invisible-control failure this
-  script exists to prevent, in a position it could not see. `star` is the one exemption and the shape any
-  future one must have: `isFavorite() ? 'star' : 'star-outline'`, where the fill is the state, not the
-  style.
+  preset), so no single diff shows the mismatch. Widening the gate to see all five found two live bugs:
+  the notifications inbox was registering outline SVGs under SOLID alias keys, and `[leadingIcon]` names
+  were never checked for registration at all — the invisible-control failure that script exists to
+  prevent, in a position it could not see.
+- **`FILLED_BY_DESIGN` is for a CONTROL that fills in to report its own state**, and the two entries are
+  the shape any third must have: `isFavorite() ? 'star' : 'star-outline'` and the note editor's pin. A
+  blanket outline sweep silently flattened the pin toggle to `'pin-outline' : 'pin-outline'` — the same
+  expression on both branches, a control that could no longer say what it had done. **A filled/outline
+  PAIR is a state machine, and a sweep that reads only the variant suffix cannot see one.**
 
 ## Router and navigation
 

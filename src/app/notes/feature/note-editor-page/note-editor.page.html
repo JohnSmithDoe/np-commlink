@@ -1,22 +1,22 @@
 <app-page-header label="page-title.note" hideButtons="true">
   <ion-buttons toolbar slot="end">
     <ion-button
-      (click)="togglePin()"
+      data-testid="note-pin"
       [attr.aria-pressed]="!!note()?.pinned"
       [attr.aria-label]="'notes.editor.pin' | translate"
-      data-testid="note-pin"
+      (click)="togglePin()"
     >
       <ion-icon
         slot="icon-only"
-        [name]="note()?.pinned ? 'pin-outline' : 'pin-outline'"
         aria-hidden="true"
+        [name]="note()?.pinned ? 'pin' : 'pin-outline'"
       />
     </ion-button>
     <ion-button
       id="present-note-delete-alert"
       color="danger"
-      [attr.aria-label]="'notes.editor.delete' | translate"
       data-testid="note-delete"
+      [attr.aria-label]="'notes.editor.delete' | translate"
     >
       <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
     </ion-button>
@@ -31,24 +31,24 @@
     <ion-item lines="none">
       <ion-input
         class="note-title"
+        data-testid="note-title"
         [attr.aria-label]="'notes.editor.title.label' | translate"
         [placeholder]="'notes.editor.title.placeholder' | translate"
         [value]="current.name"
         (ionInput)="editTitle($event)"
-        data-testid="note-title"
       />
     </ion-item>
 
     <ion-item lines="none">
       <ion-textarea
         class="note-body"
+        data-testid="note-body"
         [autoGrow]="true"
         [rows]="8"
         [attr.aria-label]="'notes.editor.body.label' | translate"
         [placeholder]="'notes.editor.body.placeholder' | translate"
         [value]="current.body"
         (ionInput)="editBody($event)"
-        data-testid="note-body"
       />
     </ion-item>
 

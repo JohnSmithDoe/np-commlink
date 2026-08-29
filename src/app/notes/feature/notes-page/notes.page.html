@@ -14,7 +14,7 @@
     [item]="item"
     [title]="item.name || ('notes.item.untitled' | translate)"
     [ionList]="ionList"
-    [leadingIcon]="item.pinned ? 'pin-outline' : undefined"
+    [leadingIcon]="item.pinned ? 'pin' : undefined"
     [reorderable]="reorderable"
     [startSwipeAction]="swipeActionFor(item)"
     (selectItem)="facade.openNote(item)"
@@ -33,10 +33,10 @@
           @for (imageId of item.images; track imageId) {
             <ion-thumbnail>
               <img
-                [src]="facade.imageUrls()[imageId]"
-                [alt]="'notes.image.alt' | translate"
                 loading="lazy"
                 decoding="async"
+                [src]="facade.imageUrls()[imageId]"
+                [alt]="'notes.image.alt' | translate"
               />
             </ion-thumbnail>
           }

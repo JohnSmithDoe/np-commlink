@@ -40,16 +40,23 @@
  * Neither check catches the ordering case: an icon registered only by a
  * component behind another lazy route is blank until that route is visited.
  *
- * Check 3 is a different question on the same set: every name ends `-outline`.
- * Ionicons ships three variants and the app uses one, so a solid glyph beside
- * outline ones is a mismatch a reviewer sees and a diff does not. It lives here
- * because a name reaches an icon through five spellings — `name`, `[name]`, an
- * `icon` input, `[leadingIcon]`, and `icon:` in a catalog or preset — and only
- * a pass over the whole tree sees all five. It caught the notifications inbox
+ * Check 3 is a different question on the same set: weight follows POSITION. A
+ * control is outline and a subject is filled — where the subject slot is
+ * `[leadingIcon]`, the glyph saying what a row IS rather than what tapping it
+ * does. Both directions are errors, because either one alone lets the weight
+ * drift back to whatever the last author felt like. It lives here because a
+ * name reaches an icon through five spellings — `name`, `[name]`, an `icon`
+ * input, `[leadingIcon]`, and `icon:` in a catalog or preset — and only a pass
+ * over the whole tree sees all five. It caught the notifications inbox
  * registering outline SVGs under solid ALIASES, which no single file shows.
  *
- * `FILLED_BY_DESIGN` is for a glyph whose fill is STATE rather than style, and
- * an entry nothing uses reports itself stale, on `verify:docs`'s pattern.
+ * `FILLED_BY_DESIGN` is the escape for a CONTROL whose fill is state rather
+ * than style, and an entry nothing uses reports itself stale, on
+ * `verify:docs`'s pattern.
+ *
+ * A name assembled in TS outside an `icon:` key — cash's `KIND_ICON`, tracking's
+ * `TRACKING_TOGGLE_ICON` — is invisible to every check here, the same blind spot
+ * check 1 has always had.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -73,15 +80,21 @@ const iconNamesIn = (expression) =>
 // An icon a COMPONENT input names, which never reaches an `<ion-icon>` in the
 // template that writes it — `app-list-item` and `app-list-page` render it one
 // level down, so the two regexes above cannot see these at all.
-const USE_INPUT_STATIC = /\s(?:icon|leadingIcon)="([a-z][a-z0-9-]*)"/g;
-const USE_INPUT_BOUND = /\[(?:icon|leadingIcon)\]="([^"]*)"/g;
+const USE_INPUT_STATIC = /\sicon="([a-z][a-z0-9-]*)"/g;
+const USE_INPUT_BOUND = /\[icon\]="([^"]*)"/g;
 
-// Filled where the fill is the STATE, not the style. Anything else is outline.
+// `leadingIcon` is the SUBJECT slot and the only one that is filled.
+const USE_SUBJECT_STATIC = /\sleadingIcon="([a-z][a-z0-9-]*)"/g;
+const USE_SUBJECT_BOUND = /\[leadingIcon\]="([^"]*)"/g;
+
+// A CONTROL whose fill is the STATE, not the style. Both are toggles that say
+// what they did by filling in, against an outline that says they have not.
 const FILLED_BY_DESIGN = new Map([
   [
     'star',
     'filled means favourite, outline means not — the pair IS the toggle',
   ],
+  ['pin', 'filled means pinned, outline means not — the pair IS the toggle'],
 ]);
 
 function* walk(dir) {
@@ -138,10 +151,16 @@ const isComponent = (file) =>
 
 const used = new Map();
 const foreign = new Map();
+// Kept per POSITION, not per name: `pin` is right as a subject and wrong as a
+// control, and a name reaching both slots must fail on the slot it is wrong in.
+const subjects = new Map();
+const controls = new Map();
 
-const use = (name, file, index, source, local) => {
+const use = (name, file, index, source, local, subject = false) => {
   const at = `${file}:${source.slice(0, index).split('\n').length}`;
   if (!used.has(name)) used.set(name, at);
+  const slot = subject ? subjects : controls;
+  if (!slot.has(name)) slot.set(name, at);
 
   const owner = declaringComponent(file);
   if (!local || !isComponent(owner)) return;
@@ -171,6 +190,11 @@ for (const file of sources) {
     for (const match of source.matchAll(USE_INPUT_BOUND))
       for (const name of iconNamesIn(match[1]))
         use(name, file, match.index, source, false);
+    for (const match of source.matchAll(USE_SUBJECT_STATIC))
+      use(match[1], file, match.index, source, false, true);
+    for (const match of source.matchAll(USE_SUBJECT_BOUND))
+      for (const name of iconNamesIn(match[1]))
+        use(name, file, match.index, source, false, true);
   }
   if (scripts.includes(file))
     for (const match of source.matchAll(USE_TS))
@@ -179,9 +203,10 @@ for (const file of sources) {
 
 const missing = [...used].filter(([name]) => !registered.has(name));
 
-const filled = [...used].filter(
+const filled = [...controls].filter(
   ([name]) => !name.endsWith('-outline') && !FILLED_BY_DESIGN.has(name)
 );
+const hollow = [...subjects].filter(([name]) => name.endsWith('-outline'));
 const staleExemptions = [...FILLED_BY_DESIGN.keys()].filter(
   (name) => !used.has(name)
 );
@@ -191,16 +216,22 @@ for (const [name, where] of missing)
 for (const { name, at } of foreign.values())
   console.log(`not registered here  ${name}  ${at}`);
 for (const [name, where] of filled)
-  console.log(`not outline  ${name}  ${where}  (use ${name}-outline)`);
+  console.log(`control not outline  ${name}  ${where}  (use ${name}-outline)`);
+for (const [name, where] of hollow)
+  console.log(
+    `subject not filled  ${name}  ${where}  ` +
+      `(use ${name.replace(/-outline$/, '')})`
+  );
 for (const name of staleExemptions)
   console.log(`stale exemption  ${name}  (nothing uses it — drop the entry)`);
 
+const wrongWeight = filled.length + hollow.length;
 console.log(
   `\n${used.size} used · ${registered.size} registered · ` +
     `${missing.length} unregistered · ${foreign.size} registered elsewhere · ` +
-    `${filled.length} not outline · ${staleExemptions.length} stale exemptions`
+    `${wrongWeight} wrong weight · ${staleExemptions.length} stale exemptions`
 );
 process.exitCode =
-  missing.length + foreign.size + filled.length + staleExemptions.length > 0
+  missing.length + foreign.size + wrongWeight + staleExemptions.length > 0
     ? 1
     : 0;

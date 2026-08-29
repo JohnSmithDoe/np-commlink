@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline, diceOutline } from 'ionicons/icons';
+import { createOutline, dice, diceOutline } from 'ionicons/icons';
 import { GameType } from '../../model/trackplay.types';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -32,7 +32,7 @@ export class TrackplayGameTypesPage {
   readonly defaultTypeId = DEFAULT_GAME_TYPE_ID;
 
   constructor() {
-    addIcons({ createOutline, diceOutline });
+    addIcons({ createOutline, dice, diceOutline });
   }
 
   openEdit(type: GameType): void {

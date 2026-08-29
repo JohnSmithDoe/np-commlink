@@ -17,7 +17,7 @@ import {
 import { IonList, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { createOutline, playCircleOutline } from 'ionicons/icons';
+import { createOutline, playCircle } from 'ionicons/icons';
 import { Category } from '../../../@shared/model/category.types';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { Game } from '../../model/trackplay.types';
@@ -41,6 +41,6 @@ export class GameRowComponent {
   readonly deleteGame = output<void>();
 
   constructor() {
-    addIcons({ createOutline, playCircleOutline });
+    addIcons({ createOutline, playCircle });
   }
 }

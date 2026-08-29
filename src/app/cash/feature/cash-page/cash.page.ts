@@ -45,10 +45,10 @@ import { CashTransferModalComponent } from '../transfer-modal/transfer-modal.com
 import { presentModal } from '../../../@shared/util/app.modal.utils';
 
 const KIND_ICON: Record<AccountKind, string> = {
-  giro: 'wallet-outline',
-  creditcard: 'card-outline',
-  savings: 'trending-up-outline',
-  cash: 'cash-outline',
+  giro: 'wallet',
+  creditcard: 'card',
+  savings: 'trending-up',
+  cash: 'cash',
 };
 
 @Component({
