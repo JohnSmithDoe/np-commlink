@@ -88,13 +88,16 @@ and every exemption taken so far.
   set is sorted to take five. A compiled condition set (resolve the RegExp and the cents once), a running
   top-five and a ~250 ms debounce on the preview input are the three halves of it; the debounce changes
   **when** the preview updates, which is why it is not a silent cleanup.
-- **688 method calls sit in templates, across 119 files** (measured 2026-08-29 by enabling
-  `@angular-eslint/template/no-call-expression` and counting; recount before citing). Every one re-runs on
-  each change detection of its view, and `statusColor(item)` in a `@for` pays that per row. The five
-  template rules taken alongside it were all one autofix; **this one is not** — each call is a `computed`
-  the component does not have yet, and some take the row as an argument, so they become a signal keyed by
-  id rather than a straight lift. Enable the rule at the END of that work, not before: as a warning it is
-  688 lines of noise that trains the eye to skip template lint.
+- **`@angular-eslint/template/no-call-expression` is measured and REJECTED, not deferred.** It reports 688
+  hits across 119 files (2026-08-29), and the count is the reason it cannot be used: the rule matches every
+  `Call` node except `$any` and output handlers, so `facade.items()` — a memoised signal read, the
+  idiomatic thing in a zoneless signals app — is indistinguishable to it from `statusColor(item)`. Its
+  options filter by receiver NAME (`allowList`, `allowPrefix`, `allowSuffix`), which cannot express "zero
+  arguments", so there is no configuration that keeps the real finding. The rule predates signals.
+  The underlying concern is still real and now has no gate: a call WITH arguments in a `@for` body re-runs
+  per row per change detection. Finding those means a rule of our own in `eslint-plugin-commlink/`,
+  matching a `Call` with a non-empty argument list, which is where this belongs if it is ever worth paying
+  for.
 
 ## Platform reach
 
