@@ -3,7 +3,6 @@
   "title": "STASH",
   "plain": "Vorräte",
   "route": "/household/storage",
-  "shotsStale": true,
   "summary": "Was im Haus ist — mit Mindestmenge, Farbbalken, Mindesthaltbarkeitsdatum und einem Wisch zurück auf die Einkaufsliste.",
   "sections": [
     {

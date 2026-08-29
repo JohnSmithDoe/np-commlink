@@ -3,7 +3,6 @@
   "title": "COMMS",
   "plain": "Nachrichten",
   "route": "/notifications",
-  "shotsStale": true,
   "summary": "Der Posteingang, in den die App sich selbst schreibt — plus die echten Erinnerungen des Betriebssystems.",
   "sections": [
     {

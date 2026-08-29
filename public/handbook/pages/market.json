@@ -3,7 +3,6 @@
   "title": "MARKET",
   "plain": "Einkaufsliste",
   "route": "/household/shopping",
-  "shotsStale": true,
   "summary": "Die Einkaufsliste — schnell tippen, Mengen zählen, Gekauftes abhaken und am Ende in die Vorräte übernehmen.",
   "sections": [
     {

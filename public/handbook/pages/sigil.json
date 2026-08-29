@@ -3,7 +3,6 @@
   "title": "SIGIL",
   "plain": "Notizen",
   "route": "/notes",
-  "shotsStale": true,
   "summary": "Notizen aus Titel, Freitext und Fotos — ohne Speichern-Knopf, mit angehefteter Spitze.",
   "sections": [
     {
