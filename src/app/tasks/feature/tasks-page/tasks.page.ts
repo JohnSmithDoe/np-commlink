@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { add, remove } from 'ionicons/icons';
@@ -16,11 +15,11 @@ import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-
 @Component({
   selector: 'app-page-tasks',
   templateUrl: 'tasks.page.html',
+  styleUrls: ['tasks.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     DatePipe,
-    IonNote,
     ListPageComponent,
     ListItemComponent,
     EditTaskItemDialogComponent,
@@ -42,7 +41,7 @@ export class TasksPage {
     this.#facade.showEditDialog(item);
   }
 
-  statusColor(item: TaskItem): IonColor {
+  statusColor(item: TaskItem): IonColor | undefined {
     return dueStatusColor(item);
   }
 }

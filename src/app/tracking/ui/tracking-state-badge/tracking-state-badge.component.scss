@@ -1,0 +1,25 @@
+.tracking-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-xsmall);
+  font-weight: 700;
+  letter-spacing: var(--sr-label-tracking);
+  text-transform: var(--sr-label-transform);
+  padding: var(--space-0) var(--space-2);
+  border-radius: var(--sr-radius);
+}
+
+.tracking-badge--running {
+  background: var(--ion-color-success);
+  color: var(--ion-color-success-contrast);
+}
+
+.tracking-badge--paused {
+  background: var(--ion-color-warning);
+  color: var(--ion-color-warning-contrast);
+}
+
+.tracking-badge--stopped {
+  background: var(--sr-panel);
+  color: var(--sr-text-dim);
+}

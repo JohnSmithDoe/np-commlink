@@ -1,6 +1,38 @@
+// ─── why ────────────────────────────────────────────────────────
+// Ionic's `.toolbar-container` is `overflow: hidden` and its `ion-button` is
+// `white-space: normal`, so an over-capacity row does not degrade — it cuts a
+// glyph in half and breaks a label across two lines. Both slots scroll instead,
+// on the filter bar's pattern.
+//
+// The end slot is capped rather than pinned, because a page hangs either its
+// headline value there or a run of actions: below the cap a value keeps its
+// full width and cannot be clipped, above it the sort keys still keep half the
+// row they exist for.
+// ────────────────────────────────────────────────────────────────
+
 :host {
   display: flex;
   flex-direction: column;
   max-width: var(--app-content-max-width);
   margin-inline: auto;
+}
+
+ion-buttons {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ion-button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+ion-buttons[slot='end'] {
+  flex-shrink: 0;
+  max-width: 50%;
 }

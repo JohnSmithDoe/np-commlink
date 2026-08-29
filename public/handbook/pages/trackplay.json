@@ -3,6 +3,7 @@
   "title": "TRACKPLAY",
   "plain": "Spielstände",
   "route": "/trackplay",
+  "shotsStale": true,
   "summary": "Der Punkteblock: Spieler, Spielarten und Partien mit Runde-für-Runde-Wertung, Sieger und Bilanz.",
   "sections": [
     {

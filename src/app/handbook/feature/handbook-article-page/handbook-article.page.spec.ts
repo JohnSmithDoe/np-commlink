@@ -76,7 +76,13 @@ describe('HandbookArticlePage', () => {
       providers: [
         ...COMMON_TEST_PROVIDERS,
         { provide: HandbookService, useValue: handbook },
-        { provide: ActivatedRoute, useValue: { paramMap: routeParameters } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: routeParameters,
+            snapshot: { pathFromRoot: [] },
+          },
+        },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(HandbookArticlePage);

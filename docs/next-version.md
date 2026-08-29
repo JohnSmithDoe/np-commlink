@@ -46,6 +46,29 @@ and every exemption taken so far.
   player), and would inherit it the day either opts into undo. The fix is a scope built from the
   filter, which widens `undoableDelete.scope` to accept a function of the item.
 
+## The shared list page — a list that says how it is ordered
+
+- **A list has to declare its own sort fallback, because only it knows what an absent sort means.** The
+  Pixel 8 walk read this as a missing indicator and it is not one: `ItemListToolbarComponent` already
+  draws an arrow on whichever button matches `activeSort`. Household shows none because shopping's stored
+  document carries no `sort` at all, while the list IS name-ordered — by `filterAndSortItemList`'s
+  comparator, which falls back to NAME when `sort` is absent. So the button is right and unmarked.
+  Two cheap fixes were tried on paper and both fail. Seeding `sort` into initial state reaches nobody who
+  has the problem, because `hydratedList` takes the stored document wholesale instead of merging it over
+  the default — it would mark the arrow for a fresh install only. And reading an absent sort as "name"
+  inside the toolbar lies on the recipe list, where absent means the cookability ranking
+  (`selectRecipesListItems` routes to `ranked(...)` on exactly that condition). What is owed is a
+  `defaultSort` the FACADE declares beside `sortOptions` and `sortable`, which the toolbar marks when
+  `activeSort` is absent — the same "absence is the declaration" axis the shared page already runs on,
+  named rather than inferred. It also retires the trap in
+  [decisions.md](./decisions.md)'s _"A sort fallback is not a pinned order"_: today the fallback is
+  knowledge held in a comparator, and three selectors already alphabetised lists whose order was semantic
+  because nothing made a list state what it meant.
+- **`/cash` is not a caller of the shared toolbar at all**, which is the other half and a bigger change:
+  the accounts page hangs its net worth in `toolbarActionsEnd` but renders no sort row, so there is
+  nothing on it for an indicator to mark. Worth doing with the entry above rather than before it — a page
+  that joins the toolbar wants the fallback axis to exist first.
+
 ## Measured costs
 
 - **A picture is base64 in IndexedDB, and binary is the better answer on both platforms.** The store keys

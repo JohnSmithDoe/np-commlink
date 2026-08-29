@@ -4,7 +4,9 @@
 />
 
 <ion-content class="ion-padding">
-  <ion-note>{{ 'deck.config.intro' | translate }}</ion-note>
+  <ion-note class="deck-config__intro">{{
+    'deck.config.intro' | translate
+  }}</ion-note>
 
   <ion-segment
     class="deck-config__lens"
@@ -29,7 +31,16 @@
                 <h2 class="deck-config__group">
                   {{ group.labelKey | translate }}
                 </h2>
-                <p>{{ group.visibleCount }} / {{ group.programs.length }}</p>
+                <p>
+                  {{
+                    'deck.config.module-count'
+                      | translate
+                        : {
+                            visible: group.visibleCount,
+                            total: group.programs.length,
+                          }
+                  }}
+                </p>
               </ion-label>
               <ion-toggle
                 slot="end"

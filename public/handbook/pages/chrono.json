@@ -3,6 +3,7 @@
   "title": "CHRONO",
   "plain": "Zeiterfassung",
   "route": "/tracking",
+  "shotsStale": true,
   "summary": "Stoppuhr pro Aufgabe, ein Tagesprotokoll darunter und ein Archiv mit Diagramm und CSV-Export.",
   "sections": [
     {

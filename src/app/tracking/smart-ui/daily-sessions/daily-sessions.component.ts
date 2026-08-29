@@ -6,7 +6,6 @@ import {
   signal,
 } from '@angular/core';
 import {
-  IonBadge,
   IonButton,
   IonIcon,
   IonItem,
@@ -23,6 +22,8 @@ import dayjs, { Dayjs } from 'dayjs';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { TrackingFacade } from '../../data';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
+import { formatSecondsAsClock } from '../../util/tracking.utils';
+import { TrackingStateBadgeComponent } from '../../ui/tracking-state-badge/tracking-state-badge.component';
 import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 
 @Component({
@@ -33,7 +34,7 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   imports: [
     EmptyStateComponent,
     DatePipe,
-    IonBadge,
+    TrackingStateBadgeComponent,
     IonButton,
     IonIcon,
     IonItem,
@@ -68,11 +69,9 @@ export class DailySessionsComponent {
       (sum, s) => sum + (s.trackedTimeInSeconds ?? 0),
       0
     );
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
     return {
       count: items.length,
-      duration: hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`,
+      duration: formatSecondsAsClock(seconds),
     };
   });
 

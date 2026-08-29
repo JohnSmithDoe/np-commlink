@@ -7,18 +7,14 @@
   <ion-label class="ion-text-wrap">
     <h2 class="tracking-item-title">
       <span>{{ trackingItem.name }}</span>
-      <span
-        class="tracking-item-badge tracking-item-badge-{{ trackingItem.state }}"
-      >
-        {{ stateLabelKeys[trackingItem.state] | translate }}
-      </span>
+      <app-tracking-state-badge [state]="trackingItem.state" />
     </h2>
 
     @if (trackingItem.state !== 'stopped') {
       <div
         class="tracking-item-timer tracking-item-timer-{{ trackingItem.state }}"
       >
-        {{ trackingItem.trackedTimeInSeconds | timeWithUnit }}
+        {{ trackingItem | trackingTime }}
       </div>
     }
 
@@ -27,7 +23,7 @@
         trackingItem.state === 'stopped' &&
         (trackingItem.trackedTimeInSeconds ?? 0) > 0
       ) {
-        <div>{{ trackingItem.trackedTimeInSeconds | timeWithUnit }}</div>
+        <div>{{ trackingItem | trackingTime }}</div>
       }
       @if (trackingItem.startTime) {
         {{

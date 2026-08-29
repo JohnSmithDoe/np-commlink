@@ -1,0 +1,6 @@
+.task-facts {
+  span + span::before {
+    content: ' · ';
+    color: var(--sr-text-dim);
+  }
+}

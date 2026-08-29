@@ -16,6 +16,10 @@ ion-accordion [slot='content'] ion-item {
   border-inline-start: 1px solid var(--sr-border);
 }
 
+.deck-config__intro {
+  color: var(--sr-text-dim);
+}
+
 .deck-config__lens {
   margin-block: var(--space-3);
 }

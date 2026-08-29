@@ -21,7 +21,7 @@ const withGame = (games: GamesState, next: Game): GamesState => ({
 
 const withBlankRound = (game: Game, roundId: TrackplayId): Game => ({
   ...game,
-  rounds: [...game.rounds, createRound(game.playerIds, roundId)],
+  rounds: [...game.rounds, createRound(roundId)],
 });
 
 export const ensureTrailingBlankRound = (

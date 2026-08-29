@@ -10,17 +10,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 describe('trackplay.factory', () => {
   describe('createRound', () => {
-    it('seeds every player at 0', () => {
-      const round = createRound(['p1', 'p2'], 'r3');
-      expect(round.values).toEqual({ p1: 0, p2: 0 });
-    });
-
-    it('produces an empty values map with no players', () => {
-      expect(createRound([], 'r0').values).toEqual({});
+    it('scores nothing, so an untouched cell stays empty', () => {
+      expect(createRound('r3').values).toEqual({});
     });
 
     it('takes its id rather than minting one', () => {
-      expect(createRound([], 'r0').id).toBe('r0');
+      expect(createRound('r0').id).toBe('r0');
     });
   });
 

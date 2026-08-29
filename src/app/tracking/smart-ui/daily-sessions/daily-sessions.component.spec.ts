@@ -72,13 +72,13 @@ describe('DailySessionsComponent', () => {
       session('B', dayjs().hour(11).format(), 1800),
     ]);
 
-    expect(component.totals()).toEqual({ count: 2, duration: '1h 30m' });
+    expect(component.totals()).toEqual({ count: 2, duration: '01:30:00' });
   });
 
-  it('formats a sub-hour duration without the hour part', () => {
-    const component = create([session('A', dayjs().hour(9).format(), 45 * 60)]);
+  it('keeps a short session off zero, where minutes alone rounded it away', () => {
+    const component = create([session('A', dayjs().hour(9).format(), 3)]);
 
-    expect(component.totals()).toEqual({ count: 1, duration: '45m' });
+    expect(component.totals()).toEqual({ count: 1, duration: '00:00:03' });
   });
 
   it('starts on today and refuses to page into the future', () => {

@@ -20,24 +20,17 @@
     (selectItem)="showEditDialog(item)"
     (deleteItem)="removeItem(item)"
   >
-    @if (item.dueAt) {
-      <ng-container itemDetails>
-        <ion-note>
-          {{ 'tasks.item.due.note' | translate }}:
-          {{ item.dueAt | date }}
-        </ion-note>
-        <br />
-      </ng-container>
-    }
-
-    @if (item.prio) {
-      <ng-container itemDetails>
-        <ion-note>
-          {{ 'tasks.item.prio' | translate }}:
-          {{ item.prio }}
-        </ion-note>
-        <br />
-      </ng-container>
+    @if (item.dueAt || item.prio) {
+      <p itemDetails class="task-facts">
+        @if (item.dueAt) {
+          <span>
+            {{ 'tasks.item.due.note' | translate }}: {{ item.dueAt | date }}
+          </span>
+        }
+        @if (item.prio) {
+          <span> {{ 'tasks.item.prio' | translate }}: {{ item.prio }} </span>
+        }
+      </p>
     }
   </app-list-item>
 </ng-template>

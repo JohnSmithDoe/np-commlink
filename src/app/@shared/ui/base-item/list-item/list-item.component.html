@@ -50,6 +50,8 @@
       <ng-content select="[itemDetails]"></ng-content>
     </ion-label>
 
+    <ng-content select="[itemTrailing]"></ng-content>
+
     @if (reorderable()) {
       <ion-reorder slot="end" />
     }

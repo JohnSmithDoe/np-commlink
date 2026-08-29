@@ -59,12 +59,8 @@ export function createGame(
   };
 }
 
-export function createRound(playerIds: TrackplayId[], id: TrackplayId): Round {
-  const values: Record<TrackplayId, number> = {};
-  for (const pid of playerIds) {
-    values[pid] = 0;
-  }
-  return { id, values };
+export function createRound(id: TrackplayId): Round {
+  return { id, values: {} };
 }
 
 export const DEFAULT_GAME_TYPES: readonly GameType[] = [

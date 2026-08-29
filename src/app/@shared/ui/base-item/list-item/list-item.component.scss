@@ -9,3 +9,7 @@
 .bought {
   text-decoration: line-through;
 }
+
+[data-testid='list-row-category'] {
+  color: var(--sr-text-dim);
+}

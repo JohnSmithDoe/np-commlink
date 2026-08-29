@@ -34,16 +34,17 @@
         </div>
 
         <div class="tp-body" #bodyRegion (scroll)="onScroll($event)">
-          @for (round of rounds(); track round.id) {
+          @for (round of rounds(); track round.id; let roundIndex = $index) {
             <div class="tp-row tp-row--data" data-testid="score-row">
-              <div class="tp-cell tp-cell--round">{{ $index }}</div>
+              <div class="tp-cell tp-cell--round">{{ roundIndex + 1 }}</div>
               @for (pid of playerIds(); track pid) {
                 <div class="tp-cell tp-cell--edit" data-testid="score-cell">
                   <ion-input
                     type="number"
                     [attr.aria-label]="
                       'trackplay.a11y.score-cell'
-                        | translate: { round: $index, player: playerName(pid) }
+                        | translate
+                          : { round: roundIndex + 1, player: playerName(pid) }
                     "
                     inputmode="numeric"
                     [value]="valueFor(round, pid)"

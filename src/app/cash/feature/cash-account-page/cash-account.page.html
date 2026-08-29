@@ -58,7 +58,6 @@
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
-    [categories]="categories"
     [startSwipeAction]="reconcileAction(item)"
     [canDelete]="item.source === 'manual'"
     (selectItem)="facade.showEditDialog(item)"
@@ -67,6 +66,9 @@
   >
     <p itemDetails>
       {{ item.dateISO | localizedDate }}
+      @if (categoryOf(item, categories); as category) {
+        · {{ category }}
+      }
       @if (item.status === 'pending') {
         · {{ 'cash.txn.pending' | translate }}
       }
@@ -75,7 +77,8 @@
       <p itemDetails class="cash-txn__purpose">{{ item.remittanceInfo }}</p>
     }
     <ion-note
-      itemDetails
+      itemTrailing
+      slot="end"
       class="cash-txn__amount"
       [class.cash-txn__amount--out]="item.amountCents < 0"
       [class.cash-txn__amount--in]="item.amountCents > 0"

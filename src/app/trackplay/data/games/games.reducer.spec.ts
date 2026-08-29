@@ -36,7 +36,7 @@ describe('gamesReducer', () => {
     const state = gamesReducer(start, GamesActions.enterGamePage('g', 'r0'));
 
     expect(roundsOf(state, 'g').map((round) => round.id)).toEqual(['r0']);
-    expect(valuesOf(state, 'g', 'r0')).toEqual({ p1: 0, p2: 0 });
+    expect(valuesOf(state, 'g', 'r0')).toEqual({});
   });
 
   it('adds no second blank round when the game already ends in one', () => {

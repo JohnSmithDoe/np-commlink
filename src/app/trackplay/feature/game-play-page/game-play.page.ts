@@ -90,8 +90,8 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
     return this.players().find((player) => player.id === pid)?.name ?? '';
   }
 
-  valueFor(round: Round, pid: TrackplayId): number {
-    return round.values[pid] ?? 0;
+  valueFor(round: Round, pid: TrackplayId): number | null {
+    return round.values[pid] ?? null;
   }
 
   onValue(roundId: TrackplayId, playerId: TrackplayId, event: Event): void {

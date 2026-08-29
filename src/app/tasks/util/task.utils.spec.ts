@@ -8,8 +8,8 @@ const colorOf = (dueAt?: string) =>
   dueStatusColor(mockTaskItem({ dueAt }), NOW);
 
 describe('dueStatusColor', () => {
-  it('treats a task without a due date as unpressing', () => {
-    expect(colorOf(undefined)).toBe('success');
+  it('gives a task without a due date no status at all', () => {
+    expect(colorOf(undefined)).toBeUndefined();
   });
 
   it('flags an overdue task', () => {

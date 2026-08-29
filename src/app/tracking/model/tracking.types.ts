@@ -27,7 +27,7 @@ export type DailySeries = {
   series: { name?: string; hours: number[] }[];
 };
 
-type TrackingItemState = 'running' | 'stopped' | 'paused';
+export type TrackingItemState = 'running' | 'stopped' | 'paused';
 
 export const TRACKING_STATE_LABEL_KEYS: Record<TrackingItemState, Marker> = {
   running: marker('tracking.item.state.running'),

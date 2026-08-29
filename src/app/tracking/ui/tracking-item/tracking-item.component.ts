@@ -40,7 +40,8 @@ import {
   stopSharp,
   trashOutline,
 } from 'ionicons/icons';
-import { TimeWithUnitPipe } from '../../util/time-with-unit.pipe';
+import { TrackingTimePipe } from '../../util/tracking-time.pipe';
+import { TrackingStateBadgeComponent } from '../tracking-state-badge/tracking-state-badge.component';
 
 marker('tracking.item.action.start');
 marker('tracking.item.action.pause');
@@ -62,7 +63,8 @@ marker('tracking.item.action.pause');
     IonButton,
     IonIcon,
     IonPopover,
-    TimeWithUnitPipe,
+    TrackingTimePipe,
+    TrackingStateBadgeComponent,
     IonList,
   ],
 })

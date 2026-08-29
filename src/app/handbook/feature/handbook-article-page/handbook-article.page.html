@@ -1,6 +1,11 @@
-<app-page-header label="page-title.handbook" hideButtons />
+<app-page-header
+  [heading]="article()?.plain ?? ('page-title.handbook' | translate)"
+  hideButtons
+/>
 
 <ion-content class="ion-padding">
+  <app-page-return />
+
   @if (failed()) {
     <div class="hb-state" data-testid="handbook-page-error">
       <p class="hb-state__text">{{ 'handbook.error.page' | translate }}</p>

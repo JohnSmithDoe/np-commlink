@@ -99,6 +99,11 @@ owes once one IS needed is in [decisions.md](./decisions.md).
   before any toast, and so are NOT flagged. [CLAUDE.md](../CLAUDE.md) forbids an agent running the
   suite, so SETTING `"shotsStale": true` stays manual and no gate can see it — **whoever changes a
   screen sets it on the pages that show that screen**, and the next release run clears it.
+- **`credstick`, `chrono`, `trackplay` and `start` joined them on 2026-08-29** with the Pixel 8 walk's
+  defect and consistency batches: the sort toolbar no longer clips or wraps, the ledger row wears the
+  report's shape, CHRONO speaks one duration and one state chip, the round column counts from 1, an
+  undated task shows no status bar, and the deck config's count says what it counts. Figures are shot at
+  a 393 px viewport, narrower than the 412 px the walk used, so an over-capacity toolbar shows in them.
 
 ## Waiting on upstream
 
@@ -148,61 +153,75 @@ shoots them next must write outside that directory.
 
 ### Wrong, not a matter of taste
 
-- **`/cash` clips its own total.** The sort row's right-aligned sum runs past the right edge at 412 px —
-  the `€` glyph is cut in half on the accounts page. The clearest defect in the set.
+**Six of the eight were fixed on 2026-08-29.** The one that governs later callers — what the sort
+toolbar does when it runs out of room — is in [decisions.md](./decisions.md). Two are left.
+
 - **Two household header actions are vertically clipped**: the cart on STASH and the tray on MARKET are
   sliced by the toolbar's top edge, while the tab bar renders the same two glyphs whole. Not a fluke —
-  both list pages show it.
-- **CHRONO's toolbar is over capacity at 412 px** and wraps the sort label onto two lines, `A-` over `Z`.
-  The dev-only flask (`@if (isDev)`, `tracking.page.html:32`) additionally clips at the right edge, so
-  what ships is the wrap alone.
-- **Trackplay numbers its rounds from 0** — the `#` column prints the array index, so a card game opens
-  at round 0 — and a fresh round pre-fills `0 / 0 / 0`, which makes "not entered yet" and "scored
-  nothing" the same cell.
-- **`1 SESSIONS · 0M`** — a plural on one, and a three-second session rounded to zero minutes.
-- **AGENDA runs two facts together with no separator**: `Arbeit Fällig am: 26.08.2026` reads as the
-  broken phrase "Arbeit Fällig". The report's `28.08.2026 · Wohnen` is the shape to copy.
+  both list pages show it. **The cause is not in the source**: Ionic's `.toolbar-container` carries
+  `contain: content` and `overflow: hidden`, which clips to the padding box, but it does that on every
+  page, and nothing the household pages add is in that row. It needs the app on screen at 412 px to
+  diagnose, which is why it outlived the batch around it.
 - **The birthdate field prints `05/14/1980`.** A native `<input type="date">` follows the DEVICE locale,
   not the app's language, so US order appears on a German UI and no language switch touches it, against
-  `dd.MM.yyyy` everywhere else.
+  `dd.MM.yyyy` everywhere else. Left with **"native controls ignore the skin"** below: replacing the
+  native input is one fix for both, and it drags in the sheet-modal safe-area entry in
+  [next-version.md](./next-version.md).
 
 ### One thing, two treatments
+
+**Most of these were fixed on 2026-08-29.** The sort indicator turned out to need an axis on the shared
+page rather than a widget, and is scheduled in [next-version.md](./next-version.md).
 
 - **The ledger row is twice the height of the row that shows the same data better.** A booking spends
   three or four lines — title, category, date, amount each on their own — so five rows fill a phone
   screen, while `cash-report`'s _Größte Ausgaben_ already carries title-with-amount plus one dim
-  `date · category` subline. Same domain, same fields, two layouts.
-- **Only AGENDA says which sort is active** (an arrow beside `TERMIN`); `/cash` and the household lists
-  print their sort keys with nothing marking the live one.
+  `date · category` subline. Same domain, same fields, two layouts. **Fixed 2026-08-29** — the row wears
+  the report's shape: `app-list-item` gained an `[itemTrailing]` slot so the amount sits beside the title
+  instead of under it, and the ledger stopped passing `[categories]` so it can print `date · category`
+  itself. Absence was already the declaration there — a row given no catalog renders no category note.
 - **CHRONO spells one state three ways on one screen** — a `LÄUFT` chip, a lowercase `läuft` chip, and
-  `GESTOPPT` as bare amber text — and one duration two ways, `3 Sekunden` beside `00:00:03`.
+  `GESTOPPT` as bare amber text — and one duration two ways, `3 Sekunden` beside `00:00:03`. **Fixed
+  2026-08-29**: the chip is one `app-tracking-state-badge` both lists render, which retired the duplicate
+  `tracking.daily-sessions.running` key, and the screen speaks one duration format
+  ([decisions.md](./decisions.md)).
 - **Two different colours mean "secondary".** In cyberpunk `--sr-text-dim` IS the amber at 85 %
   (`_shadowrun.scss:119`), so the notes snippet, which sets the token, is amber, while `list-item`'s
   `list-row-category` and the deck-config intro never set it and inherit Ionic's grey step. Neither
   breaks `commlink/muted-text-uses-token` — the rule sees a hardcoded colour, not an unthemed default.
+  **Fixed 2026-08-29** by setting the token at both. No gate follows: the grey is Ionic's own default and
+  there is no declaration in this repo's source for a rule to match.
 - **Filled buttons appear twice and outline everywhere else**: cash's _Regeln anwenden_ and the shopping
-  toolbar's bag are solid amber; every other button in the walk is an outline.
+  toolbar's bag are solid amber; every other button in the walk is an outline. **Fixed 2026-08-29** — and
+  they were two different faults wearing one look: _Regeln anwenden_ was a genuine `fill="solid"` default,
+  while the bag was the SOLID `bag-add` glyph where the app uses outline variants.
 - **Green carries four meanings** — income in the ledger, _Ohne Kategorie_ in the report donut, both
-  priority 3 and no priority in AGENDA, and a healthy MHD in STASH.
+  priority 3 and no priority in AGENDA, and a healthy MHD in STASH. **Fixed 2026-08-29**; two of the four
+  were accidents rather than meanings, and what green is allowed to say is in
+  [decisions.md](./decisions.md).
 - **Native controls ignore the skin entirely**: SYSOP's two `<input type="color">` swatches wear grey
   browser bezels and BIOMON's date field a white calendar glyph, the only unskinned chrome in the app.
+  Carries the birthdate-locale defect above with it — one replacement answers both.
 - **The deck config's subline is a label for some rows and a count for others** — "Bürozeiten" and
   "Notizen" against a bare "4 / 4", in the same slot, with nothing saying the count is programs.
+  **Fixed 2026-08-29**: the count says what it counts. The slot holding different kinds of subline is
+  fine as long as each names itself.
 
 ### Structure
 
-- **SYSOP is two pages stacked.** Its top half is plain divs, its storage and about halves are `ion-item`
-  rows on their own band, and section headers render exactly like field labels — _Deck_, _Akzentfarben_
-  and _Speicher_ carry no more weight than _Helligkeit_ — so the hierarchy reads flat. Its worst row is
-  _Dauerhafter Speicher_, where a right-aligned status squeezes the description into three lines of ~28
-  characters with 40 % of the row empty beneath it.
+- **SYSOP has one row idiom doing three jobs.** `<ion-item lines="none"><ion-label>text</ion-label>` is a
+  section header at _Deck_, _Akzentfarben_, _Speicher_ and _Über_, a field label at _Helligkeit_ and
+  _Sprache_ — `settings-segment` emits its own label row in exactly that markup — and a value row at
+  _Primärfarbe_. Nothing distinguishes the three, so the hierarchy reads flat. **The walk's "two pages
+  stacked" reading was wrong about its own evidence** and should not be carried forward: the page is a
+  single `ion-list` of `ion-item`s throughout, `settings-segment` being `display: contents` so its two
+  rows are direct list children. What differs between the halves is the row's CONTENT, not its box.
+  Separately real: _Dauerhafter Speicher_ puts a wrapping `ion-text-wrap` label with a nested note beside
+  a right-aligned status note, so the description is squeezed into three short lines with the space under
+  the status left empty.
 - **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
   `app-empty-state` exists and cash already uses it five times — and neither says what a rule is or that
   `+` makes one. _Regeln anwenden_ is offered, full-width and solid, with zero rules to apply.
-- **The handbook article is the one child page with no way back at the top.** Its header is `hideButtons`
-  and names the program rather than the article, and the only parent link is `hb-pager__overview` BELOW
-  the whole article — the longest scroll in the app, left by the OS gesture or not at all.
-  `app-page-return` needs no inputs there; `PROGRAM_RETURN` already derives `/handbook`.
 - **Trackplay's totals row is pinned to the bottom of the viewport**, so a three-round grid puts the
   summary a screenful of emptiness below its own table.
 

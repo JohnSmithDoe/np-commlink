@@ -29,8 +29,10 @@
   <ion-list class="daily-sessions">
     <ion-list-header class="daily-sessions-totals">
       {{
-        'tracking.daily-sessions.totals'
-          | translate: { count: totals().count, duration: totals().duration }
+        (totals().count === 1
+          ? 'tracking.daily-sessions.totals-one'
+          : 'tracking.daily-sessions.totals'
+        ) | translate: { count: totals().count, duration: totals().duration }
       }}
     </ion-list-header>
     @for (session of sessions(); track session.id) {
@@ -40,9 +42,7 @@
           <ion-note>{{ session.startTime | date: 'shortTime' }}</ion-note>
         </ion-label>
         @if (session.state === 'running') {
-          <ion-badge slot="end" color="success">
-            {{ 'tracking.daily-sessions.running' | translate }}
-          </ion-badge>
+          <app-tracking-state-badge slot="end" [state]="session.state" />
         }
         <ion-label slot="end" class="duration">
           {{ session | trackingTime }}

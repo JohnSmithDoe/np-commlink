@@ -24,6 +24,7 @@ import {
 } from 'ionicons/icons';
 import { map } from 'rxjs';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
+import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 import { HandbookService } from '../../data/handbook.service';
 import { handbookNeighbours } from '../../util/handbook-content';
 import { HandbookArticleComponent } from '../../ui/handbook-article/handbook-article.component';
@@ -41,6 +42,7 @@ import { HandbookTitleComponent } from '../../ui/handbook-title/handbook-title.c
     IonIcon,
     TranslatePipe,
     PageHeaderComponent,
+    PageReturnComponent,
     HandbookArticleComponent,
     HandbookTitleComponent,
   ],

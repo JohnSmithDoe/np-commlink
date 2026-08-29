@@ -31,6 +31,8 @@ import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
+import { Category } from '../../../@shared/model/category.types';
+import { categoryNames } from '../../../@shared/util/categories/category.utils';
 import { deleteConfirmAlert } from '../../util/delete-alert.utils';
 import { MoneyEurPipe } from '../../util/formatting/money.pipe';
 import { readStatementDocuments } from '../../util/import/read-bank-file';
@@ -88,6 +90,10 @@ export class CashAccountPage {
       swapHorizontalOutline,
       unlinkOutline,
     });
+  }
+
+  categoryOf(txn: AccountTransaction, catalog: readonly Category[]): string {
+    return categoryNames(txn, catalog).join(', ');
   }
 
   reconcileAction(txn: AccountTransaction): StartSwipeAction | undefined {
