@@ -31,6 +31,7 @@ import { expect, Page, test } from '@playwright/test';
 import {
   openRowSwipe,
   pageRoot,
+  slideDelete,
   presentedDialog,
   waitForListPage,
   waitForPersisted,
@@ -103,5 +104,26 @@ test.describe('household category catalog', () => {
 
     await expect(catalogRow(page, 'Tiefkühl')).toBeVisible({ timeout: 10_000 });
     await expect(catalogRow(page, 'Tiefkuhl')).toHaveCount(0);
+  });
+
+  test('undo puts a deleted category back on the rows it was stripped from', async ({
+    page,
+  }) => {
+    await addViaCatalogSearch(page, 'Tiefkuehl');
+    await expect(catalogRow(page, 'Tiefkuehl')).toBeVisible({
+      timeout: 10_000,
+    });
+
+    await slideDelete(catalogRow(page, 'Tiefkuehl'));
+    await expect(catalogRow(page, 'Tiefkuehl')).toHaveCount(0);
+
+    const undo = catalogPage(page).getByTestId('undo-button');
+    await expect(undo).toBeVisible({ timeout: 10_000 });
+    await undo.click();
+
+    await expect(catalogRow(page, 'Tiefkuehl')).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(undo).toHaveCount(0);
   });
 });

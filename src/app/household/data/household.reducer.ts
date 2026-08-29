@@ -17,8 +17,11 @@
 import { Action, combineReducers, createReducer, on } from '@ngrx/store';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { HouseholdState } from '../model/household.types';
+import { HouseholdActions } from './household.actions';
 import {
+  addToCatalog,
   dropCategoryRef,
+  restoreCategoryRef,
   remapCategoryRef,
   removeFromCatalog,
   renameInCatalog,
@@ -58,6 +61,14 @@ const catalogCascade = createReducer(
     ...withEveryItemList(state, (items) => dropCategoryRef(items, item.id)),
     categories: removeFromCatalog(state.categories, item.id),
   })),
+
+  on(HouseholdActions.restoreCategory, (state, { category, tagged }): HouseholdState => {
+    const ids = new Set(tagged);
+    return {
+      ...withEveryItemList(state, (items) => restoreCategoryRef(items, category.id, ids)),
+      categories: addToCatalog(state.categories, category),
+    };
+  }),
 
   on(HouseholdCategoriesActions.updateItem, (state, { item }): HouseholdState => {
     const { catalog, mergedInto } = renameInCatalog(state.categories, item.id, item.name ?? '');

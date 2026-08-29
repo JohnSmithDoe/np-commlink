@@ -90,6 +90,32 @@ describe('tasksReducer', () => {
     expect(state.list.items[0].categoryIds).toEqual([]);
   });
 
+  it('undoing a delete puts the category back on the tasks that had it', () => {
+    const chores = mockCategory({ id: 'c1', name: 'Chores' });
+    const start = mockTasksState({
+      categoryList: { items: [chores] },
+      list: {
+        items: [
+          mockTaskItem({ id: 't', categoryIds: ['c1'] }),
+          mockTaskItem({ id: 'other', categoryIds: [] }),
+        ],
+      },
+    });
+
+    const deleted = tasksReducer(
+      start,
+      TaskCategoriesActions.removeItem(chores)
+    );
+    const restored = tasksReducer(
+      deleted,
+      TasksActions.restoreCategory(chores, ['t'])
+    );
+
+    expect(restored.categoryList.items).toEqual([chores]);
+    expect(restored.list.items[0].categoryIds).toEqual(['c1']);
+    expect(restored.list.items[1].categoryIds).toEqual([]);
+  });
+
   it('replaces the state from a loaded datastore and resets transient fields', () => {
     const state = tasksReducer(
       initialState,

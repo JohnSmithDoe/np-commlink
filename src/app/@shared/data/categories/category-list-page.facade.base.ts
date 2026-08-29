@@ -22,7 +22,9 @@ import { inject, Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Action, Store } from '@ngrx/store';
 import { Category, CategoryId } from '../../model/category.types';
+import { DispatchableAction } from '../../model/dispatchable-action.types';
 import { ItemListId } from '../../model/item-list.types';
+import { UndoActions } from '../undo/undo.actions';
 import { createCategory } from '../../util/app.factory';
 import { categoryFilterQueryParameters } from '../../util/item-lists/category-filter.route';
 import { ItemDialogService } from '../item-lists/item-dialog.service';
@@ -45,6 +47,8 @@ export abstract class BaseCategoryListPageFacade extends BaseListPageFacade {
   abstract readonly listHref: Signal<string>;
   abstract readonly listTitleKey: Signal<string>;
 
+  protected restoreActionFor?(category: Category): DispatchableAction;
+
   showCreateDialog(): void {
     this.#dialogs.open({
       item: createCategory(this.state()?.searchQuery ?? ''),
@@ -66,6 +70,16 @@ export abstract class BaseCategoryListPageFacade extends BaseListPageFacade {
   }
 
   removeCategory(category: Category): void {
+    const restore = this.restoreActionFor?.(category);
+    if (restore) {
+      this.store.dispatch(
+        UndoActions.pushed({
+          scope: this.catalogListId,
+          name: category.name,
+          action: restore,
+        })
+      );
+    }
     this.store.dispatch(this.actions.removeItem(category));
   }
 

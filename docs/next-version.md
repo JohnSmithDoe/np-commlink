@@ -30,13 +30,11 @@ and every exemption taken so far.
   discards every running timer, geist's purge fires unannounced on a persona switch — all destroy what
   the user was not looking at. Cash's `deleteConfirmAlert` is the row-level confirm still standing, at
   four sites: accounts, the ledger, rules and schedules.
-- **A cascading delete needs a restore action before it can join the undo stack.** The stack replays
-  `addItem(item)`, which is exactly wrong for a delete that also touched other slices: a category comes
-  back with every item it was stripped from still untagged, a profile without its readings and pills,
-  and products — which already opted in — leave the recipe lines they emptied empty. Each needs a
-  restore action carrying what the cascade removed, computed where the cascade runs. Until then the
-  categories dialog's full swipe is the sharpest gesture in the app, having been made `expandable` on
-  the promise of an undo that does not cover it yet.
+- **Two cascades still have no restore action.** The pattern is settled and shipped — carry what the
+  cascade removed, build it in the command ([decisions.md](./decisions.md)) — and the two left are
+  PRODUCTS, which already opted in and leaves the recipe lines it emptied empty, and CASH categories,
+  whose delete also deletes every rule pointing at the category and blanks a schedule's, so its entry
+  has to carry three collections rather than a list of ids.
 - **The undo scope has no gate.** Producer and page each name the list, and only a spec would prove
   they agree; the symptom of drift is a button that never appears, which is why the gate did not ship
   with the scoping. What is owed: a plugin rule banning a string literal in the three scope positions,

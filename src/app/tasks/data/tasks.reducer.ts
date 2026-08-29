@@ -7,6 +7,7 @@ import {
 import {
   addToCatalog,
   dropCategoryRef,
+  restoreCategoryRef,
   remapCategoryRef,
   removeFromCatalog,
   renameInCatalog,
@@ -45,6 +46,15 @@ export const tasksReducer = createReducer(
     categoryList: removeFromCatalog(state.categoryList, item.id),
     list: { ...state.list, items: dropCategoryRef(state.list.items, item.id) },
   })),
+
+  on(TasksActions.restoreCategory, (state, { category, tagged }): TasksState => {
+    const ids = new Set(tagged);
+    return {
+      ...state,
+      categoryList: addToCatalog(state.categoryList, category),
+      list: { ...state.list, items: restoreCategoryRef(state.list.items, category.id, ids) },
+    };
+  }),
 
   on(TaskCategoriesActions.updateItem, (state, { item }): TasksState => {
     const { catalog, mergedInto } = renameInCatalog(state.categoryList, item.id, item.name);

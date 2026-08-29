@@ -4,15 +4,21 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { categoryById } from '../../@shared/util/categories/category.utils';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
-import { TaskItem, TASKS_LIST_ID } from '../model/task.types';
+import {
+  TaskItem,
+  TASK_CATEGORIES_LIST_ID,
+  TASKS_LIST_ID,
+} from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
 import {
   BaseListPageFacade,
   itemListCommands,
 } from '../../@shared/data/item-lists/list-page.facade.base';
+import { UndoActions } from '../../@shared/data/undo/undo.actions';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import {
   selectTaskItems,
+  selectTaskTaggedByCategory,
   selectTasksCategories,
   selectTasksList,
   selectTasksListItems,
@@ -36,6 +42,8 @@ export class TasksListPageFacade extends BaseListPageFacade {
 
   readonly state = this.#store.selectSignal(selectTasksList);
   readonly undoScope = signal(TASKS_LIST_ID);
+
+  readonly #taggedWith = this.#store.selectSignal(selectTaskTaggedByCategory);
   readonly items = this.#store.selectSignal(selectTasksListItems);
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
   readonly catalog = this.#store.selectSignal(selectTasksCategories);
@@ -79,6 +87,13 @@ export class TasksListPageFacade extends BaseListPageFacade {
   removeCategory(id: CategoryId): void {
     const category = categoryById(this.catalog(), id);
     if (!category) return;
+    this.#store.dispatch(
+      UndoActions.pushed({
+        scope: TASK_CATEGORIES_LIST_ID,
+        name: category.name,
+        action: TasksActions.restoreCategory(category, this.#taggedWith()(id)),
+      })
+    );
     this.#store.dispatch(TaskCategoriesActions.removeItem(category));
   }
 }

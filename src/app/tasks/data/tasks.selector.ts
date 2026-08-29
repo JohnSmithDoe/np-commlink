@@ -11,6 +11,7 @@ import {
   CategoryList,
 } from '../../@shared/model/category.types';
 import { SearchResult } from '../../@shared/model/item-list.types';
+import { idsTaggedWith } from '../../@shared/util/categories/category-list.utils';
 
 export const TASKS_STATE_KEY = 'tasks';
 
@@ -63,6 +64,13 @@ export const selectTaskCategoriesListItems = createSelector(
 export const selectTaskCountByCategory = createSelector(
   selectTaskItems,
   (items): Map<CategoryId, number> => itemCountByCategory(items)
+);
+
+export const selectTaskTaggedByCategory = createSelector(
+  selectTaskItems,
+  (items) =>
+    (categoryId: CategoryId): string[] =>
+      idsTaggedWith(items, categoryId)
 );
 
 export const selectOpenTaskCount = createSelector(

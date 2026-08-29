@@ -205,8 +205,11 @@ it was measured against.
   shopping, storage, products, tasks, tracking, recipes, vitals' readings, trackplay's games. **A
   cascade qualifies too, but must build its entry in the COMMAND** — an effect runs after the reducer,
   which has already dropped what the entry needs to carry. Vitals' pills and profiles do that, and so
-  do trackplay's players and game types. The abstainers: categories still cascade with no restore
-  action, and cash confirms instead. **Products is the one that slipped through**: deleting a product
+  do trackplay's players and game types, and household's and tasks' CATEGORIES — which carry the ids of
+  the rows they were stripped from, so the undo re-tags exactly those and leaves a row edited in the
+  meantime alone. The abstainers: cash confirms instead, and its categories are a different animal —
+  deleting one also DELETES every rule pointing at it and blanks a schedule's, so its entry would have
+  to carry three collections rather than a list of ids. **Products is the one that slipped through**: deleting a product
   also strips it from every recipe, and restoring the product does not bring those ingredient lines
   back.
 - **The stack's ONLY path is `app-undo-button`, in the header of every list that can raise an entry —
@@ -264,6 +267,14 @@ it was measured against.
   considered for deletion was deleted.
 - **Raising error toasts to `assertive` was declined** — it would mean replacing `ion-toast`. What Ionic's
   toast already announces, and the reading that dates it, are in `ionic-a11y-assumptions.spec.ts`.
+- **A field's message waits for touched OR dirty, and the create dialog opens on its first field.** Both
+  seams are the framework's, not ours: `ItemNameInputComponent` declares `touched`/`dirty` inputs the
+  `FormField` directive fills, and implements `focus()`, which is what `focusBoundControl()` on
+  `(didPresent)` reaches. Touched alone was not enough — one box on a phone, focused on present and saved
+  from the toolbar, never blurs, so a duplicate name would refuse to save while saying nothing. The state
+  is per FIELD NODE, not per open, so `close()` resets it or the second open reopens accusing. **The
+  hand-rolled `sr-field-note`s in the vitals and cash dialogs still show on open** — they read their
+  field's errors directly, and each is its own fix.
 
 ## Findings that were wrong about their own evidence
 
@@ -336,6 +347,13 @@ Every `BaseItem` list renders `ListPageComponent`. This is the half a read of th
   windowing stays unbuilt rather than superseded — `ion-virtual-scroll` was deprecated in Ionic 6 and
   **removed** in 7 with the CDK named as successor, and the CDK strategy wants a fixed `itemSize` which
   sliding rows of two and three lines with section headers between them do not offer.
+- **The sort toolbar scrolls rather than degrades, and the end slot is capped at half the row.** Ionic
+  gives `.toolbar-container` `overflow: hidden` and `ion-button` `white-space: normal`, so an
+  over-capacity row does not compress — it cut `/cash`'s `€` in half and broke CHRONO's `A-Z` across two
+  lines. Both slots scroll on the filter bar's pattern. The cap is what keeps the two callers from
+  wanting opposite things: a page hangs either a headline value in the end slot or a run of actions, and
+  pinning it would let CHRONO's four buttons take the row from the sort keys it exists for, while
+  shrinking it would clip cash's number again.
 - **Two lists are deliberately not candidates.** A `DeckEntry` has no `name` — its label is a per-skin
   marker — so nothing exists for a title, a search or a comparator to read, and its rows are toggles over
   a visible set rather than an `ItemList`. And cash's uncategorized view keeps the inert empty state,

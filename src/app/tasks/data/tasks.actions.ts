@@ -8,6 +8,10 @@ export const TasksActions = createActionGroup({
   events: {
     load: emptyProps(),
     loaded: (tasks: TasksState | null) => ({ tasks }),
+    restoreCategory: (category: Category, tagged: readonly string[]) => ({
+      category,
+      tagged,
+    }),
 
     ...createItemListActionEvents<TaskItem>(),
   },

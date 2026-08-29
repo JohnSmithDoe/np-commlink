@@ -80,6 +80,25 @@ export const dropCategoryRef = <T extends BaseItem>(
       : item
   );
 
+export const idsTaggedWith = (
+  items: readonly BaseItem[],
+  categoryId: CategoryId
+): string[] =>
+  items
+    .filter((item) => item.categoryIds?.includes(categoryId))
+    .map((item) => item.id);
+
+export const restoreCategoryRef = <T extends BaseItem>(
+  items: readonly T[],
+  categoryId: CategoryId,
+  tagged: ReadonlySet<string>
+): T[] =>
+  items.map((item) =>
+    tagged.has(item.id) && !item.categoryIds?.includes(categoryId)
+      ? { ...item, categoryIds: [...(item.categoryIds ?? []), categoryId] }
+      : item
+  );
+
 export const remapCategoryRef = <T extends BaseItem>(
   items: readonly T[],
   from: CategoryId,

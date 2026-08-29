@@ -10,6 +10,8 @@ import {
   filterListBySearchQuery,
   itemCountByCategory,
 } from '../../../@shared/util/item-lists/list.selector';
+import { idsTaggedWith } from '../../../@shared/util/categories/category-list.utils';
+import { HouseholdState } from '../../model/household.types';
 import { selectHouseholdState } from '../household.selector';
 
 export const selectHouseholdCategoryList = createSelector(
@@ -35,12 +37,20 @@ export const selectHouseholdCategoriesListItems = createSelector(
     filterAndSortItemList(catalog, result)
 );
 
+const taggableItems = (state: HouseholdState) => [
+  ...state.products.items,
+  ...state.shopping.items,
+  ...state.storage.items,
+];
+
 export const selectHouseholdCountByCategory = createSelector(
   selectHouseholdState,
-  (state): Map<CategoryId, number> =>
-    itemCountByCategory([
-      ...state.products.items,
-      ...state.shopping.items,
-      ...state.storage.items,
-    ])
+  (state): Map<CategoryId, number> => itemCountByCategory(taggableItems(state))
+);
+
+export const selectHouseholdTaggedByCategory = createSelector(
+  selectHouseholdState,
+  (state) =>
+    (categoryId: CategoryId): string[] =>
+      idsTaggedWith(taggableItems(state), categoryId)
 );
