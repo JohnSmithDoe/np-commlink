@@ -118,10 +118,6 @@
           "type": "figure",
           "img": "stash-produkt-uebernehmen.webp",
           "caption": "Der Vorschlag „Aus den Produkten“ — ein Tipp legt den Vorrat an, mit Haltbarkeit"
-        },
-        {
-          "type": "p",
-          "html": "Das Barcode-Symbol gibt es auch hier, und auch hier nur in der Android-App. Es legt ein <strong>Produkt</strong> an, keinen Vorrat — Einzelheiten in <a href=\"#/handbook/market\">MARKET</a>."
         }
       ]
     },
@@ -137,7 +133,7 @@
             "<strong><code>+</code> / <code>−</code> rechts in der Zeile</strong> — der <strong>einzige</strong> Weg, die Menge zu ändern; im Dialog gibt es kein Mengenfeld. Bei 0 ist Schluss, die Zeile bleibt stehen.",
             "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em>: Name, Mindestmenge, Mindesthaltbarkeitsdatum, Kategorien.",
             "<strong><code>MHD</code></strong> in der Werkzeugleiste sortiert nach Datum, nochmal tippen dreht die Richtung.",
-            "<strong>Schieberegler-Symbol</strong> → <a href=\"#/handbook/catalog\">CATALOG</a>-Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>. <strong>Barcode</strong> → nur in der APK.",
+            "<strong>Schieberegler-Symbol</strong> → <a href=\"#/handbook/catalog\">CATALOG</a>-Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>.",
             "Kein Lang-Druck, kein Sortier-Griff."
           ]
         },

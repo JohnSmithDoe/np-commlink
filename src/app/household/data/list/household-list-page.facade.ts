@@ -1,5 +1,4 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import { computed, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -7,7 +6,6 @@ import {
   PRODUCTS_LIST_ID,
   STORAGE_LIST_ID,
 } from '../../model/household-list.types';
-import { BarcodeScannerService } from '../barcode-scanner.service';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import {
   BaseListPageFacade,
@@ -36,9 +34,6 @@ export class HouseholdListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
-  readonly #scanner = inject(BarcodeScannerService);
-
-  readonly showScanButton = this.#scanner.isNativePlatform;
 
   readonly state = this.#store.selectSignal(selectListState);
   readonly items = this.#store.selectSignal(selectListItems);
@@ -87,34 +82,6 @@ export class HouseholdListPageFacade extends BaseListPageFacade {
       item: createProduct(state?.searchQuery ?? '', state?.filterBy),
       listId: PRODUCTS_LIST_ID,
       addToAdditionalList: this.activeListId(),
-      editMode: 'create',
-    });
-  }
-
-  async scan(): Promise<void> {
-    const outcome = await this.#scanner.scanEan();
-    if (outcome.ok) {
-      this.#showCreateProductFromScan(outcome.ean);
-      return;
-    }
-    if (outcome.reason !== 'cancelled' && outcome.reason !== 'unsupported') {
-      this.#reportScanFailure();
-    }
-  }
-
-  #reportScanFailure(): void {
-    this.#store.dispatch(
-      NotificationsActions.toast({
-        key: marker('household.scan.error'),
-        color: 'danger',
-      })
-    );
-  }
-
-  #showCreateProductFromScan(scannedEan: string): void {
-    this.#dialogs.open({
-      item: createProduct(scannedEan),
-      listId: PRODUCTS_LIST_ID,
       editMode: 'create',
     });
   }

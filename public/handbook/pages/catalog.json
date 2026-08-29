@@ -63,7 +63,7 @@
         },
         {
           "type": "p",
-          "html": "Kein Barcode-Feld, keine Einheit, keine Standardmenge, kein Preis. Ein gescannter Code wird <strong>nicht</strong> gespeichert (siehe <a href=\"#/handbook/market\">MARKET</a>), und intern gilt jedes Produkt als „Stück“ — sichtbar wird das nur als Voreinstellung der Einheit einer Rezeptzutat in <a href=\"#/handbook/soykaf\">SOYKAF</a>. Ins Regal oder auf den Zettel kommt ein Produkt immer mit <strong>Menge 1</strong>; erhöhen kannst du dort mit <code>+</code>."
+          "html": "Kein Barcode-Feld, keine Einheit, keine Standardmenge, kein Preis. Ein Produkt trägt keinen Code, und intern gilt jedes Produkt als „Stück“ — sichtbar wird das nur als Voreinstellung der Einheit einer Rezeptzutat in <a href=\"#/handbook/soykaf\">SOYKAF</a>. Ins Regal oder auf den Zettel kommt ein Produkt immer mit <strong>Menge 1</strong>; erhöhen kannst du dort mit <code>+</code>."
         },
         {
           "type": "figure",
@@ -139,8 +139,7 @@
             "<strong>Keine <code>+</code>/<code>−</code></strong> und keine Menge — ein Produkt ist kein Bestand.",
             "<strong>Zeile antippen</strong> → <em>Eintrag bearbeiten</em> mit den vier Feldern von oben.",
             "<strong><code>A-Z</code></strong> sortiert, nochmal tippen dreht die Richtung; einen <code>MHD</code>-Knopf gibt es nur in <a href=\"#/handbook/stash\">STASH</a>.",
-            "<strong>Schieberegler-Symbol</strong> → Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>.",
-            "Kein Barcode-Symbol auf dieser Liste — gescannt wird in <a href=\"#/handbook/market\">MARKET</a> und <a href=\"#/handbook/stash\">STASH</a>, angelegt wird trotzdem hier."
+            "<strong>Schieberegler-Symbol</strong> → Listenoptionen. <strong>Preisschild-Symbol</strong> → <em>Kategorien verwalten</em>."
           ]
         },
         {
@@ -173,7 +172,7 @@
         {
           "type": "ul",
           "items": [
-            "<a href=\"#/handbook/market\">MARKET</a> — die Einkaufsliste, und der Barcode-Scanner, der hier Produkte anlegt",
+            "<a href=\"#/handbook/market\">MARKET</a> — die Einkaufsliste, die aus diesen Produkten liest",
             "<a href=\"#/handbook/stash\">STASH</a> — Vorräte, Mindestmengen und das aus der Haltbarkeit berechnete MHD",
             "<a href=\"#/handbook/soykaf\">SOYKAF</a> — Rezepte aus Produkten, abgeglichen mit den Vorräten",
             "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Suchleiste, Kategorien, Dialoge: die gemeinsame Bedienung"

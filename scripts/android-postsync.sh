@@ -10,16 +10,14 @@
 #   pnpm run build && npx cap sync android
 #   ./scripts/android-postsync.sh
 #
-# Patches 4-6 are DERIVED PER BUILD and must keep running. The rest is also
+# Patches 2-4 are DERIVED PER BUILD and must keep running. The rest is also
 # committed file state; they stay so a from-scratch `cap add` lands correct.
 #
 # Idempotent: safe to run repeatedly. Patches:
-#   1. CAMERA / FLASHLIGHT permissions        — mlkit EAN-13 scanner
-#   2. POST_NOTIFICATIONS permission          — Android 13+ local notifications
-#   3. mlkit barcode_ui install meta-data     — bundles the scanner UI module
-#   4. versionName / versionCode              — release identity, from package.json
-#   5. release signingConfig                  — reads NPC_* env vars, opt-in
-#   6. launcher label                         — appName, from capacitor.config.ts
+#   1. POST_NOTIFICATIONS permission          — Android 13+ local notifications
+#   2. versionName / versionCode              — release identity, from package.json
+#   3. release signingConfig                  — reads NPC_* env vars, opt-in
+#   4. launcher label                         — appName, from capacitor.config.ts
 #
 set -euo pipefail
 
@@ -33,24 +31,17 @@ if [ ! -f "$MANIFEST" ]; then
   exit 1
 fi
 
-# 1 + 2. permissions — inserted after INTERNET, only if CAMERA is absent
+# 1. permissions — inserted after INTERNET. The guard keys on what this patch
+#    WRITES: keyed on anything else it either re-appends forever or goes inert.
 perl -0pi -e '
   BEGIN {
-    $perms = qq{\n    <uses-permission android:name="android.permission.CAMERA" />}
-           . qq{\n    <uses-permission android:name="android.permission.FLASHLIGHT" />}
-           . qq{\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />};
+    $perms = qq{\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />};
   }
   s{(<uses-permission android:name="android.permission.INTERNET" />)}{$1$perms}
-    unless /android.permission.CAMERA/;
+    unless /android.permission.POST_NOTIFICATIONS/;
 ' "$MANIFEST"
 
-# 3. mlkit barcode_ui install-time meta-data — inside <application>, if absent
-perl -0pi -e '
-  s{(\n[ \t]*</application>)}{\n        <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui" />$1}
-    unless /com\.google\.mlkit\.vision\.DEPENDENCIES/;
-' "$MANIFEST"
-
-# 4. release identity — derived, so package.json stays the only place a version
+# 2. release identity — derived, so package.json stays the only place a version
 #    is written (the web build injects the same value via esbuild `define`).
 #
 #    versionCode is what Android actually compares to decide an install is an
@@ -71,7 +62,7 @@ VERSION_CODE="$(node -p "
 perl -pi -e "s{versionName \"[^\"]*\"}{versionName \"$VERSION_NAME\"};" "$GRADLE"
 perl -pi -e "s{versionCode \\d+}{versionCode $VERSION_CODE};" "$GRADLE"
 
-# 5. release signing — appended once, and it contains NO key material.
+# 3. release signing — appended once, and it contains NO key material.
 #
 #    The four values are read from the environment when Gradle configures, so
 #    the signing identity never lands in a file this script writes, in android/,
@@ -98,7 +89,7 @@ perl -pi -e "s{versionCode \\d+}{versionCode $VERSION_CODE};" "$GRADLE"
 perl -0pi -e 's{\n*// --- np-commlink release signing.*\z}{\n}s' "$GRADLE"
 cat >> "$GRADLE" <<'GRADLE_SIGNING'
 
-// --- np-commlink release signing (scripts/android-postsync.sh, patch 5) ---
+// --- np-commlink release signing (scripts/android-postsync.sh, patch 3) ---
 def npcSigningVars = ['NPC_KEYSTORE_PATH', 'NPC_KEYSTORE_PASSWORD', 'NPC_KEY_ALIAS', 'NPC_KEY_PASSWORD']
 def npcSigning = npcSigningVars.collectEntries { [it, System.getenv(it)?.trim()] }
 
@@ -131,7 +122,7 @@ if (npcSigning.any { it.value }) {
 }
 GRADLE_SIGNING
 
-# 6. launcher label — Capacitor writes appName into strings.xml when it
+# 4. launcher label — Capacitor writes appName into strings.xml when it
 #    SCAFFOLDS the project and never again, so editing capacitor.config.ts does
 #    not reach an android/ that already exists. Without this the label is
 #    whatever `cap add` happened to see, and differs between machines.
@@ -150,4 +141,4 @@ fi
 
 perl -pi -e "s{(<string name=\"(?:app_name|title_activity_main)\">)[^<]*(</string>)}{\$1$APP_NAME\$2}g" "$STRINGS"
 
-echo "android-postsync: patched AndroidManifest.xml (camera/flashlight/notifications + mlkit), build.gradle ($VERSION_NAME / $VERSION_CODE + release signing hook) and strings.xml (label '$APP_NAME')."
+echo "android-postsync: patched AndroidManifest.xml (notifications), build.gradle ($VERSION_NAME / $VERSION_CODE + release signing hook) and strings.xml (label '$APP_NAME')."

@@ -32,9 +32,6 @@ importers:
       '@angular/service-worker':
         specifier: ^21.2.18
         version: 21.2.18(@angular/core@21.2.18(@angular/compiler@21.2.18)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
-      '@capacitor-mlkit/barcode-scanning':
-        specifier: ^8.1.0
-        version: 8.1.0(@capacitor/core@8.4.2)
       '@capacitor/android':
         specifier: ^8.4.2
         version: 8.4.2(@capacitor/core@8.4.2)
@@ -589,11 +586,6 @@ packages:
 
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
-
-  '@capacitor-mlkit/barcode-scanning@8.1.0':
-    resolution: {integrity: sha512-lhOYHZINLOCT0i5YSbSMkouik3zh0BncJouumNTgXCT0/533Z4733jAX9zv+nEd++bE8QHeUl2g0NrewreumnQ==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
 
   '@capacitor/android@8.4.2':
     resolution: {integrity: sha512-bzf8XZ9C+ePgOQ+e+T0fnhHGH4aCNY494vvSQIF5w4AY07RwEmkFqZs1678DDSMH0hLSQpxEwXGFNUVcXO6bBA==}
@@ -5082,10 +5074,6 @@ snapshots:
     dependencies:
       hashery: 1.5.1
       keyv: 5.6.0
-
-  '@capacitor-mlkit/barcode-scanning@8.1.0(@capacitor/core@8.4.2)':
-    dependencies:
-      '@capacitor/core': 8.4.2
 
   '@capacitor/android@8.4.2(@capacitor/core@8.4.2)':
     dependencies:

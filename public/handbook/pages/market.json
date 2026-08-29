@@ -97,18 +97,6 @@
         {
           "type": "p",
           "html": "Praktischer Nebeneffekt: <strong>legst du etwas an, während ein Kategorie-Chip aktiv ist, bekommt der neue Eintrag genau diese Kategorie</strong> — der schnellste Weg, einen Einkauf vorzusortieren."
-        },
-        {
-          "type": "h3",
-          "html": "Barcode-Scanner"
-        },
-        {
-          "type": "p",
-          "html": "Das Barcode-Symbol in der Werkzeugleiste gibt es <strong>nur in der Android-App (APK)</strong>. Im Browser und in der PWA ist die Schaltfläche nicht vorhanden — nicht ausgegraut, sondern gar nicht da. Beim ersten Aufruf fragt Android nach der Kamera und lädt ggf. Googles Scanner-Modul nach; gelesen werden <strong>EAN-13</strong>-Codes."
-        },
-        {
-          "type": "p",
-          "html": "Was danach passiert, überrascht: es öffnet sich <em>Neuen Eintrag anlegen</em> für ein <strong>Produkt</strong>, und im Namensfeld steht die <strong>Ziffernfolge des Codes</strong>. Die App kennt keine Produktdatenbank und speichert den Code auch nicht — sie erkennt nichts, sie tippt für dich. Du ersetzt die Ziffern durch einen Namen. Das Ergebnis landet in <a href=\"#/handbook/catalog\">CATALOG</a>, nicht direkt in der Einkaufsliste. Schlägt der Scan fehl, erscheint <em>Scan fehlgeschlagen – Kamerazugriff prüfen</em>; ein Abbruch bleibt still."
         }
       ]
     },

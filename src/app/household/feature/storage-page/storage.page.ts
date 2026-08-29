@@ -4,14 +4,13 @@ import { IonNote } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { barcodeOutline, cartOutline } from 'ionicons/icons';
+import { cartOutline } from 'ionicons/icons';
 import { StorageItem } from '../../model/household-list.types';
 import { storageStatusColor } from '../../util/household-list.utils';
 import { HouseholdListPageFacade, StorageFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ItemListQuickAddComponent } from '../../smart-ui/item-list-quick-add/item-list-quick-add.component';
-import { HouseholdScanButtonComponent } from '../../smart-ui/household-scan-button/household-scan-button.component';
 import { HouseholdSearchPanelComponent } from '../../smart-ui/household-search-panel/household-search-panel.component';
 import { HouseholdListSettingsButtonComponent } from '../../ui/household-list-settings-button/household-list-settings-button.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
@@ -29,7 +28,6 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
     IonNote,
     ListPageComponent,
     ItemListQuickAddComponent,
-    HouseholdScanButtonComponent,
     HouseholdSearchPanelComponent,
     HouseholdListSettingsButtonComponent,
     ListItemComponent,
@@ -49,7 +47,7 @@ export class StoragePage {
   readonly statusColor = storageStatusColor;
 
   constructor() {
-    addIcons({ barcodeOutline, cartOutline });
+    addIcons({ cartOutline });
   }
 
   removeItem(item: StorageItem) {

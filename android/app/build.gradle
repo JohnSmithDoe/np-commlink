@@ -53,7 +53,7 @@ try {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }
 
-// --- np-commlink release signing (scripts/android-postsync.sh, patch 5) ---
+// --- np-commlink release signing (scripts/android-postsync.sh, patch 3) ---
 def npcSigningVars = ['NPC_KEYSTORE_PATH', 'NPC_KEYSTORE_PASSWORD', 'NPC_KEY_ALIAS', 'NPC_KEY_PASSWORD']
 def npcSigning = npcSigningVars.collectEntries { [it, System.getenv(it)?.trim()] }
 

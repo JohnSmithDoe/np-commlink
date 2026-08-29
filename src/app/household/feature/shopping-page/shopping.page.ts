@@ -3,13 +3,12 @@ import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { bagAddOutline, barcodeOutline, cartOutline } from 'ionicons/icons';
+import { bagAddOutline, cartOutline } from 'ionicons/icons';
 import { ShoppingItem } from '../../model/household-list.types';
 import { HouseholdListPageFacade, ShoppingFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ItemListQuickAddComponent } from '../../smart-ui/item-list-quick-add/item-list-quick-add.component';
-import { HouseholdScanButtonComponent } from '../../smart-ui/household-scan-button/household-scan-button.component';
 import { HouseholdSearchPanelComponent } from '../../smart-ui/household-search-panel/household-search-panel.component';
 import { HouseholdListSettingsButtonComponent } from '../../ui/household-list-settings-button/household-list-settings-button.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
@@ -28,7 +27,6 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
     IonIcon,
     ListPageComponent,
     ItemListQuickAddComponent,
-    HouseholdScanButtonComponent,
     HouseholdSearchPanelComponent,
     HouseholdListSettingsButtonComponent,
     ListItemComponent,
@@ -48,7 +46,7 @@ export class ShoppingPage {
   };
 
   constructor() {
-    addIcons({ bagAddOutline, barcodeOutline, cartOutline });
+    addIcons({ bagAddOutline, cartOutline });
   }
 
   removeItem(item: ShoppingItem) {
