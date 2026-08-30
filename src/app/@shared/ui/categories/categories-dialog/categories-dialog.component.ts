@@ -37,6 +37,7 @@ import {
   uuidv4,
 } from '../../../util/app.utils';
 import { Category, CategoryId } from '../../../model/category.types';
+import { EmptyStateComponent } from '../../empty-state/empty-state.component';
 
 @Component({
   selector: 'app-categories-dialog',
@@ -44,6 +45,7 @@ import { Category, CategoryId } from '../../../model/category.types';
   templateUrl: './categories-dialog.component.html',
   imports: [
     TranslatePipe,
+    EmptyStateComponent,
     IonModal,
     IonHeader,
     IonToolbar,

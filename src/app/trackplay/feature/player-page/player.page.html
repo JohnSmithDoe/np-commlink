@@ -1,3 +1,5 @@
+@let stats = facade.stats();
+
 <app-list-page
   class="ion-page"
   returnRoute="/trackplay/players"
@@ -29,18 +31,19 @@
     />
   </ion-button>
 
-  <div beforeList class="ion-padding tp-player-stats">
-    @let stats = facade.stats();
-    <p class="sr-hud">
-      {{
-        'trackplay.stats.win-loss-open'
-          | translate: { win: stats.win, loss: stats.loss, open: stats.open }
-      }}
-    </p>
-    <p class="sr-hud">
-      {{ 'trackplay.stats.play' | translate: { count: stats.play } }}
-    </p>
-  </div>
+  @if (stats.play) {
+    <div beforeList class="ion-padding tp-player-stats">
+      <p class="sr-hud">
+        {{
+          'trackplay.stats.win-loss-open'
+            | translate: { win: stats.win, loss: stats.loss, open: stats.open }
+        }}
+      </p>
+      <p class="sr-hud">
+        {{ 'trackplay.stats.play' | translate: { count: stats.play } }}
+      </p>
+    </div>
+  }
 </app-list-page>
 
 <ng-template

@@ -77,6 +77,7 @@ export class CashSchedulesPage {
   readonly #translate = inject(TranslateService);
 
   readonly commitment = this.#facade.commitment;
+  readonly schedules = this.#facade.items;
 
   readonly #categoryName = computed(() =>
     categoryNameLookup(this.#categories.allItems())

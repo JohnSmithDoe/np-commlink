@@ -14,6 +14,8 @@
         [note]="'item-list.empty.filtered.note' | translate"
         (selectItem)="clearFilter.emit()"
       />
+    } @else if (label(); as declared) {
+      <app-empty-state [label]="declared" [note]="note()" />
     } @else {
       <app-text-item
         [label]="'item-list.empty.isempty' | translate"

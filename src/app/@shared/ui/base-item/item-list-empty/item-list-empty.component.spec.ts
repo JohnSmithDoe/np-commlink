@@ -91,6 +91,33 @@ describe('ItemListEmptyComponent', () => {
     expect(created).toBe(0);
   });
 
+  it('renders a declared empty state as prose instead of the invitation row', () => {
+    fixture.componentRef.setInput('isEmptyList', true);
+    fixture.componentRef.setInput('label', 'Noch keine Regeln.');
+    fixture.componentRef.setInput('note', 'Eine Regel sortiert Buchungen.');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('app-text-item')).toBeNull();
+    expect(fixture.nativeElement.textContent).toContain('Noch keine Regeln.');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Eine Regel sortiert Buchungen.'
+    );
+  });
+
+  it('lets the search message win over a declared empty state', () => {
+    fixture.componentRef.setInput('isEmptyList', true);
+    fixture.componentRef.setInput('isSearching', true);
+    fixture.componentRef.setInput('label', 'Noch keine Regeln.');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'item-list.empty.notfound'
+    );
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'Noch keine Regeln.'
+    );
+  });
+
   it('renders nothing when the list is not empty', () => {
     fixture.componentRef.setInput('isEmptyList', false);
     fixture.componentRef.setInput('isSearching', false);

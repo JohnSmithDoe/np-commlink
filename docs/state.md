@@ -101,11 +101,6 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 - **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches and BIOMON's date field,
   the only unskinned chrome in the app. Replacing the native input answers this and the entry above, and
   drags in the sheet-modal safe-area entry in [next-version.md](./next-version.md).
-- **Cash's rules and schedules answer an empty list with a bare sentence** on a divider, where
-  `app-empty-state` exists and cash already uses it five times. _Regeln anwenden_ is offered, full-width and
-  solid, with zero rules to apply.
-- **Trackplay's totals row is pinned to the bottom of the viewport**, so a three-round grid puts the summary
-  a screenful of emptiness below its own table.
 
 ## Known cost, not yet paid
 

@@ -95,6 +95,8 @@
     [isSearching]="!!facade.searchResult()"
     [isFiltered]="!!facade.state()?.filterBy"
     [searchTerm]="facade.searchResult()?.searchTerm"
+    [label]="emptyLabel()"
+    [note]="emptyNote()"
     (emptyList)="facade.showCreateDialog()"
     (emptySearch)="facade.addItemFromSearch()"
     (clearFilter)="clearFilter()"

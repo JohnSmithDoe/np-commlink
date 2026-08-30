@@ -13,7 +13,7 @@
   >
     <ion-icon
       slot="icon-only"
-      icon="settings-outline"
+      name="settings-outline"
       color="primary"
       aria-hidden="true"
     />
@@ -21,22 +21,24 @@
 
   <ng-container toolbarActionsEnd>
     <span class="tracking-total">{{ total() }}</span>
-    <ion-button (click)="resetAll()"
-      ><ion-icon slot="start" aria-hidden="true" [icon]="'trash-outline'" />
-      {{ 'tracking.action.reset-all' | translate }}</ion-button
-    >
-    <ion-button (click)="saveAndResetAll()"
-      ><ion-icon slot="start" aria-hidden="true" [icon]="'save-outline'" />
-      {{ 'tracking.action.save-and-reset' | translate }}</ion-button
-    >
+    @if (items().length) {
+      <ion-button (click)="resetAll()"
+        ><ion-icon slot="start" aria-hidden="true" name="trash-outline" />
+        {{ 'tracking.action.reset-all' | translate }}</ion-button
+      >
+      <ion-button (click)="saveAndResetAll()"
+        ><ion-icon slot="start" aria-hidden="true" name="save-outline" />
+        {{ 'tracking.action.save-and-reset' | translate }}</ion-button
+      >
+    }
     @if (isDev) {
       <ion-button color="warning" (click)="seedDemoSessions()"
-        ><ion-icon slot="start" aria-hidden="true" [icon]="'flask-outline'" />
+        ><ion-icon slot="start" aria-hidden="true" name="flask-outline" />
         {{ 'tracking.action.generate-dummy-data' | translate }}</ion-button
       >
       <ion-button color="warning" (click)="generateTaskByTicket()"
-        ><ion-icon slot="start" aria-hidden="true" [icon]="'flask-outline'" />
-        add ticket</ion-button
+        ><ion-icon slot="start" aria-hidden="true" name="flask-outline" />
+        {{ 'tracking.action.generate-task-by-ticket' | translate }}</ion-button
       >
     }
   </ng-container>

@@ -5,11 +5,7 @@
     [attr.aria-label]="'tracking.a11y.prev-day' | translate"
     (click)="prevDay()"
   >
-    <ion-icon
-      slot="icon-only"
-      aria-hidden="true"
-      [icon]="'chevron-back-outline'"
-    />
+    <ion-icon slot="icon-only" aria-hidden="true" name="chevron-back-outline" />
   </ion-button>
   <div class="daily-sessions-title">
     @if (isToday()) {
@@ -28,7 +24,7 @@
     <ion-icon
       slot="icon-only"
       aria-hidden="true"
-      [icon]="'chevron-forward-outline'"
+      name="chevron-forward-outline"
     />
   </ion-button>
 </div>

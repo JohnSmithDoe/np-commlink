@@ -1,9 +1,11 @@
 <app-page-header hideButtons="true" [label]="'page-title.data' | translate">
   <ion-list>
     <ion-item lines="none" class="">
-      <ion-button slot="end" size="default" (click)="shareCSV()">
-        {{ 'data.page.share' | translate }}
-      </ion-button>
+      @if (sessionsByView().length) {
+        <ion-button slot="end" size="default" (click)="shareCSV()">
+          {{ 'data.page.share' | translate }}
+        </ion-button>
+      }
       <ion-select
         [value]="viewMode()"
         [label]="'data.page.view' | translate"
@@ -32,7 +34,6 @@
       />
     } @empty {
       <app-empty-state
-        icon="documents-outline"
         [label]="'data.page.empty' | translate"
         [note]="'data.page.empty.note' | translate"
       />

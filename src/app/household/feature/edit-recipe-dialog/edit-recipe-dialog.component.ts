@@ -21,6 +21,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { trashOutline } from 'ionicons/icons';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/number-input.component';
 import { Marker } from '../../../@shared/model/app.types';
@@ -57,6 +58,7 @@ const UNIT_LABEL_KEYS: Record<ItemUnit, Marker> = {
     IonSelectOption,
     IonTextarea,
     TranslatePipe,
+    EmptyStateComponent,
     ItemEditModalComponent,
     NumberInputComponent,
   ],

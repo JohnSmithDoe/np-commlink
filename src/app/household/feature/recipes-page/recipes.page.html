@@ -3,12 +3,14 @@
   pageHeader="page-title.soykaf"
   [itemTemplate]="recipeRow"
 >
-  <p beforeList class="sr-hud ion-padding-horizontal">
-    {{ 'household.recipe.list-header' | translate }} ({{
-      facade.cookableCount()
-    }}
-    / {{ facade.matches().length }})
-  </p>
+  @if (facade.matches().length) {
+    <p beforeList class="sr-hud ion-padding-horizontal">
+      {{ 'household.recipe.list-header' | translate }} ({{
+        facade.cookableCount()
+      }}
+      / {{ facade.matches().length }})
+    </p>
+  }
 </app-list-page>
 
 <ng-template #recipeRow let-item let-ionList="ionList">

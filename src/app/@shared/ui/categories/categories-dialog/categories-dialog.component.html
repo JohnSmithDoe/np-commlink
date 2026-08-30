@@ -117,14 +117,10 @@
           </ion-item-sliding>
         } @empty {
           @if (!searchQuery().length) {
-            <ion-item lines="none">
-              <ion-label class="ion-text-wrap">
-                {{ 'category-picker.empty' | translate }}<br />
-                <ion-note>{{
-                  'category-picker.empty-helper' | translate
-                }}</ion-note>
-              </ion-label>
-            </ion-item>
+            <app-empty-state
+              [label]="'category-picker.empty' | translate"
+              [note]="'category-picker.empty-helper' | translate"
+            />
           }
         }
       </ion-list>

@@ -21,6 +21,8 @@
  * finding it. It also asserts the category UI is absent, since tracking's
  * facade omits `manageCategories`. A naive swap onto the shared page
  * would have silently dropped the first three and wrongly shown the last.
+ * It seeds one item first because the reset/save pair is withheld from an
+ * empty list, so an empty page cannot tell a missing slot from a guard.
  *
  * `trackingRow` matches the row element rather than its text, which is
  * what drops the `.first()` a text locator forces — that matches every
@@ -103,7 +105,11 @@ test.describe('tracking (lazy)', () => {
     await page.goto('/#/tracking');
     await waitForListPage(page);
 
+    await addViaSearch(page, 'Standup');
     const trackingPage = pageRoot(page, 'app-page-tracking');
+    await expect(trackingRow(mainContent(page), 'Standup')).toBeVisible({
+      timeout: 10_000,
+    });
 
     await expect(trackingPage.locator('app-daily-sessions')).toBeVisible();
 

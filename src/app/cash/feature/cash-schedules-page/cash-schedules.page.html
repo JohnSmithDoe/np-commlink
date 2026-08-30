@@ -2,42 +2,53 @@
   class="ion-page"
   pageHeader="page-title.cash-schedules"
   [itemTemplate]="scheduleRow"
+  [emptyLabel]="'cash.schedule.empty' | translate"
+  [emptyNote]="'cash.schedule.empty.note' | translate"
 >
-  <div beforeList class="cash-schedules__summary">
-    <div class="cash-networth">
-      <span class="cash-networth__label">
-        {{ 'cash.schedule.per-month' | translate }}
-      </span>
-      <span class="cash-networth__value" data-testid="schedules-monthly">
-        {{ -commitment().monthlyCents | moneyEur }}
-      </span>
+  @if (schedules().length) {
+    <div beforeList class="cash-schedules__summary">
+      <div class="cash-networth">
+        <span class="cash-networth__label">
+          {{ 'cash.schedule.per-month' | translate }}
+        </span>
+        <span class="cash-networth__value" data-testid="schedules-monthly">
+          {{ -commitment().monthlyCents | moneyEur }}
+        </span>
+      </div>
+
+      <ion-list lines="full" class="cash-schedules__breakdown">
+        <ion-item>
+          <ion-label>{{
+            'cash.schedule.due-this-month' | translate
+          }}</ion-label>
+          <ion-note slot="end">
+            {{ -commitment().dueThisMonthCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'cash.schedule.confirmed' | translate }}</ion-label>
+          <ion-note slot="end" data-testid="schedules-confirmed">
+            {{ -commitment().confirmedCents | moneyEur }}
+          </ion-note>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{ 'cash.schedule.still-open' | translate }}</ion-label>
+          <ion-note
+            slot="end"
+            [color]="openCents() > 0 ? 'warning' : undefined"
+          >
+            {{ -openCents() | moneyEur }}
+          </ion-note>
+        </ion-item>
+      </ion-list>
     </div>
+  }
 
-    <ion-list lines="full" class="cash-schedules__breakdown">
-      <ion-item>
-        <ion-label>{{ 'cash.schedule.due-this-month' | translate }}</ion-label>
-        <ion-note slot="end">
-          {{ -commitment().dueThisMonthCents | moneyEur }}
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{ 'cash.schedule.confirmed' | translate }}</ion-label>
-        <ion-note slot="end" data-testid="schedules-confirmed">
-          {{ -commitment().confirmedCents | moneyEur }}
-        </ion-note>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{ 'cash.schedule.still-open' | translate }}</ion-label>
-        <ion-note slot="end" [color]="openCents() > 0 ? 'warning' : undefined">
-          {{ -openCents() | moneyEur }}
-        </ion-note>
-      </ion-item>
-    </ion-list>
-  </div>
-
-  <ion-list-header beforeList>
-    {{ 'cash.section.schedules' | translate }}
-  </ion-list-header>
+  @if (schedules().length) {
+    <ion-list-header beforeList>
+      {{ 'cash.section.schedules' | translate }}
+    </ion-list-header>
+  }
 </app-list-page>
 
 <ng-template #scheduleRow let-schedule>

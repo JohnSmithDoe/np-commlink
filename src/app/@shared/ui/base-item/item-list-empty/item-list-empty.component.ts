@@ -6,6 +6,7 @@ import {
   output,
 } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
+import { EmptyStateComponent } from '../../empty-state/empty-state.component';
 import { TextItemComponent } from '../text-item/text-item.component';
 
 @Component({
@@ -13,7 +14,7 @@ import { TextItemComponent } from '../text-item/text-item.component';
   templateUrl: 'item-list-empty.component.html',
   styleUrls: ['item-list-empty.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TextItemComponent, TranslatePipe],
+  imports: [EmptyStateComponent, TextItemComponent, TranslatePipe],
 })
 export class ItemListEmptyComponent {
   readonly isEmptyList = input(true, { transform: booleanAttribute });
@@ -21,6 +22,8 @@ export class ItemListEmptyComponent {
   readonly isSearching = input(false, { transform: booleanAttribute });
   readonly isFiltered = input(false, { transform: booleanAttribute });
   readonly searchTerm = input<string>();
+  readonly label = input<string>();
+  readonly note = input<string>();
 
   readonly emptyList = output<void>();
   readonly emptySearch = output<void>();

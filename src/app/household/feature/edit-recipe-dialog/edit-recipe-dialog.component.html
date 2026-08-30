@@ -67,11 +67,7 @@
       </ion-button>
     </ion-item>
   } @empty {
-    <ion-item lines="none">
-      <ion-label class="recipe-empty">{{
-        'household.recipe.no-ingredients' | translate
-      }}</ion-label>
-    </ion-item>
+    <app-empty-state [label]="'household.recipe.no-ingredients' | translate" />
   }
 
   <ion-item>

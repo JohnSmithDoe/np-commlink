@@ -4,6 +4,10 @@
 // offsets in sync. That only holds with native scrollbars hidden on all three
 // and no data row scrolling on its own. The round-marker column stays pinned.
 //
+// The grid is CAPPED at the viewport, never filled to it: at `height: 100%` the
+// body stretched, so three rounds put the totals a screenful below the last one
+// they add up. `max-height` lets the footer close the table it belongs to.
+//
 // The victory HUD is pure deck decoration — plain shows the flat trophy and
 // nothing moves. The sparks are `app-confetti` and carry their own theme and
 // reduced-motion rules; what is left here is the trophy they fall around.
@@ -17,7 +21,7 @@ $round-width: 3rem;
 .tp-grid {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  max-height: 100%;
   font-family: var(--sr-deck-font);
   color: var(--sr-text);
 }

@@ -55,6 +55,7 @@ export class TrackingPage implements ViewWillEnter {
   readonly #router = inject(Router);
 
   readonly total = this.#tracking.total;
+  readonly items = this.#list.items;
   readonly isDev = isDevMode();
 
   constructor() {

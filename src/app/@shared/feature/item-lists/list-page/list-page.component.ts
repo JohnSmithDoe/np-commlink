@@ -104,6 +104,8 @@ export class ListPageComponent {
   readonly heading = input('');
   readonly returnRoute = input<string>();
   readonly returnLabel = input<string>();
+  readonly emptyLabel = input<string>();
+  readonly emptyNote = input<string>();
 
   readonly canManageCategories = !!this.facade.manageCategories;
   readonly canReorder = !!this.facade.reorder;
