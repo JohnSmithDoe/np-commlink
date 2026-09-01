@@ -55,7 +55,6 @@ export class NotificationsToastEffects {
   ): Promise<HTMLIonToastElement> {
     return this.#toastController.create({
       position: 'bottom',
-      positionAnchor: 'footer',
       buttons: [
         {
           text: 'X',
