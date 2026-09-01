@@ -225,6 +225,11 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **A shadow Ionic element is reachable only through the custom properties it documents.** `ion-toolbar` is
   `encapsulation: "shadow"`; `--padding-start`/`--padding-end` are the only way in, and Ionic's default for
   both is `0`, which makes a `max(0px, …)` gutter free on every narrow viewport.
+- **Nothing that runs on its own renders a non-zero safe-area inset.** Vitest, both Playwright projects and
+  `handbook:shots` all resolve `--ion-safe-area-*` to `0`, so a rule that only misbehaves against a real
+  status bar is invisible to every gate and every figure — it surfaces as a phone screenshot and nothing
+  else. To see one, inject `:root { --safe-area-inset-top: 50px }`: `global.scss` maps the Ionic variables
+  onto the `--safe-area-inset-*` names precisely so a browser can be told what the WebView reports.
 
 ## Build
 

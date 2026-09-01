@@ -31,6 +31,12 @@
 // a page's ion-content, and its scroll padding already composes keyboard and offset —
 // so the bottom inset is a MARGIN on the last child, never an override of that calc;
 // and shadowrun's `ion-content { --background }` out-specifies body.
+//
+// Ionic pays the top inset through `ion-header ion-toolbar:first-of-type`, a DESCENDANT
+// selector whose :first-of-type counts against each element's OWN parent — so a toolbar a
+// component wraps is first-of-type inside that wrapper and takes the inset a second time,
+// as a band of nothing mid-header. Only a header's own child can be the one that pays.
+// Invisible wherever the inset is 0, which is every browser the suite and the figures run in.
 // ────────────────────────────────────────────────────────────────
 
 @use 'theme/fonts'; // @font-face (self-hosted JetBrains Mono)
@@ -90,6 +96,10 @@ button.alert-button.alert-button-danger {
     env(safe-area-inset-bottom)
   );
   --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left));
+}
+
+ion-header :not(ion-header) > ion-toolbar:first-of-type {
+  padding-top: 0;
 }
 
 ion-content > *:last-child {
