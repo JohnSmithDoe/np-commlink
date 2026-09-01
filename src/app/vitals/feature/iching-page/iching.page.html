@@ -18,16 +18,12 @@
   <app-page-return label="page-title.vitals-profile" [route]="returnRoute()" />
 
   <div class="ich sr-scanlines">
-    <ion-item class="ich-date">
-      <ion-input
-        labelPlacement="stacked"
-        type="date"
-        data-testid="vitals-iching-date"
-        [label]="'vitals.label.birth-date' | translate"
-        [value]="date()"
-        (ionChange)="setDate($event)"
-      />
-    </ion-item>
+    <app-date-input
+      class="ich-date"
+      [label]="'vitals.label.birth-date' | translate"
+      [value]="date()"
+      (valueChange)="date.set($event)"
+    />
 
     @if (star(); as own) {
       <section class="ich-panel sr-panel sr-corners">

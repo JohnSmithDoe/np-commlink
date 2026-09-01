@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
 import {
-  IonInput,
   IonItem,
   IonNote,
   IonSegment,
@@ -18,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import { ProfilesFacade } from '../../data';
 import { ZODIAC_SIGNS } from '../../model/astro.consts';
 import { ZodiacSign } from '../../model/astro.types';
@@ -43,7 +43,6 @@ type ProfileForm = {
   templateUrl: './edit-profile-dialog.component.html',
   imports: [
     FormField,
-    IonInput,
     IonItem,
     IonNote,
     IonSegment,
@@ -51,6 +50,7 @@ type ProfileForm = {
     IonSelect,
     IonSelectOption,
     TranslatePipe,
+    DateInputComponent,
     ItemEditModalComponent,
   ],
 })

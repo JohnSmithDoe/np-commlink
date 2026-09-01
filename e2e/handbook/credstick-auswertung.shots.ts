@@ -17,6 +17,7 @@ import {
   nameBox,
   pageRoot,
   presentedDialog,
+  pickDate,
 } from '../helpers';
 import { openPage, shot } from './shot';
 
@@ -235,10 +236,7 @@ test('burn-down and daily spending over a seeded month', async ({ page }) => {
       .getByTestId('condition-value')
       .locator('input')
       .fill(cost.match);
-    await dialog
-      .getByTestId('schedule-next-due')
-      .locator('input')
-      .fill(cost.due);
+    await pickDate(dialog.locator('app-date-input'), cost.due);
     await dialog.getByRole('button', { name: SAVE }).click();
     await expect(modal(page)).toBeHidden({ timeout: 15_000 });
   }

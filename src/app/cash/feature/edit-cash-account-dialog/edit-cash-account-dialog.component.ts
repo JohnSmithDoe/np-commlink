@@ -28,6 +28,7 @@ import { CASH_ACCOUNTS_LIST_ID } from '../../model/cash.types';
 import { CashAccountsFacade } from '../../data';
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { createCashAccount } from '../../util/cash.factory';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 
 const ACCOUNT_KINDS = Object.keys(
   ACCOUNT_KIND_LABEL_KEYS
@@ -57,6 +58,7 @@ type AccountForm = {
     TranslatePipe,
     ItemEditModalComponent,
     MoneyInputComponent,
+    DateInputComponent,
   ],
 })
 export class EditCashAccountDialogComponent extends BaseEditItemDialog<

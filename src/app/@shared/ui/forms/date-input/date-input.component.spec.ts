@@ -21,10 +21,16 @@ describe('DateInputComponent', () => {
   it('reads a cleared calendar and a range alike as no date', () => {
     component.value.set('2026-07-01');
     component.updateInputValue({ detail: { value: null } } as never);
-    expect(component.value()).toBeNull();
+    expect(component.value()).toBe('');
 
     component.value.set('2026-07-01');
     component.updateInputValue({ detail: { value: ['a', 'b'] } } as never);
-    expect(component.value()).toBeNull();
+    expect(component.value()).toBe('');
+  });
+
+  it('gives every instance its own picker trigger', () => {
+    const second =
+      TestBed.createComponent(DateInputComponent).componentInstance;
+    expect(second.triggerId).not.toBe(component.triggerId);
   });
 });

@@ -23,7 +23,7 @@
 
   <app-date-input
     [label]="'household.item.best-before-date' | translate"
-    [value]="draft().bestBefore ?? null"
+    [value]="draft().bestBefore ?? ''"
     (valueChange)="setBestBefore($event)"
   />
 

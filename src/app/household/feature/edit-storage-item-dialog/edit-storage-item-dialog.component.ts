@@ -41,8 +41,8 @@ export class EditStorageItemDialogComponent extends BaseHouseholdEditItemDialog<
     this.#storage.saveItem(item);
   }
 
-  setBestBefore(value: string | null) {
-    this.patch({ bestBefore: value ?? undefined });
+  setBestBefore(value: string) {
+    this.patch({ bestBefore: value || undefined });
   }
 
   setMinAmount(value: number) {

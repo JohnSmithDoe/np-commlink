@@ -34,7 +34,6 @@ import {
 import {
   IonButton,
   IonIcon,
-  IonInput,
   IonItem,
   IonListHeader,
   IonNote,
@@ -69,6 +68,7 @@ import { CashCategoryPickerComponent } from '../../smart-ui/cash-category-picker
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { categoryIdOf } from '../../util/cash-category.utils';
 import { createCashTransaction } from '../../util/cash.factory';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 
 type Direction = 'expense' | 'income';
 
@@ -93,7 +93,6 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
     IonButton,
     IonIcon,
     IonItem,
-    IonInput,
     IonListHeader,
     IonNote,
     IonSegment,
@@ -104,6 +103,7 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
     CashBankDetailsComponent,
     CashCategoryPickerComponent,
     MoneyInputComponent,
+    DateInputComponent,
   ],
 })
 export class EditCashTransactionDialogComponent extends BaseEditItemDialog<

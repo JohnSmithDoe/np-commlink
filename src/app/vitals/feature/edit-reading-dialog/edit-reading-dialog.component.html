@@ -9,15 +9,10 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
-  <ion-item>
-    <ion-input
-      labelPlacement="stacked"
-      type="date"
-      data-testid="vitals-reading-date"
-      [label]="'vitals.label.date' | translate"
-      [formField]="form.name"
-    />
-  </ion-item>
+  <app-date-input
+    [label]="'vitals.label.date' | translate"
+    [formField]="form.name"
+  />
   @if (dateTaken()) {
     <ion-note color="danger" class="sr-field-note">
       {{ 'vitals.reading-dialog.date-taken' | translate }}

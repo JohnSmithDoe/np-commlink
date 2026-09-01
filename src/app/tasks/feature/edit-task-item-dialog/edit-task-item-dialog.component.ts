@@ -54,8 +54,8 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
     this.patch({ prio: value });
   }
 
-  updateDueAt(value: string | null) {
-    this.patch({ dueAt: value ?? undefined });
+  updateDueAt(value: string) {
+    this.patch({ dueAt: value || undefined });
   }
 
   updateDone(done: boolean) {

@@ -13,12 +13,12 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { listRow, searchInput } from '../helpers';
+import { listRow, pickDate, searchInput } from '../helpers';
 import {
   addButton,
   createDialog,
   CREATE_BUTTON,
-  dateBox,
+  dateField,
   editDialog,
   gotoPage,
   openProfile,
@@ -34,7 +34,7 @@ const openProfiles = (page: Page) => gotoPage(page, 'vitals', PROFILES_PAGE);
 const weighIn = async (page: Page, kg: string, on?: string) => {
   await addButton(pageRoot(page, PROFILE_PAGE)).click();
   const dialog = createDialog(page);
-  if (on) await dateBox(dialog).fill(on);
+  if (on) await pickDate(dateField(dialog), on);
   await weightBox(dialog).fill(kg);
   await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
   await expect(dialog).toBeHidden();

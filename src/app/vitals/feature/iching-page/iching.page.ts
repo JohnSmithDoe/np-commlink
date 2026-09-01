@@ -8,13 +8,10 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
-  InputCustomEvent,
   IonButton,
   IonButtons,
   IonContent,
   IonIcon,
-  IonInput,
-  IonItem,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -22,6 +19,7 @@ import { discOutline, layersOutline } from 'ionicons/icons';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import { ProfilesFacade } from '../../data';
 import {
   birthDigitSumFor,
@@ -41,12 +39,11 @@ import {
     IonButtons,
     IonContent,
     IonIcon,
-    IonInput,
-    IonItem,
     RouterLink,
     TranslatePipe,
     PageHeaderComponent,
     PageReturnComponent,
+    DateInputComponent,
   ],
 })
 export class VitalsIChingPage {
@@ -78,10 +75,5 @@ export class VitalsIChingPage {
 
   constructor() {
     addIcons({ discOutline, layersOutline });
-  }
-
-  setDate(event: InputCustomEvent): void {
-    const { value } = event.detail;
-    this.date.set(typeof value === 'string' ? value : '');
   }
 }

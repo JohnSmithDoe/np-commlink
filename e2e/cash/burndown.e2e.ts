@@ -25,6 +25,7 @@ import {
   pageRoot,
   presentedDialog,
   waitForPersisted,
+  pickDate,
 } from '../helpers';
 
 const BURNDOWN = '/#/cash/burndown';
@@ -65,7 +66,7 @@ async function createRent(page: Page) {
     const due = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     return `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, '0')}-01`;
   });
-  await modal.getByTestId('schedule-next-due').locator('input').fill(nextMonth);
+  await pickDate(modal.locator('app-date-input'), nextMonth);
 
   await modal.getByRole('button', { name: /Anlegen|Übernehmen/ }).click();
   await expect(dialog(page)).toBeHidden({ timeout: 10_000 });

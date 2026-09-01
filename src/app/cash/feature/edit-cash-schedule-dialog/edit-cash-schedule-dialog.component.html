@@ -33,15 +33,10 @@
     </ion-select>
   </ion-item>
 
-  <ion-item>
-    <ion-input
-      labelPlacement="stacked"
-      type="date"
-      data-testid="schedule-next-due"
-      [label]="'cash.label.next-due' | translate"
-      [formField]="form.nextDue"
-    />
-  </ion-item>
+  <app-date-input
+    [label]="'cash.label.next-due' | translate"
+    [formField]="form.nextDue"
+  />
 
   <app-cash-category-picker [formField]="form.categoryId" />
 

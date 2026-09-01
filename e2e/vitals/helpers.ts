@@ -42,8 +42,8 @@ export {
 export const PROFILES_PAGE = 'app-page-vitals-profiles';
 export const PROFILE_PAGE = 'app-page-vitals-profile';
 
-export function dateBox(dialog: Locator): Locator {
-  return dialog.getByTestId('vitals-reading-date').locator('input');
+export function dateField(dialog: Locator): Locator {
+  return dialog.locator('app-date-input');
 }
 
 export function weightBox(dialog: Locator, index = 0): Locator {

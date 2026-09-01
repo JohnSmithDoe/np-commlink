@@ -223,6 +223,50 @@ export async function pickSelectOption(
   await expect(alert).toBeHidden();
 }
 
+const MONTHS = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+];
+
+export function dateBox(field: Locator): Locator {
+  return field.locator('ion-input input');
+}
+
+export async function pickDate(field: Locator, iso: string): Promise<void> {
+  const [year, month, day] = iso.split('-').map(Number);
+  await dateBox(field).click();
+  const picker = field
+    .page()
+    .locator('ion-modal:not(.overlay-hidden) ion-datetime');
+  await expect(picker).toBeVisible({ timeout: 15_000 });
+
+  await picker.locator('.calendar-month-year-toggle').click();
+  const columns = picker.locator('ion-picker-column');
+  await columns
+    .nth(0)
+    .getByText(MONTHS[month - 1], { exact: true })
+    .click();
+  await columns.nth(1).getByText(String(year), { exact: true }).click();
+  await picker.locator('.calendar-month-year-toggle').click();
+
+  await picker
+    .locator(
+      `button.calendar-day[data-day="${day}"][data-month="${month}"][data-year="${year}"]`
+    )
+    .click();
+  await picker.getByRole('button', { name: 'Fertig' }).click();
+}
+
 const ORDER_LENS = 'Reihenfolge';
 
 export async function openOrderLens(config: Locator): Promise<void> {

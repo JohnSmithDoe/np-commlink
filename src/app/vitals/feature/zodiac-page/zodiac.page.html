@@ -8,16 +8,12 @@
   <app-page-return label="page-title.vitals-profile" [route]="returnRoute()" />
 
   <div class="zd sr-scanlines">
-    <ion-item class="zd-date">
-      <ion-input
-        labelPlacement="stacked"
-        type="date"
-        data-testid="vitals-zodiac-date"
-        [label]="'vitals.label.birth-date' | translate"
-        [value]="date()"
-        (ionChange)="setDate($event)"
-      />
-    </ion-item>
+    <app-date-input
+      class="zd-date"
+      [label]="'vitals.label.birth-date' | translate"
+      [value]="date()"
+      (valueChange)="date.set($event)"
+    />
 
     @if (sign(); as record) {
       <section class="zd-panel sr-panel sr-corners">

@@ -92,15 +92,13 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 
 ## Open defects
 
-- **Two household header actions are vertically clipped** — the cart on STASH and the tray on MARKET are
-  sliced by the toolbar's top edge, while the tab bar renders the same glyphs whole. **The cause is not in
-  the source**: Ionic's `.toolbar-container` carries `contain: content` and `overflow: hidden`, but does so
-  on every page. Needs the app on screen at 412px to diagnose.
-- **The birthdate field prints `05/14/1980`.** A native `<input type="date">` follows the DEVICE locale, not
-  the app's language, against `dd.MM.yyyy` everywhere else.
-- **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches and BIOMON's date field,
-  the only unskinned chrome in the app. Replacing the native input answers this and the entry above, and
-  drags in the sheet-modal safe-area entry in [next-version.md](./next-version.md).
+- **Two household header actions may still be vertically clipped** — the cart on STASH and the tray on
+  MARKET, sliced by the toolbar's top edge while the tab bar renders the same glyphs whole. One cause has
+  since been found and fixed: that toolbar was paying the status-bar inset a SECOND time, inside a
+  `.toolbar-container` that is `contain: content` and `overflow: hidden`. **Re-check on the device before
+  treating this as open** — it reproduces only where the inset is non-zero, which is the same condition.
+- **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
+  chrome in the app.
 
 ## Known cost, not yet paid
 

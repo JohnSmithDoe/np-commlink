@@ -20,12 +20,7 @@ import {
   Signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  InputCustomEvent,
-  IonContent,
-  IonInput,
-  IonItem,
-} from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { planetOutline } from 'ionicons/icons';
@@ -33,6 +28,7 @@ import { Marker } from '../../../@shared/model/app.types';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ProfilesFacade } from '../../data';
 import {
@@ -63,12 +59,11 @@ const PHASE_LABEL_KEYS: Record<SeasonPhase, Marker> = {
   imports: [
     DatePipe,
     IonContent,
-    IonInput,
-    IonItem,
     RouterLink,
     TranslatePipe,
     PageHeaderComponent,
     PageReturnComponent,
+    DateInputComponent,
     EraYearPipe,
   ],
 })
@@ -111,10 +106,5 @@ export class VitalsZodiacPage {
 
   constructor() {
     addIcons({ planetOutline });
-  }
-
-  setDate(event: InputCustomEvent): void {
-    const { value } = event.detail;
-    this.date.set(typeof value === 'string' ? value : '');
   }
 }

@@ -28,14 +28,10 @@
     </ion-note>
   }
 
-  <ion-item>
-    <ion-input
-      labelPlacement="stacked"
-      type="date"
-      [label]="'cash.label.date' | translate"
-      [formField]="form.date"
-    />
-  </ion-item>
+  <app-date-input
+    [label]="'cash.label.date' | translate"
+    [formField]="form.date"
+  />
 
   <app-cash-category-picker [formField]="form.categoryId" />
 

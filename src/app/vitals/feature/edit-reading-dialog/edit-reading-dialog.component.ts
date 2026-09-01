@@ -29,7 +29,6 @@ import {
 } from '@angular/core';
 import { FormField, SchemaPathTree, validate } from '@angular/forms/signals';
 import {
-  IonInput,
   IonItem,
   IonListHeader,
   IonNote,
@@ -41,6 +40,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import {
   DUPLICATE_NAME,
   hasErrorKind,
@@ -66,13 +66,13 @@ const MISSING_WEIGHT = { kind: 'missingWeight' } as const;
   templateUrl: './edit-reading-dialog.component.html',
   imports: [
     FormField,
-    IonInput,
     IonItem,
     IonListHeader,
     IonNote,
     IonSelect,
     IonSelectOption,
     TranslatePipe,
+    DateInputComponent,
     ItemEditModalComponent,
     WeightInputComponent,
   ],

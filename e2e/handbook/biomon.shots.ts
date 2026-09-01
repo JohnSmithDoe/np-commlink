@@ -22,6 +22,7 @@ import {
   pageRoot,
   pickSelectOption,
   waitForPersisted,
+  pickDate,
 } from '../helpers';
 import { bootDeck, openPage, shot } from './shot';
 
@@ -85,7 +86,7 @@ async function weighIn(page: Page, kg: string, on?: string): Promise<void> {
   const dialog = createDialog(page);
   await expect(dialog).toBeVisible({ timeout: 15_000 });
   if (on) {
-    await dialog.getByTestId('vitals-reading-date').locator('input').fill(on);
+    await pickDate(dialog.locator('app-date-input'), on);
   }
   await dialog.locator('app-weight-input input').first().fill(kg);
   await saveNew(dialog);

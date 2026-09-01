@@ -18,15 +18,10 @@
     </ion-segment-button>
   </ion-segment>
 
-  <ion-item>
-    <ion-input
-      labelPlacement="stacked"
-      type="date"
-      data-testid="vitals-profile-birth-date"
-      [label]="'vitals.label.birth-date' | translate"
-      [formField]="form.birthDate"
-    />
-  </ion-item>
+  <app-date-input
+    [label]="'vitals.label.birth-date' | translate"
+    [formField]="form.birthDate"
+  />
 
   <ion-item>
     <ion-select

@@ -21,7 +21,6 @@ import {
 import {
   IonButton,
   IonIcon,
-  IonInput,
   IonItem,
   IonListHeader,
   IonNote,
@@ -59,6 +58,7 @@ import {
   toConditionForm,
   UNPARSEABLE_AMOUNT,
 } from '../../util/rule-form.utils';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 
 const PERIOD_MONTHS = [1, 3, 6, 12] as const;
 const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
@@ -72,7 +72,6 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
     FormField,
     IonButton,
     IonIcon,
-    IonInput,
     IonItem,
     IonListHeader,
     IonNote,
@@ -86,6 +85,7 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
     CashConditionRowsComponent,
     CashMatchPreviewComponent,
     MoneyInputComponent,
+    DateInputComponent,
   ],
 })
 export class EditCashScheduleDialogComponent extends BaseEditItemDialog<

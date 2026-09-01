@@ -23,7 +23,7 @@
 
   <app-date-input
     [label]="'edit.item.dialog.dueAt' | translate"
-    [value]="draft().dueAt ?? null"
+    [value]="draft().dueAt ?? ''"
     (valueChange)="updateDueAt($event)"
   />
 

@@ -47,14 +47,10 @@
     </ion-note>
   }
 
-  <ion-item>
-    <ion-input
-      labelPlacement="stacked"
-      type="date"
-      [label]="'cash.label.opening-date' | translate"
-      [formField]="form.openingDate"
-    />
-  </ion-item>
+  <app-date-input
+    [label]="'cash.label.opening-date' | translate"
+    [formField]="form.openingDate"
+  />
 
   <ion-item>
     <ion-toggle

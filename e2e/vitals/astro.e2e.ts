@@ -1,8 +1,8 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * Both readouts are pure functions with their own unit specs, so what is
  * here is only what jsdom cannot show: that the date field seeds itself
- * from the stored profile across a real navigation, and that typing over
- * it re-derives everything without touching the profile.
+ * from the stored profile across a real navigation, and that picking a new
+ * date re-derives everything without touching the profile.
  *
  * The panel headline is located as `h1` rather than by its text, because a
  * sign name also appears in the season timeline below it — today's
@@ -10,9 +10,15 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { pickSelectOption, waitForPersisted } from '../helpers';
+import {
+  dateBox,
+  pickDate,
+  pickSelectOption,
+  waitForPersisted,
+} from '../helpers';
 import {
   createProfile,
+  dateField,
   editDialog,
   gotoPage,
   openProfile,
@@ -35,10 +41,7 @@ async function openProfileBornOn(page: Page, birthDate: string): Promise<void> {
 
   const dialog = editDialog(page);
   await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await dialog
-    .getByTestId('vitals-profile-birth-date')
-    .locator('input')
-    .fill(birthDate);
+  await pickDate(dateField(dialog), birthDate);
   await pickSelectOption(
     page,
     dialog.getByTestId('vitals-profile-ascendant'),
@@ -65,16 +68,14 @@ test.describe('BIOMON · astro', () => {
     const zodiac = pageRoot(page, ZODIAC_PAGE);
     await expect(zodiac).toBeVisible({ timeout: 15_000 });
 
-    const zodiacDate = zodiac
-      .getByTestId('vitals-zodiac-date')
-      .locator('input');
-    await expect(zodiacDate).toHaveValue('1980-08-05');
+    const zodiacDate = zodiac.locator('app-date-input');
+    await expect(dateBox(zodiacDate)).toHaveValue('05.08.1980');
     await expect(zodiac.locator('h1')).toHaveText('Löwe');
 
     const ascendant = zodiac.locator('p').filter({ hasText: 'Aszendent' });
     await expect(ascendant).toContainText('Steinbock');
 
-    await zodiacDate.fill('1990-03-25');
+    await pickDate(zodiacDate, '1990-03-25');
 
     await expect(zodiac.locator('h1')).toHaveText('Widder');
     await expect(ascendant).toContainText('nicht gesetzt');
@@ -94,10 +95,7 @@ test.describe('BIOMON · astro', () => {
     await expect(iching.locator('h1')).toHaveText('2 · Erde');
     await expect(iching.getByText('Ki-Jahr 1980')).toBeVisible();
 
-    await iching
-      .getByTestId('vitals-iching-date')
-      .locator('input')
-      .fill('1980-02-03');
+    await pickDate(iching.locator('app-date-input'), '1980-02-03');
 
     await expect(iching.locator('h1')).toHaveText('3 · Donner');
     await expect(iching.getByText('Ki-Jahr 1979')).toBeVisible();
@@ -168,9 +166,9 @@ test.describe('BIOMON · the go-to profile', () => {
     await page.goto('/#/vitals/iching');
     const iching = pageRoot(page, ICHING_PAGE);
     await expect(iching).toBeVisible({ timeout: 15_000 });
-    await expect(
-      iching.getByTestId('vitals-iching-date').locator('input')
-    ).toHaveValue('1980-08-05');
+    await expect(dateBox(iching.locator('app-date-input'))).toHaveValue(
+      '05.08.1980'
+    );
   });
 
   test('follows the star once a second person makes it a choice', async ({
@@ -189,8 +187,8 @@ test.describe('BIOMON · the go-to profile', () => {
     await page.goto('/#/vitals/iching');
     const iching = pageRoot(page, ICHING_PAGE);
     await expect(iching).toBeVisible({ timeout: 15_000 });
-    await expect(
-      iching.getByTestId('vitals-iching-date').locator('input')
-    ).not.toHaveValue('1980-08-05');
+    await expect(dateBox(iching.locator('app-date-input'))).not.toHaveValue(
+      '05.08.1980'
+    );
   });
 });

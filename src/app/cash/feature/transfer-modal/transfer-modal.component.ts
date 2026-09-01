@@ -38,6 +38,7 @@ import {
 import { CashAccountsFacade, CashTransactionsFacade } from '../../data';
 import { MoneyInputComponent } from '../../ui/money-input/money-input.component';
 import { buildTransferLegs } from '../../util/transfer.utils';
+import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 
 type TransferForm = {
   fromId: string;
@@ -83,6 +84,7 @@ const transferRules: SchemaFn<TransferForm> = (path) => {
     IonSelectOption,
     TranslatePipe,
     MoneyInputComponent,
+    DateInputComponent,
   ],
 })
 export class CashTransferModalComponent extends BaseModalDialog<
