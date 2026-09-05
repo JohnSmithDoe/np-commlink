@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   createOutline,
+  cubeOutline,
   eyeOutline,
   eyeOffOutline,
   peopleOutline,
@@ -41,6 +42,7 @@ export class TrackplayGamesPage {
   constructor() {
     addIcons({
       createOutline,
+      cubeOutline,
       eyeOutline,
       eyeOffOutline,
       peopleOutline,

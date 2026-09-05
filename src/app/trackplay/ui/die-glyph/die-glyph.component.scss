@@ -1,0 +1,38 @@
+:host {
+  display: inline-block;
+  width: var(--die-size, 2.75rem);
+  height: var(--die-size, 2.75rem);
+  color: var(--sr-amber);
+}
+
+.die {
+  width: 100%;
+  height: 100%;
+}
+
+.die__body {
+  fill: rgba(var(--sr-amber-rgb), 0.08);
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.die__face {
+  fill: rgba(var(--sr-amber-rgb), 0.16);
+  stroke: rgba(var(--sr-amber-rgb), 0.55);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.die__value {
+  fill: var(--sr-text);
+  font-family: var(--sr-deck-font);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.die__value--long {
+  font-size: var(--fs-xsmall);
+}

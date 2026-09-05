@@ -311,6 +311,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.games'),
   },
   {
+    id: 'dice',
+    module: 'trackplay',
+    icon: 'cube-outline',
+    route: '/trackplay/dice',
+    titleKey: marker('page-title.trackplay-dice'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.dice.name'),
+        descKey: marker('deck.cyberpunk.dice.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.dice.name'),
+        descKey: marker('deck.boomer.dice.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'vitals',
     module: 'vitals',
     icon: 'pulse-outline',

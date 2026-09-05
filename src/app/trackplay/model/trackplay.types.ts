@@ -19,6 +19,7 @@
 import { Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
+import { DieFaces } from './dice.types';
 
 export type TrackplayId = string;
 
@@ -53,6 +54,17 @@ export type GamesView = Pick<
   'searchQuery' | 'sort' | 'filterBy'
 > & { showEndedGames: boolean };
 
+export interface DiceGroup {
+  id: TrackplayId;
+  faces: DieFaces;
+  count: number;
+}
+
+export interface DicePool {
+  groups: DiceGroup[];
+  modifier: number;
+}
+
 export type PlayersState = Readonly<
   ItemList<Player> & { id: typeof PLAYERS_LIST_ID }
 >;
@@ -75,4 +87,5 @@ export interface TrackplayState {
   games: GamesState;
   gamesForPlayer: GamesView;
   gameTypes: GameTypesState;
+  dice: DicePool;
 }

@@ -40,6 +40,14 @@ export const trackplayRoutes: Routes = [
           ),
       },
       {
+        path: 'dice',
+        title: marker('page-title.trackplay-dice'),
+        loadComponent: () =>
+          import('../feature/dice-page/dice.page').then(
+            (m) => m.TrackplayDicePage
+          ),
+      },
+      {
         path: 'game/:id',
         title: marker('page-title.trackplay-game'),
         loadComponent: () =>

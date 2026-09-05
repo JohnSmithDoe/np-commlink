@@ -1,0 +1,60 @@
+@for (group of groups(); track group.id) {
+  <div class="dice-row" data-testid="dice-row">
+    <app-trackplay-die-glyph class="dice-row__glyph" [faces]="group.faces" />
+
+    <ion-select
+      class="dice-row__type"
+      interface="popover"
+      [attr.aria-label]="'trackplay.dice.a11y.type' | translate"
+      [value]="group.faces"
+      (ionChange)="
+        facesPicked.emit({ id: group.id, faces: $any($event).detail.value })
+      "
+    >
+      @for (faces of dieFaces; track faces) {
+        <ion-select-option [value]="faces">
+          {{ 'trackplay.dice.die' | translate: { faces: faces } }}
+        </ion-select-option>
+      }
+    </ion-select>
+
+    <div class="dice-row__count">
+      <ion-button
+        fill="clear"
+        size="small"
+        [attr.aria-label]="'trackplay.dice.a11y.fewer' | translate"
+        (click)="countChanged.emit({ id: group.id, count: group.count - 1 })"
+      >
+        <ion-icon slot="icon-only" name="remove-outline" aria-hidden="true" />
+      </ion-button>
+
+      <ion-input
+        class="dice-row__amount"
+        type="number"
+        inputmode="numeric"
+        data-testid="dice-row-count"
+        [attr.aria-label]="'trackplay.dice.a11y.count' | translate"
+        [value]="group.count"
+        (ionChange)="onCount(group.id, $event)"
+      />
+
+      <ion-button
+        fill="clear"
+        size="small"
+        [attr.aria-label]="'trackplay.dice.a11y.more' | translate"
+        (click)="countChanged.emit({ id: group.id, count: group.count + 1 })"
+      >
+        <ion-icon slot="icon-only" name="add-outline" aria-hidden="true" />
+      </ion-button>
+    </div>
+
+    <ion-button
+      fill="clear"
+      color="medium"
+      [attr.aria-label]="'trackplay.dice.a11y.remove' | translate"
+      (click)="removed.emit(group.id)"
+    >
+      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+    </ion-button>
+  </div>
+}

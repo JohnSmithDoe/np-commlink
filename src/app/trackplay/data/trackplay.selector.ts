@@ -9,6 +9,7 @@
 
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  DicePool,
   GamesState,
   GamesView,
   GameTypesState,
@@ -41,4 +42,9 @@ export const selectGameTypesList = createSelector(
 export const selectGamesForPlayerView = createSelector(
   selectTrackplayState,
   (state): GamesView => state.gamesForPlayer
+);
+
+export const selectDicePool = createSelector(
+  selectTrackplayState,
+  (state): DicePool => state.dice
 );

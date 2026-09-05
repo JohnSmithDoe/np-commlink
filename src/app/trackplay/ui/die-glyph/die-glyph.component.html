@@ -1,0 +1,12 @@
+<svg class="die" viewBox="0 0 48 48" focusable="false">
+  <polygon class="die__body" [attr.points]="shape().body" />
+  <polygon class="die__face" [attr.points]="shape().face" />
+  <text
+    class="die__value"
+    x="24"
+    [class.die__value--long]="long()"
+    [attr.y]="shape().textY"
+  >
+    {{ label() }}
+  </text>
+</svg>

@@ -259,6 +259,20 @@ Everything below the first entry is **v2.0.0 scope**.
   keeps the slice text-only. What is left is generalising it past notes — the store, its resolver and its
   collector are note-shaped.
 
+## TRACKPLAY — the dice pool
+
+- **The pool is stored and the throw is not.** A setup is configuration you rebuild every session
+  otherwise; a result you could reload back into is not one you threw — the same split the I Ching cast
+  makes. So `TrackplayState.dice` holds `{ groups, modifier }` and the `PoolRoll` lives in the page,
+  dying with it. Clearing the pool clears the last throw with it: the thing that produced it is gone.
+- **`rollPool` is pure and decides everything before the first frame.** The tray animates a known
+  outcome — its scramble is a function of a tick counter, never a second random source — so what the
+  dice settle on is assertable without waiting on an animation.
+- **Seven silhouettes are drawn, not registered.** Ionicons ships one `dice` glyph and a pool needs
+  d4..d100 told apart at a glance. Each is the die from above: outer polygon, the face turned to the
+  reader, and the number inside THAT face, which is why every shape carries its own baseline. Unrolled,
+  a die shows its own face count, so one component labels the editor and the tray.
+
 ## The deck
 
 - **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.

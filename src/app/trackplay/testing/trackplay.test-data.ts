@@ -1,4 +1,6 @@
 import {
+  DiceGroup,
+  DicePool,
   Game,
   GamesState,
   GamesView,
@@ -11,6 +13,7 @@ import {
 } from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPES,
+  initialDicePool,
   initialGamesForPlayerView,
   initialGamesState,
   initialGameTypesState,
@@ -67,6 +70,14 @@ export function mockGameTypesState(items?: GameType[]): GameTypesState {
   return { ...initialGameTypesState, items: items ?? [...DEFAULT_GAME_TYPES] };
 }
 
+export function mockDiceGroup(overrides: Partial<DiceGroup> = {}): DiceGroup {
+  return { id: 'dice-1', faces: 6, count: 2, ...overrides };
+}
+
+export function mockDicePool(overrides: Partial<DicePool> = {}): DicePool {
+  return { ...initialDicePool, ...overrides };
+}
+
 export function mockGamesForPlayerView(
   overrides: Partial<GamesView> = {}
 ): GamesView {
@@ -81,6 +92,7 @@ export function mockTrackplayState(
     games: mockGamesState(),
     gamesForPlayer: mockGamesForPlayerView(),
     gameTypes: mockGameTypesState(),
+    dice: mockDicePool(),
     ...overrides,
   };
 }

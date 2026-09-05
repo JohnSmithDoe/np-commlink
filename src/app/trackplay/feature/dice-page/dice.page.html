@@ -1,0 +1,81 @@
+<app-page-header hideButtons label="page-title.trackplay-dice">
+  <ion-buttons slot="end" toolbar>
+    <ion-button
+      color="primary"
+      data-testid="dice-clear"
+      [disabled]="!canRoll()"
+      [attr.aria-label]="'trackplay.dice.action.clear' | translate"
+      (click)="clearPool()"
+    >
+      <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
+
+<ion-content>
+  <app-page-return />
+
+  <div class="dice-page ion-padding">
+    <section class="dice-page__pool sr-panel">
+      <p class="sr-hud">{{ 'trackplay.dice.pool' | translate }}</p>
+
+      @if (groups().length) {
+        <app-trackplay-dice-pool-rows
+          [groups]="groups()"
+          (facesPicked)="setFaces($event)"
+          (countChanged)="setCount($event)"
+          (removed)="removeGroup($event)"
+        />
+      } @else {
+        <app-empty-state [label]="'trackplay.dice.empty' | translate" />
+      }
+
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="ion-margin-top"
+        data-testid="dice-add"
+        (click)="addDie()"
+      >
+        <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+        {{ 'trackplay.dice.action.add' | translate }}
+      </ion-button>
+
+      <app-number-input
+        [label]="'trackplay.dice.modifier' | translate"
+        [value]="modifier()"
+        (updateValue)="setModifier($event)"
+      />
+    </section>
+
+    @if (canRoll()) {
+      <p class="dice-page__notation" data-testid="dice-notation">
+        @for (group of groups(); track group.id) {
+          <span class="dice-page__term">
+            {{ $first ? '' : '+' }} {{ group.count
+            }}{{ 'trackplay.dice.die' | translate: { faces: group.faces } }}
+          </span>
+        }
+        @if (modifier() !== 0) {
+          <span class="dice-page__term">
+            {{ modifierSign() }} {{ modifierAmount() }}
+          </span>
+        }
+      </p>
+    }
+
+    <ion-button
+      expand="block"
+      size="large"
+      class="dice-page__throw"
+      data-testid="dice-throw"
+      [disabled]="!canRoll()"
+      (click)="throwDice()"
+    >
+      <ion-icon slot="start" name="dice-outline" aria-hidden="true" />
+      {{ 'trackplay.dice.action.throw' | translate }}
+    </ion-button>
+
+    <app-trackplay-dice-tray [roll]="roll()" [throwId]="throwId()" />
+  </div>
+</ion-content>

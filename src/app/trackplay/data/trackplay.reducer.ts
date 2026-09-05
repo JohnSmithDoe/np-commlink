@@ -23,6 +23,7 @@ import {
 } from '../util/trackplay.cascade';
 import { DEFAULT_GAME_TYPE_ID } from '../util/trackplay.factory';
 import { stampParticipants } from '../util/trackplay.scoring';
+import { diceReducer } from './dice/dice.reducer';
 import { gamesForPlayerReducer } from './games/games-for-player.reducer';
 import { GamesActions } from './games/games.actions';
 import { gamesReducer } from './games/games.reducer';
@@ -37,6 +38,7 @@ const perAggregate = combineReducers<TrackplayState>({
   games: gamesReducer,
   gamesForPlayer: gamesForPlayerReducer,
   gameTypes: gameTypesReducer,
+  dice: diceReducer,
 });
 
 // prettier-ignore
