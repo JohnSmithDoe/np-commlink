@@ -1,5 +1,4 @@
 import {
-  DiceGroup,
   DicePool,
   Game,
   GamesState,
@@ -68,10 +67,6 @@ export function mockGamesState(
 
 export function mockGameTypesState(items?: GameType[]): GameTypesState {
   return { ...initialGameTypesState, items: items ?? [...DEFAULT_GAME_TYPES] };
-}
-
-export function mockDiceGroup(overrides: Partial<DiceGroup> = {}): DiceGroup {
-  return { id: 'dice-1', faces: 6, count: 2, ...overrides };
 }
 
 export function mockDicePool(overrides: Partial<DicePool> = {}): DicePool {

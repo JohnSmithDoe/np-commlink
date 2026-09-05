@@ -4,16 +4,13 @@ import { Store } from '@ngrx/store';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { DiceActions } from '../../data';
 import {
-  mockDiceGroup,
   mockDicePool,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { TrackplayDicePage } from './dice.page';
 
-const withPool = () =>
-  mockTrackplayState({
-    dice: mockDicePool({ groups: [mockDiceGroup({ count: 3 })] }),
-  });
+const withTable = () =>
+  mockTrackplayState({ dice: mockDicePool({ dice: [6, 6, 20] }) });
 
 describe('TrackplayDicePage', () => {
   let component: TrackplayDicePage;
@@ -28,8 +25,8 @@ describe('TrackplayDicePage', () => {
     component = TestBed.createComponent(TrackplayDicePage).componentInstance;
   };
 
-  it('throws one die per counted die', () => {
-    setup(withPool());
+  it('throws one die per die on the table', () => {
+    setup(withTable());
 
     component.throwDice();
 
@@ -37,7 +34,7 @@ describe('TrackplayDicePage', () => {
     expect(component.throwId()).toBe(1);
   });
 
-  it('throws nothing while the pool is empty', () => {
+  it('throws nothing off an empty table', () => {
     setup();
 
     component.throwDice();
@@ -45,8 +42,8 @@ describe('TrackplayDicePage', () => {
     expect(component.roll()).toBeNull();
   });
 
-  it('drops the last throw when the pool is cleared', () => {
-    setup(withPool());
+  it('drops the last throw when the table is cleared', () => {
+    setup(withTable());
     component.throwDice();
 
     component.clearPool();
@@ -55,13 +52,20 @@ describe('TrackplayDicePage', () => {
     expect(dispatch).toHaveBeenCalledWith(DiceActions.clearPool());
   });
 
-  it('dispatches the count a row reports', () => {
-    setup(withPool());
+  it('tallies equal dice into one term', () => {
+    setup(withTable());
 
-    component.setCount({ id: 'dice-1', count: 5 });
+    expect(component.tally()).toEqual([
+      { faces: 6, count: 2 },
+      { faces: 20, count: 1 },
+    ]);
+  });
 
-    expect(dispatch).toHaveBeenCalledWith(
-      DiceActions.setGroupCount('dice-1', 5)
-    );
+  it('takes back the die at the index tapped', () => {
+    setup(withTable());
+
+    component.removeDie(1);
+
+    expect(dispatch).toHaveBeenCalledWith(DiceActions.removeDieAt(1));
   });
 });

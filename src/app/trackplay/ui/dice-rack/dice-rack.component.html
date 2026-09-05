@@ -1,0 +1,11 @@
+@for (faces of dice(); track $index) {
+  <button
+    type="button"
+    class="dice-rack__die"
+    data-testid="dice-die"
+    [attr.aria-label]="labelKey() | translate: { faces: faces }"
+    (click)="picked.emit({ index: $index, faces: faces })"
+  >
+    <app-trackplay-die-glyph [faces]="faces" />
+  </button>
+}

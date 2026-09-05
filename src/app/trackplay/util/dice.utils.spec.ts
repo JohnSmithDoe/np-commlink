@@ -1,67 +1,52 @@
+import { DICE_MAX, DieFaces } from '../model/dice.types';
 import { DicePool } from '../model/trackplay.types';
-import {
-  clampDiceCount,
-  clampModifier,
-  poolDiceCount,
-  rollBreakdown,
-  rollPool,
-} from './dice.utils';
+import { rollPool, tallyDice, withDie, withoutDieAt } from './dice.utils';
 
-const pool = (overrides: Partial<DicePool> = {}): DicePool => ({
-  groups: [{ id: 'a', faces: 6, count: 2 }],
-  modifier: 0,
-  ...overrides,
-});
+const pool = (dice: DicePool['dice'] = [6, 6]): DicePool => ({ dice });
 
-describe('clampDiceCount', () => {
-  it.each([
-    [0, 1],
-    [-4, 1],
-    [Number.NaN, 1],
-    [2.7, 2],
-    [999, 30],
-  ])('turns %s into %s', (input, expected) => {
-    expect(clampDiceCount(input)).toBe(expected);
+describe('withDie', () => {
+  it('keeps the table sorted, so equal dice sit together', () => {
+    expect(withDie([6, 20], 4)).toEqual([4, 6, 20]);
+    expect(withDie([4, 20], 6)).toEqual([4, 6, 20]);
+  });
+
+  it('takes a second die of a face already there', () => {
+    expect(withDie([6], 6)).toEqual([6, 6]);
+  });
+
+  it('refuses to take more dice than the table holds', () => {
+    const full: DieFaces[] = Array.from({ length: DICE_MAX }, () => 6);
+
+    expect(withDie(full, 20)).toHaveLength(DICE_MAX);
   });
 });
 
-describe('clampModifier', () => {
-  it('keeps a negative modifier', () => {
-    expect(clampModifier(-3)).toBe(-3);
+describe('withoutDieAt', () => {
+  it('takes back exactly the die tapped, not every die of its face', () => {
+    expect(withoutDieAt([6, 6, 20], 0)).toEqual([6, 20]);
   });
 
-  it('caps both directions', () => {
-    expect(clampModifier(5000)).toBe(999);
-    expect(clampModifier(-5000)).toBe(-999);
+  it('leaves the table alone for an index nothing occupies', () => {
+    expect(withoutDieAt([6, 20], 7)).toEqual([6, 20]);
   });
 });
 
-describe('poolDiceCount', () => {
-  it('sums every group', () => {
-    const counted = poolDiceCount(
-      pool({
-        groups: [
-          { id: 'a', faces: 6, count: 2 },
-          { id: 'b', faces: 20, count: 1 },
-        ],
-      })
-    );
+describe('tallyDice', () => {
+  it('counts each face once, in the order it first appears', () => {
+    expect(tallyDice([6, 6, 20, 6])).toEqual([
+      { faces: 6, count: 3 },
+      { faces: 20, count: 1 },
+    ]);
+  });
 
-    expect(counted).toBe(3);
+  it('tallies an empty table to nothing', () => {
+    expect(tallyDice([])).toEqual([]);
   });
 });
 
 describe('rollPool', () => {
-  it('rolls one die per counted die, in group order', () => {
-    const roll = rollPool(
-      pool({
-        groups: [
-          { id: 'a', faces: 6, count: 2 },
-          { id: 'b', faces: 20, count: 1 },
-        ],
-      }),
-      () => 0.5
-    );
+  it('rolls one die per die on the table, in table order', () => {
+    const roll = rollPool(pool([6, 6, 20]), () => 0.5);
 
     expect(roll.dice).toEqual([
       { faces: 6, value: 4 },
@@ -78,29 +63,14 @@ describe('rollPool', () => {
     expect(highest.dice.map((die) => die.value)).toEqual([6, 6]);
   });
 
-  it('adds the modifier to the sum, not to a die', () => {
-    const roll = rollPool(pool({ modifier: 3 }), () => 0.5);
-
-    expect(roll.sum).toBe(8);
-    expect(roll.total).toBe(11);
+  it('totals every die it rolled', () => {
+    expect(rollPool(pool([6, 6, 20]), () => 0.5).total).toBe(19);
   });
 
-  it('rolls nothing for an empty pool', () => {
-    const roll = rollPool(pool({ groups: [], modifier: 2 }), () => 0.5);
+  it('rolls nothing off an empty table', () => {
+    const roll = rollPool(pool([]), () => 0.5);
 
     expect(roll.dice).toEqual([]);
-    expect(roll.total).toBe(2);
-  });
-});
-
-describe('rollBreakdown', () => {
-  it('leaves a zero modifier out', () => {
-    expect(rollBreakdown(rollPool(pool(), () => 0.5))).toBe('4 + 4');
-  });
-
-  it('spells a negative modifier as a subtraction', () => {
-    expect(rollBreakdown(rollPool(pool({ modifier: -2 }), () => 0.5))).toBe(
-      '4 + 4 − 2'
-    );
+    expect(roll.total).toBe(0);
   });
 });

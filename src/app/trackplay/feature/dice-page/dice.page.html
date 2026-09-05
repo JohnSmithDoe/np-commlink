@@ -16,54 +16,6 @@
   <app-page-return />
 
   <div class="dice-page ion-padding">
-    <section class="dice-page__pool sr-panel">
-      <p class="sr-hud">{{ 'trackplay.dice.pool' | translate }}</p>
-
-      @if (groups().length) {
-        <app-trackplay-dice-pool-rows
-          [groups]="groups()"
-          (facesPicked)="setFaces($event)"
-          (countChanged)="setCount($event)"
-          (removed)="removeGroup($event)"
-        />
-      } @else {
-        <app-empty-state [label]="'trackplay.dice.empty' | translate" />
-      }
-
-      <ion-button
-        expand="block"
-        fill="outline"
-        class="ion-margin-top"
-        data-testid="dice-add"
-        (click)="addDie()"
-      >
-        <ion-icon slot="start" name="add-outline" aria-hidden="true" />
-        {{ 'trackplay.dice.action.add' | translate }}
-      </ion-button>
-
-      <app-number-input
-        [label]="'trackplay.dice.modifier' | translate"
-        [value]="modifier()"
-        (updateValue)="setModifier($event)"
-      />
-    </section>
-
-    @if (canRoll()) {
-      <p class="dice-page__notation" data-testid="dice-notation">
-        @for (group of groups(); track group.id) {
-          <span class="dice-page__term">
-            {{ $first ? '' : '+' }} {{ group.count
-            }}{{ 'trackplay.dice.die' | translate: { faces: group.faces } }}
-          </span>
-        }
-        @if (modifier() !== 0) {
-          <span class="dice-page__term">
-            {{ modifierSign() }} {{ modifierAmount() }}
-          </span>
-        }
-      </p>
-    }
-
     <ion-button
       expand="block"
       size="large"
@@ -77,5 +29,35 @@
     </ion-button>
 
     <app-trackplay-dice-tray [roll]="roll()" [throwId]="throwId()" />
+
+    <section class="dice-page__table sr-panel" data-testid="dice-table">
+      @if (dice().length) {
+        <app-trackplay-dice-rack
+          class="dice-page__laid"
+          labelKey="trackplay.dice.a11y.take-back"
+          [dice]="dice()"
+          (picked)="removeDie($event.index)"
+        />
+
+        <p class="dice-page__notation" data-testid="dice-notation">
+          @for (tally of tally(); track tally.faces) {
+            <span class="dice-page__term">
+              {{ $first ? '' : '+' }} {{ tally.count
+              }}{{ 'trackplay.dice.die' | translate: { faces: tally.faces } }}
+            </span>
+          }
+        </p>
+      } @else {
+        <app-empty-state [label]="'trackplay.dice.empty' | translate" />
+      }
+    </section>
+
+    <section class="dice-page__bag" data-testid="dice-bag">
+      <app-trackplay-dice-rack
+        labelKey="trackplay.dice.a11y.put-on-table"
+        [dice]="dieFaces"
+        (picked)="addDie($event.faces)"
+      />
+    </section>
   </div>
 </ion-content>

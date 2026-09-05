@@ -54,15 +54,8 @@ export type GamesView = Pick<
   'searchQuery' | 'sort' | 'filterBy'
 > & { showEndedGames: boolean };
 
-export interface DiceGroup {
-  id: TrackplayId;
-  faces: DieFaces;
-  count: number;
-}
-
 export interface DicePool {
-  groups: DiceGroup[];
-  modifier: number;
+  dice: DieFaces[];
 }
 
 export type PlayersState = Readonly<

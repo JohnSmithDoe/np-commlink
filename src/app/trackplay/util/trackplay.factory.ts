@@ -11,10 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { createBaseItem } from '../../@shared/util/app.factory';
-import { uuidv4 } from '../../@shared/util/app.utils';
-import { DieFaces } from '../model/dice.types';
 import {
-  DiceGroup,
   DicePool,
   Game,
   GamesState,
@@ -96,12 +93,4 @@ export const initialGameTypesState: GameTypesState = {
   items: [...DEFAULT_GAME_TYPES],
 };
 
-const DEFAULT_DIE_FACES: DieFaces = 6;
-
-export function createDiceGroup(
-  faces: DieFaces = DEFAULT_DIE_FACES
-): DiceGroup {
-  return { id: uuidv4(), faces, count: 1 };
-}
-
-export const initialDicePool: DicePool = { groups: [], modifier: 0 };
+export const initialDicePool: DicePool = { dice: [] };

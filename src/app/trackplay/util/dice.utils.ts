@@ -1,6 +1,6 @@
 import {
-  DICE_MODIFIER_MAX,
-  DICE_PER_GROUP_MAX,
+  DICE_MAX,
+  DiceTally,
   DieFaces,
   DieRoll,
   PoolRoll,
@@ -9,20 +9,30 @@ import { DicePool } from '../model/trackplay.types';
 
 type RandomSource = () => number;
 
-export function clampDiceCount(count: number): number {
-  const whole = Math.trunc(count);
-  if (!Number.isFinite(whole) || whole < 1) return 1;
-  return Math.min(whole, DICE_PER_GROUP_MAX);
+export const prefersStill = (): boolean =>
+  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+export function withDie(
+  dice: readonly DieFaces[],
+  faces: DieFaces
+): DieFaces[] {
+  if (dice.length >= DICE_MAX) return [...dice];
+  return [...dice, faces].toSorted((a, b) => a - b);
 }
 
-export function clampModifier(modifier: number): number {
-  const whole = Math.trunc(modifier);
-  if (!Number.isFinite(whole)) return 0;
-  return Math.max(Math.min(whole, DICE_MODIFIER_MAX), -DICE_MODIFIER_MAX);
+export function withoutDieAt(
+  dice: readonly DieFaces[],
+  index: number
+): DieFaces[] {
+  return dice.filter((_, at) => at !== index);
 }
 
-export function poolDiceCount(pool: DicePool): number {
-  return pool.groups.reduce((count, group) => count + group.count, 0);
+export function tallyDice(dice: readonly DieFaces[]): DiceTally[] {
+  const counts = new Map<DieFaces, number>();
+  for (const faces of dice) {
+    counts.set(faces, (counts.get(faces) ?? 0) + 1);
+  }
+  return [...counts].map(([faces, count]) => ({ faces, count }));
 }
 
 function rollDie(faces: DieFaces, random: RandomSource): number {
@@ -33,21 +43,10 @@ export function rollPool(
   pool: DicePool,
   random: RandomSource = Math.random
 ): PoolRoll {
-  const dice = pool.groups.flatMap((group) =>
-    Array.from({ length: clampDiceCount(group.count) }, (): DieRoll => ({
-      faces: group.faces,
-      value: rollDie(group.faces, random),
-    }))
-  );
-  const sum = dice.reduce((total, die) => total + die.value, 0);
-  const modifier = clampModifier(pool.modifier);
+  const dice = pool.dice.map((faces): DieRoll => ({
+    faces,
+    value: rollDie(faces, random),
+  }));
 
-  return { dice, modifier, sum, total: sum + modifier };
-}
-
-export function rollBreakdown(roll: PoolRoll): string {
-  const values = roll.dice.map((die) => `${die.value}`).join(' + ');
-  if (roll.modifier === 0) return values;
-  const sign = roll.modifier > 0 ? '+' : '−';
-  return `${values} ${sign} ${Math.abs(roll.modifier)}`;
+  return { dice, total: dice.reduce((sum, die) => sum + die.value, 0) };
 }

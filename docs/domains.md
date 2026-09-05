@@ -261,10 +261,20 @@ Everything below the first entry is **v2.0.0 scope**.
 
 ## TRACKPLAY — the dice pool
 
-- **The pool is stored and the throw is not.** A setup is configuration you rebuild every session
+- **The table is stored and the throw is not.** A setup is configuration you rebuild every session
   otherwise; a result you could reload back into is not one you threw — the same split the I Ching cast
-  makes. So `TrackplayState.dice` holds `{ groups, modifier }` and the `PoolRoll` lives in the page,
-  dying with it. Clearing the pool clears the last throw with it: the thing that produced it is gone.
+  makes. So `TrackplayState.dice` holds the table and the `PoolRoll` lives in the page, dying with it.
+  Clearing the table clears the last throw with it: the thing that produced it is gone.
+- **A bag and a table, so `dice` is a FLAT list and never a count.** Three d6 is three taps on the d6
+  in the bag and three dice on the table, each tapped back individually — which is why the stored array
+  holds one entry per die and is kept SORTED on insert: equal dice sit together, and the index the UI
+  emits is then the die the reader meant. A `{faces, count}` pair would have to be re-derived into
+  targets anyway, so it exists only where it reads: `tallyDice` builds `4W6 + 1W20` for display.
+- **No modifier, no per-die readout — the throw answers with one number.** Both were built and both
+  were noise against a table you can already see: the dice show their own faces, so a breakdown line
+  restated them, and a `+N` field is arithmetic the reader was going to do anyway. The button sits
+  ABOVE the table so a throw needs no scroll, which is also why the tray renders nothing at all until
+  there is a roll.
 - **`rollPool` is pure and decides everything before the first frame.** The tray animates a known
   outcome — its scramble is a function of a tick counter, never a second random source — so what the
   dice settle on is assertable without waiting on an animation.

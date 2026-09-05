@@ -18,7 +18,7 @@ import {
   untracked,
 } from '@angular/core';
 import { DieFaces, PoolRoll } from '../../model/dice.types';
-import { rollBreakdown } from '../../util/dice.utils';
+import { prefersStill } from '../../util/dice.utils';
 import { DieGlyphComponent } from '../die-glyph/die-glyph.component';
 
 type TrayDie = { faces: DieFaces; value: number; settle: string };
@@ -29,9 +29,6 @@ const SETTLE_STEP_MS = 55;
 
 const scrambleValue = (index: number, tick: number, faces: DieFaces): number =>
   ((index * 7 + tick * 13) % faces) + 1;
-
-const prefersStill = (): boolean =>
-  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 @Component({
   selector: 'app-trackplay-dice-tray',
@@ -59,11 +56,6 @@ export class DiceTrayComponent {
       value: revealed ? die.value : scrambleValue(index, tick, die.faces),
       settle: `${index * SETTLE_STEP_MS}ms`,
     }));
-  });
-
-  readonly breakdown = computed<string>(() => {
-    const roll = this.roll();
-    return roll ? rollBreakdown(roll) : '';
   });
 
   constructor() {

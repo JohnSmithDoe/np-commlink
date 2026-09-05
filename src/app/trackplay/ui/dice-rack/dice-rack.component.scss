@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dice-rack__die {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--sr-touch);
+  min-height: var(--sr-touch);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dice-rack__die:active app-trackplay-die-glyph {
+  transform: scale(0.88);
+}
+
+app-trackplay-die-glyph {
+  --die-size: var(--dice-rack-size, 2.75rem);
+
+  transition: transform 0.12s ease-out;
+}
+
+:host-context([data-skin='cyberpunk']) .dice-rack__die:active {
+  filter: drop-shadow(0 0 8px rgba(var(--sr-amber-rgb), 0.6));
+}

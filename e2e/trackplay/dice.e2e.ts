@@ -3,66 +3,86 @@
  * so every assertion about a result waits on `dice-total` rather than on
  * the click — a throw asserted synchronously reads the scramble.
  *
- * The pool is persisted, so each spec clears it before it builds one:
+ * The table is persisted, so each spec clears it before it lays one out:
  * the previous spec in the same worker leaves its dice behind.
  * ───────────────────────────────────────────────────────────────── */
 
-import { expect, Page, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 import { gotoPage, pageRoot } from './helpers';
 
 const PAGE = 'app-page-trackplay-dice';
 
-async function openDicePage(page: Page) {
+const table = (dice: Locator): Locator =>
+  dice.getByTestId('dice-table').getByTestId('dice-die');
+
+const bag = (dice: Locator): Locator =>
+  dice.getByTestId('dice-bag').getByTestId('dice-die');
+
+const tray = (dice: Locator): Locator =>
+  dice.locator('app-trackplay-dice-tray app-trackplay-die-glyph');
+
+async function openDicePage(page: Page): Promise<Locator> {
   await gotoPage(page, 'trackplay/dice', PAGE);
   const dice = pageRoot(page, PAGE);
-  if (await dice.getByTestId('dice-row').count()) {
+  if (await table(dice).count()) {
     await dice.getByTestId('dice-clear').click();
-    await expect(dice.getByTestId('dice-row')).toHaveCount(0);
+    await expect(table(dice)).toHaveCount(0);
   }
   return dice;
 }
 
 test.describe('trackplay dice', () => {
-  test('starts empty and cannot be thrown', async ({ page }) => {
+  test('offers the whole bag over an empty table', async ({ page }) => {
     const dice = await openDicePage(page);
 
-    await expect(dice.getByTestId('dice-row')).toHaveCount(0);
+    await expect(bag(dice)).toHaveCount(7);
+    await expect(table(dice)).toHaveCount(0);
     await expect(dice.getByTestId('dice-throw')).toHaveAttribute(
       'aria-disabled',
       'true'
     );
   });
 
-  test('adds dice of two types to one throw setup', async ({ page }) => {
+  test('lays one die per tap, and tallies equal ones into a term', async ({
+    page,
+  }) => {
     const dice = await openDicePage(page);
 
-    await dice.getByTestId('dice-add').click();
-    await dice.getByTestId('dice-add').click();
+    await bag(dice).nth(1).click();
+    await bag(dice).nth(1).click();
+    await bag(dice).nth(1).click();
+    await bag(dice).nth(5).click();
 
-    await expect(dice.getByTestId('dice-row')).toHaveCount(2);
-    await expect(dice.getByTestId('dice-notation')).toContainText('1W6');
-    await expect(dice.getByTestId('dice-throw')).not.toHaveAttribute(
-      'aria-disabled',
-      'true'
-    );
+    await expect(table(dice)).toHaveCount(4);
+    await expect(dice.getByTestId('dice-notation')).toContainText('3W6');
+    await expect(dice.getByTestId('dice-notation')).toContainText('1W20');
   });
 
-  test('throws one die per counted die and totals them', async ({ page }) => {
+  test('takes a die back off the table when it is tapped', async ({ page }) => {
     const dice = await openDicePage(page);
-    await dice.getByTestId('dice-add').click();
-    const count = dice.getByTestId('dice-row-count').locator('input');
-    await count.fill('3');
-    await count.blur();
-    await expect(dice.getByTestId('dice-notation')).toContainText('3W6');
+    await bag(dice).nth(1).click();
+    await bag(dice).nth(1).click();
+    await expect(table(dice)).toHaveCount(2);
+
+    await table(dice).first().click();
+
+    await expect(table(dice)).toHaveCount(1);
+    await expect(dice.getByTestId('dice-notation')).toContainText('1W6');
+  });
+
+  test('throws one die per die on the table and totals them', async ({
+    page,
+  }) => {
+    const dice = await openDicePage(page);
+    for (let taps = 0; taps < 3; taps++) await bag(dice).nth(1).click();
+    await expect(table(dice)).toHaveCount(3);
 
     await dice.getByTestId('dice-throw').click();
 
     const total = dice.getByTestId('dice-total');
     await expect(total).toBeVisible({ timeout: 15_000 });
-    const printed = await dice.getByTestId('dice-breakdown').textContent();
-    const values = (printed ?? '')
-      .split('+')
-      .map((part) => Number.parseInt(part.trim(), 10));
+    const settled = await tray(dice).allTextContents();
+    const values = settled.map((face) => Number.parseInt(face.trim(), 10));
 
     expect(values).toHaveLength(3);
     expect(values.every((value) => value >= 1 && value <= 6)).toBe(true);
@@ -71,11 +91,11 @@ test.describe('trackplay dice', () => {
     );
   });
 
-  test('keeps the pool across a reload and drops the throw', async ({
+  test('keeps the table across a reload and drops the throw', async ({
     page,
   }) => {
     const dice = await openDicePage(page);
-    await dice.getByTestId('dice-add').click();
+    await bag(dice).nth(1).click();
     await dice.getByTestId('dice-throw').click();
     await expect(dice.getByTestId('dice-total')).toBeVisible({
       timeout: 15_000,
@@ -84,7 +104,7 @@ test.describe('trackplay dice', () => {
     await page.reload();
     const reloaded = pageRoot(page, PAGE);
 
-    await expect(reloaded.getByTestId('dice-row')).toHaveCount(1);
+    await expect(table(reloaded)).toHaveCount(1);
     await expect(reloaded.getByTestId('dice-total')).toHaveCount(0);
   });
 });

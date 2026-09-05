@@ -1,67 +1,36 @@
-import {
-  mockDiceGroup,
-  mockTrackplayState,
-} from '../../testing/trackplay.test-data';
+import { DicePool } from '../../model/trackplay.types';
+import { mockTrackplayState } from '../../testing/trackplay.test-data';
 import { initialDicePool } from '../../util/trackplay.factory';
 import { TrackplayActions } from '../trackplay.actions';
 import { DiceActions } from './dice.actions';
 import { diceReducer } from './dice.reducer';
 
-const poolOf = (...groups: ReturnType<typeof mockDiceGroup>[]) => ({
-  ...initialDicePool,
-  groups,
-});
+const tableOf = (...dice: DicePool['dice']): DicePool => ({ dice });
 
 describe('diceReducer', () => {
-  it('starts with an empty pool', () => {
-    expect(initialDicePool).toEqual({ groups: [], modifier: 0 });
+  it('starts with an empty table', () => {
+    expect(initialDicePool).toEqual({ dice: [] });
   });
 
-  it('appends a group', () => {
-    const group = mockDiceGroup({ id: 'd20', faces: 20, count: 1 });
+  it('puts a die on the table', () => {
+    const state = diceReducer(initialDicePool, DiceActions.addDie(20));
 
-    const state = diceReducer(initialDicePool, DiceActions.addGroup(group));
-
-    expect(state.groups).toEqual([group]);
+    expect(state.dice).toEqual([20]);
   });
 
-  it('clamps a count below one', () => {
-    const state = diceReducer(
-      poolOf(mockDiceGroup()),
-      DiceActions.setGroupCount('dice-1', 0)
-    );
+  it('takes back exactly the die tapped', () => {
+    const state = diceReducer(tableOf(6, 6, 20), DiceActions.removeDieAt(1));
 
-    expect(state.groups[0].count).toBe(1);
+    expect(state.dice).toEqual([6, 20]);
   });
 
-  it('changes only the group it names', () => {
-    const state = diceReducer(
-      poolOf(mockDiceGroup(), mockDiceGroup({ id: 'dice-2', faces: 20 })),
-      DiceActions.setGroupFaces('dice-2', 12)
-    );
-
-    expect(state.groups.map((group) => group.faces)).toEqual([6, 12]);
-  });
-
-  it('removes a group by id', () => {
-    const state = diceReducer(
-      poolOf(mockDiceGroup(), mockDiceGroup({ id: 'dice-2' })),
-      DiceActions.removeGroup('dice-1')
-    );
-
-    expect(state.groups.map((group) => group.id)).toEqual(['dice-2']);
-  });
-
-  it('clears back to the initial pool', () => {
-    const state = diceReducer(
-      { groups: [mockDiceGroup()], modifier: 4 },
-      DiceActions.clearPool()
-    );
+  it('clears back to an empty table', () => {
+    const state = diceReducer(tableOf(6), DiceActions.clearPool());
 
     expect(state).toEqual(initialDicePool);
   });
 
-  it('hydrates a document written before the pool existed', () => {
+  it('hydrates a document written before the table existed', () => {
     const stored = mockTrackplayState();
     delete (stored as Partial<typeof stored>).dice;
 

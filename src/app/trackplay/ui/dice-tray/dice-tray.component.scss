@@ -2,13 +2,19 @@
   display: block;
 }
 
+.dice-tray {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .dice-tray__dice {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3.5rem;
 }
 
 .dice-tray__die {
@@ -27,24 +33,10 @@
   filter: drop-shadow(0 0 6px rgba(var(--sr-amber-rgb), 0.4));
 }
 
-.dice-tray__result {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.25rem 0.75rem;
-  margin: 0.75rem 0 0;
-  font-family: var(--sr-deck-font);
-}
-
-.dice-tray__breakdown {
-  color: var(--sr-text-dim);
-  font-size: var(--fs-small);
-  overflow-wrap: anywhere;
-}
-
 .dice-tray__total {
+  margin: 0;
   color: var(--sr-amber);
+  font-family: var(--sr-deck-font);
   font-size: var(--fs-xxlarge);
   font-weight: 700;
   text-shadow: var(--sr-glow);

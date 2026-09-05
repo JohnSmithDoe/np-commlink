@@ -1,25 +1,20 @@
-<div class="dice-tray" [class.dice-tray--rolling]="!revealed()">
-  <div class="dice-tray__dice">
-    @for (die of dice(); track $index) {
-      <app-trackplay-die-glyph
-        class="dice-tray__die"
-        [style.--dice-settle]="die.settle"
-        [faces]="die.faces"
-        [value]="die.value"
-      />
-    }
-  </div>
+@if (roll(); as roll) {
+  <div class="dice-tray" [class.dice-tray--rolling]="!revealed()">
+    <div class="dice-tray__dice">
+      @for (die of dice(); track $index) {
+        <app-trackplay-die-glyph
+          class="dice-tray__die"
+          [style.--dice-settle]="die.settle"
+          [faces]="die.faces"
+          [value]="die.value"
+        />
+      }
+    </div>
 
-  @if (roll(); as roll) {
     @if (revealed()) {
-      <p class="dice-tray__result" role="status">
-        <span class="dice-tray__breakdown" data-testid="dice-breakdown">
-          {{ breakdown() }}
-        </span>
-        <span class="dice-tray__total" data-testid="dice-total">
-          {{ roll.total }}
-        </span>
+      <p class="dice-tray__total" role="status" data-testid="dice-total">
+        {{ roll.total }}
       </p>
     }
-  }
-</div>
+  </div>
+}
