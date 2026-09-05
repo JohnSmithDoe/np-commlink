@@ -6,8 +6,12 @@
  * yard button, and a pasted setting alike.
  * ───────────────────────────────────────────────────────────────── */
 
-import { BoardField, BoardFigure, BoardLayout } from '../model/board.types';
-import { TrackplayId } from '../model/trackplay.types';
+import {
+  BoardField,
+  BoardFieldId,
+  BoardFigure,
+  BoardLayout,
+} from '../model/board.types';
 
 export type PlacementRefusal =
   'unknown-field' | 'occupied' | 'foreign-ground' | 'too-many';
@@ -28,13 +32,13 @@ export function nextFigure(
   };
 }
 
-export function homeFieldId(player: number, piece: number): TrackplayId {
+export function homeFieldId(player: number, piece: number): BoardFieldId {
   return `nest-${player}-${piece}`;
 }
 
 export function figureOn(
   placed: readonly BoardFigure[],
-  fieldId: TrackplayId
+  fieldId: BoardFieldId
 ): BoardFigure | undefined {
   return placed.find((figure) => figure.fieldId === fieldId);
 }
@@ -47,7 +51,7 @@ export function refuseFigure(
   layout: BoardLayout,
   placed: readonly BoardFigure[],
   player: number,
-  fieldId: TrackplayId
+  fieldId: BoardFieldId
 ): PlacementRefusal | null {
   const field = layout.fields.find((one) => one.id === fieldId);
 
@@ -62,7 +66,7 @@ export function refuseFigure(
 export function refuseNext(
   layout: BoardLayout,
   placed: readonly BoardFigure[],
-  fieldId: TrackplayId
+  fieldId: BoardFieldId
 ): PlacementRefusal | null {
   const next = nextFigure(layout, placed);
   return next ? refuseFigure(layout, placed, next.player, fieldId) : 'too-many';
@@ -71,7 +75,7 @@ export function refuseNext(
 export function placeFigure(
   layout: BoardLayout,
   placed: readonly BoardFigure[],
-  fieldId: TrackplayId
+  fieldId: BoardFieldId
 ): readonly BoardFigure[] {
   const next = nextFigure(layout, placed);
   if (!next || refuseNext(layout, placed, fieldId)) return placed;

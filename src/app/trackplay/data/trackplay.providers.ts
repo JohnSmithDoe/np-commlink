@@ -27,6 +27,7 @@ export const trackplayContext = providePersistedContext({
       '[Trackplay GamesForPlayer]',
       '[Trackplay GameTypes]',
       '[Trackplay Dice]',
+      '[Trackplay Board]',
     ],
   },
   telemetry: [

@@ -1,0 +1,48 @@
+<app-page-header hideButtons label="page-title.trackplay-board-rules" />
+
+<ion-content>
+  <app-page-return />
+
+  <div class="board-rules ion-padding">
+    <p class="sr-hud">{{ 'trackplay.board.rules.heading' | translate }}</p>
+
+    <ion-list>
+      @for (rule of toggles; track rule.key) {
+        <ion-item>
+          <ion-toggle
+            [checked]="isOn(rule.key)"
+            (ionChange)="toggle(rule.key, $any($event).detail.checked)"
+          >
+            {{ rule.label | translate }}
+          </ion-toggle>
+        </ion-item>
+        <ion-note class="board-rules__hint">
+          {{ rule.hint | translate }}
+        </ion-note>
+      }
+    </ion-list>
+
+    <p class="sr-hud">{{ 'trackplay.board.rules.entry-roll' | translate }}</p>
+
+    <div class="board-rules__pips">
+      @for (pips of [1, 2, 3, 4, 5, 6]; track pips) {
+        <ion-button
+          size="small"
+          [fill]="board.rules().entryRoll === pips ? 'solid' : 'outline'"
+          [attr.aria-pressed]="board.rules().entryRoll === pips"
+          (click)="setEntryRoll(pips)"
+        >
+          {{ pips }}
+        </ion-button>
+      }
+    </div>
+
+    <ion-note class="board-rules__hint">
+      {{ 'trackplay.board.rules.entry-roll-hint' | translate }}
+    </ion-note>
+
+    <ion-button expand="block" fill="outline" (click)="reset()">
+      {{ 'trackplay.board.rules.reset' | translate }}
+    </ion-button>
+  </div>
+</ion-content>

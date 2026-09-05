@@ -2,8 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   IonButton,
   IonButtons,
@@ -13,7 +15,6 @@ import {
   IonSegmentButton,
   IonTextarea,
 } from '@ionic/angular/standalone';
-import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
@@ -22,29 +23,24 @@ import {
   cubeOutline,
   enterOutline,
   gridOutline,
+  optionsOutline,
   playForwardOutline,
   refreshOutline,
 } from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
+import { BoardFacade } from '../../data';
 import {
   BOARD_PLAYER_COUNTS,
-  BoardFigure,
+  BoardFieldId,
   BoardPlayerCount,
 } from '../../model/board.types';
-import { TrackplayId } from '../../model/trackplay.types';
 import { BoardComponent } from '../../ui/board/board.component';
-import { buildBoard } from '../../util/board.factory';
-import { formatSetting, parseSetting } from '../../util/board.notation';
-import {
-  PlacementRefusal,
-  figureCount,
-  nextFigure,
-  placeFigure,
-  placeNextAtHome,
-  refuseNext,
-  takeBack,
-} from '../../util/board.setup';
+import { MoveRefusal, planMove } from '../../util/board.moves';
+import { parseSetting } from '../../util/board.notation';
+import { PlacementRefusal, refuseNext } from '../../util/board.setup';
+
+const PIPS = [1, 2, 3, 4, 5, 6];
 
 @Component({
   selector: 'app-page-trackplay-board',
@@ -67,58 +63,90 @@ import {
   ],
 })
 export class TrackplayBoardPage {
+  readonly board = inject(BoardFacade);
+
   readonly counts = BOARD_PLAYER_COUNTS;
-  readonly players = signal<BoardPlayerCount>(4);
+  readonly pips = PIPS;
+
   readonly arranging = signal(false);
-  readonly figures = signal<readonly BoardFigure[]>([]);
-
-  readonly layout = computed(() => buildBoard(this.players()));
-  readonly total = computed(() => figureCount(this.layout()));
-  readonly next = computed(() => nextFigure(this.layout(), this.figures()));
-  readonly complete = computed(() => this.next() === null);
-  readonly notation = computed(() =>
-    formatSetting(this.layout(), this.figures())
-  );
-
+  readonly picked = signal<BoardFieldId | null>(null);
   readonly draft = signal('');
   readonly rejected = signal<readonly string[]>([]);
   readonly refused = signal<PlacementRefusal | null>(null);
+  readonly moveRefused = signal<MoveRefusal | null>(null);
   readonly copied = signal(false);
 
+  readonly complete = computed(() => this.board.next() === null);
+
   selectPlayers(players: BoardPlayerCount): void {
-    this.players.set(players);
-    this.#hold([]);
+    this.board.seatPlayers(players);
+    this.#quiet();
   }
 
   toggleArranging(): void {
     this.arranging.update((arranging) => !arranging);
+    this.picked.set(null);
   }
 
-  placeOn(fieldId: TrackplayId): void {
-    const refusal = refuseNext(this.layout(), this.figures(), fieldId);
+  tapField(fieldId: BoardFieldId): void {
+    if (this.complete()) {
+      this.picked.update((held) => (held === fieldId ? null : fieldId));
+      return;
+    }
+
+    const refusal = refuseNext(
+      this.board.layout(),
+      this.board.figures(),
+      fieldId
+    );
     if (refusal) {
       this.refused.set(refusal);
       return;
     }
 
-    this.#hold(placeFigure(this.layout(), this.figures(), fieldId));
+    this.board.placeOn(fieldId);
+    this.#quiet();
+  }
+
+  moveBy(pips: number): void {
+    const from = this.picked();
+    if (!from) return;
+
+    const plan = planMove(
+      this.board.layout(),
+      this.board.rules(),
+      this.board.figures(),
+      from,
+      pips
+    );
+    if (!plan.ok) {
+      this.moveRefused.set(plan.refusal);
+      return;
+    }
+
+    this.board.moveFigure(from, pips);
+    this.picked.set(null);
+    this.#quiet();
   }
 
   placeNext(): void {
-    this.#hold(placeNextAtHome(this.layout(), this.figures()));
+    this.board.placeNextAtHome();
+    this.#quiet();
   }
 
   undo(): void {
-    this.#hold(takeBack(this.figures()));
+    this.board.takeBack();
+    this.#quiet();
   }
 
   clear(): void {
-    this.#hold([]);
+    this.board.clearBoard();
+    this.#quiet();
   }
 
   async copy(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(this.notation());
+      await navigator.clipboard.writeText(this.board.notation());
       this.copied.set(true);
     } catch {
       this.copied.set(false);
@@ -126,18 +154,18 @@ export class TrackplayBoardPage {
   }
 
   importSetting(): void {
-    const parsed = parseSetting(this.draft(), this.layout());
+    const parsed = parseSetting(this.draft(), this.board.layout());
 
-    this.players.set(parsed.layout.players);
-    this.#hold(parsed.figures);
+    this.board.loadSetting(parsed.layout.players, parsed.figures);
+    this.#quiet();
     this.rejected.set(parsed.rejected);
   }
 
-  #hold(figures: readonly BoardFigure[]): void {
-    this.figures.set(figures);
+  #quiet(): void {
     this.copied.set(false);
     this.rejected.set([]);
     this.refused.set(null);
+    this.moveRefused.set(null);
   }
 
   constructor() {
@@ -147,6 +175,7 @@ export class TrackplayBoardPage {
       cubeOutline,
       enterOutline,
       gridOutline,
+      optionsOutline,
       playForwardOutline,
       refreshOutline,
     });

@@ -12,6 +12,8 @@ export { GamePlayFacade } from './games/game-play.facade';
 export { GameTypesActions } from './game-types/game-types.actions';
 export { GameTypesFacade } from './game-types/game-types.facade';
 export { GameTypesPageFacade } from './game-types/game-types-page.facade';
+export { BoardActions } from './board/board.actions';
+export { BoardFacade } from './board/board.facade';
 export { DiceActions } from './dice/dice.actions';
 export { DiceFacade } from './dice/dice.facade';
 export { trackplayContext } from './trackplay.providers';

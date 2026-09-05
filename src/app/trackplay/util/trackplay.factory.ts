@@ -11,6 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { createBaseItem } from '../../@shared/util/app.factory';
+import { BoardRules, BoardState } from '../model/board.types';
 import {
   DicePool,
   Game,
@@ -94,3 +95,17 @@ export const initialGameTypesState: GameTypesState = {
 };
 
 export const initialDicePool: DicePool = { dice: [] };
+
+export const MADN_RULES: BoardRules = {
+  entryRoll: 6,
+  exactHome: true,
+  jumpOwnInHome: false,
+  throwOnLanding: true,
+  blockOwn: false,
+};
+
+export const initialBoardState: BoardState = {
+  players: 4,
+  figures: [],
+  rules: MADN_RULES,
+};

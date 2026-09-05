@@ -61,6 +61,11 @@ $players: (
   cursor: pointer;
 }
 
+.board__cell--picked {
+  stroke: var(--sr-amber);
+  stroke-width: 0.2;
+}
+
 @each $player, $ink in $players {
   .board__cell--p#{$player} {
     fill: var(--board-p#{$player});

@@ -16,11 +16,11 @@
 
 import {
   BoardField,
+  BoardFieldId,
   BoardFieldKind,
   BoardLayout,
   BoardPlayerCount,
 } from '../model/board.types';
-import { TrackplayId } from '../model/trackplay.types';
 
 const PIECES = 4;
 const SHARE_MIN = 3;
@@ -83,7 +83,7 @@ function round(value: number): number {
 }
 
 function field(
-  id: TrackplayId,
+  id: BoardFieldId,
   kind: BoardFieldKind,
   player: number | null,
   index: number,

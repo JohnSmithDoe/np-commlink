@@ -10,6 +10,14 @@
 
     <ion-button
       color="primary"
+      routerLink="/trackplay/board/rules"
+      [attr.aria-label]="'trackplay.board.rules.heading' | translate"
+    >
+      <ion-icon slot="icon-only" name="options-outline" aria-hidden="true" />
+    </ion-button>
+
+    <ion-button
+      color="primary"
       [attr.aria-pressed]="arranging()"
       [attr.aria-label]="'trackplay.board.action.set' | translate"
       (click)="toggleArranging()"
@@ -28,7 +36,7 @@
     <ion-segment
       scrollable
       class="board-page__players"
-      [value]="players()"
+      [value]="board.players()"
       [attr.aria-label]="'trackplay.board.players' | translate"
       (ionChange)="selectPlayers($any($event).detail.value)"
     >
@@ -38,48 +46,89 @@
     </ion-segment>
 
     <app-trackplay-board
-      [layout]="layout()"
-      [figures]="figures()"
+      [layout]="board.layout()"
+      [figures]="board.figures()"
       [picking]="arranging()"
-      [label]="'trackplay.board.a11y.board' | translate: { players: players() }"
-      (fieldPicked)="placeOn($event)"
+      [selected]="picked()"
+      [label]="
+        'trackplay.board.a11y.board' | translate: { players: board.players() }
+      "
+      (fieldPicked)="tapField($event)"
     />
 
     @if (arranging()) {
       <section class="board-page__setup sr-panel">
-        <p class="sr-hud">
-          {{
-            'trackplay.board.setup.progress'
-              | translate: { placed: figures().length, total: total() }
-          }}
-        </p>
+        @if (complete()) {
+          <p class="sr-hud">{{ 'trackplay.board.play.heading' | translate }}</p>
 
-        @if (next(); as figure) {
-          <p class="board-page__next">
+          @if (picked()) {
+            <p class="board-page__next">
+              {{ 'trackplay.board.play.picked' | translate }}
+            </p>
+
+            <div class="board-page__pips">
+              @for (pip of pips; track pip) {
+                <ion-button size="small" (click)="moveBy(pip)">
+                  {{ pip }}
+                </ion-button>
+              }
+            </div>
+
+            @switch (moveRefused()) {
+              @case ('needs-six') {
+                <p class="board-page__note" role="status">
+                  {{ 'trackplay.board.play.needs-six' | translate }}
+                </p>
+              }
+              @case ('overshoots-home') {
+                <p class="board-page__note" role="status">
+                  {{ 'trackplay.board.play.overshoots' | translate }}
+                </p>
+              }
+              @case ('own-piece') {
+                <p class="board-page__note" role="status">
+                  {{ 'trackplay.board.play.own-piece' | translate }}
+                </p>
+              }
+              @case ('blocked-in-home') {
+                <p class="board-page__note" role="status">
+                  {{ 'trackplay.board.play.blocked' | translate }}
+                </p>
+              }
+            }
+          } @else {
+            <p class="board-page__next">
+              {{ 'trackplay.board.play.pick' | translate }}
+            </p>
+          }
+        } @else {
+          <p class="sr-hud">
             {{
-              'trackplay.board.setup.next'
+              'trackplay.board.setup.progress'
                 | translate
-                  : { player: figure.player + 1, piece: figure.piece + 1 }
+                  : { placed: board.figures().length, total: board.total() }
             }}
           </p>
-        } @else {
-          <p class="board-page__next">
-            {{ 'trackplay.board.setup.done' | translate }}
-          </p>
-        }
 
-        <ion-button
-          expand="block"
-          [disabled]="complete()"
-          (click)="placeNext()"
-        >
-          <ion-icon
-            slot="start"
-            name="play-forward-outline"
-            aria-hidden="true"
-          />
-          {{ 'trackplay.board.setup.place' | translate }}
-        </ion-button>
+          @if (board.next(); as figure) {
+            <p class="board-page__next">
+              {{
+                'trackplay.board.setup.next'
+                  | translate
+                    : { player: figure.player + 1, piece: figure.piece + 1 }
+              }}
+            </p>
+          }
+
+          <ion-button expand="block" (click)="placeNext()">
+            <ion-icon
+              slot="start"
+              name="play-forward-outline"
+              aria-hidden="true"
+            />
+            {{ 'trackplay.board.setup.place' | translate }}
+          </ion-button>
+        }
 
         @switch (refused()) {
           @case ('foreign-ground') {
@@ -97,7 +146,7 @@
         <ion-button
           expand="block"
           fill="outline"
-          [disabled]="!figures().length"
+          [disabled]="!board.figures().length"
           (click)="undo()"
         >
           <ion-icon slot="start" name="arrow-undo-outline" aria-hidden="true" />
@@ -107,7 +156,7 @@
         <ion-button
           expand="block"
           fill="outline"
-          [disabled]="!figures().length"
+          [disabled]="!board.figures().length"
           (click)="clear()"
         >
           <ion-icon slot="start" name="refresh-outline" aria-hidden="true" />
@@ -116,7 +165,7 @@
 
         <p class="sr-hud">{{ 'trackplay.board.setup.notation' | translate }}</p>
 
-        <pre class="board-page__notation">{{ notation() }}</pre>
+        <pre class="board-page__notation">{{ board.notation() }}</pre>
 
         <ion-button expand="block" fill="outline" (click)="copy()">
           <ion-icon slot="start" name="copy-outline" aria-hidden="true" />
@@ -163,9 +212,9 @@
         'trackplay.board.summary'
           | translate
             : {
-                players: layout().players,
-                track: layout().trackLength,
-                goal: layout().pieces,
+                players: board.layout().players,
+                track: board.layout().trackLength,
+                goal: board.layout().pieces,
               }
       }}
     </p>

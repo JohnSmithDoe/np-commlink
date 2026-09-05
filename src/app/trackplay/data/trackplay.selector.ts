@@ -8,6 +8,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { BoardState } from '../model/board.types';
 import {
   DicePool,
   GamesState,
@@ -47,4 +48,9 @@ export const selectGamesForPlayerView = createSelector(
 export const selectDicePool = createSelector(
   selectTrackplayState,
   (state): DicePool => state.dice
+);
+
+export const selectBoard = createSelector(
+  selectTrackplayState,
+  (state): BoardState => state.board
 );

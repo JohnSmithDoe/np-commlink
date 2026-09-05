@@ -1,3 +1,4 @@
+import { BoardState } from '../model/board.types';
 import {
   DicePool,
   Game,
@@ -12,6 +13,7 @@ import {
 } from '../model/trackplay.types';
 import {
   DEFAULT_GAME_TYPES,
+  initialBoardState,
   initialDicePool,
   initialGamesForPlayerView,
   initialGamesState,
@@ -79,6 +81,10 @@ export function mockGamesForPlayerView(
   return { ...initialGamesForPlayerView, ...overrides };
 }
 
+function mockBoardState(overrides: Partial<BoardState> = {}): BoardState {
+  return { ...initialBoardState, ...overrides };
+}
+
 export function mockTrackplayState(
   overrides: Partial<TrackplayState> = {}
 ): TrackplayState {
@@ -88,6 +94,7 @@ export function mockTrackplayState(
     gamesForPlayer: mockGamesForPlayerView(),
     gameTypes: mockGameTypesState(),
     dice: mockDicePool(),
+    board: mockBoardState(),
     ...overrides,
   };
 }

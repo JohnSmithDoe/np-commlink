@@ -5,8 +5,12 @@ import {
   input,
   output,
 } from '@angular/core';
-import { BoardField, BoardFigure, BoardLayout } from '../../model/board.types';
-import { TrackplayId } from '../../model/trackplay.types';
+import {
+  BoardField,
+  BoardFieldId,
+  BoardFigure,
+  BoardLayout,
+} from '../../model/board.types';
 
 interface PlacedFigure extends BoardFigure {
   x: number;
@@ -24,8 +28,9 @@ export class BoardComponent {
   readonly label = input.required<string>();
   readonly figures = input<readonly BoardFigure[]>([]);
   readonly picking = input(false);
+  readonly selected = input<BoardFieldId | null>(null);
 
-  readonly fieldPicked = output<TrackplayId>();
+  readonly fieldPicked = output<BoardFieldId>();
 
   protected readonly figureRadius = computed<number>(
     () => this.layout().radius * 0.62
@@ -44,9 +49,11 @@ export class BoardComponent {
 
   protected cellClass(field: BoardField): string {
     const kind = `board__cell board__cell--${field.kind}`;
-    return field.player === null
-      ? kind
-      : `${kind} board__cell--p${field.player}`;
+    const owned =
+      field.player === null ? kind : `${kind} board__cell--p${field.player}`;
+    return this.selected() === field.id
+      ? `${owned} board__cell--picked`
+      : owned;
   }
 
   protected pick(field: BoardField): void {

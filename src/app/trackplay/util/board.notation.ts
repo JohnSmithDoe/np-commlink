@@ -24,11 +24,11 @@
 import {
   BOARD_PLAYER_COUNTS,
   BoardField,
+  BoardFieldId,
   BoardFigure,
   BoardLayout,
   BoardPlayerCount,
 } from '../model/board.types';
-import { TrackplayId } from '../model/trackplay.types';
 import { buildBoard } from './board.factory';
 import { refuseFigure } from './board.setup';
 
@@ -77,7 +77,7 @@ export function fieldNotation(layout: BoardLayout, field: BoardField): string {
 
 export function notationOf(
   layout: BoardLayout,
-  fieldId: TrackplayId
+  fieldId: BoardFieldId
 ): string | null {
   const field = layout.fields.find((one) => one.id === fieldId);
   return field ? fieldNotation(layout, field) : null;

@@ -19,6 +19,7 @@
 import { Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
+import { BoardState } from './board.types';
 import { DieFaces } from './dice.types';
 
 export type TrackplayId = string;
@@ -81,4 +82,5 @@ export interface TrackplayState {
   gamesForPlayer: GamesView;
   gameTypes: GameTypesState;
   dice: DicePool;
+  board: BoardState;
 }
