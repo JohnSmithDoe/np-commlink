@@ -1,0 +1,27 @@
+<svg
+  class="board"
+  role="img"
+  focusable="false"
+  [class.board--picking]="picking()"
+  [attr.viewBox]="layout().viewBox"
+  [attr.aria-label]="label()"
+>
+  @for (field of layout().fields; track field.id) {
+    <circle
+      [attr.class]="cellClass(field)"
+      [attr.cx]="field.x"
+      [attr.cy]="field.y"
+      [attr.r]="layout().radius"
+      (click)="pick(field)"
+    />
+  }
+
+  @for (figure of placed(); track figure.player + '-' + figure.piece) {
+    <circle
+      [attr.class]="'board__figure board__figure--p' + figure.player"
+      [attr.cx]="figure.x"
+      [attr.cy]="figure.y"
+      [attr.r]="figureRadius()"
+    />
+  }
+</svg>

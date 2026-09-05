@@ -1,0 +1,173 @@
+<app-page-header hideButtons label="page-title.trackplay-board">
+  <ion-buttons slot="end" toolbar>
+    <ion-button
+      color="primary"
+      routerLink="/trackplay/dice"
+      [attr.aria-label]="'trackplay.dice.a11y.open' | translate"
+    >
+      <ion-icon slot="icon-only" name="cube-outline" aria-hidden="true" />
+    </ion-button>
+
+    <ion-button
+      color="primary"
+      [attr.aria-pressed]="arranging()"
+      [attr.aria-label]="'trackplay.board.action.set' | translate"
+      (click)="toggleArranging()"
+    >
+      <ion-icon slot="icon-only" name="grid-outline" aria-hidden="true" />
+    </ion-button>
+  </ion-buttons>
+</app-page-header>
+
+<ion-content>
+  <app-page-return />
+
+  <div class="board-page ion-padding">
+    <p class="sr-hud">{{ 'trackplay.board.players' | translate }}</p>
+
+    <ion-segment
+      scrollable
+      class="board-page__players"
+      [value]="players()"
+      [attr.aria-label]="'trackplay.board.players' | translate"
+      (ionChange)="selectPlayers($any($event).detail.value)"
+    >
+      @for (count of counts; track count) {
+        <ion-segment-button [value]="count">{{ count }}</ion-segment-button>
+      }
+    </ion-segment>
+
+    <app-trackplay-board
+      [layout]="layout()"
+      [figures]="figures()"
+      [picking]="arranging()"
+      [label]="'trackplay.board.a11y.board' | translate: { players: players() }"
+      (fieldPicked)="placeOn($event)"
+    />
+
+    @if (arranging()) {
+      <section class="board-page__setup sr-panel">
+        <p class="sr-hud">
+          {{
+            'trackplay.board.setup.progress'
+              | translate: { placed: figures().length, total: total() }
+          }}
+        </p>
+
+        @if (next(); as figure) {
+          <p class="board-page__next">
+            {{
+              'trackplay.board.setup.next'
+                | translate
+                  : { player: figure.player + 1, piece: figure.piece + 1 }
+            }}
+          </p>
+        } @else {
+          <p class="board-page__next">
+            {{ 'trackplay.board.setup.done' | translate }}
+          </p>
+        }
+
+        <ion-button
+          expand="block"
+          [disabled]="complete()"
+          (click)="placeNext()"
+        >
+          <ion-icon
+            slot="start"
+            name="play-forward-outline"
+            aria-hidden="true"
+          />
+          {{ 'trackplay.board.setup.place' | translate }}
+        </ion-button>
+
+        @switch (refused()) {
+          @case ('foreign-ground') {
+            <p class="board-page__note" role="status">
+              {{ 'trackplay.board.setup.denied-foreign' | translate }}
+            </p>
+          }
+          @case ('occupied') {
+            <p class="board-page__note" role="status">
+              {{ 'trackplay.board.setup.denied-occupied' | translate }}
+            </p>
+          }
+        }
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          [disabled]="!figures().length"
+          (click)="undo()"
+        >
+          <ion-icon slot="start" name="arrow-undo-outline" aria-hidden="true" />
+          {{ 'trackplay.board.setup.undo' | translate }}
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          [disabled]="!figures().length"
+          (click)="clear()"
+        >
+          <ion-icon slot="start" name="refresh-outline" aria-hidden="true" />
+          {{ 'trackplay.board.setup.clear' | translate }}
+        </ion-button>
+
+        <p class="sr-hud">{{ 'trackplay.board.setup.notation' | translate }}</p>
+
+        <pre class="board-page__notation">{{ notation() }}</pre>
+
+        <ion-button expand="block" fill="outline" (click)="copy()">
+          <ion-icon slot="start" name="copy-outline" aria-hidden="true" />
+          {{ 'trackplay.board.setup.copy' | translate }}
+        </ion-button>
+
+        @if (copied()) {
+          <p class="board-page__note" role="status">
+            {{ 'trackplay.board.setup.copied' | translate }}
+          </p>
+        }
+
+        <ion-textarea
+          rows="3"
+          labelPlacement="stacked"
+          [label]="'trackplay.board.setup.paste' | translate"
+          [value]="draft()"
+          (ionInput)="draft.set($any($event).detail.value ?? '')"
+        />
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          [disabled]="!draft().trim()"
+          (click)="importSetting()"
+        >
+          <ion-icon slot="start" name="enter-outline" aria-hidden="true" />
+          {{ 'trackplay.board.setup.import' | translate }}
+        </ion-button>
+
+        @if (rejected().length) {
+          <p class="board-page__note" role="status">
+            {{
+              'trackplay.board.setup.rejected'
+                | translate: { count: rejected().length }
+            }}
+          </p>
+        }
+      </section>
+    }
+
+    <p class="board-page__summary">
+      {{
+        'trackplay.board.summary'
+          | translate
+            : {
+                players: layout().players,
+                track: layout().trackLength,
+                goal: layout().pieces,
+              }
+      }}
+    </p>
+  </div>
+</ion-content>

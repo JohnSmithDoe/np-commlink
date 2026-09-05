@@ -48,6 +48,14 @@ export const trackplayRoutes: Routes = [
           ),
       },
       {
+        path: 'board',
+        title: marker('page-title.trackplay-board'),
+        loadComponent: () =>
+          import('../feature/board-page/board.page').then(
+            (m) => m.TrackplayBoardPage
+          ),
+      },
+      {
         path: 'game/:id',
         title: marker('page-title.trackplay-game'),
         loadComponent: () =>

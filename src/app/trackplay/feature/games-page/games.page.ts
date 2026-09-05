@@ -8,6 +8,7 @@ import {
   cubeOutline,
   eyeOutline,
   eyeOffOutline,
+  gridOutline,
   peopleOutline,
   playCircleOutline,
 } from 'ionicons/icons';
@@ -45,6 +46,7 @@ export class TrackplayGamesPage {
       cubeOutline,
       eyeOutline,
       eyeOffOutline,
+      gridOutline,
       peopleOutline,
       playCircleOutline,
     });

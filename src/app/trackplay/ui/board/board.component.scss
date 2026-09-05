@@ -1,0 +1,72 @@
+// ─── why ────────────────────────────────────────────────────────
+// Twelve hues, never repeated: a colour IS a player's identity here, so the
+// palette has to reach as far as the board seats — which is twelve.
+//
+// A figure ringed in --sr-panel was invisible in the one place it matters
+// most: standing in its OWN yard, where the field underneath is already its
+// colour. Light on light said nothing, and setting the board is the whole
+// mode. So the ring is --sr-text, and it is the ring, not the fill, that
+// reads as "occupied".
+// ────────────────────────────────────────────────────────────────
+$players: (
+  0: #e5484d,
+  1: #3e63dd,
+  2: #30a46c,
+  3: #ebbc00,
+  4: #d6409f,
+  5: #f76b15,
+  6: #00a2c7,
+  7: #8e4ec6,
+  8: #8db600,
+  9: #0d8f7f,
+  10: #9c5a2d,
+  11: #6b7a8f,
+);
+
+:host {
+  @each $player, $ink in $players {
+    --board-p#{$player}: #{$ink};
+  }
+
+  display: block;
+}
+
+.board {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: var(--sr-radius);
+}
+
+.board__cell {
+  fill: var(--sr-bg);
+  stroke: var(--sr-line);
+  stroke-width: 0.07;
+}
+
+.board__cell--start {
+  stroke: var(--sr-text);
+  stroke-width: 0.12;
+}
+
+.board__figure {
+  stroke: var(--sr-text);
+  stroke-width: 0.11;
+  pointer-events: none;
+}
+
+.board--picking .board__cell {
+  cursor: pointer;
+}
+
+@each $player, $ink in $players {
+  .board__cell--p#{$player} {
+    fill: var(--board-p#{$player});
+  }
+
+  .board__figure--p#{$player} {
+    fill: var(--board-p#{$player});
+  }
+}

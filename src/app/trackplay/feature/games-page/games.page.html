@@ -16,6 +16,16 @@
   <ion-button
     headerEnd
     slot="end"
+    routerLink="/trackplay/board"
+    color="primary"
+    [attr.aria-label]="'trackplay.board.a11y.open' | translate"
+  >
+    <ion-icon slot="icon-only" name="grid-outline" aria-hidden="true" />
+  </ion-button>
+
+  <ion-button
+    headerEnd
+    slot="end"
     routerLink="/trackplay/players"
     color="primary"
     [attr.aria-label]="'trackplay.a11y.players' | translate"
