@@ -121,3 +121,6 @@ docs/cash
 *.jks
 *.keystore
 keystore.properties
+
+# locally generated image takes — staged art is not shipped art
+/image-staging/

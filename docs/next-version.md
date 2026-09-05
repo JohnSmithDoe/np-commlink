@@ -149,6 +149,20 @@ numbers, own deck program, both detail routes deep-linkable. Left:
   heads 3 and tails 2, sum 6 to 9, parity carrying yang and 6 or 9 marking the line as changing, read bottom
   to top.
 
+## TRACKPLAY
+
+- **The board plays a game but polices no turn.** Any figure moves by any count: nothing holds whose turn
+  it is, nothing grants the extra roll a six earns, nothing gives a player with an empty board their three
+  throws, and nothing enforces that an occupied start field is cleared first. That is deliberate — the
+  board is a virtual copy of a game on the table, and there the humans already hold the turn order, so a
+  board that refuses a move the physical game has just made is wrong more often than it is right. What
+  makes it a real question rather than a settled one is that the same screen is the only place a game
+  could be played with nobody at a table.
+  Owed if it lands: turn state — current player, throws left, whether a six is pending — which is a
+  persisted shape in the `board` slice and so wants the usual ask. The move rules are already a
+  ruleset (`BoardRules`), so the turn rules belong beside them as toggles rather than as a second engine,
+  and the decision to make first is whether the board FOLLOWS the table or LEADS it.
+
 ## SOYKAF
 
 Recipe-book scope lives with the domain: [domains.md](./domains.md).
