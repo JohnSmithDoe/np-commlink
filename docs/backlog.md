@@ -27,47 +27,23 @@ remains here is duplication, four test gaps and the doc drift._
 
 ## Duplication — the same shape, written again
 
-- **D1 · 17 hand-written ItemList CRUD reducer blocks, and hydration has already forked.** Every
-  list reducer spells out `addItem`/`removeItem`/`updateItem`/`updateSearch`/`updateFilter`/`updateSort`
-  plus its `loaded` handler — ~95 handler lines and ~120 lines of repeated imports. The _action_ half of
-  exactly this set is already a factory (`item-list.actions.factory.ts`), used by all 17. The reducer is
-  the only half nobody generated, and the copies have diverged on the one line that touches persisted
-  data: seven spell hydration `{ ...initialXState, ...(loaded ?? state) }`, nine spell it `loaded ??
-state`. The second form takes the stored document wholesale, so a field seeded into initial state
-  never reaches anyone holding an older document. **Fix:** `itemListReducerOns(actions, initial)` in
-  `@shared/data/item-lists/` (must be `data/` — `on()` is `@ngrx/store`), and pick the initial-spread
-  spelling. Do this **before** the "a list declares its own sort fallback" item in
-  [next-version.md](./next-version.md) — it turns that from 17 edits into one.
+- **D3 · The create-seed rule is declared twice per list.** _A new item takes its name from the search
+  box and is filed under the armed filter_ — stated once as `create:` config in the domain's list
+  effects, and again in the facade's `showCreateDialog`, thirteen times over. Two writers for one fact,
+  and it has already produced two spellings of the same null-guard (`state().searchQuery` in seven,
+  `state()?.searchQuery` in six) against one `Signal<ItemList | undefined>` contract. **Fix:** an
+  abstract `create` on `BaseListPageFacade` that both the dialog call and the effects config read, so
+  each list declares its seed once. The sixteen identical `showEditDialog` bodies can ride along into the
+  base in the same pass, but the seed rule is the finding — the dialog call has never diverged.
 
-- **D2 · Seven facades hand-roll the three forwarders `itemListCommands` already builds** (vitals ×3,
-  trackplay ×4), while nine use the helper. Already diverged: `game-types.facade.ts:70` declares
-  `setSortMode(sortBy)` with **no `direction` parameter**, hardcoding `'toggle'`. Structural typing
-  accepts the narrower signature silently; it is harmless only because every current caller passes
-  `'toggle'`. The first caller wanting a pinned direction gets it ignored, with no error.
-
-- **D3 · `showEditDialog` written out 16 times, the create-seed 13 times.** The seeding rule — _a new
-  item takes its name from the search box and is filed under the armed filter_ — is stated twice per
-  list: once as `create:` config in the domain's list effects, once in the facade. Two writers, one
-  fact, and it has already produced two spellings of the same null-guard (`state().searchQuery` vs
-  `state()?.searchQuery`) against one `Signal<ItemList | undefined>` contract. **Fix:** `showEditDialog`
-  onto `BaseListPageFacade`; an abstract `create` both the facade and the effects config read.
-
-- **D4 · ~18 pages carry three-line forwarders, under six names for one operation.**
-  `removeItem`/`remove`/`deleteItem`/`deletePlayer`/`deleteType`/`deleteProfile`… and
-  `showEditDialog`/`openEdit`/`edit`/`openEditRule`/`openPillEdit`… Two of them forward to a method
-  _already on the bound page facade_ — pure indirection — and ~10 pages inject a second facade solely to
-  hold them. Two pages already prove the template can call the facade directly. The real cost is that a
-  reader cannot tell from a page whether a delete is undoable or confirmed without opening the facade.
-
-- **D5 · The route-scoped list-selector chain is hand-rolled three times while the `@shared` factory
-  that does it serves one domain.** `route-scoped-list.selector.ts` is used by vitals only; cash
-  rebuilds it twice in one file and trackplay once, and the _unscoped_ triple is written out in 13 more
-  places. The load-bearing part is the ordering — scope before search — and cash's banner and the
-  factory's banner each argue it separately while trackplay's states neither. **Fix:** generalise the
-  factory to take the scope selector plus an optional `project(list)` hook (cash pins `sort` inside its
-  scope, which the factory has no concept of), and add a plain `createListSelectors` for the 13. This is
-  the honest resolution of "something in `@shared` only one domain uses" — the shared thing is right,
-  the others should join it.
+- **D4 · One operation, six names — a rename pass, not an extraction.** ~18 pages carry three-line
+  forwarders spelled `removeItem`/`remove`/`deleteItem`/`deletePlayer`/`deleteType`/`deleteProfile`, and
+  `showEditDialog`/`openEdit`/`edit`/`openEditRule`/`openPillEdit`. Deleting them saves nothing anyone
+  would ever debug — each is trivial and a bug in one is a bug in one. The cost is that a reader cannot
+  tell from a page whether a delete is undoable or confirmed without opening the facade, and two of the
+  forwarders point at a method _already on the bound page facade_. **Fix:** settle on one name per
+  operation and let the row template call `facade.*` directly, as the cash account page and the notes
+  page already do. Judge it as consistency, not as line count.
 
 - **D6 · Five facades hand-wire push-undo-then-remove**, while two declarative forms already exist —
   the effects factory's `undoableDelete` and `BaseCategoryListPageFacade`'s `restoreActionFor?` hook.
@@ -82,13 +58,6 @@ state`. The second form takes the stored document wholesale, so a field seeded i
   places to forget. **Fix:** a `modal-chrome` component under `@shared/ui/` taking every label as an **input** (so
   `i18n-key-ownership` holds) and deriving the aria-label from the title, closing the sync gap
   structurally. Scope honestly: the cash trio is the byte-identical part.
-
-- **D8 · `@shared/feature/modal-dialog/base-modal-dialog.ts` has one consumer, in one domain.** 57
-  lines plus a spec serving `cash/feature/transfer-modal` alone — cash's two other modals do not use it.
-  It sits one directory from `BaseEditItemDialog` (12 consumers, 6 domains) with a near-identical member
-  set, so a reader in `@shared/feature/` must work out which of two dialog bases applies, and the answer
-  is "the second one, only if you are the transfer modal". **Fix:** move it to `cash/feature/`, beside
-  its consumer — the shape household already uses. It earns a return when a second domain needs one.
 
 - **D9 · The category-catalog port is implemented twice as pure forwarders** (household, tasks), and
   cash solved the same problem a third way with its own picker while trackplay treats `GameType` as a

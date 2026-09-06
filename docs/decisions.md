@@ -8,6 +8,16 @@ or a count the code owns.
 
 ## Declined extractions
 
+- **The five ItemList CRUD `on`s.** Seventeen reducers spell them out and none has ever diverged — all
+  call the same `list.utils`. Every shape that returns them as shared `on()` entries pays five or six
+  casts to NgRx's state variance, and `removeItem` cannot join at all: trackplay's aggregates omit it so
+  `combineReducers` hands the cascade the pre-delete state. The line that DID drift was the hydration
+  spread, and that is now one spelling.
+- **A general route-scoped list chain.** `createRouteScopedListSelectors` fits a list scoped by `:id`
+  with no projection. Cash's two views scope by `accountId`/`categoryId`, overwrite `sort` to pin the
+  ledger, and post-map against the UNSCOPED items; absorbing that needs three options, which is a bag
+  rather than a factory. The ordering rule — scope, then search, then sort — only bites where there is a
+  scope step, so the unscoped trio has nothing to protect.
 - **A `field-note` read idiom.** An empty money box disables save silently, an empty name box says so —
   the money box was never seeded, the name box was.
 - **A 24-line banner ceiling.** 32 is the gate; 6–14 lines is the guideline for a new banner.
@@ -17,7 +27,7 @@ or a count the code owns.
 - **`@capacitor/app`, `keyboard`, `haptics`** — zero imports, all three on the native classpath. Removing
   `app` changes Android's back button and no gate sees it. "No import" ≠ "unused" for a Capacitor plugin.
 - **`sonar-project.properties`** — Sonar runs on demand, natively (the CLI image is amd64-only; a
-  container mount breaks coverage import). Not for CI: it asserts on *new* code only, so a first
+  container mount breaks coverage import). Not for CI: it asserts on _new_ code only, so a first
   analysis passes vacuously.
 - **Intended variants outlive a `/simplify` sweep.** Spec-only usage is the specification, not dead code.
 
@@ -27,7 +37,7 @@ or a count the code owns.
   `CategoryId`. The name decides duplicates only: adding an existing one is a no-op, renaming onto one merges.
 - **When a reducer rewrites rows a dialog is editing, the dialog is a row too** — the open draft follows
   the survivor rather than putting a retired id back on save.
-- **A GUID per row, a natural key per singleton** — natural only where the key *is* the thing: list ids,
+- **A GUID per row, a natural key per singleton** — natural only where the key _is_ the thing: list ids,
   deck ids, office-time's day maps.
 - **Branded ids rejected.** Cost is an `as` at every mint point including every IndexedDB read. One mint;
   the disk read re-mints rather than casting.
@@ -39,10 +49,10 @@ or a count the code owns.
 - **A control the user can operate must change something observable; a page the user can reach must be
   reachable without a URL bar.** Why `list-settings` left `DECK_CATALOG`.
 - **No root-state type** — selectors and facades are `type:data` and cannot reach the shell.
-- **"Every context lazy"** — lifecycle matches where a slice is written and read. No *supplier* slice is eager.
+- **"Every context lazy"** — lifecycle matches where a slice is written and read. No _supplier_ slice is eager.
 - **A skin-composed i18n keyspace** — made all 60 keys invisible to `--clean`. Declared `Record<Skin, …>`
   fields make a missing skin a compile error.
-- **A CI i18n freshness gate** — the extract flags removed the need. *One artifact, two writers.*
+- **A CI i18n freshness gate** — the extract flags removed the need. _One artifact, two writers._
 - **`@ngrx/component-store` / `signalStore` for dialog state** — `signal` + `computed` is the whole
   requirement. No dialog state lives in NgRx.
 - **`office-time → tracking`** — office-time is standalone and only reports telemetry.
@@ -79,7 +89,7 @@ or a count the code owns.
   (`name`, `[name]`, an `icon` input, `[leadingIcon]`, `icon:` in a catalog or preset). "Outline
   everywhere" was tried and flattened two different things.
 - **`FILLED_BY_DESIGN` is for a CONTROL that fills in to report its own state** — `isFavorite() ? 'star'
-  : 'star-outline'`, the note editor's pin. A filled/outline pair is a state machine, and a sweep reading
+: 'star-outline'`, the note editor's pin. A filled/outline pair is a state machine, and a sweep reading
   only the variant suffix cannot see one.
 
 ## Router and navigation
@@ -129,8 +139,8 @@ or a count the code owns.
 
 - **Impurity arrives through a call into a util, not an import of a framework.** Four `trackplay` handlers
   read `crypto.randomUUID()` and `Date.now()` during reduce; a grep for framework imports could not see it.
-- **The fix is a defaulted parameter on the action *creator*** — clock and id read at dispatch time. A
-  default on the *factory* lets the impurity back in silently. What remains takes its `id` as required.
+- **The fix is a defaulted parameter on the action _creator_** — clock and id read at dispatch time. A
+  default on the _factory_ lets the impurity back in silently. What remains takes its `id` as required.
 - **Nothing gates this.** A file-scoped import ban keys on a filename (a decaying gate) and would not have
   caught the real violation.
 
@@ -144,7 +154,7 @@ or a count the code owns.
   against `unknown` and casting once, because the types it migrates FROM no longer exist; pinned by a spec
   against a literal of the old shape. `runMigrations` throwing is the only safe failure — it loads empty,
   never half-migrated. No down-ladder, no backup.
-- **A reset is a legitimate answer to a moved shape.** A rung is owed where the data's *meaning* survives;
+- **A reset is a legitimate answer to a moved shape.** A rung is owed where the data's _meaning_ survives;
   the deck's pre-flip document named the ids to _hide_, so migrating it would have inverted every choice.
 
 ## Destructive actions
@@ -218,7 +228,7 @@ The workflow file documents what it does. Two decisions are not visible there:
   `main` unchecked, and a green tree on one machine is the only evidence there is. Accepted because the
   hook is installed by `prepare` and the repo has one pusher.
 - **The signing key does not go into GitHub secrets, and no runner builds an APK.** It saves three minutes a few
-  times a year against a credential that *cannot be rotated* — a leak has no recovery except abandoning
+  times a year against a credential that _cannot be rotated_ — a leak has no recovery except abandoning
   the app identity, which takes every user's data. Exposure is wider than the repo: anyone with write
   access, any later workflow edit, and every third-party action sharing the job. **Automate up to the
   trust boundary and stop** — the same instinct that put Pages on a short-lived OIDC token.
