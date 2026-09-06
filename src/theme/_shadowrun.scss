@@ -93,6 +93,19 @@
   --sr-glow: none; // text/box neon bloom (off in plain)
   --sr-glow-lg: none; // hero / page-title bloom (off in plain)
 
+  --sr-seat-0: #d13239; // seat identity — deepened, paper washes a mid tone
+  --sr-seat-1: #3355c9;
+  --sr-seat-2: #278a5a;
+  --sr-seat-3: #a8850a;
+  --sr-seat-4: #bd2f89;
+  --sr-seat-5: #d4550a;
+  --sr-seat-6: #0086a5;
+  --sr-seat-7: #7a3fae;
+  --sr-seat-8: #6d8c00;
+  --sr-seat-9: #0a7568;
+  --sr-seat-10: #834a24;
+  --sr-seat-11: #566476;
+
   scrollbar-width: thin;
   scrollbar-color: var(--sr-line) transparent;
 }
@@ -112,6 +125,19 @@
   --sr-text-dim: #9aa4b2;
   --sr-panel-inset: rgba(0, 0, 0, 0.4);
   --sr-scanline-ink: rgba(0, 0, 0, 0.22);
+
+  --sr-seat-0: #e5484d;
+  --sr-seat-1: #3e63dd;
+  --sr-seat-2: #30a46c;
+  --sr-seat-3: #ebbc00;
+  --sr-seat-4: #d6409f;
+  --sr-seat-5: #f76b15;
+  --sr-seat-6: #00a2c7;
+  --sr-seat-7: #8e4ec6;
+  --sr-seat-8: #8db600;
+  --sr-seat-9: #0d8f7f;
+  --sr-seat-10: #9c5a2d;
+  --sr-seat-11: #6b7a8f;
 }
 
 :root[data-skin='cyberpunk'] {

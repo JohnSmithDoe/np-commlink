@@ -63,6 +63,18 @@ export const rankPlayersByScore = (
       : (scores[a] ?? 0) - (scores[b] ?? 0)
   );
 
+export const leadersByScore = (
+  playerIds: TrackplayId[],
+  scores: Record<TrackplayId, number>,
+  winHigh: boolean
+): TrackplayId[] => {
+  const [best, ...rest] = rankPlayersByScore(playerIds, scores, winHigh);
+  if (best === undefined) return [];
+
+  const top = scores[best] ?? 0;
+  return [best, ...rest.filter((id) => (scores[id] ?? 0) === top)];
+};
+
 export const selectGameItems = createSelector(
   selectGamesList,
   (list): Game[] => list.items
@@ -110,6 +122,19 @@ export const selectResultByGame = (gameId: TrackplayId) =>
       return rankPlayersByScore(game.playerIds, computeScores(game), winHigh)
         .map((pid) => players.find((player) => player.id === pid))
         .filter((player): player is Player => !!player);
+    }
+  );
+
+export const selectLeadersByGame = (gameId: TrackplayId) =>
+  createSelector(
+    selectGameById(gameId),
+    selectGameTypesList,
+    (game, gameTypes): TrackplayId[] => {
+      if (!game) return [];
+      const winHigh =
+        gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
+          ?.winHigh ?? true;
+      return leadersByScore(game.playerIds, computeScores(game), winHigh);
     }
   );
 

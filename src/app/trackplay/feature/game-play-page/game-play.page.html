@@ -1,17 +1,19 @@
 <app-page-header hideButtons [heading]="game()?.name ?? ''">
-  <ion-buttons slot="end" toolbar>
-    <ion-button color="primary" (click)="toggleEnded()">
-      <ion-icon
-        slot="start"
-        aria-hidden="true"
-        [name]="ended() ? 'play-outline' : 'square-outline'"
-      />
-      {{
-        (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
-          | translate
-      }}
-    </ion-button>
-  </ion-buttons>
+  @if (game()) {
+    <ion-buttons slot="end" toolbar>
+      <ion-button color="primary" (click)="toggleEnded()">
+        <ion-icon
+          slot="start"
+          aria-hidden="true"
+          [name]="ended() ? 'play-outline' : 'square-outline'"
+        />
+        {{
+          (ended() ? 'trackplay.action.continue' : 'trackplay.action.end')
+            | translate
+        }}
+      </ion-button>
+    </ion-buttons>
+  }
 </app-page-header>
 
 <ion-content>
@@ -73,6 +75,14 @@
       <div class="tp-result ion-padding">
         <p class="sr-hud">{{ 'trackplay.game.ended' | translate }}</p>
 
+        @if (drawn()) {
+          <p class="tp-result__winner" data-testid="game-drawn">
+            <strong class="sr-glow">{{
+              'trackplay.game.drawn' | translate
+            }}</strong>
+          </p>
+        }
+
         @if (winner(); as winner) {
           <p class="tp-result__winner" data-testid="game-winner">
             <span>
@@ -104,7 +114,7 @@
         }
 
         @for (player of result(); track player.id; let i = $index) {
-          @if (i !== 0) {
+          @if (drawn() || i !== 0) {
             <p class="tp-result__row">
               <span>{{ i + 1 }}. {{ player.name }}</span>
               <span class="tp-result__score">
@@ -116,5 +126,7 @@
         }
       </div>
     }
+  } @else {
+    <app-empty-state [label]="'trackplay.game.unknown' | translate" />
   }
 </ion-content>

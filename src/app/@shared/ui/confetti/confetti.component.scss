@@ -1,8 +1,8 @@
 // ─── why ────────────────────────────────────────────────────────
-// The plain theme is deliberately still — the deck skin is where things
-// move — so the sparks only exist under cyberpunk. The reduced-motion
-// block has to match that rule's specificity AND come after it, or the
-// confetti keeps running for a visitor who asked it not to.
+// The reduced-motion block has to match the spark rule's specificity AND
+// come after it, or the confetti keeps running for a visitor who asked it
+// not to. Only the glow is skinned: a win is a win in both vocabularies,
+// but the bloom around it is cyberpunk decoration.
 // ────────────────────────────────────────────────────────────────
 :host {
   position: absolute;
@@ -12,20 +12,22 @@
 }
 
 .confetti__spark {
-  display: none;
-}
-
-:host-context([data-skin='cyberpunk']) .confetti__spark {
   display: block;
   position: absolute;
   top: 0;
   background: var(--sr-amber);
-  box-shadow: 0 0 6px rgba(var(--sr-amber-rgb), 0.7);
   opacity: 0;
   animation: confetti-fall 2.2s linear infinite;
 
   &:nth-child(even) {
     background: var(--sr-cyan);
+  }
+}
+
+:host-context([data-skin='cyberpunk']) .confetti__spark {
+  box-shadow: 0 0 6px rgba(var(--sr-amber-rgb), 0.7);
+
+  &:nth-child(even) {
     box-shadow: 0 0 6px rgba(var(--sr-cyan-rgb), 0.7);
   }
 }
@@ -50,7 +52,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host-context([data-skin='cyberpunk']) .confetti__spark {
+  .confetti__spark {
     display: none;
   }
 }

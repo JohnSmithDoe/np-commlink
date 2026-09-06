@@ -23,6 +23,7 @@ import { Round, TrackplayId } from '../../model/trackplay.types';
 import { GamePlayFacade, GamesFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
 import { ConfettiComponent } from '../../../@shared/ui/confetti/confetti.component';
+import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 
 @Component({
@@ -32,6 +33,7 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ConfettiComponent,
+    EmptyStateComponent,
     PageHeaderComponent,
     IonButtons,
     IonButton,
@@ -54,7 +56,12 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly rounds = this.#facade.roundsByGame(this.id);
   readonly scores = this.#facade.scoresByGame(this.id);
   readonly result = this.#facade.resultByGame(this.id);
-  readonly winner = computed(() => this.result()[0]);
+  readonly #leaders = this.#facade.leadersByGame(this.id);
+
+  readonly drawn = computed(() => this.#leaders().length > 1);
+  readonly winner = computed(() =>
+    this.drawn() ? undefined : this.result()[0]
+  );
 
   readonly playerIds = computed<TrackplayId[]>(
     () => this.game()?.playerIds ?? []

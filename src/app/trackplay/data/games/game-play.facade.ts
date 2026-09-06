@@ -5,6 +5,7 @@ import { selectPlayerItems } from '../players/players.selector';
 import { GamesActions } from './games.actions';
 import {
   selectGameById,
+  selectLeadersByGame,
   selectResultByGame,
   selectRoundsByGame,
   selectScoresByGame,
@@ -27,6 +28,9 @@ export class GamePlayFacade {
   }
   resultByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectResultByGame(id));
+  }
+  leadersByGame(id: TrackplayId) {
+    return this.#store.selectSignal(selectLeadersByGame(id));
   }
 
   enterGamePage(gameId: TrackplayId): void {

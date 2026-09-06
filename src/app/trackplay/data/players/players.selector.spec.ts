@@ -123,6 +123,39 @@ describe('players.selector — stats', () => {
     });
   });
 
+  it('credits neither a win nor a loss when the top score is shared', () => {
+    const drawn = stateWith({
+      ...stateInput,
+      games: mockGamesState([
+        mockGame({
+          id: 'drawn',
+          playerIds: ['p1', 'p2'],
+          ended: true,
+          rounds: [mockRound({ id: 'r0', values: { p1: 10, p2: 10 } })],
+        }),
+      ]),
+    });
+
+    expect(selectPlayerStats(drawn)).toEqual({
+      p1: { play: 1, win: 0, loss: 0, open: 0 },
+      p2: { play: 1, win: 0, loss: 0, open: 0 },
+    });
+  });
+
+  it('crowns nobody in an ended game nobody scored in', () => {
+    const scoreless = stateWith({
+      ...stateInput,
+      games: mockGamesState([
+        mockGame({ id: 'blank', playerIds: ['p1', 'p2'], ended: true }),
+      ]),
+    });
+
+    expect(selectPlayerStats(scoreless)).toEqual({
+      p1: { play: 1, win: 0, loss: 0, open: 0 },
+      p2: { play: 1, win: 0, loss: 0, open: 0 },
+    });
+  });
+
   it('falls back to empty stats for a player who is not in the list', () => {
     expect(selectStatsForRoutePlayer(stateWith(stateInput, 'nope'))).toEqual({
       play: 0,

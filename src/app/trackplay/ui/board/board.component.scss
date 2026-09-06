@@ -1,33 +1,16 @@
 // ─── why ────────────────────────────────────────────────────────
-// Twelve hues, never repeated: a colour IS a player's identity here, so the
-// palette has to reach as far as the board seats — which is twelve.
-//
 // A figure ringed in --sr-panel was invisible in the one place it matters
 // most: standing in its OWN yard, where the field underneath is already its
 // colour. Light on light said nothing, and setting the board is the whole
 // mode. So the ring is --sr-text, and it is the ring, not the fill, that
 // reads as "occupied".
+//
+// The hues themselves are --sr-seat-* in the theme layer, so light mode can
+// deepen them; the loop below only needs to know how far the board seats.
 // ────────────────────────────────────────────────────────────────
-$players: (
-  0: #e5484d,
-  1: #3e63dd,
-  2: #30a46c,
-  3: #ebbc00,
-  4: #d6409f,
-  5: #f76b15,
-  6: #00a2c7,
-  7: #8e4ec6,
-  8: #8db600,
-  9: #0d8f7f,
-  10: #9c5a2d,
-  11: #6b7a8f,
-);
+$seats: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11;
 
 :host {
-  @each $player, $ink in $players {
-    --board-p#{$player}: #{$ink};
-  }
-
   display: block;
 }
 
@@ -66,12 +49,12 @@ $players: (
   stroke-width: 0.2;
 }
 
-@each $player, $ink in $players {
-  .board__cell--p#{$player} {
-    fill: var(--board-p#{$player});
+@each $seat in $seats {
+  .board__cell--p#{$seat} {
+    fill: var(--sr-seat-#{$seat});
   }
 
-  .board__figure--p#{$player} {
-    fill: var(--board-p#{$player});
+  .board__figure--p#{$seat} {
+    fill: var(--sr-seat-#{$seat});
   }
 }

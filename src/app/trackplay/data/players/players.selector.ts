@@ -8,7 +8,7 @@ import {
 import { Player, PlayerStats, TrackplayId } from '../../model/trackplay.types';
 import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
 import { gameTypeIdOf } from '../../util/game-type.utils';
-import { computeScores, rankPlayersByScore } from '../games/games.selector';
+import { computeScores, leadersByScore } from '../games/games.selector';
 import {
   selectGamesList,
   selectGameTypesList,
@@ -62,16 +62,18 @@ export const selectPlayerStats = createSelector(
       const winHigh =
         gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
           ?.winHigh ?? true;
-      const ranked = rankPlayersByScore(
+      const leaders = leadersByScore(
         game.playerIds,
         computeScores(game),
         winHigh
       );
-      for (const [rank, playerId] of ranked.entries()) {
+      const drawn = leaders.length > 1;
+
+      for (const playerId of game.playerIds) {
         const playerStats = stats[playerId];
         if (!playerStats) continue;
-        if (rank === 0) playerStats.win++;
-        else playerStats.loss++;
+        if (!leaders.includes(playerId)) playerStats.loss++;
+        else if (!drawn) playerStats.win++;
       }
     }
     return stats;
