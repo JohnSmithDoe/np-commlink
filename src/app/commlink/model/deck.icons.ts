@@ -1,5 +1,6 @@
 import {
   bookOutline,
+  calculatorOutline,
   businessOutline,
   cartOutline,
   checkboxOutline,
@@ -7,6 +8,7 @@ import {
   diceOutline,
   discOutline,
   documentsOutline,
+  cropOutline,
   documentTextOutline,
   fileTrayStackedOutline,
   gridOutline,
@@ -24,12 +26,15 @@ import {
   sparklesOutline,
   speedometerOutline,
   sunnyOutline,
+  swapHorizontalOutline,
   timerOutline,
   walletOutline,
 } from 'ionicons/icons';
 
 export const DECK_ICONS = {
   'book-outline': bookOutline,
+  'calculator-outline': calculatorOutline,
+  'crop-outline': cropOutline,
   'business-outline': businessOutline,
   'cart-outline': cartOutline,
   'checkbox-outline': checkboxOutline,
@@ -53,6 +58,7 @@ export const DECK_ICONS = {
   'sparkles-outline': sparklesOutline,
   'speedometer-outline': speedometerOutline,
   'sunny-outline': sunnyOutline,
+  'swap-horizontal-outline': swapHorizontalOutline,
   'timer-outline': timerOutline,
   'wallet-outline': walletOutline,
   'people-outline': peopleOutline,

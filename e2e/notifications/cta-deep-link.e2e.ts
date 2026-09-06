@@ -44,7 +44,7 @@ test.describe('notifications — CTA deep-link back into a producer', () => {
 
     await row.getByRole('button', { name: 'Pausieren' }).click();
 
-    await expect(page).toHaveURL(/#\/tracking$/);
+    await expect(page).toHaveURL(/#\/tracking\/timers$/);
     await waitForPersisted(page, 'notifications', 'pausiert');
 
     await page.goto('/#/notifications');

@@ -1,0 +1,32 @@
+<app-page-header hideButtons label="page-title.coprocessor-calc" />
+
+<ion-content>
+  <app-page-return />
+
+  <div class="calc ion-padding">
+    <ion-input
+      class="calc__expression"
+      inputmode="text"
+      autocomplete="off"
+      spellcheck="false"
+      data-testid="coprocessor-expression"
+      labelPlacement="stacked"
+      [label]="'coprocessor.calc.expression' | translate"
+      [value]="expression()"
+      (ionInput)="edit($event)"
+    />
+
+    <p class="calc__result" data-testid="coprocessor-result" aria-live="polite">
+      @if (value(); as shown) {
+        <span class="calc__value">{{ shown }}</span>
+      } @else {
+        <span class="calc__placeholder" aria-hidden="true">&mdash;</span>
+      }
+      @if (errorKey(); as key) {
+        <span class="calc__error">{{ key | translate }}</span>
+      }
+    </p>
+
+    <app-keypad [keys]="keys" (pressed)="press($event)" />
+  </div>
+</ion-content>

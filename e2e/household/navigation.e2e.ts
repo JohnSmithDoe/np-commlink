@@ -13,7 +13,7 @@ const moduleTabs = (page: Page): Locator =>
   mainContent(page).getByTestId('module-tabs');
 
 const tabButton = (tabs: Locator, tab: string): Locator =>
-  tabs.locator(`ion-tab-button[tab="${tab}"]`);
+  tabs.locator(`#tab-button-${tab}`);
 
 test.describe('household navigation', () => {
   test('redirects the root url to the commlink deck', async ({ page }) => {

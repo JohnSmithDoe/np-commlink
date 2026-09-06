@@ -44,6 +44,10 @@ export function mainContent(page: Page): Locator {
   return page.locator('#main-content');
 }
 
+export function moduleTab(page: Page, segment: string): Locator {
+  return mainContent(page).locator(`#tab-button-${segment}`);
+}
+
 export function pageRoot(page: Page, selector: string): Locator {
   return mainContent(page).locator(selector);
 }

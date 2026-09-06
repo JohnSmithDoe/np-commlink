@@ -25,6 +25,7 @@
 export const I18N_OWNERS: Record<string, string[]> = {
   cash: ['cash'],
   commlink: ['commlink', 'deck', 'settings'],
+  coprocessor: ['coprocessor'],
   geist: ['geist'],
   household: ['household'],
   notes: ['notes'],

@@ -1,0 +1,49 @@
+.units {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.units__pair {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.units__swap {
+  margin: 0;
+}
+
+.units__result {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.units__value {
+  font-size: var(--fs-xxlarge);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.units__symbol {
+  font-size: var(--fs-body);
+}
+
+.units__inverse {
+  margin: 0;
+  text-align: end;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}
+
+.units__group-title {
+  margin: 0.5rem 0 0;
+  font-size: var(--fs-xsmall);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sr-text-dim);
+}

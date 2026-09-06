@@ -1,0 +1,159 @@
+<app-page-header hideButtons label="page-title.coprocessor-golden" />
+
+<ion-content>
+  <app-page-return />
+
+  <div class="golden ion-padding">
+    <ion-segment
+      data-testid="coprocessor-golden-view"
+      [value]="view()"
+      (ionChange)="selectView($any($event.detail.value))"
+    >
+      <ion-segment-button value="divider">
+        {{ 'coprocessor.golden.divider' | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="area">
+        {{ 'coprocessor.golden.area' | translate }}
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (view() === 'divider') {
+      <ion-input
+        inputmode="decimal"
+        autocomplete="off"
+        data-testid="coprocessor-golden-total"
+        labelPlacement="stacked"
+        [label]="'coprocessor.golden.total' | translate"
+        [value]="total()"
+        (ionInput)="edit('total', $event)"
+      />
+
+      <app-split-bar
+        [major]="split().major"
+        [minor]="split().minor"
+        [label]="'coprocessor.golden.bar' | translate"
+      />
+
+      <dl class="golden__pair">
+        <div>
+          <dt>{{ 'coprocessor.golden.major' | translate }}</dt>
+          <dd data-testid="coprocessor-golden-major">{{ major() }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'coprocessor.golden.minor' | translate }}</dt>
+          <dd data-testid="coprocessor-golden-minor">{{ minor() }}</dd>
+        </div>
+      </dl>
+
+      <h2 class="golden__section">
+        {{ 'coprocessor.golden.ladder' | translate }}
+      </h2>
+      <p class="golden__hint">
+        {{ 'coprocessor.golden.ladder-hint' | translate }}
+      </p>
+
+      <ol class="golden__ladder" data-testid="coprocessor-golden-ladder">
+        @for (rung of rungs(); track $index) {
+          <li
+            class="golden__rung"
+            [class.golden__rung--base]="rung.base"
+            [class.golden__rung--half]="rung.half"
+          >
+            {{ rung.label }}
+          </li>
+        }
+      </ol>
+    } @else {
+      <div class="golden__sides">
+        <ion-input
+          inputmode="decimal"
+          autocomplete="off"
+          data-testid="coprocessor-golden-width"
+          labelPlacement="stacked"
+          [label]="'coprocessor.golden.width' | translate"
+          [value]="width()"
+          (ionInput)="edit('width', $event)"
+        />
+
+        <ion-button
+          fill="clear"
+          size="small"
+          class="golden__swap"
+          data-testid="coprocessor-golden-swap"
+          [attr.aria-label]="'coprocessor.golden.swap' | translate"
+          (click)="swapSides()"
+        >
+          <ion-icon
+            slot="icon-only"
+            name="swap-horizontal-outline"
+            aria-hidden="true"
+          />
+        </ion-button>
+
+        <ion-input
+          inputmode="decimal"
+          autocomplete="off"
+          data-testid="coprocessor-golden-height"
+          labelPlacement="stacked"
+          [label]="'coprocessor.golden.height' | translate"
+          [value]="height()"
+          (ionInput)="edit('height', $event)"
+        />
+      </div>
+
+      <p class="golden__ratio">
+        {{
+          'coprocessor.golden.ratio'
+            | translate: { ratio: ratioLabel(), phi: phi }
+        }}
+      </p>
+      <p class="golden__hint">
+        {{
+          'coprocessor.golden.suggested'
+            | translate: { short: suggestedShort(), long: suggestedLong() }
+        }}
+      </p>
+
+      <dl class="golden__measures" data-testid="coprocessor-golden-measures">
+        <div>
+          <dt>{{ 'coprocessor.golden.from-left' | translate }}</dt>
+          <dd data-testid="coprocessor-golden-x">{{ chosen().fromLeft }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'coprocessor.golden.from-right' | translate }}</dt>
+          <dd>{{ chosen().fromRight }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'coprocessor.golden.from-bottom' | translate }}</dt>
+          <dd data-testid="coprocessor-golden-y">{{ chosen().fromBottom }}</dd>
+        </div>
+        <div>
+          <dt>{{ 'coprocessor.golden.from-top' | translate }}</dt>
+          <dd>{{ chosen().fromTop }}</dd>
+        </div>
+      </dl>
+
+      <ion-segment
+        data-testid="coprocessor-golden-depth"
+        [value]="depth()"
+        (ionChange)="selectDepth($any($event.detail.value))"
+      >
+        @for (level of depths; track level) {
+          <ion-segment-button [value]="level">
+            {{ 'coprocessor.golden.level' | translate: { level: level } }}
+          </ion-segment-button>
+        }
+      </ion-segment>
+
+      <app-golden-area
+        [width]="width()"
+        [height]="height()"
+        [depth]="depth()"
+        [selected]="activeId()"
+        [label]="'coprocessor.golden.figure' | translate"
+        [pointLabel]="'coprocessor.golden.point' | translate"
+        (pick)="selected.set($event)"
+      />
+    }
+  </div>
+</ion-content>

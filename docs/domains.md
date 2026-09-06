@@ -320,6 +320,41 @@ Everything below the first entry is **v2.0.0 scope**.
   per-aggregate spec notices. `setRoundValue` is the deliberate opposite: the aggregate writes the round
   and the cascade then stamps `lastPlayedAt`, which wants the post-write game.
 
+## COPROCESSOR — calculator, converter, golden section
+
+- **The first domain that owns nothing.** No slice, no facade, no `data/` and no barrel; every value is a
+  component signal and a reload starts cold. `handbook` and `geist` established that a domain may skip the
+  store; this one also skips the service. The e2e asserts the emptiness after a reload, because every other
+  module's suite defends the opposite and a slice added here would pass all of them.
+- **Three catalog entries, one folder.** `calc`, `units` and `golden` are separately switchable programs, and
+  because `programSiblingsFor` derives the bar from routes one segment below the mount, the same three
+  entries _are_ the tab bar. A page one segment deeper would be a stack inside its tab, which is why the
+  golden screen's two views are an `ion-segment` and not routes.
+- **The unit table is affine, and the defaults are foreign.** One formula, `value * factor + offset`, covers
+  ratio and temperature alike. Each quantity opens on a foreign unit converted into the metric one —
+  centimetres into metres is mental arithmetic, pounds and Fahrenheit are what a converter is opened for.
+  Every factor is pinned by a spec against its _definition_ (a mile is 8 furlongs) rather than restated.
+- **`humanize` reads only the ladder it is handed.** Given a whole quantity it will answer 320.000.000 m in
+  nautical miles, because nmi has the larger factor and is still "readable". A ladder is a curated scale, not
+  a unit list, so the money mode passes metric rungs and the converter never calls it at all.
+- **Money is scale intuition, not currency.** A stale exchange rate is a wrong answer that looks right, so
+  currency stays out; the references that _do_ drift carry their year in the visible label instead. Every
+  number a reader sees is interpolated from the field the calculation divided by — a rate typed into a
+  translation string is the same silent wrongness arriving through the bundle.
+- **The anchor is half of every money row.** `2,33 Mio km` is a number, `6,1× zum Mond` is the sentence you
+  repeat. `pickAnchor` prefers a multiple at or just above 1 and then the largest qualifying rung, which is
+  what makes 320.000 km read as the equator rather than as a fraction of the moon. Each family is a ladder
+  with no gap wider than 100×, asserted by spec, so the band can never come up empty.
+- **Anchors are named for recognition, not correctness** — `die Grenze zum Weltall`, never `die
+Kármán-Linie`. A name that costs a lookup is the failure the feature exists to prevent.
+- **The spiral is seeded by orientation.** Its subdivision only stays a spiral while each cut alternates the
+  rectangle's axis, so the corner sequence starts one step further when the first cut is horizontal. Getting
+  this wrong breaks every arc joint in a portrait figure and draws as curves flying out of the frame — it
+  shipped that way until a portrait case was added to the spec, which had only ever run landscape.
+- **The crossings are the answer, the spiral is the explanation.** Two levels of recursion, both pickable,
+  drawn smaller with depth but kept touchable by a transparent stroke. Level one is four points you can
+  measure onto a wall; past level two they sit closer together than the thing being placed.
+
 ## The deck
 
 - **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.

@@ -9,7 +9,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Page, test } from '@playwright/test';
-import { gotoPage, mainContent, pageRoot } from './helpers';
+import { gotoPage, mainContent, moduleTab, pageRoot } from './helpers';
 
 const GAMES_PAGE = 'app-page-trackplay-games';
 const DICE_PAGE = 'app-page-trackplay-dice';
@@ -19,8 +19,7 @@ const PLAYERS_PAGE = 'app-page-trackplay-players';
 const tabBar = (page: Page) =>
   mainContent(page).getByTestId('module-tabs').first();
 
-const tab = (page: Page, name: string) =>
-  tabBar(page).locator(`ion-tab-button[tab="${name}"]`);
+const tab = (page: Page, name: string) => moduleTab(page, name);
 
 test.describe('trackplay module tabs', () => {
   test('opens the games tab from the module root', async ({ page }) => {

@@ -46,6 +46,13 @@ export const routes: Routes = [
       import('./handbook/routes/handbook.routes').then((m) => m.handbookRoutes),
   },
   {
+    path: 'coprocessor',
+    loadChildren: () =>
+      import('./coprocessor/routes/coprocessor.routes').then(
+        (m) => m.coprocessorRoutes
+      ),
+  },
+  {
     path: 'geist',
     loadChildren: () =>
       import('./geist/routes/geist.routes').then((m) => m.geistRoutes),

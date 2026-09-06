@@ -1,0 +1,21 @@
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.keypad__key {
+  --border-color: var(--sr-line, currentColor);
+  height: max(var(--sr-touch), 3.25rem);
+  margin: 0;
+  font-size: var(--fs-large);
+  font-variant-numeric: tabular-nums;
+}
+
+.keypad__key--operator {
+  --color: var(--ion-color-primary);
+}
+
+.keypad__key--action {
+  --color: var(--sr-text-dim);
+}

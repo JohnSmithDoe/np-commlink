@@ -1,0 +1,42 @@
+.magnitude {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.magnitude__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.magnitude__chip {
+  margin: 0;
+  --border-color: var(--sr-line, currentColor);
+}
+
+.magnitude__chip--active {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+}
+
+.magnitude__echo {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.magnitude__grouped {
+  font-size: var(--fs-xlarge);
+  font-variant-numeric: tabular-nums;
+}
+
+.magnitude__spelled {
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}
+
+.magnitude__steps {
+  display: flex;
+  gap: 0.25rem;
+}

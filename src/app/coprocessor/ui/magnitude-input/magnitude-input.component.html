@@ -1,0 +1,54 @@
+<div class="magnitude">
+  <ion-input
+    inputmode="decimal"
+    autocomplete="off"
+    data-testid="coprocessor-money-amount"
+    labelPlacement="stacked"
+    [label]="'coprocessor.money.amount' | translate"
+    [value]="mantissa()"
+    (ionInput)="edit($event)"
+  />
+
+  <div class="magnitude__chips">
+    @for (chip of chips; track chip.id) {
+      <ion-button
+        size="small"
+        fill="outline"
+        class="magnitude__chip"
+        data-testid="coprocessor-money-chip"
+        [class.magnitude__chip--active]="magnitude() === chip.id"
+        (click)="applyChip(chip.id)"
+      >
+        {{ chip.labelKey | translate }}
+      </ion-button>
+    }
+  </div>
+
+  <p class="magnitude__echo" data-testid="coprocessor-money-echo">
+    <span class="magnitude__grouped">{{ grouped() }}</span>
+    <span class="magnitude__spelled">
+      {{ scaleKey() | translate: { amount: mantissa() } }}
+    </span>
+  </p>
+
+  <div class="magnitude__steps">
+    <ion-button
+      size="small"
+      fill="clear"
+      data-testid="coprocessor-money-down"
+      [attr.aria-label]="'coprocessor.money.divide-ten' | translate"
+      (click)="scale(0.1)"
+    >
+      ÷10
+    </ion-button>
+    <ion-button
+      size="small"
+      fill="clear"
+      data-testid="coprocessor-money-up"
+      [attr.aria-label]="'coprocessor.money.times-ten' | translate"
+      (click)="scale(10)"
+    >
+      ×10
+    </ion-button>
+  </div>
+</div>

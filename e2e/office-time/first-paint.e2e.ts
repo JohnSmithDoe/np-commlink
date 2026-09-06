@@ -60,7 +60,7 @@ test.describe('office-time (lazy)', () => {
     const today = await page.evaluate(() =>
       new Date().toLocaleDateString('sv-SE')
     );
-    await waitForPersisted(page, 'officeTime', `"officedays":["${today}"]`);
+    await waitForPersisted(page, 'officeTime', `"officedays":{"${today}":true`);
 
     await page.reload();
 

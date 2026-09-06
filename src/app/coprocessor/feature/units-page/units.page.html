@@ -1,0 +1,119 @@
+<app-page-header hideButtons label="page-title.coprocessor-units" />
+
+<ion-content>
+  <app-page-return />
+
+  <div class="units ion-padding">
+    <ion-segment
+      data-testid="coprocessor-units-mode"
+      [value]="mode()"
+      (ionChange)="selectMode($any($event.detail.value))"
+    >
+      <ion-segment-button value="units">
+        {{ 'coprocessor.units.mode-units' | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="money">
+        {{ 'coprocessor.units.mode-money' | translate }}
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (mode() === 'units') {
+      <ion-select
+        data-testid="coprocessor-units-quantity"
+        labelPlacement="stacked"
+        [label]="'coprocessor.units.quantity' | translate"
+        [value]="quantityId()"
+        (ionChange)="selectQuantity($any($event.detail.value))"
+      >
+        @for (item of quantities; track item.id) {
+          <ion-select-option [value]="item.id">
+            {{ item.nameKey | translate }}
+          </ion-select-option>
+        }
+      </ion-select>
+
+      <ion-input
+        inputmode="decimal"
+        autocomplete="off"
+        data-testid="coprocessor-units-amount"
+        labelPlacement="stacked"
+        [label]="'coprocessor.units.amount' | translate"
+        [value]="amount()"
+        (ionInput)="editAmount($event)"
+      />
+
+      <div class="units__pair">
+        <ion-select
+          labelPlacement="stacked"
+          [label]="'coprocessor.units.from' | translate"
+          [value]="fromId()"
+          (ionChange)="fromId.set($any($event.detail.value))"
+        >
+          @for (item of quantity().units; track item.id) {
+            <ion-select-option [value]="item.id">
+              {{ item.nameKey | translate }} ({{ item.symbol }})
+            </ion-select-option>
+          }
+        </ion-select>
+
+        <ion-button
+          fill="clear"
+          class="units__swap"
+          data-testid="coprocessor-units-swap"
+          [attr.aria-label]="'coprocessor.units.swap' | translate"
+          (click)="swap()"
+        >
+          <ion-icon
+            slot="icon-only"
+            name="swap-horizontal-outline"
+            aria-hidden="true"
+          />
+        </ion-button>
+
+        <ion-select
+          labelPlacement="stacked"
+          [label]="'coprocessor.units.to' | translate"
+          [value]="toId()"
+          (ionChange)="toId.set($any($event.detail.value))"
+        >
+          @for (item of quantity().units; track item.id) {
+            <ion-select-option [value]="item.id">
+              {{ item.nameKey | translate }} ({{ item.symbol }})
+            </ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <p class="units__result" data-testid="coprocessor-units-result">
+        <span class="units__value">{{ converted() }}</span>
+        <span class="units__symbol">{{ toUnit().symbol }}</span>
+      </p>
+
+      <p class="units__inverse">
+        {{
+          'coprocessor.units.inverse'
+            | translate
+              : {
+                  value: inverse(),
+                  from: toUnit().symbol,
+                  to: fromUnit().symbol,
+                }
+        }}
+      </p>
+    } @else {
+      <app-magnitude-input
+        [amount]="money()"
+        (amountChange)="money.set($event)"
+      />
+
+      @for (group of groups; track group.id) {
+        <section class="units__group">
+          <h2 class="units__group-title">{{ group.labelKey | translate }}</h2>
+          @for (row of rowsIn(group.id); track row.reference.id) {
+            <app-money-row [row]="row" />
+          }
+        </section>
+      }
+    }
+  </div>
+</ion-content>

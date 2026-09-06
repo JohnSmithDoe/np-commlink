@@ -1,0 +1,39 @@
+<div class="money-row" data-testid="coprocessor-money-row">
+  <span class="money-row__emoji" aria-hidden="true">{{
+    row().reference.emoji
+  }}</span>
+
+  <div class="money-row__body">
+    <p class="money-row__label">{{ row().reference.labelKey | translate }}</p>
+
+    <p class="money-row__headline">
+      <span class="money-row__value">{{ headline() }}</span>
+      <span class="money-row__unit">
+        @if (row().unit; as unit) {
+          {{ unit.symbol }}
+        } @else {
+          {{ row().reference.unitKey | translate }}
+        }
+      </span>
+    </p>
+
+    @if (row().anchor; as anchor) {
+      <p class="money-row__anchor" data-testid="coprocessor-money-anchor">
+        {{
+          'coprocessor.money.anchor-line'
+            | translate
+              : {
+                  multiple: anchorParams()?.multiple,
+                  anchor:
+                    anchor.anchor.labelKey
+                    | translate: { value: anchorParams()?.value },
+                }
+        }}
+      </p>
+    }
+
+    <p class="money-row__basis">
+      {{ row().reference.basisKey | translate: basisParams() }}
+    </p>
+  </div>
+</div>

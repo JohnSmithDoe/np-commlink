@@ -46,7 +46,7 @@ test.describe('cash manage categories', () => {
     await expect(listRow(page, 'Miete')).toContainText('0');
 
     await catalog.getByTestId('page-return').click();
-    await expect(page).toHaveURL(/#\/cash$/);
+    await expect(page).toHaveURL(/#\/cash\/accounts$/);
   });
 
   test('drills from a category into its transactions', async ({ page }) => {

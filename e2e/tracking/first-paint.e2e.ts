@@ -121,7 +121,7 @@ test.describe('tracking (lazy)', () => {
 
     await mainContent(page)
       .getByTestId('module-tabs')
-      .locator('ion-tab-button[tab="data"]')
+      .locator('#tab-button-data')
       .click();
     await expect(page).toHaveURL(/#\/tracking\/data$/);
   });

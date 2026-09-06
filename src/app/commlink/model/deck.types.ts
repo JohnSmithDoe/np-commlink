@@ -17,6 +17,7 @@ export type AppModule =
   | 'geist'
   | 'vitals'
   | 'handbook'
+  | 'coprocessor'
   | 'settings';
 
 export type DeckEntryId = string;

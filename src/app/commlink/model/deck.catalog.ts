@@ -543,6 +543,60 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     onDeck: true,
     needsLanguageModel: true,
   },
+  {
+    id: 'calc',
+    module: 'coprocessor',
+    icon: 'calculator-outline',
+    route: '/coprocessor/calc',
+    titleKey: marker('page-title.coprocessor-calc'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.calc.name'),
+        descKey: marker('deck.cyberpunk.calc.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.calc.name'),
+        descKey: marker('deck.boomer.calc.desc'),
+      },
+    },
+    onDeck: true,
+  },
+  {
+    id: 'units',
+    module: 'coprocessor',
+    icon: 'swap-horizontal-outline',
+    route: '/coprocessor/units',
+    titleKey: marker('page-title.coprocessor-units'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.units.name'),
+        descKey: marker('deck.cyberpunk.units.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.units.name'),
+        descKey: marker('deck.boomer.units.desc'),
+      },
+    },
+    onDeck: true,
+  },
+  {
+    id: 'golden',
+    module: 'coprocessor',
+    icon: 'crop-outline',
+    route: '/coprocessor/golden',
+    titleKey: marker('page-title.coprocessor-golden'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.golden.name'),
+        descKey: marker('deck.cyberpunk.golden.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.golden.name'),
+        descKey: marker('deck.boomer.golden.desc'),
+      },
+    },
+    onDeck: true,
+  },
 ];
 
 export const DECK_SLOT_COUNT = DECK_CATALOG.filter(

@@ -1,0 +1,15 @@
+<div class="keypad" data-testid="coprocessor-keypad">
+  @for (key of keys(); track key.id) {
+    <ion-button
+      class="keypad__key"
+      fill="outline"
+      data-testid="coprocessor-key"
+      [class.keypad__key--action]="key.kind === 'action'"
+      [class.keypad__key--operator]="key.kind === 'operator'"
+      [attr.aria-label]="key.labelKey ? (key.labelKey | translate) : null"
+      (click)="pressed.emit(key)"
+    >
+      {{ key.glyph }}
+    </ion-button>
+  }
+</div>
