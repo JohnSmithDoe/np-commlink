@@ -133,7 +133,7 @@ describe('CashRulesPage', () => {
     const rule = mockCashRule({ id: 'r1' });
     setup(mockCashState({ rules: [rule] }));
 
-    component.openEditRule(rule);
+    component.facade.showEditDialog(rule);
 
     const request = TestBed.inject(ItemDialogService).request();
     expect(request?.editMode).toBe('update');

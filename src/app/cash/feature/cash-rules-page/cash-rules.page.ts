@@ -105,10 +105,6 @@ export class CashRulesPage {
     return this.#translate.instant(key, { count: rule.conditions.length });
   }
 
-  openEditRule(rule: CashRule): void {
-    this.facade.showEditDialog(rule);
-  }
-
   async confirmDeleteRule(rule: CashRule): Promise<void> {
     const alert = await this.#alertCtrl.create(
       deleteConfirmAlert(this.#translate, {

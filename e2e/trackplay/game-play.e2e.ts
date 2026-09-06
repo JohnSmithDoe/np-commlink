@@ -93,7 +93,7 @@ test.describe('trackplay full game', () => {
     await togglePlayerInSelect(dialog, 'Bob');
 
     await dialog.getByRole('button', { name: 'Weiter' }).click();
-    await expect(page).toHaveURL(/#\/trackplay\/game\//);
+    await expect(page).toHaveURL(/#\/trackplay\/games\//);
     const grid = mainContent(page).locator('app-page-trackplay-game-play');
     await expect(grid).toBeVisible({ timeout: 30_000 });
 
@@ -127,5 +127,14 @@ test.describe('trackplay full game', () => {
     await expect(grid.getByTestId('score-total-row')).toBeVisible();
     await expect(footerCells(grid).nth(0)).toHaveText('30');
     await expect(dataRows(grid)).toHaveCount(3);
+
+    await enterScore(grid, 1, 1, 25); // Bob catches up: 5 + 25
+    await expect(footerCells(grid).nth(1)).toHaveText('30');
+
+    await grid.getByRole('button', { name: 'Beenden' }).click();
+
+    await expect(grid.getByTestId('game-drawn')).toContainText('Unentschieden');
+    await expect(grid.getByTestId('game-winner')).toHaveCount(0);
+    await expect(grid.getByTestId('game-victory-art')).toHaveCount(0);
   });
 });

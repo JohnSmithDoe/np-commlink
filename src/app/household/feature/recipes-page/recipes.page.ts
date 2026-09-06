@@ -47,10 +47,6 @@ export class RecipesPage {
     return this.#missingByRecipe().get(recipe.id) ?? [];
   }
 
-  edit(recipe: Recipe) {
-    this.facade.showEditDialog(recipe);
-  }
-
   remove(recipe: Recipe) {
     this.facade.removeItem(recipe);
   }

@@ -41,7 +41,7 @@
     [title]="item.name || categoryName(item.categoryId)"
     [ionList]="ionList"
     [reorderable]="reorderable"
-    (selectItem)="openEditRule(item)"
+    (selectItem)="facade.showEditDialog(item)"
     (deleteItem)="confirmDeleteRule(item)"
   >
     <ng-container itemDetails>
