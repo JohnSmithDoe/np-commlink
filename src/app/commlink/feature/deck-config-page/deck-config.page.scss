@@ -23,3 +23,7 @@ ion-accordion [slot='content'] ion-item {
 .deck-config__lens {
   margin-block: var(--space-3);
 }
+
+.deck-config__row--off-deck ion-label {
+  opacity: 0.5;
+}

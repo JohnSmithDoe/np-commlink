@@ -73,13 +73,20 @@
       }
     </ion-accordion-group>
   } @else {
+    <ion-note class="deck-config__intro">{{
+      'deck.config.order-intro' | translate
+    }}</ion-note>
+
     <ion-list lines="full">
       <ion-reorder-group
         [disabled]="false"
         (ionReorderEnd)="reorder($any($event))"
       >
         @for (entry of shown(); track entry.id) {
-          <ion-item data-testid="deck-config-order-row">
+          <ion-item
+            data-testid="deck-config-order-row"
+            [class.deck-config__row--off-deck]="entry.hiddenOnDeck"
+          >
             <ion-reorder slot="start" />
             <ion-label>
               <h2>{{ entry.nameKey | translate }}</h2>
@@ -90,6 +97,22 @@
                 </p>
               }
             </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              data-testid="deck-config-tile-toggle"
+              [attr.aria-label]="
+                (entry.hiddenOnDeck ? tileLabelKeys.show : tileLabelKeys.hide)
+                  | translate: { name: entry.nameKey | translate }
+              "
+              (click)="toggleTile(entry.id)"
+            >
+              <ion-icon
+                slot="icon-only"
+                aria-hidden="true"
+                [name]="entry.hiddenOnDeck ? 'eye-off-outline' : 'eye-outline'"
+              />
+            </ion-button>
           </ion-item>
         } @empty {
           <app-empty-state

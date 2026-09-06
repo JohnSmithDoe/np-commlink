@@ -9,6 +9,7 @@ import {
   IonAccordionGroup,
   IonButton,
   IonContent,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -23,6 +24,8 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { eyeOffOutline, eyeOutline } from 'ionicons/icons';
 import { Marker } from '../../../@shared/model/app.types';
 import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
@@ -38,6 +41,11 @@ const LENS_LABEL_KEYS: Record<DeckConfigLens, Marker> = {
   order: marker('deck.config.lens.order'),
 };
 
+const TILE_LABEL_KEYS = {
+  hide: marker('deck.config.tile-hide'),
+  show: marker('deck.config.tile-show'),
+};
+
 @Component({
   selector: 'app-page-deck-config',
   templateUrl: './deck-config.page.html',
@@ -49,6 +57,7 @@ const LENS_LABEL_KEYS: Record<DeckConfigLens, Marker> = {
     IonAccordionGroup,
     IonButton,
     IonContent,
+    IonIcon,
     IonList,
     IonItem,
     IonLabel,
@@ -68,6 +77,7 @@ export class DeckConfigPage {
 
   readonly lenses = LENSES;
   readonly lensLabelKeys = LENS_LABEL_KEYS;
+  readonly tileLabelKeys = TILE_LABEL_KEYS;
   readonly lens = signal<DeckConfigLens>('programs');
 
   readonly shown = this.#deck.orderedPrograms;
@@ -78,8 +88,16 @@ export class DeckConfigPage {
     this.lens.set(lens as DeckConfigLens);
   }
 
+  constructor() {
+    addIcons({ eyeOffOutline, eyeOutline });
+  }
+
   toggleEntry(id: DeckEntryId): void {
     this.#deck.toggleEntry(id);
+  }
+
+  toggleTile(id: DeckEntryId): void {
+    this.#deck.toggleTile(id);
   }
 
   toggleModule(module: AppModule): void {

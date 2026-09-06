@@ -13,8 +13,8 @@ import {
   resonanceRatingOf,
   isEntryVisible,
   isFactoryDeck,
-  moveOnDeck,
   orderEntries,
+  reorderWithin,
   resolveLabels,
   toggleIn,
 } from './deck.utils';
@@ -38,9 +38,15 @@ const CATALOG: readonly DeckEntry[] = [
   entry('cash', 'cash'),
 ];
 
+const PINNED: readonly DeckEntry[] = [
+  ...CATALOG,
+  entry('commlink', 'commlink'),
+];
+
 const state = (overrides: Partial<DeckState> = {}): DeckState => ({
   order: [],
   visibleEntries: [],
+  hiddenTiles: [],
   ...overrides,
 });
 
@@ -71,6 +77,48 @@ describe('orderEntries', () => {
     expect(
       orderEntries(CATALOG, ['retired', 'cash']).map((ordered) => ordered.id)
     ).toEqual(['cash', 'shopping', 'storage']);
+  });
+
+  it('pins the deck entry to slot 0, wherever the order puts it', () => {
+    expect(
+      orderEntries(PINNED, ['cash', 'commlink', 'shopping']).map(
+        (ordered) => ordered.id
+      )
+    ).toEqual(['commlink', 'cash', 'shopping', 'storage']);
+  });
+});
+
+describe('reorderWithin', () => {
+  const order = ['commlink', 'cash', 'storage', 'shopping', 'handbook'];
+
+  it('writes the new sequence back into the slots it came from', () => {
+    expect(reorderWithin(order, ['shopping', 'cash'])).toEqual([
+      'commlink',
+      'shopping',
+      'storage',
+      'cash',
+      'handbook',
+    ]);
+  });
+
+  it('leaves every id the drag never touched exactly where it sat', () => {
+    expect(reorderWithin(order, ['storage', 'cash', 'shopping'])).toEqual([
+      'commlink',
+      'storage',
+      'cash',
+      'shopping',
+      'handbook',
+    ]);
+  });
+
+  it('ignores a subject the order does not hold', () => {
+    expect(reorderWithin(order, ['shopping', 'nothing', 'cash'])).toEqual([
+      'commlink',
+      'shopping',
+      'storage',
+      'cash',
+      'handbook',
+    ]);
   });
 });
 
@@ -104,34 +152,6 @@ describe('entriesOnDeck', () => {
 
   it('is empty on a cold deck, whatever the catalog holds', () => {
     expect(entriesOnDeck(CATALOG, state())).toEqual([]);
-  });
-});
-
-describe('moveOnDeck', () => {
-  const order = ['cash', 'storage', 'shopping', 'tasks'];
-  const visible = ['cash', 'shopping', 'tasks'];
-
-  it('swaps a program with the next one the deck actually shows', () => {
-    expect(moveOnDeck(order, visible, 'cash', 1)).toEqual([
-      'shopping',
-      'storage',
-      'cash',
-      'tasks',
-    ]);
-  });
-
-  it('leaves a hidden entry where it sits, so the config order does not shift', () => {
-    expect(moveOnDeck(order, visible, 'shopping', -1)[1]).toBe('storage');
-  });
-
-  it('refuses to move the first program earlier or the last one later', () => {
-    expect(moveOnDeck(order, visible, 'cash', -1)).toEqual(order);
-    expect(moveOnDeck(order, visible, 'tasks', 1)).toEqual(order);
-  });
-
-  it('is inert for an id the deck is not showing', () => {
-    expect(moveOnDeck(order, visible, 'storage', 1)).toEqual(order);
-    expect(moveOnDeck(order, visible, 'nothing', -1)).toEqual(order);
   });
 });
 
@@ -269,10 +289,17 @@ describe('isFactoryDeck', () => {
   const factory: DeckState = {
     order: [],
     visibleEntries: ['shopping', 'storage'],
+    hiddenTiles: [],
   };
 
   it('recognizes the factory deck itself', () => {
     expect(isFactoryDeck(factory, factory)).toBe(true);
+  });
+
+  it('reads a tile hidden on the deck as custom', () => {
+    expect(
+      isFactoryDeck({ ...factory, hiddenTiles: ['shopping'] }, factory)
+    ).toBe(false);
   });
 
   it('reads a toggle as custom, in either direction', () => {
@@ -324,6 +351,7 @@ const configured = (hidden: string[] = []) =>
     CATALOG.map(resolveLabels('cyberpunk')).map((program) => ({
       ...program,
       hidden: hidden.includes(program.id),
+      hiddenOnDeck: false,
     }))
   );
 

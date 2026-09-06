@@ -5,6 +5,7 @@ import { deckReducer, initialDeck } from './deck.reducer';
 const stored: DeckState = {
   order: ['cash', 'shopping'],
   visibleEntries: ['cash', 'shopping'],
+  hiddenTiles: ['cash'],
 };
 
 describe('deckReducer', () => {
@@ -19,6 +20,19 @@ describe('deckReducer', () => {
       expect(deckReducer(initialDeck, DeckActions.loaded(null))).toBe(
         initialDeck
       );
+    });
+
+    it('reads a document written before tiles could be hidden', () => {
+      const before = {
+        order: ['cash'],
+        visibleEntries: ['cash'],
+      } as unknown as DeckState;
+
+      expect(deckReducer(initialDeck, DeckActions.loaded(before))).toEqual({
+        order: ['cash'],
+        visibleEntries: ['cash'],
+        hiddenTiles: [],
+      });
     });
 
     it('discards a document from before the shape was inverted', () => {
@@ -55,6 +69,11 @@ describe('deckReducer', () => {
       ).toEqual(['cash']);
     });
 
+    it('forgets a tile preference, so switching a program back on shows it', () => {
+      const off = deckReducer(stored, DeckActions.toggleEntry('cash'));
+      expect(off.hiddenTiles).toEqual([]);
+    });
+
     it('shows one the factory default starts hidden', () => {
       expect(
         deckReducer(initialDeck, DeckActions.toggleEntry('ritual'))
@@ -84,6 +103,27 @@ describe('deckReducer', () => {
         deckReducer(stored, DeckActions.setEntries(['cash', 'spending'], false))
           .visibleEntries
       ).toEqual(['shopping']);
+    });
+
+    it('forgets the tile preferences of every id it touches', () => {
+      expect(
+        deckReducer(stored, DeckActions.setEntries(['cash', 'spending'], true))
+          .hiddenTiles
+      ).toEqual([]);
+    });
+  });
+
+  describe('toggleTile', () => {
+    it('hides a tile without touching what the drawer shows', () => {
+      const next = deckReducer(stored, DeckActions.toggleTile('shopping'));
+      expect(next.hiddenTiles).toEqual(['cash', 'shopping']);
+      expect(next.visibleEntries).toEqual(stored.visibleEntries);
+    });
+
+    it('shows a hidden one again', () => {
+      expect(
+        deckReducer(stored, DeckActions.toggleTile('cash')).hiddenTiles
+      ).toEqual([]);
     });
   });
 

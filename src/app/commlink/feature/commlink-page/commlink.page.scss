@@ -11,7 +11,11 @@
 // contrast that neon only clears as a dot, a border or a large icon.
 //
 // The terminal glyphs are drawn in CSS, not translated — punctuation in the
-// deck's voice under cyberpunk, and noise in plain.
+// deck's voice under cyberpunk, and noise in plain, `SIN://` among them. What
+// plain cannot punctuate away it drops: the hero headline and the caret are
+// in-fiction chrome, unreadable as anything else, so there is nothing to
+// translate. The caret is hidden HERE and not on `.sr-caret`, because GEIST
+// blinks the same glyph to mean a reply is still arriving.
 // ────────────────────────────────────────────────────────────────
 
 @use '../../../../theme/deck';
@@ -73,6 +77,9 @@
     font-weight: 600;
   }
 }
+.cl-bar__host {
+  margin-left: var(--space-2);
+}
 .cl-bar__clock {
   margin-left: auto;
   color: var(--sr-amber);
@@ -101,6 +108,12 @@
   color: var(--sr-amber);
   text-shadow: var(--sr-glow-lg);
 }
+:host-context([data-skin='boomer']) {
+  .cl-hero__title,
+  .sr-caret {
+    display: none;
+  }
+}
 .cl-hero__meta {
   @include deck.hud-label;
   margin: var(--space-4) 0 0;
@@ -117,20 +130,6 @@
   grid-template-columns: repeat(auto-fit, minmax(layout.$tile-nav, 1fr));
   gap: var(--space-4);
   margin-top: var(--space-5);
-}
-
-.cl-slot {
-  display: flex;
-  flex-direction: column;
-
-  > .cl-node {
-    flex: 1;
-  }
-}
-
-.cl-slot__arrange {
-  display: flex;
-  justify-content: space-between;
 }
 
 .cl-node {
@@ -327,6 +326,9 @@
   }
   .cl-hero__title {
     letter-spacing: 0.22em;
+  }
+  .cl-bar__host::before {
+    content: 'SIN://';
   }
   .cl-node__foot::before {
     content: '> ';

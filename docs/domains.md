@@ -326,3 +326,16 @@ Everything below the first entry is **v2.0.0 scope**.
   what makes the drag worth keeping — the drawer beside it renders the same list in the same order, so a drag
   is watched live. **This is the one list on the page that can be empty**, hence `app-empty-state` where the
   catalog beside it never can.
+- **Two switches, and the second is a subset of the first.** `visibleEntries` says whether a program exists
+  for the user at all; `hiddenTiles` says only whether it also gets a tile, so a program can sit in the
+  drawer with no tile but never the reverse. **Absence in `hiddenTiles` means SHOWN** — the opposite polarity
+  to `visibleEntries`, and forced: switching a program on has to put it on the deck. Switching one off clears
+  its tile preference, so a re-add never restores a choice nothing on screen still names.
+- **The deck itself has no arrange mode, and it is not an omission.** Direct manipulation on the grid is what
+  would justify a second surface, and `ion-reorder-group` cannot do it — the gesture is y-only
+  ([footguns.md](footguns.md)). Anything it *can* do is the order lens rebuilt one route away, so ordering
+  and tile-visibility both live there and the deck stays a launcher. **A list on the deck is not the
+  compromise — it is the duplication.**
+- **`commlink` is pinned to slot 0 by `orderEntries`, not by the stored order.** The drawer's first row is
+  the way back to the deck, so it cannot be dragged away or sorted behind a program. It is therefore dropped
+  from the order lens as well — a row that can be dragged and snaps back reads as a defect.

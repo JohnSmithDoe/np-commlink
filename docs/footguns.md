@@ -143,6 +143,11 @@ R1–R9 is the a11y rule set; each gated rule's banner carries its argument. **R
   button ("reset"), `ion-datetime`'s nav and the modal drag handle do not.
 - **(R8) `aria-label` on a roleless `<div>`/`<span>` is prohibited** — the implicit `generic` role does not
   support naming. Add `role="img"` / `role="status"`, or use real text in a visually-hidden span.
+- **`ion-reorder-group` is vertical-only, and it rewrites its children's `display`.** The gesture is
+  `direction: 'y'` and every position is read off `getBoundingClientRect().top`, so a multi-column grid
+  cannot be dragged with it at all — **this is why the deck grid has no drag** and reordering lives in the
+  config page's list. While dragging, the global `.reorder-list-active > *` forces `display: block` on each
+  direct child, so anything but an `ion-item` in there needs a two-class selector to keep its own layout.
 - **(R5) Neither `ion-item-sliding` nor `ion-reorder-group` ships keyboard support** (WCAG 2.1.1). The
   pattern here is a kebab `ion-button` opening an `ion-popover` (`tracking-item`). **Never gateable** — it
   depends on whether a keyboard path to the same action exists elsewhere. Also why `ion-item[button]` carries

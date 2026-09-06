@@ -122,6 +122,61 @@ genuine rung is owed by whichever ships first.
   child is a component host with no declared `display` (an Angular host defaults to `inline`).
   Switching the phone to three-button navigation is the cheapest confirmation available.
 
+## The deck
+
+- **Ordering and hiding cost four interactions before the thing being changed is even on screen.** Both
+  live in the config page's order lens, so changing what the deck shows means drawer → DECK → REIHENFOLGE
+  → drag or eye, then back. The deck itself is inert: a tile opens its program and does nothing else.
+  That is the accepted cost of dropping arrange mode ([domains.md](./domains.md)) and it is too high —
+  the setting is about the grid, and it is edited everywhere except on the grid.
+  **What a return must not be:** a list on the deck. That is the order lens rebuilt one route away, which
+  is why arrange mode went. Only direct manipulation of the tiles earns a second surface.
+  Two shapes, and they compose: **move buttons on the tile** (what v1 shipped, and they worked — they were
+  removed for being ugly, not for being wrong), and **a visibility toggle on the card itself**. Neither is
+  free, for the same reason arrange was a MODE to begin with: **a tile IS an `<a routerLink>`**, so any
+  control on it competes with the tap that opens the program, and `ion-reorder-group` cannot drive the grid
+  at all — the gesture is y-only ([footguns.md](./footguns.md)), so dragging tiles means a hand-written
+  pointer drag, ~120 lines, plus suppressing touch-scroll mid-drag.
+  Cheap and worth pricing first: **long-press a tile to toggle its visibility**, which needs no mode and no
+  second layout, against R5 — a gesture is never the only way, and here the order lens already is the other
+  way. **Owes no rung:** `hiddenTiles` and `reorderWithin` already ship, so this is UI only.
+- **Price the DRAWER before either of those — it may retire the entry above.** The side menu already
+  renders the same entries in the same order, as `ion-item`s in an `ion-list` (`app.component.html:37`):
+  **a single-column vertical list, which is the one thing `ion-reorder-group` does support.** Everything
+  the grid cannot have comes free here — no hand-written pointer drag, no y-only problem, no second
+  layout. Three things it wins outright: the drawer opens from **every page**, so a global setting stops
+  being reachable only from one route; past 992px it is a permanent pane, so the reorder happens in the
+  surface being reordered rather than one route away; and it lists the `onDeck: false` entries too, so it
+  can order the WHOLE list instead of the tile subset.
+  **It likely needs no mode at all.** Drag-by-handle is its own hit target — Ionic's `ion-reorder`
+  already calls `stopImmediatePropagation` on click inside an enabled group — so the handle can sit in
+  every row permanently while the rest of the row keeps navigating, exactly as the config order lens
+  works today. The open question is visual noise, not mechanics.
+  The eye belongs here too, and reads better here than anywhere: hiding a tile while keeping the row is
+  legible precisely when **you are looking at the row that stays**.
+  Two wrinkles: the reorder group's direct children would be the `ion-menu-toggle` wrappers rather than
+  the `ion-item`s, which is what `.reorder-list-active > *` would restyle mid-drag
+  ([footguns.md](./footguns.md)); and the drag stays pointer-only, so the config order lens remains the
+  keyboard path (R5) and cannot be dropped as a duplicate.
+- **A cold install hands the whole catalog to someone who has seen none of it.** The empty deck is a rule
+  and stays one ([domains.md](./domains.md)) — but its one entrance drops a first-time user straight into
+  the config page: every program in the catalog, grouped by module, each a switch with a codename and a
+  civil name and nothing saying which of them is for them. The catalog only grows, so the landing gets
+  worse on its own, and the failure is not confusion but resignation — everything on, or nothing.
+  Owed: **a step-by-step setup wizard that asks rather than lists.** A few questions in the user's own
+  terms — do you track working hours, do you cook, do you want the money side — each switching on the
+  entries that answer it, one screen at a time, with what it just enabled shown as it goes. It must
+  **pick nothing on its own**: the wizard is a different way to answer the same question the config page
+  asks, so an unanswered step leaves those entries OFF and the empty-deck rule survives it.
+  Skippable, and **re-runnable from SYSOP** — the second run is the more useful one, once the catalog has
+  grown past what the first covered.
+  **This is where the module count is actually paid for**, not on the deck: the deck shows what was
+  chosen, the wizard is what makes choosing survivable.
+  Two costs: the questions are **wording, not code**, and wrong wording makes it worse than the list it
+  replaces — they want drafting in German first, in the plain skin's voice, since a wizard speaking
+  cyberpunk to a new user is the problem restated. And **"has run the wizard" is a persisted flag** in
+  `settings`, a slice real users hold, so it owes the usual ask before it is added.
+
 ## BIOMON
 
 The browse tree **shipped** — `/vitals/browse`, twelve signs, 64 hexagrams, nine Ki stars, nine life

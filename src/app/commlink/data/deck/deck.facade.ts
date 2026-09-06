@@ -1,10 +1,15 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ThemeService } from '../theme.service';
-import { DECK_CATALOG, DECK_SLOT_COUNT } from '../../model/deck.catalog';
+import {
+  DECK_CATALOG,
+  DECK_PINNED_ENTRY,
+  DECK_SLOT_COUNT,
+} from '../../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../../model/deck.labels';
 import {
   AppModule,
+  DeckProgram,
   DeckProgramConfig,
   DeckEntryId,
 } from '../../model/deck.types';
@@ -13,9 +18,8 @@ import {
   groupByModule,
   groupingModules,
   isFactoryDeck,
-  moveOnDeck,
   orderEntries,
-  reorderVisible,
+  reorderWithin,
   resolveLabels,
 } from '../../util/deck.utils';
 import { DeckActions } from './deck.actions';
@@ -34,9 +38,12 @@ export class DeckFacade {
     entriesOnDeck(DECK_CATALOG, this.#config()).map(this.#labelled())
   );
 
-  readonly programs = computed(() =>
-    this.menuEntries().filter((entry) => entry.onDeck)
-  );
+  readonly programs = computed(() => {
+    const { hiddenTiles } = this.#config();
+    return this.menuEntries().filter(
+      (entry) => entry.onDeck && !hiddenTiles.includes(entry.id)
+    );
+  });
 
   readonly allPrograms = computed(() =>
     DECK_CATALOG.filter((entry) => entry.onDeck).map(this.#labelled())
@@ -45,32 +52,33 @@ export class DeckFacade {
 
   readonly #grouping = groupingModules(DECK_CATALOG);
 
-  readonly configuredEntries = computed<DeckProgramConfig[]>(() => {
+  readonly #configure = computed(() => {
     const config = this.#config();
-    return orderEntries(DECK_CATALOG, config.order)
-      .map(this.#labelled())
-      .map((entry) => ({
-        ...entry,
-        hidden: !config.visibleEntries.includes(entry.id),
-        moduleKey: this.#grouping.has(entry.module)
-          ? DECK_MODULE_LABELS[entry.module]
-          : undefined,
-      }));
+    return (entry: DeckProgram): DeckProgramConfig => ({
+      ...entry,
+      hidden: !config.visibleEntries.includes(entry.id),
+      hiddenOnDeck: config.hiddenTiles.includes(entry.id),
+      moduleKey: this.#grouping.has(entry.module)
+        ? DECK_MODULE_LABELS[entry.module]
+        : undefined,
+    });
   });
 
-  readonly orderedPrograms = computed(() =>
-    this.configuredEntries().filter((entry) => !entry.hidden)
+  readonly configuredEntries = computed(() =>
+    orderEntries(DECK_CATALOG, this.#config().order)
+      .map(this.#labelled())
+      .map(this.#configure())
   );
 
-  readonly configuredModules = computed(() => {
-    const config = this.#config();
-    return groupByModule(
-      DECK_CATALOG.map(this.#labelled()).map((entry) => ({
-        ...entry,
-        hidden: !config.visibleEntries.includes(entry.id),
-      }))
-    );
-  });
+  readonly orderedPrograms = computed(() =>
+    this.configuredEntries().filter(
+      (entry) => !entry.hidden && entry.id !== DECK_PINNED_ENTRY
+    )
+  );
+
+  readonly configuredModules = computed(() =>
+    groupByModule(DECK_CATALOG.map(this.#labelled()).map(this.#configure()))
+  );
 
   readonly hasCustomConfig = computed(
     () => !isFactoryDeck(this.#config(), initialDeck)
@@ -81,19 +89,18 @@ export class DeckFacade {
   }
 
   reorderShown(visibleOrder: DeckEntryId[]): void {
-    this.reorder(reorderVisible(this.#config().order, visibleOrder));
-  }
-
-  moveProgram(id: DeckEntryId, delta: -1 | 1): void {
-    const config = this.#config();
-    const order = orderEntries(DECK_CATALOG, config.order).map(
+    const order = orderEntries(DECK_CATALOG, this.#config().order).map(
       (entry) => entry.id
     );
-    this.reorder(moveOnDeck(order, config.visibleEntries, id, delta));
+    this.reorder(reorderWithin(order, visibleOrder));
   }
 
   toggleEntry(id: DeckEntryId): void {
     this.#store.dispatch(DeckActions.toggleEntry(id));
+  }
+
+  toggleTile(id: DeckEntryId): void {
+    this.#store.dispatch(DeckActions.toggleTile(id));
   }
 
   toggleModule(module: AppModule): void {

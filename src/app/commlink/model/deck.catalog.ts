@@ -1,6 +1,8 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
-import { DeckEntry } from './deck.types';
+import { DeckEntry, DeckEntryId } from './deck.types';
+
+export const DECK_PINNED_ENTRY: DeckEntryId = 'commlink';
 
 export const DECK_CATALOG: readonly DeckEntry[] = [
   {

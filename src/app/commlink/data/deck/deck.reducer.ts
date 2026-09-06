@@ -12,6 +12,11 @@
  * switched its program on for everyone. Now absence means hidden, and
  * both of those cost nothing.
  *
+ * `hiddenTiles` inverts that on purpose: it is a subset of what is already
+ * switched ON, so absence has to mean SHOWN, or switching a program on
+ * would leave its tile off the deck. Two sets because two questions — the
+ * drawer asks one, the grid the other, and a toggle answers both at once.
+ *
  * A document from before that flip is DISCARDED, not migrated: it names
  * the ids to hide, which under the new reading are the only ones that
  * would show. There is no rung — every holder lands on the cold-install
@@ -33,17 +38,20 @@ import { DeckActions } from './deck.actions';
 export const initialDeck: DeckState = {
   order: [],
   visibleEntries: [],
+  hiddenTiles: [],
 };
 
-const isCurrentShape = (deck: DeckState): boolean =>
-  Array.isArray((deck as Partial<DeckState>).visibleEntries) &&
-  Array.isArray((deck as Partial<DeckState>).order);
+const asCurrentShape = (deck: DeckState): DeckState | null => {
+  const { order, visibleEntries, hiddenTiles } = deck as Partial<DeckState>;
+  if (!Array.isArray(order) || !Array.isArray(visibleEntries)) return null;
+  return { order, visibleEntries, hiddenTiles: hiddenTiles ?? [] };
+};
 
 export const deckReducer = createReducer(
   initialDeck,
   on(DeckActions.loaded, (state, { deck }): DeckState => {
     if (!deck) return state;
-    return isCurrentShape(deck) ? deck : initialDeck;
+    return asCurrentShape(deck) ?? initialDeck;
   }),
   on(DeckActions.reorder, (state, { order }): DeckState => ({
     ...state,
@@ -52,10 +60,16 @@ export const deckReducer = createReducer(
   on(DeckActions.toggleEntry, (state, { id }): DeckState => ({
     ...state,
     visibleEntries: toggleIn(state.visibleEntries, id),
+    hiddenTiles: setIn(state.hiddenTiles, [id], false),
   })),
   on(DeckActions.setEntries, (state, { ids, visible }): DeckState => ({
     ...state,
     visibleEntries: setIn(state.visibleEntries, ids, visible),
+    hiddenTiles: setIn(state.hiddenTiles, ids, false),
+  })),
+  on(DeckActions.toggleTile, (state, { id }): DeckState => ({
+    ...state,
+    hiddenTiles: toggleIn(state.hiddenTiles, id),
   })),
   on(DeckActions.reset, (): DeckState => initialDeck)
 );

@@ -1,6 +1,10 @@
 import { LanguageModelAvailability, Skin } from '../../@shared/model/app.types';
 import { DashboardState } from '../model/dashboard.types';
-import { DeckChrome, DeckChromeField } from '../model/deck.catalog';
+import {
+  DeckChrome,
+  DeckChromeField,
+  DECK_PINNED_ENTRY,
+} from '../model/deck.catalog';
 import { DECK_MODULE_LABELS } from '../model/deck.labels';
 import {
   AppModule,
@@ -77,22 +81,11 @@ export function orderEntries(
   const configuredIds = new Set(order);
   const added = catalog.filter((entry) => !configuredIds.has(entry.id));
 
-  return [...configured, ...added];
-}
-
-export function moveOnDeck(
-  order: readonly DeckEntryId[],
-  visible: readonly DeckEntryId[],
-  id: DeckEntryId,
-  delta: -1 | 1
-): DeckEntryId[] {
-  const onDeck = order.filter((entry) => visible.includes(entry));
-  const neighbour = onDeck[onDeck.indexOf(id) + delta];
-  if (!onDeck.includes(id) || neighbour === undefined) return [...order];
-
-  return order.map((entry) =>
-    entry === id ? neighbour : entry === neighbour ? id : entry
-  );
+  const ordered = [...configured, ...added];
+  const pinned = ordered.find((entry) => entry.id === DECK_PINNED_ENTRY);
+  return pinned
+    ? [pinned, ...ordered.filter((entry) => entry !== pinned)]
+    : ordered;
 }
 
 export const badgeValue = (
@@ -139,20 +132,23 @@ const sameSet = <T>(a: readonly T[], b: readonly T[]): boolean =>
 
 export const isFactoryDeck = (state: DeckState, factory: DeckState): boolean =>
   sameOrder(state.order, factory.order) &&
-  sameSet(state.visibleEntries, factory.visibleEntries);
+  sameSet(state.visibleEntries, factory.visibleEntries) &&
+  sameSet(state.hiddenTiles, factory.hiddenTiles);
 
 export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
   list.includes(value)
     ? list.filter((entry) => entry !== value)
     : [...list, value];
 
-export const reorderVisible = (
+export const reorderWithin = (
   order: readonly DeckEntryId[],
-  visibleOrder: readonly DeckEntryId[]
-): DeckEntryId[] => [
-  ...visibleOrder,
-  ...order.filter((id) => !visibleOrder.includes(id)),
-];
+  subjects: readonly DeckEntryId[]
+): DeckEntryId[] => {
+  const taking = subjects.filter((id) => order.includes(id)).values();
+  return order.map((id) =>
+    subjects.includes(id) ? (taking.next().value ?? id) : id
+  );
+};
 
 export const setIn = <T>(
   list: readonly T[],

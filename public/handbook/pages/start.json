@@ -3,6 +3,7 @@
   "title": "COMMLINK",
   "plain": "Startdeck",
   "route": "/commlink",
+  "shotsStale": true,
   "summary": "Die Startseite: ein Deck aus Kacheln, das du dir selbst zusammenschaltest — und das Seitenmenü daneben.",
   "sections": [
     {
