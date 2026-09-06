@@ -9,10 +9,6 @@ import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import {
-  ItemListSortDirection,
-  ItemListSortType,
-} from '../../../@shared/model/item-list.types';
 import { Profile, PROFILES_LIST_ID, VitalsId } from '../../model/vitals.types';
 import { createProfile } from '../../util/vitals.factory';
 import { pillsOf } from '../../util/pill.utils';
@@ -67,21 +63,6 @@ export class ProfilesFacade {
 
   setFavorite(id: VitalsId): void {
     this.#store.dispatch(ProfilesActions.setFavorite(id));
-  }
-
-  search(searchQuery?: string): void {
-    this.#store.dispatch(ProfilesActions.updateSearch(searchQuery));
-  }
-
-  addItemFromSearch(): void {
-    this.#store.dispatch(ProfilesActions.addItemFromSearch());
-  }
-
-  setSortMode(
-    sortBy: ItemListSortType,
-    direction: ItemListSortDirection | 'toggle' = 'toggle'
-  ): void {
-    this.#store.dispatch(ProfilesActions.updateSort(sortBy, direction));
   }
 
   removeItem(profile: Profile): void {

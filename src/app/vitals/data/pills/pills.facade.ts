@@ -3,10 +3,6 @@ import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import {
-  ItemListSortDirection,
-  ItemListSortType,
-} from '../../../@shared/model/item-list.types';
 import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { isTakenOn } from '../../util/pill.utils';
 import { createPill } from '../../util/vitals.factory';
@@ -59,17 +55,6 @@ export class PillsFacade {
 
   saveItem(pill: Pill): void {
     this.#store.dispatch(PillsActions.addOrUpdateItem(pill));
-  }
-
-  search(searchQuery?: string): void {
-    this.#store.dispatch(PillsActions.updateSearch(searchQuery));
-  }
-
-  setSortMode(
-    sortBy: ItemListSortType,
-    direction: ItemListSortDirection | 'toggle' = 'toggle'
-  ): void {
-    this.#store.dispatch(PillsActions.updateSort(sortBy, direction));
   }
 
   removeItem(pill: Pill): void {

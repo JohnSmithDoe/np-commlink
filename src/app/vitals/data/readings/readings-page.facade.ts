@@ -13,7 +13,12 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import { Store } from '@ngrx/store';
+import { ReadingsActions } from './readings.actions';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { Reading, READINGS_LIST_ID } from '../../model/vitals.types';
 import { ProfilesFacade } from '../profiles/profiles.facade';
 import { ReadingsFacade } from './readings.facade';
@@ -22,10 +27,11 @@ const MIN_TREND_READINGS = 2;
 
 @Injectable({ providedIn: 'root' })
 export class ReadingsPageFacade extends BaseListPageFacade {
+  readonly #store = inject(Store);
   readonly #readings = inject(ReadingsFacade);
   readonly #profiles = inject(ProfilesFacade);
 
-  protected readonly commands = this.#readings;
+  protected readonly commands = itemListCommands(this.#store, ReadingsActions);
 
   readonly state = this.#readings.state;
   readonly items = this.#readings.items;

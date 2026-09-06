@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import { ItemListSortType } from '../../../@shared/model/item-list.types';
 import {
   GameType,
   GAME_TYPES_LIST_ID,
@@ -57,18 +56,6 @@ export class GameTypesFacade {
 
   saveItem(gameType: GameType): void {
     this.#store.dispatch(GameTypesActions.addOrUpdateItem(gameType));
-  }
-
-  search(searchQuery?: string): void {
-    this.#store.dispatch(GameTypesActions.updateSearch(searchQuery));
-  }
-
-  addItemFromSearch(): void {
-    this.#store.dispatch(GameTypesActions.addItemFromSearch());
-  }
-
-  setSortMode(sortBy: ItemListSortType): void {
-    this.#store.dispatch(GameTypesActions.updateSort(sortBy, 'toggle'));
   }
 
   removeItem(gameType: GameType): void {

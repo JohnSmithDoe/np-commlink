@@ -2,10 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import {
-  ItemListSortDirection,
-  ItemListSortType,
-} from '../../../@shared/model/item-list.types';
 import { Player, PLAYERS_LIST_ID } from '../../model/trackplay.types';
 import { gamesWithPlayer } from '../../util/trackplay.cascade';
 import { createPlayer } from '../../util/trackplay.factory';
@@ -53,21 +49,6 @@ export class PlayersFacade {
 
   saveItem(player: Player): void {
     this.#store.dispatch(PlayersActions.addOrUpdateItem(player));
-  }
-
-  search(searchQuery?: string): void {
-    this.#store.dispatch(PlayersActions.updateSearch(searchQuery));
-  }
-
-  addItemFromSearch(): void {
-    this.#store.dispatch(PlayersActions.addItemFromSearch());
-  }
-
-  setSortMode(
-    sortBy: ItemListSortType,
-    direction: ItemListSortDirection | 'toggle' = 'toggle'
-  ): void {
-    this.#store.dispatch(PlayersActions.updateSort(sortBy, direction));
   }
 
   removeItem(player: Player): void {

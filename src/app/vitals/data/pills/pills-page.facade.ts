@@ -1,15 +1,21 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import { Store } from '@ngrx/store';
+import { PillsActions } from './pills.actions';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { ProfilesFacade } from '../profiles/profiles.facade';
 import { PillsFacade } from './pills.facade';
 
 @Injectable({ providedIn: 'root' })
 export class PillsPageFacade extends BaseListPageFacade {
+  readonly #store = inject(Store);
   readonly #pills = inject(PillsFacade);
   readonly #profiles = inject(ProfilesFacade);
 
-  protected readonly commands = this.#pills;
+  protected readonly commands = itemListCommands(this.#store, PillsActions);
 
   readonly state = this.#pills.state;
   readonly items = this.#pills.items;

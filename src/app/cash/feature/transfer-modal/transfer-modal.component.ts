@@ -30,7 +30,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import dayjs from 'dayjs';
 import { uuidv4 } from '../../../@shared/util/app.utils';
-import { BaseModalDialog } from '../../../@shared/feature/modal-dialog/base-modal-dialog';
+import { BaseModalDialog } from '../base-modal-dialog';
 import {
   requireParseableDate,
   requireText,

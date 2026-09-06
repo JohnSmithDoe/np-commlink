@@ -2,10 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { TodayService } from '../../../@shared/data/services/today.service';
-import {
-  ItemListSortDirection,
-  ItemListSortType,
-} from '../../../@shared/model/item-list.types';
 import { Reading, READINGS_LIST_ID } from '../../model/vitals.types';
 import { createReading } from '../../util/vitals.factory';
 import { readingOn } from '../../util/vitals.utils';
@@ -60,17 +56,6 @@ export class ReadingsFacade {
 
   saveItem(reading: Reading): void {
     this.#store.dispatch(ReadingsActions.addOrUpdateItem(reading));
-  }
-
-  search(searchQuery?: string): void {
-    this.#store.dispatch(ReadingsActions.updateSearch(searchQuery));
-  }
-
-  setSortMode(
-    sortBy: ItemListSortType,
-    direction: ItemListSortDirection | 'toggle' = 'toggle'
-  ): void {
-    this.#store.dispatch(ReadingsActions.updateSort(sortBy, direction));
   }
 
   removeItem(reading: Reading): void {

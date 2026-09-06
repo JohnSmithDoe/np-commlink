@@ -15,7 +15,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import { Store } from '@ngrx/store';
+import { GamesActions } from './games.actions';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { ItemListSortOption } from '../../../@shared/model/item-list.types';
 import { GameTypesFacade } from '../game-types/game-types.facade';
 import { GAMES_LIST_ID } from '../../model/trackplay.types';
@@ -27,10 +32,11 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
 
 @Injectable({ providedIn: 'root' })
 export class GamesPageFacade extends BaseListPageFacade {
+  readonly #store = inject(Store);
   readonly #games = inject(GamesFacade);
   readonly #router = inject(Router);
 
-  protected readonly commands = this.#games;
+  protected readonly commands = itemListCommands(this.#store, GamesActions);
 
   readonly state = this.#games.state;
   readonly undoScope = signal(GAMES_LIST_ID);

@@ -8,15 +8,21 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable, signal } from '@angular/core';
-import { BaseListPageFacade } from '../../../@shared/data/item-lists/list-page.facade.base';
+import { Store } from '@ngrx/store';
+import { GameTypesActions } from './game-types.actions';
+import {
+  BaseListPageFacade,
+  itemListCommands,
+} from '../../../@shared/data/item-lists/list-page.facade.base';
 import { GAME_TYPES_LIST_ID } from '../../model/trackplay.types';
 import { GameTypesFacade } from './game-types.facade';
 
 @Injectable({ providedIn: 'root' })
 export class GameTypesPageFacade extends BaseListPageFacade {
+  readonly #store = inject(Store);
   readonly #gameTypes = inject(GameTypesFacade);
 
-  protected readonly commands = this.#gameTypes;
+  protected readonly commands = itemListCommands(this.#store, GameTypesActions);
 
   readonly state = this.#gameTypes.state;
   readonly undoScope = signal(GAME_TYPES_LIST_ID);
