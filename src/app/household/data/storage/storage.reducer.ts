@@ -32,6 +32,6 @@ export const storageReducer = createReducer(
   on(StorageActions.addShoppingList, (state, { items }): StorageState => addShoppinglistToStorage(state, items)),
 
   on(HouseholdActions.loaded,(_state, { data }): StorageState => {
-    return hydratedList(data?.storage ?? _state);
+    return hydratedList({ ...initialState, ...(data?.storage ?? _state) });
   })
 );

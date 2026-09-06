@@ -95,5 +95,5 @@ export const cashTransactionsReducer = createReducer(
       txn.id === manualId ? { ...txn, matchedTxnId: undefined, status: 'pending' } : txn
     ))),
 
-  on(CashActions.loaded, (state, { cash }): CashTransactionsState => hydratedList(cash?.transactions ?? state))
+  on(CashActions.loaded, (state, { cash }): CashTransactionsState => hydratedList({ ...initialTransactionsState, ...(cash?.transactions ?? state) }))
 );

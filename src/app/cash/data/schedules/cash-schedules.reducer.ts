@@ -56,5 +56,5 @@ export const cashSchedulesReducer = createReducer(
     items: withChanges(state.items, changes),
   })),
 
-  on(CashActions.loaded, (state, { cash }): CashSchedulesState => hydratedList(cash?.schedules ?? state))
+  on(CashActions.loaded, (state, { cash }): CashSchedulesState => hydratedList({ ...initialSchedulesState, ...(cash?.schedules ?? state) }))
 );

@@ -37,5 +37,5 @@ export const recipesReducer = createReducer(
   on(RecipesActions.updateSort, (state, { sortBy, sortDirection }): RecipesState => updateListSort(state, sortBy, sortDirection)),
   on(ProductsActions.removeItem, (state, { item }): RecipesState => dropProductFromRecipes(state, item.id)),
 
-  on(HouseholdActions.loaded, (state, { data }): RecipesState => hydratedList(data?.recipes ?? state))
+  on(HouseholdActions.loaded, (state, { data }): RecipesState => hydratedList({ ...initialState, ...(data?.recipes ?? state) }))
 );

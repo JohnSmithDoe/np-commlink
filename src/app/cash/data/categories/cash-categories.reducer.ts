@@ -22,5 +22,5 @@ export const cashCategoriesReducer = createReducer(
   on(CashCategoriesActions.updateSearch, (state, { searchQuery }): CategoryList => updateListSearch(state, searchQuery)),
   on(CashCategoriesActions.updateSort, (state, { sortBy, sortDirection }): CategoryList => updateListSort(state, sortBy, sortDirection)),
 
-  on(CashActions.loaded, (state, { cash }): CategoryList => hydratedList(cash?.categories ?? state))
+  on(CashActions.loaded, (state, { cash }): CategoryList => hydratedList({ ...initialCategoriesState, ...(cash?.categories ?? state) }))
 );

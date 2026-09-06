@@ -76,4 +76,16 @@ describe('productsReducer', () => {
     expect(state.searchQuery).toBeUndefined();
     expect(state.filterBy).toBeUndefined();
   });
+
+  it('fills a stored document out with the fields it was saved without', () => {
+    const stored = { items: [mockProduct()] } as never;
+
+    const state = productsReducer(
+      initialState,
+      HouseholdActions.loaded({ products: stored } as never)
+    );
+
+    expect(state.id).toBe(initialState.id);
+    expect(state.items).toHaveLength(1);
+  });
 });

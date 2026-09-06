@@ -56,5 +56,5 @@ export const cashRulesReducer = createReducer(
     items: reordered(state.items, ids),
   })),
 
-  on(CashActions.loaded, (state, { cash }): CashRulesState => hydratedList(cash?.rules ?? state))
+  on(CashActions.loaded, (state, { cash }): CashRulesState => hydratedList({ ...initialRulesState, ...(cash?.rules ?? state) }))
 );

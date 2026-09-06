@@ -22,5 +22,5 @@ export const householdCategoriesReducer = createReducer(
   on(HouseholdCategoriesActions.updateSearch, (state, { searchQuery }): CategoryList => updateListSearch(state, searchQuery)),
   on(HouseholdCategoriesActions.updateSort, (state, { sortBy, sortDirection }): CategoryList => updateListSort(state, sortBy, sortDirection)),
 
-  on(HouseholdActions.loaded, (state, { data }): CategoryList => hydratedList(data?.categories ?? state))
+  on(HouseholdActions.loaded, (state, { data }): CategoryList => hydratedList({ ...initialState, ...(data?.categories ?? state) }))
 );

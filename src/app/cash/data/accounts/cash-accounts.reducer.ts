@@ -27,5 +27,5 @@ export const cashAccountsReducer = createReducer(
   on(CashAccountsActions.updateFilter, (state, { filterBy }): CashAccountsState => ({ ...state, filterBy })),
   on(CashAccountsActions.updateSort, (state, { sortBy, sortDirection }): CashAccountsState => updateListSort(state, sortBy, sortDirection)),
 
-  on(CashActions.loaded, (state, { cash }): CashAccountsState => hydratedList(cash?.accounts ?? state))
+  on(CashActions.loaded, (state, { cash }): CashAccountsState => hydratedList({ ...initialAccountsState, ...(cash?.accounts ?? state) }))
 );
