@@ -9,8 +9,10 @@ Line numbers were true when the finding was written and the tree moves — locat
 
 _Reviewed 2026-09-06 across five passes: pattern conformance, duplication, trackplay correctness, the
 deck/nav shell, and state/tests/docs. Every gate was green at the time — everything found was invisible
-to all of them, which is the point. The bug findings and the shell's shape have since been fixed; what
-remains here is duplication, four test gaps and the doc drift._
+to all of them, which is the point. The bug findings, the shell's shape and the whole duplication pass
+have since been settled — four extractions done, five declined in
+[decisions.md](./decisions.md) with the reason. What remains is one gate blind spot, four test gaps and
+the doc drift._
 
 ---
 
@@ -24,46 +26,6 @@ remains here is duplication, four test gaps and the doc drift._
   config and notifications all dim this way, so the honest fix is a sweep plus a rule that also flags a
   low `opacity` on a block that paints text. Low urgency — nothing here is unreadable today; the point is
   that the gate would not tell us if it became so.
-
-## Duplication — the same shape, written again
-
-- **D3 · The create-seed rule is declared twice per list.** _A new item takes its name from the search
-  box and is filed under the armed filter_ — stated once as `create:` config in the domain's list
-  effects, and again in the facade's `showCreateDialog`, thirteen times over. Two writers for one fact,
-  and it has already produced two spellings of the same null-guard (`state().searchQuery` in seven,
-  `state()?.searchQuery` in six) against one `Signal<ItemList | undefined>` contract. **Fix:** an
-  abstract `create` on `BaseListPageFacade` that both the dialog call and the effects config read, so
-  each list declares its seed once. The sixteen identical `showEditDialog` bodies can ride along into the
-  base in the same pass, but the seed rule is the finding — the dialog call has never diverged.
-
-- **D4 · One operation, six names — a rename pass, not an extraction.** ~18 pages carry three-line
-  forwarders spelled `removeItem`/`remove`/`deleteItem`/`deletePlayer`/`deleteType`/`deleteProfile`, and
-  `showEditDialog`/`openEdit`/`edit`/`openEditRule`/`openPillEdit`. Deleting them saves nothing anyone
-  would ever debug — each is trivial and a bug in one is a bug in one. The cost is that a reader cannot
-  tell from a page whether a delete is undoable or confirmed without opening the facade, and two of the
-  forwarders point at a method _already on the bound page facade_. **Fix:** settle on one name per
-  operation and let the row template call `facade.*` directly, as the cash account page and the notes
-  page already do. Judge it as consistency, not as line count.
-
-- **D6 · Five facades hand-wire push-undo-then-remove**, while two declarative forms already exist —
-  the effects factory's `undoableDelete` and `BaseCategoryListPageFacade`'s `restoreActionFor?` hook.
-  Three ways to say one thing, and the wiring is where the mistake lands: `game-types.facade.ts:75`
-  guards `id === DEFAULT_GAME_TYPE_ID` and `trackplay.reducer.ts:55` re-checks the identical veto.
-
-- **D7 · Modal chrome is written raw in seven components** (cancel / title / confirm toolbar), three
-  of them line-for-line identical. This is where R4 lives and the copies disagree: four set
-  `[attr.aria-label]` on their own `ion-modal`; the three cash ones have no modal host and depend on the
-  _caller_ passing `htmlAttributes`, with nothing linking the visible title to that label.
-  [footguns.md](./footguns.md) records that they must be kept in sync by hand — seven copies is seven
-  places to forget. **Fix:** a `modal-chrome` component under `@shared/ui/` taking every label as an **input** (so
-  `i18n-key-ownership` holds) and deriving the aria-label from the title, closing the sync gap
-  structurally. Scope honestly: the cash trio is the byte-identical part.
-
-- **D9 · The category-catalog port is implemented twice as pure forwarders** (household, tasks), and
-  cash solved the same problem a third way with its own picker while trackplay treats `GameType` as a
-  category joining none of it. Four answers, two of them identical boilerplate. **Fix when a third
-  domain wants a category picker in an edit dialog**, not before: one injected `CATEGORY_CATALOG` token
-  replaces the three abstract methods and deletes `base-household-edit-item-dialog.ts`.
 
 ## Tests — the risk-weighted holes
 

@@ -8,11 +8,28 @@ or a count the code owns.
 
 ## Declined extractions
 
+- **A single create-seed declaration.** The seed looked like two writers — `create:` config in the list
+  effects and `createX(searchQuery, filterBy)` in the facade — but both call the same mint function, and
+  every pair that exists passes the same arguments. What differs is only where the values come from: the
+  effect reads the action, the facade reads its own state. Nothing to merge.
+- **Renaming the eighteen page forwarders.** A bug in one is a bug in one, so the file wins. Worth
+  knowing rather than doing: six names for one operation means a reader cannot tell from a page whether
+  a delete is undoable or confirmed. The three that forwarded to a method the template already had are
+  gone; the rest earn a rename only alongside work that is touching them anyway.
 - **The five ItemList CRUD `on`s.** Seventeen reducers spell them out and none has ever diverged — all
   call the same `list.utils`. Every shape that returns them as shared `on()` entries pays five or six
   casts to NgRx's state variance, and `removeItem` cannot join at all: trackplay's aggregates omit it so
   `combineReducers` hands the cascade the pre-delete state. The line that DID drift was the hydration
   spread, and that is now one spelling.
+- **A `removeWithUndo` helper.** Four collection facades push the undo entry and then dispatch the
+  removal. The helper would take an already-built restore action, so it enforces nothing the copies get
+  wrong — the rule that matters, _build the entry in the COMMAND_, is upheld by the caller either way.
+  The `DEFAULT_GAME_TYPE_ID` check that looks written twice is two guards sharing one condition: the
+  reducer's protects the state, the facade's stops an undo toast for a removal that never happened.
+- **A shared modal chrome component.** The three cash modals are a pair and a variant, not a trio —
+  reconcile has no confirm button. What is worth keeping in view is that all three lack an `ion-modal`
+  host and depend on the caller passing `htmlAttributes`, so nothing links the visible title to the
+  accessible name; that is an a11y question, not a duplication one.
 - **A general route-scoped list chain.** `createRouteScopedListSelectors` fits a list scoped by `:id`
   with no projection. Cash's two views scope by `accountId`/`categoryId`, overwrite `sort` to pin the
   ledger, and post-map against the UNSCOPED items; absorbing that needs three options, which is a bag
