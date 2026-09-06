@@ -52,7 +52,7 @@ export const computeScores = (game: Game): Record<TrackplayId, number> => {
   return scores;
 };
 
-export const rankPlayersByScore = (
+const rankPlayersByScore = (
   playerIds: TrackplayId[],
   scores: Record<TrackplayId, number>,
   winHigh: boolean

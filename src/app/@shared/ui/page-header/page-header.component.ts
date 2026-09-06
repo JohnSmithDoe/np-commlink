@@ -18,7 +18,9 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { addOutline } from 'ionicons/icons';
-import { PROGRAM_ICON } from '../../util/program-icon.token';
+import { ActivatedRoute } from '@angular/router';
+import { PROGRAM_CONTEXT } from '../../util/program-context.token';
+import { routeUrl } from '../../util/route-url';
 
 @Component({
   selector: 'app-page-header',
@@ -36,7 +38,7 @@ import { PROGRAM_ICON } from '../../util/program-icon.token';
   ],
 })
 export class PageHeaderComponent {
-  readonly #programIcon = inject(PROGRAM_ICON);
+  readonly #program = inject(PROGRAM_CONTEXT)(routeUrl(inject(ActivatedRoute)));
 
   readonly label = input('');
   readonly heading = input('');
@@ -45,7 +47,7 @@ export class PageHeaderComponent {
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly addItem = output<void>();
 
-  readonly glyph = computed(() => this.icon() ?? this.#programIcon());
+  readonly glyph = computed(() => this.icon() ?? this.#program.icon);
 
   constructor() {
     addIcons({ addOutline });

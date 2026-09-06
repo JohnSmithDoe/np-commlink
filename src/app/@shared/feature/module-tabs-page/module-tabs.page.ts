@@ -18,17 +18,17 @@ import {
   IonTabs,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { PROGRAM_SIBLINGS } from '../../util/program-siblings.token';
+import { PROGRAM_CONTEXT } from '../../util/program-context.token';
 import { routeUrl } from '../../util/route-url';
 
 @Component({
-  selector: 'app-module-tabs',
+  selector: 'app-page-module-tabs',
   templateUrl: './module-tabs.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, TranslatePipe],
 })
 export class ModuleTabsPage {
-  protected readonly tabs = inject(PROGRAM_SIBLINGS)(
+  protected readonly tabs = inject(PROGRAM_CONTEXT)(
     routeUrl(inject(ActivatedRoute))
-  );
+  ).siblings;
 }

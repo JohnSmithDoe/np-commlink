@@ -126,7 +126,7 @@ export interface OfficeTimeState {
   reminder: OfficeReminder;
 }
 
-export type StoredDays = DayMap | Array<string>;
+type StoredDays = DayMap | Array<string>;
 
 export type OfficeTimeStateStorage = Omit<
   OfficeTimeState,

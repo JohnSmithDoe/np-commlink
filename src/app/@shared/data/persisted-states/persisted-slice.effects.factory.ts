@@ -73,6 +73,11 @@ const VIEW_ONLY_EVENT = /\] (updateSearch|updateFilter)$/;
 const persistsNothing = (type: string): boolean =>
   HYDRATION_EVENT.test(type) || VIEW_ONLY_EVENT.test(type);
 
+const fromSource = (type: string, source: string): boolean => {
+  const bare = source.replace(/]$/, '');
+  return type.startsWith(`${bare}]`) || type.startsWith(`${bare} `);
+};
+
 export const createLoadSliceEffect = <T>(
   lifecycle: SliceLifecycle<T>,
   key: string,
@@ -118,7 +123,7 @@ export const createSaveSliceEffect = <T>(
     (trigger.on ?? []).map((creator) => creator.type)
   );
   const matchesSource = (type: string): boolean =>
-    (trigger.sources ?? []).some((source) => type.startsWith(source)) &&
+    (trigger.sources ?? []).some((source) => fromSource(type, source)) &&
     !persistsNothing(type);
 
   const isMutation = (action: Action): boolean =>

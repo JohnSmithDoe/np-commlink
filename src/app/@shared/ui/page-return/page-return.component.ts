@@ -23,7 +23,7 @@ import { IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { chevronBackOutline } from 'ionicons/icons';
-import { PROGRAM_RETURN } from '../../util/program-return.token';
+import { PROGRAM_CONTEXT } from '../../util/program-context.token';
 import { routeUrl } from '../../util/route-url';
 
 @Component({
@@ -34,7 +34,7 @@ import { routeUrl } from '../../util/route-url';
   imports: [IonIcon, RouterLink, TranslatePipe],
 })
 export class PageReturnComponent {
-  readonly #program = inject(PROGRAM_RETURN)(routeUrl(inject(ActivatedRoute)));
+  readonly #program = inject(PROGRAM_CONTEXT)(routeUrl(inject(ActivatedRoute)));
 
   readonly route = input<string>();
   readonly label = input<string>();

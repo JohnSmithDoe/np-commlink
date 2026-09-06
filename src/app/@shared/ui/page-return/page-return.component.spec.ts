@@ -1,16 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { queryByTestId } from '../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
-import { PROGRAM_RETURN, ProgramReturn } from '../../util/program-return.token';
+import {
+  PROGRAM_CONTEXT,
+  ProgramContext,
+} from '../../util/program-context.token';
 import { PageReturnComponent } from './page-return.component';
 
-const rowFor = (program: ProgramReturn, route?: string, label?: string) => {
+const rowFor = (
+  program: Omit<ProgramContext, 'siblings'>,
+  route?: string,
+  label?: string
+) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [PageReturnComponent],
     providers: [
       ...COMMON_TEST_PROVIDERS,
-      { provide: PROGRAM_RETURN, useValue: () => program },
+      {
+        provide: PROGRAM_CONTEXT,
+        useValue: () => ({ ...program, siblings: [] }),
+      },
     ],
   });
   const fixture = TestBed.createComponent(PageReturnComponent);
@@ -21,7 +31,7 @@ const rowFor = (program: ProgramReturn, route?: string, label?: string) => {
   return queryByTestId(fixture, 'page-return');
 };
 
-const INSIDE_CASH: ProgramReturn = {
+const INSIDE_CASH: Omit<ProgramContext, 'siblings'> = {
   isProgram: false,
   parent: { route: '/cash', titleKey: 'page-title.cash' },
 };

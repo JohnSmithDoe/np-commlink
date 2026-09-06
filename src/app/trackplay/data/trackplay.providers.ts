@@ -19,17 +19,7 @@ export const trackplayContext = providePersistedContext({
   reducer: trackplayReducer,
   lifecycle: TrackplayActions,
   select: selectTrackplayPersisted,
-  save: {
-    sources: [
-      '[Trackplay]',
-      '[Trackplay Players]',
-      '[Trackplay Games]',
-      '[Trackplay GamesForPlayer]',
-      '[Trackplay GameTypes]',
-      '[Trackplay Dice]',
-      '[Trackplay Board]',
-    ],
-  },
+  save: { sources: ['[Trackplay'] },
   telemetry: [
     {
       source: 'trackplay',

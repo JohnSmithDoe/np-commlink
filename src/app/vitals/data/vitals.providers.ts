@@ -16,14 +16,7 @@ export const vitalsContext = providePersistedContext({
   reducer: vitalsReducer,
   lifecycle: VitalsActions,
   select: selectVitalsState,
-  save: {
-    sources: [
-      '[Vitals]',
-      '[Vitals Profiles]',
-      '[Vitals Readings]',
-      '[Vitals Pills]',
-    ],
-  },
+  save: { sources: ['[Vitals'] },
   telemetry: [
     {
       source: 'vitals',

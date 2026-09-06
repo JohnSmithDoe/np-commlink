@@ -11,9 +11,7 @@ import { DeckActions } from './deck/deck.actions';
 import { DashboardEffects } from './dashboard/dashboard.effects';
 import { dashboardReducer } from './dashboard/dashboard.reducer';
 import { deckReducer } from './deck/deck.reducer';
-import { programIconProvider } from './deck/program-icon.provider';
-import { programReturnProvider } from './deck/program-return.provider';
-import { programSiblingsProvider } from './deck/program-siblings.provider';
+import { programContextProvider } from './deck/program-context.provider';
 import { DASHBOARD_STATE_KEY } from './dashboard/dashboard.selector';
 import { settingsContext } from './settings/settings.providers';
 import { DECK_STATE_KEY, selectDeckState } from './deck/deck.selector';
@@ -34,11 +32,7 @@ const deckContext = providePersistedContext({
   select: selectDeckState,
   save: { sources: ['[Deck]'] },
   hydrate: 'boot',
-  publishes: [
-    programIconProvider,
-    programReturnProvider,
-    programSiblingsProvider,
-  ],
+  publishes: [programContextProvider],
 });
 
 export const commlinkContext: ContextBundle = mergeContexts(

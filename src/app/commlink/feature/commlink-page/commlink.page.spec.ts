@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { LanguageModelService } from '../../../@shared/data/theme/language-model.service';
 import {
@@ -31,6 +32,7 @@ describe('CommlinkPage', () => {
     bySource.set({});
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         provideTranslateService(),
         provideZonelessChangeDetection(),
         { provide: LanguageModelService, useValue: { availability } },

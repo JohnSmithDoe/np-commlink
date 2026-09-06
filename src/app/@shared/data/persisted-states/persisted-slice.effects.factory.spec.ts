@@ -50,6 +50,16 @@ const OtherActions = createActionGroup({
   events: { 'Do Thing': emptyProps() },
 });
 
+const ProbeAggregateActions = createActionGroup({
+  source: 'Probe Aggregate',
+  events: { addItem: (name: string) => ({ name }) },
+});
+
+const ProbelikeActions = createActionGroup({
+  source: 'Probelike',
+  events: { addItem: (name: string) => ({ name }) },
+});
+
 const selectProbe = createFeatureSelector<ProbeState>('probe');
 
 const probeState: ProbeState = { items: ['a'] };
@@ -248,6 +258,34 @@ describe('persisted-slice effects', () => {
       );
 
       expect(emitted).toEqual([]);
+      expect(database.save).not.toHaveBeenCalled();
+    });
+
+    it('takes another aggregate of the domain it names', async () => {
+      setup();
+      markProbeRead();
+      actions$ = of(ProbeAggregateActions.addItem('a'));
+
+      await firstValueFrom(
+        run(
+          createSaveSliceEffect({ sources: ['[Probe'] }, selectProbe, 'probe')
+        ).pipe(toArray())
+      );
+
+      expect(database.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not take a domain that merely starts with the same letters', async () => {
+      setup();
+      markProbeRead();
+      actions$ = of(ProbelikeActions.addItem('b'));
+
+      await firstValueFrom(
+        run(
+          createSaveSliceEffect({ sources: ['[Probe'] }, selectProbe, 'probe')
+        ).pipe(toArray())
+      );
+
       expect(database.save).not.toHaveBeenCalled();
     });
 

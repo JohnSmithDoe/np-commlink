@@ -27,16 +27,7 @@ export const cashContext = providePersistedContext({
     cashSchedulesListEffects,
     cashRulesEffects,
   ],
-  save: {
-    sources: [
-      '[Cash]',
-      '[Cash Accounts]',
-      '[Cash Transactions]',
-      '[Cash Rules]',
-      '[Cash Schedules]',
-      '[Cash Categories]',
-    ],
-  },
+  save: { sources: ['[Cash'] },
   telemetry: [
     {
       source: 'cash',

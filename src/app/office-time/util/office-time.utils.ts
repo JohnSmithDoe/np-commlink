@@ -136,7 +136,7 @@ export const dayjsFromString = (date: string): Dayjs | null => {
 };
 export const dayjsToday = () => dayjs().hour(12);
 
-export const dayKeyFrom = (date?: string | null): DayKey | null => {
+const dayKeyFrom = (date?: string | null): DayKey | null => {
   if (typeof date !== 'string') return null;
   const parsed = dayjsFromString(date);
   return parsed ? dayjsToString(parsed) : null;

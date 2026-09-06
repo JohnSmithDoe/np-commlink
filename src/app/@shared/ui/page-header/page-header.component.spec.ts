@@ -1,8 +1,7 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { getByTestId, queryByTestId } from '../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
-import { PROGRAM_ICON } from '../../util/program-icon.token';
+import { PROGRAM_CONTEXT } from '../../util/program-context.token';
 import { PageHeaderComponent } from './page-header.component';
 
 const glyphOf = (icon?: string) => {
@@ -11,7 +10,14 @@ const glyphOf = (icon?: string) => {
     imports: [PageHeaderComponent],
     providers: [
       ...COMMON_TEST_PROVIDERS,
-      { provide: PROGRAM_ICON, useValue: signal('wallet-outline') },
+      {
+        provide: PROGRAM_CONTEXT,
+        useValue: () => ({
+          icon: 'wallet-outline',
+          isProgram: true,
+          siblings: [],
+        }),
+      },
     ],
   });
   const header = TestBed.createComponent(PageHeaderComponent);

@@ -7,12 +7,14 @@
  * a later `/cashflow`. A wrong glyph is silent where a missing one is not,
  * which is the whole failure mode worth defending against here.
  *
- * The two readers want opposite answers on an EXACT match: a program wears
- * its own glyph, and a program has nowhere to return to. So the match is made
- * once and only the return reader asks whether it was exact.
+ * The readers want opposite answers on an EXACT match: a program wears its
+ * own glyph, and a program has nowhere to return to. So the match is made
+ * once and `isProgram` carries whether it was exact.
  * ───────────────────────────────────────────────────────────────── */
-import { ProgramReturn } from '../../@shared/util/program-return.token';
-import { ProgramSibling } from '../../@shared/util/program-siblings.token';
+import {
+  ProgramContext,
+  ProgramSibling,
+} from '../../@shared/util/program-context.token';
 import { DeckEntry } from '../model/deck.types';
 
 const longestRouteFirst = (a: DeckEntry, b: DeckEntry): number =>
@@ -45,21 +47,22 @@ export const programSiblingsFor = (
       : [];
   });
 
-export const programIconFor = (
+export const programContextFor = (
   catalog: readonly DeckEntry[],
   url: string
-): string | undefined => entryFor(catalog, pathOf(url))?.icon;
-
-export const programReturnFor = (
-  catalog: readonly DeckEntry[],
-  url: string
-): ProgramReturn => {
+): ProgramContext => {
   const path = pathOf(url);
   const entry = entryFor(catalog, path);
-  if (!entry) return { isProgram: false };
-  if (entry.route === path) return { isProgram: true };
+  const siblings = programSiblingsFor(catalog, path);
+
+  if (!entry) return { isProgram: false, siblings };
+  if (entry.route === path)
+    return { icon: entry.icon, isProgram: true, siblings };
+
   return {
+    icon: entry.icon,
     isProgram: false,
     parent: { route: entry.route, titleKey: entry.titleKey },
+    siblings,
   };
 };
