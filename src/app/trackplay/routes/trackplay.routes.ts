@@ -20,6 +20,27 @@ export const trackplayRoutes: Routes = [
           ),
         children: [
           {
+            path: 'players',
+            children: [
+              {
+                path: '',
+                title: marker('page-title.trackplay-players'),
+                loadComponent: () =>
+                  import('../feature/players-page/players.page').then(
+                    (m) => m.TrackplayPlayersPage
+                  ),
+              },
+              {
+                path: ':id',
+                title: marker('page-title.trackplay-player'),
+                loadComponent: () =>
+                  import('../feature/player-page/player.page').then(
+                    (m) => m.TrackplayPlayerPage
+                  ),
+              },
+            ],
+          },
+          {
             path: 'games',
             children: [
               {
@@ -28,22 +49,6 @@ export const trackplayRoutes: Routes = [
                 loadComponent: () =>
                   import('../feature/games-page/games.page').then(
                     (m) => m.TrackplayGamesPage
-                  ),
-              },
-              {
-                path: 'players',
-                title: marker('page-title.trackplay-players'),
-                loadComponent: () =>
-                  import('../feature/players-page/players.page').then(
-                    (m) => m.TrackplayPlayersPage
-                  ),
-              },
-              {
-                path: 'player/:id',
-                title: marker('page-title.trackplay-player'),
-                loadComponent: () =>
-                  import('../feature/player-page/player.page').then(
-                    (m) => m.TrackplayPlayerPage
                   ),
               },
               {

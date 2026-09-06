@@ -15,8 +15,8 @@
 import { expect, Page, test } from '@playwright/test';
 import { listRow } from '../helpers';
 import {
-  CREATE_BUTTON,
   addButton,
+  CREATE_BUTTON,
   createDialog,
   createPlayer,
   gotoPage,
@@ -41,11 +41,7 @@ async function createGame(page: Page, name: string, type: string) {
 
 test.describe('trackplay games', () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(
-      page,
-      'trackplay/games/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
     await createPlayer(page, 'Alice');
 
     await gotoPage(page, 'trackplay', 'app-page-trackplay-games');

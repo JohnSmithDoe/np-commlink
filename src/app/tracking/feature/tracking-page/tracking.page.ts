@@ -4,7 +4,7 @@ import {
   inject,
   isDevMode,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
@@ -21,12 +21,7 @@ import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page
 import { TrackingFacade, TrackingListPageFacade } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
-import {
-  IonButton,
-  IonIcon,
-  IonRouterLink,
-  ViewWillEnter,
-} from '@ionic/angular/standalone';
+import { IonButton, IonIcon, ViewWillEnter } from '@ionic/angular/standalone';
 import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.component';
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';
 
@@ -41,8 +36,6 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
     DailySessionsComponent,
     IonButton,
     IonIcon,
-    IonRouterLink,
-    RouterLink,
     TrackingItemComponent,
     EditTrackingItemDialogComponent,
   ],

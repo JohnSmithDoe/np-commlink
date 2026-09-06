@@ -4,16 +4,6 @@
   [itemTemplate]="gameRow"
 >
   <ion-button
-    headerEnd
-    slot="end"
-    routerLink="/trackplay/games/players"
-    color="primary"
-    [attr.aria-label]="'trackplay.a11y.players' | translate"
-  >
-    <ion-icon slot="icon-only" name="people-outline" aria-hidden="true" />
-  </ion-button>
-
-  <ion-button
     toolbarActions
     data-testid="games-show-ended"
     [attr.aria-pressed]="facade.showEndedGames()"

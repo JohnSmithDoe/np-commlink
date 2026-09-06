@@ -3,6 +3,7 @@
   "title": "DAILY RUN",
   "plain": "Tagesaufgabe",
   "route": "/ritual",
+  "shotsStale": true,
   "summary": "Eine kleine Aufgabe pro Tag, zufällig gezogen, abhakbar — und bewusst ohne Serienzähler.",
   "sections": [
     {

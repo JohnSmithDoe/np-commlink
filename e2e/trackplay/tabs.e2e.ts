@@ -28,7 +28,7 @@ test.describe('trackplay module tabs', () => {
 
     await expect(page).toHaveURL(/#\/trackplay\/games$/);
     await expect(tabBar(page)).toBeVisible();
-    await expect(tabBar(page).locator('ion-tab-button')).toHaveCount(3);
+    await expect(tabBar(page).locator('ion-tab-button')).toHaveCount(4);
   });
 
   test('switches between sibling programs without leaving the module', async ({
@@ -47,7 +47,7 @@ test.describe('trackplay module tabs', () => {
   });
 
   test('keeps the bar up on a page inside a tab', async ({ page }) => {
-    await gotoPage(page, 'trackplay/games/players', PLAYERS_PAGE);
+    await gotoPage(page, 'trackplay/players', PLAYERS_PAGE);
 
     await expect(tabBar(page)).toBeVisible();
   });

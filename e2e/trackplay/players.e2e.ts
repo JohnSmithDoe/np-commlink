@@ -17,11 +17,7 @@ import { createPlayer, gotoPage, mainContent } from './helpers';
 
 test.describe('trackplay players', () => {
   test('creates two players via the dialog', async ({ page }) => {
-    await gotoPage(
-      page,
-      'trackplay/games/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
 
     await createPlayer(page, 'Alice');
     await createPlayer(page, 'Bob');
@@ -34,11 +30,7 @@ test.describe('trackplay players', () => {
   test('deletes a player and restores it from the header button', async ({
     page,
   }) => {
-    await gotoPage(
-      page,
-      'trackplay/games/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
 
     await createPlayer(page, 'Charlie');
     const row = listRow(page, 'Charlie');
@@ -63,11 +55,7 @@ test.describe('trackplay players', () => {
   test('keeps players across a full reload (hydration must not clobber storage)', async ({
     page,
   }) => {
-    await gotoPage(
-      page,
-      'trackplay/games/players',
-      'app-page-trackplay-players'
-    );
+    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
     await createPlayer(page, 'Dunkelzahn');
     await waitForPersisted(page, 'trackplay', 'Dunkelzahn');
 

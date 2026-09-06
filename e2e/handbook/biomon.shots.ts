@@ -13,16 +13,16 @@
 
 import { expect, Locator, Page, test } from '@playwright/test';
 import {
-  CREATE_BUTTON,
   addButton,
+  CREATE_BUTTON,
   createDialog,
   editDialog,
   nameBox,
   openRowSwipe,
   pageRoot,
+  pickDate,
   pickSelectOption,
   waitForPersisted,
-  pickDate,
 } from '../helpers';
 import { bootDeck, openPage, shot } from './shot';
 
@@ -228,7 +228,7 @@ async function enterScore(
 
 test('TRACKPLAY', async ({ page }) => {
   await bootDeck(page);
-  await openPage(page, 'trackplay/games/players', PLAYERS_PAGE);
+  await openPage(page, 'trackplay/players', PLAYERS_PAGE);
 
   await createPlayer(page, 'Nadja');
   await createPlayer(page, 'Sven');
@@ -281,11 +281,7 @@ test('TRACKPLAY', async ({ page }) => {
   await expect(rowIn(games, 'Skatrunde')).toBeVisible();
   await shot(page, 'trackplay-games');
 
-  const players = await freshPage(
-    page,
-    'trackplay/games/players',
-    PLAYERS_PAGE
-  );
+  const players = await freshPage(page, 'trackplay/players', PLAYERS_PAGE);
   await shot(page, 'trackplay-players');
 
   await rowIn(players, 'Nadja').getByTestId('list-row-select').click();

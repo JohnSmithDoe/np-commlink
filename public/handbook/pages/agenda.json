@@ -3,6 +3,7 @@
   "title": "AGENDA",
   "plain": "Aufgaben",
   "route": "/tasks/list",
+  "shotsStale": true,
   "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien, geteilt in Offen und Erledigt.",
   "sections": [
     {

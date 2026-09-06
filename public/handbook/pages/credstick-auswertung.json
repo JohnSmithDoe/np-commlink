@@ -3,6 +3,7 @@
   "title": "CREDSTICK · Auswertung",
   "plain": "Auswertungen",
   "route": "/cash/report",
+  "shotsStale": true,
   "summary": "Drei Seiten über demselben Kontobuch — Tagesbudget, Ausgaben und Auswertung — und wozu jede taugt.",
   "sections": [
     {

@@ -130,7 +130,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'soykaf',
     module: 'household',
     icon: 'restaurant-outline',
-    route: '/soykaf',
+    route: '/household/soykaf',
     titleKey: marker('page-title.soykaf'),
     labels: {
       cyberpunk: {
@@ -316,7 +316,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'players',
     module: 'trackplay',
     icon: 'people-outline',
-    route: '/trackplay/games/players',
+    route: '/trackplay/players',
     titleKey: marker('page-title.trackplay-players'),
     labels: {
       cyberpunk: {
@@ -490,7 +490,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'settings',
     module: 'settings',
     icon: 'settings-outline',
-    route: '/settings',
+    route: '/settings/general',
     titleKey: marker('page-title.settings'),
     labels: {
       cyberpunk: {
@@ -509,7 +509,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'deck',
     module: 'settings',
     icon: 'grid-outline',
-    route: '/commlink/deck',
+    route: '/settings/deck',
     titleKey: marker('page-title.deck-config'),
     labels: {
       cyberpunk: {

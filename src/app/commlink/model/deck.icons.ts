@@ -15,6 +15,7 @@ import {
   libraryOutline,
   notificationsOutline,
   optionsOutline,
+  peopleOutline,
   pricetagsOutline,
   pulseOutline,
   receiptOutline,
@@ -54,6 +55,7 @@ export const DECK_ICONS = {
   'sunny-outline': sunnyOutline,
   'timer-outline': timerOutline,
   'wallet-outline': walletOutline,
+  'people-outline': peopleOutline,
 } as const;
 
 export type DeckIcon = keyof typeof DECK_ICONS;

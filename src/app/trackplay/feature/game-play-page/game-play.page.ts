@@ -24,7 +24,6 @@ import { GamePlayFacade, GamesFacade } from '../../data';
 import { ScorePipe } from '../../util/score.pipe';
 import { ConfettiComponent } from '../../../@shared/ui/confetti/confetti.component';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
 
 @Component({
   selector: 'app-page-trackplay-game-play',
@@ -34,7 +33,6 @@ import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return
   imports: [
     ConfettiComponent,
     PageHeaderComponent,
-    PageReturnComponent,
     IonButtons,
     IonButton,
     IonIcon,
