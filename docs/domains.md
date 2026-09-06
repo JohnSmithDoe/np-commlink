@@ -12,11 +12,11 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   you guess, so ONE parser serves every bank. **Prefer a self-describing payload over out-of-band configuration.**
 - **`AcctSvcrRef` is ASSUMED intrinsic to the entry, and that assumption is load-bearing.** Volksbank's
   looks like `2026043042104045000` — nineteen digits opening with the booking date. Two readings fit: a
-  booking timestamp plus a counter (stable across exports), or a sequence assigned when the *file* was
+  booking timestamp plus a counter (stable across exports), or a sequence assigned when the _file_ was
   generated (not stable, which would make every re-import duplicate the statement). **Falsifying it costs
   two minutes:** export one date range twice and diff the references. If they differ, the derived key
   becomes primary and the reference a tiebreaker.
-- **One key space, no branch.** A key that is *sometimes* present forces every consumer to hold two notions
+- **One key space, no branch.** A key that is _sometimes_ present forces every consumer to hold two notions
   of duplicate, so the gap closes before anything downstream sees a row. A derived key carries four
   `|`-delimited segments, which no plausible reference has. It counts occurrences AFTER the pages are
   joined — numbering per document would restart at `1` wherever a pagination boundary fell.
@@ -97,7 +97,7 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   Generic `value`/`unit`/`kind` records were rejected: they buy a union, a unit formatter and an
   axis-switching chart to serve a metric that does not exist.
 - **A reading's `name` IS its date, `YYYY-MM-DD`.** The shared list machinery keys a row on `name`, so
-  `requireUniqueName` over the profile's own readings *is* the "one reading per profile per day" rule. What
+  `requireUniqueName` over the profile's own readings _is_ the "one reading per profile per day" rule. What
   `name` does not buy is identity — two profiles weighed on one day share one — which is why readings carry
   an id-only add-or-update. **Tripwire: a fifth suppression means the altitude was wrong.** Four of the
   shared machinery's name-flavoured behaviours meet a reading; two are answered and two are harmless. A
@@ -120,7 +120,7 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   `birthDate`: seeded once the store hydrates, then freely editable. That is what makes "check someone who
   has no profile" cost nothing — the edit dies with the page.
 - **The sun sign is DERIVED from the date, and the profile stores one anyway.** The redundancy is the point:
-  a cusp birth and a sidereal reader both want to overrule the table. The date is truth *on the page*, the
+  a cusp birth and a sidereal reader both want to overrule the table. The date is truth _on the page_, the
   field is the override, and the page prints the stored value only where the two disagree.
 - **The ascendant is the inverse — it cannot be derived at all.** It needs a birth time and place, neither
   stored, so it is a plain select and it VANISHES under any date other than the profile's own birthday.
@@ -135,8 +135,8 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   same thing as "eleven minus the digit sum" and lands straight on the table index.
 - **The Nine Star Ki reading is content, not data** — `marker(...)` keys in `astro.consts.ts`, so a sixth
   facet is one column in one table.
-- **TWO digit sums, deliberately never folded into one.** The Ki star reduces the *year* and subtracts from
-  eleven; the life number reduces the *whole date* (1980 → Ki 2, 1980-08-05 → life 4). Two panels, neither
+- **TWO digit sums, deliberately never folded into one.** The Ki star reduces the _year_ and subtracts from
+  eleven; the life number reduces the _whole date_ (1980 → Ki 2, 1980-08-05 → life 4). Two panels, neither
   borrowing the other's trigram, element or personality table. The life number reduces all the way to 1–9;
   numerology's master numbers are not kept apart, which the page states rather than hides.
 
@@ -216,15 +216,15 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   and a sort. A prompt catalog and a completion log share none of that state.
 - **The catalog lives in the translation bundle** — ~100 prompts, ~7.5 KB on a 31 KB boot fetch, keeping
   de/en in lockstep. **Past ~250 entries**, copy the emoji catalog's per-language dynamic imports.
-- **Adjacency is the complaint, not recurrence** — the draw excludes the last twenty *distinct* completed
+- **Adjacency is the complaint, not recurrence** — the draw excludes the last twenty _distinct_ completed
   prompts, bounded by count rather than a day window, and falls back to the whole catalog when the pool
   would empty.
-- **A prompt can be dismissed for good.** *Not for me* is deliberately not a rating, a snooze or a per-day
+- **A prompt can be dismissed for good.** _Not for me_ is deliberately not a rating, a snooze or a per-day
   skip, and it ships with two ways back because `ion-toast` is `role="status"`.
 - **Every prompt passes one test: it cannot be half-done.** "Put one book back" has a moment it is finished;
   "tidy the shelf" does not. The three-minute ceiling is a proxy for that property, not a rule.
 - **The card commits in place, and must never become a button.** As a button its accessible name would be the
-  task text, so it would announce *"…, button"* without saying what pressing does — and the largest target
+  task text, so it would announce _"…, button"_ without saying what pressing does — and the largest target
   on screen would commit the day.
 
 ## SIGIL — notes
@@ -242,7 +242,7 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   whole slice is rewritten on each save, so one untouched camera photo would be paid for again on every
   keystroke of the body beneath it.
 - **Reorder is pointer-only, a known R5 gap.** Here it is cosmetic — every note stays reachable, searchable
-  and openable without a drag — where in `cash-rules` the same gap sits on a *semantic* order.
+  and openable without a drag — where in `cash-rules` the same gap sits on a _semantic_ order.
 
 ## SOYKAF — the recipe book
 
@@ -260,6 +260,13 @@ Everything below the first entry is **v2.0.0 scope**.
   collector are note-shaped.
 
 ## TRACKPLAY — the dice pool
+
+- **The game page addresses its game by id, not through the route.** Every other drill-down reads
+  `selectRouteEntityId`, which is what makes those views memoized selectors instead of factories a
+  component re-creates. The game page is the exception on purpose: `IonicRouteStrategy` keeps a visited
+  page mounted and re-entering mounts a second one, so a route-scoped selector would repaint the LEAVING
+  game's table with the arriving game's rows while it slides away. The id is read once from the snapshot,
+  which is a fact that never moves under the page — the same argument `PROGRAM_CONTEXT` is built on.
 
 - **The table is stored and the throw is not.** A setup is configuration you rebuild every session
   otherwise; a result you could reload back into is not one you threw — the same split the I Ching cast
@@ -333,7 +340,7 @@ Everything below the first entry is **v2.0.0 scope**.
   its tile preference, so a re-add never restores a choice nothing on screen still names.
 - **The deck itself has no arrange mode, and it is not an omission.** Direct manipulation on the grid is what
   would justify a second surface, and `ion-reorder-group` cannot do it — the gesture is y-only
-  ([footguns.md](footguns.md)). Anything it *can* do is the order lens rebuilt one route away, so ordering
+  ([footguns.md](footguns.md)). Anything it _can_ do is the order lens rebuilt one route away, so ordering
   and tile-visibility both live there and the deck stays a launcher. **A list on the deck is not the
   compromise — it is the duplication.**
 - **`commlink` is pinned to slot 0 by `orderEntries`, not by the stored order.** The drawer's first row is

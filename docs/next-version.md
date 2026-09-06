@@ -102,7 +102,7 @@ genuine rung is owed by whichever ships first.
   all three end at a backend this app does not have.
 - **The handbook has no language axis, and French shipped without one.** The UI speaks three languages;
   `public/handbook/pages/*.json` is 19 pages of German prose, and `handbook.service.ts` fetches
-  `./handbook/pages/<slug>.json` flat — no language in the path, so there is nothing to fall back *from*.
+  `./handbook/pages/<slug>.json` flat — no language in the path, so there is nothing to fall back _from_.
   Adding one is a directory level, a fallback rule per page, and 19 pages of long-form prose per language.
   The figures are the harder half: every screenshot is of a German UI, so a translated page either shows
   German figures or `handbook:shots` grows a language axis — and that suite already runs on release only,
@@ -188,7 +188,7 @@ numbers, own deck program, both detail routes deep-linkable. Left:
 - **Filtering the 64 by trigram** — a `computed` over `HEXAGRAMS`, and the one place a search box would earn
   itself. The index ships unfiltered because 64 cells fit a grid.
 - **The astro pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr
-  1980`, a life number of 4 from the same birthday, `Nr. 31` under six drawn lines — and nothing on screen
+1980`, a life number of 4 from the same birthday, `Nr. 31` under six drawn lines — and nothing on screen
   says which follows a rule you could check against a book. The honest distinction is between what is
   DERIVED by a stated rule (Ki number, life number, hexagram and its transformation) and what rests on a
   convention somebody picked (the world-age boundaries; cusp dates taken as fixed calendar days rather than
@@ -217,6 +217,29 @@ numbers, own deck program, both detail routes deep-linkable. Left:
   persisted shape in the `board` slice and so wants the usual ask. The move rules are already a
   ruleset (`BoardRules`), so the turn rules belong beside them as toggles rather than as a second engine,
   and the decision to make first is whether the board FOLLOWS the table or LEADS it.
+
+- **Stacking has no model, only an overlay.** Two rules put two figures on one field —
+  `throwOnLanding: false` lets a mover land on an opponent, `blockOwn: true` lets two of your own share —
+  but `figureOn` is a `find`, and `planMove` addresses the mover by FIELD. So only the figure earlier in
+  the array is ever reachable and the second is stranded, while the renderer draws both circles at the
+  same coordinates with no count. Owed: `figureOn` answers with a list, the board shows how many stand
+  there, and picking a field with two on it asks which piece. Until then the two rules are honest only
+  for a table that already knows whose figure is whose.
+
+- **The board is pointer-only.** Every field is a bare `<circle (click)>` inside an `svg role="img"`, so
+  a keyboard gets no target and assistive tech gets one opaque picture. Placement has a partial escape
+  hatch — the yard button, and retyping the arrangement in the notation box — but MOVING has none, which
+  makes play unreachable without a pointer. R5 can never be gated and the `a11y-*` rules only inspect
+  `ion-*`, so nothing will ever report this. Owed: drop `role="img"` while picking, give each pickable
+  field `role="button" tabindex="0"` with enter/space and a name from `notationOf`, and keep the svg as a
+  labelled group.
+
+- **Two more, for a trackplay pass rather than a general one.** `game-play.page.ts` keeps its scroll
+  mirror, its round-count latch and its shadow-root blur inline, where `geist` put the same kind of
+  decision in a tested util and left the page holding one assignment. And "one collection, two views" is
+  built three ways across the app — vitals derives, cash derives and pins, trackplay stands up a whole
+  second PERSISTED slice — so a search term typed on a player's page survives a reload while the same
+  term on a cash account does not. Nobody decided that; it fell out of picking a different mechanism.
 
 ## SOYKAF
 
