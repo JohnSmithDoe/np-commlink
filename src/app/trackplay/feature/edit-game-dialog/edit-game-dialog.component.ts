@@ -95,6 +95,6 @@ export class EditGameDialogComponent extends BaseEditItemDialog<Game> {
     }
     const { id } = this.draft();
     this.confirm();
-    void this.#router.navigate(['/trackplay/game', id]);
+    void this.#router.navigate(['/trackplay/games', id]);
   }
 }

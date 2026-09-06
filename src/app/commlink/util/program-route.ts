@@ -12,6 +12,7 @@
  * once and only the return reader asks whether it was exact.
  * ───────────────────────────────────────────────────────────────── */
 import { ProgramReturn } from '../../@shared/util/program-return.token';
+import { ProgramSibling } from '../../@shared/util/program-siblings.token';
 import { DeckEntry } from '../model/deck.types';
 
 const longestRouteFirst = (a: DeckEntry, b: DeckEntry): number =>
@@ -26,6 +27,23 @@ const entryFor = (
   catalog
     .toSorted(longestRouteFirst)
     .find(({ route }) => path === route || path.startsWith(`${route}/`));
+
+const segmentBelow = (route: string, prefix: string): string | undefined => {
+  if (!route.startsWith(`${prefix}/`)) return undefined;
+  const segment = route.slice(prefix.length + 1);
+  return segment.includes('/') ? undefined : segment;
+};
+
+export const programSiblingsFor = (
+  catalog: readonly DeckEntry[],
+  prefix: string
+): ProgramSibling[] =>
+  catalog.flatMap((entry) => {
+    const segment = segmentBelow(entry.route, prefix);
+    return segment
+      ? [{ id: entry.id, segment, icon: entry.icon, titleKey: entry.titleKey }]
+      : [];
+  });
 
 export const programIconFor = (
   catalog: readonly DeckEntry[],

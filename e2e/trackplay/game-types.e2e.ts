@@ -19,7 +19,7 @@ test.describe('trackplay game types', () => {
   test('creates a win-low game type via the dialog', async ({ page }) => {
     await gotoPage(
       page,
-      'trackplay/game-types',
+      'trackplay/games/types',
       'app-page-trackplay-game-types'
     );
 
@@ -41,7 +41,7 @@ test.describe('trackplay game types', () => {
   test('creates a win-high game type via the dialog', async ({ page }) => {
     await gotoPage(
       page,
-      'trackplay/game-types',
+      'trackplay/games/types',
       'app-page-trackplay-game-types'
     );
 

@@ -295,7 +295,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'trackplay',
     module: 'trackplay',
     icon: 'dice-outline',
-    route: '/trackplay',
+    route: '/trackplay/games',
     titleKey: marker('page-title.trackplay-games'),
     labels: {
       cyberpunk: {
@@ -326,6 +326,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
       boomer: {
         nameKey: marker('deck.boomer.dice.name'),
         descKey: marker('deck.boomer.dice.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'board',
+    module: 'trackplay',
+    icon: 'grid-outline',
+    route: '/trackplay/board',
+    titleKey: marker('page-title.trackplay-board'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.board.name'),
+        descKey: marker('deck.cyberpunk.board.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.board.name'),
+        descKey: marker('deck.boomer.board.desc'),
       },
     },
     onDeck: true,

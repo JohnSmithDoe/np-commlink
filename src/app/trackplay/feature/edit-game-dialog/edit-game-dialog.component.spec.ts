@@ -118,7 +118,7 @@ describe('EditGameDialogComponent', () => {
         expect.objectContaining({ id: 'new', name: 'Canasta' }) as never
       )
     );
-    expect(navigate).toHaveBeenCalledWith(['/trackplay/game', 'new']);
+    expect(navigate).toHaveBeenCalledWith(['/trackplay/games', 'new']);
     expect(host.request()).toBeNull();
   });
 

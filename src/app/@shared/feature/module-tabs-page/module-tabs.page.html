@@ -1,0 +1,14 @@
+<ion-tabs>
+  <ion-tab-bar
+    slot="bottom"
+    data-testid="module-tabs"
+    [attr.aria-label]="'nav.a11y.tabs' | translate"
+  >
+    @for (tab of tabs; track tab.id) {
+      <ion-tab-button [tab]="tab.segment">
+        <ion-icon aria-hidden="true" [name]="tab.icon" />
+        {{ tab.titleKey | translate }}
+      </ion-tab-button>
+    }
+  </ion-tab-bar>
+</ion-tabs>

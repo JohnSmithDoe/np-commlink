@@ -24,12 +24,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { chevronBackOutline } from 'ionicons/icons';
 import { PROGRAM_RETURN } from '../../util/program-return.token';
-
-const urlOf = (route: ActivatedRoute): string =>
-  `/${route.snapshot.pathFromRoot
-    .flatMap(({ url }) => url)
-    .map(({ path }) => path)
-    .join('/')}`;
+import { routeUrl } from '../../util/route-url';
 
 @Component({
   selector: 'app-page-return',
@@ -39,7 +34,7 @@ const urlOf = (route: ActivatedRoute): string =>
   imports: [IonIcon, RouterLink, TranslatePipe],
 })
 export class PageReturnComponent {
-  readonly #program = inject(PROGRAM_RETURN)(urlOf(inject(ActivatedRoute)));
+  readonly #program = inject(PROGRAM_RETURN)(routeUrl(inject(ActivatedRoute)));
 
   readonly route = input<string>();
   readonly label = input<string>();

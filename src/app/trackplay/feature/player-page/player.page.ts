@@ -49,7 +49,7 @@ export class TrackplayPlayerPage {
   }
 
   goToGame(gameId: TrackplayId): void {
-    void this.#router.navigate(['/trackplay/game', gameId]);
+    void this.#router.navigate(['/trackplay/games', gameId]);
   }
 
   deleteGame(game: Game): void {

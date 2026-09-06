@@ -41,7 +41,11 @@ async function createGame(page: Page, name: string, type: string) {
 
 test.describe('trackplay games', () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
+    await gotoPage(
+      page,
+      'trackplay/games/players',
+      'app-page-trackplay-players'
+    );
     await createPlayer(page, 'Alice');
 
     await gotoPage(page, 'trackplay', 'app-page-trackplay-games');

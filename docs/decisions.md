@@ -95,6 +95,23 @@ or a count the code owns.
 - **No page carries a back button; the platform's back IS back.** `ion-back-button` renders on
   `defaultHref !== undefined` alone, so visibility is either always-on or computed from
   `IonRouterOutlet.canGoBack()` — a fact about how you arrived, not about the page.
+- **Four directions, and a screen answers exactly one.** OUT is the menu and the deck, ACROSS is the
+  module's tab bar, DOWN is a push that `app-page-return` reverses, IN is a list row opening its item —
+  content, not chrome. A header icon standing in for ACROSS is what the tab bar replaced.
+- **A module's tabs are its catalog entries exactly one segment below the shell.** `PROGRAM_SIBLINGS` is
+  asked with a URL PREFIX, not a module name, so the answer is a fact about the address bar: a program
+  further down — `/vitals/iching/cast` under a `/vitals` shell — is a page inside a tab's stack, and the
+  same lookup says so with no second rule. Sibling programs must therefore share their module's prefix;
+  `/soykaf`, `/data` and `/commlink/deck` do not yet, and each costs a move plus a redirect.
+- **The shell is `@shared/feature/module-tabs-page`, mounted on the module's EMPTY-PATH route.** `IonTabs`
+  navigates to `<its own URL>/<tab>`, so an empty path leaves the prefix at the module and every tab keeps
+  the address the catalog publishes. A module root redirects to its first tab, because `ion-tab-button`
+  addresses a named segment.
+- **A detail lives INSIDE its tab**, so the bar stays up and back walks that tab's own stack — the reason
+  to keep `ion-tabs` rather than a bare `ion-tab-bar`, which the docs permit but which owns no outlet.
+- **Deck visibility does not trim the bar.** Hiding a tile means "not on my deck", not "not in this module".
+- **A program's URL may move for one rung-free price: a redirect.** `DeckState` persists entry IDS
+  (`order`, `visibleEntries`, `hiddenTiles`); the route lives in the catalog, which is code.
 - **A child page names its parent in CONTENT, and the deck catalog decides whether it has one.**
   `app-page-return` is a row at the top of `ion-content`, one key with the parent's name as a parameter.
   `PROGRAM_RETURN` resolves the page's URL against `DECK_CATALOG`, so a page that IS an entry renders

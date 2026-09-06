@@ -22,7 +22,11 @@ test.describe('trackplay first paint', () => {
   });
 
   test('paints the players (Spieler) page', async ({ page }) => {
-    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
+    await gotoPage(
+      page,
+      'trackplay/games/players',
+      'app-page-trackplay-players'
+    );
     await expect(
       headerTitle(pageRoot(page, 'app-page-trackplay-players'))
     ).toHaveText('Spieler');
@@ -33,7 +37,7 @@ test.describe('trackplay first paint', () => {
   }) => {
     await gotoPage(
       page,
-      'trackplay/game-types',
+      'trackplay/games/types',
       'app-page-trackplay-game-types'
     );
     await expect(
@@ -51,7 +55,7 @@ test.describe('trackplay first paint', () => {
   }) => {
     await gotoPage(
       page,
-      'trackplay/game-types',
+      'trackplay/games/types',
       'app-page-trackplay-game-types'
     );
 
