@@ -11,10 +11,15 @@
       }
     </div>
 
-    @if (revealed()) {
-      <p class="dice-tray__total" role="status" data-testid="dice-total">
+    <p
+      class="dice-tray__total"
+      role="status"
+      data-testid="dice-total"
+      [class.dice-tray__total--settled]="revealed()"
+    >
+      @if (revealed()) {
         {{ roll.total }}
-      </p>
-    }
+      }
+    </p>
   </div>
 }
