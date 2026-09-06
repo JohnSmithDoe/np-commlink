@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { mockKernelState } from '../../@shared/testing/test-data';
 import { dayMap, mockOfficeTimeState } from '../testing/office-time.test-data';
+import { holidayMapFrom } from '../util/office-time.utils';
 import {
   selectDashboardItems,
   selectDashboardSettings,
@@ -66,14 +67,18 @@ describe('office-time.selector', () => {
 
   describe('selectHolidayDays', () => {
     it('flattens the keyed holiday map into its days', () => {
-      const first = dayjs('2024-01-01');
-      const second = dayjs('2024-12-25');
-      const holidays = { '2024-01-01': first, '2024-12-25': second };
+      const holidays = holidayMapFrom({
+        Neujahr: '2024-01-01',
+        Weihnachten: '2024-12-25',
+      });
 
       expect(selectHolidays.projector(mockOfficeTimeState({ holidays }))).toBe(
         holidays
       );
-      expect(selectHolidayDays.projector(holidays)).toEqual([first, second]);
+      expect(selectHolidayDays.projector(holidays)).toEqual([
+        '2024-01-01',
+        '2024-12-25',
+      ]);
     });
 
     it('is empty when no holidays have been fetched yet', () => {

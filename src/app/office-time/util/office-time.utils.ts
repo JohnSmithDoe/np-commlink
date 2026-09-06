@@ -60,7 +60,7 @@ export const getTargetPercentage = (
 };
 
 const holidayKeysOf = (holidays?: HolidayMap): Set<string> =>
-  new Set(Object.values(holidays ?? {}).map((day) => dayjsToString(day)));
+  new Set(Object.values(holidays ?? {}));
 
 interface StatsKeys {
   officeKeys: Set<string>;
@@ -136,36 +136,38 @@ export const dayjsFromString = (date: string): Dayjs | null => {
 };
 export const dayjsToday = () => dayjs().hour(12);
 
-export const deserializeIsoStringMap = (
-  isoStringMap?: Record<string, string>
-): HolidayMap => {
-  const result: HolidayMap = {};
-  for (const [name, isoString] of Object.entries(isoStringMap ?? {})) {
-    if (typeof isoString !== 'string') continue;
-    const parsed = dayjsFromString(isoString);
-    if (parsed) result[name] = parsed;
-  }
-  return result;
+export const dayKeyFrom = (date?: string | null): DayKey | null => {
+  if (typeof date !== 'string') return null;
+  const parsed = dayjsFromString(date);
+  return parsed ? dayjsToString(parsed) : null;
 };
 
-export const serializeDateMap = (
-  dateMap?: HolidayMap
-): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(dateMap ?? {}).map(([name, date]): [string, string] => [
-      name,
-      dayjsToString(date),
-    ])
-  );
+export const holidaysAreStale = (
+  holidays: HolidayMap | undefined | null,
+  year: number
+): boolean => {
+  const sample = Object.values(holidays ?? {})[0];
+  return !!sample && Number(sample.slice(0, 4)) !== year;
+};
+
+export const holidayMapFrom = (
+  named?: Record<string, string> | null
+): HolidayMap => {
+  const holidays: HolidayMap = {};
+  for (const [name, date] of Object.entries(named ?? {})) {
+    const key = dayKeyFrom(date);
+    if (key) holidays[name] = key;
+  }
+  return holidays;
+};
 
 export const dayMapFrom = (
-  dates?: ReadonlyArray<string | undefined | null>
+  dates?: ReadonlyArray<string | undefined | null> | DayMap | null
 ): DayMap => {
   const days: DayMap = {};
-  for (const date of dates ?? []) {
-    if (typeof date !== 'string') continue;
-    const parsed = dayjsFromString(date);
-    if (parsed) days[dayjsToString(parsed)] = true;
+  for (const date of Array.isArray(dates) ? dates : Object.keys(dates ?? {})) {
+    const key = dayKeyFrom(date);
+    if (key) days[key] = true;
   }
   return days;
 };
@@ -211,11 +213,10 @@ const calendarHighlights = (
     border,
   }));
 
-export const holidayHighlights = (days?: Dayjs[] | null): DateTimeHighlight[] =>
-  calendarHighlights(
-    (days ?? []).map((day) => dayjsToString(day)),
-    HOLIDAY_HIGHLIGHT_BORDER
-  );
+export const holidayHighlights = (
+  keys?: readonly string[] | null
+): DateTimeHighlight[] =>
+  calendarHighlights(keys ?? [], HOLIDAY_HIGHLIGHT_BORDER);
 
 export const freedayHighlights = (
   keys?: readonly string[] | null

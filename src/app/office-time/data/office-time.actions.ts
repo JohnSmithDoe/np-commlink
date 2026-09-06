@@ -17,7 +17,6 @@ export const OfficeTimeActions = createActionGroup({
     loadHolidaysSuccess: (holidays: HolidayMap) => ({
       holidays,
     }),
-    saveOfficeTime: emptyProps(),
     saveTargetOfficeDaysPerWeek: (daysPerWeek: number) => ({
       daysPerWeek,
     }),

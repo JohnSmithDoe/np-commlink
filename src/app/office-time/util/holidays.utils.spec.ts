@@ -6,15 +6,10 @@ import {
 import { berlinHolidaysFor } from './holidays.utils';
 
 const on = (year: number, name: string): string =>
-  berlinHolidaysFor(year)[name].format('YYYY-MM-DD');
+  berlinHolidaysFor(year)[name];
 
 const computedDates = (year: number): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(berlinHolidaysFor(year)).map(([name, date]) => [
-      name,
-      date.format('YYYY-MM-DD'),
-    ])
-  );
+  berlinHolidaysFor(year);
 
 const ruleBasedDates = (year: number): Record<string, string> =>
   Object.fromEntries(

@@ -36,6 +36,18 @@ describe('board setup', () => {
     expect(nextFigure(board, fill(15))).toEqual({ player: 3, piece: 3 });
   });
 
+  it('hands out an identity the board lacks, not the one next in line', () => {
+    const imported = [
+      { player: 0, piece: 0, fieldId: 'track-3' },
+      { player: 1, piece: 0, fieldId: 'track-9' },
+    ];
+
+    expect(nextFigure(board, imported)).toEqual({ player: 0, piece: 1 });
+    expect(
+      nextFigure(board, [...imported, { player: 0, piece: 1, fieldId: 'a' }])
+    ).toEqual({ player: 0, piece: 2 });
+  });
+
   it('runs out once every figure stands', () => {
     expect(nextFigure(board, fill(16))).toBeNull();
     expect(placeFigure(board, fill(16), 'track-1')).toHaveLength(16);
@@ -117,6 +129,15 @@ describe('board setup', () => {
       'foreign-ground',
       'occupied',
     ]);
+  });
+
+  it('refuses one piece standing in two places', () => {
+    const problems = validateSetting(board, [
+      { player: 0, piece: 0, fieldId: 'track-4' },
+      { player: 0, piece: 0, fieldId: 'track-9' },
+    ]);
+
+    expect(problems.map((problem) => problem.reason)).toEqual(['too-many']);
   });
 
   it('holds a player to their own four figures', () => {

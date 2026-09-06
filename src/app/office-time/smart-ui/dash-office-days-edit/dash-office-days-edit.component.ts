@@ -13,7 +13,6 @@ import {
   IonCardTitle,
   IonDatetime,
 } from '@ionic/angular/standalone';
-import { Dayjs } from 'dayjs';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
 import {
@@ -35,10 +34,10 @@ export class DashOfficeDaysEditComponent {
   readonly locale = inject(LanguageService).locale;
   readonly title = input<string | undefined>();
   readonly officedays = input<string[]>([]);
-  readonly holidays = input<DateTimeHighlight[], Dayjs[] | null | undefined>(
-    [],
-    { transform: holidayHighlights }
-  );
+  readonly holidays = input<
+    DateTimeHighlight[],
+    readonly string[] | null | undefined
+  >([], { transform: holidayHighlights });
   readonly freedays = input<
     DateTimeHighlight[],
     readonly string[] | null | undefined

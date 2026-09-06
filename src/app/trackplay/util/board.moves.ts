@@ -67,14 +67,38 @@ function startIndex(layout: BoardLayout, player: number): number {
   return player * layout.fieldsPerPlayer;
 }
 
+function deepestFreeSlot(
+  layout: BoardLayout,
+  figures: readonly BoardFigure[],
+  player: number,
+  first: number
+): number | null {
+  for (let slot = layout.pieces - 1; slot >= first; slot--) {
+    if (!figureOn(figures, `goal-${player}-${slot}`)) return slot;
+  }
+
+  return null;
+}
+
 function landingOf(
   layout: BoardLayout,
   rules: BoardRules,
+  figures: readonly BoardFigure[],
   figure: BoardFigure,
   field: BoardField,
   pips: number
 ): Landing {
   const start = startIndex(layout, figure.player);
+
+  const homeLanding = (slot: number, first: number): Landing => {
+    if (slot < layout.pieces) return { on: 'home', slot };
+    if (rules.exactHome) return { on: 'refused', refusal: 'overshoots-home' };
+
+    const absorbed = deepestFreeSlot(layout, figures, figure.player, first);
+    return absorbed === null
+      ? { on: 'refused', refusal: 'overshoots-home' }
+      : { on: 'home', slot: absorbed };
+  };
 
   if (field.kind === 'nest') {
     return pips === rules.entryRoll
@@ -83,10 +107,7 @@ function landingOf(
   }
 
   if (field.kind === 'goal') {
-    const slot = field.index + pips;
-    return slot < layout.pieces || !rules.exactHome
-      ? { on: 'home', slot: Math.min(slot, layout.pieces - 1) }
-      : { on: 'refused', refusal: 'overshoots-home' };
+    return homeLanding(field.index + pips, field.index + 1);
   }
 
   const travelled =
@@ -97,10 +118,7 @@ function landingOf(
     return { on: 'ring', index: (start + total) % layout.trackLength };
   }
 
-  const slot = total - layout.trackLength;
-  return slot < layout.pieces || !rules.exactHome
-    ? { on: 'home', slot: Math.min(slot, layout.pieces - 1) }
-    : { on: 'refused', refusal: 'overshoots-home' };
+  return homeLanding(total - layout.trackLength, 0);
 }
 
 function homeRunBlocked(
@@ -144,7 +162,7 @@ export function planMove(
   const field = fieldOf(layout, from);
   if (!mover || !field) return { ok: false, refusal: 'no-figure' };
 
-  const landing = landingOf(layout, rules, mover, field, pips);
+  const landing = landingOf(layout, rules, figures, mover, field, pips);
   if (landing.on === 'refused') {
     return { ok: false, refusal: landing.refusal };
   }

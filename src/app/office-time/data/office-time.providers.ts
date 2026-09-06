@@ -27,6 +27,18 @@ export const officeTimeContext = providePersistedContext({
   reducer: officeTimeReducer,
   lifecycle: OfficeTimeActions,
   select: selectOfficeTimeState,
+  save: {
+    on: [
+      OfficeTimeActions.addFreeday,
+      OfficeTimeActions.addOfficeTime,
+      OfficeTimeActions.resetData,
+      OfficeTimeActions.saveDashboardSettings,
+      OfficeTimeActions.saveTargetOfficeDaysPerWeek,
+      OfficeTimeActions.setFreedays,
+      OfficeTimeActions.setOfficedays,
+      OfficeTimeActions.setReminder,
+    ],
+  },
   telemetry: [
     {
       source: 'office-time',

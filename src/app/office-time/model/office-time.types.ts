@@ -10,10 +10,10 @@
  *
  * A bare `string` is not assignable to `DayKey`, so every write — reads
  * back off IndexedDB included — goes through `dayjsToString`, which holds
- * the one cast. `OfficeTimeStateStorage` stays `string[]` on purpose:
- * no migration ladder, and an old document dedupes on read for free.
+ * the one cast. Nothing in the slice holds a `Dayjs`: dayjs computes a day
+ * and formats it, and the `DayKey` is what is kept, so the state is what
+ * goes to disk. `OfficeTimeStateStorage` reads the older `string[]` too.
  * ───────────────────────────────────────────────────────────────── */
-import { Dayjs } from 'dayjs';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
 
@@ -114,7 +114,7 @@ export type DayKey = `${number}-${number}-${number}`;
 
 export type DayMap = Record<DayKey, true>;
 
-export type HolidayMap = Record<string, Dayjs>;
+export type HolidayMap = Record<string, DayKey>;
 
 export interface OfficeTimeState {
   targetOfficeDaysPerWeek: number;
@@ -126,11 +126,13 @@ export interface OfficeTimeState {
   reminder: OfficeReminder;
 }
 
+export type StoredDays = DayMap | Array<string>;
+
 export type OfficeTimeStateStorage = Omit<
   OfficeTimeState,
   'holidays' | 'officedays' | 'freedays'
 > & {
   holidays?: Record<string, string>;
-  officedays?: Array<string>;
-  freedays?: Array<string>;
+  officedays?: StoredDays;
+  freedays?: StoredDays;
 };

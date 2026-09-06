@@ -6,14 +6,15 @@ import {
   dayjsToString,
   dayKeysOf,
   dayMapFrom,
-  deserializeIsoStringMap,
+  holidayMapFrom,
+  holidaysAreStale,
   getTargetPercentage,
   isOfficeDay,
   isWeekend,
-  serializeDateMap,
   withoutHolidays,
 } from './office-time.utils';
 import { dayMap } from '../testing/office-time.test-data';
+import { HolidayMap } from '../model/office-time.types';
 
 describe('office-time.utils', () => {
   describe('day predicates', () => {
@@ -56,14 +57,18 @@ describe('office-time.utils', () => {
       expect(dayjsFromString('not-a-date')).toBeNull();
     });
 
-    it('round-trips maps and arrays, dropping malformed entries', () => {
-      expect(
-        serializeDateMap(deserializeIsoStringMap({ xmas: '2026-12-25' }))
-      ).toEqual({
+    it('reads maps and arrays alike, dropping malformed entries', () => {
+      expect(holidayMapFrom({ xmas: '2026-12-25', bad: 'nonsense' })).toEqual({
         xmas: '2026-12-25',
       });
       const days = dayMapFrom(['2026-07-01', 'bad', null]);
       expect(dayKeysOf(days)).toEqual(['2026-07-01']);
+    });
+
+    it('reads a stored day map as readily as the older array', () => {
+      expect(dayKeysOf(dayMapFrom({ '2026-07-01': true }))).toEqual([
+        '2026-07-01',
+      ]);
     });
 
     it('collapses two spellings of one day into a single key', () => {
@@ -73,9 +78,23 @@ describe('office-time.utils', () => {
     });
   });
 
+  describe('holidaysAreStale', () => {
+    it('is stale only once the stored year is not the current one', () => {
+      const holidays = holidayMapFrom({ xmas: '2026-12-25' });
+
+      expect(holidaysAreStale(holidays, 2026)).toBe(false);
+      expect(holidaysAreStale(holidays, 2027)).toBe(true);
+    });
+
+    it('has nothing to judge when no holiday is stored', () => {
+      expect(holidaysAreStale({}, 2027)).toBe(false);
+      expect(holidaysAreStale(undefined, 2027)).toBe(false);
+    });
+  });
+
   describe('withoutHolidays', () => {
     it('drops blanks and any day that is already a holiday', () => {
-      const holidays = deserializeIsoStringMap({ h: '2026-07-02' });
+      const holidays = holidayMapFrom({ h: '2026-07-02' });
       const result = withoutHolidays(
         dayMapFrom(['2026-07-01', '2026-07-02', null]),
         holidays
@@ -84,7 +103,7 @@ describe('office-time.utils', () => {
     });
 
     it('matches a holiday by day even if it carries a time component', () => {
-      const holidays = { h: dayjs('2026-07-02T23:00:00') };
+      const holidays = holidayMapFrom({ h: '2026-07-02T23:00:00' });
       const result = withoutHolidays(dayMapFrom(['2026-07-02']), holidays);
       expect(result).toEqual({});
     });
@@ -94,7 +113,7 @@ describe('office-time.utils', () => {
     const TODAY = dayjs('2026-08-01').hour(12); // a Saturday
     const keysFor = (
       officedays: dayjs.Dayjs[] = [TODAY],
-      holidays: Record<string, dayjs.Dayjs> = {},
+      holidays: HolidayMap = {},
       targetOfficeDaysPerWeek = 3
     ) =>
       statsKeysFrom({
@@ -160,7 +179,7 @@ describe('office-time.utils', () => {
       const plain = calculateStats('week', keysFor([]), TODAY);
       const reduced = calculateStats(
         'week',
-        keysFor([], { [holiday.format('YYYY-MM-DD')]: holiday }),
+        keysFor([], { Feiertag: dayjsToString(holiday) }),
         TODAY
       );
 

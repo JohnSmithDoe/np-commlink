@@ -8,6 +8,8 @@ import {
   IonList,
 } from '@ionic/angular/standalone';
 import { Dayjs } from 'dayjs';
+import { HolidayMap } from '../../model/office-time.types';
+import { dayjsFromString } from '../../util/office-time.utils';
 
 @Component({
   selector: 'app-dash-holidays',
@@ -27,13 +29,13 @@ export class DashHolidaysComponent {
   readonly title = input<string | undefined>();
   readonly holidays = input<
     { name: string; date: Dayjs }[],
-    Record<string, Dayjs> | undefined | null
+    HolidayMap | undefined | null
   >([], {
-    transform(day?: Record<string, Dayjs> | null) {
-      return Object.entries(day ?? {}).map(([name, date]) => ({
-        name,
-        date,
-      }));
+    transform(holidays?: HolidayMap | null) {
+      return Object.entries(holidays ?? {}).flatMap(([name, key]) => {
+        const date = dayjsFromString(key);
+        return date ? [{ name, date }] : [];
+      });
     },
   });
 }

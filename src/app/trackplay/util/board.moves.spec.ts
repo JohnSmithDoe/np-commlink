@@ -126,6 +126,27 @@ describe('planMove', () => {
     });
   });
 
+  it('lets a loose count settle into the deepest slot still free', () => {
+    const loose: BoardRules = { ...MADN, exactHome: false };
+    const figures = [at(0, 0, 'goal-0-3'), at(0, 1, 'track-39')];
+
+    const plan = move(figures, 'track-39', 6, loose);
+    expect(plan.ok && plan.to).toBe('goal-0-2');
+
+    const deeper = move([at(0, 0, 'track-39')], 'track-39', 6, loose);
+    expect(deeper.ok && deeper.to).toBe('goal-0-3');
+  });
+
+  it('refuses a loose count once the home column is full behind it', () => {
+    const loose: BoardRules = { ...MADN, exactHome: false };
+    const full = [0, 1, 2, 3].map((piece) => at(0, piece, `goal-0-${piece}`));
+
+    expect(move(full, 'goal-0-3', 2, loose)).toEqual({
+      ok: false,
+      refusal: 'overshoots-home',
+    });
+  });
+
   it('bends to the ruleset rather than to a second engine', () => {
     const pachisi: BoardRules = {
       ...MADN,

@@ -6,7 +6,7 @@
   }
   <ion-card-content>
     <ion-list class="dash-holidays-list">
-      @for (holiday of holidays(); track holiday.date.valueOf()) {
+      @for (holiday of holidays(); track holiday.name) {
         <ion-item>
           {{ holiday.date.format('DD.MMMM YYYY, dddd') }}
           {{ holiday.name }}

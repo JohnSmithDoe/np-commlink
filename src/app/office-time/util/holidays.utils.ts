@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs';
-import { HolidayMap } from '../model/office-time.types';
+import { DayKey, HolidayMap } from '../model/office-time.types';
+import { dayjsToString } from './office-time.utils';
 
 /* eslint-disable unicorn/prevent-abbreviations */
 const easterSunday = (year: number): Dayjs => {
@@ -22,18 +23,21 @@ const easterSunday = (year: number): Dayjs => {
 };
 /* eslint-enable unicorn/prevent-abbreviations */
 
-const fixedDay = (year: number, month: number, day: number): Dayjs =>
-  dayjs(new Date(year, month - 1, day));
+const fixedDay = (year: number, month: number, day: number): DayKey =>
+  dayjsToString(dayjs(new Date(year, month - 1, day)));
+
+const afterEaster = (easter: Dayjs, days: number): DayKey =>
+  dayjsToString(easter.add(days, 'day'));
 
 export const berlinHolidaysFor = (year: number): HolidayMap => {
   const easter = easterSunday(year);
   const holidays: HolidayMap = {
     Neujahr: fixedDay(year, 1, 1),
-    Karfreitag: easter.subtract(2, 'day'),
-    Ostermontag: easter.add(1, 'day'),
+    Karfreitag: afterEaster(easter, -2),
+    Ostermontag: afterEaster(easter, 1),
     'Tag der Arbeit': fixedDay(year, 5, 1),
-    'Christi Himmelfahrt': easter.add(39, 'day'),
-    Pfingstmontag: easter.add(50, 'day'),
+    'Christi Himmelfahrt': afterEaster(easter, 39),
+    Pfingstmontag: afterEaster(easter, 50),
     'Tag der Deutschen Einheit': fixedDay(year, 10, 3),
     '1. Weihnachtsfeiertag': fixedDay(year, 12, 25),
     '2. Weihnachtsfeiertag': fixedDay(year, 12, 26),

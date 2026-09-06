@@ -8,7 +8,7 @@ import { OfficeTimeActions } from './office-time.actions';
 import {
   dayjsToString,
   dayMapFrom,
-  deserializeIsoStringMap,
+  holidayMapFrom,
   withoutHolidays,
 } from '../util/office-time.utils';
 
@@ -61,7 +61,7 @@ const withKnownDashboardItems = (
 };
 
 const deserializedDayCollections = (stored: OfficeTimeStateStorage) => ({
-  holidays: deserializeIsoStringMap(stored.holidays),
+  holidays: holidayMapFrom(stored.holidays),
   officedays: dayMapFrom(stored.officedays),
   freedays: dayMapFrom(stored.freedays),
 });

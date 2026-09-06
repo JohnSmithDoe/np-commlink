@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { DayKey } from '../model/office-time.types';
 import { OfficeTimeActions } from './office-time.actions';
 import {
   OfficeTimeState,
@@ -131,7 +132,7 @@ describe('officeTimeReducer', () => {
     const dirty = {
       ...initialOfficeTime,
       targetOfficeDaysPerWeek: 5,
-      holidays: { '2026-12-25': dayjs('2026-12-25') },
+      holidays: { Weihnachten: '2026-12-25' as DayKey },
     };
     const state = officeTimeReducer(dirty, OfficeTimeActions.resetData());
     expect(state.targetOfficeDaysPerWeek).toBe(

@@ -20,16 +20,24 @@ export function figureCount(layout: BoardLayout): number {
   return layout.players * layout.pieces;
 }
 
+type FigureIdentity = Pick<BoardFigure, 'player' | 'piece'>;
+
+const identityOf = ({ player, piece }: FigureIdentity): string =>
+  `${player}-${piece}`;
+
 export function nextFigure(
   layout: BoardLayout,
   placed: readonly BoardFigure[]
-): Pick<BoardFigure, 'player' | 'piece'> | null {
-  if (placed.length >= figureCount(layout)) return null;
+): FigureIdentity | null {
+  const taken = new Set(placed.map((figure) => identityOf(figure)));
 
-  return {
-    player: Math.floor(placed.length / layout.pieces),
-    piece: placed.length % layout.pieces,
-  };
+  for (let player = 0; player < layout.players; player++) {
+    for (let piece = 0; piece < layout.pieces; piece++) {
+      if (!taken.has(identityOf({ player, piece }))) return { player, piece };
+    }
+  }
+
+  return null;
 }
 
 export function homeFieldId(player: number, piece: number): BoardFieldId {
@@ -90,11 +98,12 @@ export function validateSetting(
   const problems: { figure: BoardFigure; reason: PlacementRefusal }[] = [];
   const kept: BoardFigure[] = [];
   const used = new Map<number, number>();
+  const taken = new Set<string>();
 
   for (const figure of figures) {
     const held = used.get(figure.player) ?? 0;
     const reason =
-      held >= layout.pieces
+      held >= layout.pieces || taken.has(identityOf(figure))
         ? 'too-many'
         : refuseFigure(layout, kept, figure.player, figure.fieldId);
 
@@ -104,6 +113,7 @@ export function validateSetting(
     }
 
     used.set(figure.player, held + 1);
+    taken.add(identityOf(figure));
     kept.push(figure);
   }
 
