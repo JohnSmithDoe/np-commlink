@@ -300,7 +300,7 @@ export async function enableDeckProgram(
   codename: string,
   id: string
 ): Promise<void> {
-  await page.goto('/#/commlink/deck');
+  await page.goto('/#/settings/deck');
   const config = page.locator('app-page-deck-config');
   await expect(config.getByTestId('deck-config-lens')).toBeVisible({
     timeout: 30_000,

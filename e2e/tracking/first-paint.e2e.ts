@@ -14,13 +14,12 @@
  *
  * The last test is the one no unit spec could replace: tracking's own
  * chrome reaches the screen only through the shared, domain-blind list
- * page's projection slots — the daily-sessions panel via
- * `[afterList]`, the reset/save buttons via `[toolbarActionsEnd]`, and
- * the settings link DOUBLE-projected through `[headerEnd]` into the page
- * header, which is why that assertion follows the link rather than merely
- * finding it. It also asserts the category UI is absent, since tracking's
+ * page's projection slots — the daily-sessions panel via `[afterList]`
+ * and the reset/save buttons via `[toolbarActionsEnd]` — and then leaves
+ * the page entirely through the module tab bar, which no page projects
+ * at all. It also asserts the category UI is absent, since tracking's
  * facade omits `manageCategories`. A naive swap onto the shared page
- * would have silently dropped the first three and wrongly shown the last.
+ * would have silently dropped the first two and wrongly shown the last.
  * It seeds one item first because the reset/save pair is withheld from an
  * empty list, so an empty page cannot tell a missing slot from a guard.
  *
@@ -120,7 +119,10 @@ test.describe('tracking (lazy)', () => {
       0
     );
 
-    await trackingPage.getByTestId('tracking-daily-view-link').click();
-    await expect(page).toHaveURL(/#\/data$/);
+    await mainContent(page)
+      .getByTestId('module-tabs')
+      .locator('ion-tab-button[tab="data"]')
+      .click();
+    await expect(page).toHaveURL(/#\/tracking\/data$/);
   });
 });

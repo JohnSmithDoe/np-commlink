@@ -80,7 +80,7 @@ export class VitalsZodiacPage {
   readonly date = linkedSignal(() => this.profile()?.birthDate ?? this.today());
   readonly returnRoute = computed(() => {
     const id = this.profile()?.id;
-    return id ? `/vitals/profile/${id}` : undefined;
+    return id ? `/vitals/profiles/${id}` : undefined;
   });
 
   readonly sign = computed(() => zodiacSignFor(this.date()));

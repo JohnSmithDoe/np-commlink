@@ -27,7 +27,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'tracking',
     module: 'tracking',
     icon: 'timer-outline',
-    route: '/tracking',
+    route: '/tracking/timers',
     titleKey: marker('page-title.tracking'),
     labels: {
       cyberpunk: {
@@ -48,7 +48,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'stats',
     module: 'tracking',
     icon: 'documents-outline',
-    route: '/data',
+    route: '/tracking/data',
     titleKey: marker('page-title.data'),
     labels: {
       cyberpunk: {
@@ -235,7 +235,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'cash',
     module: 'cash',
     icon: 'wallet-outline',
-    route: '/cash',
+    route: '/cash/accounts',
     titleKey: marker('page-title.cash'),
     labels: {
       cyberpunk: {
@@ -313,6 +313,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     metricKey: marker('deck.metric.games'),
   },
   {
+    id: 'players',
+    module: 'trackplay',
+    icon: 'people-outline',
+    route: '/trackplay/games/players',
+    titleKey: marker('page-title.trackplay-players'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.players.name'),
+        descKey: marker('deck.cyberpunk.players.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.players.name'),
+        descKey: marker('deck.boomer.players.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'dice',
     module: 'trackplay',
     icon: 'cube-outline',
@@ -354,7 +373,7 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     id: 'vitals',
     module: 'vitals',
     icon: 'pulse-outline',
-    route: '/vitals',
+    route: '/vitals/profiles',
     titleKey: marker('page-title.vitals'),
     labels: {
       cyberpunk: {

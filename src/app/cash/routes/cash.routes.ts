@@ -14,9 +14,8 @@ export const cashRoutes: Routes = [
     children: [
       {
         path: '',
-        title: marker('page-title.cash'),
-        loadComponent: () =>
-          import('../feature/cash-page/cash.page').then((m) => m.CashPage),
+        redirectTo: 'accounts',
+        pathMatch: 'full',
       },
       {
         path: 'rules',
@@ -24,22 +23,6 @@ export const cashRoutes: Routes = [
         loadComponent: () =>
           import('../feature/cash-rules-page/cash-rules.page').then(
             (m) => m.CashRulesPage
-          ),
-      },
-      {
-        path: 'burndown',
-        title: marker('page-title.cash-burndown'),
-        loadComponent: () =>
-          import('../feature/cash-burndown-page/cash-burndown.page').then(
-            (m) => m.CashBurndownPage
-          ),
-      },
-      {
-        path: 'spending',
-        title: marker('page-title.cash-spending'),
-        loadComponent: () =>
-          import('../feature/cash-spending-page/cash-spending.page').then(
-            (m) => m.CashSpendingPage
           ),
       },
       {
@@ -84,12 +67,50 @@ export const cashRoutes: Routes = [
           ),
       },
       {
-        path: ':accountId',
-        title: marker('page-title.cash'),
+        path: '',
         loadComponent: () =>
-          import('../feature/cash-account-page/cash-account.page').then(
-            (m) => m.CashAccountPage
+          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
+            (m) => m.ModuleTabsPage
           ),
+        children: [
+          {
+            path: 'accounts',
+            children: [
+              {
+                path: '',
+                title: marker('page-title.cash'),
+                loadComponent: () =>
+                  import('../feature/cash-page/cash.page').then(
+                    (m) => m.CashPage
+                  ),
+              },
+              {
+                path: ':accountId',
+                title: marker('page-title.cash'),
+                loadComponent: () =>
+                  import('../feature/cash-account-page/cash-account.page').then(
+                    (m) => m.CashAccountPage
+                  ),
+              },
+            ],
+          },
+          {
+            path: 'burndown',
+            title: marker('page-title.cash-burndown'),
+            loadComponent: () =>
+              import('../feature/cash-burndown-page/cash-burndown.page').then(
+                (m) => m.CashBurndownPage
+              ),
+          },
+          {
+            path: 'spending',
+            title: marker('page-title.cash-spending'),
+            loadComponent: () =>
+              import('../feature/cash-spending-page/cash-spending.page').then(
+                (m) => m.CashSpendingPage
+              ),
+          },
+        ],
       },
     ],
   },

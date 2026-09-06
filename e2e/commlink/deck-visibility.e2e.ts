@@ -52,7 +52,7 @@ async function openDeck(page: Page): Promise<void> {
 }
 
 async function takeOffDeck(page: Page, label: string): Promise<void> {
-  await page.goto('/#/commlink/deck');
+  await page.goto('/#/settings/deck');
   await expect(configPage(page).getByTestId('deck-config-lens')).toBeVisible({
     timeout: 30_000,
   });
@@ -92,7 +92,7 @@ test.describe('taking a program off the deck', () => {
     await page.reload();
     await expect(codenames(page)).toHaveText([AGENDA]);
 
-    await page.goto('/#/commlink/deck');
+    await page.goto('/#/settings/deck');
     await openOrderLens(configPage(page));
     await orderRow(page, MARKET).getByTestId('deck-config-tile-toggle').click();
     await waitForPersisted(page, 'deck', '"hiddenTiles":[]');
@@ -106,7 +106,7 @@ test.describe('taking a program off the deck', () => {
   }) => {
     await takeOffDeck(page, MARKET);
 
-    await page.goto('/#/commlink/deck');
+    await page.goto('/#/settings/deck');
     await page.reload();
     await expect(configPage(page).getByTestId('deck-config-lens')).toBeVisible({
       timeout: 30_000,

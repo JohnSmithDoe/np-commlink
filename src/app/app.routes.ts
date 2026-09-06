@@ -13,10 +13,8 @@ export const routes: Routes = [
   },
   {
     path: 'data',
-    loadChildren: () =>
-      import('./tracking/routes/tracking.routes').then(
-        (m) => m.trackingDataRoutes
-      ),
+    redirectTo: 'tracking/data',
+    pathMatch: 'full',
   },
   {
     path: 'settings',
@@ -54,10 +52,8 @@ export const routes: Routes = [
   },
   {
     path: 'soykaf',
-    loadChildren: () =>
-      import('./household/routes/household.routes').then(
-        (m) => m.recipesRoutes
-      ),
+    redirectTo: 'household/soykaf',
+    pathMatch: 'full',
   },
   {
     path: 'household',

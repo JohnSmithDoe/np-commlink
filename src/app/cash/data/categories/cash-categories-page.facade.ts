@@ -39,7 +39,7 @@ export class CashCategoriesPageFacade extends BaseCategoryListPageFacade {
     selectCashCategoriesSearchResult
   );
   readonly countById = this.store.selectSignal(selectCashCountByCategory);
-  readonly listHref = signal('/cash');
+  readonly listHref = signal('/cash/accounts');
   readonly listTitleKey = signal(marker('page-title.cash'));
 
   override drillTo(id: CategoryId): void {

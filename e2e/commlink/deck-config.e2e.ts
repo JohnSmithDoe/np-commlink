@@ -75,7 +75,7 @@ async function gotoFresh(page: Page, hash: string): Promise<void> {
 }
 
 async function openDeckConfig(page: Page): Promise<void> {
-  await gotoFresh(page, 'commlink/deck');
+  await gotoFresh(page, 'settings/deck');
   await expect(moduleHeader(page, HOUSEHOLD_MODULE)).toBeVisible({
     timeout: 30_000,
   });
@@ -166,7 +166,7 @@ test.describe('deck configuration', () => {
   });
 
   test('opens grouped, with a module of many collapsed', async ({ page }) => {
-    await gotoFresh(page, 'commlink/deck');
+    await gotoFresh(page, 'settings/deck');
     const household = moduleHeader(page, HOUSEHOLD_MODULE);
     await expect(household).toBeVisible({ timeout: 30_000 });
     await expect(configRow(page, MARKET)).toBeHidden();
@@ -176,7 +176,7 @@ test.describe('deck configuration', () => {
   });
 
   test('switches a whole module on from its group header', async ({ page }) => {
-    await gotoFresh(page, 'commlink/deck');
+    await gotoFresh(page, 'settings/deck');
     const household = moduleHeader(page, HOUSEHOLD_MODULE);
     await expect(household).toBeVisible({ timeout: 30_000 });
 

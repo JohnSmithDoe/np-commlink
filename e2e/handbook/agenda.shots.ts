@@ -124,7 +124,7 @@ test('soykaf', async ({ page }) => {
     await addViaSearch(page, name, storage);
   }
 
-  await openPage(page, 'soykaf', 'app-page-recipes');
+  await openPage(page, 'household/soykaf', 'app-page-recipes');
   await createRecipe(page, 'Pfannkuchen');
   await createRecipe(page, 'Rührei');
   await createRecipe(page, 'Zwiebelsuppe');

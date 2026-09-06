@@ -33,10 +33,18 @@ export const householdRoutes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('../feature/household-tabs-page/household-tabs.page').then(
-            (m) => m.HouseholdTabsPage
+          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
+            (m) => m.ModuleTabsPage
           ),
         children: [
+          {
+            path: 'soykaf',
+            title: marker('page-title.soykaf'),
+            loadComponent: () =>
+              import('../feature/recipes-page/recipes.page').then(
+                (m) => m.RecipesPage
+              ),
+          },
           {
             path: 'shopping',
             title: marker('page-title.household-shopping'),
@@ -67,15 +75,5 @@ export const householdRoutes: Routes = [
         ],
       },
     ],
-  },
-];
-
-export const recipesRoutes: Routes = [
-  {
-    path: '',
-    title: marker('page-title.soykaf'),
-    ...householdContext,
-    loadComponent: () =>
-      import('../feature/recipes-page/recipes.page').then((m) => m.RecipesPage),
   },
 ];

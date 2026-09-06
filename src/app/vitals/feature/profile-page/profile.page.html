@@ -8,7 +8,7 @@
     slot="end"
     fill="clear"
     data-testid="vitals-pills-link"
-    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/pills'"
+    [routerLink]="'/vitals/profiles/' + (facade.profile()?.id ?? '') + '/pills'"
     [attr.aria-label]="'vitals.a11y.pills' | translate"
   >
     <ion-icon slot="icon-only" name="medkit-outline" aria-hidden="true" />
@@ -19,7 +19,9 @@
     slot="end"
     fill="clear"
     data-testid="vitals-zodiac-link"
-    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/zodiac'"
+    [routerLink]="
+      '/vitals/profiles/' + (facade.profile()?.id ?? '') + '/zodiac'
+    "
     [attr.aria-label]="'vitals.a11y.zodiac' | translate"
   >
     <ion-icon slot="icon-only" name="planet-outline" aria-hidden="true" />
@@ -30,7 +32,9 @@
     slot="end"
     fill="clear"
     data-testid="vitals-iching-link"
-    [routerLink]="'/vitals/profile/' + (facade.profile()?.id ?? '') + '/iching'"
+    [routerLink]="
+      '/vitals/profiles/' + (facade.profile()?.id ?? '') + '/iching'
+    "
     [attr.aria-label]="'vitals.a11y.iching' | translate"
   >
     <ion-icon slot="icon-only" name="layers-outline" aria-hidden="true" />

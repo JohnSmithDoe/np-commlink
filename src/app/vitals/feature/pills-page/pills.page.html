@@ -3,7 +3,7 @@
   returnLabel="page-title.vitals-profile"
   [heading]="facade.heading()"
   [itemTemplate]="pillRow"
-  [returnRoute]="'/vitals/profile/' + (facade.profile()?.id ?? '')"
+  [returnRoute]="'/vitals/profiles/' + (facade.profile()?.id ?? '')"
 />
 
 <ng-template #pillRow let-item let-ionList="ionList">

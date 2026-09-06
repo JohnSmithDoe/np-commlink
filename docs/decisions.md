@@ -109,6 +109,13 @@ or a count the code owns.
   addresses a named segment.
 - **A detail lives INSIDE its tab**, so the bar stays up and back walks that tab's own stack — the reason
   to keep `ion-tabs` rather than a bare `ion-tab-bar`, which the docs permit but which owns no outlet.
+- **A page belonging to the MODULE rather than to one tab stays beside the shell**, hides the bar, and
+  names its own parent — `list-settings`, and cash's `rules`, `report`, `schedules`, `categories`. No
+  catalog entry contains such a page, so `PROGRAM_RETURN` gives it none: `returnRoute`/`returnLabel` is
+  the whole mechanism, and a page that names neither renders no return row at all.
+- **A tab is labelled by the entry's `titleKey`.** The per-skin `nameKey` is the deck tile's wording and
+  a shorter one, which the bar may want if a title ever truncates; it is not free, because resolving it
+  makes the lookup skin-reactive.
 - **Deck visibility does not trim the bar.** Hiding a tile means "not on my deck", not "not in this module".
 - **A program's URL may move for one rung-free price: a redirect.** `DeckState` persists entry IDS
   (`order`, `visibleEntries`, `hiddenTiles`); the route lives in the catalog, which is code.

@@ -55,7 +55,7 @@ test('chrono', async ({ page }) => {
   await mainContent(page).getByText('Speichern').click();
   await page.waitForTimeout(4000);
 
-  await openPage(page, 'data', 'app-page-stats');
+  await openPage(page, 'tracking/data', 'app-page-stats');
   await expect(mainContent(page).locator('app-stats-item').first()).toBeVisible(
     {
       timeout: 30_000,

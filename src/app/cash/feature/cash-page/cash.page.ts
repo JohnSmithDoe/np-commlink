@@ -110,7 +110,7 @@ export class CashPage {
   }
 
   goToAccount(account: AccountWithBalance | CashAccount): void {
-    void this.#router.navigate(['/cash', account.id]);
+    void this.#router.navigate(['/cash/accounts', account.id]);
   }
 
   async confirmDelete(account: CashAccount): Promise<void> {

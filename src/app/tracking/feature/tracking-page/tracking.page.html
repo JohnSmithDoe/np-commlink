@@ -3,22 +3,6 @@
   pageHeader="page-title.tracking"
   [itemTemplate]="trackingItem"
 >
-  <ion-button
-    headerEnd
-    slot="end"
-    fill="clear"
-    routerLink="/data"
-    data-testid="tracking-daily-view-link"
-    [attr.aria-label]="'tracking.a11y.daily-view' | translate"
-  >
-    <ion-icon
-      slot="icon-only"
-      name="settings-outline"
-      color="primary"
-      aria-hidden="true"
-    />
-  </ion-button>
-
   <ng-container toolbarActionsEnd>
     <span class="tracking-total">{{ total() }}</span>
     @if (items().length) {

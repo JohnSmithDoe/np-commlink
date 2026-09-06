@@ -1,7 +1,19 @@
-import { expect, test } from '@playwright/test';
-import { gotoFeature, pageRoot, ROUTE, waitForListPage } from '../helpers';
+import { expect, Locator, Page, test } from '@playwright/test';
+import {
+  gotoFeature,
+  mainContent,
+  pageRoot,
+  ROUTE,
+  waitForListPage,
+} from '../helpers';
 
 const FLAGS = 'FLAGS';
+
+const moduleTabs = (page: Page): Locator =>
+  mainContent(page).getByTestId('module-tabs');
+
+const tabButton = (tabs: Locator, tab: string): Locator =>
+  tabs.locator(`ion-tab-button[tab="${tab}"]`);
 
 test.describe('household navigation', () => {
   test('redirects the root url to the commlink deck', async ({ page }) => {
@@ -22,7 +34,7 @@ test.describe('household navigation', () => {
   test('switches between the three lists from the tab bar', async ({
     page,
   }) => {
-    const tabs = pageRoot(page, 'app-page-household-tabs');
+    const tabs = moduleTabs(page);
 
     const switched = async (
       route: (typeof ROUTE)[keyof typeof ROUTE],
@@ -32,21 +44,19 @@ test.describe('household navigation', () => {
         new RegExp(route.replace('/', String.raw`\/`))
       );
       await waitForListPage(page);
-      await expect(tabs.getByTestId(`list-switcher-${tab}`)).toHaveClass(
-        /tab-selected/
-      );
+      await expect(tabButton(tabs, tab)).toHaveClass(/tab-selected/);
     };
 
     await gotoFeature(page, ROUTE.storage);
     await switched(ROUTE.storage, 'storage');
 
-    await tabs.getByTestId('list-switcher-shopping').click();
+    await tabButton(tabs, 'shopping').click();
     await switched(ROUTE.shopping, 'shopping');
 
-    await tabs.getByTestId('list-switcher-products').click();
+    await tabButton(tabs, 'products').click();
     await switched(ROUTE.products, 'products');
 
-    await tabs.getByTestId('list-switcher-storage').click();
+    await tabButton(tabs, 'storage').click();
     await switched(ROUTE.storage, 'storage');
   });
 
@@ -54,20 +64,18 @@ test.describe('household navigation', () => {
     page,
   }) => {
     await gotoFeature(page, ROUTE.storage);
-    const tabs = pageRoot(page, 'app-page-household-tabs');
-    await expect(tabs.getByTestId('list-switcher-storage')).toBeVisible();
+    const tabs = moduleTabs(page);
+    await expect(tabButton(tabs, 'storage')).toBeVisible();
 
     await page.goto('/#/household/list-settings');
     await expect(
       page.getByTestId('list-settings-flag-show-quick-add')
     ).toBeVisible({ timeout: 30_000 });
-    await expect(tabs.getByTestId('list-switcher-storage')).toBeHidden();
+    await expect(tabButton(tabs, 'storage')).toBeHidden();
 
     await page.goBack();
     await waitForListPage(page);
-    await expect(tabs.getByTestId('list-switcher-storage')).toHaveClass(
-      /tab-selected/
-    );
+    await expect(tabButton(tabs, 'storage')).toHaveClass(/tab-selected/);
   });
 
   test('opens the list-settings page', async ({ page }) => {

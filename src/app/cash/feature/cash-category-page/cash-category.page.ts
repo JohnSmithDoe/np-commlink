@@ -48,6 +48,6 @@ export class CashCategoryPage {
   }
 
   openAccount(txn: CashTransaction): void {
-    void this.#router.navigate(['/cash', txn.accountId]);
+    void this.#router.navigate(['/cash/accounts', txn.accountId]);
   }
 }

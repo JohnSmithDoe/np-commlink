@@ -53,7 +53,7 @@ export class VitalsProfilesPage {
   }
 
   goToProfile(id: VitalsId): void {
-    void this.#router.navigate(['/vitals/profile', id]);
+    void this.#router.navigate(['/vitals/profiles', id]);
   }
 
   openProfileEdit(profile: Profile): void {

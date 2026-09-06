@@ -43,7 +43,7 @@ async function switchOn(toggles: Locator): Promise<void> {
 }
 
 export async function bootDeck(page: Page): Promise<void> {
-  await page.goto('/#/commlink/deck');
+  await page.goto('/#/settings/deck');
   await expect(page.getByTestId('deck-config-lens')).toBeVisible({
     timeout: 60_000,
   });

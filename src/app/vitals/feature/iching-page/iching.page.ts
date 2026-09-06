@@ -66,11 +66,11 @@ export class VitalsIChingPage {
 
   readonly castHref = computed(() => {
     const id = this.#routeProfile()?.id;
-    return id ? `/vitals/profile/${id}/iching/cast` : '/vitals/iching/cast';
+    return id ? `/vitals/profiles/${id}/iching/cast` : '/vitals/iching/cast';
   });
   readonly returnRoute = computed(() => {
     const id = this.#routeProfile()?.id;
-    return id ? `/vitals/profile/${id}` : undefined;
+    return id ? `/vitals/profiles/${id}` : undefined;
   });
 
   constructor() {

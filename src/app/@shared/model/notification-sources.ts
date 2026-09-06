@@ -15,7 +15,7 @@
 export const NOTIFICATION_SOURCES = {
   officeReminder: { id: 1, route: '/office-time' },
   ritualReminder: { id: 2, route: '/ritual' },
-  pillReminder: { idBase: 1000, route: '/vitals' },
+  pillReminder: { idBase: 1000, route: '/vitals/profiles' },
 } as const;
 
 export type NotificationSource = keyof typeof NOTIFICATION_SOURCES;

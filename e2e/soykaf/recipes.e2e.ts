@@ -1,6 +1,6 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * SOYKAF joins three aggregates of one slice, so what only a real browser
- * can show is that `/soykaf` co-registers the whole household context it
+ * can show is that `/household/soykaf` co-registers the household context it
  * reads: the matcher joins recipes against products AND storage, and a
  * missing sibling would crash the selector on entry. Recipes persist into
  * the shared `npc-household` doc rather than an `npc-recipes` of their
@@ -32,7 +32,7 @@ import {
   waitForPersisted,
 } from '../helpers';
 
-const SOYKAF = '/#/soykaf';
+const SOYKAF = '/#/household/soykaf';
 
 function addButton(page: Page) {
   return page

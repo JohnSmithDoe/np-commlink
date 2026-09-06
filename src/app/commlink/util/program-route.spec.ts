@@ -4,8 +4,12 @@ import { programIconFor, programReturnFor } from './program-route';
 
 describe('programIconFor', () => {
   it('gives a program its catalog glyph, on its own route and inside it', () => {
-    expect(programIconFor(DECK_CATALOG, '/cash')).toBe('wallet-outline');
-    expect(programIconFor(DECK_CATALOG, '/cash/report')).toBe('wallet-outline');
+    expect(programIconFor(DECK_CATALOG, '/cash/accounts')).toBe(
+      'wallet-outline'
+    );
+    expect(programIconFor(DECK_CATALOG, '/cash/accounts/a1')).toBe(
+      'wallet-outline'
+    );
   });
 
   it('answers nothing for a route no program owns', () => {
@@ -23,10 +27,10 @@ describe('programIconFor', () => {
     expect(programIconFor(DECK_CATALOG, '/vitals/iching/cast')).toBe(
       'disc-outline'
     );
-    expect(programIconFor(DECK_CATALOG, '/vitals/profile/x/iching')).toBe(
+    expect(programIconFor(DECK_CATALOG, '/vitals/profiles/x/iching')).toBe(
       'pulse-outline'
     );
-    expect(programIconFor(DECK_CATALOG, '/vitals/profile/x/iching/cast')).toBe(
+    expect(programIconFor(DECK_CATALOG, '/vitals/profiles/x/iching/cast')).toBe(
       'pulse-outline'
     );
   });
@@ -49,7 +53,7 @@ describe('programIconFor', () => {
 
 describe('programReturnFor', () => {
   it('marks a program own route, so nothing offers to leave it', () => {
-    expect(programReturnFor(DECK_CATALOG, '/cash')).toEqual({
+    expect(programReturnFor(DECK_CATALOG, '/cash/accounts')).toEqual({
       isProgram: true,
     });
     expect(programReturnFor(DECK_CATALOG, '/cash/spending')).toEqual({
@@ -58,14 +62,17 @@ describe('programReturnFor', () => {
   });
 
   it('names the program a child page sits inside', () => {
-    expect(programReturnFor(DECK_CATALOG, '/cash/report')).toEqual({
+    expect(programReturnFor(DECK_CATALOG, '/cash/accounts/a1')).toEqual({
       isProgram: false,
-      parent: { route: '/cash', titleKey: 'page-title.cash' },
+      parent: { route: '/cash/accounts', titleKey: 'page-title.cash' },
     });
   });
 
   it('leaves a page the catalog does not know free to name its own parent', () => {
     expect(programReturnFor(DECK_CATALOG, '/tasks/categories')).toEqual({
+      isProgram: false,
+    });
+    expect(programReturnFor(DECK_CATALOG, '/cash/report')).toEqual({
       isProgram: false,
     });
   });

@@ -43,7 +43,7 @@ test('cold deck ships empty', async ({ page }) => {
 });
 
 test('deck config with toggles and handles', async ({ page }) => {
-  await page.goto('/#/commlink/deck');
+  await page.goto('/#/settings/deck');
   const config = page.locator('app-page-deck-config');
   await expect(config.getByTestId('deck-config-lens')).toBeVisible({
     timeout: 60_000,

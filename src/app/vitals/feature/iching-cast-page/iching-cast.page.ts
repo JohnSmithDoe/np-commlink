@@ -82,7 +82,7 @@ export class VitalsIChingCastPage {
 
   readonly returnRoute = computed(() => {
     const id = this.#profiles.routeProfile()?.id;
-    return id ? `/vitals/profile/${id}/iching` : undefined;
+    return id ? `/vitals/profiles/${id}/iching` : undefined;
   });
 
   readonly totalLines = HEXAGRAM_LINES;
