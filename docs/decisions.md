@@ -125,11 +125,16 @@ or a count the code owns.
 - **Four directions, and a screen answers exactly one.** OUT is the menu and the deck, ACROSS is the
   module's tab bar, DOWN is a push that `app-page-return` reverses, IN is a list row opening its item —
   content, not chrome. A header icon standing in for ACROSS is what the tab bar replaced.
-- **A module's tabs are its catalog entries exactly one segment below the shell.** `PROGRAM_SIBLINGS` is
+- **A module's tabs are its catalog entries exactly one segment below the shell.** `PROGRAM_CONTEXT` is
   asked with a URL PREFIX, not a module name, so the answer is a fact about the address bar: a program
   further down — `/vitals/iching/cast` under a `/vitals` shell — is a page inside a tab's stack, and the
   same lookup says so with no second rule. Sibling programs must therefore share their module's prefix;
-  `/soykaf`, `/data` and `/commlink/deck` do not yet, and each costs a move plus a redirect.
+  `/soykaf`, `/data` and `/commlink/deck` do not yet, and each costs a move plus a redirect. **A program
+  sitting AT its module's prefix is the expensive case**: the lookup answers `undefined` for a route
+  equal to the prefix, so such a program can never be a tab in its own module's bar. `/cash` and
+  `/vitals` are both there, and adopting the shell for them means moving a published program URL down a
+  segment — which for `vitals` touches a slice real users hold and owes the usual ask. It is what drove
+  trackplay's restructure.
 - **The shell is `@shared/feature/module-tabs-page`, mounted on the module's EMPTY-PATH route.** `IonTabs`
   navigates to `<its own URL>/<tab>`, so an empty path leaves the prefix at the module and every tab keeps
   the address the catalog publishes. A module root redirects to its first tab, because `ion-tab-button`
@@ -138,7 +143,7 @@ or a count the code owns.
   to keep `ion-tabs` rather than a bare `ion-tab-bar`, which the docs permit but which owns no outlet.
 - **A page belonging to the MODULE rather than to one tab stays beside the shell**, hides the bar, and
   names its own parent — `list-settings`, and cash's `rules`, `report`, `schedules`, `categories`. No
-  catalog entry contains such a page, so `PROGRAM_RETURN` gives it none: `returnRoute`/`returnLabel` is
+  catalog entry contains such a page, so `PROGRAM_CONTEXT` gives it none: `returnRoute`/`returnLabel` is
   the whole mechanism, and a page that names neither renders no return row at all.
 - **A tab is labelled by the entry's `titleKey`.** The per-skin `nameKey` is the deck tile's wording and
   a shorter one, which the bar may want if a title ever truncates; it is not free, because resolving it
@@ -148,16 +153,17 @@ or a count the code owns.
   (`order`, `visibleEntries`, `hiddenTiles`); the route lives in the catalog, which is code.
 - **A child page names its parent in CONTENT, and the deck catalog decides whether it has one.**
   `app-page-return` is a row at the top of `ion-content`, one key with the parent's name as a parameter.
-  `PROGRAM_RETURN` resolves the page's URL against `DECK_CATALOG`, so a page that IS an entry renders
+  `PROGRAM_CONTEXT` resolves the page's URL against `DECK_CATALOG`, so a page that IS an entry renders
   nothing; a page may name a narrower parent but `isProgram` outranks it. The lookup takes the page's own
   `ActivatedRoute`, never "where is the app now" — Ionic keeps the leaving page mounted through a transition.
 
 ## Reducer purity
 
-- **Impurity arrives through a call into a util, not an import of a framework.** Four `trackplay` handlers
-  read `crypto.randomUUID()` and `Date.now()` during reduce; a grep for framework imports could not see it.
-- **The fix is a defaulted parameter on the action _creator_** — clock and id read at dispatch time. A
-  default on the _factory_ lets the impurity back in silently. What remains takes its `id` as required.
+- **Impurity arrives through a call into a util, not an import of a framework**, so a grep for framework
+  imports cannot see it — a handler reading `crypto.randomUUID()` or `Date.now()` during reduce looks
+  clean.
+- **A clock or an id belongs on the action _creator_, as a defaulted parameter** — read at dispatch time.
+  A default on the _factory_ lets the impurity back in silently.
 - **Nothing gates this.** A file-scoped import ban keys on a filename (a decaying gate) and would not have
   caught the real violation.
 
@@ -180,12 +186,10 @@ or a count the code owns.
   Cash is the only swipe deliberately not expandable.
 - **Undo over confirm.** Cascades and bulk wipes are a different class, scheduled in [next-version.md](./next-version.md).
 - **Who opts into undo is decided by the round trip.** `undoableDelete` pushes `addItem(item)`, so a list
-  qualifies only where the delete took nothing but that item: shopping, storage, products, tasks, tracking,
-  recipes, vitals' readings, trackplay's games. **A cascade must build its entry in the COMMAND** — an
-  effect runs after the reducer, which has already dropped what the entry needs. Vitals' pills and
-  profiles, trackplay's players and game types, household's and tasks' categories do that. Cash confirms
-  instead. **Products slipped through**: deleting one strips it from every recipe and the restore does not
-  bring those lines back.
+  qualifies only where the delete took nothing but that item. **A cascade must build its entry in the
+  COMMAND** — an effect runs after the reducer, which has already dropped what the entry needs. Cash
+  confirms instead. Which lists sit on each side is `grep undoableDelete` and `grep UndoActions.pushed`,
+  where the fact cannot drift from itself.
 - **The stack's only path is `app-undo-button`**, in the header of every list that can raise an entry. A
   toast is `role="status"`, so a button inside it is never announced. Being the only control is what stops
   a five-second window and a persistent one from resolving the same entry twice.

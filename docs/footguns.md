@@ -48,14 +48,14 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
 
 - **`detectChanges()` depends on what the template embeds.** jsdom never upgrades a Stencil element, so an
   `ion-*` host is inert. A dumb component may call it; a page embedding Ionic-heavy children must not.
-- **Rely on Vitest `globals: true`** — never `import` a *value* from `'vitest'`. `import type` is required
+- **Rely on Vitest `globals: true`** — never `import` a _value_ from `'vitest'`. `import type` is required
   for what `vitest/globals` does not declare (`MockInstance`).
 - **A spec overriding selectors must `afterEach(() => store.resetSelectors())`** — overrides leak across
   files. Facades are root singletons, so overriding between two `createComponent` calls needs `store.refreshState()`.
 - **A fixture restates the defaults rather than importing `initialX`** — a fixture answers "a plausible
   state", a reducer's initial answers "what a fresh install boots into".
 - **`vi.mock` cannot stub a relative import.** `@angular/build:unit-test` rejects it and the spec fails to
-  *collect*, reading as a broken suite. Drive the failure through a token the module already reads.
+  _collect_, reading as a broken suite. Drive the failure through a token the module already reads.
 - **`vi.mock('<third-party-module>')` is unreliable here — inject instead.** The builder wraps each spec
   before Vitest hoists, so whether the double binds varies **between runs of the same suite**. Put a static
   vendor API behind an `InjectionToken` (`LOCAL_NOTIFICATIONS`) and override the token.
@@ -64,14 +64,14 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
 ## Gates that can go inert — and inert gates pass
 
 - **A green suite does not verify a config change.** Check with `eslint --print-config <file>`.
-- **Flat config *replaces* a rule's options, never merges them** — a selector added in one block is silently
+- **Flat config _replaces_ a rule's options, never merges them** — a selector added in one block is silently
   dropped wherever a later block sets the same rule id. Hence the i18n and NgRx checks are rule **ids**.
 - **`extends` applies the enclosing block's `files` to everything it extends**, so a template-scoped set
   nested under a `**/*.ts` parent intersects to **nothing**.
 - **Editing a rule's source does not invalidate the ESLint cache** — it hashes the resolved config, not the
-  plugin files. Develop with `--no-cache`; `rm -rf .eslintcache` (the builder makes that path a *directory*).
+  plugin files. Develop with `--no-cache`; `rm -rf .eslintcache` (the builder makes that path a _directory_).
   The cache is per-file while Sheriff is cross-file.
-- **`build` and `test` run on esbuild (transpile-only)**, so a broken *type-only* import passes both. Always
+- **`build` and `test` run on esbuild (transpile-only)**, so a broken _type-only_ import passes both. Always
   run both `tsc --noEmit` passes.
 - **Verify a new gate by breaking what it should catch.** `i18n-key-ownership` needs **two** node types — a
   quoted key is a `Literal` in TS but a `LiteralPrimitive` in a template.
@@ -87,7 +87,7 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   pull in. Templates are excluded from the denominator on purpose (with `.html` in: 39% statements, **1.4%
   functions**). `coverage.include` does not compose with `@angular/build:unit-test` — the report collapses to 0%.
 - **`maximumWarning` cannot fail a build**, so a warning is not a gate; `verify-all.sh` surfaces the count.
-- **`verify:testids` sees only `.html` declarations and *literal* references.** `DECLARE_TS` matches only the
+- **`verify:testids` sees only `.html` declarations and _literal_ references.** `DECLARE_TS` matches only the
   imperative `'data-testid': '…'` overlay form; `USE_PLAYWRIGHT` matches `getByTestId('literal')`. An inline
   template and a `@for` each break the "static literal verbatim on both sides" requirement, and breaking both
   hides it: three invisible ids still report `0 dead · 0 undeclared`.
@@ -163,7 +163,7 @@ R1–R9 is the a11y rule set; each gated rule's banner carries its argument. **R
   `<main>` produces two landmarks.
 - **`ion-back-button` is `display:none` until `:host(.show-back-button)`**, set from `defaultHref !== undefined`
   and nothing else. `@ionic/angular`'s directive overrides the CLICK — `canGoBack() ? pop() :
-  navigateBack(defaultHref)` — and never the visibility. There is no such thing as an arrow that shows itself
+navigateBack(defaultHref)` — and never the visibility. There is no such thing as an arrow that shows itself
   when back is possible.
 - **Route-change focus is opt-in.** Without `focusManagerPriority`, a click-navigation leaves focus on the
   anchor and Chrome drops it to `<body>`. `main.ts` boots `['heading','banner']`, dropping `'content'` on
@@ -172,7 +172,7 @@ R1–R9 is the a11y rule set; each gated rule's banner carries its argument. **R
 ## `@for` with `@empty` inserts at the front once the empty branch has rendered
 
 A `@for`/`@empty` pair that rendered its **empty** branch first inserts the first item view at the block's
-*leading* anchor, not after the block's preceding siblings — so a chip lands above the text it belongs to.
+_leading_ anchor, not after the block's preceding siblings — so a chip lands above the text it belongs to.
 It shows only on the second render of one instance (empty → one item), which is why it reads as "sometimes".
 
 The fix is structural: **give a `@for` with an `@empty` its own container element.** Nothing gates it — the
@@ -213,7 +213,7 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 
 ## Layout units that lie
 
-- **`vh` is not the height you can see, and it moves.** Mobile browsers resolve it against the *largest*
+- **`vh` is not the height you can see, and it moves.** Mobile browsers resolve it against the _largest_
   viewport, so a `vh` offset is wrong on first paint. It is also blind to content. Both are why
   `cash.empty-state` uses `consts.vertical-cut`, whose `::before` takes a share of the **free** space.
 - **A `flex-grow` below 1 distributes only that fraction of the free space** (Flexbox §9.7). The container
@@ -247,8 +247,8 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **A self-hosted font must live in `src/assets/`, not `public/`.** `url('/fonts/…')` 404s under the subpath,
   `url('fonts/…')` is a build error, and only `url('../assets/fonts/…')` is fingerprinted into `media/` as a
   CSS-relative URL surviving both bases. They also need their own **prefetch** group in `ngsw-config.json`.
-- **The splash's colour literals in `index.html` are correct *because* they are not derived.** The builder
-  inlines only the base `:root` as critical CSS, so at first paint `var(--sr-bg)` paints the *plain* backdrop
+- **The splash's colour literals in `index.html` are correct _because_ they are not derived.** The builder
+  inlines only the base `:root` as critical CSS, so at first paint `var(--sr-bg)` paints the _plain_ backdrop
   and `Canvas` paints white — the exact flash the splash exists to prevent, inverted.
 - **`reveal()` removes the splash on `transitionend`, not a timer.** It also sets `pointer-events: none`:
   opacity does not affect hit-testing, and a full-bleed overlay at `z-index 99999` swallows the first press.

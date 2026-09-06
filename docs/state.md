@@ -61,8 +61,9 @@ recognise them: clear the cash slice there rather than reading the duplicate cou
 - **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE.
   Published schemes disagree by centuries. Swapping the table in `src/app/vitals/model/astro.consts.ts` is
   one edit once the owner names a school.
-- **`en.json` read by a human.** Both bundles hold the same keys and only ~76 values are identical
-  (measured 2026-08-02 — recount before citing). The first English session is the first proofread.
+- **`en.json` and `fr.json` read by a human.** All three bundles hold the same keys, and neither
+  translation has been proofread by anyone who speaks the language. The first session in each is the
+  first proofread.
 
 ## Handbook figures flagged stale
 
@@ -93,10 +94,10 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 ## Open defects
 
 - **Two household header actions may still be vertically clipped** — the cart on STASH and the tray on
-  MARKET, sliced by the toolbar's top edge while the tab bar renders the same glyphs whole. One cause has
-  since been found and fixed: that toolbar was paying the status-bar inset a SECOND time, inside a
-  `.toolbar-container` that is `contain: content` and `overflow: hidden`. **Re-check on the device before
-  treating this as open** — it reproduces only where the inset is non-zero, which is the same condition.
+  MARKET, sliced by the toolbar's top edge while the tab bar renders the same glyphs whole. It reproduces
+  only where the status-bar inset is non-zero, so **re-check on the device before treating this as
+  open**: the double-inset that `.toolbar-container` (`contain: content`, `overflow: hidden`) was
+  clipping is fixed, and that shared the condition.
 - **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
   chrome in the app.
 

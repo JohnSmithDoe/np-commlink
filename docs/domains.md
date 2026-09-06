@@ -259,7 +259,7 @@ Everything below the first entry is **v2.0.0 scope**.
   keeps the slice text-only. What is left is generalising it past notes — the store, its resolver and its
   collector are note-shaped.
 
-## TRACKPLAY — the dice pool
+## TRACKPLAY — the dice pool and the board
 
 - **The game page addresses its game by id, not through the route.** Every other drill-down reads
   `selectRouteEntityId`, which is what makes those views memoized selectors instead of factories a
@@ -290,6 +290,36 @@ Everything below the first entry is **v2.0.0 scope**.
   reader, and the number inside THAT face, which is why every shape carries its own baseline. Unrolled,
   a die shows its own face count, so one component labels the editor and the tray.
 
+### The board
+
+- **A piece does not walk the ring, it walks ITS OWN lap.** Distance is counted from the player's own
+  start, so `travelled + pips` decides everything: below the lap length the piece is still on the ring,
+  at or above it the overflow IS the home slot. Turning in therefore needs no separate rule, and the
+  count into home being exact falls out of the same arithmetic rather than being enforced beside it.
+- **Every rule the walk consults is DATA.** What roll frees a piece, whether home takes an exact count,
+  whether own pieces block or stack, whether landing throws — all of it is `BoardRules`. Mensch ärgere
+  Dich nicht is one filling of that shape; Pachisi and a house rule are others, and none of them needs a
+  second engine. It is also why turn order can be added later as more of the same (parked in
+  [next-version.md](./next-version.md)) rather than as a rewrite.
+- **The track is the only common ground.** A yard and a home column belong to the player whose colour
+  they carry, so a figure may stand on any track field and on nobody's private ground but its own. One
+  rule, and every way onto the board is made to ask it: the tap, the yard button, and a pasted setting
+  alike.
+- **A figure's identity is which `(player, piece)` pair is missing, not how many stand.** Deriving it
+  positionally held only while placement ran in order, so an imported setting could mint a duplicate that
+  no `@for` track key and no move could tell apart.
+- **A field is named by WHOSE stretch of track it is** (`p1-p2f3` — player 1's figure on field 3 of
+  player 2's stretch). The ring is cut into one sector per player, so an offset within a sector is a name
+  read off the board without counting from a fixed origin. The actor leads because a field name alone
+  cannot say who is standing there. Players count from 1 and fields from 0; `h` is the home column and
+  `b` the yard, without which leaving the yard and finishing are the two moves that could not be written.
+- **The three `removeItem`s and the two restores live ONLY in `trackplay.reducer.ts`.**
+  `combineReducers` returns the IDENTICAL state when no sub-reducer changed anything, so the cascade sees
+  the pre-action slice if and only if no per-aggregate reducer claims that action. Add one to an
+  aggregate and the cascade silently starts reading POST-delete state — neither the compiler nor a
+  per-aggregate spec notices. `setRoundValue` is the deliberate opposite: the aggregate writes the round
+  and the cascade then stamps `lastPlayedAt`, which wants the post-write game.
+
 ## The deck
 
 - **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.
@@ -311,8 +341,11 @@ Everything below the first entry is **v2.0.0 scope**.
   pane 392px at 1400, so `--side-width` is not the knob it reads like.
 - **The catalog's glyph reaches the page header through a token, and the header keeps `icon` as an
   override.** `@shared/ui` may import no domain, so the header cannot read `DECK_CATALOG` however it is
-  shaped. `PROGRAM_ICON` is the port (`@shared/util`, empty-defaulted); `commlink/data` fulfils it as the
-  longest catalog route prefixing `selectUrl`. `DeckIcon` is `keyof typeof DECK_ICONS`, so a catalog entry
+  shaped. `PROGRAM_CONTEXT` is the port (`@shared/util`, empty-defaulted); `commlink/data` fulfils it as the
+  longest catalog route prefixing the URL the page was ACTIVATED on. It answers the glyph, the way back
+  and the module's tabs together, because all three are readings of that one match — and asking it with
+  the page's own route rather than "where is the app now" is what keeps a leaving page from answering
+  for its successor mid-transition. `DeckIcon` is `keyof typeof DECK_ICONS`, so a catalog entry
   cannot name a glyph nobody registered. Consequence accepted: a page inside a program wears the program's
   glyph, so adding a route to the catalog changes a header with no edit to that page.
   **The override survives in exactly one shape — a component rendered under a route the catalog does not

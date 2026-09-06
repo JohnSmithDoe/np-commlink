@@ -1,15 +1,8 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `combineReducers` returns the IDENTICAL state when no sub-reducer
- * changed anything, so `trackplayCascade` sees the pre-action slice if and
- * only if no per-aggregate reducer handles that action.
- *
- * Hence the three `removeItem`s and the two restores live ONLY here. Add
- * one to an aggregate and the cascade silently starts reading the
- * POST-delete state; neither the compiler nor a per-aggregate spec notices.
- *
- * `setRoundValue` is the deliberate opposite: the aggregate writes the
- * round, and the cascade then stamps `lastPlayedAt` on the roster — which
- * wants the post-write game.
+ * The three `removeItem`s and the two restores live ONLY here: add one to
+ * an aggregate and `combineReducers` starts handing the cascade POST-delete
+ * state, which neither the compiler nor a per-aggregate spec notices
+ * ([domains.md](../../../../docs/domains.md)).
  * ───────────────────────────────────────────────────────────────── */
 
 import { Action, combineReducers, createReducer, on } from '@ngrx/store';

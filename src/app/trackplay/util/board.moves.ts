@@ -1,15 +1,7 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * A piece does not walk the ring, it walks ITS OWN lap: distance is counted
- * from the player's start, so `travelled + pips` says everything. Below the
- * lap length the piece is still on the ring; at or above it, the overflow IS
- * the home slot — which is why turning in needs no separate rule and why the
- * count into home has to be exact.
- *
- * Every rule the walk consults is DATA, not a constant in here: what roll
- * frees a piece, whether home takes an exact count, whether own pieces block
- * or stack, whether landing throws. Mensch ärgere Dich nicht is one filling
- * of that shape; Pachisi and a house rule are others, and none of them needs
- * a second engine.
+ * A piece walks ITS OWN lap, not the ring: `travelled + pips` decides
+ * everything, and every rule the walk consults is DATA rather than a
+ * constant in here ([domains.md](../../../../docs/domains.md)).
  * ───────────────────────────────────────────────────────────────── */
 
 import {

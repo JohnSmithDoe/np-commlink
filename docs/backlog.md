@@ -11,8 +11,8 @@ _Reviewed 2026-09-06 across five passes: pattern conformance, duplication, track
 deck/nav shell, and state/tests/docs. Every gate was green at the time — everything found was invisible
 to all of them, which is the point. The bug findings, the shell's shape and the whole duplication pass
 have since been settled — four extractions done, five declined in
-[decisions.md](./decisions.md) with the reason. What remains is one gate blind spot, four test gaps and
-the doc drift._
+[decisions.md](./decisions.md) with the reason, and the doc drift is closed. What remains is one gate
+blind spot and four test gaps._
 
 ---
 
@@ -53,44 +53,6 @@ wrong answer is silent.
   **B4**), `game-play.page.ts`'s `onValue` coercion (`"abc"→0`, `"3.7"→3`, `""→0`), and the
   `parseSetting → nextFigure` composition — both halves are well specced and **B3** lives only in their
   interaction.
-
-## Docs — drift found
-
-- **X1 · The board is absent from [domains.md](./domains.md).** The TRACKPLAY section is still
-  headed "the dice pool" and every entry is about dice, while three commits of genuinely settled
-  reasoning sit in two file banners _at the 13-line ceiling_ — a piece walks its own lap so
-  `travelled + pips` decides everything and turning into home needs no separate rule; every rule the
-  walk consults is data, so MÄDN, Pachisi and a house rule are one engine; the notation format; the
-  `combineReducers`-identity trick that forces the cascade handlers into one file. That is content with
-  no home. **Fix:** retitle the section and add the entries, then the banners shrink to a pointer.
-
-- **X2 · [state.md](./state.md) says "both bundles" — French shipped.** `public/i18n/` holds three,
-  [next-version.md](./next-version.md) already says the UI speaks three languages, and `fr.json` has
-  never been proofread either. The entry understates its own debt by a third. Drop the ~76 figure while
-  fixing it — it is a count the code owns and the entry already says to recount it.
-
-- **X3 · The products-cascade defect is recorded in two files** — as a settled aside in
-  `decisions.md` and as scheduled work in `next-version.md`. It is not settled, so `next-version.md` is
-  its only correct home. Delete the sentence from `decisions.md`; the decision it trails ("a cascade
-  must build its entry in the COMMAND") stands without the counter-example.
-
-- **X4 · The undo opt-in rosters in `decisions.md` are an inventory mirroring the tree** — eight
-  lists named, then six more. Both are accurate today, which is exactly what makes the drift silent
-  tomorrow, and CLAUDE.md forbids the shape. Keep the two _rules_, drop the rosters: `grep
-undoableDelete` and `grep UndoActions.pushed` is where the fact cannot drift from itself.
-
-- **X5 · The tab-bar decision misses its most expensive case.** It prices `/soykaf`, `/data` and
-  `/commlink/deck` as "a move plus a redirect", but `segmentBelow` returns `undefined` when
-  `route === prefix` — so **a program mounted at its own module root can never be a tab in its own
-  module's bar**, and two are: `/cash` and `/vitals`. Adopting the shell there means moving a published
-  program URL down a segment, which for `vitals` touches a slice real users hold and therefore owes the
-  usual ask. This constraint is what drove the trackplay restructure and is nowhere in the docs.
-
-- **X6 · Two entries are written as the story, not the state.** The household-clipping entry in
-  `state.md` narrates a cause "since found and fixed" (it is in the tree); the reducer-purity entry in
-  `decisions.md` opens in the present tense about four handlers reading `crypto.randomUUID()` during
-  reduce, and the code shows the fix landed. Both make a reader verify against the code to learn what is
-  true. Keep the re-check instruction and the transferable lesson; drop the narrative and the count.
 
 ---
 
