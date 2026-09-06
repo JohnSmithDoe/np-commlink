@@ -79,8 +79,26 @@ describe('TrackplayGamePlayPage', () => {
     setup();
 
     component.onValue('r1', 'p1', inputEvent(''));
-
     expect(dispatch).toHaveBeenCalledWith(scored(0));
+
+    component.onValue('r1', 'p1', inputEvent('abc'));
+    expect(dispatch).toHaveBeenCalledWith(scored(0));
+  });
+
+  it('takes the whole part of a decimal rather than refusing it', () => {
+    setup();
+
+    component.onValue('r1', 'p1', inputEvent('3.7'));
+
+    expect(dispatch).toHaveBeenCalledWith(scored(3));
+  });
+
+  it('keeps a negative score, which some game types are played with', () => {
+    setup();
+
+    component.onValue('r1', 'p1', inputEvent('-20'));
+
+    expect(dispatch).toHaveBeenCalledWith(scored(-20));
   });
 
   it('flips the ended flag of the game it is showing', () => {

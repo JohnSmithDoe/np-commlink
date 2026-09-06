@@ -45,18 +45,22 @@ export function requireParseableDate(path: SchemaPath<string>): void {
 
 export const DUPLICATE_NAME = { kind: 'duplicateName' } as const;
 
+export const nameIsTaken = (
+  siblings: readonly BaseItem[],
+  name: string,
+  editingId?: string
+): boolean =>
+  siblings.some(
+    (item) => matchesSearchExactly(item, name) && item.id !== editingId
+  );
+
 export function requireUniqueName(
   path: SchemaPath<string>,
   siblings: () => readonly BaseItem[],
   editing: () => BaseItem | undefined
 ): void {
   requireText(path);
-  validate(path, ({ value }) => {
-    const twins = siblings().filter((item) =>
-      matchesSearchExactly(item, value())
-    );
-    const editingId = editing()?.id;
-    const taken = twins.some((twin) => twin.id !== editingId);
-    return taken ? DUPLICATE_NAME : null;
-  });
+  validate(path, ({ value }) =>
+    nameIsTaken(siblings(), value(), editing()?.id) ? DUPLICATE_NAME : null
+  );
 }

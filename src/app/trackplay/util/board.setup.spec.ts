@@ -1,5 +1,6 @@
 import { BoardFigure } from '../model/board.types';
 import { buildBoard } from './board.factory';
+import { parseSetting } from './board.notation';
 import {
   figureCount,
   figureOn,
@@ -46,6 +47,19 @@ describe('board setup', () => {
     expect(
       nextFigure(board, [...imported, { player: 0, piece: 1, fieldId: 'a' }])
     ).toEqual({ player: 0, piece: 2 });
+  });
+
+  it('places on top of a pasted setting without minting a piece twice', () => {
+    const { figures } = parseSetting('b4 p1-p1f0 p2-p2f0', board);
+    let placed = figures as readonly BoardFigure[];
+
+    for (const fieldId of ['track-3', 'track-4', 'track-5']) {
+      placed = placeFigure(board, placed, fieldId);
+    }
+
+    const identities = placed.map((one) => `${one.player}-${one.piece}`);
+    expect(new Set(identities).size).toBe(placed.length);
+    expect(validateSetting(board, placed)).toEqual([]);
   });
 
   it('runs out once every figure stands', () => {
