@@ -1,7 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, from, map, of, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  EMPTY,
+  from,
+  ignoreElements,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { APP_VERSION } from '../../../@shared/model/app.consts';
 import { DatabaseService } from '../../../@shared/data/persistence/database.service';
 import {
@@ -28,6 +37,8 @@ const migratedSummaries = (summaryDocuments: unknown[]): DashboardSummary[] =>
 export class DashboardEffects {
   readonly #actions$ = inject(Actions);
   readonly #database = inject(DatabaseService);
+
+  #writeReported = false;
 
   load$ = createEffect(() => {
     return this.#actions$.pipe(
@@ -59,22 +70,33 @@ export class DashboardEffects {
     );
   });
 
-  persistSummary$ = createEffect(
-    () => {
-      return this.#actions$.pipe(
-        ofType(DashboardActions.report),
-        tap(({ telemetry }) => {
-          const summary: DashboardSummary = {
-            source: telemetry.source,
-            metrics: telemetry.metrics,
-          };
-          void this.#database.save(
+  persistSummary$ = createEffect(() => {
+    return this.#actions$.pipe(
+      ofType(DashboardActions.report),
+      concatMap(({ telemetry }) => {
+        const summary: DashboardSummary = {
+          source: telemetry.source,
+          metrics: telemetry.metrics,
+        };
+        return from(
+          this.#database.save(
             summaryKey(telemetry.source),
             wrapVersioned(APP_VERSION, summary)
-          );
-        })
-      );
-    },
-    { dispatch: false }
-  );
+          )
+        ).pipe(
+          ignoreElements(),
+          catchError(() => {
+            if (this.#writeReported) return EMPTY;
+            this.#writeReported = true;
+            return of(
+              NotificationsActions.toast({
+                key: marker('toast.storage.write-failed'),
+                color: 'danger',
+              })
+            );
+          })
+        );
+      })
+    );
+  });
 }

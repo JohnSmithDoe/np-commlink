@@ -154,4 +154,11 @@ describe('board notation', () => {
     expect(parsed.layout.players).toBe(4);
     expect(parsed.figures).toHaveLength(1);
   });
+
+  it('reports a board size no board has, rather than silently using another', () => {
+    const parsed = parseSetting('b13 p1-p2f3', board);
+
+    expect(parsed.layout.players).toBe(4);
+    expect(parsed.rejected).toEqual(['b13']);
+  });
 });

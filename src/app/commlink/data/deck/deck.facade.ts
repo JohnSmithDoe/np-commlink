@@ -72,7 +72,7 @@ export class DeckFacade {
 
   readonly orderedPrograms = computed(() =>
     this.configuredEntries().filter(
-      (entry) => !entry.hidden && entry.id !== DECK_PINNED_ENTRY
+      (entry) => entry.onDeck && !entry.hidden && entry.id !== DECK_PINNED_ENTRY
     )
   );
 

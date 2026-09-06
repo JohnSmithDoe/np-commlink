@@ -38,7 +38,7 @@ import {
 import { BoardComponent } from '../../ui/board/board.component';
 import { MoveRefusal, planMove } from '../../util/board.moves';
 import { parseSetting } from '../../util/board.notation';
-import { PlacementRefusal, refuseNext } from '../../util/board.setup';
+import { figureOn, PlacementRefusal, refuseNext } from '../../util/board.setup';
 
 const PIPS = [1, 2, 3, 4, 5, 6];
 
@@ -90,6 +90,7 @@ export class TrackplayBoardPage {
 
   tapField(fieldId: BoardFieldId): void {
     if (this.complete()) {
+      if (!figureOn(this.board.figures(), fieldId)) return;
       this.picked.update((held) => (held === fieldId ? null : fieldId));
       return;
     }

@@ -11,6 +11,9 @@ import { NotificationsActions } from '../../../@shared/data/actions/notification
 import { DashboardReadModelActions } from './dashboard.actions';
 import { DashboardEffects } from './dashboard.effects';
 
+const report = (source: string) =>
+  DashboardActions.report({ source, metrics: { unread: 1 } });
+
 describe('DashboardEffects', () => {
   let actions$: Observable<Action>;
   let effects: DashboardEffects;
@@ -98,8 +101,9 @@ describe('DashboardEffects', () => {
         })
       );
 
-      await firstValueFrom(effects.persistSummary$);
-
+      expect(
+        await firstValueFrom(effects.persistSummary$.pipe(toArray()))
+      ).toEqual([]);
       expect(database.save).toHaveBeenCalledWith(
         'summary-office-time',
         wrapVersioned(APP_VERSION, {
@@ -118,7 +122,7 @@ describe('DashboardEffects', () => {
         })
       );
 
-      await firstValueFrom(effects.persistSummary$);
+      await firstValueFrom(effects.persistSummary$.pipe(toArray()));
 
       expect(database.save).toHaveBeenCalledWith(
         'summary-office-time',
@@ -127,6 +131,22 @@ describe('DashboardEffects', () => {
           metrics: { officedays: 12 },
         })
       );
+    });
+
+    it('reports a failed write once, rather than dropping it silently', async () => {
+      setup();
+      database.save.mockRejectedValue(new Error('quota exceeded'));
+      actions$ = of(report('notifications'), report('office-time'));
+
+      expect(
+        await firstValueFrom(effects.persistSummary$.pipe(toArray()))
+      ).toEqual([
+        NotificationsActions.toast({
+          key: 'toast.storage.write-failed',
+          color: 'danger',
+        }),
+      ]);
+      expect(database.save).toHaveBeenCalledTimes(2);
     });
   });
 });

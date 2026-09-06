@@ -54,6 +54,9 @@ export const boardReducer = createReducer(
     rules: { ...state.rules, ...rules },
   })),
 
-  on(TrackplayActions.loaded, (state, { trackplay }): BoardState =>
-    trackplay?.board ?? state)
+  on(TrackplayActions.loaded, (state, { trackplay }): BoardState => ({
+    ...state,
+    ...trackplay?.board,
+    rules: { ...state.rules, ...trackplay?.board?.rules },
+  }))
 );

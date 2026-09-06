@@ -48,7 +48,7 @@ export class GamesPageFacade extends BaseListPageFacade {
   }
 
   manageCategories(): void {
-    void this.#router.navigate(['/trackplay/game-types']);
+    void this.#router.navigate(['/trackplay/games/types']);
   }
 
   toggleShowEnded(): void {

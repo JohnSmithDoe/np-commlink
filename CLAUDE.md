@@ -23,9 +23,12 @@ that has to outlive its commit belongs in one of the five documents below.
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, open defects, costs left standing |
 | [next-version.md](docs/next-version.md) | work triaged into the next major |
+| [backlog.md](docs/backlog.md) | review findings, until the code answers them — and what the next reviewer should look for |
 
-**These five are the whole list.** A doc is updated only when a decision, a footgun, a one-way door or
-the next version's scope changes — **never as a follow-up to a code change**. Write the current state,
+**These six are the whole list**, and `backlog.md` is the only one that empties: an entry is deleted
+once fixed, or moves to the file that owns it. A doc is updated only when a decision, a footgun, a
+one-way door, the next version's scope or a review's findings change — **never as a follow-up to a code
+change**. Write the current state,
 not the story that reached it: **append while a decision stands, collapse it into its successor once
 one supersedes it**, and drop an entry outright once the code says it. `state.md` holds what is
 BLOCKED and `next-version.md` what is SCHEDULED — nothing belongs in both.

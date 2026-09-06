@@ -68,18 +68,21 @@ export const padClock = (value: number): string =>
 export const clockTime = (hour: number, minute: number): string =>
   `${padClock(hour)}:${padClock(minute)}`;
 
+const CLOCK_PATTERN = /^(\d{1,2}):(\d{1,2})$/;
+const HOUR_MAX = 23;
+const MINUTE_MAX = 59;
+
 export const parseClock = (
   value: unknown
 ): { hour: number; minute: number } | undefined => {
   if (typeof value !== 'string') return undefined;
-  const [hour, minute] = value.split(':').map(Number);
-  if (
-    hour === undefined ||
-    minute === undefined ||
-    Number.isNaN(hour) ||
-    Number.isNaN(minute)
-  ) {
-    return undefined;
-  }
+
+  const match = CLOCK_PATTERN.exec(value.trim());
+  if (!match) return undefined;
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (hour > HOUR_MAX || minute > MINUTE_MAX) return undefined;
+
   return { hour, minute };
 };

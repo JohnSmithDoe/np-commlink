@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { NotificationsState } from '../../@shared/model/notifications.types';
 
 export const NotificationsInboxActions = createActionGroup({
-  source: 'Notifications',
+  source: 'Notifications Inbox',
   events: {
     load: emptyProps(),
     loaded: (notifications: NotificationsState | null) => ({ notifications }),

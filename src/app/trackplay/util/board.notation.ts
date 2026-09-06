@@ -108,16 +108,22 @@ export function formatSetting(
   return [`b${layout.players}`, ...settingNotation(layout, figures)].join(' ');
 }
 
+function boardCountOf(token: string): BoardPlayerCount | null {
+  const match = BOARD_PATTERN.exec(token);
+  if (!match) return null;
+
+  const players = Number(match[1]);
+  return BOARD_PLAYER_COUNTS.includes(players as BoardPlayerCount)
+    ? (players as BoardPlayerCount)
+    : null;
+}
+
 function boardOf(tokens: string[]): BoardLayout | null {
   for (const token of tokens) {
-    const match = BOARD_PATTERN.exec(token);
-    const players = match ? Number(match[1]) : null;
+    if (!BOARD_PATTERN.test(token)) continue;
 
-    if (players !== null) {
-      return BOARD_PLAYER_COUNTS.includes(players as BoardPlayerCount)
-        ? buildBoard(players as BoardPlayerCount)
-        : null;
-    }
+    const players = boardCountOf(token);
+    return players === null ? null : buildBoard(players);
   }
 
   return null;
@@ -134,7 +140,10 @@ export function parseSetting(
   const used = new Map<number, number>();
 
   for (const token of tokens) {
-    if (BOARD_PATTERN.test(token)) continue;
+    if (BOARD_PATTERN.test(token)) {
+      if (boardCountOf(token) === null) rejected.push(token);
+      continue;
+    }
 
     const placement = parsePlacement(token);
     const field = placement ? parseField(layout, placement.field) : null;
