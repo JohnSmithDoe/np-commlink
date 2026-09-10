@@ -202,6 +202,14 @@ or a count the code owns.
   reads would be beaten by the one-tap date shortcuts — it earns itself by driving the colour. Reopening
   swaps the computed next date into `dueAt`, so a task three weeks past its cadence arrives in OPEN already
   overdue rather than resetting.
+- **Amber arrives on a schedule scaled to the cadence, and a gradient was declined.** A percentage needs a
+  span, and a one-shot task has only a deadline — measuring `createdAt → dueAt` would paint a task created
+  today for tomorrow green and one created a year ago for tomorrow red, at equal urgency. A recurring task
+  DOES span exactly one interval, so the warning window is a quarter of it, floored at a day and capped at
+  a fortnight; no cadence keeps a fixed four days. A ramped hue was rejected on three counts: the bar is
+  `background: currentcolor` off an `IonColor`, so a computed colour leaves the token path every skin rides
+  on; three states are the vocabulary and a continuum is not a state; and it would ramp along the one axis
+  red-green deficiency cannot resolve.
 - **A shared input owns its widget and never its meaning.** `app-interval-input` emits `{ every, unit }`
   and says nothing about the anchor — a task counts from when it was last done, and the next thing to grow
   an interval will count from somewhere else. Owning the interpretation is what would make it unshareable.

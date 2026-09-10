@@ -11,6 +11,18 @@ const colorOf = (dueAt?: string) =>
 const closedOn = (doneAt: string) =>
   dueStatusColor(mockTaskItem({ doneAt, interval: MONTHLY }), NOW);
 
+const weekly = (doneAt: string) =>
+  dueStatusColor(
+    mockTaskItem({ doneAt, interval: { unit: 'week', every: 1 } }),
+    NOW
+  );
+
+const yearly = (doneAt: string) =>
+  dueStatusColor(
+    mockTaskItem({ doneAt, interval: { unit: 'year', every: 1 } }),
+    NOW
+  );
+
 describe('dueStatusColor', () => {
   it('gives a task without a due date no status at all', () => {
     expect(colorOf(undefined)).toBeUndefined();
@@ -34,6 +46,27 @@ describe('dueStatusColor', () => {
     expect(closedOn('2026-05-01')).toBe('danger');
     expect(closedOn('2026-06-27')).toBe('warning');
     expect(closedOn('2026-07-20')).toBe('success');
+  });
+
+  it('warns four days out on a task with no cadence to scale by', () => {
+    expect(colorOf('2026-07-29')).toBe('warning');
+    expect(colorOf('2026-07-31')).toBe('success');
+  });
+
+  it('scales the warning window to the cadence', () => {
+    expect(weekly('2026-07-21')).toBe('warning');
+    expect(weekly('2026-07-23')).toBe('success');
+
+    expect(yearly('2025-08-05')).toBe('warning');
+    expect(yearly('2025-09-01')).toBe('success');
+  });
+
+  it('never lets a chore due every day read as comfortable', () => {
+    const everyDay = mockTaskItem({
+      doneAt: '2026-07-26',
+      interval: { unit: 'day', weekdays: [1, 2, 3, 4, 5, 6, 7] },
+    });
+    expect(dueStatusColor(everyDay, NOW)).toBe('warning');
   });
 
   it('ignores a due date the task already passed once it recurs', () => {
