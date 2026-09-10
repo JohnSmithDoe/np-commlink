@@ -7,6 +7,10 @@
  * table, so "today" cannot go stale in a dialog left open across midnight.
  * The highlight recomputes off `value` alone, which is the only thing that
  * moves it in practice.
+ *
+ * Clear is DISABLED when there is nothing to clear, not hidden: clearing is
+ * what empties the value, so a button that unmounts on its own click drops
+ * the focus it was holding onto the body.
  * ───────────────────────────────────────────────────────────────── */
 import {
   ChangeDetectionStrategy,
@@ -16,8 +20,10 @@ import {
   output,
 } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IonButton } from '@ionic/angular/standalone';
+import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
+import { addIcons } from 'ionicons';
+import { closeOutline } from 'ionicons/icons';
 import { Marker } from '../../../model/app.types';
 import { isoDay } from '../../../util/formatting/date-format.utils';
 import {
@@ -39,12 +45,16 @@ const SHORTCUT_LABELS: Readonly<Record<DateShortcutId, Marker>> = {
   selector: 'app-date-shortcuts',
   templateUrl: './date-shortcuts.component.html',
   styleUrl: './date-shortcuts.component.scss',
-  imports: [IonButton, TranslatePipe],
+  imports: [IonButton, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateShortcutsComponent {
   readonly value = input('');
   readonly picked = output<string>();
+
+  constructor() {
+    addIcons({ closeOutline });
+  }
 
   protected readonly ids = DATE_SHORTCUT_IDS;
   protected readonly labels = SHORTCUT_LABELS;
@@ -58,5 +68,9 @@ export class DateShortcutsComponent {
 
   protected pick(id: DateShortcutId): void {
     this.picked.emit(dateForShortcut(id));
+  }
+
+  protected clear(): void {
+    this.picked.emit('');
   }
 }

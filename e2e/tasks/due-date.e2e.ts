@@ -90,4 +90,25 @@ test.describe('the due-date picker', () => {
     );
     await expect(calendar(page)).toBeHidden();
   });
+
+  test('clears the date it set, and offers nothing to clear before that', async ({
+    page,
+  }) => {
+    await dueDateField(page, 'Steuer');
+    const dialog = page.locator('ion-modal.show-modal').first();
+    const clear = dialog.getByTestId('date-shortcut-clear');
+    const box = dateBox(dialog.locator('app-date-input'));
+
+    await expect(clear).toHaveAttribute('aria-disabled', 'true');
+
+    await dialog
+      .getByTestId('date-shortcut')
+      .filter({ hasText: 'Heute' })
+      .click();
+    await expect(box).not.toHaveValue('');
+    await expect(clear).not.toHaveAttribute('aria-disabled', 'true');
+
+    await clear.click();
+    await expect(box).toHaveValue('');
+  });
 });

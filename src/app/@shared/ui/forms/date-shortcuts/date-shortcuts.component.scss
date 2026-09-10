@@ -12,3 +12,9 @@
   --padding-start: var(--space-3);
   --padding-end: var(--space-3);
 }
+
+.date-shortcuts__clear {
+  margin: 0;
+  --padding-start: var(--space-2);
+  --padding-end: var(--space-2);
+}

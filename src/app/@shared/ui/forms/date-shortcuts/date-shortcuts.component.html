@@ -14,4 +14,16 @@
       {{ labels[id] | translate }}
     </ion-button>
   }
+
+  <ion-button
+    size="small"
+    fill="clear"
+    class="date-shortcuts__clear"
+    data-testid="date-shortcut-clear"
+    [disabled]="!value()"
+    [attr.aria-label]="'date-picker.clear' | translate"
+    (click)="clear()"
+  >
+    <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+  </ion-button>
 </div>

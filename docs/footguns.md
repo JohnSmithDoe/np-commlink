@@ -39,6 +39,12 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   of the host `aria-label`.
 - **A bare `ion-toast` is not unique.** Narrow with `:not(.overlay-hidden)`. General rule: **an
   always-mounted overlay makes every element-name locator for it ambiguous app-wide.**
+- **`toBeDisabled()` on an `ion-button` HOST always reads enabled**, however loudly the DOM disagrees —
+  the rendered host carries `disabled`, `aria-disabled="true"` and `.button-disabled`, and Playwright
+  honours none of them on a custom element. It works everywhere it is used here only because those
+  locators are role-based and pierce to the native `<button>` in the shadow root; a `getByTestId` locator
+  resolves the host and silently inverts the assertion. On a testid locator assert
+  `toHaveAttribute('aria-disabled', 'true')` — the contract a screen reader reads anyway.
 - **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
   `input.aux-input[type=hidden]`, so `getByTestId(…).locator('input')` on a bound `ion-toggle`/`ion-input`
   resolves to **two** elements. `getByRole('switch')` is not the way out either (the real control is in the
