@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   createOutline,
   cubeOutline,
-  eyeOutline,
   eyeOffOutline,
+  eyeOutline,
   gridOutline,
   peopleOutline,
   playCircleOutline,
@@ -27,7 +27,6 @@ import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.co
   imports: [
     IonButton,
     IonIcon,
-    RouterLink,
     TranslatePipe,
     ListPageComponent,
     GameRowComponent,

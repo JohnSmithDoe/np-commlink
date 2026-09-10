@@ -9,13 +9,6 @@
 //
 // A badge fills with --sr-red-deep, not neon --sr-red: white numerals need
 // contrast that neon only clears as a dot, a border or a large icon.
-//
-// The terminal glyphs are drawn in CSS, not translated — punctuation in the
-// deck's voice under cyberpunk, and noise in plain, `SIN://` among them. What
-// plain cannot punctuate away it drops: the hero headline and the caret are
-// in-fiction chrome, unreadable as anything else, so there is nothing to
-// translate. The caret is hidden HERE and not on `.sr-caret`, because GEIST
-// blinks the same glyph to mean a reply is still arriving.
 // ────────────────────────────────────────────────────────────────
 
 @use '../../../../theme/deck';
