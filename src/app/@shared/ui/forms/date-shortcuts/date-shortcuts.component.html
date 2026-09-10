@@ -1,0 +1,17 @@
+<div
+  class="date-shortcuts"
+  role="group"
+  [attr.aria-label]="'date-picker.shortcuts' | translate"
+>
+  @for (id of ids; track id) {
+    <ion-button
+      size="small"
+      class="date-shortcuts__pick"
+      data-testid="date-shortcut"
+      [fill]="activeId() === id ? 'solid' : 'outline'"
+      (click)="pick(id)"
+    >
+      {{ labels[id] | translate }}
+    </ion-button>
+  }
+</div>

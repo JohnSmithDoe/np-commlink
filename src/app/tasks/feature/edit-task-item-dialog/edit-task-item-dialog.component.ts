@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { IonItem, IonToggle } from '@ionic/angular/standalone';
+import { IonToggle } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { TaskItem, TASKS_LIST_ID } from '../../model/task.types';
@@ -7,6 +7,7 @@ import { createTaskItem } from '../../util/task.factory';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
+import { DateShortcutsComponent } from '../../../@shared/ui/forms/date-shortcuts/date-shortcuts.component';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/number-input.component';
 import { TasksListPageFacade } from '../../data';
@@ -16,13 +17,13 @@ import { Category, CategoryId } from '../../../@shared/model/category.types';
   selector: 'app-edit-task-item-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    IonItem,
     IonToggle,
     TranslatePipe,
     CategoryInputComponent,
     CategoriesDialogComponent,
     ItemEditModalComponent,
     DateInputComponent,
+    DateShortcutsComponent,
     NumberInputComponent,
   ],
   templateUrl: './edit-task-item-dialog.component.html',

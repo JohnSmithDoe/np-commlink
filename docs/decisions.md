@@ -105,6 +105,19 @@ or a count the code owns.
   directions gated in `verify:icons`, which reads all five spellings a name reaches an icon through
   (`name`, `[name]`, an `icon` input, `[leadingIcon]`, `icon:` in a catalog or preset). "Outline
   everywhere" was tried and flattened two different things.
+- **A chip is a shape, never an element.** `ion-chip` renders a bare shadow host with no role: it takes
+  no focus, answers no key, and `aria-pressed` on it sits where ARIA prohibits it. Every tappable "chip"
+  in the app — the category filter bar, the magnitude row, the weekday picker, the date shortcuts — is an
+  `ion-button` wearing one, and `size="small"` means small TYPE against the 44px floor `global.scss` sets.
+- **`app-date-shortcuts` runs two rules, not one.** `week`/`weekend` name a DAY and always move forward,
+  so Friday's "this week" is Friday next — a shortcut offering a date already gone is worse than none.
+  `month`/`year` name a PERIOD and stay inside the one they name, so the last of the month is today
+  rather than a jump that makes the label lie. The row therefore does not read shortest-to-longest on a
+  Saturday, where `week` (+6) lands after `weekend` (+1). Accepted, not overlooked.
+- **The shortcut row is composed per dialog, never built into `app-date-input`.** The picks are all
+  forward-looking; a birthday and a filed booking are not, and a control that offered "Monatsende" on
+  either would be answering a question nobody asked. AGENDA opts in; `[dialogTitleEnd]` on the shared
+  edit modal is the same bargain for a header control.
 - **`FILLED_BY_DESIGN` is for a CONTROL that fills in to report its own state** — `isFavorite() ? 'star'
 : 'star-outline'`, the note editor's pin. A filled/outline pair is a state machine, and a sweep reading
   only the variant suffix cannot see one.
@@ -179,6 +192,10 @@ or a count the code owns.
   never half-migrated. No down-ladder, no backup.
 - **A reset is a legitimate answer to a moved shape.** A rung is owed where the data's _meaning_ survives;
   the deck's pre-flip document named the ids to _hide_, so migrating it would have inverted every choice.
+- **A date field stores a DAY, no rung.** `app-date-input` writes `YYYY-MM-DD`; the calendar emits the
+  minute the user tapped at, which put two spellings in one field once a second control could write it.
+  Asked and answered — AGENDA's `dueAt` is held by real users, and the old timestamps still parse and
+  display, so the shapes coexist and nothing is owed.
 
 ## Destructive actions
 

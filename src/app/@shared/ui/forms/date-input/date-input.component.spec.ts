@@ -18,6 +18,13 @@ describe('DateInputComponent', () => {
     expect(component.value()).toBe('2026-07-01');
   });
 
+  it('keeps the day and drops the minute the calendar happened to emit', () => {
+    component.updateInputValue({
+      detail: { value: '2026-07-01T18:04:00' },
+    } as never);
+    expect(component.value()).toBe('2026-07-01');
+  });
+
   it('reads a cleared calendar and a range alike as no date', () => {
     component.value.set('2026-07-01');
     component.updateInputValue({ detail: { value: null } } as never);

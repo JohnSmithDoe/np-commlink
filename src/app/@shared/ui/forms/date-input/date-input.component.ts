@@ -3,6 +3,9 @@
  * date `''` and a stored one `undefined`, and a third spelling reaching only
  * into this component would have every caller translate at its own boundary.
  * So the control binds to `[formField]` directly wherever a date is held.
+ * It is a DAY, not an instant: the calendar emits whatever minute the user
+ * tapped at, and storing that gave one field two spellings once anything
+ * else could write it.
  *
  * `trigger` resolves through `getElementById`, so the id has to be unique per
  * INSTANCE — a fixed one puts two pickers in one dialog on the same element,
@@ -13,6 +16,12 @@
  * the app, so a German app on an English phone spells the same date two ways.
  * Both are passed in — `LOCALE_ID` for the calendar, translated keys for the
  * buttons, the same pair every other date in the app already reads.
+ *
+ * The modal deliberately does NOT keep its contents mounted: a mounted
+ * `ion-datetime` loses its month scroll when hidden and never regains it, so
+ * every reopen showed the month before the stored one. `keepContentsMounted`
+ * buys nothing here — it is required for `ion-datetime-button`, and the
+ * trigger is a plain input.
  * ───────────────────────────────────────────────────────────────── */
 
 import { DatePipe } from '@angular/common';
@@ -34,6 +43,7 @@ import {
   DatetimeCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
+import { isoDay } from '../../../util/formatting/date-format.utils';
 
 let instances = 0;
 
@@ -53,6 +63,6 @@ export class DateInputComponent implements FormValueControl<string> {
 
   updateInputValue(event: DatetimeCustomEvent) {
     const { value } = event.detail;
-    this.value.set(typeof value === 'string' ? value : '');
+    this.value.set(typeof value === 'string' ? isoDay(value) : '');
   }
 }

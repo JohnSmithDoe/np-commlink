@@ -207,6 +207,14 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
   the box would shrink the sibling set and a duplicate saves. The aggregate read is spelled `allItems`.
 - **A cleared date box persists the string `'Invalid Date'`** without `requireParseableDate` — it sorts above
   every real date and can never be reconciled.
+- **`keepContentsMounted` on a date picker's `ion-modal` shows the wrong month, and the header still reads the
+  right one.** `ion-datetime` lays three month panes side by side and scrolls the middle one into view; a
+  hidden scroll container reports `scrollWidth: 0`, so the snap is lost on dismiss and `markReady` — the only
+  thing that re-centers — returns early while the `datetime-ready` class survives. Every reopen sits at
+  `scrollLeft: 0`, i.e. the month *before* the stored one, with no day highlighted, while `workingParts` and
+  the month/year toggle stay correct. A preset value is worse: the first open already shows two months off.
+  Only `ion-datetime-button` needs the prop; with a plain trigger, **let the picker be rebuilt per present**.
+  Assert on the chosen day's visibility (`toBeInViewport`), never on the toggle's text — it never lied.
 - **`@angular/forms` writes every control binding onto a same-named directive input**, and `FieldState.pattern`
   defaults to a shared `computed(() => [])`, so a bound `ion-input` gets `pattern=""` — permanently `:invalid`.
   Harmless here; latent anywhere reading native validity. Unfiled upstream, so treat it as current.

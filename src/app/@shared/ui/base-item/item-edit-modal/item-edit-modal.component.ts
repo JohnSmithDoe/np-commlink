@@ -34,6 +34,7 @@ import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-in
 @Component({
   selector: 'app-item-edit-modal',
   templateUrl: './item-edit-modal.component.html',
+  styleUrl: './item-edit-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,

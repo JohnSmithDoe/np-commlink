@@ -21,7 +21,10 @@
     </ion-header>
 
     <ion-content>
-      <h3 class="ion-padding-start">{{ dialogTitle() | translate }}</h3>
+      <div class="dialog-title">
+        <h3>{{ dialogTitle() | translate }}</h3>
+        <ng-content select="[dialogTitleEnd]" />
+      </div>
       <ion-list>
         @let name = nameField();
         @if (name) {

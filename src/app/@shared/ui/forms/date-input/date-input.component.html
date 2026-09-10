@@ -12,7 +12,6 @@
   <ion-modal
     [trigger]="triggerId"
     [attr.aria-label]="'a11y.date-picker' | translate"
-    [keepContentsMounted]="true"
     [initialBreakpoint]="0.65"
   >
     <ng-template>
@@ -20,6 +19,7 @@
         presentation="date"
         mode="md"
         [locale]="locale"
+        [firstDayOfWeek]="1"
         [value]="value()"
         [showDefaultButtons]="true"
         [showClearButton]="true"

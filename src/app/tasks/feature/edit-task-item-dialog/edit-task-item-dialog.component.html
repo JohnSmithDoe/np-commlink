@@ -9,6 +9,14 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
+  <ion-toggle
+    dialogTitleEnd
+    labelPlacement="start"
+    [checked]="!!draft().doneAt"
+    (ionChange)="updateDone($event.detail.checked)"
+    >{{ 'tasks.item.done' | translate }}</ion-toggle
+  >
+
   <app-category-input
     [categories]="selectedCategories()"
     (removeCategory)="removeCategory($event)"
@@ -26,14 +34,10 @@
     [value]="draft().dueAt ?? ''"
     (valueChange)="updateDueAt($event)"
   />
-
-  <ion-item>
-    <ion-toggle
-      [checked]="!!draft().doneAt"
-      (ionChange)="updateDone($event.detail.checked)"
-      >{{ 'tasks.item.done' | translate }}</ion-toggle
-    >
-  </ion-item>
+  <app-date-shortcuts
+    [value]="draft().dueAt ?? ''"
+    (picked)="updateDueAt($event)"
+  />
 
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"
