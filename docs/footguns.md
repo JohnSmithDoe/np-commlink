@@ -244,6 +244,14 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **A shadow Ionic element is reachable only through the custom properties it documents.** `ion-toolbar` is
   `encapsulation: "shadow"`; `--padding-start`/`--padding-end` are the only way in, and Ionic's default for
   both is `0`, which makes a `max(0px, …)` gutter free on every narrow viewport.
+- **`.sr-caret` is hidden per COMPONENT, and lifting that to the global rule breaks GEIST silently.** The
+  class is global (`theme/_shadowrun.scss`) and worn by two owners: the deck hero in `commlink.page.html`,
+  and `geist.page.html`, where it blinks to say a reply is still streaming. `commlink.page.scss` hides it
+  alongside `.cl-hero__title` under `:host-context([data-skin='boomer'])` because the deck's caret is
+  in-fiction chrome the plain skin drops — GEIST's is a status indicator the plain skin still needs. Moving
+  the `display: none` onto `.sr-caret` itself therefore stops GEIST reporting that it is still answering,
+  in one skin, with no test to catch it. Same shape for the deck's other CSS-drawn glyphs (`SIN://`, the
+  hero's `::before`/`::after`): drawn here, dropped by the skin here, never translated.
 - **Nothing that runs on its own renders a non-zero safe-area inset.** Vitest, both Playwright projects and
   `handbook:shots` all resolve `--ion-safe-area-*` to `0`, so a rule that only misbehaves against a real
   status bar is invisible to every gate and every figure — it surfaces as a phone screenshot and nothing
