@@ -1,0 +1,34 @@
+<div class="number-select">
+  @if (label(); as caption) {
+    <h3 class="number-select__label">{{ caption }}</h3>
+  }
+
+  <div class="number-select__options" role="group" [attr.aria-label]="label()">
+    @for (option of options(); track option) {
+      <ion-button
+        size="small"
+        class="number-select__option"
+        data-testid="number-select-option"
+        [fill]="value() === option ? 'solid' : 'outline'"
+        [attr.aria-pressed]="value() === option"
+        (click)="pick(option)"
+      >
+        {{ option }}
+      </ion-button>
+    }
+
+    @if (clearBtn()) {
+      <ion-button
+        size="small"
+        fill="clear"
+        class="number-select__clear"
+        data-testid="number-select-clear"
+        [disabled]="value() === undefined"
+        [attr.aria-label]="clearLabel()"
+        (click)="clear()"
+      >
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+      </ion-button>
+    }
+  </div>
+</div>

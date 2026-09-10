@@ -38,6 +38,7 @@
   </ion-item>
 
   <app-weekday-picker
+    [groupLabel]="'vitals.label.weekdays' | translate"
     [weekdays]="draft().weekdays"
     (toggled)="toggleWeekday($event)"
   />

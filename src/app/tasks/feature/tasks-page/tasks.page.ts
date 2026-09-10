@@ -11,7 +11,7 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonColor } from '../../../@shared/model/app.types';
 import { TaskItem } from '../../model/task.types';
-import { dueStatusColor } from '../../util/task.utils';
+import { dueStatusColor, nextDueAt } from '../../util/task.utils';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
@@ -73,5 +73,9 @@ export class TasksPage {
 
   statusColor(item: TaskItem): IonColor | undefined {
     return dueStatusColor(item);
+  }
+
+  nextDue(item: TaskItem): string | undefined {
+    return nextDueAt(item);
   }
 }

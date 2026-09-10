@@ -23,12 +23,6 @@
     (openDialog)="openCategoriesDialog()"
   />
 
-  <app-number-input
-    [label]="'tasks.item.prio' | translate"
-    [value]="draft().prio"
-    (updateValue)="updatePrio($event)"
-  />
-
   <app-date-input
     [label]="'edit.item.dialog.dueAt' | translate"
     [value]="draft().dueAt ?? ''"
@@ -37,6 +31,22 @@
   <app-date-shortcuts
     [value]="draft().dueAt ?? ''"
     (picked)="updateDueAt($event)"
+  />
+
+  <app-interval-input
+    [label]="'tasks.item.interval' | translate"
+    [weekdayLabel]="'tasks.item.interval.weekdays' | translate"
+    [value]="draft().interval"
+    (valueChange)="updateInterval($event)"
+  />
+
+  <app-number-select
+    clearBtn
+    [max]="6"
+    [label]="'tasks.item.prio' | translate"
+    [clearLabel]="'tasks.item.prio.clear' | translate"
+    [value]="draft().prio"
+    (valueChange)="updatePrio($event)"
   />
 
   <app-categories-dialog

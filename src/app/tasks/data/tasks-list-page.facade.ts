@@ -10,6 +10,7 @@ import {
   TASKS_LIST_ID,
 } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
+import { toggledDone } from '../util/task.utils';
 import {
   BaseListPageFacade,
   itemListCommands,
@@ -81,12 +82,7 @@ export class TasksListPageFacade extends BaseListPageFacade {
           : marker('tasks.toast.done'),
       })
     );
-    this.#store.dispatch(
-      TasksActions.addOrUpdateItem({
-        ...item,
-        doneAt: item.doneAt ? undefined : new Date().toISOString(),
-      })
-    );
+    this.#store.dispatch(TasksActions.addOrUpdateItem(toggledDone(item)));
   }
 
   showCreateDialog(): void {

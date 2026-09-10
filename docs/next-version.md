@@ -204,6 +204,19 @@ numbers, own deck program, both detail routes deep-linkable. Left:
   heads 3 and tails 2, sum 6 to 9, parity carrying yang and 6 or 9 marking the line as changing, read bottom
   to top.
 
+## AGENDA
+
+- **A pill on a period, and the reminder that cannot be a cron.** AGENDA's recurrence **shipped**, and
+  `app-interval-input` was built shared for this: it emits an `{ every, unit }` and owns no interpretation,
+  because a task counts from the day it was last done and a pill would not. `weekdays: IsoWeekday[]` says
+  "Mon, Wed, Fri" and cannot say "every second Tuesday", which is a real medicine — and the intake log
+  `PillIntake { pillId, takenOn }` already carries the anchor a period needs.
+  **The cost is the reminder, not the field.** `scheduleWeekly` arms an OS cron on `on: { weekday, hour,
+  minute }`, and `Pill.slot` / `PillsState.nextSlot` exist purely to hand each pill stable notification ids
+  across weekdays. There is no "every 14 days" cron: a period pill needs a one-shot `at:` re-armed on each
+  intake, which moves the next occurrence from the OS back into the app — the exact trade the
+  `LocalNotificationsService` banner took the cron to avoid. Decide that before the field.
+
 ## TRACKPLAY
 
 - **The board plays a game but polices no turn.** Any figure moves by any count: nothing holds whose turn

@@ -32,7 +32,7 @@ const SUNDAY = 0;
 const FRIDAY = 5;
 const DAYS_PER_WEEK = 7;
 
-const nextWeekday = (now: Dayjs, weekday: number): Dayjs =>
+export const nextWeekday = (now: Dayjs, weekday: number): Dayjs =>
   now.add(
     (weekday - now.day() + DAYS_PER_WEEK) % DAYS_PER_WEEK || DAYS_PER_WEEK,
     'day'

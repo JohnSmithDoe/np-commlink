@@ -5,6 +5,9 @@ export type IonColor = PredefinedColors | 'accent';
 export type Marker = string;
 export type Timestamp = string;
 export type IsoWeekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export const ISO_WEEKDAYS = [
+  1, 2, 3, 4, 5, 6, 7,
+] as const satisfies readonly IsoWeekday[];
 export type Skin = 'cyberpunk' | 'boomer';
 export type Mode = 'light' | 'dark';
 export type LanguageModelAvailability = Availability | 'probing';

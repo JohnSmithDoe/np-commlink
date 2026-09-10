@@ -22,9 +22,14 @@
     (startSwipe)="toggleDone(item)"
     (deleteItem)="removeItem(item)"
   >
-    @if (item.dueAt || item.prio) {
+    @let recursAt = nextDue(item);
+    @if (item.dueAt || item.prio || recursAt) {
       <p itemDetails class="task-facts">
-        @if (item.dueAt) {
+        @if (recursAt) {
+          <span>
+            {{ 'tasks.item.recurs.note' | translate }}: {{ recursAt | date }}
+          </span>
+        } @else if (item.dueAt) {
           <span>
             {{ 'tasks.item.due.note' | translate }}: {{ item.dueAt | date }}
           </span>

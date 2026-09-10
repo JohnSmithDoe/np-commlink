@@ -192,6 +192,19 @@ or a count the code owns.
   never half-migrated. No down-ladder, no backup.
 - **A reset is a legitimate answer to a moved shape.** A rung is owed where the data's _meaning_ survives;
   the deck's pre-flip document named the ids to _hide_, so migrating it would have inverted every choice.
+- **A recurring task needs no completion log, because `doneAt` already is one.** BIOMON and DAILY RUN both
+  pay for recurrence with a separate keyed log (`PillIntake`, `RitualCompletion`) because their rules fire
+  on a calendar and the item never closes. AGENDA's closes: `doneAt` IS the last-completed stamp, so the
+  next occurrence is `doneAt + interval` computed on read, and `interval?` is one additive optional field
+  on a slice users hold. No new slice, no rung.
+- **AGENDA recurrence is a remembered cadence, not a scheduler.** Nothing re-arms a task; it parks in DONE
+  and warms toward `danger` as its next date nears, and the user reopens it. An interval that only a human
+  reads would be beaten by the one-tap date shortcuts — it earns itself by driving the colour. Reopening
+  swaps the computed next date into `dueAt`, so a task three weeks past its cadence arrives in OPEN already
+  overdue rather than resetting.
+- **A shared input owns its widget and never its meaning.** `app-interval-input` emits `{ every, unit }`
+  and says nothing about the anchor — a task counts from when it was last done, and the next thing to grow
+  an interval will count from somewhere else. Owning the interpretation is what would make it unshareable.
 - **A date field stores a DAY, no rung.** `app-date-input` writes `YYYY-MM-DD`; the calendar emits the
   minute the user tapped at, which put two spellings in one field once a second control could write it.
   Asked and answered — AGENDA's `dueAt` is held by real users, and the old timestamps still parse and

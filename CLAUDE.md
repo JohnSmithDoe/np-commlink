@@ -111,6 +111,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | **Speaking code, not comments** — extract the block instead of explaining it | review |
 | **No `I`/`T` prefix on a type** (`BaseItem`, not `IBaseItem`); a generic *parameter* keeps its `T` | review |
 | **Retheme the CSS custom properties** — never restyle components one by one | review |
+| **A pickable value is tapped, never typed** — anything enumerable (a priority, a cadence, a weekday, a preset amount) gets a row of options and an X to clear it. The phone keyboard covers the form it is editing, so a text field for six choices costs a keyboard, a dismissal and a re-scroll | review |
 | **Lean tests, not exhaustive** — no 100% target, no branded-type machinery | review |
 | **R5 and R9 can never be gated** — a gesture is never the only way; the viewport never locks zoom | review |
 | **A persisted shape, key or entry id changes only after asking whether a rung is owed** | ask — *Stored shapes* below |

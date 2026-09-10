@@ -8,8 +8,10 @@ import { CategoriesDialogComponent } from '../../../@shared/ui/categories/catego
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import { DateShortcutsComponent } from '../../../@shared/ui/forms/date-shortcuts/date-shortcuts.component';
+import { IntervalInputComponent } from '../../../@shared/ui/forms/interval-input/interval-input.component';
+import { Interval } from '../../../@shared/model/interval.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
-import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/number-input.component';
+import { NumberSelectComponent } from '../../../@shared/ui/forms/number-select/number-select.component';
 import { TasksListPageFacade } from '../../data';
 import { Category, CategoryId } from '../../../@shared/model/category.types';
 
@@ -24,7 +26,8 @@ import { Category, CategoryId } from '../../../@shared/model/category.types';
     ItemEditModalComponent,
     DateInputComponent,
     DateShortcutsComponent,
-    NumberInputComponent,
+    IntervalInputComponent,
+    NumberSelectComponent,
   ],
   templateUrl: './edit-task-item-dialog.component.html',
 })
@@ -51,12 +54,16 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
     this.#facade.renameCategory(id, to);
   }
 
-  updatePrio(value: number) {
+  updatePrio(value: number | undefined) {
     this.patch({ prio: value });
   }
 
   updateDueAt(value: string) {
     this.patch({ dueAt: value || undefined });
+  }
+
+  updateInterval(value: Interval | undefined) {
+    this.patch({ interval: value });
   }
 
   updateDone(done: boolean) {

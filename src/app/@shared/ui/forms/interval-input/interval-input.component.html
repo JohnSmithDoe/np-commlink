@@ -1,0 +1,45 @@
+<div class="interval">
+  @if (label(); as caption) {
+    <h3 class="interval__label">{{ caption }}</h3>
+  }
+
+  <ion-segment
+    class="interval__units"
+    scrollable="true"
+    data-testid="interval-unit"
+    [value]="selectedUnit()"
+    [attr.aria-label]="label()"
+    (ionChange)="pickUnit($event)"
+  >
+    <ion-segment-button [value]="none">
+      {{ unitLabels.none | translate }}
+    </ion-segment-button>
+    @for (unit of units; track unit) {
+      <ion-segment-button [value]="unit">
+        {{ unitLabels[unit] | translate }}
+      </ion-segment-button>
+    }
+  </ion-segment>
+
+  @if (daily(); as everyDay) {
+    <app-weekday-picker
+      [weekdays]="everyDay.weekdays"
+      [groupLabel]="weekdayLabel()"
+      (toggled)="toggleWeekday($event)"
+    />
+  }
+
+  @if (period(); as everyN) {
+    <app-number-select
+      [label]="'interval.count' | translate"
+      [value]="everyN.every"
+      [max]="maxCount()"
+      (valueChange)="pickCount($event)"
+    />
+  }
+
+  @let sentence = summary();
+  <p class="interval__summary" data-testid="interval-summary">
+    {{ sentence.key | translate: sentence.params }}
+  </p>
+</div>

@@ -28,7 +28,7 @@ import { PillsFacade, ProfilesFacade } from '../../data';
 import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { toggledWeekday } from '../../util/pill.utils';
 import { createPill } from '../../util/vitals.factory';
-import { WeekdayPickerComponent } from '../../ui/weekday-picker/weekday-picker.component';
+import { WeekdayPickerComponent } from '../../../@shared/ui/forms/weekday-picker/weekday-picker.component';
 
 type PillForm = {
   name: string;
