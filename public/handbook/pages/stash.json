@@ -97,7 +97,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Von Hand</strong> — im Bearbeiten-Dialog das Feld <em>Mindesthaltbarkeitsdatum</em> antippen, ein Kalender fährt von unten hoch (dessen Knöpfe beschriftet Ionic selbst, auf Englisch).",
+            "<strong>Von Hand</strong> — im Bearbeiten-Dialog das Feld <em>Mindesthaltbarkeitsdatum</em> antippen, ein Kalender fährt von unten hoch: Woche ab Montag, darunter <strong>Abbrechen</strong>, <strong>Löschen</strong> und <strong>Fertig</strong>.",
             "<strong>Aus einem Produkt</strong> — trägt ein Produkt in <a href=\"#/handbook/catalog\">CATALOG</a> eine <em>Haltbarkeit</em> (z. B. „3 Wochen“), dann rechnet die App beim Übernehmen ins Regal das Datum aus: heute plus drei Wochen."
           ]
         },

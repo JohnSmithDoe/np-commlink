@@ -230,6 +230,15 @@ const tasksDocument = () => ({
         prio: 3,
       },
       {
+        id: 'task-filter',
+        name: 'Wasserfilter wechseln',
+        createdAt: localDay(-15),
+        categoryIds: [HOUSEHOLD],
+        dueAt: localDay(20),
+        prio: 2,
+        interval: { unit: 'month', every: 3 },
+      },
+      {
         id: 'task-regal',
         name: 'Regal im Flur aufbauen',
         createdAt: localDay(-6),
@@ -239,6 +248,22 @@ const tasksDocument = () => ({
         id: 'task-geschenk',
         name: 'Geschenk für Mama besorgen',
         createdAt: localDay(-1),
+      },
+      {
+        id: 'task-muell',
+        name: 'Müll rausbringen',
+        createdAt: localDay(-40),
+        categoryIds: [HOUSEHOLD],
+        doneAt: localDay(-1, '19:40:00'),
+        interval: { unit: 'day', weekdays: [2, 5] },
+      },
+      {
+        id: 'task-bettwaesche',
+        name: 'Bettwäsche wechseln',
+        createdAt: localDay(-30),
+        categoryIds: [HOUSEHOLD],
+        doneAt: localDay(-11, '11:00:00'),
+        interval: { unit: 'week', every: 2 },
       },
     ],
   },
@@ -261,6 +286,19 @@ test('agenda', async ({ page }) => {
   await expect(listRow(page, /Steuererklärung/)).toBeVisible();
   await shot(page, 'agenda-liste');
 
+  await pageRoot(page, 'app-page-tasks')
+    .locator('ion-content')
+    .evaluate((element: HTMLElement & { scrollToBottom(ms: number): void }) =>
+      element.scrollToBottom(0)
+    );
+  await expect(listRow(page, /Müll rausbringen/)).toBeVisible();
+  await shot(page, 'agenda-erledigt');
+  await pageRoot(page, 'app-page-tasks')
+    .locator('ion-content')
+    .evaluate((element: HTMLElement & { scrollToTop(ms: number): void }) =>
+      element.scrollToTop(0)
+    );
+
   await openRowSwipe(listRow(page, /Zahnarzttermin/), 'end');
   await shot(page, 'agenda-swipe');
   await listRow(page, /Zahnarzttermin/).evaluate(
@@ -270,9 +308,24 @@ test('agenda', async ({ page }) => {
   await listRow(page, /Zahnarzttermin/)
     .getByTestId('list-row-select')
     .click();
-  const dialog = editDialog(page);
+  let dialog = editDialog(page);
   await expect(dialog).toBeVisible();
   await shot(page, 'agenda-aufgabe-dialog');
+  await dialog.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(dialog).toBeHidden();
+
+  await listRow(page, /Müll rausbringen/)
+    .getByTestId('list-row-select')
+    .click();
+  dialog = editDialog(page);
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByTestId('interval-summary')).toBeVisible();
+  await dialog
+    .locator('ion-content')
+    .evaluate((element: HTMLElement & { scrollToBottom(ms: number): void }) =>
+      element.scrollToBottom(0)
+    );
+  await shot(page, 'agenda-wiederholung');
   await dialog.getByRole('button', { name: 'Abbrechen' }).click();
   await expect(dialog).toBeHidden();
 

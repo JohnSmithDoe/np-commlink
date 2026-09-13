@@ -97,6 +97,12 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   imperative `'data-testid': '…'` overlay form; `USE_PLAYWRIGHT` matches `getByTestId('literal')`. An inline
   template and a `@for` each break the "static literal verbatim on both sides" requirement, and breaking both
   hides it: three invisible ids still report `0 dead · 0 undeclared`.
+- **`e2e/handbook/*.shots.ts` is behind no gate at all.** It runs under its own config, outside `verify:all`,
+  and only on release — so a selector it reads rots silently for a whole cycle and surfaces as a failed
+  release run. `input[type="date"]` survived there for the length of v1.3.0, which had already replaced every
+  raw date field with `app-date-input`; `pickDate(field, iso)` is the helper it should have used, and the
+  same file was already calling it correctly thirty lines away. **Whoever changes a screen greps the shots
+  source for what it reads** — `tsc -p e2e/handbook/tsconfig.json` type-checks it but cannot see a selector.
 - **One artifact, two writers** is always a bug in the making.
 
 ## Autofix and tooling hazards

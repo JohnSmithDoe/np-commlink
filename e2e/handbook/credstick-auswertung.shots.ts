@@ -105,7 +105,7 @@ async function addBooking(
       .click();
   }
   await dialog.locator('app-money-input input').fill(booking.amount);
-  await dialog.locator('input[type="date"]').fill(booking.dateISO);
+  await pickDate(dialog.locator('app-date-input'), booking.dateISO);
   if (booking.category) await pickCategory(page, booking.category);
   await dialog.getByRole('button', { name: SAVE }).click();
   await expect(modal(page)).toBeHidden({ timeout: 15_000 });

@@ -3,7 +3,6 @@
   "title": "BIOMON",
   "plain": "Gesundheit",
   "route": "/vitals",
-  "shotsStale": true,
   "summary": "Gewichtsverlauf für Menschen und Tiere, plus Medikamentenpläne mit Wochentagen, Uhrzeit und Erinnerung.",
   "sections": [
     {

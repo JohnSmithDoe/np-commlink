@@ -3,7 +3,6 @@
   "title": "CREDSTICK · Import & Regeln",
   "plain": "Kontoauszug-Import",
   "route": "/cash/rules",
-  "shotsStale": true,
   "summary": "Kontoauszug als camt-Datei einlesen, Buchungen per Regel einsortieren, Festkosten wiedererkennen.",
   "sections": [
     {

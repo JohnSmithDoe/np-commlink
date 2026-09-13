@@ -98,7 +98,11 @@
         },
         {
           "type": "p",
-          "html": "Mengenfelder (<em>Menge</em>) nehmen <strong>ganze Zahlen</strong>; Nachkommastellen fallen weg, und das erste Zeichen ersetzt den alten Wert statt ihn zu ergänzen. Beträge in <a href=\"#/handbook/credstick\">CREDSTICK</a> werden deutsch gelesen: <strong>Komma ist das Dezimaltrennzeichen, der Punkt ein Tausenderpunkt</strong> (<code>1.50</code> bedeutet 150 €, gemeint war <code>1,50</code>). Gewichte in <a href=\"#/handbook/biomon\">BIOMON</a> nehmen beides und runden auf 100-Gramm-Schritte. Datumsfelder öffnen einen Kalender von unten, dessen Knöpfe englisch beschriftet sind."
+          "html": "Mengenfelder (<em>Menge</em>) nehmen <strong>ganze Zahlen</strong>; Nachkommastellen fallen weg, und das erste Zeichen ersetzt den alten Wert statt ihn zu ergänzen. Beträge in <a href=\"#/handbook/credstick\">CREDSTICK</a> werden deutsch gelesen: <strong>Komma ist das Dezimaltrennzeichen, der Punkt ein Tausenderpunkt</strong> (<code>1.50</code> bedeutet 150 €, gemeint war <code>1,50</code>). Gewichte in <a href=\"#/handbook/biomon\">BIOMON</a> nehmen beides und runden auf 100-Gramm-Schritte. Datumsfelder öffnen einen Kalender von unten — die Woche beginnt am Montag, und die Knöpfe heißen <strong>Abbrechen</strong>, <strong>Löschen</strong> und <strong>Fertig</strong>."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Was sich aufzählen lässt, wird getippt statt geschrieben</strong> — damit die Tastatur nicht das Formular verdeckt, das sie gerade ausfüllt. In <a href=\"#/handbook/agenda\">AGENDA</a> ist das am weitesten ausgebaut: eine <em>Schnellauswahl</em> unter dem Datumsfeld (<em>Heute · Morgen · Diese Woche · Wochenende · Monatsende · Jahresende</em>), die Wochentage einer Wiederholung, und die Priorität als sechs Knöpfe. Ein <strong>×</strong> am Ende der Reihe leert den Wert wieder."
         },
         {
           "type": "h3",

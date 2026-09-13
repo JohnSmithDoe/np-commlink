@@ -154,27 +154,23 @@ jobs:
           cat > notes.md <<'EOF'
           ## New
 
-          - **CALC · CONVERT · PHI** — three programs that own nothing, and a number you can repeat
-          - **TRACKPLAY** — PLAYERS is a program, and three catalogs finally agree
-          - **TRACKPLAY** — the board keeps the game, and the rules are data
-          - **TRACKPLAY** — one arm, turned N times, is the whole board
-          - **TRACKPLAY** — a bag of dice and a table to tip them onto
-          - **TRACKPLAY** — a pool of dice you build once and throw
-          - **the deck** — a tile can be taken off the deck without switching the program off
-          - every module with siblings now carries the same bar
-          - a module's siblings are a tab bar the catalog writes
-          - one date field, in the app's own language
-          - an empty screen says what fills it, and offers nothing to do to it
+          - **AGENDA · Tasks that come back on their own** — give a task a rhythm and stop
+            rewriting it. Pick the weekdays it falls on, or repeat it every few weeks, months
+            or years. Tick it off and it returns on schedule, counting from the day you
+            actually did it rather than the day it was meant to happen.
+          - **AGENDA · A warning timed to the task** — the amber stripe now arrives in
+            proportion to how often something comes round. A chore you do twice a week nudges
+            you a day ahead; a service you do once a year gives you a fortnight.
+          - **AGENDA · Six answers instead of a calendar** — today, tomorrow, this week, the
+            weekend, the end of the month or the end of the year now sit right under the date
+            field. One tap sets the date, and the × clears it again.
+          - **AGENDA · Tap instead of type** — priority is a row of buttons now, and so is the
+            repeat. The keyboard stays out of the way of the form you are filling in.
 
           ## Fixed
 
-          - **TRACKPLAY** — a tie is not a win, an unknown game is not a blank page
-          - **TRACKPLAY** — a landed die reads bigger, and the total holds its line
-          - **MEATSPACE** — a slice that is what goes to disk, and two rules that count
-          - **COMMS** — drop the toast anchor that names no element
-          - a stored list is filled out with the fields it was saved without
-          - the header pays the status-bar inset once
-          - eight silent answers, and the backlog that found them
+          - **AGENDA · The calendar opens where you left it** — it no longer lands on the month
+            before the date you saved, and the week now starts on Monday.
 
           ---
 

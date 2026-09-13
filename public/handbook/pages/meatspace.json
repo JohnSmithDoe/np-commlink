@@ -3,7 +3,6 @@
   "title": "MEATSPACE",
   "plain": "Bürozeit",
   "route": "/office-time",
-  "shotsStale": true,
   "summary": "Anwesenheitstage antippen, Feiertage und Urlaub abziehen, und sehen wie weit du von der Büropflicht entfernt bist.",
   "sections": [
     {

@@ -3,8 +3,7 @@
   "title": "AGENDA",
   "plain": "Aufgaben",
   "route": "/tasks/list",
-  "shotsStale": true,
-  "summary": "Eine flache Aufgabenliste mit Termin, Priorität und Kategorien, geteilt in Offen und Erledigt.",
+  "summary": "Eine flache Aufgabenliste mit Termin, Wiederholung, Priorität und Kategorien, geteilt in Offen und Erledigt.",
   "sections": [
     {
       "kind": "why",
@@ -12,7 +11,7 @@
       "blocks": [
         {
           "type": "p",
-          "html": "AGENDA (Aufgaben) ist eine einzige, flache Liste von Dingen, die zu tun sind. Jede Aufgabe kann einen Termin, eine Priorität und Kategorien haben — mehr Struktur gibt es nicht: keine Unteraufgaben, keine Projekte, kein Archiv. Der Kopf der Seite heißt übrigens <strong>Todoliste</strong>; AGENDA ist nur der Name auf dem Deck."
+          "html": "AGENDA (Aufgaben) ist eine einzige, flache Liste von Dingen, die zu tun sind. Jede Aufgabe kann einen Termin, eine <strong>Wiederholung</strong>, eine Priorität und Kategorien haben — mehr Struktur gibt es nicht: keine Unteraufgaben, keine Projekte, kein Archiv. Der Kopf der Seite heißt übrigens <strong>Todoliste</strong>; AGENDA ist nur der Name auf dem Deck."
         }
       ]
     },
@@ -25,7 +24,8 @@
           "items": [
             "<code>/tasks/list</code> öffnen. In die Suchleiste <strong>Suchen oder neu anlegen</strong> den Namen tippen und <strong>Enter</strong> drücken — die Aufgabe ist angelegt und das Feld leert sich wieder.",
             "Alternativ <strong>+</strong> oben rechts. Der Dialog <em>Neuen Eintrag anlegen</em> übernimmt dabei den Text aus der Suchleiste und den gerade aktiven Kategoriefilter als Vorbelegung.",
-            "Die Zeile <strong>antippen</strong> öffnet <em>Eintrag bearbeiten</em>: <strong>Name</strong>, <strong>Priorität</strong> (freie Zahl), <strong>Erledigen bis</strong> (öffnet einen Kalender), der Schalter <strong>Erledigt</strong> und <strong>Kategorien</strong>.",
+            "Die Zeile <strong>antippen</strong> öffnet <em>Eintrag bearbeiten</em>: <strong>Name</strong>, <strong>Kategorien</strong>, <strong>Erledigen bis</strong> mit der <strong>Schnellauswahl</strong> darunter, <strong>Wiederholen</strong>, <strong>Priorität</strong> und oben rechts der Schalter <strong>Erledigt</strong>.",
+            "<strong>Termin, Wiederholung und Priorität werden getippt, nicht geschrieben.</strong> Die Schnellauswahl bietet <em>Heute · Morgen · Diese Woche · Wochenende · Monatsende · Jahresende</em>, die Priorität sechs Knöpfe von <strong>1</strong> bis <strong>6</strong>. Rechts steht jeweils ein <strong>×</strong>, das den Wert wieder leert.",
             "Erledigt? Die Zeile <strong>nach rechts wischen</strong> — sie wandert durchgestrichen in den Abschnitt <strong>Erledigt</strong>. Dieselbe Geste dort holt sie zurück.",
             "Endgültig weg? Die Zeile <strong>nach links wischen</strong> und löschen."
           ]
@@ -52,7 +52,12 @@
         },
         {
           "type": "p",
-          "html": "Die Liste zerfällt in zwei Abschnitte: <strong>Offen</strong> oben, <strong>Erledigt</strong> darunter mit durchgestrichenen Zeilen. Eine Aufgabe merkt sich <em>wann</em> sie erledigt wurde, nicht bloß <em>dass</em>. Erledigte Zeilen tragen keinen Farbstreifen mehr — ein abgehakter Termin mahnt nicht. Die Zahl auf der Deck-Kachel — <code>offen: n</code> — zählt nur den oberen Abschnitt. Ein Archiv gibt es weiter nicht: <strong>Erledigt</strong> wächst, bis du die Zeilen löschst."
+          "html": "Die Liste zerfällt in zwei Abschnitte: <strong>Offen</strong> oben, <strong>Erledigt</strong> darunter mit durchgestrichenen Zeilen. Eine Aufgabe merkt sich <em>wann</em> sie erledigt wurde, nicht bloß <em>dass</em>. Eine erledigte Zeile <strong>ohne</strong> Wiederholung trägt keinen Farbstreifen mehr — ein abgehakter Termin mahnt nicht; eine <strong>mit</strong> Wiederholung behält ihn, denn sie kommt ja wieder. Die Zahl auf der Deck-Kachel — <code>offen: n</code> — zählt nur den oberen Abschnitt. Ein Archiv gibt es weiter nicht: <strong>Erledigt</strong> wächst, bis du die Zeilen löschst."
+        },
+        {
+          "type": "figure",
+          "img": "agenda-erledigt.webp",
+          "caption": "Der Abschnitt <em>Erledigt</em>: die Wiederholungen behalten ihren Streifen und zeigen <em>Wieder fällig</em>"
         },
         {
           "type": "h3",
@@ -60,7 +65,28 @@
         },
         {
           "type": "p",
-          "html": "Der schmale Streifen am linken Rand jeder Zeile ist die Terminwarnung: <strong>rot</strong> = der Termin liegt in der Vergangenheit, <strong>gelb</strong> = innerhalb der nächsten drei Tage, <strong>grün</strong> = später oder ohne Termin. Unter dem Namen steht dann <code>Fällig am: 24.08.2026</code>."
+          "html": "Der schmale Streifen am linken Rand jeder Zeile ist die Terminwarnung: <strong>rot</strong> = der Termin liegt in der Vergangenheit, <strong>gelb</strong> = er steht bald an, <strong>grün</strong> = später oder ohne Termin. Unter dem Namen steht dann <code>Fällig am: 24.08.2026</code>."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Wie früh Gelb kommt, richtet sich nach der Wiederholung.</strong> Eine Aufgabe ohne Wiederholung warnt vier Tage vorher — eine feste Frist. Eine wiederkehrende warnt nach einem Viertel ihres eigenen Abstands, mindestens einen Tag und höchstens zwei Wochen vorher: der Müll meldet sich Stunden vorher, die Wartung einmal im Jahr vierzehn Tage vorher."
+        },
+        {
+          "type": "h3",
+          "html": "Wiederholen"
+        },
+        {
+          "type": "p",
+          "html": "Die Zeile <strong>Wiederholen</strong> im Dialog ist eine Leiste aus fünf Knöpfen: <strong>Nie · Tag · Woche · Monat · Jahr</strong>. Was du wählst, entscheidet, was darunter erscheint — und nur eines von beidem: <strong>Tag</strong> zeigt die sieben Wochentage zum Ein- und Ausschalten, <strong>Woche · Monat · Jahr</strong> eine Zahlenreihe <em>Alle …</em> (bis 8 Wochen, 12 Monate, 10 Jahre). Darunter steht die Wiederholung als Satz: <em>Jeden Dienstag, Freitag</em>, <em>Alle 3 Monate</em>, <em>Wiederholt sich nicht</em>."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Gezählt wird ab dem Tag, an dem du abhakst</strong> — nicht ab dem geplanten Termin. Eine Aufgabe „alle 3 Monate\", drei Wochen zu spät erledigt, ist erst drei Monate <em>danach</em> wieder fällig. Solange sie abgehakt ist, steht unter dem Namen <code>Wieder fällig: 12.10.2026</code> statt <code>Fällig am</code>, und der Farbstreifen misst gegen dieses neue Datum."
+        },
+        {
+          "type": "figure",
+          "img": "agenda-wiederholung.webp",
+          "caption": "Wiederholen auf <em>Tag</em>: die sieben Wochentage, darunter der Satz und die Priorität"
         },
         {
           "type": "h3",
@@ -68,7 +94,7 @@
         },
         {
           "type": "p",
-          "html": "Eine beliebige Zahl, ohne Skala und ohne Obergrenze, angezeigt als <code>Priorität: 2</code>. Aufgaben ohne Priorität landen beim Sortieren hinten."
+          "html": "Sechs Knöpfe, <strong>1</strong> bis <strong>6</strong>, angezeigt als <code>Priorität: 2</code>. Das <strong>×</strong> daneben nimmt die Priorität wieder weg. Aufgaben ohne Priorität landen beim Sortieren hinten."
         },
         {
           "type": "h3",
@@ -117,13 +143,14 @@
           "type": "ul",
           "items": [
             "<strong>Nach links wischen</strong> auf einer Aufgabe → rote Fläche <strong>LÖSCHEN</strong>. Ein <em>vollständiger</em> Wisch löscht sofort, ohne Antippen und ohne Rückfrage.",
-            "<strong>Nach rechts wischen</strong> auf einer Aufgabe → keine Aktion. Aufgabenzeilen haben nur die eine Seite.",
+            "<strong>Nach rechts wischen</strong> auf einer Aufgabe → <strong>erledigt</strong> (auf einer erledigten: zurück nach offen). Ein vollständiger Wisch führt es sofort aus.",
             "<strong>Zeile antippen</strong> → Bearbeiten-Dialog.",
             "<strong>Kategorienseite, nach rechts wischen</strong> → grüner Stift = <strong>umbenennen</strong> (öffnet denselben Namensdialog).",
             "<strong>Kategorienseite, nach links wischen</strong> → <strong>LÖSCHEN</strong>, vollständig gewischt sofort.",
             "<strong>Kategorienseite, Zeile antippen</strong> → in die gefilterte Aufgabenliste springen (nicht bearbeiten).",
             "<strong>Im Kategorien-Dialog</strong> (aus dem Aufgaben-Dialog) wischt jede Zeile <strong>nach links</strong> und zeigt zwei Knöpfe: Stift zum Umbenennen und roten Mülleimer zum Löschen.",
             "<strong>Das kleine x</strong> am Kategorie-Chip im Bearbeiten-Dialog entfernt die Zuordnung direkt.",
+            "<strong>Nach rechts wischen auf einer erledigten Wiederholung</strong> → sie kommt zurück nach <strong>Offen</strong>, und zwar mit dem <em>neu berechneten</em> Termin, nicht mit dem alten.",
             "<strong>Enter in der Suchleiste</strong> legt an; der leere Hinweistext ist ebenfalls anklickbar und tut dasselbe."
           ]
         },
@@ -146,7 +173,10 @@
             "<strong>Eine Kategorie löschen löscht keine Aufgaben</strong>, entfernt sie aber aus allen. Die Zuordnung ist danach weg, die Aufgaben bleiben.",
             "<strong>Umbenennen auf einen bereits vorhandenen Namen verschmilzt</strong> die beiden Kategorien: die umbenannte verschwindet, ihre Aufgaben hängen danach an der bestehenden.",
             "<strong>Vor dem ersten Antippen eines Sortierknopfs steht die Liste rückwärts</strong> (Z nach A). Der erste Druck auf einen Knopf ist immer aufsteigend, jeder weitere dreht.",
-            "<strong>Ohne Termin ist grün</strong> — die Farbe sagt nicht \"erledigt\", sondern nur \"nicht eilig\"."
+            "<strong>Ohne Termin ist grün</strong> — die Farbe sagt nicht \"erledigt\", sondern nur \"nicht eilig\".",
+            "<strong>Eine Wiederholung legt nichts Neues an.</strong> Es bleibt <em>eine</em> Zeile, die zwischen Offen und Erledigt hin- und herwandert — es gibt keine Historie, wie oft du sie schon abgehakt hast.",
+            "<strong>Nie</strong> löscht den Rhythmus, nicht den Termin. Wer die Wiederholung wegnimmt, behält <em>Erledigen bis</em> — die Aufgabe ist danach eine einmalige mit Frist.",
+            "<strong>Die Einheit wechseln wirft die Auswahl weg</strong>: von <em>Tag</em> auf <em>Woche</em> sind die Wochentage fort, zurück auf <em>Tag</em> ist keiner mehr gesetzt. Der Satz darunter sagt dann <em>Noch kein Wochentag gewählt</em>."
           ]
         }
       ]

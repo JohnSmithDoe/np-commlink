@@ -3,7 +3,6 @@
   "title": "CATALOG",
   "plain": "Produkte",
   "route": "/household/products",
-  "shotsStale": true,
   "summary": "Die Stammdaten hinter Einkaufsliste und Vorräten — Produkte mit Haltbarkeitsvorlage, plus alle Listenoptionen der drei Listen.",
   "sections": [
     {

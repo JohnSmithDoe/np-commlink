@@ -82,11 +82,37 @@ Four headings, in this order, each omitted when empty:
 | **Fixed** | `fix` |
 | **Faster** | `perf` |
 
-**The subject is already the sentence.** These commits are written as chapter headlines —
-_"the deck learns to weigh you, and your cat by difference"_ — so carry them over as written.
-Do not rewrite them into marketing copy, and do not expand them from the body.
+**The subject is the source, never the text.** These commits are written as chapter headlines —
+_"amber that arrives on the cadence's own schedule"_ — which says which commit to Martin and
+nothing at all to whoever downloads the APK. **Rewrite every kept commit as a friendly teaser of
+what the reader can now do.** Warm, second person where it helps, and never a sentence that only
+makes sense to someone holding the diff.
 
-English, matching every published release and the README.
+One bullet is **a bold hook, an em dash, then one or two sentences** of what changes for them:
+
+```
+- **AGENDA · Tasks that come back on their own** — give a task a rhythm and stop rewriting it.
+  Tick it off and it returns on schedule, counting from the day you actually did it.
+```
+
+The hook carries the program name where there is one — `**AGENDA · <hook>**` — so a reader
+scanning the list still sees which part of the deck grew.
+
+**Read the diff whenever the subject is too compressed to rewrite from.** A subject naming a
+test, a selector or a refactor — _"one tap to no date, and a disabled button the test could not
+see"_ — is hiding a real user-facing change, and that change is the bullet. Say what it does,
+never how it is built: no component names, no flags, no file paths, no test vocabulary.
+
+**The bullets answer to the reader, not to the log.** Merge two commits that ship one visible
+thing; split one commit that shipped two; drop what is left over that nobody could see. The
+count need not match.
+
+**Teaser, not a claim.** Stay inside what the code actually does — a floor of one day is "a day
+ahead", not "instantly" — and skip the superlatives. A small change described plainly reads
+better than a big one oversold.
+
+English, matching every published release and the README — the app is German, the release page
+is not. Describe a control rather than quoting its German label.
 
 ### Name the program, not the folder
 
