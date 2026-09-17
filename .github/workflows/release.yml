@@ -154,23 +154,26 @@ jobs:
           cat > notes.md <<'EOF'
           ## New
 
-          - **AGENDA · Tasks that come back on their own** — give a task a rhythm and stop
-            rewriting it. Pick the weekdays it falls on, or repeat it every few weeks, months
-            or years. Tick it off and it returns on schedule, counting from the day you
-            actually did it rather than the day it was meant to happen.
-          - **AGENDA · A warning timed to the task** — the amber stripe now arrives in
-            proportion to how often something comes round. A chore you do twice a week nudges
-            you a day ahead; a service you do once a year gives you a fortnight.
-          - **AGENDA · Six answers instead of a calendar** — today, tomorrow, this week, the
-            weekend, the end of the month or the end of the year now sit right under the date
-            field. One tap sets the date, and the × clears it again.
-          - **AGENDA · Tap instead of type** — priority is a row of buttons now, and so is the
-            repeat. The keyboard stays out of the way of the form you are filling in.
-
-          ## Fixed
-
-          - **AGENDA · The calendar opens where you left it** — it no longer lands on the month
-            before the date you saved, and the week now starts on Monday.
+          - **AGENDA · A repeating task reopens itself** — until now it waited in Done until
+            you noticed it. Now it comes back to your open list on its own, on the day it is
+            due again, with nothing to remember and nothing to retype.
+          - **AGENDA · Decide how much notice you get** — say how far ahead each task should
+            reopen: on the day itself, a few days or weeks before, or at the start of its
+            week, month or year. Only the spans that fit the task's own rhythm are offered,
+            so a daily chore is never asked whether it wants a week's warning.
+          - **AGENDA · Repeat in the months you choose** — for the things that happen in March
+            and June rather than every so many weeks. Tap the months and the task lands at
+            the start of each one.
+          - **AGENDA · Count from the deadline, or from the day you did it** — an annual
+            renewal keeps its date year after year, while a filter you change every three
+            months counts three months from the day you actually changed it. Each task
+            decides for itself.
+          - **AGENDA · The rhythm, right in the list** — a repeating task now states how often
+            it comes round in its own row, so you can read it without opening anything.
+          - **AGENDA · A settings screen of its own** — choose whether tasks start warning you
+            earlier or later than usual, and what a new task should count from by default.
+          - **Roomier edit dialogs** — the fields in every dialog across the deck now sit
+            apart from one another instead of flush together.
 
           ---
 
