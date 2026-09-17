@@ -1,0 +1,38 @@
+<app-page-header
+  label="page-title.task-settings"
+  icon="options-outline"
+  hideButtons="true"
+/>
+
+<ion-content>
+  <app-page-return route="/tasks/list" label="page-title.tasks" />
+
+  <ion-list>
+    <ion-list-header>{{
+      'tasks.settings.section.global' | translate
+    }}</ion-list-header>
+    <ion-item lines="none">
+      <app-option-chips
+        [label]="'tasks.settings.warn' | translate"
+        [options]="warnOptions()"
+        [value]="settings().warnShift"
+        (picked)="setWarnShift($event)"
+      />
+    </ion-item>
+
+    <ion-list-header>{{
+      'tasks.settings.section.defaults' | translate
+    }}</ion-list-header>
+    <ion-item lines="none">
+      <p>{{ 'tasks.settings.defaults.note' | translate }}</p>
+    </ion-item>
+    <ion-item lines="none">
+      <app-option-chips
+        [label]="'tasks.item.anchor' | translate"
+        [options]="anchorOptions()"
+        [value]="settings().defaultAnchor"
+        (picked)="setDefaultAnchor($event)"
+      />
+    </ion-item>
+  </ion-list>
+</ion-content>

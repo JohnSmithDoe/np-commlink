@@ -2,6 +2,8 @@ import { CategoryList } from '../../@shared/model/category.types';
 import {
   TASK_CATEGORIES_LIST_ID,
   TaskItem,
+  DEFAULT_TASK_SETTINGS,
+  TaskSettings,
   TASKS_LIST_ID,
   TasksList,
   TasksState,
@@ -31,10 +33,12 @@ export function mockTasksState(
   overrides: {
     list?: Partial<TasksList>;
     categoryList?: Partial<CategoryList>;
+    settings?: Partial<TaskSettings>;
   } = {}
 ): TasksState {
   return {
     list: mockTasksList(overrides.list),
     categoryList: mockTaskCategoryList(overrides.categoryList),
+    settings: { ...DEFAULT_TASK_SETTINGS, ...overrides.settings },
   };
 }

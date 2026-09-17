@@ -1,0 +1,15 @@
+<div class="month-picker" role="group" [attr.aria-label]="groupLabel()">
+  @for (month of all; track month) {
+    <ion-button
+      class="month-picker__month"
+      size="small"
+      data-testid="month"
+      [fill]="isOn(month) ? 'solid' : 'outline'"
+      [attr.aria-pressed]="isOn(month)"
+      [attr.aria-label]="fullLabel(month)"
+      (click)="toggled.emit(month)"
+    >
+      {{ label(month) }}
+    </ion-button>
+  }
+</div>

@@ -6,11 +6,12 @@ import { categoryById } from '../../@shared/util/categories/category.utils';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import {
   TaskItem,
+  TaskSettings,
   TASK_CATEGORIES_LIST_ID,
   TASKS_LIST_ID,
 } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
-import { toggledDone } from '../util/task.utils';
+import { seededTaskDefaults, toggledDone } from '../util/task.utils';
 import {
   BaseListPageFacade,
   itemListCommands,
@@ -23,6 +24,7 @@ import {
   selectTaskItems,
   selectTaskTaggedByCategory,
   selectTasksCategories,
+  selectTaskSettings,
   selectTasksList,
   selectTasksListItems,
   selectTasksListSearchResult,
@@ -33,7 +35,7 @@ import { ListSection } from '../../@shared/util/item-lists/list-page.facade';
 
 const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'prio', labelKey: marker('tasks.list-toolbar.prio') },
-  { type: 'dueAt', labelKey: marker('tasks.list-toolbar.due') },
+  { type: 'nextDueAt', labelKey: marker('tasks.list-toolbar.due') },
 ];
 
 const OPEN_SECTION = 'open';
@@ -57,6 +59,7 @@ export class TasksListPageFacade extends BaseListPageFacade {
   readonly sortOptions = signal(SORT_OPTIONS);
 
   readonly allItems = this.#store.selectSignal(selectTaskItems);
+  readonly settings = this.#store.selectSignal(selectTaskSettings);
 
   readonly #open = this.#store.selectSignal(selectOpenTasks);
   readonly #done = this.#store.selectSignal(selectDoneTasks);
@@ -88,10 +91,17 @@ export class TasksListPageFacade extends BaseListPageFacade {
   showCreateDialog(): void {
     const state = this.state();
     this.#dialogs.open({
-      item: createTaskItem(state?.searchQuery ?? '', state?.filterBy),
+      item: {
+        ...createTaskItem(state?.searchQuery ?? '', state?.filterBy),
+        ...seededTaskDefaults(this.settings()),
+      },
       listId: TASKS_LIST_ID,
       editMode: 'create',
     });
+  }
+
+  updateSettings(settings: Partial<TaskSettings>): void {
+    this.#store.dispatch(TasksActions.updateSettings(settings));
   }
 
   manageCategories(): void {

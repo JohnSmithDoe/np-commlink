@@ -4,6 +4,7 @@
   "plain": "Gesten & Bedienung",
   "route": "—",
   "summary": "Wischen, Tippen, Suchen, Sortieren — die versteckten Handgriffe, die in jedem Modul gleich funktionieren.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

@@ -4,6 +4,7 @@
   "plain": "Aufgaben",
   "route": "/tasks/list",
   "summary": "Eine flache Aufgabenliste mit Termin, Wiederholung, Priorität und Kategorien, geteilt in Offen und Erledigt.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

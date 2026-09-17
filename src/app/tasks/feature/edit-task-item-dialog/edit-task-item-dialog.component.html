@@ -23,6 +23,15 @@
     (openDialog)="openCategoriesDialog()"
   />
 
+  <app-number-select
+    clearBtn
+    [max]="6"
+    [label]="'tasks.item.prio' | translate"
+    [clearLabel]="'tasks.item.prio.clear' | translate"
+    [value]="draft().prio"
+    (valueChange)="updatePrio($event)"
+  />
+
   <app-date-input
     [label]="'edit.item.dialog.dueAt' | translate"
     [value]="draft().dueAt ?? ''"
@@ -36,18 +45,28 @@
   <app-interval-input
     [label]="'tasks.item.interval' | translate"
     [weekdayLabel]="'tasks.item.interval.weekdays' | translate"
+    [monthLabel]="'tasks.item.interval.months' | translate"
     [value]="draft().interval"
     (valueChange)="updateInterval($event)"
   />
 
-  <app-number-select
-    clearBtn
-    [max]="6"
-    [label]="'tasks.item.prio' | translate"
-    [clearLabel]="'tasks.item.prio.clear' | translate"
-    [value]="draft().prio"
-    (valueChange)="updatePrio($event)"
-  />
+  @if (draft().interval) {
+    @if (anchorChoice()) {
+      <app-option-chips
+        [label]="'tasks.item.anchor' | translate"
+        [options]="anchorOptions()"
+        [value]="draft().anchor ?? 'done'"
+        (picked)="updateAnchor($event)"
+      />
+    }
+
+    <app-option-chips
+      [label]="'tasks.item.lead' | translate"
+      [options]="leadOptions()"
+      [value]="draft().lead ?? onDayLead"
+      (picked)="updateLead($event)"
+    />
+  }
 
   <app-categories-dialog
     [isOpen]="categoriesDialogOpen()"

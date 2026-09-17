@@ -7,6 +7,9 @@ import { BaseItem } from '../model/base-item.types';
 
 export const uuidv4 = () => crypto.randomUUID();
 
+export const sortedAscending = <T extends number>(values: readonly T[]): T[] =>
+  [...values].toSorted((a, b) => a - b);
+
 const SWIPE_TRIGGER_AMOUNT = 160;
 
 export const revealedSideFromDrag = (

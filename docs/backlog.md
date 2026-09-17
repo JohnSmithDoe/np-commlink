@@ -29,6 +29,66 @@ pinned. One entry is left, and it is a gate that cannot see what it was written 
 
 ---
 
+## AGENDA — what the recurring/auto-open pass left standing
+
+_Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, altitude. The cheap half
+is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
+outside AGENDA._
+
+- **A1 · New-task defaults reach one of three creation paths.** `seededTaskDefaults` is spread in
+  `TasksListPageFacade.showCreateDialog` only. `tasksListEffects`' `create:` (the add-from-search path —
+  the primary one, and the one the new e2e uses) and `EditTaskItemDialogComponent.blank()` get nothing,
+  so a setting the page advertises as a default for new tasks applies or not depending on which button
+  was pressed. The seam that covers all three is the reducer's `addItem`, which already holds
+  `state.settings`; the facade seed stays, so the dialog still *shows* the default. Behaviour change on
+  two paths (quick-add, and undo-restore, which replays `addItem` with an older item) — hence not
+  applied.
+- **A2 · `nextDueAt` is reconciled by two form handlers.** `updateDueAt` and `updateInterval` each
+  re-derive it; the field's other writers are `closedTask` and the migration. A third writer of `dueAt`
+  — a swipe edit, an import — would leave it stale, and the list sorts and colours on it. The seam is
+  `fromForm`, or a `normalizedTask` applied by the reducer (same seam as A1). Not a straight move:
+  `fromForm` cannot tell an untouched draft from a retyped one, and clobbering `nextDueAt` on a
+  name-only edit would discard a closed task's schedule position.
+- **A3 · `TaskSettings.defaultLead` has no writer.** Read by `seededTaskDefaults`, set by nothing —
+  the settings page ships `warnShift` and `defaultAnchor` only. Either ship the control or drop the
+  field. It is in a persisted shape, so dropping it is a question, not a cleanup.
+- **A4 · `month-picker` is `weekday-picker` line for line.** Same class shape, same template down to
+  the `[fill]`/`aria-pressed`/`aria-label` triple, SCSS differing only in `grid` vs `flex-wrap`. The
+  same diff added `option-chips`, which *is* the general mechanism and was not used for the case that
+  motivated it — `@shared/ui/forms` now holds three near-identical button rows, each satisfying the
+  eight `a11y-*` rules independently. The merge costs one static `data-testid` (composed ids are
+  banned), so `getByTestId('weekday'|'month')` in `e2e/vitals/pills.e2e.ts`, `e2e/handbook/biomon.shots.ts`
+  and `e2e/tasks/auto-open.e2e.ts` become role locators — which is what the auto-open banner argues for
+  anyway. Touching the shots source makes BIOMON figures stale.
+- **A5 · `settings-link-button` is now in three domains.** `TaskSettingsButtonComponent` is
+  `HouseholdListSettingsButtonComponent` byte for byte, `display:contents` banner included — and that
+  file's own banner records the shape being copied twice before. `domain:tasks → domain:household` is
+  sealed, so the fix is one `@shared/ui` component taking `route` and `label`; both wrappers then
+  delete, and two e2e testids converge.
+- **A6 · `option-chips` and `number-select` are one component apart.** Identical templates and
+  property-for-property identical SCSS; `NumberSelectComponent` is `OptionChipsComponent<number>` plus a
+  clear button. `date-shortcuts.component.scss` is a third copy of the same chip-row styling, so a
+  retheme has to find three files sharing no selector.
+- **A7 · `ChipOption<T>` has no identity, so the shared row invents one.** `JSON.stringify` equality
+  and `track option.label`. It holds because every lead comes from one factory, so key order matches; it
+  stops holding the first time a lead is built or migrated elsewhere, and the failure is "no chip looks
+  selected" — which no test would catch. A `key: string` on `ChipOption` moves identity to the domain
+  that owns the value.
+- **A8 · `interval-input` takes a group label per unit from its caller.** It owns `interval.unit.*`,
+  `interval.count` and `interval.summary.*`, but its group names arrive as `tasks.item.interval.weekdays`
+  / `.months` — wording that says what the picker beside them is for, not anything a task owns. One
+  input per unit added is the cost of leaving it; `@shared` already owns the `interval.*` family.
+- **A9 · `closings` is written and never read.** Capped at 200 entries per task, stripped by the edit
+  dialog, and ridden along by every save — `createSaveSliceEffect` has no debounce, so the whole tasks
+  document is re-serialized on each mutation. Cap it at what a reader would plausibly show, or persist
+  real closes without the `missed` runs, until one exists.
+- **A10 · The roll-forward loop is the only unbounded one here.** `advanceFrom` walks up to
+  `MAX_ROLL_STEPS` (500), each step allocating a `Dayjs` per weekday plus a sort — reachable from one
+  swipe on a due-anchored task whose `dueAt` the migration left far in the past. For the elapsed units
+  the same answer is one `diff` and one step.
+
+---
+
 ## What the next reviewer should look for
 
 The shapes this review turned up, kept because they will recur. Each is invisible to every gate here.

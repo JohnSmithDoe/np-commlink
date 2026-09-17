@@ -1,0 +1,27 @@
+.option-chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-inline: var(--space-4);
+}
+
+.option-chips__label {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  text-transform: var(--sr-label-transform);
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.option-chips__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.option-chips__pick {
+  margin: 0;
+  font-size: var(--fs-xsmall);
+  --padding-start: var(--space-3);
+  --padding-end: var(--space-3);
+}

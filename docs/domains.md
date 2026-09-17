@@ -227,6 +227,89 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   task text, so it would announce _"…, button"_ without saying what pressing does — and the largest target
   on screen would commit the day.
 
+## AGENDA — tasks
+
+- **The cadence decides whether an anchor exists; the task decides which one.** `Interval` is a union of
+  calendar-positioned arms (`weekdays`, `months`) and one elapsed arm (`every` + `unit`). A positioned
+  cadence names its own next occurrence, so `anchor` is neither stored nor offered for it — the edit
+  dialog renders the control off the arm, which is why the union is worth more than optional fields.
+  **A due date is the second gate**: with none, `seedFor` falls back to the close whichever anchor is
+  set, so both chips would do the same thing and neither is shown.
+- **A repeat needs no due date — the close is the anchor.** `seedFor` seeds from `now` when `dueAt` is
+  absent, so "every 3 days" starts counting the first time it is ticked off, which is the whole point of
+  the maintenance case. What was missing was not the behaviour but the EVIDENCE: until its first close
+  such a task has no date and no status colour, so the row said nothing and the cadence looked broken.
+  The row states the cadence **whenever there is one**, beside the date rather than instead of it —
+  "Fällig am 21.07. · Am Montag, Dienstag" answers when AND how often, and reading the rhythm off the
+  list is worth the second fact. It comes from the same `intervalSummary` the picker writes under its
+  own control, so an incomplete cadence says so on the row too.
+- **`dueAt` is the reader's entry and the app never writes it; `nextDueAt` is where the schedule moves.**
+  One field doing both jobs meant a date somebody typed was silently replaced by a computed one, and
+  after the first close the entry was unrecoverable. Every read goes through `nextDueOf`, which falls
+  back to `dueAt` — that fallback is why tasks written before the split answer correctly and **no rung
+  beyond the existing one is owed**. Closing writes only `nextDueAt`; **editing either input in the
+  dialog discards it**, because a date derived from a cadence the reader has just replaced is a date
+  nothing stands behind. Changing the due date writes both, changing the cadence resets `nextDueAt` to
+  `dueAt`, and the next close recomputes from there. The shared list comparator reads a raw key
+  and cannot fall back, so the sort moved to `nextDueAt` and the rung backfills it onto every dated
+  task, not only the recurring ones.
+- **A monthly cadence keeps the day the reader chose, because `dueAt` still holds it.** A month added to
+  the 31st lands on the 28th, and a month added to THAT keeps the 28th for good — so each step re-applies
+  `dueAt`'s day, clamped to the month it lands in: 31 Jan → 28 Feb → **31 Mar** → 30 Apr. CREDSTICK pays
+  for the same fix with a `dueDay` field beside its date (`schedule.types.ts`); AGENDA needs no second
+  field because the split already keeps the entry. It is excluded for `week`, where a day number means
+  nothing and applying it drags the date bodily across the month.
+- **Rolling forward is one loop with one exit: the first date after today.** Both anchors feed the same
+  advance; only the seed differs — `dueAt` for an obligation, `doneAt` for maintenance. Completion
+  anchoring can never land in the past, so the loop is a no-op there, and the same code covers both.
+- **A seed already in the future is the answer, not a starting point, and that is what makes advancing
+  idempotent.** Closing a due-anchored task twice used to step twice — the second close read the date
+  the first one wrote, an occurrence that has not happened, and walked past it — so a stray tick and
+  untick pushed the schedule out a whole interval and three of them pushed it three. Nothing can tell a
+  correction from doing the task again, so closing must land on the same date however often it runs.
+  Completion anchoring was never affected: its seed is the clock, not the stored date.
+- **A lead can pull a task open earlier, never earlier than the day after it was closed.** Without that
+  clamp a lead wider than the gap to the next occurrence re-opens the task the instant it is closed, and
+  ticking it off does nothing: "Tue and Wed" closed on Tuesday is due Wednesday, and a two-day lead opens
+  it on Monday — a date already gone. The clamp cannot overshoot, because the next occurrence is always
+  strictly after the close, so `doneAt + 1 day` is never past `dueAt`.
+- **The lead row never clears, because "on the day" IS its neutral state.** An absent `lead` and a lead
+  of zero days open the task on the same date, so a clear button offered a second spelling of the first
+  chip — and a new task, seeded with no lead, showed an empty row that was quietly already behaving as
+  "on the day". The dialog reads `lead ?? ON_DAY_LEAD`, so one chip is always lit and the stored shape is
+  untouched: `undefined` still means on the day. `app-option-chips` therefore has no clear affordance at
+  all and emits `T` rather than `T | undefined`; `app-number-select` keeps its own, because a priority
+  genuinely has no neutral value to fall back to.
+- **The lead CHIPS are capped by the same rule, so the clamp is a floor nobody reaches.** `leadOptionsFor`
+  offers nothing whose worst reach is not shorter than the cadence's widest gap — five days for "Mon and
+  Tue", one for "Mon, Wed, Fri, Sun", none at all for a chore on every weekday. Two things follow that are
+  easy to mistake for bugs: **the chip row changes length when you change the cadence**, and a weekday
+  cadence enumerates its days where the longer units read a ladder. Leaving the clamp as the only guard
+  was the version that shipped first, and it is the worse one — the chips were all still offered, and
+  picking any of them did the same thing as picking the one beside it.
+- **The lead time and the amber window are the same shape and must not be merged.** Both scale to the
+  cadence, and `warnDaysBefore` already derives one. They differ in consequence: amber paints a task the
+  user can see, the lead MOVES it out of DONE. A task can want to go red a fortnight out and re-arm the
+  morning it is due, so one value cannot serve both.
+- **Re-arming is triggered twice and polled never.** The condition is derivable — open when
+  `now >= next occurrence - lead` — so nothing records that an occurrence was handled and a check that
+  never ran costs nothing. `reopenDueTasksResolver` covers ARRIVING: it sits on the `list` CHILD route,
+  so the parent's hydration resolver has already run (Angular resolves a parent's before a child's) and
+  the row is in OPEN on the first paint. `tasksDayRolloverEffects` covers STAYING, off `TodayService` —
+  on a phone the common path is resume, not reload, and its signal holds an ISO day, so resuming on the
+  same day emits nothing and only a real rollover reaches it. A minute timer was declined for the one
+  case those two miss between them, which is none; an effect on `routerNavigatedAction` was declined
+  because it fires after `NavigationEnd`, painting the row in DONE and then moving it.
+  **Pattern: level-triggered beats edge-triggered wherever the condition is derivable** — the trigger
+  stops being a correctness question and becomes a latency one, so it can be as cheap as you like.
+- **Anything reading "today" reads `TodayService`, never `dayjs()`.** The list's status colours are
+  computed in the template off its signal, so a page left open across midnight repaints itself instead
+  of holding yesterday's verdict. `task.utils` still takes `now` as a parameter — the clock is injected
+  at the edge, which is also what lets the specs pin dates.
+- **`closings` is capped and never pruned by age.** A daily chore closed for two years is 730 entries on
+  a slice loaded at boot, so the log keeps its most recent entries and drops the oldest — a bound the
+  reducer applies, not the view. Age would make the cap depend on the cadence.
+
 ## SIGIL — notes
 
 - **One note type, never two.** "Image note" and "text note" would need a discriminator, a convert action and

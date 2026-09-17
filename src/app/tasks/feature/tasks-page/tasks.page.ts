@@ -1,6 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import dayjs from 'dayjs';
+import { TodayService } from '../../../@shared/data/services/today.service';
+import {
+  IntervalSummary,
+  intervalSummary,
+} from '../../../@shared/util/forms/interval-summary.utils';
 import { addIcons } from 'ionicons';
 import {
   addOutline,
@@ -9,15 +20,16 @@ import {
   removeOutline,
 } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IonColor } from '../../../@shared/model/app.types';
+import { IonColor, Marker, Timestamp } from '../../../@shared/model/app.types';
 import { TaskItem } from '../../model/task.types';
-import { dueStatusColor, nextDueAt } from '../../util/task.utils';
+import { dueStatusColor, nextDueOf, recursAt } from '../../util/task.utils';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { TasksListPageFacade } from '../../data';
 import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-item-dialog.component';
+import { TaskSettingsButtonComponent } from '../../ui/task-settings-button/task-settings-button.component';
 
 const MARK_DONE: StartSwipeAction = {
   labelKey: marker('tasks.action.done'),
@@ -28,6 +40,9 @@ const REOPEN: StartSwipeAction = {
   icon: 'arrow-undo-outline',
   color: 'medium',
 };
+
+const RECURS_NOTE = marker('tasks.item.recurs.note');
+const DUE_NOTE = marker('tasks.item.due.note');
 
 @Component({
   selector: 'app-page-tasks',
@@ -40,11 +55,14 @@ const REOPEN: StartSwipeAction = {
     ListPageComponent,
     ListItemComponent,
     EditTaskItemDialogComponent,
+    TaskSettingsButtonComponent,
   ],
   providers: [{ provide: LIST_FACADE, useExisting: TasksListPageFacade }],
 })
 export class TasksPage {
   readonly #facade = inject(TasksListPageFacade);
+  readonly #today = inject(TodayService).today;
+  readonly #now = computed(() => dayjs(this.#today()));
 
   constructor() {
     addIcons({
@@ -72,10 +90,16 @@ export class TasksPage {
   }
 
   statusColor(item: TaskItem): IonColor | undefined {
-    return dueStatusColor(item);
+    return dueStatusColor(item, this.#now(), this.#facade.settings().warnShift);
   }
 
-  nextDue(item: TaskItem): string | undefined {
-    return nextDueAt(item);
+  dateNote(item: TaskItem): { key: Marker; date: Timestamp } | undefined {
+    const date = nextDueOf(item);
+    if (!date) return undefined;
+    return { key: recursAt(item) ? RECURS_NOTE : DUE_NOTE, date };
+  }
+
+  cadence(item: TaskItem): IntervalSummary | undefined {
+    return item.interval ? intervalSummary(item.interval) : undefined;
   }
 }

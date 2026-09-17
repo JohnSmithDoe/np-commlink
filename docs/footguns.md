@@ -45,6 +45,15 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   locators are role-based and pierce to the native `<button>` in the shadow root; a `getByTestId` locator
   resolves the host and silently inverts the assertion. On a testid locator assert
   `toHaveAttribute('aria-disabled', 'true')` — the contract a screen reader reads anyway.
+- **Ionic moves a host's `aria-*` into its shadow root on first render, so the INITIAL state is the one
+  that lies.** `<ion-button [attr.aria-pressed]="…">` renders the attribute on the host, Ionic's inherit
+  pass copies it onto the native `<button>` inside and **deletes it from the host**, and every later
+  Angular update writes it back to the host — where it then stays. So a `getByTestId` assertion on the
+  pressed state passes after a click and fails before one, reading `""` rather than `"false"`. The fix is
+  the section's own rule taken one step further: locate by ROLE so the locator pierces to the native
+  button that actually carries the state — `getByRole('button', { name, pressed: true })`, asserted with
+  `toHaveCount`. Angular is not the culprit here and `[attr.x]="false"` does render `"false"`: Angular
+  only drops an attribute bound to `null`/`undefined`.
 - **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
   `input.aux-input[type=hidden]`, so `getByTestId(…).locator('input')` on a bound `ion-toggle`/`ion-input`
   resolves to **two** elements. `getByRole('switch')` is not the way out either (the real control is in the
@@ -230,6 +239,16 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **`@angular/forms` writes every control binding onto a same-named directive input**, and `FieldState.pattern`
   defaults to a shared `computed(() => [])`, so a bound `ion-input` gets `pattern=""` — permanently `:invalid`.
   Harmless here; latent anywhere reading native validity. Unfiled upstream, so treat it as current.
+- **An array of OBJECTS in a signal-forms draft throws `Cannot add property Symbol(), object is not
+  extensible`** the first time the field structure goes live. `provideStore` is called without
+  `runtimeChecks`, so NgRx deep-freezes state in dev, and `toForm`'s `{ ...item }` is shallow — the nested
+  array and its elements stay the frozen originals. `markStructuresLive` keys array children by writing a
+  Symbol onto each element, which a frozen object refuses. A nested plain OBJECT is fine (`interval` has
+  always been one); an array of STRINGS is fine (`categoryIds`); only an array of objects trips it, so the
+  first one written into a draft finds it. The fix is not to clone: a value the form does not edit has no
+  business in the draft — strip it in `toForm` and put it back in `fromForm` from the seed, which is what
+  the `TForm` seam exists for. A production build does not freeze, so **this crashes only in dev** and a
+  spec has to freeze the fixture itself to see it.
 
 ## Layout units that lie
 

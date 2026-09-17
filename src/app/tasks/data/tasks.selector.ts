@@ -1,5 +1,10 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { TaskItem, TasksList, TasksState } from '../model/task.types';
+import {
+  TaskItem,
+  TaskSettings,
+  TasksList,
+  TasksState,
+} from '../model/task.types';
 import {
   filterAndSortItemList,
   filterListBySearchQuery,
@@ -81,6 +86,11 @@ export const selectTaskTaggedByCategory = createSelector(
   (items) =>
     (categoryId: CategoryId): string[] =>
       idsTaggedWith(items, categoryId)
+);
+
+export const selectTaskSettings = createSelector(
+  selectTasksState,
+  (state): TaskSettings => state.settings
 );
 
 export const selectOpenTaskCount = createSelector(

@@ -2,8 +2,10 @@ import { createReducer, on } from '@ngrx/store';
 import {
   TASK_CATEGORIES_LIST_ID,
   TASKS_LIST_ID,
+  DEFAULT_TASK_SETTINGS,
   TasksState,
 } from '../model/task.types';
+import { reopenedTask } from '../util/task.utils';
 import {
   addToCatalog,
   dropCategoryRef,
@@ -26,6 +28,7 @@ import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 export const initialState: TasksState = {
   list: { id: TASKS_LIST_ID, items: [] },
   categoryList: { id: TASK_CATEGORIES_LIST_ID, items: [] },
+  settings: DEFAULT_TASK_SETTINGS,
 };
 
 // prettier-ignore
@@ -75,6 +78,23 @@ export const tasksReducer = createReducer(
     return {
       list: hydratedList(hydrated.list),
       categoryList: hydratedList(hydrated.categoryList),
+      settings: { ...DEFAULT_TASK_SETTINGS, ...hydrated.settings },
+    };
+  }),
+
+  on(TasksActions.updateSettings, (state, { settings }): TasksState => ({
+    ...state,
+    settings: { ...state.settings, ...settings },
+  })),
+
+  on(TasksActions.reopenDue, (state, { items }): TasksState => {
+    const due = new Set(items.map((item) => item.id));
+    return due.size === 0 ? state : {
+      ...state,
+      list: {
+        ...state.list,
+        items: state.list.items.map((item) => due.has(item.id) ? reopenedTask(item) : item),
+      },
     };
   })
 );

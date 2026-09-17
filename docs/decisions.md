@@ -192,16 +192,33 @@ or a count the code owns.
   never half-migrated. No down-ladder, no backup.
 - **A reset is a legitimate answer to a moved shape.** A rung is owed where the data's _meaning_ survives;
   the deck's pre-flip document named the ids to _hide_, so migrating it would have inverted every choice.
-- **A recurring task needs no completion log, because `doneAt` already is one.** BIOMON and DAILY RUN both
-  pay for recurrence with a separate keyed log (`PillIntake`, `RitualCompletion`) because their rules fire
-  on a calendar and the item never closes. AGENDA's closes: `doneAt` IS the last-completed stamp, so the
-  next occurrence is `doneAt + interval` computed on read, and `interval?` is one additive optional field
-  on a slice users hold. No new slice, no rung.
-- **AGENDA recurrence is a remembered cadence, not a scheduler.** Nothing re-arms a task; it parks in DONE
-  and warms toward `danger` as its next date nears, and the user reopens it. An interval that only a human
-  reads would be beaten by the one-tap date shortcuts — it earns itself by driving the colour. Reopening
-  swaps the computed next date into `dueAt`, so a task three weeks past its cadence arrives in OPEN already
-  overdue rather than resetting.
+- **A recurring task records every close, because the screen that reads them cannot be backfilled.**
+  `doneAt` answers "when was this last done" and nothing else — the moment a task closes a second time the
+  first close is gone. Every other field recurrence needs describes a task's FUTURE and can therefore ship
+  with the screen that renders it; `closings` describes its past, so a close happening before the field
+  exists is unrecoverable. That asymmetry, not a known consumer, is what puts the log in ahead of its view.
+  BIOMON and DAILY RUN keep their separate keyed logs (`PillIntake`, `RitualCompletion`) because their
+  items never close; AGENDA's closes, so the log hangs off the task.
+  **Pattern: append-only observational data ships early, derived data waits for its consumer** — the usual
+  YAGNI test is inverted for anything that can only be recorded as it happens.
+- **AGENDA recurrence is a scheduler, and every repeating task is in it.** A cadence that only warms a
+  colour leaves a weekly chore sitting in DONE looking red until somebody scrolls there, so a closed task
+  with an interval re-arms itself, `lead` deciding how far ahead. **The opt-in was removed rather than
+  defaulted on**: recording a cadence is already the act of saying the task comes back, so a switch
+  beside it asked a question whose answer it had just been given — and a task that repeats but never
+  returns is a shape nobody wanted. What survives is `lead`, which asks the question that IS open.
+  Removing the field leaves a dead `autoOpen` key in stored documents; it is ignored, not migrated.
+- **The anchor is a property of the task, and only elapsed cadences have one.** Due-date anchoring suits an
+  obligation (the bins go out Tuesday whether or not last week happened), completion anchoring suits
+  maintenance (the filter is due three months after it was actually changed) — the same split Todoist needs
+  `every` vs `every!` to express. A CALENDAR-POSITIONED cadence has no such choice: "on Tuesdays" and "in
+  March and June" name their own next occurrence, so the two anchors converge and the control is not
+  rendered. That is what makes `Interval` a discriminated union rather than one bag of optional fields —
+  the illegal combination becomes unrepresentable instead of merely unoffered.
+- **Advancing a cadence rolls forward, never into the past.** A task three months overdue would take
+  thirteen `+ 1 week` hops to reach today, and each intermediate date is a day the app already knows has
+  gone. Close it and the next date is the first occurrence in the future; the dates stepped over are
+  appended to `closings` as misses, which is the only place they are of any use.
 - **Amber arrives on a schedule scaled to the cadence, and a gradient was declined.** A percentage needs a
   span, and a one-shot task has only a deadline — measuring `createdAt → dueAt` would paint a task created
   today for tomorrow green and one created a year ago for tomorrow red, at equal urgency. A recurring task
@@ -210,9 +227,19 @@ or a count the code owns.
   `background: currentcolor` off an `IonColor`, so a computed colour leaves the token path every skin rides
   on; three states are the vocabulary and a continuum is not a state; and it would ramp along the one axis
   red-green deficiency cannot resolve.
-- **A shared input owns its widget and never its meaning.** `app-interval-input` emits `{ every, unit }`
-  and says nothing about the anchor — a task counts from when it was last done, and the next thing to grow
-  an interval will count from somewhere else. Owning the interpretation is what would make it unshareable.
+- **A shared input owns its widget and never its meaning.** `app-interval-input` emits an `Interval` and
+  says nothing about the anchor — a task counts from the due date or the close depending on its own field,
+  and the next thing to grow an interval will count from somewhere else again. Owning the interpretation is
+  what would make it unshareable. The union it emits is the limit of what it may know: which cadences are
+  positioned on a calendar is a property of the cadence, not of who reads it.
+- **A settings page holds two kinds of setting, and which kind a value is follows from the data.** A
+  setting the item MIRRORS with a field of its own can only be a **default** — it seeds a new item and can
+  never reach an existing one, because the item's own value wins the moment it exists. A setting no item
+  field mirrors can only be a **global** — it is read at render time and therefore moves everything at
+  once. So the classification is not a judgement call: AGENDA's warn-earlier/later is a global because no
+  task stores a warning window, and anchor and lead are defaults because every task stores its own.
+  Household's `ListSettings` is the page mechanism; `toggleFlag(flag: BooleanKeys<ListSettings>)` is the
+  globals half of it and nothing there seeds an item.
 - **A date field stores a DAY, no rung.** `app-date-input` writes `YYYY-MM-DD`; the calendar emits the
   minute the user tapped at, which put two spellings in one field once a second control could write it.
   Asked and answered — AGENDA's `dueAt` is held by real users, and the old timestamps still parse and

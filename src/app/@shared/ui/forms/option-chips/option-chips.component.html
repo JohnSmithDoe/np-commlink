@@ -1,0 +1,19 @@
+<div class="option-chips">
+  @if (label(); as caption) {
+    <h3 class="option-chips__label">{{ caption }}</h3>
+  }
+
+  <div class="option-chips__row" role="group" [attr.aria-label]="label()">
+    @for (option of options(); track option.label) {
+      <ion-button
+        size="small"
+        class="option-chips__pick"
+        [fill]="isOn(option) ? 'solid' : 'outline'"
+        [attr.aria-pressed]="isOn(option) ? 'true' : 'false'"
+        (click)="picked.emit(option.value)"
+      >
+        {{ option.label }}
+      </ion-button>
+    }
+  </div>
+</div>

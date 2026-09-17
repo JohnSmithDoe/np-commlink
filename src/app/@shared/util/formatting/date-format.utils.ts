@@ -3,12 +3,13 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import 'dayjs/locale/de';
 import 'dayjs/locale/en';
 import 'dayjs/locale/fr';
-import { IsoWeekday, Language } from '../../model/app.types';
+import { IsoMonth, IsoWeekday, Language } from '../../model/app.types';
 
 dayjs.extend(localizedFormat);
 
 export const setDayjsLocale = (language: Language): void => {
   dayjs.locale(language);
+  localizedNames.clear();
 };
 
 const ISO_DAY_FORMAT = 'YYYY-MM-DD';
@@ -54,13 +55,35 @@ const DAYJS_DAY: Readonly<Record<IsoWeekday, number>> = {
   7: 0,
 };
 
+const localizedNames = new Map<string, string>();
+
+const cachedName = (key: string, read: () => string): string => {
+  const known = localizedNames.get(key);
+  if (known !== undefined) return known;
+  const name = read();
+  localizedNames.set(key, name);
+  return name;
+};
+
 export const localizedWeekday = (
   day: IsoWeekday,
   style: 'short' | 'long'
 ): string =>
-  dayjs()
-    .day(DAYJS_DAY[day])
-    .format(style === 'long' ? 'dddd' : 'dd');
+  cachedName(`weekday.${day}.${style}`, () =>
+    dayjs()
+      .day(DAYJS_DAY[day])
+      .format(style === 'long' ? 'dddd' : 'dd')
+  );
+
+export const localizedMonth = (
+  month: IsoMonth,
+  style: 'short' | 'long'
+): string =>
+  cachedName(`month.${month}.${style}`, () =>
+    dayjs()
+      .month(month - 1)
+      .format(style === 'long' ? 'MMMM' : 'MMM')
+  );
 
 export const padClock = (value: number): string =>
   String(value).padStart(2, '0');

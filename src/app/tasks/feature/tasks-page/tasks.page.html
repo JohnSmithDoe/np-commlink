@@ -2,7 +2,9 @@
   class="ion-page"
   pageHeader="page-title.tasks"
   [itemTemplate]="taskItem"
-/>
+>
+  <app-task-settings-button toolbarActionsEnd />
+</app-list-page>
 
 <ng-template
   #taskItem
@@ -22,17 +24,15 @@
     (startSwipe)="toggleDone(item)"
     (deleteItem)="removeItem(item)"
   >
-    @let recursAt = nextDue(item);
-    @if (item.dueAt || item.prio || recursAt) {
+    @let note = dateNote(item);
+    @let repeats = cadence(item);
+    @if (note || item.prio || repeats) {
       <p itemDetails class="task-facts">
-        @if (recursAt) {
-          <span>
-            {{ 'tasks.item.recurs.note' | translate }}: {{ recursAt | date }}
-          </span>
-        } @else if (item.dueAt) {
-          <span>
-            {{ 'tasks.item.due.note' | translate }}: {{ item.dueAt | date }}
-          </span>
+        @if (note) {
+          <span>{{ note.key | translate }}: {{ note.date | date }}</span>
+        }
+        @if (repeats) {
+          <span>{{ repeats.key | translate: repeats.params }}</span>
         }
         @if (item.prio) {
           <span> {{ 'tasks.item.prio' | translate }}: {{ item.prio }} </span>

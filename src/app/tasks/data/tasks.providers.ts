@@ -1,6 +1,8 @@
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
+import { tasksDayRolloverEffects } from './tasks-day-rollover.effects';
+import { tasksLadder } from './tasks.migrations';
 import { tasksReducer } from './tasks.reducer';
 import {
   taskCategoriesListEffects,
@@ -18,9 +20,12 @@ export const tasksContext = providePersistedContext({
   reducer: tasksReducer,
   lifecycle: TasksActions,
   select: selectTasksState,
+  ladder: tasksLadder,
   save: {
     on: [
       TasksActions.addItem,
+      TasksActions.updateSettings,
+      TasksActions.reopenDue,
       TasksActions.removeItem,
       TasksActions.updateItem,
       TasksActions.updateSort,
@@ -41,5 +46,6 @@ export const tasksContext = providePersistedContext({
     tasksListEffects,
     taskCategoriesListEffects,
     tasksRouteFilterEffects,
+    tasksDayRolloverEffects,
   ],
 });

@@ -22,8 +22,13 @@ one's data.
   trailing slash is a different identity with its own IndexedDB. Never touch.
 - **Renaming a persisted key or a deck entry id costs a ladder rung wherever somebody holds one.**
   [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer.
-- **`APP_VERSION` is 1 and `runMigrations` has never run a step.** The first genuine rung is unwritten and
-  has no precedent in the repo to copy.
+- **`APP_VERSION` is 2, and the `tasks` ladder holds the repo's only rung.** It is the precedent every
+  later one copies: written against `unknown`, casting once, pinned by a spec against a literal of the v1
+  shape. The number is global, so every other slice is walked past and re-stamped on the same hop.
+- **A close that happens before `closings` exists is gone.** The log is append-only and cannot be
+  reconstructed from `doneAt`, which holds one date. That is what put the field in ahead of the screen
+  that reads it — see [decisions.md](./decisions.md); every other recurrence field describes a task's
+  future and could have waited.
 - **`vitals` and `notes` are published from v1.1.0 on**, so `VitalsState` (`profiles`, `readings`, `pills`)
   and `notes` are somebody's data. Anything holding either from before that tag came from a locally built
   debug APK, which a release-key install cannot upgrade.
@@ -90,6 +95,8 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
     Angular's intra-family peers are **exact**, so one held-back member pins the set.
   - Already compatible: `@ionic/angular` 8.8.x, `@ionic/storage-angular`, `ng2-charts` 9, `@ngx-translate/*` 18, Sheriff.
   - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit.
+  - **`@angular/aria` unlocks with it** — published `22.1.7`, peering `@angular/core: ^22.0.0 || ^23.0.0`,
+    with no 21.x line. What it would be adopted FOR is scheduled in [next-version.md](./next-version.md).
 
 ## Open defects
 

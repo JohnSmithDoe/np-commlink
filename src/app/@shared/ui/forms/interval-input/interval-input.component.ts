@@ -5,16 +5,14 @@
  * one will count from somewhere else.
  *
  * The unit CHOOSES the second control rather than sitting beside it: a
- * daily cadence is a set of weekdays and everything else is a count, and
- * offering both at once invites a form that says "every 2 months on
- * Tuesday" and means nothing by it. Switching unit therefore rebuilds the
- * value rather than carrying a field across.
+ * cadence is a set of weekdays, a set of months, or a count, and offering
+ * two at once invites a form that says "every 2 months on Tuesday" and
+ * means nothing by it. Switching unit therefore rebuilds the value rather
+ * than carrying a field across.
  *
- * German spells the singular four ways ("Jeden Tag", "Jede Woche",
- * "Jedes Jahr"), so a count of one reads from its own key family rather
- * than a plural rule. The sentence under the control is the only place
- * the cadence is stated in words, which is why it also has to answer the
- * empty cases — no repeat at all, and a daily cadence with no day picked.
+ * The sentence under the control is NOT written here. A list row states
+ * the same cadence for a repeating task with no date yet, so the wording
+ * lives in `intervalSummary` where both read it.
  *
  * Each unit caps its own count so the grid never runs past two rows:
  * past eight weeks people say "two months", and ten years is a smoke
@@ -34,14 +32,16 @@ import {
   SegmentCustomEvent,
 } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
-import { IsoWeekday, Marker } from '../../../model/app.types';
+import { IsoMonth, IsoWeekday, Marker } from '../../../model/app.types';
 import {
   INTERVAL_UNITS,
   Interval,
   IntervalUnit,
+  isCalendarInterval,
   PeriodUnit,
 } from '../../../model/interval.types';
-import { localizedWeekday } from '../../../util/formatting/date-format.utils';
+import { intervalSummary } from '../../../util/forms/interval-summary.utils';
+import { MonthPickerComponent } from '../month-picker/month-picker.component';
 import { NumberSelectComponent } from '../number-select/number-select.component';
 import { WeekdayPickerComponent } from '../weekday-picker/weekday-picker.component';
 
@@ -59,27 +59,11 @@ const UNIT_LABELS: Readonly<Record<IntervalUnit | typeof NONE, Marker>> = {
   week: marker('interval.unit.week'),
   month: marker('interval.unit.month'),
   year: marker('interval.unit.year'),
+  monthsOfYear: marker('interval.unit.monthsOfYear'),
 };
 
-const SUMMARY_ONE: Readonly<Record<PeriodUnit, Marker>> = {
-  week: marker('interval.summary.one.week'),
-  month: marker('interval.summary.one.month'),
-  year: marker('interval.summary.one.year'),
-};
-
-const SUMMARY_MANY: Readonly<Record<PeriodUnit, Marker>> = {
-  week: marker('interval.summary.many.week'),
-  month: marker('interval.summary.many.month'),
-  year: marker('interval.summary.many.year'),
-};
-
-const NO_REPEAT = marker('interval.summary.none');
-const EVERY_DAY = marker('interval.summary.everyday');
-const NO_DAY = marker('interval.summary.noday');
-const ON_DAYS = marker('interval.summary.days');
-
-const sorted = (weekdays: readonly IsoWeekday[]): IsoWeekday[] =>
-  [...weekdays].toSorted((a, b) => a - b);
+const sorted = <T extends number>(values: readonly T[]): T[] =>
+  [...values].toSorted((a, b) => a - b);
 
 @Component({
   selector: 'app-interval-input',
@@ -88,6 +72,7 @@ const sorted = (weekdays: readonly IsoWeekday[]): IsoWeekday[] =>
   imports: [
     IonSegment,
     IonSegmentButton,
+    MonthPickerComponent,
     NumberSelectComponent,
     TranslatePipe,
     WeekdayPickerComponent,
@@ -98,6 +83,7 @@ export class IntervalInputComponent {
   readonly value = input<Interval | undefined>();
   readonly label = input<string>();
   readonly weekdayLabel = input<string>();
+  readonly monthLabel = input<string>();
   readonly valueChange = output<Interval | undefined>();
 
   protected readonly none = NONE;
@@ -111,31 +97,17 @@ export class IntervalInputComponent {
     return current?.unit === 'day' ? current : undefined;
   });
 
+  protected readonly monthly = computed(() => {
+    const current = this.value();
+    return current?.unit === 'monthsOfYear' ? current : undefined;
+  });
+
   protected readonly period = computed(() => {
     const current = this.value();
-    return current && current.unit !== 'day' ? current : undefined;
+    return current && !isCalendarInterval(current) ? current : undefined;
   });
 
-  protected readonly summary = computed<{ key: Marker; params: object }>(() => {
-    const current = this.value();
-    if (!current) return { key: NO_REPEAT, params: {} };
-
-    if (current.unit === 'day') {
-      if (current.weekdays.length === 0) return { key: NO_DAY, params: {} };
-      if (current.weekdays.length === ISO_WEEKDAY_COUNT) {
-        return { key: EVERY_DAY, params: {} };
-      }
-      const days = sorted(current.weekdays)
-        .map((day) => localizedWeekday(day, 'long'))
-        .join(', ');
-      return { key: ON_DAYS, params: { days } };
-    }
-
-    const { every, unit } = current;
-    return every === 1
-      ? { key: SUMMARY_ONE[unit], params: {} }
-      : { key: SUMMARY_MANY[unit], params: { count: every } };
-  });
+  protected readonly summary = computed(() => intervalSummary(this.value()));
 
   protected pickUnit(event: SegmentCustomEvent): void {
     this.valueChange.emit(intervalForUnit(String(event.detail.value)));
@@ -154,17 +126,30 @@ export class IntervalInputComponent {
   protected toggleWeekday(day: IsoWeekday): void {
     const daily = this.daily();
     if (!daily) return;
-    const weekdays = daily.weekdays.includes(day)
-      ? daily.weekdays.filter((existing) => existing !== day)
-      : sorted([...daily.weekdays, day]);
-    this.valueChange.emit({ unit: 'day', weekdays });
+    this.valueChange.emit({
+      unit: 'day',
+      weekdays: toggled(daily.weekdays, day),
+    });
+  }
+
+  protected toggleMonth(month: IsoMonth): void {
+    const monthly = this.monthly();
+    if (!monthly) return;
+    this.valueChange.emit({
+      unit: 'monthsOfYear',
+      months: toggled(monthly.months, month),
+    });
   }
 }
 
-const ISO_WEEKDAY_COUNT = 7;
+const toggled = <T extends number>(values: readonly T[], value: T): T[] =>
+  values.includes(value)
+    ? values.filter((existing) => existing !== value)
+    : sorted([...values, value]);
 
 const intervalForUnit = (unit: string): Interval | undefined => {
   if (unit === 'day') return { unit: 'day', weekdays: [] };
+  if (unit === 'monthsOfYear') return { unit: 'monthsOfYear', months: [] };
   return unit === NONE || unit === undefined
     ? undefined
     : { unit: unit as PeriodUnit, every: 1 };

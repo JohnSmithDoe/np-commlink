@@ -4,6 +4,7 @@
   "plain": "Kontoauszug-Import",
   "route": "/cash/rules",
   "summary": "Kontoauszug als camt-Datei einlesen, Buchungen per Regel einsortieren, Festkosten wiedererkennen.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

@@ -8,6 +8,10 @@ export type IsoWeekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export const ISO_WEEKDAYS = [
   1, 2, 3, 4, 5, 6, 7,
 ] as const satisfies readonly IsoWeekday[];
+export type IsoMonth = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+export const ISO_MONTHS = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+] as const satisfies readonly IsoMonth[];
 export type Skin = 'cyberpunk' | 'boomer';
 export type Mode = 'light' | 'dark';
 export type LanguageModelAvailability = Availability | 'probing';

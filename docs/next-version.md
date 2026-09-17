@@ -1,8 +1,8 @@
 # Next version — what v2.0.0 owes
 
 **Scheduled, not open.** Nothing here is blocked — [state.md](./state.md) holds what is, and settled
-questions are in [decisions.md](./decisions.md). Three entries change a persisted shape, so the first
-genuine rung is owed by whichever ships first.
+questions are in [decisions.md](./decisions.md). Three entries change a persisted shape; AGENDA's
+recurrence ladder wrote the first rung, so they copy it rather than invent one.
 
 ## Cash
 
@@ -41,6 +41,25 @@ genuine rung is owed by whichever ships first.
   the toolbar marks when `activeSort` is absent.
 - **`/cash` is not a caller of the shared toolbar at all** — the accounts page hangs its net worth in
   `toolbarActionsEnd` but renders no sort row. Worth doing after the entry above, not before.
+
+## Shared form controls
+
+- **A row of toggle buttons is a row of tab stops.** `month-picker` is **twelve**, `weekday-picker` seven,
+  `option-chips` two to five, and none of them answer an arrow key — every chip is its own stop, so
+  reaching the last month of the year is twelve presses. The eight `a11y-*` rules see nothing wrong,
+  correctly: each button is labelled, focusable and reachable. It is reachable and *tedious*, which no
+  gate can tell apart. ARIA's own guidance is that a group like this is ONE stop with arrow navigation
+  inside it.
+  `@angular/aria` does exactly that — `ngToolbar` / `ngToolbarWidget` carry the roving tabindex, and the
+  state binding loses its `attr.` prefix and its ternary because the directive declares `aria-pressed` as
+  a typed input (`[aria-pressed]="bold.selected()"`). Gated on Angular 22, which is gated on NgRx; see
+  [state.md](./state.md).
+  **The cost is not the upgrade, it is the element.** Those directives target native elements, and all
+  three pickers are `ion-button` — which relocates a host's `aria-*` into its shadow root
+  ([footguns.md](./footguns.md)), so a directive writing to the host would be writing to the wrong place.
+  Adopting means moving the three pickers to plain `<button>` and styling them, which also retires that
+  footgun for this code. **Decide that before the package**: it is the same "a chip is the shape, never
+  the element" question `date-shortcuts` already answered once, asked now about the button underneath.
 
 ## Measured costs
 
@@ -206,11 +225,17 @@ numbers, own deck program, both detail routes deep-linkable. Left:
 
 ## AGENDA
 
+- **The closings log has no screen.** `closings` records every close and every date rolled over as a miss,
+  and nothing renders it — it ships ahead of its view because a close is only recordable as it happens
+  ([decisions.md](./decisions.md)). The view is the next step: a per-task history, and the question it
+  should answer is whether a cadence is being kept, which is a comparison between the closings and the
+  cadence rather than a list of dates.
 - **A pill on a period, and the reminder that cannot be a cron.** AGENDA's recurrence **shipped**, and
-  `app-interval-input` was built shared for this: it emits an `{ every, unit }` and owns no interpretation,
-  because a task counts from the day it was last done and a pill would not. `weekdays: IsoWeekday[]` says
-  "Mon, Wed, Fri" and cannot say "every second Tuesday", which is a real medicine — and the intake log
-  `PillIntake { pillId, takenOn }` already carries the anchor a period needs.
+  `app-interval-input` was built shared for this: it emits an `Interval` and owns no interpretation,
+  because a task counts from its due date or its close and a pill would not. The union now carries
+  calendar-positioned arms, so "in March and June" is expressible — but nothing says "every second
+  Tuesday", which is a real medicine, and the intake log `PillIntake { pillId, takenOn }` already carries
+  the anchor a period needs.
   **The cost is the reminder, not the field.** `scheduleWeekly` arms an OS cron on `on: { weekday, hour,
   minute }`, and `Pill.slot` / `PillsState.nextSlot` exist purely to hand each pill stable notification ids
   across weekdays. There is no "every 14 days" cron: a period pill needs a one-shot `at:` re-armed on each

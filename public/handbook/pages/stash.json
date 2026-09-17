@@ -4,6 +4,7 @@
   "plain": "Vorräte",
   "route": "/household/storage",
   "summary": "Was im Haus ist — mit Mindestmenge, Farbbalken, Mindesthaltbarkeitsdatum und einem Wisch zurück auf die Einkaufsliste.",
+  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

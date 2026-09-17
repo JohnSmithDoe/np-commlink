@@ -19,7 +19,7 @@ that has to outlive its commit belongs in one of the five documents below.
 | File | Holds |
 | --- | --- |
 | [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work |
-| [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, BIOMON, DAILY RUN, SIGIL, SOYKAF, TRACKPLAY, the deck |
+| [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, BIOMON, DAILY RUN, AGENDA, SIGIL, SOYKAF, TRACKPLAY, the deck |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, open defects, costs left standing |
 | [next-version.md](docs/next-version.md) | work triaged into the next major |

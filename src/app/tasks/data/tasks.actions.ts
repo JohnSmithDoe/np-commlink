@@ -1,6 +1,6 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import { createItemListActionEvents } from '../../@shared/data/item-lists/item-list.actions.factory';
-import { TaskItem, TasksState } from '../model/task.types';
+import { TaskItem, TaskSettings, TasksState } from '../model/task.types';
 import { Category } from '../../@shared/model/category.types';
 
 export const TasksActions = createActionGroup({
@@ -12,6 +12,8 @@ export const TasksActions = createActionGroup({
       category,
       tagged,
     }),
+    updateSettings: (settings: Partial<TaskSettings>) => ({ settings }),
+    reopenDue: (items: readonly TaskItem[]) => ({ items }),
 
     ...createItemListActionEvents<TaskItem>(),
   },

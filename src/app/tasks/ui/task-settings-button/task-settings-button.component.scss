@@ -1,0 +1,8 @@
+// ─── why ────────────────────────────────────────────────────────
+// display:contents, so the host introduces no box of its own: `ion-buttons`
+// lays out its buttons, and a wrapper would take the flex slot instead.
+// ────────────────────────────────────────────────────────────────
+
+:host {
+  display: contents;
+}

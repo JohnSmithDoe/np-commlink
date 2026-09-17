@@ -29,6 +29,14 @@
     />
   }
 
+  @if (monthly(); as inMonths) {
+    <app-month-picker
+      [months]="inMonths.months"
+      [groupLabel]="monthLabel()"
+      (toggled)="toggleMonth($event)"
+    />
+  }
+
   @if (period(); as everyN) {
     <app-number-select
       [label]="'interval.count' | translate"
