@@ -23,6 +23,7 @@ import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sess
 
 import { IonButton, IonIcon, ViewWillEnter } from '@ionic/angular/standalone';
 import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.component';
+import { EditTrackingSessionDialogComponent } from '../edit-tracking-session-dialog/edit-tracking-session-dialog.component';
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';
 
 @Component({
@@ -38,6 +39,7 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
     IonIcon,
     TrackingItemComponent,
     EditTrackingItemDialogComponent,
+    EditTrackingSessionDialogComponent,
   ],
   providers: [{ provide: LIST_FACADE, useExisting: TrackingListPageFacade }],
 })

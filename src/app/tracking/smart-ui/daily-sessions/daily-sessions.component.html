@@ -40,7 +40,7 @@
       }}
     </ion-list-header>
     @for (session of sessions(); track session.id) {
-      <ion-item lines="full">
+      <ion-item lines="full" [button]="true" (click)="edit(session)">
         <ion-label class="ion-text-wrap">
           <h2>{{ session.name }}</h2>
           <ion-note>{{ session.startTime | date: 'shortTime' }}</ion-note>

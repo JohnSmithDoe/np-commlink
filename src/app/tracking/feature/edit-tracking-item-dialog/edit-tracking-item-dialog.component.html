@@ -8,4 +8,13 @@
   (confirmed)="confirm()"
   (cancelled)="close()"
   (dismissed)="close()"
-/>
+>
+  @if (draft().startTime) {
+    <app-tracked-time-adjuster
+      [trackedSeconds]="draft().trackedTimeInSeconds ?? 0"
+      [breakSeconds]="draft().breakInSeconds ?? 0"
+      (adjusted)="adjustTrackedTime($event)"
+      (durationChange)="setTrackedDuration($event)"
+    />
+  }
+</app-item-edit-modal>

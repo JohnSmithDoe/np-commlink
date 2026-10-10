@@ -248,6 +248,28 @@ describe('trackingReducer', () => {
     expect(removed.sessions.map((index) => index.id)).toEqual(['d2']);
   });
 
+  it('replaces an archived session in place and keeps the archive in start order', () => {
+    const withData = {
+      ...initialState,
+      sessions: [
+        track({ id: 'a', startTime: '2026-06-01T08:00:00' }),
+        track({ id: 'b', startTime: '2026-06-01T10:00:00' }),
+      ],
+    };
+    const corrected = trackingReducer(
+      withData,
+      TrackingActions.updateSession(
+        track({
+          id: 'b',
+          startTime: '2026-06-01T07:00:00',
+          breakInSeconds: 900,
+        })
+      )
+    );
+    expect(corrected.sessions.map((s) => s.id)).toEqual(['b', 'a']);
+    expect(corrected.sessions[0]?.breakInSeconds).toBe(900);
+  });
+
   it('sets the sort descriptor', () => {
     const next = trackingReducer(
       initialState,

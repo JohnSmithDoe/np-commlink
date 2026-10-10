@@ -1,0 +1,65 @@
+@let parts = duration();
+
+<div class="adjuster">
+  <h3 class="adjuster__label">
+    {{ 'tracking.adjust.label' | translate }}
+  </h3>
+  <div class="adjuster__fields">
+    <ion-input
+      type="number"
+      inputmode="numeric"
+      min="0"
+      fill="outline"
+      labelPlacement="stacked"
+      [label]="'tracking.adjust.hours' | translate"
+      [value]="parts.hours"
+      (ionInput)="setPart('hours', $event)"
+    />
+    <ion-input
+      type="number"
+      inputmode="numeric"
+      min="0"
+      fill="outline"
+      labelPlacement="stacked"
+      [label]="'tracking.adjust.minutes' | translate"
+      [value]="parts.minutes"
+      (ionInput)="setPart('minutes', $event)"
+    />
+    <ion-input
+      type="number"
+      inputmode="numeric"
+      min="0"
+      fill="outline"
+      labelPlacement="stacked"
+      [label]="'tracking.adjust.seconds' | translate"
+      [value]="parts.seconds"
+      (ionInput)="setPart('seconds', $event)"
+    />
+  </div>
+  <div
+    class="adjuster__row"
+    role="group"
+    [attr.aria-label]="'tracking.adjust.label' | translate"
+  >
+    @for (minutes of steps; track minutes) {
+      <ion-button
+        size="small"
+        fill="outline"
+        class="adjuster__step"
+        [attr.aria-label]="
+          (minutes < 0 ? 'tracking.adjust.remove' : 'tracking.adjust.add')
+            | translate: { minutes: minutes < 0 ? -minutes : minutes }
+        "
+        (click)="adjusted.emit(minutes * 60)"
+      >
+        {{ minutes < 0 ? '−' + -minutes : '+' + minutes }}
+      </ion-button>
+    }
+  </div>
+  <p class="adjuster__break">
+    {{
+      'tracking.adjust.break'
+        | translate: { minutes: breakSeconds() | minutesFromSeconds }
+    }}
+  </p>
+</div>

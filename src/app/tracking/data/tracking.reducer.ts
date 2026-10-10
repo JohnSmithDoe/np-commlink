@@ -189,6 +189,13 @@ export const trackingReducer = createReducer(
     };
   }),
 
+  on(TrackingActions.updateSession, (state, { session }): TrackingState => ({
+    ...state,
+    sessions: state.sessions
+      .map((stored) => (stored.id === session.id ? session : stored))
+      .toSorted(byStartTime),
+  })),
+
   on(
     TrackingActions.updateSort,
     (state, { sortBy, sortDirection }): TrackingState =>

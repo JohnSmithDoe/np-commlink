@@ -8,6 +8,7 @@ import {
 } from '../testing/tracking.test-data';
 import { TrackingActions } from './tracking.actions';
 import { TrackingFacade } from './tracking.facade';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 
 describe('TrackingFacade', () => {
   let store: MockStore;
@@ -45,6 +46,16 @@ describe('TrackingFacade', () => {
       archived.name,
     ]);
     expect(facade.allSessions()).toHaveLength(1);
+  });
+
+  it('opens an archived session in the session dialog, a live one in the item dialog', () => {
+    const dialogs = TestBed.inject(ItemDialogService);
+
+    facade.showSessionDialog(archived);
+    expect(dialogs.request()?.listId).toBe('_tracking-sessions');
+
+    facade.showSessionDialog(mockTrackingItem({ id: 'live' }));
+    expect(dialogs.request()?.listId).toBe('_tracking');
   });
 
   it('stamps the toggle with the moment it happened', () => {

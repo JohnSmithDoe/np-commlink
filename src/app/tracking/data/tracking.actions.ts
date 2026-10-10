@@ -36,6 +36,7 @@ export const TrackingActions = createActionGroup({
 
     shareData: emptyProps(),
     removeDataItem: (item: DataItem) => ({ item }),
+    updateSession: (session: TrackingItem) => ({ session }),
     changeDataView: (viewId: TrackingViewId) => ({ viewId }),
   },
 });

@@ -3,6 +3,7 @@
   "title": "CHRONO",
   "plain": "Zeiterfassung",
   "route": "/tracking",
+  "shotsStale": true,
   "summary": "Stoppuhr pro Aufgabe, ein Tagesprotokoll darunter und ein Archiv mit Diagramm und CSV-Export.",
   "sections": [
     {
@@ -61,7 +62,7 @@
         },
         {
           "type": "p",
-          "html": "Unter der Liste steht <strong>Heute</strong> mit allen Sessions dieses Tages, Startzeit, Dauer und <code>3 Sessions • 4h 12m</code>. Mit <strong>‹</strong> und <strong>›</strong> blätterst du in vergangene Tage; nach vorne geht es nicht. Steht dort nichts: <em>Keine Sessions an diesem Tag</em>."
+          "html": "Unter der Liste steht <strong>Heute</strong> mit allen Sessions dieses Tages, Startzeit, Dauer und <code>3 Sessions • 4h 12m</code>. Mit <strong>‹</strong> und <strong>›</strong> blätterst du in vergangene Tage; nach vorne geht es nicht. Steht dort nichts: <em>Keine Sessions an diesem Tag</em>. <strong>Eine Session antippen</strong> öffnet sie zum Korrigieren — auch gespeicherte und vergangene Tage."
         },
         {
           "type": "figure",
@@ -100,7 +101,7 @@
         },
         {
           "type": "p",
-          "html": "<strong>Bearbeiten</strong> ändert nur den <strong>Namen</strong> — Zeiten lassen sich nicht nachtragen oder nachbessern. Zum Korrigieren gibt es genau zwei Wege: <strong>Zurücksetzen</strong> löscht die laufende Aufnahme einer Aufgabe, und im Archiv löschst du eine einzelne falsche Session in der Ansicht <strong>Einzeln</strong> per Wisch."
+          "html": "<strong>Bearbeiten</strong> ändert den <strong>Namen</strong> und korrigiert die <strong>erfasste Zeit</strong>: direkt in die Felder Std / Min / Sek tippen oder in 5-, 15- und 30-Minuten-Schritten. Abziehen bucht die Zeit als Pause — die Uhr lief durch die Mittagspause. Hinzufügen verbraucht erst die Pause und verlegt dann den Start nach vorn — vergessen zu starten. Das geht auch, während die Uhr läuft. Nach dem <strong>SPEICHERN</strong> korrigierst du genauso: im Tagesprotokoll die Session antippen. Eine ganz falsche Session löschst du im Archiv in der Ansicht <strong>Einzeln</strong> per Wisch."
         },
         {
           "type": "h3",
@@ -149,7 +150,7 @@
             "<strong>Nur eine Uhr läuft.</strong> Zwei Dinge parallel zu messen ist nicht möglich.",
             "<strong>Ohne SPEICHERN kein Archiv.</strong> Was am Tagesende nicht gespeichert wurde, taucht in <code>/data</code> nie auf und fehlt auch im Diagramm, sobald die Uhr zurückgesetzt ist.",
             "<strong>Nach einem Neustart steht die Ansicht wieder auf „Heute\"</strong> — die gewählte Sicht wird nicht gemerkt.",
-            "Zeiten sind nicht editierbar. Vergessen zu starten heißt: verloren."
+            "<strong>Korrigiert wird nur im Tagesprotokoll.</strong> Die Archivzeilen in <code>/data</code> sind Summen und lassen sich nur löschen."
           ]
         }
       ]

@@ -53,6 +53,27 @@ describe('EditTrackingItemDialogComponent', () => {
     expect(host.request()).toBeNull();
   });
 
+  it('saves a tracked-time correction as break', () => {
+    const dispatch = vi.spyOn(store, 'dispatch');
+    const tracked = {
+      ...seed,
+      startTime: '2026-10-10T08:00:00+02:00',
+      trackedTimeInSeconds: 3600,
+    };
+    host.open({ item: tracked, listId: '_tracking', editMode: 'update' });
+
+    component.adjustTrackedTime(-15 * 60);
+    component.confirm();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      TrackingActions.addOrUpdateItem({
+        ...tracked,
+        trackedTimeInSeconds: 2700,
+        breakInSeconds: 900,
+      })
+    );
+  });
+
   it('refuses a name a sibling activity already has', () => {
     expect(component.canSave()).toBe(true);
 

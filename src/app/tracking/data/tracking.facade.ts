@@ -3,12 +3,15 @@ import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import {
   DataItem,
+  TRACKING_LIST_ID,
+  TRACKING_SESSIONS_LIST_ID,
   TrackingItem,
   TrackingViewId,
 } from '../model/tracking.types';
 import { createDemoSessions } from '../util/demo-sessions.factory';
 import { dailySeries, groupSessionsByView } from '../util/sessions.utils';
 import { TodayService } from '../../@shared/data/services/today.service';
+import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { TrackingActions } from './tracking.actions';
 import {
   selectAllTrackingSessions,
@@ -22,19 +25,20 @@ import {
 export class TrackingFacade {
   readonly #store = inject(Store);
   readonly #today = inject(TodayService).today;
+  readonly #dialogs = inject(ItemDialogService);
 
   readonly total = this.#store.selectSignal(selectTrackingTime);
   readonly viewMode = this.#store.selectSignal(selectTrackingDataViewId);
   readonly allSessions = this.#store.selectSignal(selectAllTrackingSessions);
 
-  readonly #archived = this.#store.selectSignal(selectArchivedSessions);
+  readonly archivedSessions = this.#store.selectSignal(selectArchivedSessions);
   readonly #liveForChart = this.#store.selectSignal(selectLiveChartSessions);
 
   readonly sessionsByView = computed(() =>
-    groupSessionsByView(this.#archived(), this.viewMode(), this.#today())
+    groupSessionsByView(this.archivedSessions(), this.viewMode(), this.#today())
   );
   readonly sessionsByDayAndName = computed(() =>
-    dailySeries(this.#archived(), this.#liveForChart(), this.#today())
+    dailySeries(this.archivedSessions(), this.#liveForChart(), this.#today())
   );
 
   toggleTracking(item: TrackingItem): void {
@@ -69,6 +73,21 @@ export class TrackingFacade {
 
   shareCsv(): void {
     this.#store.dispatch(TrackingActions.shareData());
+  }
+
+  showSessionDialog(session: TrackingItem): void {
+    const archived = this.archivedSessions().some(
+      (stored) => stored.id === session.id
+    );
+    this.#dialogs.open({
+      item: session,
+      listId: archived ? TRACKING_SESSIONS_LIST_ID : TRACKING_LIST_ID,
+      editMode: 'update',
+    });
+  }
+
+  updateSession(session: TrackingItem): void {
+    this.#store.dispatch(TrackingActions.updateSession(session));
   }
 
   removeDataItem(item: DataItem): void {

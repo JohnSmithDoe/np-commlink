@@ -4,6 +4,7 @@ import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
 
 export const TRACKING_LIST_ID = '_tracking';
+export const TRACKING_SESSIONS_LIST_ID = '_tracking-sessions';
 
 export type TrackingCommand = 'tracking.start' | 'tracking.pause';
 

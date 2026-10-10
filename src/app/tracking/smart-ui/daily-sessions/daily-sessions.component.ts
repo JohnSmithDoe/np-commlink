@@ -21,6 +21,7 @@ import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { TrackingFacade } from '../../data';
+import { TrackingItem } from '../../model/tracking.types';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';
 import { formatSecondsAsClock } from '../../util/tracking.utils';
 import { TrackingStateBadgeComponent } from '../../ui/tracking-state-badge/tracking-state-badge.component';
@@ -47,7 +48,8 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   ],
 })
 export class DailySessionsComponent {
-  readonly #allSessions = inject(TrackingFacade).allSessions;
+  readonly #facade = inject(TrackingFacade);
+  readonly #allSessions = this.#facade.allSessions;
   readonly #today = inject(TodayService).today;
   readonly selectedDate = signal<Dayjs>(dayjs().startOf('day'));
 
@@ -77,6 +79,10 @@ export class DailySessionsComponent {
 
   constructor() {
     addIcons({ chevronBackOutline, chevronForwardOutline });
+  }
+
+  edit(session: TrackingItem) {
+    this.#facade.showSessionDialog(session);
   }
 
   prevDay() {

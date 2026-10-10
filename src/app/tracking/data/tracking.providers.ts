@@ -28,6 +28,7 @@ export const trackingContext = providePersistedContext({
       TrackingActions.saveAndResetTracking,
       TrackingActions.resetAllTracking,
       TrackingActions.removeDataItem,
+      TrackingActions.updateSession,
       TrackingActions.seedDemoSessions,
     ],
   },
