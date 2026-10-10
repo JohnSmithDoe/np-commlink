@@ -215,6 +215,25 @@ test.describe('notes', () => {
     await expect(mainContent(page).locator('ion-list-header')).toHaveCount(2);
   });
 
+  test('inserts the date at the caret and keeps it', async ({ page }) => {
+    await startNote(page);
+    await bodyBox(page).fill('Termin  fix');
+    await bodyBox(page).evaluate((element: HTMLTextAreaElement) =>
+      element.setSelectionRange(7, 7)
+    );
+
+    await mainContent(page)
+      .locator(EDITOR_PAGE)
+      .getByTestId('note-insert-date')
+      .click();
+
+    const dated = /^Termin \d{2}\.\d{2}\.\d{4} fix$/;
+    await expect(bodyBox(page)).toHaveValue(dated);
+    await waitForPersisted(page, 'notes', `${new Date().getFullYear()} fix`);
+    await page.reload();
+    await expect(bodyBox(page)).toHaveValue(dated, { timeout: 30_000 });
+  });
+
   test('deletes a note from the editor', async ({ page }) => {
     await startNote(page);
     await titleBox(page).fill('Weg damit');

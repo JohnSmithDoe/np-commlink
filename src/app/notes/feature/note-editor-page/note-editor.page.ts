@@ -15,6 +15,7 @@ import {
   inject,
   OnDestroy,
   signal,
+  viewChild,
 } from '@angular/core';
 import {
   AlertButton,
@@ -32,9 +33,18 @@ import {
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
-import { closeCircleOutline, pinOutline, trashOutline } from 'ionicons/icons';
+import {
+  calendarOutline,
+  closeCircleOutline,
+  pinOutline,
+  trashOutline,
+} from 'ionicons/icons';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return.component';
+import {
+  localizedDate,
+  todayISO,
+} from '../../../@shared/util/formatting/date-format.utils';
 import { NoteEditorFacade } from '../../data';
 import { NoteImageId } from '../../model/notes.types';
 import { NoteImageInputComponent } from '../../smart-ui/note-image-input/note-image-input.component';
@@ -68,6 +78,7 @@ export class NoteEditorPage implements OnDestroy {
   readonly note = this.#facade.note;
   readonly images = this.#facade.images;
   readonly openAt = signal<number | undefined>(undefined);
+  private readonly body = viewChild('body', { read: IonTextarea });
 
   readonly #noteId = this.note()?.id;
 
@@ -84,7 +95,7 @@ export class NoteEditorPage implements OnDestroy {
   ];
 
   constructor() {
-    addIcons({ closeCircleOutline, pinOutline, trashOutline });
+    addIcons({ calendarOutline, closeCircleOutline, pinOutline, trashOutline });
   }
 
   ngOnDestroy(): void {
@@ -97,6 +108,20 @@ export class NoteEditorPage implements OnDestroy {
 
   editBody(event: TextareaCustomEvent): void {
     this.#facade.edit({ body: event.detail.value ?? '' });
+  }
+
+  async insertToday(): Promise<void> {
+    const textarea = await this.body()?.getInputElement();
+    if (!textarea) return;
+
+    textarea.setRangeText(
+      localizedDate(todayISO()),
+      textarea.selectionStart,
+      textarea.selectionEnd,
+      'end'
+    );
+    textarea.focus();
+    this.#facade.edit({ body: textarea.value });
   }
 
   togglePin(): void {

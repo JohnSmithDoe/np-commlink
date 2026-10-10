@@ -867,6 +867,7 @@
   "notes.action.view-images": "Voir les images",
   "notes.delete.header": "Supprimer la note ?",
   "notes.delete.message": "La note et ses images seront supprimées.",
+  "notes.editor.add-date": "Insérer la date",
   "notes.editor.add-image": "Ajouter une image",
   "notes.editor.body.label": "Texte de la note",
   "notes.editor.body.placeholder": "Note…",

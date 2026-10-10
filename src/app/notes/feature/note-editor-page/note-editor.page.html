@@ -41,6 +41,7 @@
 
     <ion-item lines="none">
       <ion-textarea
+        #body
         class="note-body"
         data-testid="note-body"
         [autoGrow]="true"
@@ -83,6 +84,15 @@
 
     <div class="note-actions">
       <app-note-image-input />
+      <ion-button
+        fill="outline"
+        size="small"
+        data-testid="note-insert-date"
+        (click)="insertToday()"
+      >
+        <ion-icon slot="start" name="calendar-outline" aria-hidden="true" />
+        {{ 'notes.editor.add-date' | translate }}
+      </ion-button>
     </div>
   }
 

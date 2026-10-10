@@ -867,6 +867,7 @@
   "notes.action.view-images": "Bilder ansehen",
   "notes.delete.header": "Notiz löschen?",
   "notes.delete.message": "Die Notiz und ihre Bilder werden entfernt.",
+  "notes.editor.add-date": "Datum einfügen",
   "notes.editor.add-image": "Bild hinzufügen",
   "notes.editor.body.label": "Notiztext",
   "notes.editor.body.placeholder": "Notiz…",
