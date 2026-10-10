@@ -3,13 +3,18 @@
  * takes one and answers `undefined` rather than asserting: a hexagram at
  * `/browse/iching/99` is a page saying so, never a crash.
  *
- * Both catalogs are CYCLES — the twelfth sign's neighbour is the first, the
- * sixty-fourth hexagram's is number one — so stepping through either can
- * never dead-end, and neither page needs a disabled edge case.
+ * Every catalog is a CYCLE — the twelfth sign's neighbour is the first, the
+ * sixty-fourth hexagram's is number one — so stepping through any of them
+ * can never dead-end, and no page needs a disabled edge case.
  * ───────────────────────────────────────────────────────────────── */
 
-import { ASTRO_AGES, ZODIAC_SIGNS } from '../model/astro.consts';
-import { AstroAge, ZodiacSign, ZodiacSignRecord } from '../model/astro.types';
+import { ASTRO_AGES, CHINESE_SIGNS, ZODIAC_SIGNS } from '../model/astro.consts';
+import {
+  AstroAge,
+  ChineseSignRecord,
+  ZodiacSign,
+  ZodiacSignRecord,
+} from '../model/astro.types';
 import { HEXAGRAMS } from '../model/iching.consts';
 import { HexagramRecord } from '../model/iching.types';
 
@@ -34,6 +39,14 @@ export const zodiacNeighbours = (
   record: ZodiacSignRecord
 ): Neighbours<ZodiacSignRecord> | undefined =>
   cycle(ZODIAC_SIGNS, ZODIAC_SIGNS.indexOf(record));
+
+export const chineseSignNamed = (name: string): ChineseSignRecord | undefined =>
+  CHINESE_SIGNS.find((record) => record.animal === name);
+
+export const chineseNeighbours = (
+  record: ChineseSignRecord
+): Neighbours<ChineseSignRecord> | undefined =>
+  cycle(CHINESE_SIGNS, CHINESE_SIGNS.indexOf(record));
 
 export const hexagramNumbered = (value: string): HexagramRecord | undefined =>
   HEXAGRAMS.find((record) => String(record.number) === value);

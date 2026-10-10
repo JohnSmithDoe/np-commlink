@@ -121,6 +121,22 @@ export const vitalsRoutes: Routes = [
                   ),
               },
               {
+                path: 'chinese',
+                title: marker('page-title.vitals-browse-chinese'),
+                loadComponent: () =>
+                  import('../feature/browse-chinese-page/browse-chinese.page').then(
+                    (m) => m.VitalsBrowseChinesePage
+                  ),
+              },
+              {
+                path: 'chinese/:animal',
+                title: marker('page-title.vitals-browse-animal'),
+                loadComponent: () =>
+                  import('../feature/browse-animal-page/browse-animal.page').then(
+                    (m) => m.VitalsBrowseAnimalPage
+                  ),
+              },
+              {
                 path: 'iching',
                 title: marker('page-title.vitals-browse-iching'),
                 loadComponent: () =>

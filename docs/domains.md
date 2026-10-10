@@ -139,6 +139,14 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   eleven; the life number reduces the _whole date_ (1980 → Ki 2, 1980-08-05 → life 4). Two panels, neither
   borrowing the other's trigram, element or personality table. The life number reduces all the way to 1–9;
   numerology's master numbers are not kept apart, which the page states rather than hides.
+- **The Chinese animal turns at the lunar new year, beside a Ki year that turns on 4 February.** Both are
+  real conventions (popular zodiac vs. Lichun); each page names its own boundary in a note, so a late-January
+  birthday may read the previous animal and the current Ki year without either being wrong.
+- **The lunar year is asked of ICU (`Intl` with `-u-ca-chinese`), not a table of new-year dates** — with
+  three overrides. Checked 1900–2100 against Meeus' new-moon series: 1954, 2027 and 2030 have a new moon
+  minutes from Beijing midnight that ICU puts on the wrong side, and the published dates side with Meeus.
+- **The Chinese sign has no profile field, unlike `sun`.** Nothing about it is a matter of opinion a
+  reader would overrule, so it is derived only and the `vitals` shape is untouched.
 
 **The browse tree**
 
@@ -149,10 +157,10 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   `/browse/zodiac/:sign` each give a deep link, a working platform back and a title per reading.
 - **An unknown parameter is a page saying so, never a guard.** `hexagramNumbered` and `zodiacSignNamed`
   answer `undefined` and the page paints `app-empty-state` with its return row.
-- **Both catalogs are CYCLES, so stepping has no edge case.** `cycle` leans on `Array.prototype.at` taking a
-  negative index.
-- **Only the two catalogs with 12 and 64 entries earn a detail route.** A Ki star and a life number fit their
-  own index. The 64-row index is a plain `@for` grid, not an `ItemList` — the shared machinery is
+- **Every stepped catalog is a CYCLE, so stepping has no edge case.** `cycle` leans on `Array.prototype.at`
+  taking a negative index.
+- **Only the catalogs with 12 and 64 entries earn a detail route** — both zodiacs and the hexagrams. A Ki
+  star and a life number fit their own index. The 64-row index is a plain `@for` grid, not an `ItemList` — the shared machinery is
   NgRx-backed and a static catalog has nothing to add, sort or delete.
 
 **The coin oracle**

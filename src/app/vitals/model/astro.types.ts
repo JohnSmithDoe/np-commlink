@@ -16,6 +16,24 @@ export type ZodiacSign =
 
 export type ZodiacElement = 'fire' | 'earth' | 'air' | 'water';
 
+export type ChineseAnimal =
+  | 'rat'
+  | 'ox'
+  | 'tiger'
+  | 'rabbit'
+  | 'dragon'
+  | 'snake'
+  | 'horse'
+  | 'goat'
+  | 'monkey'
+  | 'rooster'
+  | 'dog'
+  | 'pig';
+
+export type ChineseElement = 'wood' | 'fire' | 'earth' | 'metal' | 'water';
+
+export type ChinesePolarity = 'yang' | 'yin';
+
 type KiNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export interface MonthDay {
@@ -28,6 +46,13 @@ export interface ZodiacSignRecord {
   glyph: string;
   element: ZodiacElement;
   from: MonthDay;
+  nameKey: Marker;
+  traitKey: Marker;
+}
+
+export interface ChineseSignRecord {
+  animal: ChineseAnimal;
+  glyph: string;
   nameKey: Marker;
   traitKey: Marker;
 }

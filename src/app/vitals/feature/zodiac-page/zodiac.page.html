@@ -53,6 +53,29 @@
       </section>
     }
 
+    @if (chineseYear(); as lunar) {
+      <section
+        class="zd-panel sr-panel sr-corners"
+        data-testid="vitals-zodiac-chinese"
+      >
+        <p class="sr-hud">{{ 'vitals.chinese.heading.you' | translate }}</p>
+        <p class="zd-glyph" aria-hidden="true">{{ lunar.sign.glyph }}</p>
+        <h2 class="zd-name">{{ lunar.sign.nameKey | translate }}</h2>
+        <p class="zd-element">
+          {{ chineseElementKeys[lunar.element] | translate }} ·
+          {{ polarityKeys[lunar.polarity] | translate }}
+        </p>
+        <p class="zd-trait">{{ lunar.sign.traitKey | translate }}</p>
+        <p class="zd-row">
+          <span class="sr-hud">{{ 'vitals.chinese.year' | translate }}</span>
+          <span class="zd-row__value">
+            {{ lunar.fromISO | date }} – {{ lunar.toISO | date }}
+          </span>
+        </p>
+        <p class="zd-note">{{ 'vitals.chinese.year-start' | translate }}</p>
+      </section>
+    }
+
     <section class="zd-panel sr-panel sr-corners">
       <p class="sr-hud">{{ 'vitals.zodiac.heading.today' | translate }}</p>
       <ol class="zd-timeline">
@@ -71,6 +94,32 @@
               </span>
               <span class="zd-step__meta">
                 {{ season.fromISO | date }} – {{ season.toISO | date }}
+              </span>
+            </a>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <section class="zd-panel sr-panel sr-corners">
+      <p class="sr-hud">{{ 'vitals.chinese.heading.today' | translate }}</p>
+      <ol class="zd-timeline">
+        @for (lunar of chineseTimeline(); track lunar.phase) {
+          <li>
+            <a
+              class="zd-step"
+              [class.zd-step--current]="lunar.phase === 'current'"
+              [routerLink]="['/vitals/browse/chinese', lunar.sign.animal]"
+            >
+              <span class="zd-step__phase">
+                {{ phaseKeys[lunar.phase] | translate }}
+              </span>
+              <span class="zd-step__title">
+                {{ lunar.sign.glyph }} {{ lunar.sign.nameKey | translate }}
+              </span>
+              <span class="zd-step__meta">
+                {{ chineseElementKeys[lunar.element] | translate }} ·
+                {{ lunar.fromISO | date }} – {{ lunar.toISO | date }}
               </span>
             </a>
           </li>

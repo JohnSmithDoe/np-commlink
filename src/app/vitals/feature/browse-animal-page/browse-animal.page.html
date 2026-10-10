@@ -1,0 +1,66 @@
+<app-page-header label="page-title.vitals-browse-animal" hideButtons="true" />
+
+<ion-content>
+  <app-page-return
+    route="/vitals/browse/chinese"
+    label="page-title.vitals-browse-chinese"
+  />
+
+  <div class="bra sr-scanlines">
+    @if (sign(); as record) {
+      <section
+        class="bra-panel sr-panel sr-corners"
+        data-testid="vitals-browse-animal"
+      >
+        <p class="bra-glyph" aria-hidden="true">{{ record.glyph }}</p>
+        <h1 class="bra-name">{{ record.nameKey | translate }}</h1>
+
+        @if (window(); as lunar) {
+          <p class="bra-element">
+            {{ elementKeys[lunar.element] | translate }} ·
+            {{ polarityKeys[lunar.polarity] | translate }}
+          </p>
+          <p class="bra-window">
+            {{ lunar.fromISO | date }} – {{ lunar.toISO | date }}
+          </p>
+        }
+
+        <p class="bra-trait">{{ record.traitKey | translate }}</p>
+      </section>
+
+      <section class="bra-panel sr-panel sr-corners">
+        <p class="sr-hud">
+          {{ 'vitals.chinese.heading.elements' | translate }}
+        </p>
+        <ol class="bra-years">
+          @for (entry of elementYears(); track entry.year) {
+            <li
+              class="bra-year"
+              [class.bra-year--current]="entry.year === currentYear()"
+            >
+              <span>{{ entry.year }}</span>
+              <span class="bra-year__element">
+                {{ elementKeys[entry.element] | translate }}
+              </span>
+            </li>
+          }
+        </ol>
+        <p class="bra-note">{{ 'vitals.chinese.elements-note' | translate }}</p>
+      </section>
+
+      @if (steps(); as walk) {
+        <app-browse-steps
+          [previousLink]="walk.previousLink"
+          [previousKey]="walk.previousKey"
+          [nextLink]="walk.nextLink"
+          [nextKey]="walk.nextKey"
+        />
+      }
+    } @else {
+      <app-empty-state
+        [label]="'vitals.browse.unknown-animal' | translate"
+        [note]="'vitals.browse.unknown-note' | translate"
+      />
+    }
+  </div>
+</ion-content>

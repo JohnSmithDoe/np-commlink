@@ -1,0 +1,35 @@
+<app-page-header label="page-title.vitals-browse-chinese" hideButtons="true" />
+
+<ion-content>
+  <app-page-return route="/vitals/browse" label="page-title.vitals-browse" />
+
+  <div class="brc sr-scanlines">
+    <ol class="brc-list" data-testid="vitals-browse-chinese-list">
+      @for (lunar of years(); track lunar.year) {
+        <li>
+          <a
+            class="brc-row sr-panel sr-corners"
+            [class.brc-row--current]="lunar.year === currentYear()"
+            [routerLink]="['/vitals/browse/chinese', lunar.sign.animal]"
+          >
+            <span class="brc-row__glyph" aria-hidden="true">
+              {{ lunar.sign.glyph }}
+            </span>
+            <span class="brc-row__text">
+              <span class="brc-row__name">
+                {{ lunar.sign.nameKey | translate }}
+              </span>
+              <span class="brc-row__meta">
+                {{ lunar.fromISO | date }} – {{ lunar.toISO | date }}
+              </span>
+            </span>
+            <span class="brc-row__element">
+              {{ elementKeys[lunar.element] | translate }}
+            </span>
+          </a>
+        </li>
+      }
+    </ol>
+    <p class="brc-note">{{ 'vitals.chinese.year-start' | translate }}</p>
+  </div>
+</ion-content>

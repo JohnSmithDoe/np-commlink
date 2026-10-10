@@ -81,6 +81,27 @@ test.describe('BIOMON · astro', () => {
     await expect(ascendant).toContainText('nicht gesetzt');
   });
 
+  test('turns the Chinese animal at the lunar new year, not on 1 January', async ({
+    page,
+  }) => {
+    await openProfileBornOn(page, '1990-01-26');
+
+    await pageRoot(page, PROFILE_PAGE)
+      .getByTestId('vitals-zodiac-link')
+      .click();
+    const zodiac = pageRoot(page, ZODIAC_PAGE);
+    await expect(zodiac).toBeVisible({ timeout: 15_000 });
+
+    const chinese = zodiac.getByTestId('vitals-zodiac-chinese');
+    await expect(chinese.locator('h2')).toHaveText('Schlange');
+    await expect(chinese).toContainText('Erde · Yin');
+
+    await pickDate(zodiac.locator('app-date-input'), '1990-01-27');
+
+    await expect(chinese.locator('h2')).toHaveText('Pferd');
+    await expect(chinese).toContainText('Metall · Yang');
+  });
+
   test('maps a birthday to its Ki year number across the February turn', async ({
     page,
   }) => {

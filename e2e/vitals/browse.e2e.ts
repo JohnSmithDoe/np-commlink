@@ -20,6 +20,8 @@ const currentPage = (page: Page, selector: string): Locator =>
 const BROWSE_PAGE = 'app-page-vitals-browse';
 const ZODIAC_PAGE = 'app-page-vitals-browse-zodiac';
 const SIGN_PAGE = 'app-page-vitals-browse-sign';
+const CHINESE_PAGE = 'app-page-vitals-browse-chinese';
+const ANIMAL_PAGE = 'app-page-vitals-browse-animal';
 const ICHING_PAGE = 'app-page-vitals-browse-iching';
 const HEXAGRAM_PAGE = 'app-page-vitals-browse-hexagram';
 const KI_PAGE = 'app-page-vitals-browse-ki';
@@ -31,7 +33,7 @@ test.describe('BIOMON · browse', () => {
 
     await pageRoot(page, BROWSE_PAGE)
       .getByTestId('vitals-browse-sections')
-      .getByRole('link', { name: /Tierkreis/ })
+      .getByRole('link', { name: /^Tierkreis/ })
       .click();
 
     const zodiac = pageRoot(page, ZODIAC_PAGE);
@@ -71,6 +73,44 @@ test.describe('BIOMON · browse', () => {
       .click();
 
     await expect(pageRoot(page, ZODIAC_PAGE)).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('reaches an animal from the table of contents and wraps past the pig', async ({
+    page,
+  }) => {
+    await gotoPage(page, 'vitals/browse', BROWSE_PAGE);
+
+    await pageRoot(page, BROWSE_PAGE)
+      .getByTestId('vitals-browse-sections')
+      .getByRole('link', { name: /Chinesischer Tierkreis/ })
+      .click();
+
+    const chinese = pageRoot(page, CHINESE_PAGE);
+    await expect(chinese).toBeVisible({ timeout: 15_000 });
+    const list = chinese.getByTestId('vitals-browse-chinese-list');
+    await expect(list.getByRole('link')).toHaveCount(12);
+
+    await list.getByRole('link', { name: /Schwein/ }).click();
+
+    const animal = pageRoot(page, ANIMAL_PAGE);
+    await expect(animal.getByTestId('vitals-browse-animal')).toContainText(
+      'Schwein'
+    );
+
+    await animal.getByTestId('vitals-browse-step-next').click();
+
+    await expect(page).toHaveURL(/vitals\/browse\/chinese\/rat/);
+    await expect(currentPage(page, ANIMAL_PAGE).locator('h1')).toHaveText(
+      'Ratte'
+    );
+  });
+
+  test('says so when the name is no animal of the cycle', async ({ page }) => {
+    await gotoPage(page, 'vitals/browse/chinese/unicorn', ANIMAL_PAGE);
+
+    const animal = pageRoot(page, ANIMAL_PAGE);
+    await expect(animal.getByTestId('vitals-browse-animal')).toHaveCount(0);
+    await expect(animal.getByText('Kein solches Tier')).toBeVisible();
   });
 
   test('opens a hexagram by number and wraps backwards off the first', async ({

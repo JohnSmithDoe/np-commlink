@@ -1,7 +1,9 @@
-import { ZODIAC_SIGNS } from '../model/astro.consts';
+import { CHINESE_SIGNS, ZODIAC_SIGNS } from '../model/astro.consts';
 import { HEXAGRAMS } from '../model/iching.consts';
 import {
   astroAgeOfSign,
+  chineseNeighbours,
+  chineseSignNamed,
   hexagramNeighbours,
   hexagramNumbered,
   zodiacNeighbours,
@@ -10,12 +12,22 @@ import {
 
 describe('zodiacSignNamed', () => {
   it('finds a sign by its own name', () => {
-    expect(zodiacSignNamed('scorpio')?.glyph).toBe('♏');
+    expect(zodiacSignNamed('scorpio')?.glyph).toBe('♏\uFE0E');
   });
 
   it('answers undefined for anything else', () => {
     expect(zodiacSignNamed('ophiuchus')).toBeUndefined();
     expect(zodiacSignNamed('')).toBeUndefined();
+  });
+});
+
+describe('chineseSignNamed', () => {
+  it('finds an animal by its own name', () => {
+    expect(chineseSignNamed('horse')?.glyph).toBe('馬');
+  });
+
+  it('answers undefined for anything else', () => {
+    expect(chineseSignNamed('unicorn')).toBeUndefined();
   });
 });
 
@@ -39,6 +51,11 @@ describe('neighbours', () => {
 
     expect(zodiacNeighbours(first)?.previous).toBe(last);
     expect(zodiacNeighbours(last)?.next).toBe(first);
+  });
+
+  it('wraps the Chinese cycle from the pig back to the rat', () => {
+    expect(chineseNeighbours(CHINESE_SIGNS.at(-1)!)?.next.animal).toBe('rat');
+    expect(chineseNeighbours(CHINESE_SIGNS[0]!)?.previous.animal).toBe('pig');
   });
 
   it('wraps the hexagrams at both ends', () => {

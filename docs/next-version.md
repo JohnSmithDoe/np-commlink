@@ -198,8 +198,8 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
 
 ## BIOMON
 
-The browse tree **shipped** — `/vitals/browse`, twelve signs, 64 hexagrams, nine Ki stars, nine life
-numbers, own deck program, both detail routes deep-linkable. Left:
+The browse tree **shipped** — `/vitals/browse`, twelve signs, twelve Chinese animals, 64 hexagrams, nine Ki
+stars, nine life numbers, own deck program, every detail route deep-linkable. Left:
 
 - **The world ages are still not browsable, deliberately.** Browsing them invites the question of where the
   boundaries come from, and the answer is a pick rather than a source ([state.md](./state.md)). Settle the

@@ -5,7 +5,12 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../../@shared/model/app.types';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
-import { KI_STARS, ZODIAC_SIGNS } from '../../model/astro.consts';
+import {
+  asText,
+  CHINESE_SIGNS,
+  KI_STARS,
+  ZODIAC_SIGNS,
+} from '../../model/astro.consts';
 import { HEXAGRAMS, LIFE_NUMBERS } from '../../model/iching.consts';
 
 interface BrowseSection {
@@ -19,10 +24,17 @@ interface BrowseSection {
 const SECTIONS: readonly BrowseSection[] = [
   {
     route: '/vitals/browse/zodiac',
-    glyph: '♈',
+    glyph: asText('♈'),
     titleKey: marker('vitals.browse.zodiac.title'),
     descKey: marker('vitals.browse.zodiac.desc'),
     count: ZODIAC_SIGNS.length,
+  },
+  {
+    route: '/vitals/browse/chinese',
+    glyph: '龍',
+    titleKey: marker('vitals.browse.chinese.title'),
+    descKey: marker('vitals.browse.chinese.desc'),
+    count: CHINESE_SIGNS.length,
   },
   {
     route: '/vitals/browse/iching',

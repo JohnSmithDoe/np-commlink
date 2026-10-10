@@ -17,11 +17,20 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
 import {
   AstroAge,
+  ChineseAnimal,
+  ChineseElement,
+  ChinesePolarity,
+  ChineseSignRecord,
   KiStar,
   ZodiacElement,
   ZodiacSign,
   ZodiacSignRecord,
 } from './astro.types';
+
+const TEXT_PRESENTATION = '\uFE0E';
+
+export const asText = (symbol: string): string =>
+  `${symbol}${TEXT_PRESENTATION}`;
 
 export const ZODIAC_ELEMENT_LABEL_KEYS: Record<ZodiacElement, Marker> = {
   fire: marker('vitals.astro.element.fire'),
@@ -33,7 +42,7 @@ export const ZODIAC_ELEMENT_LABEL_KEYS: Record<ZodiacElement, Marker> = {
 export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   aquarius: {
     sign: 'aquarius',
-    glyph: '♒',
+    glyph: asText('♒'),
     element: 'air',
     from: { month: 1, day: 20 },
     nameKey: marker('vitals.astro.sign.aquarius'),
@@ -41,7 +50,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   pisces: {
     sign: 'pisces',
-    glyph: '♓',
+    glyph: asText('♓'),
     element: 'water',
     from: { month: 2, day: 19 },
     nameKey: marker('vitals.astro.sign.pisces'),
@@ -49,7 +58,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   aries: {
     sign: 'aries',
-    glyph: '♈',
+    glyph: asText('♈'),
     element: 'fire',
     from: { month: 3, day: 21 },
     nameKey: marker('vitals.astro.sign.aries'),
@@ -57,7 +66,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   taurus: {
     sign: 'taurus',
-    glyph: '♉',
+    glyph: asText('♉'),
     element: 'earth',
     from: { month: 4, day: 20 },
     nameKey: marker('vitals.astro.sign.taurus'),
@@ -65,7 +74,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   gemini: {
     sign: 'gemini',
-    glyph: '♊',
+    glyph: asText('♊'),
     element: 'air',
     from: { month: 5, day: 21 },
     nameKey: marker('vitals.astro.sign.gemini'),
@@ -73,7 +82,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   cancer: {
     sign: 'cancer',
-    glyph: '♋',
+    glyph: asText('♋'),
     element: 'water',
     from: { month: 6, day: 21 },
     nameKey: marker('vitals.astro.sign.cancer'),
@@ -81,7 +90,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   leo: {
     sign: 'leo',
-    glyph: '♌',
+    glyph: asText('♌'),
     element: 'fire',
     from: { month: 7, day: 23 },
     nameKey: marker('vitals.astro.sign.leo'),
@@ -89,7 +98,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   virgo: {
     sign: 'virgo',
-    glyph: '♍',
+    glyph: asText('♍'),
     element: 'earth',
     from: { month: 8, day: 23 },
     nameKey: marker('vitals.astro.sign.virgo'),
@@ -97,7 +106,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   libra: {
     sign: 'libra',
-    glyph: '♎',
+    glyph: asText('♎'),
     element: 'air',
     from: { month: 9, day: 23 },
     nameKey: marker('vitals.astro.sign.libra'),
@@ -105,7 +114,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   scorpio: {
     sign: 'scorpio',
-    glyph: '♏',
+    glyph: asText('♏'),
     element: 'water',
     from: { month: 10, day: 23 },
     nameKey: marker('vitals.astro.sign.scorpio'),
@@ -113,7 +122,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   sagittarius: {
     sign: 'sagittarius',
-    glyph: '♐',
+    glyph: asText('♐'),
     element: 'fire',
     from: { month: 11, day: 22 },
     nameKey: marker('vitals.astro.sign.sagittarius'),
@@ -121,7 +130,7 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
   },
   capricorn: {
     sign: 'capricorn',
-    glyph: '♑',
+    glyph: asText('♑'),
     element: 'earth',
     from: { month: 12, day: 22 },
     nameKey: marker('vitals.astro.sign.capricorn'),
@@ -131,6 +140,97 @@ export const ZODIAC_BY_SIGN: Record<ZodiacSign, ZodiacSignRecord> = {
 
 export const ZODIAC_SIGNS: readonly ZodiacSignRecord[] =
   Object.values(ZODIAC_BY_SIGN);
+
+export const CHINESE_ELEMENT_LABEL_KEYS: Record<ChineseElement, Marker> = {
+  wood: marker('vitals.chinese.element.wood'),
+  fire: marker('vitals.chinese.element.fire'),
+  earth: marker('vitals.chinese.element.earth'),
+  metal: marker('vitals.chinese.element.metal'),
+  water: marker('vitals.chinese.element.water'),
+};
+
+export const CHINESE_POLARITY_LABEL_KEYS: Record<ChinesePolarity, Marker> = {
+  yang: marker('vitals.chinese.polarity.yang'),
+  yin: marker('vitals.chinese.polarity.yin'),
+};
+
+export const CHINESE_BY_ANIMAL: Record<ChineseAnimal, ChineseSignRecord> = {
+  rat: {
+    animal: 'rat',
+    glyph: '鼠',
+    nameKey: marker('vitals.chinese.animal.rat'),
+    traitKey: marker('vitals.chinese.trait.rat'),
+  },
+  ox: {
+    animal: 'ox',
+    glyph: '牛',
+    nameKey: marker('vitals.chinese.animal.ox'),
+    traitKey: marker('vitals.chinese.trait.ox'),
+  },
+  tiger: {
+    animal: 'tiger',
+    glyph: '虎',
+    nameKey: marker('vitals.chinese.animal.tiger'),
+    traitKey: marker('vitals.chinese.trait.tiger'),
+  },
+  rabbit: {
+    animal: 'rabbit',
+    glyph: '兔',
+    nameKey: marker('vitals.chinese.animal.rabbit'),
+    traitKey: marker('vitals.chinese.trait.rabbit'),
+  },
+  dragon: {
+    animal: 'dragon',
+    glyph: '龍',
+    nameKey: marker('vitals.chinese.animal.dragon'),
+    traitKey: marker('vitals.chinese.trait.dragon'),
+  },
+  snake: {
+    animal: 'snake',
+    glyph: '蛇',
+    nameKey: marker('vitals.chinese.animal.snake'),
+    traitKey: marker('vitals.chinese.trait.snake'),
+  },
+  horse: {
+    animal: 'horse',
+    glyph: '馬',
+    nameKey: marker('vitals.chinese.animal.horse'),
+    traitKey: marker('vitals.chinese.trait.horse'),
+  },
+  goat: {
+    animal: 'goat',
+    glyph: '羊',
+    nameKey: marker('vitals.chinese.animal.goat'),
+    traitKey: marker('vitals.chinese.trait.goat'),
+  },
+  monkey: {
+    animal: 'monkey',
+    glyph: '猴',
+    nameKey: marker('vitals.chinese.animal.monkey'),
+    traitKey: marker('vitals.chinese.trait.monkey'),
+  },
+  rooster: {
+    animal: 'rooster',
+    glyph: '雞',
+    nameKey: marker('vitals.chinese.animal.rooster'),
+    traitKey: marker('vitals.chinese.trait.rooster'),
+  },
+  dog: {
+    animal: 'dog',
+    glyph: '狗',
+    nameKey: marker('vitals.chinese.animal.dog'),
+    traitKey: marker('vitals.chinese.trait.dog'),
+  },
+  pig: {
+    animal: 'pig',
+    glyph: '豬',
+    nameKey: marker('vitals.chinese.animal.pig'),
+    traitKey: marker('vitals.chinese.trait.pig'),
+  },
+};
+
+export const CHINESE_SIGNS: readonly ChineseSignRecord[] =
+  Object.values(CHINESE_BY_ANIMAL);
 
 export const ASTRO_AGES: readonly AstroAge[] = [
   {

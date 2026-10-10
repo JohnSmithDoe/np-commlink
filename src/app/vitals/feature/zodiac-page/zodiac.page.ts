@@ -33,9 +33,17 @@ import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ProfilesFacade } from '../../data';
 import {
   ASTRO_AGES,
+  CHINESE_ELEMENT_LABEL_KEYS,
+  CHINESE_POLARITY_LABEL_KEYS,
   ZODIAC_BY_SIGN,
   ZODIAC_ELEMENT_LABEL_KEYS,
 } from '../../model/astro.consts';
+import {
+  ChineseYearPhase,
+  chineseTimelineAround,
+  chineseYearFor,
+  chineseYearWindow,
+} from '../../util/chinese-zodiac.utils';
 import { EraYearPipe } from '../../util/era-year.pipe';
 import {
   astroAgeFor,
@@ -72,6 +80,8 @@ export class VitalsZodiacPage {
   readonly signs = ZODIAC_BY_SIGN;
   readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
   readonly phaseKeys = PHASE_LABEL_KEYS;
+  readonly chineseElementKeys = CHINESE_ELEMENT_LABEL_KEYS;
+  readonly polarityKeys = CHINESE_POLARITY_LABEL_KEYS;
 
   readonly #profiles = inject(ProfilesFacade);
 
@@ -99,8 +109,16 @@ export class VitalsZodiacPage {
       : undefined;
   });
 
+  readonly chineseYear = computed(() => {
+    const year = chineseYearFor(this.date());
+    return year === undefined ? undefined : chineseYearWindow(year);
+  });
+
   readonly timeline: Signal<readonly ZodiacSeason[]> = computed(() =>
     zodiacTimelineAround(this.today())
+  );
+  readonly chineseTimeline: Signal<readonly ChineseYearPhase[]> = computed(() =>
+    chineseTimelineAround(this.today())
   );
   readonly currentAge = computed(() => astroAgeFor(this.today()));
 
