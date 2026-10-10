@@ -1,37 +1,43 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The daily reminders' two triggers — a load re-arms in silence, a change
- * speaks once — but reconciling the WHOLE domain each time rather than the
- * pill that moved. An effect runs after the reducer, so a deleted pill is
- * already gone from state and there is nothing left to read its ids off.
- * `nextSlot` is what makes the sweep possible: every id ever issued lies
- * below it, so clearing that range cannot leave an orphan nudging for a pill
- * nobody can see any more.
+ * Every trigger reconciles the WHOLE domain rather than the pill that
+ * moved: an effect runs after the reducer, so a deleted pill's ids are
+ * already gone. `nextSlot` makes the sweep possible — every id ever issued
+ * lies below it — and the clear must precede the arm in one promise, kept
+ * from interleaving by `concatMap`, because unticking a weekday SHRINKS a
+ * pill's due days.
  *
- * The clear must precede the arm within one promise — a pill's due days
- * SHRINK when a weekday is unticked — and `concatMap` is what keeps two
- * sweeps from interleaving.
- *
- * Only a `refused` outcome speaks. A sweep that placed nothing collects no
- * outcomes at all, and off native every outcome is `unsupported`, so neither
- * raises a toast about a request the user never made.
+ * The roster is a trigger too: a rename changes the body, and a pill whose
+ * person no longer resolves is not armed. A load re-arms in silence; only
+ * a `refused` outcome speaks, so off native nothing toasts.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
-import { catchError, concatMap, filter, from, map, Observable, of } from 'rxjs';
+import {
+  catchError,
+  concatMap,
+  distinctUntilChanged,
+  filter,
+  from,
+  map,
+  Observable,
+  of,
+  skip,
+} from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import {
   LocalNotificationsService,
   ReminderOutcome,
 } from '../../@shared/data/services/local-notifications.service';
-import { Pill, PillsState, Profile } from '../model/vitals.types';
+import { PersonRef } from '../../@shared/model/person.types';
+import { PEOPLE } from '../../@shared/util/people/people.token';
+import { Pill, PillsState } from '../model/vitals.types';
 import { pillNotificationBlock, pillNotificationId } from '../util/pill.utils';
 import { PillsActions } from './pills/pills.actions';
-import { ProfilesActions } from './profiles/profiles.actions';
-import { selectProfileItems } from './profiles/profiles.selector';
 import { VitalsActions } from './vitals.actions';
 import { selectPillsList } from './vitals.selector';
 
@@ -44,13 +50,30 @@ export class PillReminderEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);
   readonly #notifications = inject(LocalNotificationsService);
+  readonly #people = inject(PEOPLE);
+  readonly #roster$ = toObservable(this.#people);
 
   restoreReminders$ = createEffect(
     () => {
       return this.#actions$.pipe(
         ofType(VitalsActions.loaded),
-        concatLatestFrom(() => this.#snapshot()),
-        concatMap(([, pills, profiles]) => this.#reconcile(pills, profiles))
+        concatLatestFrom(() => this.#store.select(selectPillsList)),
+        concatMap(([, pills]) => this.#reconcile(pills))
+      );
+    },
+    { dispatch: false }
+  );
+
+  rosterReminders$ = createEffect(
+    () => {
+      return this.#roster$.pipe(
+        map((people) =>
+          people.map(({ id, name }) => `${id}:${name}`).join('|')
+        ),
+        distinctUntilChanged(),
+        skip(1),
+        concatLatestFrom(() => this.#store.select(selectPillsList)),
+        concatMap(([, pills]) => this.#reconcile(pills))
       );
     },
     { dispatch: false }
@@ -62,13 +85,10 @@ export class PillReminderEffects {
         PillsActions.addItem,
         PillsActions.updateItem,
         PillsActions.removeItem,
-        ProfilesActions.updateItem,
-        ProfilesActions.removeItem,
-        VitalsActions.restorePill,
-        VitalsActions.restoreProfile
+        VitalsActions.restorePill
       ),
-      concatLatestFrom(() => this.#snapshot()),
-      concatMap(([, pills, profiles]) => this.#reconcile(pills, profiles)),
+      concatLatestFrom(() => this.#store.select(selectPillsList)),
+      concatMap(([, pills]) => this.#reconcile(pills)),
       filter((outcomes) => outcomes.includes('refused')),
       map(() =>
         NotificationsActions.toast({ key: REMINDER_REFUSED, color: 'danger' })
@@ -76,49 +96,38 @@ export class PillReminderEffects {
     );
   });
 
-  #snapshot(): [Observable<PillsState>, Observable<Profile[]>] {
-    return [
-      this.#store.select(selectPillsList),
-      this.#store.select(selectProfileItems),
-    ];
-  }
-
-  #reconcile(
-    pills: PillsState,
-    profiles: readonly Profile[]
-  ): Observable<ReminderOutcome[]> {
-    return from(this.#sweep(pills, profiles)).pipe(
+  #reconcile(pills: PillsState): Observable<ReminderOutcome[]> {
+    return from(this.#sweep(pills, this.#people())).pipe(
       catchError(() => of<ReminderOutcome[]>(['refused']))
     );
   }
 
   async #sweep(
     pills: PillsState,
-    profiles: readonly Profile[]
+    people: readonly PersonRef[]
   ): Promise<ReminderOutcome[]> {
     const issued = Array.from({ length: pills.nextSlot }, (_, slot) =>
       pillNotificationBlock(slot)
     ).flat();
     await this.#notifications.cancelIds(issued);
 
+    const holders = new Map(people.map((person) => [person.id, person.name]));
     const due = pills.items.filter(
-      (pill) => pill.remind && pill.weekdays.length > 0
+      (pill) =>
+        pill.remind && pill.weekdays.length > 0 && holders.has(pill.profileId)
     );
     const outcomes: ReminderOutcome[] = [];
     for (const pill of due) {
-      outcomes.push(...(await this.#arm(pill, profiles)));
+      outcomes.push(...(await this.#arm(pill, holders.get(pill.profileId))));
     }
     return outcomes;
   }
 
-  async #arm(
-    pill: Pill,
-    profiles: readonly Profile[]
-  ): Promise<ReminderOutcome[]> {
+  async #arm(pill: Pill, holder = ''): Promise<ReminderOutcome[]> {
     const parameters = {
       name: pill.name,
       dose: String(pill.dose),
-      profile: profiles.find(({ id }) => id === pill.profileId)?.name ?? '',
+      profile: holder,
     };
 
     const outcomes: ReminderOutcome[] = [];

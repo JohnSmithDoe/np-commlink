@@ -370,6 +370,27 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     status: 'online',
   },
   {
+    id: 'people',
+    module: 'people',
+    icon: 'id-card-outline',
+    route: '/people',
+    titleKey: marker('page-title.people'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.people.name'),
+        descKey: marker('deck.cyberpunk.people.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.people.name'),
+        descKey: marker('deck.boomer.people.desc'),
+      },
+    },
+    onDeck: true,
+    source: 'people',
+    metric: 'count',
+    metricKey: marker('deck.metric.count'),
+  },
+  {
     id: 'vitals',
     module: 'vitals',
     icon: 'pulse-outline',

@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TrackplayId } from '../../model/trackplay.types';
-import { selectPlayerItems } from '../players/players.selector';
+import { PlayersFacade } from '../players/players.facade';
 import { GamesActions } from './games.actions';
 import {
   selectGameById,
   selectLeadersByGame,
-  selectResultByGame,
+  selectRankingByGame,
   selectRoundsByGame,
   selectScoresByGame,
 } from './games.selector';
@@ -15,7 +15,7 @@ import {
 export class GamePlayFacade {
   readonly #store = inject(Store);
 
-  readonly players = this.#store.selectSignal(selectPlayerItems);
+  readonly #players = inject(PlayersFacade);
 
   gameById(id: TrackplayId) {
     return this.#store.selectSignal(selectGameById(id));
@@ -26,8 +26,11 @@ export class GamePlayFacade {
   scoresByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectScoresByGame(id));
   }
-  resultByGame(id: TrackplayId) {
-    return this.#store.selectSignal(selectResultByGame(id));
+  rankingByGame(id: TrackplayId) {
+    return this.#store.selectSignal(selectRankingByGame(id));
+  }
+  nameOf(id: TrackplayId): string {
+    return this.#players.nameOf(id);
   }
   leadersByGame(id: TrackplayId) {
     return this.#store.selectSignal(selectLeadersByGame(id));

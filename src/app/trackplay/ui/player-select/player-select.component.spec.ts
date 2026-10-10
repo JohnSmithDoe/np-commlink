@@ -71,4 +71,14 @@ describe('TrackplayPlayerSelectComponent', () => {
 
     expect(emitted).toEqual([['d']]);
   });
+
+  it('keeps the seat of a person who is gone, so editing a game never rewrites it', () => {
+    setup(['d', 'gone']);
+    const emitted: TrackplayId[][] = [];
+    component.selectionChange.subscribe((ids) => emitted.push(ids));
+
+    component.onToggle('a', toggle(true));
+
+    expect(emitted).toEqual([['d', 'a', 'gone']]);
+  });
 });

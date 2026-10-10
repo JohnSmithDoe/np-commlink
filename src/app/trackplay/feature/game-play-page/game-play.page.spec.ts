@@ -6,8 +6,8 @@ import {
   mockGame,
   mockGamesState,
   mockPlayer,
-  mockPlayersState,
   mockTrackplayState,
+  providePeople,
 } from '../../testing/trackplay.test-data';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { GamesActions } from '../../data';
@@ -34,6 +34,7 @@ describe('TrackplayGamePlayPage', () => {
       imports: [TrackplayGamePlayPage],
       providers: [
         provideTestingProviders({ trackplay: state }),
+        providePeople([mockPlayer({ id: 'p1', name: 'Alice' })]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -117,13 +118,12 @@ describe('TrackplayGamePlayPage', () => {
     setup(
       mockTrackplayState({
         games: mockGamesState([game]),
-        players: mockPlayersState([mockPlayer({ id: 'p1', name: 'Alice' })]),
       })
     );
 
     expect(component.playerIds()).toEqual(['p1', 'p2']);
     expect(component.ended()).toBe(true);
     expect(component.playerName('p1')).toBe('Alice');
-    expect(component.playerName('nope')).toBe('');
+    expect(component.playerName('nope')).toBe('—');
   });
 });

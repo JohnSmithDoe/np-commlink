@@ -62,9 +62,11 @@ export class TrackplayPlayerSelectComponent {
 
   private emitSelection(): void {
     const checked = this.#checked();
+    const offered = new Set(this.players().map((player) => player.id));
     const ids = this.orderedPlayers()
       .map((player) => player.id)
       .filter((id) => checked[id]);
-    this.selectionChange.emit(ids);
+    const absent = this.selectedIds().filter((id) => !offered.has(id));
+    this.selectionChange.emit([...ids, ...absent]);
   }
 }

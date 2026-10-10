@@ -6,7 +6,6 @@ import { trackplayReducer } from './trackplay.reducer';
 import {
   gamesListEffects,
   gameTypesListEffects,
-  playersListEffects,
   trackplayRouteFilterEffects,
 } from './trackplay-list.effects';
 import {
@@ -28,7 +27,6 @@ export const trackplayContext = providePersistedContext({
     },
   ],
   effects: [
-    playersListEffects,
     gamesListEffects,
     gameTypesListEffects,
     trackplayRouteFilterEffects,

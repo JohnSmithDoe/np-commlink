@@ -5,7 +5,7 @@ import { TodayService } from '../../../@shared/data/services/today.service';
 import { Reading, READINGS_LIST_ID } from '../../model/vitals.types';
 import { createReading } from '../../util/vitals.factory';
 import { readingOn } from '../../util/vitals.utils';
-import { selectRouteProfile } from '../profiles/profiles.selector';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { selectReadingsList } from '../vitals.selector';
 import { ReadingsActions } from './readings.actions';
 import {
@@ -21,7 +21,7 @@ import {
 export class ReadingsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
-  readonly #profile = this.#store.selectSignal(selectRouteProfile);
+  readonly #profileId = this.#store.selectSignal(selectRouteEntityId);
   readonly #today = inject(TodayService).today;
 
   readonly state = this.#store.selectSignal(selectReadingsList);
@@ -35,16 +35,16 @@ export class ReadingsFacade {
   readonly summary = this.#store.selectSignal(selectRouteProfileSummary);
 
   showCreateDialog(): void {
-    const profile = this.#profile();
-    if (!profile) return;
+    const profileId = this.#profileId();
+    if (!profileId) return;
     const today = this.#today();
-    const logged = readingOn(this.profileReadings(), profile.id, today);
+    const logged = readingOn(this.profileReadings(), profileId, today);
     if (logged) {
       this.showEditDialog(logged);
       return;
     }
     this.#dialogs.open({
-      item: createReading(profile.id, 0, today),
+      item: createReading(profileId, 0, today),
       listId: READINGS_LIST_ID,
       editMode: 'create',
     });

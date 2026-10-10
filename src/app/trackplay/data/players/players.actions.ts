@@ -1,8 +1,13 @@
 import { createActionGroup } from '@ngrx/store';
-import { createItemListActionEvents } from '../../../@shared/data/item-lists/item-list.actions.factory';
-import { Player } from '../../model/trackplay.types';
+import { ItemListSortType } from '../../../@shared/model/item-list.types';
 
 export const PlayersActions = createActionGroup({
   source: 'Trackplay Players',
-  events: createItemListActionEvents<Player>(),
+  events: {
+    updateSearch: (searchQuery?: string) => ({ searchQuery }),
+    updateSort: (
+      sortBy?: ItemListSortType,
+      sortDirection?: 'asc' | 'desc' | 'keep' | 'toggle'
+    ) => ({ sortBy, sortDirection }),
+  },
 });

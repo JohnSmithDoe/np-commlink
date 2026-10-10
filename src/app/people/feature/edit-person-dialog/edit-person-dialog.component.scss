@@ -1,0 +1,11 @@
+.person-address__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.person-address__label {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}

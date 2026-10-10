@@ -1,9 +1,4 @@
-import {
-  createGame,
-  createGameType,
-  createPlayer,
-  createRound,
-} from './trackplay.factory';
+import { createGame, createGameType, createRound } from './trackplay.factory';
 import { gameTypeIdOf } from './game-type.utils';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -16,15 +11,6 @@ describe('trackplay.factory', () => {
 
     it('takes its id rather than minting one', () => {
       expect(createRound('r0').id).toBe('r0');
-    });
-  });
-
-  describe('createPlayer', () => {
-    it('trims the name and mints an id and a stamp', () => {
-      const player = createPlayer('  Bob  ');
-      expect(player.name).toBe('Bob');
-      expect(player.id).toMatch(UUID);
-      expect(player.createdAt).toBeTruthy();
     });
   });
 

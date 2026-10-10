@@ -1,22 +1,21 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * Neither `catalog` nor `manageCategories` is declared, which is how
- * `ListPageComponent` learns this list has no category axis: no chip bar,
- * no manage button. A player is not filed under anything — which is also
- * why `PlayersFacade` serves as the command port unchanged: it has no
- * `selectCategory` to offer, and the base reads that absence as the
- * third statement of the same fact.
+ * A player is a person, and a person is created in `people` — so the add
+ * button leaves for that program rather than opening a dialog here. The
+ * list's search and sort stay trackplay's: the view is local, only the
+ * roster is borrowed.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
-import { PlayersActions } from './players.actions';
 import {
   BaseListPageFacade,
   itemListCommands,
 } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { ItemListSortOption } from '../../../@shared/model/item-list.types';
-import { PLAYERS_LIST_ID } from '../../model/trackplay.types';
+import { PEOPLE_ROUTE } from '../../../@shared/util/people/people.token';
+import { PlayersActions } from './players.actions';
 import { PlayersFacade } from './players.facade';
 
 const SORT_OPTIONS: readonly ItemListSortOption[] = [
@@ -27,17 +26,17 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
 @Injectable({ providedIn: 'root' })
 export class PlayersPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
+  readonly #router = inject(Router);
   readonly #players = inject(PlayersFacade);
 
   protected readonly commands = itemListCommands(this.#store, PlayersActions);
 
   readonly state = this.#players.state;
-  readonly undoScope = signal(PLAYERS_LIST_ID);
   readonly items = this.#players.items;
   readonly searchResult = this.#players.searchResult;
   readonly sortOptions = signal(SORT_OPTIONS);
 
   showCreateDialog(): void {
-    this.#players.showCreateDialog();
+    void this.#router.navigate([PEOPLE_ROUTE]);
   }
 }

@@ -4,11 +4,7 @@ import { PillReminderEffects } from './pill-reminder.effects';
 import { selectReadingsCount } from './readings/readings.selector';
 import { VitalsActions } from './vitals.actions';
 import { vitalsReducer } from './vitals.reducer';
-import {
-  pillsListEffects,
-  profilesListEffects,
-  readingsListEffects,
-} from './vitals-list.effects';
+import { pillsListEffects, readingsListEffects } from './vitals-list.effects';
 import { selectVitalsState, VITALS_STATE_KEY } from './vitals.selector';
 
 export const vitalsContext = providePersistedContext({
@@ -24,10 +20,5 @@ export const vitalsContext = providePersistedContext({
       metrics: createMetric('count'),
     },
   ],
-  effects: [
-    profilesListEffects,
-    readingsListEffects,
-    pillsListEffects,
-    PillReminderEffects,
-  ],
+  effects: [readingsListEffects, pillsListEffects, PillReminderEffects],
 });

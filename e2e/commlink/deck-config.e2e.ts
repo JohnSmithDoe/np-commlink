@@ -141,13 +141,13 @@ test.describe('deck configuration', () => {
     page,
   }) => {
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/28');
+    await expect(statusStrip(page)).toContainText('/29');
 
     await openDeckConfig(page);
     await switchOn(page, MARKET, '"shopping"');
 
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/28');
+    await expect(statusStrip(page)).toContainText('/29');
   });
 
   test('orders only what is switched on, and names its module', async ({

@@ -15,7 +15,7 @@ import {
   mockGame,
   mockGamesState,
   mockPlayer,
-  mockPlayersState,
+  providePeople,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { EditGameDialogComponent } from './edit-game-dialog.component';
@@ -41,12 +41,12 @@ describe('EditGameDialogComponent', () => {
         provideTestingProviders({
           trackplay: mockTrackplayState({
             games: mockGamesState([skat]),
-            players: mockPlayersState([
-              mockPlayer({ id: 'p1', name: 'Alice' }),
-              mockPlayer({ id: 'p2', name: 'Bob' }),
-            ]),
           }),
         }),
+        providePeople([
+          mockPlayer({ id: 'p1', name: 'Alice' }),
+          mockPlayer({ id: 'p2', name: 'Bob' }),
+        ]),
       ],
     });
     host = TestBed.inject(ItemDialogService);

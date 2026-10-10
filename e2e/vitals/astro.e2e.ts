@@ -18,13 +18,10 @@ import {
 } from '../helpers';
 import {
   createProfile,
-  dateField,
   editDialog,
-  gotoPage,
   openProfile,
   pageRoot,
   PROFILE_PAGE,
-  PROFILES_PAGE,
 } from './helpers';
 
 const ZODIAC_PAGE = 'app-page-vitals-zodiac';
@@ -32,8 +29,7 @@ const ICHING_PAGE = 'app-page-vitals-iching';
 const CAST_PAGE = 'app-page-vitals-iching-cast';
 
 async function openProfileBornOn(page: Page, birthDate: string): Promise<void> {
-  await gotoPage(page, 'vitals', PROFILES_PAGE);
-  await createProfile(page, 'Martin');
+  await createProfile(page, 'Martin', 'person', birthDate);
   await openProfile(page, 'Martin');
 
   const profile = pageRoot(page, PROFILE_PAGE);
@@ -41,7 +37,6 @@ async function openProfileBornOn(page: Page, birthDate: string): Promise<void> {
 
   const dialog = editDialog(page);
   await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await pickDate(dateField(dialog), birthDate);
   await pickSelectOption(
     page,
     dialog.getByTestId('vitals-profile-ascendant'),
@@ -197,13 +192,12 @@ test.describe('BIOMON · the go-to profile', () => {
   }) => {
     await openProfileBornOn(page, '1980-08-05');
 
-    await gotoPage(page, 'vitals', PROFILES_PAGE);
     await createProfile(page, 'Rita');
     await openProfile(page, 'Rita');
 
     const rita = pageRoot(page, PROFILE_PAGE);
     await rita.getByTestId('vitals-favorite-toggle').click();
-    await waitForPersisted(page, 'vitals', '"favorite"');
+    await waitForPersisted(page, 'vitals', '"favoriteId"');
 
     await page.goto('/#/vitals/iching');
     const iching = pageRoot(page, ICHING_PAGE);

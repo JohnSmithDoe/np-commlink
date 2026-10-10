@@ -5,7 +5,8 @@ import {
   readingOn,
   readingsOf,
   summaryFor,
-  withSoleFavorite,
+  profilesOf,
+  summariesByProfile,
 } from './vitals.utils';
 
 const readings = [
@@ -67,28 +68,25 @@ describe('summaryFor', () => {
   });
 });
 
-describe('withSoleFavorite', () => {
-  const profiles = [
-    mockProfile({ id: 'ann' }),
-    mockProfile({ id: 'bo', favorite: true }),
-    mockProfile({ id: 'cat', type: 'pet' }),
-  ];
-
-  it('moves the flag rather than adding a second one', () => {
-    const moved = withSoleFavorite(profiles, 'ann');
-    expect(
-      moved.filter(({ favorite }) => favorite).map(({ id }) => id)
-    ).toEqual(['ann']);
+describe('profilesOf', () => {
+  it('lays a person’s astro override over the person', () => {
+    const [profile] = profilesOf([mockProfile({ id: 'ann' })], {
+      ann: { sun: 'leo' },
+    });
+    expect(profile).toEqual(mockProfile({ id: 'ann', sun: 'leo' }));
   });
+});
 
-  it('drops the key instead of writing false', () => {
-    expect(withSoleFavorite(profiles, 'ann')[1]).not.toHaveProperty('favorite');
-  });
+describe('summariesByProfile', () => {
+  it('summarises each weighed profile and nobody else', () => {
+    const summaries = summariesByProfile([
+      mockReading({ id: 'a', name: '2026-08-01', grams: 78_000 }),
+      mockReading({ id: 'b', name: '2026-08-02', grams: 77_800 }),
+    ]);
 
-  it('leaves nobody starred when the id is gone', () => {
-    expect(withSoleFavorite(profiles, 'nobody').some((p) => p.favorite)).toBe(
-      false
-    );
+    expect(summaries).toEqual({
+      'profile-1': { count: 2, latestGrams: 77_800, deltaGrams: -200 },
+    });
   });
 });
 
@@ -106,10 +104,10 @@ describe('favoriteAmong', () => {
 
   it('is the starred one whenever there is one', () => {
     expect(
-      favoriteAmong([
-        mockProfile({ id: 'ann' }),
-        mockProfile({ id: 'bo', favorite: true }),
-      ])?.id
+      favoriteAmong(
+        [mockProfile({ id: 'ann' }), mockProfile({ id: 'bo' })],
+        'bo'
+      )?.id
     ).toBe('bo');
   });
 });

@@ -9,8 +9,8 @@
     headerEnd
     slot="end"
     color="primary"
+    [routerLink]="peopleRoute"
     [attr.aria-label]="'a11y.edit' | translate"
-    (click)="facade.showEditPlayerDialog()"
   >
     <ion-icon slot="icon-only" name="create-outline" aria-hidden="true" />
   </ion-button>
@@ -60,5 +60,4 @@
   />
 </ng-template>
 
-<app-edit-player-dialog />
 <app-edit-game-dialog />

@@ -24,6 +24,7 @@ import {
   pickSelectOption,
   waitForPersisted,
 } from '../helpers';
+import { createPerson } from '../people/helpers';
 import { bootDeck, openPage, shot } from './shot';
 
 const PROFILES_PAGE = 'app-page-vitals-profiles';
@@ -63,21 +64,10 @@ async function saveNew(dialog: Locator): Promise<void> {
 async function createProfile(
   page: Page,
   name: string,
-  type: 'person' | 'pet' = 'person'
+  kind: 'person' | 'pet' = 'person'
 ): Promise<void> {
-  const profiles = pageRoot(page, PROFILES_PAGE);
-  await addButton(profiles).click();
-  const dialog = createDialog(page);
-  await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await nameBox(dialog).fill(name);
-  await expect(nameBox(dialog)).toHaveValue(name);
-  if (type === 'pet') {
-    await dialog
-      .getByTestId('vitals-profile-type')
-      .getByText('Tier', { exact: true })
-      .click();
-  }
-  await saveNew(dialog);
+  await createPerson(page, name, { kind });
+  const profiles = await openPage(page, 'vitals', PROFILES_PAGE);
   await expect(profiles.getByText(name, { exact: true })).toBeVisible();
 }
 
@@ -180,14 +170,11 @@ test('BIOMON', async ({ page }) => {
 });
 
 async function createPlayer(page: Page, name: string): Promise<void> {
-  const players = pageRoot(page, PLAYERS_PAGE);
-  await addButton(players).click();
-  const dialog = createDialog(page);
-  await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await nameBox(dialog).fill(name);
-  await expect(nameBox(dialog)).toHaveValue(name);
-  await saveNew(dialog);
-  await expect(players.getByText(name, { exact: true })).toBeVisible();
+  await createPerson(page, name);
+  await openPage(page, 'trackplay/players', PLAYERS_PAGE);
+  await expect(
+    pageRoot(page, PLAYERS_PAGE).getByText(name, { exact: true })
+  ).toBeVisible();
 }
 
 async function fillGameDialog(

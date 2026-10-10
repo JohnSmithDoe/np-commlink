@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -16,7 +16,7 @@ import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { GameRowComponent } from '../../ui/game-row/game-row.component';
 import { GamesForPlayerPageFacade } from '../../data';
 import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.component';
-import { EditPlayerDialogComponent } from '../edit-player-dialog/edit-player-dialog.component';
+import { PEOPLE_ROUTE } from '../../../@shared/util/people/people.token';
 
 @Component({
   selector: 'app-page-trackplay-player',
@@ -30,12 +30,13 @@ import { EditPlayerDialogComponent } from '../edit-player-dialog/edit-player-dia
     ListPageComponent,
     GameRowComponent,
     EditGameDialogComponent,
-    EditPlayerDialogComponent,
+    RouterLink,
   ],
   providers: [{ provide: LIST_FACADE, useExisting: GamesForPlayerPageFacade }],
 })
 export class TrackplayPlayerPage {
   readonly facade = inject(GamesForPlayerPageFacade);
+  readonly peopleRoute = PEOPLE_ROUTE;
   readonly #router = inject(Router);
 
   constructor() {

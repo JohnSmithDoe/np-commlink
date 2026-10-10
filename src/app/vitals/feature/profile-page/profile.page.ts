@@ -60,7 +60,7 @@ export class VitalsProfilePage {
   );
   readonly canPickFavorite = computed(
     () =>
-      this.facade.profile()?.type === 'person' &&
+      this.facade.profile()?.kind === 'person' &&
       this.#profiles.persons().length > 1
   );
 

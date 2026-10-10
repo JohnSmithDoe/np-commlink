@@ -8,8 +8,6 @@ import {
   mockGameType,
   mockGameTypesState,
   mockGamesForPlayerView,
-  mockPlayer,
-  mockPlayersState,
   mockRound,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
@@ -17,7 +15,7 @@ import {
   selectGameById,
   selectGamesForPlayerItems,
   selectGamesListItems,
-  selectResultByGame,
+  selectRankingByGame,
   selectRoundsByGame,
   selectScoresByGame,
 } from './games.selector';
@@ -43,10 +41,6 @@ const scored = [
 
 describe('games.selector — scoring', () => {
   const state = stateWith({
-    players: mockPlayersState([
-      mockPlayer({ id: 'p1', name: 'Alice' }),
-      mockPlayer({ id: 'p2', name: 'Bob' }),
-    ]),
     gameTypes: mockGameTypesState([
       mockGameType({ id: 'default', winHigh: true }),
       mockGameType({ id: 'low', name: 'Low', winHigh: false }),
@@ -67,16 +61,12 @@ describe('games.selector — scoring', () => {
   });
 
   it('picks the winner per the type winHigh rule', () => {
-    expect(selectResultByGame('gh')(state).map((p) => p.id)).toEqual([
-      'p2',
-      'p1',
-    ]);
-    expect(selectResultByGame('gl')(state)[0]?.id).toBe('p1');
+    expect(selectRankingByGame('gh')(state)).toEqual(['p2', 'p1']);
+    expect(selectRankingByGame('gl')(state)[0]).toBe('p1');
   });
 
   it('counts a player with no entry in a round as zero', () => {
     const sparse = stateWith({
-      players: mockPlayersState([mockPlayer({ id: 'p1' })]),
       games: mockGamesState([
         mockGame({
           id: 'g',
@@ -100,7 +90,7 @@ describe('games.selector — scoring', () => {
     expect(selectGameById('nope')(state)).toBeUndefined();
     expect(selectRoundsByGame('nope')(state)).toEqual([]);
     expect(selectScoresByGame('nope')(state)).toEqual({});
-    expect(selectResultByGame('nope')(state)).toEqual([]);
+    expect(selectRankingByGame('nope')(state)).toEqual([]);
   });
 });
 

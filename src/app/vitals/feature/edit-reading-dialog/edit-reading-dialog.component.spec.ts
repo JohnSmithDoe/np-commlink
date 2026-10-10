@@ -12,7 +12,7 @@ import { createReading } from '../../util/vitals.factory';
 import { todayISO } from '../../../@shared/util/formatting/date-format.utils';
 import { EditReadingDialogComponent } from './edit-reading-dialog.component';
 
-const cat = mockProfile({ id: 'cat', name: 'Katze', type: 'pet' });
+const cat = mockProfile({ id: 'cat', name: 'Katze', kind: 'pet' });
 const martin = mockProfile();
 
 const myReadings = [

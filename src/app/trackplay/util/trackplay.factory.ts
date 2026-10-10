@@ -6,7 +6,7 @@
  * the persisted log stops describing the store it produced. Required, not
  * defaulted — a default would let the impurity back in silently.
  *
- * The other three are called from a facade and dispatch a finished entity,
+ * The other two are called from a facade and dispatch a finished entity,
  * so they can spread `createBaseItem`.
  * ───────────────────────────────────────────────────────────────── */
 
@@ -21,7 +21,6 @@ import {
   GameTypesState,
   GAME_TYPES_LIST_ID,
   GAMES_LIST_ID,
-  Player,
   PlayersState,
   PLAYERS_LIST_ID,
   PlayerStats,
@@ -37,10 +36,6 @@ export const NO_PLAYER_STATS: PlayerStats = {
 };
 
 export const DEFAULT_GAME_TYPE_ID: TrackplayId = 'default';
-
-export function createPlayer(name: string): Player {
-  return createBaseItem(name);
-}
 
 export function createGameType(name: string, winHigh: boolean): GameType {
   return { ...createBaseItem(name), winHigh };
@@ -73,7 +68,6 @@ export const DEFAULT_GAME_TYPES: readonly GameType[] = [
 
 export const initialPlayersState: PlayersState = {
   id: PLAYERS_LIST_ID,
-  items: [],
   sort: { sortBy: 'name', sortDirection: 'asc' },
 };
 

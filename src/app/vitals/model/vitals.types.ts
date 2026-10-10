@@ -17,6 +17,7 @@
 import { IsoWeekday, Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
+import { PersonId, PersonRef } from '../../@shared/model/person.types';
 import { ZodiacSign } from './astro.types';
 
 export type VitalsId = string;
@@ -26,16 +27,12 @@ export const PROFILES_LIST_ID = '_vitals-profiles';
 export const READINGS_LIST_ID = '_vitals-readings';
 export const PILLS_LIST_ID = '_vitals-pills';
 
-export type ProfileType = 'person' | 'pet';
-
-export interface Profile extends BaseItem {
-  createdAt: Timestamp;
-  type: ProfileType;
-  birthDate?: ISODate;
+export interface AstroOverride {
   sun?: ZodiacSign;
   ascendant?: ZodiacSign;
-  favorite?: true;
 }
+
+export type Profile = PersonRef & AstroOverride;
 
 export interface Reading extends BaseItem {
   createdAt: Timestamp;
@@ -60,7 +57,11 @@ interface PillIntake {
 }
 
 export type ProfilesState = Readonly<
-  ItemList<Profile> & { id: typeof PROFILES_LIST_ID }
+  Omit<ItemList<Profile>, 'items'> & {
+    id: typeof PROFILES_LIST_ID;
+    astro: Record<PersonId, AstroOverride>;
+    favoriteId?: PersonId;
+  }
 >;
 export type ReadingsState = Readonly<
   ItemList<Reading> & { id: typeof READINGS_LIST_ID }

@@ -1,8 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import {
-  hydratedList,
-  addListItem,
-  updateListItem,
   updateListSearch,
   updateListSort,
 } from '../../../@shared/util/item-lists/list.utils';
@@ -15,11 +12,8 @@ import { PlayersActions } from './players.actions';
 export const playersReducer = createReducer(
   initialPlayersState,
 
-  on(PlayersActions.addItem, (state, { item }): PlayersState => addListItem(state, item)),
-  on(PlayersActions.updateItem, (state, { item }): PlayersState => updateListItem(state, item)),
   on(PlayersActions.updateSearch, (state, { searchQuery }): PlayersState => updateListSearch(state, searchQuery)),
-  on(PlayersActions.updateFilter, (state, { filterBy }): PlayersState => ({ ...state, filterBy })),
   on(PlayersActions.updateSort, (state, { sortBy, sortDirection }): PlayersState => updateListSort(state, sortBy, sortDirection)),
 
-  on(TrackplayActions.loaded, (state, { trackplay }): PlayersState => hydratedList({ ...initialPlayersState, ...(trackplay?.players ?? state) }))
+  on(TrackplayActions.loaded, (state, { trackplay }): PlayersState => trackplay ? { ...initialPlayersState, sort: trackplay.players?.sort ?? initialPlayersState.sort } : state)
 );

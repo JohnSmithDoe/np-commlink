@@ -1,0 +1,135 @@
+<app-item-edit-modal
+  [nameField]="form.name"
+  [canSave]="canSave()"
+  [isOpen]="isOpen()"
+  [saveButtonText]="saveButtonText()"
+  [dialogTitle]="dialogTitle()"
+  [closeButtonText]="closeButtonText"
+  (confirmed)="confirm()"
+  (cancelled)="close()"
+  (dismissed)="close()"
+>
+  <ion-segment data-testid="person-kind" [formField]="form.kind">
+    <ion-segment-button value="person">
+      {{ 'people.kind.person' | translate }}
+    </ion-segment-button>
+    <ion-segment-button value="pet">
+      {{ 'people.kind.pet' | translate }}
+    </ion-segment-button>
+  </ion-segment>
+
+  <app-date-input
+    [label]="'people.label.birth-date' | translate"
+    [formField]="form.birthDate"
+  />
+
+  @if (draft().kind === 'person') {
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        data-testid="person-size-top"
+        [label]="'people.label.top' | translate"
+        [formField]="form.top"
+      >
+        <ion-select-option value="">
+          {{ 'people.size.unset' | translate }}
+        </ion-select-option>
+        @for (size of clothingSizes; track size) {
+          <ion-select-option [value]="size">{{ size }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        [label]="'people.label.bottom' | translate"
+        [formField]="form.bottom"
+      >
+        <ion-select-option value="">
+          {{ 'people.size.unset' | translate }}
+        </ion-select-option>
+        @for (size of clothingSizes; track size) {
+          <ion-select-option [value]="size">{{ size }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        labelPlacement="stacked"
+        data-testid="person-size-shoe"
+        [label]="'people.label.shoe' | translate"
+        [formField]="form.shoe"
+      >
+        <ion-select-option value="">
+          {{ 'people.size.unset' | translate }}
+        </ion-select-option>
+        @for (size of shoeSizes; track size) {
+          <ion-select-option [value]="size">{{ size }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  }
+
+  @for (address of form.addresses; track $index) {
+    <div class="person-address">
+      <div class="person-address__head">
+        <h3 class="person-address__label">
+          {{ 'people.label.address' | translate }}
+        </h3>
+        <ion-button
+          fill="clear"
+          color="medium"
+          [attr.aria-label]="'people.a11y.remove-address' | translate"
+          (click)="removeAddress($index)"
+        >
+          <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
+        </ion-button>
+      </div>
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          autocomplete="street-address"
+          [label]="'people.label.street' | translate"
+          [formField]="address.street"
+        />
+      </ion-item>
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          inputmode="numeric"
+          autocomplete="postal-code"
+          [label]="'people.label.postal-code' | translate"
+          [formField]="address.postalCode"
+        />
+      </ion-item>
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          autocomplete="address-level2"
+          data-testid="person-address-city"
+          [label]="'people.label.city' | translate"
+          [formField]="address.city"
+        />
+      </ion-item>
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          autocomplete="country-name"
+          [label]="'people.label.country' | translate"
+          [formField]="address.country"
+        />
+      </ion-item>
+    </div>
+  }
+
+  <ion-button
+    fill="clear"
+    data-testid="person-add-address"
+    (click)="addAddress()"
+  >
+    <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+    {{ 'people.action.add-address' | translate }}
+  </ion-button>
+</app-item-edit-modal>

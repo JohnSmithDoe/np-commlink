@@ -1,68 +1,54 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * The undo test drives the HEADER button: a toast reports and offers
- * nothing, and this is the only e2e proving trackplay's per-entity
- * restore, which replaced a snapshot that ate anything created after the
- * delete.
- *
- * The reload test guards silent data loss: on re-entry the route
- * registers the slice at empty `initialState` and the resolver dispatches
- * `[Trackplay] load`, which the save effect must exclude or it writes
- * that empty slice over the saved player before the load effect reads it
- * back.
+ * The roster is borrowed from the people program, so the reload test now
+ * guards the KERNEL's boot hydration: the players page reads persons the
+ * people slice restored, and nothing of trackplay's own.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { listRow, slideDelete, waitForPersisted } from '../helpers';
-import { createPlayer, gotoPage, mainContent } from './helpers';
+import { listRow, waitForPersisted } from '../helpers';
+import { createPerson, PEOPLE_PAGE } from '../people/helpers';
+import {
+  addButton,
+  createPlayer,
+  gotoPage,
+  mainContent,
+  pageRoot,
+  PLAYERS_PAGE,
+} from './helpers';
 
 test.describe('trackplay players', () => {
-  test('creates two players via the dialog', async ({ page }) => {
-    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
-
+  test('lists the persons of the people program, and no pet', async ({
+    page,
+  }) => {
     await createPlayer(page, 'Alice');
     await createPlayer(page, 'Bob');
+    await createPerson(page, 'Mieze', { kind: 'pet' });
 
-    await expect(mainContent(page).getByTestId('list-row')).toHaveCount(2);
-    await expect(listRow(page, 'Alice')).toBeVisible();
-    await expect(listRow(page, 'Bob')).toBeVisible();
+    await gotoPage(page, 'trackplay/players', PLAYERS_PAGE);
+
+    const rows = pageRoot(page, PLAYERS_PAGE).getByTestId('list-row');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.filter({ hasText: 'Alice' })).toBeVisible();
+    await expect(rows.filter({ hasText: 'Bob' })).toBeVisible();
   });
 
-  test('deletes a player and restores it from the header button', async ({
-    page,
-  }) => {
-    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
+  test('sends the add button to the people program', async ({ page }) => {
+    await gotoPage(page, 'trackplay/players', PLAYERS_PAGE);
 
-    await createPlayer(page, 'Charlie');
-    const row = listRow(page, 'Charlie');
-    await expect(row).toBeVisible();
+    await addButton(pageRoot(page, PLAYERS_PAGE)).click();
 
-    await slideDelete(row);
-
-    await expect(
-      mainContent(page).getByText('Charlie', { exact: true })
-    ).toHaveCount(0);
-
-    const undo = page.getByTestId('undo-button');
-    await expect(undo).toBeVisible({ timeout: 10_000 });
-    await undo.click();
-
-    await expect(
-      mainContent(page).getByText('Charlie', { exact: true })
-    ).toBeVisible();
-    await expect(undo).toHaveCount(0);
+    await expect(page).toHaveURL(/#\/people$/);
+    await expect(mainContent(page).locator(PEOPLE_PAGE)).toBeVisible();
   });
 
-  test('keeps players across a full reload (hydration must not clobber storage)', async ({
-    page,
-  }) => {
-    await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
+  test('keeps players across a full reload', async ({ page }) => {
     await createPlayer(page, 'Dunkelzahn');
-    await waitForPersisted(page, 'trackplay', 'Dunkelzahn');
+    await waitForPersisted(page, 'people', 'Dunkelzahn');
 
     await page.reload();
-    await expect(
-      mainContent(page).locator('app-page-trackplay-players')
-    ).toBeVisible({ timeout: 30_000 });
+    await expect(mainContent(page).locator(PLAYERS_PAGE)).toBeVisible({
+      timeout: 30_000,
+    });
 
     await expect(listRow(page, 'Dunkelzahn')).toBeVisible();
   });

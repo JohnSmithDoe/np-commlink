@@ -5,7 +5,7 @@ import {
   mockGame,
   mockGamesState,
   mockPlayer,
-  mockPlayersState,
+  providePeople,
   mockTrackplayState,
 } from '../../testing/trackplay.test-data';
 import { mockRouterState } from '../../../@shared/testing/test-data';
@@ -23,7 +23,6 @@ describe('TrackplayPlayerPage', () => {
       providers: [
         provideTestingProviders({
           trackplay: mockTrackplayState({
-            players: mockPlayersState([mockPlayer({ id: 'p1', name: 'Ada' })]),
             games: mockGamesState([
               mockGame({ id: 'g1', playerIds: ['p1'] }),
               mockGame({ id: 'g2', playerIds: ['p2'] }),
@@ -31,6 +30,7 @@ describe('TrackplayPlayerPage', () => {
           }),
           router: mockRouterState({ parameters: { id } }),
         }),
+        providePeople([mockPlayer({ id: 'p1', name: 'Ada' })]),
       ],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');

@@ -1,4 +1,7 @@
+import { signal } from '@angular/core';
+import { PersonRef } from '../../@shared/model/person.types';
 import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
+import { PEOPLE } from '../../@shared/util/people/people.token';
 import {
   Pill,
   PillsState,
@@ -20,7 +23,7 @@ export function mockProfile(overrides: Partial<Profile> = {}): Profile {
   return {
     id: 'profile-1',
     name: 'Martin',
-    type: 'person',
+    kind: 'person',
     createdAt: TEST_TIMESTAMP,
     ...overrides,
   };
@@ -61,11 +64,15 @@ export function mockPillsState(
 }
 
 export function mockProfilesState(
-  items: Profile[] = [],
   overrides: Partial<ProfilesState> = {}
 ): ProfilesState {
-  return { ...initialProfilesState, items, ...overrides };
+  return { ...initialProfilesState, ...overrides };
 }
+
+export const providePeople = (people: readonly PersonRef[]) => ({
+  provide: PEOPLE,
+  useValue: signal(people),
+});
 
 export function mockReadingsState(
   items: Reading[] = [],

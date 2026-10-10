@@ -89,6 +89,23 @@ outside AGENDA._
 
 ---
 
+## SIN — the people module is a first cut
+
+Landed working and gated, but Martin's verdict is that it needs work. Known rough edges:
+
+- **No person page.** A tap opens the edit dialog; the row shows only the first address, and nothing
+  links from a person to their BIOMON profile or TRACKPLAY record.
+- **Sizes are one list for top and trousers** (letters, then children's heights) plus EU shoes — no
+  jeans W/L, no per-garment notes. Untested against how sizes are actually bought.
+- **Creating from BIOMON or TRACKPLAY navigates away** to `/people` and does not come back; the search
+  term is not carried over.
+- **Orphans accumulate.** A deleted person's readings, pills and games stay on disk, unread, with no
+  sweep and no way to see them.
+- **The BIOMON astro dialog has no name field and a generic title** — it does not say whose signs it edits.
+- **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" moves on
+  any game edit, not only on a scored round.
+- **No handbook page for SIN**; the BIOMON and TRACKPLAY pages were reworded, their figures stale.
+
 ## What the next reviewer should look for
 
 The shapes this review turned up, kept because they will recur. Each is invisible to every gate here.

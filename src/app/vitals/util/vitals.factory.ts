@@ -7,10 +7,8 @@ import {
   Pill,
   PillsState,
   PILLS_LIST_ID,
-  Profile,
   ProfilesState,
   PROFILES_LIST_ID,
-  ProfileType,
   Reading,
   ReadingsState,
   READINGS_LIST_ID,
@@ -18,13 +16,6 @@ import {
 } from '../model/vitals.types';
 
 export const EVERY_DAY: IsoWeekday[] = [1, 2, 3, 4, 5, 6, 7];
-
-export function createProfile(
-  name: string,
-  type: ProfileType = 'person'
-): Profile {
-  return { ...createBaseItem(name), type };
-}
 
 export function createReading(
   profileId: VitalsId,
@@ -54,8 +45,8 @@ export function createPill(
 
 export const initialProfilesState: ProfilesState = {
   id: PROFILES_LIST_ID,
-  items: [],
   sort: { sortBy: 'name', sortDirection: 'asc' },
+  astro: {},
 };
 
 export const initialReadingsState: ReadingsState = {

@@ -52,10 +52,12 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
 
   readonly game = this.#facade.gameById(this.id);
-  readonly players = this.#facade.players;
   readonly rounds = this.#facade.roundsByGame(this.id);
   readonly scores = this.#facade.scoresByGame(this.id);
-  readonly result = this.#facade.resultByGame(this.id);
+  readonly #ranking = this.#facade.rankingByGame(this.id);
+  readonly result = computed(() =>
+    this.#ranking().map((id) => ({ id, name: this.playerName(id) }))
+  );
   readonly #leaders = this.#facade.leadersByGame(this.id);
 
   readonly drawn = computed(() => this.#leaders().length > 1);
@@ -92,7 +94,7 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   }
 
   playerName(pid: TrackplayId): string {
-    return this.players().find((player) => player.id === pid)?.name ?? '';
+    return this.#facade.nameOf(pid);
   }
 
   valueFor(round: Round, pid: TrackplayId): number | null {

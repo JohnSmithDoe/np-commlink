@@ -66,7 +66,6 @@ async function enterScore(
 }
 
 async function createTwoPlayers(page: Page): Promise<void> {
-  await gotoPage(page, 'trackplay/players', 'app-page-trackplay-players');
   await createPlayer(page, 'Alice');
   await createPlayer(page, 'Bob');
 }

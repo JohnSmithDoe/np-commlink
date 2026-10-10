@@ -1,4 +1,6 @@
+import { PersonId, PersonRef } from '../../@shared/model/person.types';
 import {
+  AstroOverride,
   ISODate,
   Profile,
   ProfileSummary,
@@ -6,19 +8,26 @@ import {
   VitalsId,
 } from '../model/vitals.types';
 
-export const withSoleFavorite = (
-  profiles: readonly Profile[],
-  favoriteId: VitalsId
-): Profile[] =>
-  profiles.map(({ favorite, ...profile }) =>
-    profile.id === favoriteId ? { ...profile, favorite: true } : profile
-  );
+export const profilesOf = (
+  people: readonly PersonRef[],
+  astro: Readonly<Record<PersonId, AstroOverride>>
+): Profile[] => people.map((person) => ({ ...person, ...astro[person.id] }));
 
-export const favoriteAmong = (
-  persons: readonly Profile[]
-): Profile | undefined =>
-  persons.find((person) => person.favorite) ??
+export const favoriteAmong = <T extends PersonRef>(
+  persons: readonly T[],
+  favoriteId?: PersonId
+): T | undefined =>
+  persons.find((person) => person.id === favoriteId) ??
   (persons.length === 1 ? persons[0] : undefined);
+
+export const summariesByProfile = (
+  readings: readonly Reading[]
+): Record<VitalsId, ProfileSummary> => {
+  const profileIds = new Set(readings.map((reading) => reading.profileId));
+  return Object.fromEntries(
+    [...profileIds].map((id) => [id, summaryFor(readingsOf(readings, id))])
+  );
+};
 
 export const readingsOf = (
   readings: readonly Reading[],

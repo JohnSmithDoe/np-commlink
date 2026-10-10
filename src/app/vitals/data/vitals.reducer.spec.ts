@@ -1,60 +1,54 @@
 import {
-  mockProfile,
   mockProfilesState,
   mockReading,
   mockReadingsState,
   mockVitalsState,
 } from '../testing/vitals.test-data';
+import { VitalsState } from '../model/vitals.types';
 import { ProfilesActions } from './profiles/profiles.actions';
 import { ReadingsActions } from './readings/readings.actions';
 import { VitalsActions } from './vitals.actions';
 import { vitalsReducer } from './vitals.reducer';
 
-const martin = mockProfile();
-const cat = mockProfile({ id: 'cat', name: 'Katze', type: 'pet' });
 const mine = mockReading({ id: 'mine' });
-const cats = mockReading({ id: 'cats', profileId: 'cat', grams: 4300 });
 
-const stateWithBoth = mockVitalsState({
-  profiles: mockProfilesState([martin, cat]),
-  readings: mockReadingsState([mine, cats]),
-});
+describe('vitalsReducer — profiles', () => {
+  it('keeps one astro override per person, replacing the last', () => {
+    const first = vitalsReducer(
+      mockVitalsState(),
+      ProfilesActions.setAstro('martin', { sun: 'leo' })
+    );
+    const second = vitalsReducer(
+      first,
+      ProfilesActions.setAstro('martin', { ascendant: 'aries' })
+    );
 
-describe('vitalsReducer — deleting a profile', () => {
-  it('takes that profile’s readings with it and leaves the others', () => {
-    const next = vitalsReducer(stateWithBoth, ProfilesActions.removeItem(cat));
-
-    expect(next.profiles.items).toEqual([martin]);
-    expect(next.readings.items).toEqual([mine]);
+    expect(second.profiles.astro).toEqual({
+      martin: { ascendant: 'aries' },
+    });
   });
 
-  it('puts the profile and its history back on restore', () => {
-    const deleted = vitalsReducer(
-      stateWithBoth,
-      ProfilesActions.removeItem(cat)
+  it('stars exactly one person', () => {
+    const first = vitalsReducer(
+      mockVitalsState(),
+      ProfilesActions.setFavorite('ann')
     );
+    const second = vitalsReducer(first, ProfilesActions.setFavorite('bo'));
 
-    const restored = vitalsReducer(
-      deleted,
-      VitalsActions.restoreProfile(cat, [cats], [], [])
-    );
-
-    expect(restored.profiles.items).toContainEqual(cat);
-    expect(restored.readings.items).toContainEqual(cats);
+    expect(second.profiles.favoriteId).toBe('bo');
   });
 });
 
 describe('vitalsReducer — readings', () => {
-  it('adds and removes a reading without touching the roster', () => {
+  it('adds and removes a reading', () => {
     const added = vitalsReducer(
-      mockVitalsState({ profiles: mockProfilesState([martin]) }),
+      mockVitalsState(),
       ReadingsActions.addItem(mine)
     );
     expect(added.readings.items).toEqual([mine]);
 
     const removed = vitalsReducer(added, ReadingsActions.removeItem(mine));
     expect(removed.readings.items).toEqual([]);
-    expect(removed.profiles.items).toEqual([martin]);
   });
 
   it('updates the reading carrying a known id', () => {
@@ -78,21 +72,42 @@ describe('vitalsReducer — hydration', () => {
       undefined,
       VitalsActions.loaded(
         mockVitalsState({
-          profiles: mockProfilesState([martin], { searchQuery: 'mar' }),
+          profiles: mockProfilesState({
+            searchQuery: 'mar',
+            astro: { martin: { sun: 'leo' } },
+          }),
           readings: mockReadingsState([mine], { searchQuery: '2026' }),
         })
       )
     );
 
-    expect(next.profiles.items).toEqual([martin]);
+    expect(next.profiles.astro).toEqual({ martin: { sun: 'leo' } });
     expect(next.profiles.searchQuery).toBeUndefined();
     expect(next.readings.searchQuery).toBeUndefined();
   });
 
-  it('keeps the empty roster a cold install ships', () => {
+  it('starts empty on a cold install', () => {
     const next = vitalsReducer(undefined, VitalsActions.loaded(null));
 
-    expect(next.profiles.items).toEqual([]);
+    expect(next.profiles.astro).toEqual({});
     expect(next.readings.items).toEqual([]);
+  });
+});
+
+describe('vitalsReducer — the roster BIOMON used to own', () => {
+  it('resets a stored profile list instead of carrying it forward', () => {
+    const legacy = {
+      ...mockVitalsState({ readings: mockReadingsState([mine]) }),
+      profiles: {
+        id: '_vitals-profiles',
+        items: [{ id: 'martin', name: 'Martin', type: 'person' }],
+        sort: { sortBy: 'name', sortDirection: 'asc' },
+      },
+    } as unknown as VitalsState;
+
+    const next = vitalsReducer(undefined, VitalsActions.loaded(legacy));
+
+    expect(next.profiles).toEqual(mockProfilesState());
+    expect(next.readings.items).toEqual([mine]);
   });
 });

@@ -6,7 +6,7 @@ import { UndoActions } from '../../../@shared/data/undo/undo.actions';
 import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { isTakenOn } from '../../util/pill.utils';
 import { createPill } from '../../util/vitals.factory';
-import { selectRouteProfile } from '../profiles/profiles.selector';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import { VitalsActions } from '../vitals.actions';
 import { selectIntakes, selectPillsList } from '../vitals.selector';
 import { PillsActions } from './pills.actions';
@@ -21,7 +21,7 @@ import {
 export class PillsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
-  readonly #profile = this.#store.selectSignal(selectRouteProfile);
+  readonly #profileId = this.#store.selectSignal(selectRouteEntityId);
   readonly #intakes = this.#store.selectSignal(selectIntakes);
   readonly #today = inject(TodayService).today;
 
@@ -40,10 +40,10 @@ export class PillsFacade {
   }
 
   showCreateDialog(): void {
-    const profile = this.#profile();
-    if (!profile) return;
+    const profileId = this.#profileId();
+    if (!profileId) return;
     this.#dialogs.open({
-      item: createPill(profile.id, this.state().searchQuery ?? ''),
+      item: createPill(profileId, this.state().searchQuery ?? ''),
       listId: PILLS_LIST_ID,
       editMode: 'create',
     });

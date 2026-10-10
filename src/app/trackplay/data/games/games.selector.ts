@@ -17,7 +17,6 @@ import {
 import {
   Game,
   GAMES_LIST_ID,
-  Player,
   Round,
   TrackplayId,
 } from '../../model/trackplay.types';
@@ -27,7 +26,6 @@ import {
   selectGamesList,
   selectGameTypesList,
 } from '../trackplay.selector';
-import { selectPlayerItems } from '../players/players.selector';
 
 const endedLast = (a: Game, b: Game): number =>
   (a.ended ? 1 : 0) - (b.ended ? 1 : 0);
@@ -109,19 +107,16 @@ export const selectScoresByGame = (gameId: TrackplayId) =>
     game ? computeScores(game) : {}
   );
 
-export const selectResultByGame = (gameId: TrackplayId) =>
+export const selectRankingByGame = (gameId: TrackplayId) =>
   createSelector(
     selectGameById(gameId),
-    selectPlayerItems,
     selectGameTypesList,
-    (game, players, gameTypes): Player[] => {
+    (game, gameTypes): TrackplayId[] => {
       if (!game) return [];
       const winHigh =
         gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
           ?.winHigh ?? true;
-      return rankPlayersByScore(game.playerIds, computeScores(game), winHigh)
-        .map((pid) => players.find((player) => player.id === pid))
-        .filter((player): player is Player => !!player);
+      return rankPlayersByScore(game.playerIds, computeScores(game), winHigh);
     }
   );
 

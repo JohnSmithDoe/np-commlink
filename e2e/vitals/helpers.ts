@@ -1,21 +1,11 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * A fresh browser context starts BIOMON with no profiles at all: the
- * module seeds nothing, so a spec creates whoever it needs to weigh.
+ * BIOMON owns no roster: a profile is a person from the people program,
+ * so `createProfile` creates one there and comes back. A fresh context
+ * has nobody, and a spec creates whoever it needs to weigh.
  *
  * `weightBox` indexes the weight fields rather than naming them, because
  * an `ion-input`'s label lives in its shadow root and the pet dialog shows
- * three of them: the reading's own, the holder's, and the combined one, in
- * that order.
- *
- * `createProfile` asserts the name landed before it reaches for the save
- * button. `fill` can win the race against an `ion-modal` still presenting,
- * and the value is then lost silently: the draft stays blank, `canSave`
- * stays false, and the click times out against a disabled button 30
- * seconds later with nothing to say about why.
- *
- * Everything re-exported below belongs to the suite-wide helpers rather
- * than to this suite — the shared edit modal's copy, the shared page
- * header — while this suite's specs keep one import.
+ * three of them: the reading's own, the holder's, and the combined one.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';
@@ -26,9 +16,9 @@ import {
   editDialog,
   gotoPage,
   mainContent,
-  nameBox,
   pageRoot,
 } from '../helpers';
+import { createPerson } from '../people/helpers';
 
 export {
   addButton,
@@ -53,25 +43,14 @@ export function weightBox(dialog: Locator, index = 0): Locator {
 export async function createProfile(
   page: Page,
   name: string,
-  type: 'person' | 'pet' = 'person'
+  kind: 'person' | 'pet' = 'person',
+  birthDate?: string
 ): Promise<void> {
-  const profiles = pageRoot(page, PROFILES_PAGE);
-  await addButton(profiles).click();
-  const dialog = createDialog(page);
-  await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await nameBox(dialog).fill(name);
-  await expect(nameBox(dialog)).toHaveValue(name);
-  if (type === 'pet') {
-    await dialog
-      .getByTestId('vitals-profile-type')
-      .getByText('Tier', { exact: true })
-      .click();
-  }
-  const save = dialog.getByRole('button', { name: CREATE_BUTTON });
-  await expect(save).toBeEnabled();
-  await save.click();
-  await expect(dialog).toBeHidden();
-  await expect(profiles.getByText(name, { exact: true })).toBeVisible();
+  await createPerson(page, name, { kind, birthDate });
+  await gotoPage(page, 'vitals', PROFILES_PAGE);
+  await expect(
+    pageRoot(page, PROFILES_PAGE).getByText(name, { exact: true })
+  ).toBeVisible();
 }
 
 export async function openProfile(page: Page, name: string): Promise<void> {

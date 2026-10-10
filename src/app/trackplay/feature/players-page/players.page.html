@@ -11,10 +11,8 @@
     [title]="item.name"
     [ionList]="ionList"
     [leadingIcon]="'person'"
-    [startSwipeAction]="editSwipeAction"
+    [canDelete]="false"
     (selectItem)="goToPlayer(item.id)"
-    (startSwipe)="openPlayerEdit(item)"
-    (deleteItem)="deletePlayer(item)"
   >
     <p itemDetails class="second-line">
       <ion-note>{{ 'trackplay.label.created' | translate }}</ion-note>
@@ -50,5 +48,3 @@
     </p>
   </app-list-item>
 </ng-template>
-
-<app-edit-player-dialog />

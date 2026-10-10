@@ -249,6 +249,8 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
   business in the draft — strip it in `toForm` and put it back in `fromForm` from the seed, which is what
   the `TForm` seam exists for. A production build does not freeze, so **this crashes only in dev** and a
   spec has to freeze the fixture itself to see it.
+  An array the form DOES edit (a person's addresses) is cloned per element in `toForm`, and the Symbol
+  then rides back OUT: `fromForm` rebuilds each element field by field, or the tag reaches the store.
 
 ## Layout units that lie
 

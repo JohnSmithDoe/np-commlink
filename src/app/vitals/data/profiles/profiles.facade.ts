@@ -1,85 +1,82 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `removeItem` builds the undo entry here rather than in an effect,
- * because deleting a profile takes its readings with it and an effect runs
- * AFTER the reducer — it would snapshot a profile whose history is already
- * gone. The command is the last place that can still see both.
+ * A profile is a person from `PEOPLE` seen through BIOMON: the person
+ * brings name, kind and birthday, this slice only the astro overrides and
+ * the go-to star. Who exists is not BIOMON's to decide, so creating sends
+ * the user to the people program and nothing here removes anyone.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
-import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import { Profile, PROFILES_LIST_ID, VitalsId } from '../../model/vitals.types';
-import { createProfile } from '../../util/vitals.factory';
-import { pillsOf } from '../../util/pill.utils';
-import { readingsOf } from '../../util/vitals.utils';
-import { selectPillItems } from '../pills/pills.selector';
-import { selectReadingItems } from '../readings/readings.selector';
-import { selectIntakes, selectProfilesList } from '../vitals.selector';
-import { VitalsActions } from '../vitals.actions';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
+import { PersonId } from '../../../@shared/model/person.types';
+import {
+  filterAndSortItemList,
+  filterListBySearchQuery,
+} from '../../../@shared/util/item-lists/list.selector';
+import {
+  PEOPLE,
+  PEOPLE_ROUTE,
+} from '../../../@shared/util/people/people.token';
+import {
+  AstroOverride,
+  Profile,
+  PROFILES_LIST_ID,
+} from '../../model/vitals.types';
+import { favoriteAmong, profilesOf } from '../../util/vitals.utils';
+import { selectProfilesList } from '../vitals.selector';
 import { ProfilesActions } from './profiles.actions';
 import {
-  selectFavoriteProfile,
-  selectPersonProfiles,
-  selectProfileItems,
+  selectAstroOverrides,
+  selectFavoriteId,
   selectProfileSummaries,
-  selectProfilesListItems,
-  selectProfilesSearchResult,
-  selectRouteProfile,
 } from './profiles.selector';
 
 @Injectable({ providedIn: 'root' })
 export class ProfilesFacade {
   readonly #store = inject(Store);
+  readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
-  readonly #readings = this.#store.selectSignal(selectReadingItems);
-  readonly #pills = this.#store.selectSignal(selectPillItems);
-  readonly #intakes = this.#store.selectSignal(selectIntakes);
+  readonly #people = inject(PEOPLE);
+  readonly #view = this.#store.selectSignal(selectProfilesList);
+  readonly #astro = this.#store.selectSignal(selectAstroOverrides);
+  readonly #favoriteId = this.#store.selectSignal(selectFavoriteId);
+  readonly #routeId = this.#store.selectSignal(selectRouteEntityId);
 
-  readonly state = this.#store.selectSignal(selectProfilesList);
-  readonly allItems = this.#store.selectSignal(selectProfileItems);
-  readonly items = this.#store.selectSignal(selectProfilesListItems);
-  readonly searchResult = this.#store.selectSignal(selectProfilesSearchResult);
+  readonly allItems = computed(() => profilesOf(this.#people(), this.#astro()));
+  readonly state = computed(() => ({
+    ...this.#view(),
+    items: this.allItems(),
+  }));
+  readonly searchResult = computed(() => filterListBySearchQuery(this.state()));
+  readonly items = computed(() =>
+    filterAndSortItemList(this.state(), this.searchResult())
+  );
   readonly summaries = this.#store.selectSignal(selectProfileSummaries);
-  readonly persons = this.#store.selectSignal(selectPersonProfiles);
-  readonly routeProfile = this.#store.selectSignal(selectRouteProfile);
-  readonly favoriteProfile = this.#store.selectSignal(selectFavoriteProfile);
+  readonly persons = computed(() =>
+    this.allItems().filter((profile) => profile.kind === 'person')
+  );
+  readonly routeProfile = computed(() =>
+    this.allItems().find((profile) => profile.id === this.#routeId())
+  );
+  readonly favoriteProfile = computed(() =>
+    favoriteAmong(this.persons(), this.#favoriteId())
+  );
 
   showCreateDialog(): void {
-    this.#dialogs.open({
-      item: createProfile(this.state().searchQuery ?? ''),
-      listId: PROFILES_LIST_ID,
-      editMode: 'create',
-    });
+    void this.#router.navigateByUrl(PEOPLE_ROUTE);
   }
 
   showEditDialog(item: Profile): void {
     this.#dialogs.open({ item, listId: PROFILES_LIST_ID, editMode: 'update' });
   }
 
-  saveItem(profile: Profile): void {
-    this.#store.dispatch(ProfilesActions.addOrUpdateItem(profile));
+  saveAstro(id: PersonId, astro: AstroOverride): void {
+    this.#store.dispatch(ProfilesActions.setAstro(id, astro));
   }
 
-  setFavorite(id: VitalsId): void {
+  setFavorite(id: PersonId): void {
     this.#store.dispatch(ProfilesActions.setFavorite(id));
-  }
-
-  removeItem(profile: Profile): void {
-    const pills = pillsOf(this.#pills(), profile.id);
-    const pillIds = new Set(pills.map((pill) => pill.id));
-    this.#store.dispatch(
-      UndoActions.pushed({
-        scope: PROFILES_LIST_ID,
-        name: profile.name,
-        action: VitalsActions.restoreProfile(
-          profile,
-          readingsOf(this.#readings(), profile.id),
-          pills,
-          this.#intakes().filter((intake) => pillIds.has(intake.pillId))
-        ),
-      })
-    );
-    this.#store.dispatch(ProfilesActions.removeItem(profile));
   }
 }

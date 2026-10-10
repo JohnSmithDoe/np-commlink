@@ -15,6 +15,7 @@ export type AppModule =
   | 'trackplay'
   | 'ritual'
   | 'geist'
+  | 'people'
   | 'vitals'
   | 'handbook'
   | 'coprocessor'

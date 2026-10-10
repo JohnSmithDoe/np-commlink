@@ -1,11 +1,17 @@
 import { createActionGroup } from '@ngrx/store';
-import { createItemListActionEvents } from '../../../@shared/data/item-lists/item-list.actions.factory';
-import { Profile, VitalsId } from '../../model/vitals.types';
+import { PersonId } from '../../../@shared/model/person.types';
+import { ItemListSortType } from '../../../@shared/model/item-list.types';
+import { AstroOverride } from '../../model/vitals.types';
 
 export const ProfilesActions = createActionGroup({
   source: 'Vitals Profiles',
   events: {
-    ...createItemListActionEvents<Profile>(),
-    setFavorite: (id: VitalsId) => ({ id }),
+    updateSearch: (searchQuery?: string) => ({ searchQuery }),
+    updateSort: (
+      sortBy?: ItemListSortType,
+      sortDirection?: 'asc' | 'desc' | 'keep' | 'toggle'
+    ) => ({ sortBy, sortDirection }),
+    setAstro: (id: PersonId, astro: AstroOverride) => ({ id, astro }),
+    setFavorite: (id: PersonId) => ({ id }),
   },
 });

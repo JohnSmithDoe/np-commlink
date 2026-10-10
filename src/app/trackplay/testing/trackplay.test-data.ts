@@ -1,3 +1,6 @@
+import { signal, ValueProvider } from '@angular/core';
+import { PersonRef } from '../../@shared/model/person.types';
+import { PEOPLE } from '../../@shared/util/people/people.token';
 import { BoardState } from '../model/board.types';
 import {
   DicePool,
@@ -26,10 +29,16 @@ export function mockPlayer(overrides: Partial<Player> = {}): Player {
   return {
     id: 'player-1',
     name: 'Alice',
+    kind: 'person',
     createdAt: TEST_TIMESTAMP,
     ...overrides,
   };
 }
+
+export const providePeople = (people: readonly PersonRef[]): ValueProvider => ({
+  provide: PEOPLE,
+  useValue: signal(people),
+});
 
 export function mockGameType(overrides: Partial<GameType> = {}): GameType {
   return { id: 'default', name: 'Standard', winHigh: true, ...overrides };
@@ -54,10 +63,9 @@ export function mockRound(overrides: Partial<Round> = {}): Round {
 }
 
 export function mockPlayersState(
-  items: Player[] = [],
   overrides: Partial<PlayersState> = {}
 ): PlayersState {
-  return { ...initialPlayersState, items, ...overrides };
+  return { ...initialPlayersState, ...overrides };
 }
 
 export function mockGamesState(

@@ -13,12 +13,14 @@
  * `showEndedGames` is a field, not a `filterBy` token, because the list
  * filters on two independent axes and `filterBy` is one opaque string.
  * `gamesForPlayer` is a second VIEW over the same games, so it carries
- * config and no items of its own.
+ * config and no items of its own — as does `players`, whose items are the
+ * persons the kernel publishes.
  * ───────────────────────────────────────────────────────────────── */
 
 import { Timestamp } from '../../@shared/model/app.types';
 import { BaseItem } from '../../@shared/model/base-item.types';
 import { ItemList } from '../../@shared/model/item-list.types';
+import { PersonRef } from '../../@shared/model/person.types';
 import { BoardState } from './board.types';
 import { DieFaces } from './dice.types';
 
@@ -33,8 +35,7 @@ export interface Round {
   values: Record<TrackplayId, number>;
 }
 
-export interface Player extends BaseItem {
-  createdAt: Timestamp;
+export interface Player extends PersonRef {
   lastPlayedAt?: Timestamp;
 }
 
@@ -60,7 +61,9 @@ export interface DicePool {
 }
 
 export type PlayersState = Readonly<
-  ItemList<Player> & { id: typeof PLAYERS_LIST_ID }
+  Pick<ItemList<Player>, 'searchQuery' | 'sort' | 'filterBy'> & {
+    id: typeof PLAYERS_LIST_ID;
+  }
 >;
 export type GamesState = Readonly<
   ItemList<Game> & { id: typeof GAMES_LIST_ID } & GamesView

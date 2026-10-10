@@ -13,8 +13,8 @@ import {
   mockPill,
   mockPillsState,
   mockProfile,
-  mockProfilesState,
   mockVitalsState,
+  providePeople,
 } from '../testing/vitals.test-data';
 import { pillNotificationBlock, pillNotificationId } from '../util/pill.utils';
 import { PillReminderEffects } from './pill-reminder.effects';
@@ -37,7 +37,11 @@ describe('PillReminderEffects', () => {
     scheduleWeekly: ReturnType<typeof vi.fn>;
   };
 
-  const setup = (state: VitalsState, outcome: ReminderOutcome = 'armed') => {
+  const setup = (
+    state: VitalsState,
+    outcome: ReminderOutcome = 'armed',
+    people = [martin]
+  ) => {
     notifications = {
       cancelIds: vi.fn().mockResolvedValue(undefined),
       scheduleWeekly: vi.fn().mockResolvedValue(outcome),
@@ -48,6 +52,7 @@ describe('PillReminderEffects', () => {
         provideMockActions(() => actions$),
         provideMockStore({ initialState: { [VITALS_STATE_KEY]: state } }),
         { provide: LocalNotificationsService, useValue: notifications },
+        providePeople(people),
       ],
     });
     effects = TestBed.inject(PillReminderEffects);
@@ -58,7 +63,6 @@ describe('PillReminderEffects', () => {
 
   const stateWith = (...pills: ReturnType<typeof mockPill>[]) =>
     mockVitalsState({
-      profiles: mockProfilesState([martin]),
       pills: mockPillsState(pills, { nextSlot: pills.length }),
     });
 
@@ -100,7 +104,6 @@ describe('PillReminderEffects', () => {
     const deleted = mockPill({ id: 'gone', slot: 0 });
     setup(
       mockVitalsState({
-        profiles: mockProfilesState([martin]),
         pills: mockPillsState([], { nextSlot: 1 }),
       })
     );
@@ -112,6 +115,17 @@ describe('PillReminderEffects', () => {
       expect.arrayContaining(pillNotificationBlock(0))
     );
     expect(notifications.scheduleWeekly).not.toHaveBeenCalled();
+  });
+
+  it('arms nothing for a pill whose person is gone', async () => {
+    const pill = mockPill({ slot: 0, weekdays: [1] });
+    setup(stateWith(pill), 'armed', []);
+    actions$ = of(PillsActions.updateItem(pill));
+
+    await drain(effects.changeReminders$);
+
+    expect(notifications.scheduleWeekly).not.toHaveBeenCalled();
+    expect(notifications.cancelIds).toHaveBeenCalled();
   });
 
   it('arms nothing for a pill whose switch is off', async () => {
@@ -165,7 +179,6 @@ describe('PillReminderEffects', () => {
     const deleted = mockPill({ id: 'gone', slot: 0 });
     setup(
       mockVitalsState({
-        profiles: mockProfilesState([martin]),
         pills: mockPillsState([], { nextSlot: 1 }),
       }),
       'refused'

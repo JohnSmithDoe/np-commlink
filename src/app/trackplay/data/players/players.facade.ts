@@ -1,67 +1,55 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
-import { UndoActions } from '../../../@shared/data/undo/undo.actions';
-import { Player, PLAYERS_LIST_ID } from '../../model/trackplay.types';
-import { gamesWithPlayer } from '../../util/trackplay.cascade';
-import { createPlayer } from '../../util/trackplay.factory';
-import { TrackplayActions } from '../trackplay.actions';
-import { selectGamesList, selectPlayersList } from '../trackplay.selector';
-import { PlayersActions } from './players.actions';
+import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import {
-  selectPlayerItems,
-  selectPlayersListItems,
-  selectPlayersSearchResult,
+  filterAndSortItemList,
+  filterListBySearchQuery,
+} from '../../../@shared/util/item-lists/list.selector';
+import { PEOPLE } from '../../../@shared/util/people/people.token';
+import { TrackplayId } from '../../model/trackplay.types';
+import { playersFrom } from '../../util/players.utils';
+import { selectGameItems } from '../games/games.selector';
+import { selectPlayersList } from '../trackplay.selector';
+import {
   selectPlayerStats,
-  selectRoutePlayer,
   selectStatsForRoutePlayer,
 } from './players.selector';
+
+const UNKNOWN_PLAYER = '—';
 
 @Injectable({ providedIn: 'root' })
 export class PlayersFacade {
   readonly #store = inject(Store);
-  readonly #dialogs = inject(ItemDialogService);
+  readonly #people = inject(PEOPLE);
+  readonly #games = this.#store.selectSignal(selectGameItems);
+  readonly #view = this.#store.selectSignal(selectPlayersList);
+  readonly #routeId = this.#store.selectSignal(selectRouteEntityId);
 
-  readonly #games = this.#store.selectSignal(selectGamesList);
-
-  readonly state = this.#store.selectSignal(selectPlayersList);
-  readonly allItems = this.#store.selectSignal(selectPlayerItems);
-  readonly items = this.#store.selectSignal(selectPlayersListItems);
-  readonly searchResult = this.#store.selectSignal(selectPlayersSearchResult);
+  readonly allItems = computed(() =>
+    playersFrom(this.#people(), this.#games())
+  );
+  readonly state = computed(() => ({
+    ...this.#view(),
+    items: this.allItems(),
+  }));
+  readonly searchResult = computed(() => filterListBySearchQuery(this.state()));
+  readonly items = computed(() =>
+    filterAndSortItemList(this.state(), this.searchResult())
+  );
   readonly stats = this.#store.selectSignal(selectPlayerStats);
 
-  readonly routePlayer = this.#store.selectSignal(selectRoutePlayer);
+  readonly routePlayer = computed(() =>
+    this.allItems().find((player) => player.id === this.#routeId())
+  );
   readonly routePlayerStats = this.#store.selectSignal(
     selectStatsForRoutePlayer
   );
 
-  showCreateDialog(): void {
-    this.#dialogs.open({
-      item: createPlayer(this.state().searchQuery ?? ''),
-      listId: PLAYERS_LIST_ID,
-      editMode: 'create',
-    });
-  }
+  readonly #names = computed(
+    () => new Map(this.#people().map((person) => [person.id, person.name]))
+  );
 
-  showEditDialog(item: Player): void {
-    this.#dialogs.open({ item, listId: PLAYERS_LIST_ID, editMode: 'update' });
-  }
-
-  saveItem(player: Player): void {
-    this.#store.dispatch(PlayersActions.addOrUpdateItem(player));
-  }
-
-  removeItem(player: Player): void {
-    this.#store.dispatch(
-      UndoActions.pushed({
-        scope: PLAYERS_LIST_ID,
-        name: player.name,
-        action: TrackplayActions.restorePlayer(
-          player,
-          gamesWithPlayer(this.#games(), player.id)
-        ),
-      })
-    );
-    this.#store.dispatch(PlayersActions.removeItem(player));
+  nameOf(id: TrackplayId): string {
+    return this.#names().get(id) ?? UNKNOWN_PLAYER;
   }
 }

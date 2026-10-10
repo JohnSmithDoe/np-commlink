@@ -12,32 +12,17 @@
 import { categoryFilterFromRoute } from '../../@shared/data/item-lists/category-filter.effects';
 import { createItemListEffects } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { selectRouteCategoryFilter } from '../../@shared/data/router/router.selector';
-import {
-  createGame,
-  createGameType,
-  createPlayer,
-} from '../util/trackplay.factory';
+import { createGame, createGameType } from '../util/trackplay.factory';
 import { GAMES_LIST_ID } from '../model/trackplay.types';
 import { GameTypesActions } from './game-types/game-types.actions';
 import { GamesActions } from './games/games.actions';
-import { PlayersActions } from './players/players.actions';
-import {
-  selectGamesList,
-  selectGameTypesList,
-  selectPlayersList,
-} from './trackplay.selector';
+import { selectGamesList, selectGameTypesList } from './trackplay.selector';
 
 export const trackplayRouteFilterEffects = {
   drilledFilter$: categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
     id ? GamesActions.updateFilter(id) : undefined
   ),
 };
-
-export const playersListEffects = createItemListEffects({
-  actions: PlayersActions,
-  select: selectPlayersList,
-  create: (name) => createPlayer(name),
-});
 
 export const gamesListEffects = createItemListEffects({
   actions: GamesActions,

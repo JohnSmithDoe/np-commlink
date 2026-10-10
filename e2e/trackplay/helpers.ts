@@ -12,7 +12,8 @@
  * every mounted page renders a title, so the unscoped locator needed a
  * `.first()` that could just as easily read the stale page's.
  *
- * `createPlayer` assumes the players page is the active route.
+ * A player is a person, so `createPlayer` creates one in the people program
+ * and lands back on the players page.
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, Locator, Page } from '@playwright/test';
@@ -27,6 +28,7 @@ import {
   pageRoot,
   pickSelectOption,
 } from '../helpers';
+import { createPerson } from '../people/helpers';
 
 export {
   addButton,
@@ -44,15 +46,14 @@ export function headerTitle(scope: Locator): Locator {
   return scope.getByTestId('page-header-title');
 }
 
+export const PLAYERS_PAGE = 'app-page-trackplay-players';
+
 export async function createPlayer(page: Page, name: string): Promise<void> {
-  const players = pageRoot(page, 'app-page-trackplay-players');
-  await addButton(players).click();
-  const dialog = createDialog(page);
-  await expect(dialog).toBeVisible({ timeout: 15_000 });
-  await nameBox(dialog).fill(name);
-  await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
-  await expect(dialog).toBeHidden();
-  await expect(players.getByText(name, { exact: true })).toBeVisible();
+  await createPerson(page, name);
+  await gotoPage(page, 'trackplay/players', PLAYERS_PAGE);
+  await expect(
+    pageRoot(page, PLAYERS_PAGE).getByText(name, { exact: true })
+  ).toBeVisible();
 }
 
 export async function togglePlayerInSelect(

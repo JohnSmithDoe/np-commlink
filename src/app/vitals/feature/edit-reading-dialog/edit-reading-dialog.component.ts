@@ -122,7 +122,7 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
   }
 
   readonly showCalculator = computed(
-    () => this.isCreateMode() && this.#profiles.routeProfile()?.type === 'pet'
+    () => this.isCreateMode() && this.#profiles.routeProfile()?.kind === 'pet'
   );
 
   readonly dateTaken = hasErrorKind(this.form.name, DUPLICATE_NAME);

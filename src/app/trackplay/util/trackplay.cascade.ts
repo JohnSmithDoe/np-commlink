@@ -2,13 +2,13 @@
  * These run as a post-pass over the state `combineReducers` already
  * produced, and they read the PRE-action slice — which only holds while no
  * per-aggregate reducer handles the same action, because `combineReducers`
- * returns the identical object when nothing changed. The three
- * `removeItem`s and the two restores therefore live here and nowhere else;
+ * returns the identical object when nothing changed. The two
+ * `removeItem`s and the restore therefore live here and nowhere else;
  * `trackplay.reducer.ts` says so again next to the wiring.
  *
- * `writtenBack` replaces a game by id and appends the ones that are gone,
- * because deleting a player strips them from games that survive but takes
- * a solo ENDED game with it — one restore has to answer both.
+ * No cascade follows a player: a player is a person the kernel publishes,
+ * and a game keeps the id of one who is gone, so an undo in `people`
+ * brings their seat back with no write here.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -20,18 +20,11 @@ import {
   GamesState,
   GameType,
   GameTypesState,
-  Player,
-  PlayersState,
   TrackplayState,
   TrackplayId,
 } from '../model/trackplay.types';
 import { DEFAULT_GAME_TYPE_ID } from './trackplay.factory';
 import { gameTypeIdOf, withGameTypeId } from './game-type.utils';
-
-export const gamesWithPlayer = (
-  games: GamesState,
-  playerId: TrackplayId
-): Game[] => games.items.filter((game) => game.playerIds.includes(playerId));
 
 export const gamesWithType = (games: GamesState, typeId: TrackplayId): Game[] =>
   games.items.filter((game) => gameTypeIdOf(game) === typeId);
@@ -48,44 +41,6 @@ const writtenBack = (
     items: [...kept, ...restored.filter((game) => !keptIds.has(game.id))],
   };
 };
-
-const withoutPlayer = (game: Game, playerId: TrackplayId): Game => ({
-  ...game,
-  playerIds: game.playerIds.filter((id) => id !== playerId),
-  rounds: game.rounds.map((round) => {
-    const values = { ...round.values };
-    delete values[playerId];
-    return { ...round, values };
-  }),
-});
-
-const detachPlayer = (game: Game, playerId: TrackplayId): Game | undefined => {
-  const remaining = game.playerIds.filter((id) => id !== playerId);
-  if (remaining.length > 0) return withoutPlayer(game, playerId);
-  if (game.ended) return undefined;
-  return { ...game, playerIds: [], rounds: [] };
-};
-
-const detachPlayerFromGames = (
-  games: GamesState,
-  playerId: TrackplayId
-): GamesState => ({
-  ...games,
-  items: games.items
-    .map((game) =>
-      game.playerIds.includes(playerId) ? detachPlayer(game, playerId) : game
-    )
-    .filter((game): game is Game => !!game),
-});
-
-export const deletePlayerCascade = (
-  state: TrackplayState,
-  player: Player
-): TrackplayState => ({
-  ...state,
-  players: removeListItem<PlayersState, Player>(state.players, player),
-  games: detachPlayerFromGames(state.games, player.id),
-});
 
 export const deleteGameCascade = (
   state: TrackplayState,
@@ -123,16 +78,6 @@ export const deleteGameTypeCascade = (
     type.id
   ),
   gamesForPlayer: clearDeletedTypeFromFilter(state.gamesForPlayer, type.id),
-});
-
-export const restorePlayerCascade = (
-  state: TrackplayState,
-  player: Player,
-  games: readonly Game[]
-): TrackplayState => ({
-  ...state,
-  players: addListItem<PlayersState, Player>(state.players, player),
-  games: writtenBack(state.games, games),
 });
 
 export const restoreGameTypeCascade = (

@@ -24,7 +24,7 @@
           "type": "ol",
           "items": [
             "TRACKPLAY/<strong>Spielstände</strong> auf dem Deck antippen oder im Menü <strong>Spiele</strong> wählen.",
-            "Oben rechts das <strong>Personen-Symbol</strong> → <strong>Spieler</strong>. Dort <strong>+</strong>, Name, <strong>ANLEGEN</strong> — für jeden Mitspieler einmal. Schneller: Namen in die Suchleiste tippen und Enter.",
+            "Mitspieler sind Personen: Jeder wird einmal unter <strong>SIN</strong>/<strong>Personen</strong> angelegt und steht dann hier unter <strong>Spieler</strong>. Das <strong>+</strong> auf der Spielerliste führt direkt dorthin.",
             "Zurück zu <strong>Spiele</strong> — mit der Zurück-Geste des Geräts oder über das Menü —, dann <strong>+</strong>: <strong>Name</strong> der Partie, <strong>Spielart</strong> wählen, Spieler anhaken.",
             "<strong>WEITER</strong> speichert und öffnet direkt den Punkteblock; <strong>ANLEGEN</strong> speichert nur."
           ]
@@ -46,7 +46,7 @@
         },
         {
           "type": "p",
-          "html": "Ein Spieler ist nur ein Name. Die Zeile zeigt <strong>Erstellt</strong>, <strong>Zuletzt gespielt</strong>, die Bilanz <strong>Siege / Niederlagen / Offen</strong> und <strong>Gespielt: n</strong>; sortiert wird nach <strong>A-Z</strong>, <strong>ERSTELLT</strong> oder <strong>ZULETZT GESPIELT</strong>. <em>Zuletzt gespielt</em> rückt vor, sobald in einer Partie mit diesem Spieler ein Punktwert eingetragen wird — nicht schon beim Anlegen."
+          "html": "Ein Spieler ist eine Person aus SIN/<em>Personen</em> — Haustiere spielen nicht mit; umbenannt und gelöscht wird dort. Die Zeile zeigt <strong>Erstellt</strong>, <strong>Zuletzt gespielt</strong>, die Bilanz <strong>Siege / Niederlagen / Offen</strong> und <strong>Gespielt: n</strong>; sortiert wird nach <strong>A-Z</strong>, <strong>ERSTELLT</strong> oder <strong>ZULETZT GESPIELT</strong>. <em>Zuletzt gespielt</em> ist die letzte Änderung an einer Partie mit diesem Spieler."
         },
         {
           "type": "figure",
@@ -146,7 +146,7 @@
         {
           "type": "ul",
           "items": [
-            "<strong>Nach rechts wischen</strong> auf einer Zeile (Partie, Spieler, Spielart) → grüne Fläche <strong>Bearbeiten</strong>: bei einer Partie derselbe Dialog wie beim Anlegen — der Weg, Spieler nachzutragen.",
+            "<strong>Nach rechts wischen</strong> auf einer Zeile (Partie, Spielart) → grüne Fläche <strong>Bearbeiten</strong>: bei einer Partie derselbe Dialog wie beim Anlegen — der Weg, Spieler nachzutragen.",
             "<strong>Nach links wischen</strong> → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Der Hinweis unten meldet es nur — <strong>Rückgängig</strong> steht oben in der Kopfzeile. Bei <em>Standard</em> fehlt die Löschfläche.",
             "<strong>Tipp auf eine Partiezeile</strong> öffnet den Punkteblock, <strong>auf eine Spielerzeile</strong> die Spielerseite, <strong>auf eine Spielart</strong> den Bearbeiten-Dialog.",
             "<strong>Enter in der Suchleiste</strong> legt sofort an: in der Spieleliste eine Partie <strong>ohne Spieler</strong> mit der Spielart des aktiven Chips, in der Spielerliste einen Spieler, in den Spielarten eine Spielart mit <em>Höchste Punktzahl gewinnt</em>.",
@@ -165,8 +165,8 @@
           "type": "ul",
           "items": [
             "<strong>Eine Partie ohne Spieler lässt sich nicht öffnen</strong> — die Zeile ist grau. So entstehen die per Enter angelegten: nach rechts wischen, <strong>Bearbeiten</strong>, Spieler anhaken.",
-            "<strong>Einen Spieler löschen greift in laufende Partien ein</strong>: seine Spalte und seine Punkte gehen mit. War er der letzte, wird eine laufende Partie geleert und eine beendete ganz gelöscht.",
-            "<strong>Rückgängig holt genau das Gelöschte zurück</strong> — eine Spielart mitsamt den Partien, die auf <em>Standard</em> umgestellt wurden, und einen Spieler mitsamt seinen Punkten in jeder Partie, an der er teilgenommen hat. Was du danach angelegt hast, bleibt.",
+            "<strong>Eine Person zu löschen ändert keine Partie</strong>: Ihr Platz und ihre Punkte bleiben, der Name steht dann als —. Holt man sie in SIN zurück, trägt der Platz wieder ihren Namen.",
+            "<strong>Rückgängig holt genau das Gelöschte zurück</strong> — eine Spielart mitsamt den Partien, die auf <em>Standard</em> umgestellt wurden. Was du danach angelegt hast, bleibt.",
             "<strong>Ein Unentschieden gibt es nicht.</strong> Bei gleicher Summe gewinnt, wer beim Anlegen weiter vorn angehakt wurde.",
             "<strong>Punkte gelten erst beim Verlassen des Feldes</strong> — Enter ist der sichere Weg.",
             "Alles liegt nur auf diesem Gerät. Browserdaten löschen heißt Spielstände löschen."

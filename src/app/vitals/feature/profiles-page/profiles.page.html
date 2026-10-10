@@ -9,11 +9,11 @@
     [item]="item"
     [title]="item.name"
     [ionList]="ionList"
-    [leadingIcon]="item.type === 'pet' ? 'paw' : 'person'"
+    [leadingIcon]="item.kind === 'pet' ? 'paw' : 'person'"
     [startSwipeAction]="editSwipeAction"
+    [canDelete]="false"
     (selectItem)="goToProfile(item.id)"
     (startSwipe)="openProfileEdit(item)"
-    (deleteItem)="deleteProfile(item)"
   >
     @if (isFavorite(item)) {
       <p itemDetails class="second-line vitals-profiles__favorite">

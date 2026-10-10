@@ -59,8 +59,4 @@ export class VitalsProfilesPage {
   openProfileEdit(profile: Profile): void {
     this.#profiles.showEditDialog(profile);
   }
-
-  deleteProfile(profile: Profile): void {
-    this.#profiles.removeItem(profile);
-  }
 }

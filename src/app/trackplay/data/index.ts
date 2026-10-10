@@ -1,5 +1,4 @@
 export { TrackplayActions } from './trackplay.actions';
-export { PlayersActions } from './players/players.actions';
 export { PlayersFacade } from './players/players.facade';
 export { PlayersPageFacade } from './players/players-page.facade';
 export { GamesActions } from './games/games.actions';

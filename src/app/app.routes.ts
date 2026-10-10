@@ -85,6 +85,11 @@ export const routes: Routes = [
       import('./cash/routes/cash.routes').then((m) => m.cashRoutes),
   },
   {
+    path: 'people',
+    loadChildren: () =>
+      import('./people/routes/people.routes').then((m) => m.peopleRoutes),
+  },
+  {
     path: 'vitals',
     loadChildren: () =>
       import('./vitals/routes/vitals.routes').then((m) => m.vitalsRoutes),

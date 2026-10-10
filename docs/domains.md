@@ -88,14 +88,28 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
 - **Reconciliation never auto-merges** — an equal-amount coincidence (two identical fares) would corrupt the
   ledger. Reconciled-away legs are excluded from balances or the spend double-counts.
 
+## SIN — people
+
+- **The roster every domain reads, and the only one that writes it.** Name, kind (person or pet),
+  birthday, clothing sizes and addresses. What another domain needs ABOUT a person — weight, a game
+  record — lives in that domain, keyed by the person's id.
+- **The slice boots with the kernel**, because two route-hydrated domains read it and neither may load it.
+- **Sizes are picked, never typed.** One list serves top and trousers — letters, then the German children's
+  sizes by height — and shoes run EU 16–50. A pet keeps none; switching to pet drops them on save.
+- **An address is four free-text fields, and a blank one is dropped on save** rather than validated —
+  any one of them is worth keeping alone.
+
 ## BIOMON — weight, profiles, astro, pills
 
 **Weight and profiles**
 
-- **One domain, one slice: `{ profiles, readings }`.** Blood pressure, when it comes, is a third key in the
-  same slice — domains are sealed, so a second one could not import the profiles, and they are the spine.
-  Generic `value`/`unit`/`kind` records were rejected: they buy a union, a unit formatter and an
+- **A profile is a person from `PEOPLE` seen through BIOMON.** Name, kind and birthday belong to `people`;
+  `profiles` holds only the list view, the astro overrides keyed by person id, and `favoriteId`. Creating
+  and deleting happen in `people`, so the BIOMON list neither adds nor deletes. Blood pressure, when it
+  comes, is another key in this slice beside `readings`. Generic `value`/`unit`/`kind` records were rejected: they buy a union, a unit formatter and an
   axis-switching chart to serve a metric that does not exist.
+- **A pill whose person no longer resolves is not armed**, and a change to the roster's names re-arms, so a
+  deleted person stops nudging and an undo brings the reminders back.
 - **A reading's `name` IS its date, `YYYY-MM-DD`.** The shared list machinery keys a row on `name`, so
   `requireUniqueName` over the profile's own readings _is_ the "one reading per profile per day" rule. What
   `name` does not buy is identity — two profiles weighed on one day share one — which is why readings carry
@@ -109,9 +123,10 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
 - **Subtracting the person from a co-weighed pet is a calculator, not data.** Nothing about the holder is
   stored, so either side can be corrected afterwards. The suggestion is the holder's nearest reading **at or
   before** the date — back-dating must not subtract a body weight from the future.
+- **Weight stays here and nowhere in `people`.** It is a series, and a field on the person would be a
+  second place holding the latest one.
 - **The deck badge is a count of readings, not a weight.** A kg figure needs a designated self profile and
   the module seeds none; a delta would need a sentinel for "no reading yet", and `-1` is a good delta.
-- **Deleting a profile takes its readings with it, and the undo entry is built in the command.**
 
 **The astro pages**
 
@@ -202,10 +217,9 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   owning the taken-tick would have to answer "taken when" on every render. It also keeps R5 free.
 - **Pills match on the id, like readings, but for the neighbouring reason** — their uniqueness rule is scoped
   to one profile, so two profiles may each hold an "Ibuprofen".
-- **One person is the go-to profile, and the sole person holds that by DERIVATION.** The star is a radio, not
-  a checkbox: `withSoleFavorite` clears every other row in the reducer, so "only one" is an invariant of the
-  state. Nothing is written when there is one person — `favoriteAmong` falls back to them — which is what
-  makes the flag additive on a slice real users hold.
+- **One person is the go-to profile, and the sole person holds that by DERIVATION.** `favoriteId` is one
+  id, so "only one" is the shape, not a reducer invariant. Nothing is written when there is one person —
+  `favoriteAmong` falls back to them.
 - **The fallback stops at routes that name no profile.** `/vitals/iching` and `/iching/cast` read it;
   `/vitals/profile/:id` and its children deliberately do NOT — a stale id must render nothing, never quietly
   render somebody else's readings.
@@ -404,12 +418,13 @@ Everything below the first entry is **v2.0.0 scope**.
   read off the board without counting from a fixed origin. The actor leads because a field name alone
   cannot say who is standing there. Players count from 1 and fields from 0; `h` is the home column and
   `b` the yard, without which leaving the yard and finishing are the two moves that could not be written.
-- **The three `removeItem`s and the two restores live ONLY in `trackplay.reducer.ts`.**
+- **The two `removeItem`s and the restore live ONLY in `trackplay.reducer.ts`.**
   `combineReducers` returns the IDENTICAL state when no sub-reducer changed anything, so the cascade sees
   the pre-action slice if and only if no per-aggregate reducer claims that action. Add one to an
   aggregate and the cascade silently starts reading POST-delete state — neither the compiler nor a
-  per-aggregate spec notices. `setRoundValue` is the deliberate opposite: the aggregate writes the round
-  and the cascade then stamps `lastPlayedAt`, which wants the post-write game.
+  per-aggregate spec notices.
+- **A player is a person, and "last played" is derived** — the latest `updatedAt` among the games they sit
+  in. A seat whose person was deleted keeps its id and renders `—`; the game is never rewritten.
 
 ## COPROCESSOR — calculator, converter, golden section
 

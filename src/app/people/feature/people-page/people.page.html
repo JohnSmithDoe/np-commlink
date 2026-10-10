@@ -1,0 +1,48 @@
+<app-list-page
+  class="ion-page"
+  pageHeader="page-title.people"
+  [itemTemplate]="personRow"
+/>
+
+<ng-template #personRow let-item let-ionList="ionList">
+  <app-list-item
+    [item]="item"
+    [title]="item.name"
+    [ionList]="ionList"
+    [leadingIcon]="item.kind === 'pet' ? 'paw' : 'person'"
+    (selectItem)="openPersonEdit(item)"
+    (deleteItem)="deletePerson(item)"
+  >
+    @if (item.birthDate) {
+      <p itemDetails class="second-line">
+        <ion-note>{{ 'people.label.birth-date' | translate }}</ion-note>
+        <span class="value">
+          {{ item.birthDate | date: 'mediumDate' }} ·
+          {{ 'people.stats.age' | translate: { age: ageOf(item) } }}
+        </span>
+      </p>
+    }
+    @if (hasSizes(item)) {
+      <p itemDetails class="second-line">
+        <ion-note>{{ 'people.label.sizes' | translate }}</ion-note>
+        <span class="value">{{
+          'people.stats.sizes'
+            | translate
+              : {
+                  top: item.sizes.top ?? '—',
+                  bottom: item.sizes.bottom ?? '—',
+                  shoe: item.sizes.shoe ?? '—',
+                }
+        }}</span>
+      </p>
+    }
+    @if (firstAddress(item); as address) {
+      <p itemDetails class="second-line">
+        <ion-note>{{ 'people.label.address' | translate }}</ion-note>
+        <span class="value">{{ address }}</span>
+      </p>
+    }
+  </app-list-item>
+</ng-template>
+
+<app-edit-person-dialog />

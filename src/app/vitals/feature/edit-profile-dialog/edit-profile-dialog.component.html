@@ -1,5 +1,5 @@
 <app-item-edit-modal
-  [nameField]="form.name"
+  [nameField]="null"
   [canSave]="canSave()"
   [isOpen]="isOpen()"
   [saveButtonText]="saveButtonText()"
@@ -9,20 +9,6 @@
   (cancelled)="close()"
   (dismissed)="close()"
 >
-  <ion-segment data-testid="vitals-profile-type" [formField]="form.type">
-    <ion-segment-button value="person">
-      {{ 'vitals.profile.person' | translate }}
-    </ion-segment-button>
-    <ion-segment-button value="pet">
-      {{ 'vitals.profile.pet' | translate }}
-    </ion-segment-button>
-  </ion-segment>
-
-  <app-date-input
-    [label]="'vitals.label.birth-date' | translate"
-    [formField]="form.birthDate"
-  />
-
   <ion-item>
     <ion-select
       labelPlacement="stacked"

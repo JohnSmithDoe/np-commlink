@@ -17,8 +17,8 @@ import {
   mockGameType,
   mockGameTypesState,
   mockPlayer,
-  mockPlayersState,
   mockTrackplayState,
+  providePeople,
 } from '../../testing/trackplay.test-data';
 import { GamesForPlayerPageFacade } from './games-for-player-page.facade';
 
@@ -26,7 +26,6 @@ const PLAYER = 'player-1';
 
 const stateWith = (filterBy?: string) =>
   mockTrackplayState({
-    players: mockPlayersState([mockPlayer({ id: PLAYER, name: 'Ada' })]),
     gameTypes: mockGameTypesState([mockGameType({ id: 'skat', name: 'Skat' })]),
     gamesForPlayer: mockGamesForPlayerView({ filterBy }),
     games: mockGamesState([
@@ -53,6 +52,7 @@ const setup = (filterBy?: string) => {
         trackplay: stateWith(filterBy),
         router: mockRouterState({ parameters: { id: PLAYER } }),
       }),
+      providePeople([mockPlayer({ id: PLAYER, name: 'Ada' })]),
     ],
   });
   return TestBed.inject(GamesForPlayerPageFacade);

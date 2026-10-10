@@ -80,13 +80,6 @@ export class GamesForPlayerPageFacade extends BaseListPageFacade {
     this.#games.removeItem(item);
   }
 
-  showEditPlayerDialog(): void {
-    const player = this.player();
-    if (player) {
-      this.#players.showEditDialog(player);
-    }
-  }
-
   toggleShowEnded(): void {
     this.#view.setShowEnded(!this.showEndedGames());
   }

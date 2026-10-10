@@ -58,6 +58,13 @@ or a count the code owns.
   deck ids, office-time's day maps.
 - **Branded ids rejected.** Cost is an `as` at every mint point including every IndexedDB read. One mint;
   the disk read re-mints rather than casting.
+- **A person is the one identity three domains share, and only `people` writes it.** The kernel publishes
+  the roster read-only behind `PEOPLE` (`@shared/util/people/people.token.ts`), the `RECENT_EMOJIS` shape:
+  a port, not a replicated copy, so a rename cannot drift and no slice hydrates someone else's data.
+  BIOMON and TRACKPLAY key their own records on the person's id and keep only what is theirs.
+- **A reference outlives its person; nothing cascades across a domain seal.** A removed id stops
+  resolving — its readings, pills and games stay on disk, unread — and `people`'s undo makes it resolve
+  again. A cross-slice cascade would need a cross-slice undo; orphans are the price, and they are inert.
 - **Comparing by name is legitimate in exactly one place** — the recipe matcher's fallback for a storage
   row with no `productId`.
 

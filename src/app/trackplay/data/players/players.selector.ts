@@ -1,60 +1,24 @@
 import { createSelector } from '@ngrx/store';
 import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
-import { SearchResult } from '../../../@shared/model/item-list.types';
-import {
-  filterAndSortItemList,
-  filterListBySearchQuery,
-} from '../../../@shared/util/item-lists/list.selector';
-import { Player, PlayerStats, TrackplayId } from '../../model/trackplay.types';
+import { PlayerStats, TrackplayId } from '../../model/trackplay.types';
 import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
 import { gameTypeIdOf } from '../../util/game-type.utils';
 import { computeScores, leadersByScore } from '../games/games.selector';
-import {
-  selectGamesList,
-  selectGameTypesList,
-  selectPlayersList,
-} from '../trackplay.selector';
+import { selectGamesList, selectGameTypesList } from '../trackplay.selector';
 
-export const selectPlayerItems = createSelector(
-  selectPlayersList,
-  (list): Player[] => list.items
-);
-
-export const selectPlayersSearchResult = createSelector(
-  selectPlayersList,
-  (list): SearchResult<Player> | undefined => filterListBySearchQuery(list)
-);
-
-export const selectPlayersListItems = createSelector(
-  selectPlayersList,
-  selectPlayersSearchResult,
-  (list, result): Player[] => filterAndSortItemList(list, result)
-);
-
-export const selectRoutePlayer = createSelector(
-  selectPlayerItems,
-  selectRouteEntityId,
-  (players, playerId): Player | undefined =>
-    players.find((player) => player.id === playerId)
-);
-
-const zeroedStatsPerPlayer = (
-  players: readonly Player[]
-): Record<TrackplayId, PlayerStats> =>
-  Object.fromEntries(
-    players.map((player) => [player.id, { ...NO_PLAYER_STATS }])
-  );
+const statsOf = (
+  stats: Record<TrackplayId, PlayerStats>,
+  playerId: TrackplayId
+): PlayerStats => (stats[playerId] ??= { ...NO_PLAYER_STATS });
 
 export const selectPlayerStats = createSelector(
-  selectPlayerItems,
   selectGamesList,
   selectGameTypesList,
-  (players, games, gameTypes): Record<TrackplayId, PlayerStats> => {
-    const stats = zeroedStatsPerPlayer(players);
+  (games, gameTypes): Record<TrackplayId, PlayerStats> => {
+    const stats: Record<TrackplayId, PlayerStats> = {};
     for (const game of games.items) {
       for (const playerId of game.playerIds) {
-        const playerStats = stats[playerId];
-        if (!playerStats) continue;
+        const playerStats = statsOf(stats, playerId);
         playerStats.play++;
         if (!game.ended) playerStats.open++;
       }
@@ -70,8 +34,7 @@ export const selectPlayerStats = createSelector(
       const drawn = leaders.length > 1;
 
       for (const playerId of game.playerIds) {
-        const playerStats = stats[playerId];
-        if (!playerStats) continue;
+        const playerStats = statsOf(stats, playerId);
         if (!leaders.includes(playerId)) playerStats.loss++;
         else if (!drawn) playerStats.win++;
       }

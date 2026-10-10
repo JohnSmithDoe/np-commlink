@@ -21,21 +21,9 @@
 import { createItemListEffects } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { findById } from '../../@shared/util/app.utils';
 import { READINGS_LIST_ID } from '../model/vitals.types';
-import { createProfile } from '../util/vitals.factory';
 import { PillsActions } from './pills/pills.actions';
-import { ProfilesActions } from './profiles/profiles.actions';
 import { ReadingsActions } from './readings/readings.actions';
-import {
-  selectPillsList,
-  selectProfilesList,
-  selectReadingsList,
-} from './vitals.selector';
-
-export const profilesListEffects = createItemListEffects({
-  actions: ProfilesActions,
-  select: selectProfilesList,
-  create: (name) => createProfile(name),
-});
+import { selectPillsList, selectReadingsList } from './vitals.selector';
 
 export const readingsListEffects = createItemListEffects({
   actions: ReadingsActions,

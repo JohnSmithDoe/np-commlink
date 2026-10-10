@@ -1,11 +1,5 @@
 import { Timestamp } from '../../@shared/model/app.types';
-import {
-  Game,
-  GamesState,
-  PlayersState,
-  Round,
-  TrackplayId,
-} from '../model/trackplay.types';
+import { Game, GamesState, Round, TrackplayId } from '../model/trackplay.types';
 import { createRound } from './trackplay.factory';
 
 const isRoundBlank = (round?: Round): boolean =>
@@ -73,21 +67,4 @@ export const setRoundValue = (
     ? withBlankRound(scored, nextRoundId)
     : scored;
   return withGame(games, { ...grown, updatedAt: at });
-};
-
-export const stampParticipants = (
-  players: PlayersState,
-  games: GamesState,
-  gameId: TrackplayId,
-  at: Timestamp
-): PlayersState => {
-  const game = gameById(games, gameId);
-  if (!game) return players;
-  const roster = new Set(game.playerIds);
-  return {
-    ...players,
-    items: players.items.map((player) =>
-      roster.has(player.id) ? { ...player, lastPlayedAt: at } : player
-    ),
-  };
 };

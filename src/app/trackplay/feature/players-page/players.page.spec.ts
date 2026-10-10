@@ -1,37 +1,39 @@
 import { TestBed } from '@angular/core/testing';
-import { Store } from '@ngrx/store';
-
+import { Router } from '@angular/router';
+import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import {
   mockGame,
   mockGamesState,
   mockPlayer,
-  mockPlayersState,
   mockTrackplayState,
+  providePeople,
 } from '../../testing/trackplay.test-data';
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
-import { PlayersActions } from '../../data';
+import { PlayersPageFacade } from '../../data';
 import { TrackplayPlayersPage } from './players.page';
 
 describe('TrackplayPlayersPage', () => {
   let component: TrackplayPlayersPage;
-  let dispatch: ReturnType<typeof vi.spyOn>;
 
   const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
       imports: [TrackplayPlayersPage],
-      providers: [provideTestingProviders({ trackplay: state })],
+      providers: [
+        provideTestingProviders({ trackplay: state }),
+        providePeople([mockPlayer({ id: 'p1' }), mockPlayer({ id: 'p2' })]),
+      ],
     });
-    dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
     component = TestBed.createComponent(TrackplayPlayersPage).componentInstance;
   };
 
-  it('dispatches removeItem with the player', () => {
-    const player = mockPlayer({ id: 'p1' });
+  it('sends the add button to the people program', () => {
     setup();
+    const navigate = vi
+      .spyOn(TestBed.inject(Router), 'navigate')
+      .mockResolvedValue(true);
 
-    component.deletePlayer(player);
+    TestBed.inject(PlayersPageFacade).addItemFromSearch();
 
-    expect(dispatch).toHaveBeenCalledWith(PlayersActions.removeItem(player));
+    expect(navigate).toHaveBeenCalledWith(['/people']);
   });
 
   it('returns per-player stats, falling back to empty stats', () => {
@@ -41,15 +43,7 @@ describe('TrackplayPlayersPage', () => {
       rounds: [],
       ended: true,
     });
-    setup(
-      mockTrackplayState({
-        players: mockPlayersState([
-          mockPlayer({ id: 'p1' }),
-          mockPlayer({ id: 'p2' }),
-        ]),
-        games: mockGamesState([ended]),
-      })
-    );
+    setup(mockTrackplayState({ games: mockGamesState([ended]) }));
 
     expect(component.statsFor(mockPlayer({ id: 'p1' })).play).toBe(1);
     expect(component.statsFor(mockPlayer({ id: 'nope' }))).toEqual({
