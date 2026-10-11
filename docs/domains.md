@@ -461,8 +461,19 @@ Kármán-Linie`. A name that costs a lookup is the failure the feature exists to
   drawn smaller with depth but kept touchable by a transparent stroke. Level one is four points you can
   measure onto a wall; past level two they sit closer together than the thing being placed.
 
-## The deck
+## SIMSENSE — music
 
+- **Native playback, web UI.** A WebView pauses audio once the app leaves the screen, so on Android the
+  player is Media3 (`ExoPlayer` in a `MediaSessionService`) behind the local `MusicPlayer` plugin, and
+  the page only sends commands and renders the `stateChange` events. The facade follows the native
+  player, never its own taps: the notification, the lock screen and a headset change the state too.
+- **The folder grant is the persisted state, and it lives natively.** One Storage Access Framework
+  tree, its URI in `SharedPreferences` beside the persisted permission it names — no runtime
+  permission, no IndexedDB slice, so nothing here is a stored shape. A revoked grant clears itself.
+- **The browser shows an empty state** until the PWA adapter (`<audio>` + `navigator.mediaSession`)
+  lands behind the same plugin port.
+
+$1
 - **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.
   The curated four it replaced re-opened "does this one belong in the default?" for every new feature, a
   question with no checkable answer. Empty is a rule instead of a list. **No entry is ever added back as a

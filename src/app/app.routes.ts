@@ -102,6 +102,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'music',
+    loadChildren: () =>
+      import('./music/routes/music.routes').then((m) => m.musicRoutes),
+  },
+  {
     path: '**',
     redirectTo: 'commlink',
     pathMatch: 'full',

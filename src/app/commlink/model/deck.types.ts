@@ -17,6 +17,7 @@ export type AppModule =
   | 'geist'
   | 'people'
   | 'vitals'
+  | 'music'
   | 'handbook'
   | 'coprocessor'
   | 'settings';

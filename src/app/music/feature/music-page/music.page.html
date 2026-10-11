@@ -1,0 +1,105 @@
+<app-page-header hideButtons label="page-title.music">
+  @if (folder()) {
+    <ion-buttons slot="end" toolbar>
+      <ion-button
+        color="primary"
+        [attr.aria-label]="'music.action.change-folder' | translate"
+        (click)="pickFolder()"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="folder-open-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    </ion-buttons>
+  }
+</app-page-header>
+
+<ion-content>
+  <div class="music ion-padding">
+    @if (!supported) {
+      <app-empty-state
+        [label]="'music.empty.native-only' | translate"
+        [note]="'music.empty.native-only-note' | translate"
+      />
+    } @else if (folder(); as folder) {
+      <section class="music__deck sr-panel sr-corners">
+        <p class="music__folder">{{ folder.name }}</p>
+        <p class="music__title">
+          {{ current()?.title ?? ('music.label.idle' | translate) }}
+        </p>
+        <div class="music__controls">
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="'music.action.previous' | translate"
+            [disabled]="!current()"
+            (click)="previous()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="play-skip-back-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+          <ion-button
+            size="large"
+            [attr.aria-label]="
+              (playing() ? 'music.action.pause' : 'music.action.play')
+                | translate
+            "
+            [disabled]="!tracks().length"
+            (click)="togglePlay()"
+          >
+            <ion-icon
+              slot="icon-only"
+              aria-hidden="true"
+              [name]="playing() ? 'pause-outline' : 'play-outline'"
+            />
+          </ion-button>
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="'music.action.next' | translate"
+            [disabled]="!current()"
+            (click)="next()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="play-skip-forward-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+        </div>
+      </section>
+
+      @if (tracks().length) {
+        <ion-list class="music__tracks">
+          @for (track of tracks(); track track.uri) {
+            <ion-item
+              button
+              detail="false"
+              [class.music__track--current]="track.uri === current()?.uri"
+              (click)="play(track)"
+            >
+              <ion-label>
+                <h3>{{ track.title }}</h3>
+                <p>{{ track.path }}</p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      } @else {
+        <app-empty-state [label]="'music.empty.no-tracks' | translate" />
+      }
+    } @else {
+      <app-empty-state
+        [label]="'music.empty.no-folder' | translate"
+        [note]="'music.empty.no-folder-note' | translate"
+      />
+      <ion-button expand="block" (click)="pickFolder()">
+        <ion-icon slot="start" name="folder-open-outline" aria-hidden="true" />
+        {{ 'music.action.pick-folder' | translate }}
+      </ion-button>
+    }
+  </div>
+</ion-content>

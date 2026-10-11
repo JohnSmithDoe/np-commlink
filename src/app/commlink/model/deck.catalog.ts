@@ -469,6 +469,25 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     status: 'online',
   },
   {
+    id: 'music',
+    module: 'music',
+    icon: 'musical-notes-outline',
+    route: '/music',
+    titleKey: marker('page-title.music'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.music.name'),
+        descKey: marker('deck.cyberpunk.music.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.music.name'),
+        descKey: marker('deck.boomer.music.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'ritual',
     module: 'ritual',
     icon: 'sunny-outline',

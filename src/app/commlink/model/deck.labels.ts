@@ -68,6 +68,7 @@ export const DECK_MODULE_LABELS: Record<AppModule, Marker> = {
   geist: marker('deck.module.geist'),
   people: marker('deck.module.people'),
   vitals: marker('deck.module.vitals'),
+  music: marker('deck.module.music'),
   handbook: marker('deck.module.handbook'),
   coprocessor: marker('deck.module.coprocessor'),
   settings: marker('deck.module.settings'),

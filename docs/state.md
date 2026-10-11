@@ -72,6 +72,10 @@ recognise them: clear the cash slice there rather than reading the duplicate cou
 - **`en.json` and `fr.json` read by a human.** All three bundles hold the same keys, and neither
   translation has been proofread by anyone who speaks the language. The first session in each is the
   first proofread.
+- **SIMSENSE's native half has never compiled.** `android/app/src/main/java/np/afterwork/commlink/music/`
+  needs Media3 (`media3Version` in `android/variables.gradle`, unverified against the latest release), which
+  is not in the Gradle cache. The first `pnpm run apk:debug` downloads it; then playback on a device:
+  screen off, notification controls, swiping the app away.
 
 ## Handbook figures flagged stale
 
