@@ -469,10 +469,29 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
     status: 'online',
   },
   {
+    id: 'music-home',
+    module: 'music',
+    icon: 'radio-outline',
+    route: '/music/home',
+    titleKey: marker('page-title.music-home'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.music-home.name'),
+        descKey: marker('deck.cyberpunk.music-home.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.music-home.name'),
+        descKey: marker('deck.boomer.music-home.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
     id: 'music',
     module: 'music',
     icon: 'musical-notes-outline',
-    route: '/music',
+    route: '/music/library',
     titleKey: marker('page-title.music'),
     labels: {
       cyberpunk: {
@@ -482,6 +501,63 @@ export const DECK_CATALOG: readonly DeckEntry[] = [
       boomer: {
         nameKey: marker('deck.boomer.music.name'),
         descKey: marker('deck.boomer.music.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'music-search',
+    module: 'music',
+    icon: 'search-outline',
+    route: '/music/search',
+    titleKey: marker('page-title.music-search'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.music-search.name'),
+        descKey: marker('deck.cyberpunk.music-search.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.music-search.name'),
+        descKey: marker('deck.boomer.music-search.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'music-queue',
+    module: 'music',
+    icon: 'list-outline',
+    route: '/music/queue',
+    titleKey: marker('page-title.music-queue'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.music-queue.name'),
+        descKey: marker('deck.cyberpunk.music-queue.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.music-queue.name'),
+        descKey: marker('deck.boomer.music-queue.desc'),
+      },
+    },
+    onDeck: true,
+    status: 'online',
+  },
+  {
+    id: 'music-sources',
+    module: 'music',
+    icon: 'server-outline',
+    route: '/music/sources',
+    titleKey: marker('page-title.music-sources'),
+    labels: {
+      cyberpunk: {
+        nameKey: marker('deck.cyberpunk.music-sources.name'),
+        descKey: marker('deck.cyberpunk.music-sources.desc'),
+      },
+      boomer: {
+        nameKey: marker('deck.boomer.music-sources.name'),
+        descKey: marker('deck.boomer.music-sources.desc'),
       },
     },
     onDeck: true,

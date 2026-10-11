@@ -1,0 +1,146 @@
+<app-page-header hideButtons label="page-title.music-queue" />
+
+<ion-content>
+  <div class="queue ion-padding">
+    @if (current(); as entry) {
+      <section class="queue__now sr-panel sr-corners">
+        <app-music-cover
+          class="queue__cover"
+          [cover]="entry.track.cover"
+          [loader]="loadCover"
+          [label]="entry.track.album ?? ''"
+        />
+        <p class="queue__title">{{ entry.track.title }}</p>
+        <p class="queue__artist">
+          {{ entry.track.artist ?? ('music.label.unknown-artist' | translate) }}
+          · {{ entry.track.album ?? ('music.label.unknown-album' | translate) }}
+        </p>
+        <ion-range
+          class="queue__seek"
+          [attr.aria-label]="'music.queue.a11y.seek' | translate"
+          [min]="0"
+          [max]="durationMs() ?? 0"
+          [value]="positionMs()"
+          [disabled]="!durationMs()"
+          (ionKnobMoveEnd)="seek($event)"
+        >
+          <span slot="start" class="queue__time">{{
+            positionMs() | trackTime
+          }}</span>
+          <span slot="end" class="queue__time">{{
+            durationMs() | trackTime
+          }}</span>
+        </ion-range>
+        <div class="queue__controls">
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="repeatLabel() | translate"
+            [class.queue__toggle--on]="repeat() !== 'off'"
+            (click)="cycleRepeat()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="repeat-outline"
+              aria-hidden="true"
+            />
+            @if (repeat() === 'one') {
+              <span class="queue__badge" aria-hidden="true">1</span>
+            }
+          </ion-button>
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="'music.action.previous' | translate"
+            (click)="previous()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="play-skip-back-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+          <ion-button
+            size="large"
+            [attr.aria-label]="
+              (playing() ? 'music.action.pause' : 'music.action.play')
+                | translate
+            "
+            (click)="togglePlay()"
+          >
+            <ion-icon
+              slot="icon-only"
+              aria-hidden="true"
+              [name]="playing() ? 'pause-outline' : 'play-outline'"
+            />
+          </ion-button>
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="'music.action.next' | translate"
+            (click)="next()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="play-skip-forward-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+          <ion-button
+            fill="clear"
+            [attr.aria-label]="'music.queue.shuffle' | translate"
+            (click)="shuffle()"
+          >
+            <ion-icon
+              slot="icon-only"
+              name="shuffle-outline"
+              aria-hidden="true"
+            />
+          </ion-button>
+        </div>
+      </section>
+    }
+
+    @if (queue().length) {
+      <ion-list class="queue__list">
+        @for (entry of queue(); track entry.entryId) {
+          <ion-item
+            button
+            detail="false"
+            [class.queue__row--current]="entry.entryId === current()?.entryId"
+            (click)="skipTo(entry)"
+          >
+            <ion-label>
+              <h3>{{ entry.track.title }}</h3>
+              <p>
+                {{
+                  entry.track.artist ??
+                    ('music.label.unknown-artist' | translate)
+                }}
+                @if (entry.track.onDevice) {
+                  · {{ 'music.label.on-device' | translate }}
+                }
+              </p>
+            </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              [attr.aria-label]="
+                'music.action.dequeue' | translate: { title: entry.track.title }
+              "
+              (click)="$event.stopPropagation(); remove(entry)"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="trash-outline"
+                aria-hidden="true"
+              />
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+    } @else {
+      <app-empty-state
+        [label]="'music.empty.queue' | translate"
+        [note]="'music.empty.queue-note' | translate"
+      />
+    }
+  </div>
+</ion-content>

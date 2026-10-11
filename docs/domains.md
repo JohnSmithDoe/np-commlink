@@ -463,17 +463,32 @@ Kármán-Linie`. A name that costs a lookup is the failure the feature exists to
 
 ## SIMSENSE — music
 
-- **Native playback, web UI.** A WebView pauses audio once the app leaves the screen, so on Android the
-  player is Media3 (`ExoPlayer` in a `MediaSessionService`) behind the local `MusicPlayer` plugin, and
-  the page only sends commands and renders the `stateChange` events. The facade follows the native
-  player, never its own taps: the notification, the lock screen and a headset change the state too.
-- **The folder grant is the persisted state, and it lives natively.** One Storage Access Framework
-  tree, its URI in `SharedPreferences` beside the persisted permission it names — no runtime
-  permission, no IndexedDB slice, so nothing here is a stored shape. A revoked grant clears itself.
-- **The browser shows an empty state** until the PWA adapter (`<audio>` + `navigator.mediaSession`)
-  lands behind the same plugin port.
+- **Sources are a JamServe connection plus any number of on-device folders, and every source feeds one
+  library and one queue.** Nothing is matched across sources: a local file is a local track marked "on
+  device". Artists and albums are merged for DISPLAY by normalized name — a label, never an identity —
+  and each merged entry keeps one ref per source, so a detail page asks every source it came from.
+- **Local folders are re-read on every start.** Tags come from `MediaMetadataRetriever`; an untagged
+  file shows its file name. No index is stored until a real library proves the scan too slow.
+- **The source list is the `music` slice; the native side keeps only the Storage Access Framework
+  grants.** A folder whose grant is gone shows "access lost" rather than disappearing.
+- **The password is never stored; the JWT is, until the server refuses it.** A 401/403 anywhere — an API
+  call, or ExoPlayer on a stream — clears the session but keeps server and username, so the next visit
+  asks for the password alone. Playback stops on a refused stream.
+- **Native HTTP in the APK, the WebView only on the web.** The Jam client's axios gets a `CapacitorHttp`
+  adapter on Android, so no request carries an `Origin` and jamserve's CORS list never applies; the JWT
+  is a header, the only place jamserve reads it. In the browser the generated client picks a cookie
+  session when the page's origin is on the server's list — localhost in development — and `<audio>`
+  rides that cookie.
+- **Native playback, web UI.** Media3 (`ExoPlayer` in a `MediaSessionService`) behind the local
+  `MusicPlayer` plugin; a `ResolvingDataSource` adds the bearer header for the server's origin only, and
+  the same factory loads the notification's artwork. The web adapter is `<audio>` plus
+  `navigator.mediaSession`, its artwork an object URL from the cover store, because jamserve's
+  `Cross-Origin-Resource-Policy` blocks a direct image URL there. The facades follow the player's events,
+  never their own taps.
+- **A queue entry has its own id**, so the same track twice is two entries, and every server track that
+  starts is scrobbled — that is what fills "recently played" and "played often".
 
-$1
+## The deck
 - **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.
   The curated four it replaced re-opened "does this one belong in the default?" for every new feature, a
   question with no checkable answer. Empty is a rule instead of a list. **No entry is ever added back as a

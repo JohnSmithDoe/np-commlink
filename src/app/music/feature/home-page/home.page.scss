@@ -1,0 +1,18 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.home__heading {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  text-transform: uppercase;
+}

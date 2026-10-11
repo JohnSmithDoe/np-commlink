@@ -1,0 +1,76 @@
+<app-page-header
+  hideButtons
+  [heading]="album()?.name ?? ('music.label.unknown-album' | translate)"
+/>
+
+<ion-content>
+  <app-page-return />
+
+  <div class="album ion-padding">
+    <header class="album__head">
+      <app-music-cover
+        class="album__cover"
+        [cover]="cover()"
+        [loader]="loadCover"
+        [label]="album()?.name ?? ''"
+      />
+      <div class="album__meta">
+        <p class="album__artist">
+          {{ album()?.artist ?? ('music.label.unknown-artist' | translate) }}
+        </p>
+        @if (tracks.hasValue()) {
+          <p class="album__stats">
+            {{
+              'music.label.track-count'
+                | translate: { count: tracks.value().length }
+            }}
+            · {{ totalMs() | trackTime }}
+          </p>
+        }
+        <div class="album__actions">
+          <ion-button
+            size="small"
+            [disabled]="!tracks.hasValue()"
+            (click)="playAll()"
+          >
+            <ion-icon slot="start" name="play-outline" aria-hidden="true" />
+            {{ 'music.action.play-all' | translate }}
+          </ion-button>
+          <ion-button
+            size="small"
+            fill="outline"
+            [disabled]="!tracks.hasValue()"
+            (click)="enqueueAll()"
+          >
+            <ion-icon
+              slot="start"
+              name="add-circle-outline"
+              aria-hidden="true"
+            />
+            {{ 'music.action.enqueue-all' | translate }}
+          </ion-button>
+        </div>
+      </div>
+    </header>
+
+    @if (tracks.hasValue()) {
+      <app-music-track-list
+        showNumbers
+        favorites
+        [tracks]="tracks.value()"
+        [currentId]="currentId()"
+        (playTrack)="play($event)"
+        (enqueueTrack)="enqueue($event)"
+        (favoriteTrack)="favorite($event)"
+      />
+    } @else if (tracks.isLoading()) {
+      <p class="album__stats">{{ 'music.label.scanning' | translate }}</p>
+    } @else {
+      <app-empty-state [label]="'music.error.server' | translate" />
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

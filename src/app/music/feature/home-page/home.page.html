@@ -1,0 +1,67 @@
+<app-page-header hideButtons label="page-title.music-home" />
+
+<ion-content>
+  <div class="home ion-padding">
+    @if (!hasSources()) {
+      <app-empty-state
+        [label]="'music.empty.no-source' | translate"
+        [note]="'music.empty.no-source-note' | translate"
+      />
+      <ion-button expand="block" routerLink="/music/sources">
+        <ion-icon slot="start" name="server-outline" aria-hidden="true" />
+        {{ 'music.action.open-sources' | translate }}
+      </ion-button>
+    } @else {
+      @if (connected()) {
+        <ion-button
+          fill="outline"
+          size="small"
+          routerLink="/music/home/favorites"
+        >
+          <ion-icon slot="start" name="star-outline" aria-hidden="true" />
+          {{ 'music.home.favorite-tracks' | translate }}
+        </ion-button>
+      }
+      @for (section of sections; track section.list) {
+        @if (section.albums.hasValue() && section.albums.value().length) {
+          <section class="home__section">
+            <h2 class="home__heading">{{ section.label | translate }}</h2>
+            <app-music-album-grid
+              [albums]="section.albums.value()"
+              [loader]="loadCover"
+              (openAlbum)="openAlbum($event)"
+            />
+          </section>
+        }
+      }
+      @if (playlists.hasValue() && playlists.value().length) {
+        <section class="home__section">
+          <h2 class="home__heading">
+            {{ 'music.home.playlists' | translate }}
+          </h2>
+          <ion-list>
+            @for (playlist of playlists.value(); track playlist.id) {
+              <ion-item
+                button
+                [routerLink]="['/music/home/playlist', playlist.id]"
+              >
+                <ion-label>{{ playlist.name }}</ion-label>
+                <ion-note slot="end">
+                  {{
+                    'music.label.track-count'
+                      | translate: { count: playlist.trackCount }
+                  }}
+                  · {{ playlist.durationMs | trackTime }}
+                </ion-note>
+              </ion-item>
+            }
+          </ion-list>
+        </section>
+      }
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

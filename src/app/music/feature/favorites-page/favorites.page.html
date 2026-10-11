@@ -1,0 +1,32 @@
+<app-page-header hideButtons label="page-title.music-favorites" />
+
+<ion-content>
+  <app-page-return />
+
+  <div class="playlist ion-padding">
+    @if (tracks.hasValue()) {
+      @if (tracks.value().length) {
+        <ion-button size="small" (click)="playAll()">
+          <ion-icon slot="start" name="play-outline" aria-hidden="true" />
+          {{ 'music.action.play-all' | translate }}
+        </ion-button>
+        <app-music-track-list
+          favorites
+          [tracks]="tracks.value()"
+          [currentId]="currentId()"
+          (playTrack)="play($event)"
+          (enqueueTrack)="enqueue($event)"
+          (favoriteTrack)="favorite($event)"
+        />
+      } @else {
+        <app-empty-state [label]="'music.empty.no-favorites' | translate" />
+      }
+    } @else {
+      <p class="playlist__note">{{ 'music.label.scanning' | translate }}</p>
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

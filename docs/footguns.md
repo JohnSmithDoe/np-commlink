@@ -306,3 +306,13 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **The collected APK name follows the signature** (`np-commlink.apk` vs `-unsigned.apk`), and its source
   filename comes from AGP's `output-metadata.json`, never a glob — both outputs live in one directory and
   neither build deletes the other.
+
+## The generated Jam client and the APK shell
+
+- **axios writes an array parameter as `ids[]=…`, and jamserve ignores it silently** — an album's
+  `tracks?ids[]=…` answered with the whole library. `jam.client.ts` sets
+  `axios.defaults.paramsSerializer = { indexes: null }` (repeated `ids=` keys) for both adapters; drop it
+  and nothing fails, the lists are just wrong.
+- **An APK installed over an older one keeps serving the OLD web bundle** — the service worker answers
+  from its cache until the "new version" toast is accepted, so a route the update added redirects to
+  `/commlink`. Driving the app right after `adb install`, accept the toast or clear the app's data first.

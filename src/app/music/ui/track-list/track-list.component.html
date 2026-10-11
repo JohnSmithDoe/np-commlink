@@ -1,0 +1,55 @@
+<ion-list class="tracks">
+  @for (track of tracks(); track track.id + $index) {
+    <ion-item
+      button
+      detail="false"
+      [class.tracks__row--current]="track.id === currentId()"
+      (click)="playTrack.emit(track)"
+    >
+      @if (showNumbers() && track.trackNumber) {
+        <span slot="start" class="tracks__number">{{ track.trackNumber }}</span>
+      }
+      <ion-label>
+        <h3>{{ track.title }}</h3>
+        <p>
+          {{ track.artist ?? ('music.label.unknown-artist' | translate) }}
+          @if (track.onDevice) {
+            · {{ 'music.label.on-device' | translate }}
+          }
+        </p>
+      </ion-label>
+      <ion-note slot="end">{{ track.durationMs | trackTime }}</ion-note>
+      @if (favorites() && !track.onDevice) {
+        <ion-button
+          slot="end"
+          fill="clear"
+          [attr.aria-label]="
+            (track.faved ? 'music.action.unfavorite' : 'music.action.favorite')
+              | translate: { title: track.title }
+          "
+          (click)="$event.stopPropagation(); favoriteTrack.emit(track)"
+        >
+          <ion-icon
+            slot="icon-only"
+            aria-hidden="true"
+            [name]="track.faved ? 'star' : 'star-outline'"
+          />
+        </ion-button>
+      }
+      <ion-button
+        slot="end"
+        fill="clear"
+        [attr.aria-label]="
+          'music.action.enqueue' | translate: { title: track.title }
+        "
+        (click)="$event.stopPropagation(); enqueueTrack.emit(track)"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="add-circle-outline"
+          aria-hidden="true"
+        />
+      </ion-button>
+    </ion-item>
+  }
+</ion-list>

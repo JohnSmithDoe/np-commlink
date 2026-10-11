@@ -1,16 +1,16 @@
 import { anyTag, sameTag, SheriffConfig } from '@softarc/sheriff-core';
 
-const specMayUseTesting = (ctx: {
+const specMayUseTesting = (context: {
   to: string;
   fromFilePath: string;
 }): boolean =>
-  ctx.to === 'type:testing' && ctx.fromFilePath.endsWith('.spec.ts');
+  context.to === 'type:testing' && context.fromFilePath.endsWith('.spec.ts');
 
-const featureMayUseSharedFeature = (ctx: {
+const featureMayUseSharedFeature = (context: {
   to: string;
   toModulePath: string;
 }): boolean =>
-  ctx.to === 'type:feature' && ctx.toModulePath.includes('/@shared/');
+  context.to === 'type:feature' && context.toModulePath.includes('/@shared/');
 
 /**
  * Sheriff config — Hahnekamp two-axis tagging.
@@ -25,9 +25,10 @@ const featureMayUseSharedFeature = (ctx: {
  *   feature  → smart-ui, ui, data, util, model (+ shared feature only)
  *   smart-ui → ui, data, util, model           (stateful presentational, leaf)
  *   ui       → self, util, model               (strict — pure dumb)
- *   data     → self, util, model
- *   util     → self, model
+ *   data     → self, util, model, vendor
+ *   util     → self, model, vendor
  *   model    → self
+ *   vendor   → self                         (generated clients, src/vendor)
  *
  * Domain axis: every domain sealed.
  */
@@ -37,6 +38,7 @@ export const config: SheriffConfig = {
   modules: {
     'src/app': ['type:shell'],
     'src/app/<domain>/<type>': ['domain:<domain>', 'type:<type>'],
+    'src/vendor/<lib>': ['domain:@shared', 'type:vendor'],
   },
 
   depRules: {
@@ -69,8 +71,15 @@ export const config: SheriffConfig = {
       specMayUseTesting,
     ],
     'type:ui': [sameTag, 'type:util', 'type:model', specMayUseTesting],
-    'type:data': [sameTag, 'type:util', 'type:model', specMayUseTesting],
-    'type:util': [sameTag, 'type:model', specMayUseTesting],
+    'type:data': [
+      sameTag,
+      'type:util',
+      'type:model',
+      'type:vendor',
+      specMayUseTesting,
+    ],
+    'type:util': [sameTag, 'type:model', 'type:vendor', specMayUseTesting],
+    'type:vendor': [sameTag],
     'type:model': [sameTag, specMayUseTesting],
     'type:testing': [anyTag],
 

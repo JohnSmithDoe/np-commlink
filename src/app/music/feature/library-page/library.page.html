@@ -1,0 +1,102 @@
+<app-page-header hideButtons label="page-title.music" />
+
+<ion-content>
+  <div class="library ion-padding">
+    @if (!hasSources()) {
+      <app-empty-state
+        [label]="'music.empty.no-source' | translate"
+        [note]="'music.empty.no-source-note' | translate"
+      />
+      <ion-button expand="block" routerLink="/music/sources">
+        <ion-icon slot="start" name="server-outline" aria-hidden="true" />
+        {{ 'music.action.open-sources' | translate }}
+      </ion-button>
+    } @else {
+      <ion-segment
+        [attr.aria-label]="'music.library.a11y.view' | translate"
+        [value]="view()"
+        (ionChange)="show($event.detail.value)"
+      >
+        <ion-segment-button value="artists">
+          {{ 'music.library.artists' | translate }}
+        </ion-segment-button>
+        <ion-segment-button value="albums">
+          {{ 'music.library.albums' | translate }}
+        </ion-segment-button>
+        <ion-segment-button value="folders">
+          {{ 'music.library.folders' | translate }}
+        </ion-segment-button>
+      </ion-segment>
+
+      @if (serverFailed()) {
+        <p class="library__note">{{ 'music.error.server' | translate }}</p>
+      }
+
+      @switch (view()) {
+        @case ('artists') {
+          <ion-list>
+            @for (artist of artists(); track artist.key) {
+              <ion-item
+                button
+                [routerLink]="['/music/library/artist', artist.key]"
+              >
+                <ion-label>
+                  {{
+                    artist.name ?? ('music.label.unknown-artist' | translate)
+                  }}
+                </ion-label>
+                <ion-note slot="end">
+                  {{
+                    'music.label.track-count'
+                      | translate: { count: artist.trackCount }
+                  }}
+                </ion-note>
+              </ion-item>
+            } @empty {
+              <p class="library__note">
+                {{
+                  (loading() ? 'music.label.scanning' : 'music.empty.no-tracks')
+                    | translate
+                }}
+              </p>
+            }
+          </ion-list>
+        }
+        @case ('albums') {
+          <app-music-album-grid
+            [albums]="albums()"
+            [loader]="loadCover"
+            (openAlbum)="openAlbum($event)"
+          />
+        }
+        @case ('folders') {
+          <ion-list>
+            @for (folder of folders(); track folder.id) {
+              <ion-item
+                button
+                [routerLink]="['/music/library/folder', folder.id]"
+              >
+                <ion-label>
+                  <h3>{{ folder.name }}</h3>
+                  @if (folder.onDevice) {
+                    <p>{{ 'music.label.on-device' | translate }}</p>
+                  }
+                </ion-label>
+                <ion-note slot="end">
+                  {{
+                    'music.label.track-count'
+                      | translate: { count: folder.trackCount }
+                  }}
+                </ion-note>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      }
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

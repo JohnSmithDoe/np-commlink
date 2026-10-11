@@ -75,7 +75,7 @@ export default defineConfig({
        * The two i18n bundles go with them: `deck.catalog.spec.ts` imports them
        * via `resolveJsonModule`, and a data file scores a free 100%.
        */
-      exclude: ['**/*.html', 'public/i18n/*.json'],
+      exclude: ['**/*.html', 'public/i18n/*.json', 'src/vendor/**'],
       thresholds: {
         statements: 88,
         branches: 83,

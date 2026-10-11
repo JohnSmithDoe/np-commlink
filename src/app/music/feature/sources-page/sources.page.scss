@@ -1,0 +1,30 @@
+.sources {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.sources__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sources__heading {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  text-transform: uppercase;
+}
+
+.sources__note {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}
+
+.sources__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

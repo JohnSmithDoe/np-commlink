@@ -1,0 +1,47 @@
+<app-page-header
+  hideButtons
+  [heading]="folder()?.name ?? ('page-title.music-folder' | translate)"
+/>
+
+<ion-content>
+  <app-page-return />
+
+  <div class="folder ion-padding">
+    @if (contents.hasValue()) {
+      @if (contents.value().folders.length) {
+        <ion-list>
+          @for (sub of contents.value().folders; track sub.id) {
+            <ion-item button [routerLink]="[tab, 'folder', sub.id]">
+              <ion-label>{{ sub.name }}</ion-label>
+              <ion-note slot="end">
+                {{
+                  'music.label.track-count'
+                    | translate: { count: sub.trackCount }
+                }}
+              </ion-note>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (contents.value().tracks.length) {
+        <ion-button size="small" (click)="playAll()">
+          <ion-icon slot="start" name="play-outline" aria-hidden="true" />
+          {{ 'music.action.play-all' | translate }}
+        </ion-button>
+        <app-music-track-list
+          showNumbers
+          [tracks]="contents.value().tracks"
+          [currentId]="currentId()"
+          (playTrack)="play($event)"
+          (enqueueTrack)="enqueue($event)"
+        />
+      }
+    } @else {
+      <p class="folder__note">{{ 'music.label.scanning' | translate }}</p>
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

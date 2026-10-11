@@ -54,12 +54,16 @@ const ROOT = process.cwd();
  * (`sheriff.config.ts`, `vitest.config.ts`, …) are outside it on purpose: their
  * tool reads them rather than importing them, so every export there would be a
  * finding and every one would need an exemption. Nothing at the root imports
- * from `src/`, so leaving them out costs no resolution either.
+ * from `src/`, so leaving them out costs no resolution either. `src/vendor/` is
+ * generated and replaced wholesale, so what it exports is the generator's call.
  */
+const GENERATED = /^src[/\\]vendor[/\\]/;
+
 const files = [
   ...globSync('src/**/*.ts', { cwd: ROOT }),
   ...globSync('e2e/**/*.ts', { cwd: ROOT }),
 ]
+  .filter((file) => !GENERATED.test(file))
   .map((file) => join(ROOT, file))
   .filter((file) => existsSync(file));
 

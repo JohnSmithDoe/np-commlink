@@ -1,0 +1,21 @@
+:host {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--sr-bg-mid);
+  border: 1px solid var(--sr-line);
+  border-radius: var(--sr-radius);
+}
+
+.cover__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover__placeholder {
+  width: 45%;
+  height: 45%;
+  color: var(--sr-text-dim);
+}

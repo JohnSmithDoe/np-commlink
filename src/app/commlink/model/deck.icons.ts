@@ -31,6 +31,10 @@ import {
   swapHorizontalOutline,
   timerOutline,
   walletOutline,
+  listOutline,
+  radioOutline,
+  searchOutline,
+  serverOutline,
 } from 'ionicons/icons';
 
 export const DECK_ICONS = {
@@ -66,6 +70,10 @@ export const DECK_ICONS = {
   'timer-outline': timerOutline,
   'wallet-outline': walletOutline,
   'people-outline': peopleOutline,
+  'list-outline': listOutline,
+  'radio-outline': radioOutline,
+  'search-outline': searchOutline,
+  'server-outline': serverOutline,
 } as const;
 
 export type DeckIcon = keyof typeof DECK_ICONS;

@@ -1,0 +1,10 @@
+.tracks__number {
+  min-width: 1.5rem;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+  text-align: end;
+}
+
+.tracks__row--current {
+  --color: var(--sr-amber);
+}

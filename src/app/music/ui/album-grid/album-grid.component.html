@@ -1,0 +1,30 @@
+<ul class="albums">
+  @for (album of albums(); track album.key) {
+    <li>
+      <button
+        type="button"
+        class="albums__card"
+        (click)="openAlbum.emit(album)"
+      >
+        <app-music-cover
+          [cover]="album.cover"
+          [loader]="loader()"
+          [label]="album.name ?? ''"
+        />
+        <span class="albums__name">
+          {{ album.name ?? ('music.label.unknown-album' | translate) }}
+        </span>
+        @if (showArtist()) {
+          <span class="albums__artist">
+            {{ album.artist ?? ('music.label.unknown-artist' | translate) }}
+          </span>
+        }
+        @if (album.onDevice) {
+          <span class="albums__badge">{{
+            'music.label.on-device' | translate
+          }}</span>
+        }
+      </button>
+    </li>
+  }
+</ul>

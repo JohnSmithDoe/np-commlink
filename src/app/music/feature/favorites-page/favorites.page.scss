@@ -1,0 +1,11 @@
+.playlist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.playlist__note {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}

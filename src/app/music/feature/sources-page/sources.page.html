@@ -1,0 +1,188 @@
+<app-page-header hideButtons label="page-title.music-sources" />
+
+<ion-content>
+  <div class="sources ion-padding">
+    <section class="sources__section">
+      <h2 class="sources__heading">{{ 'music.sources.server' | translate }}</h2>
+
+      @if (connected() && jam(); as jam) {
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <h3>{{ jam.server }}</h3>
+              <p>
+                {{
+                  'music.sources.signed-in-as'
+                    | translate
+                      : {
+                          name: jam.username,
+                          version: jam.session?.auth?.version ?? '?',
+                        }
+                }}
+              </p>
+            </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              [attr.aria-label]="
+                'music.action.remove-source' | translate: { name: jam.server }
+              "
+              (click)="remove(jam)"
+            >
+              <ion-icon
+                slot="icon-only"
+                name="trash-outline"
+                aria-hidden="true"
+              />
+            </ion-button>
+          </ion-item>
+        </ion-list>
+        <ion-button fill="outline" size="small" (click)="signOut()">
+          <ion-icon slot="start" name="log-out-outline" aria-hidden="true" />
+          {{ 'music.action.sign-out' | translate }}
+        </ion-button>
+      } @else {
+        @if (needsPassword()) {
+          <p class="sources__note">
+            {{ 'music.sources.session-expired' | translate }}
+          </p>
+        }
+        <ion-list>
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://music.example.org"
+              [label]="'music.sources.label.server' | translate"
+              [formField]="connection.server"
+            />
+          </ion-item>
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              autocomplete="username"
+              [label]="'music.sources.label.username' | translate"
+              [formField]="connection.username"
+            />
+          </ion-item>
+          <ion-item>
+            <ion-input
+              labelPlacement="stacked"
+              type="password"
+              autocomplete="current-password"
+              [label]="'music.sources.label.password' | translate"
+              [formField]="connection.password"
+            />
+          </ion-item>
+        </ion-list>
+        <p class="sources__note">
+          {{ 'music.sources.password-note' | translate }}
+        </p>
+        <ion-button
+          expand="block"
+          [disabled]="!canConnect()"
+          (click)="connect()"
+        >
+          <ion-icon slot="start" name="log-in-outline" aria-hidden="true" />
+          {{
+            (connecting() ? 'music.sources.connecting' : 'music.action.connect')
+              | translate
+          }}
+        </ion-button>
+        @if (jam(); as jam) {
+          <ion-button
+            fill="clear"
+            size="small"
+            color="danger"
+            (click)="remove(jam)"
+          >
+            {{ 'music.action.forget-server' | translate }}
+          </ion-button>
+        }
+      }
+      @if (outcomeMessage(); as message) {
+        <p class="sources__note" role="status">{{ message | translate }}</p>
+      }
+    </section>
+
+    <section class="sources__section">
+      <h2 class="sources__heading">
+        {{ 'music.sources.folders' | translate }}
+      </h2>
+      @if (!foldersSupported) {
+        <app-empty-state
+          [label]="'music.empty.folders-native-only' | translate"
+        />
+      } @else {
+        @if (folders().length) {
+          <ion-list>
+            @for (source of folders(); track source.id) {
+              <ion-item>
+                <ion-label>
+                  <h3>{{ source.name }}</h3>
+                  <p>
+                    @if (lostSourceIds().has(source.id)) {
+                      {{ 'music.sources.access-lost' | translate }}
+                    } @else if (scanning()) {
+                      {{ 'music.label.scanning' | translate }}
+                    } @else {
+                      {{
+                        'music.label.track-count'
+                          | translate
+                            : { count: trackCounts().get(source.id) ?? 0 }
+                      }}
+                    }
+                  </p>
+                </ion-label>
+                <ion-button
+                  slot="end"
+                  fill="clear"
+                  color="danger"
+                  [attr.aria-label]="
+                    'music.action.remove-source'
+                      | translate: { name: source.name }
+                  "
+                  (click)="remove(source)"
+                >
+                  <ion-icon
+                    slot="icon-only"
+                    name="trash-outline"
+                    aria-hidden="true"
+                  />
+                </ion-button>
+              </ion-item>
+            }
+          </ion-list>
+        } @else {
+          <app-empty-state
+            [label]="'music.empty.no-folder' | translate"
+            [note]="'music.empty.no-folder-note' | translate"
+          />
+        }
+        <div class="sources__actions">
+          <ion-button fill="outline" (click)="addFolder()">
+            <ion-icon slot="start" name="add-outline" aria-hidden="true" />
+            {{ 'music.action.add-folder' | translate }}
+          </ion-button>
+          @if (folders().length) {
+            <ion-button fill="clear" (click)="rescan()">
+              <ion-icon
+                slot="start"
+                name="refresh-outline"
+                aria-hidden="true"
+              />
+              {{ 'music.action.rescan' | translate }}
+            </ion-button>
+          }
+        </div>
+      }
+    </section>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

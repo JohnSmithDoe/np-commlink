@@ -1,0 +1,44 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+}
+
+.bar__track {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.bar__cover {
+  width: 2.75rem;
+  flex-shrink: 0;
+}
+
+.bar__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bar__title {
+  overflow: hidden;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--sr-amber);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bar__artist {
+  overflow: hidden;
+  font-size: var(--fs-xsmall);
+  color: var(--sr-text-dim);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

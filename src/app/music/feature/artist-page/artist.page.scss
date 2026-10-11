@@ -1,0 +1,11 @@
+.artist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.artist__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

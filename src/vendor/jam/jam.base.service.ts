@@ -1,0 +1,118 @@
+// @generated
+// This file was automatically generated and should not be edited.
+
+import { JamAuthService } from './jam.auth.service';
+import { JamHttpService } from './jam.http.service';
+
+type GenericParameters = Record<string, string | Array<string> | undefined>;
+
+export class JamBaseService {
+	constructor(private readonly http: JamHttpService, private readonly authService: JamAuthService) {
+	}
+
+	buildRequest(view: string, params?: GenericParameters): { url: string; parameters: GenericParameters } {
+		return { url: this.authService.auth?.server + JamAuthService.apiPrefix + view, parameters: params ?? {} };
+	}
+
+	static flattenParams(params: Record<string, unknown>): string {
+		const result: Array<string> = [];
+		for (const [key, value] of Object.entries(params)) {
+			if (value !== undefined) {
+				result.push(...this.formatParam(key, value));
+			}
+		}
+		if (result.length > 0) {
+			return result.join('&');
+		}
+		return '';
+	}
+
+	private static formatParam(key: string, value: unknown): Array<string> {
+		switch (typeof value) {
+			case 'number': {
+				return [`${key}=${value}`];
+			}
+			case 'string': {
+				return [`${key}=${encodeURIComponent(value)}`];
+			}
+			case 'boolean': {
+				return [`${key}=${value ? 'true' : 'false'}`];
+			}
+			case 'object': {
+				if (Array.isArray(value)) {
+					return value.map(v => `${key}=${encodeURIComponent(v as string)}`);
+				}
+				return [];
+			}
+			default: {
+				return [];
+			}
+		}
+	}
+
+	buildUrl(view: string, params?: unknown): string {
+		const { url, parameters } = this.buildRequest(view, params as GenericParameters);
+		const flat = JamBaseService.flattenParams(parameters);
+		return url + (flat ? `?${flat}` : '');
+	}
+
+	async raw(view: string, params?: unknown): Promise<{ buffer: ArrayBuffer; contentType: string }> {
+		const { url, parameters } = this.buildRequest(view, params as GenericParameters);
+		return this.http.raw(url, { ...this.authService.getHTTPOptions(), params: parameters });
+	}
+
+	async get<T>(view: string, params: unknown): Promise<T> {
+		const { url, parameters } = this.buildRequest(view, params as GenericParameters);
+		return this.http.get(url, { ...this.authService.getHTTPOptions(), params: parameters });
+	}
+
+	async post<T>(view: string, params: unknown, body: unknown): Promise<T> {
+		return this.http.post<T>(this.buildUrl(view, params), body, this.authService.getHTTPOptions());
+	}
+
+	async requestData<T>(path: string, params: unknown): Promise<T> {
+		if (this.authService.isLoggedIn()) {
+			return this.get<T>(path, params);
+		}
+		return Promise.reject(new Error('Not logged in'));
+	}
+
+	async requestPostData<T>(path: string, params: unknown): Promise<T> {
+		if (this.authService.isLoggedIn()) {
+			return this.post<T>(path, {}, params);
+		}
+		return Promise.reject(new Error('Not logged in'));
+	}
+
+	async requestPostDataOK(path: string, params: unknown): Promise<void> {
+		await this.requestPostData<{}>(path, params);
+	}
+
+	async requestOK(path: string, params: unknown): Promise<void> {
+		await this.requestData<{}>(path, params);
+	}
+
+	buildRequestUrl(view: string, params?: unknown): string {
+		return this.buildUrl(view, params);
+	}
+
+	async binary(path: string, params?: unknown): Promise<{ buffer: ArrayBuffer; contentType: string }> {
+		if (this.authService.isLoggedIn()) {
+			return this.raw(path, params);
+		}
+		return Promise.reject(new Error('Not logged in'));
+	}
+
+	async upload<T>(path: string, params: unknown, name: string, file: any, onUploadProgress: (progressEvent: any) => void): Promise<T> {
+		const formData = new FormData();
+		const data = params as Record<string, string>;
+		for (const [key, value] of Object.entries(data)) {
+			formData.append(key, value);
+		}
+		formData.append(name, file);
+		const url = this.buildUrl(path, {});
+		const options = this.authService.getHTTPOptions();
+		options.reportProgress = true;
+		return this.http.postObserve<T>(url, formData, options, onUploadProgress);
+	}
+}

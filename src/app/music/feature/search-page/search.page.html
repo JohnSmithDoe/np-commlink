@@ -1,0 +1,74 @@
+<app-page-header hideButtons label="page-title.music-search">
+  <ion-searchbar
+    class="search__bar"
+    [placeholder]="'music.search.placeholder' | translate"
+    [attr.aria-label]="'music.search.a11y' | translate"
+    [value]="query()"
+    [debounce]="300"
+    (ionInput)="search($event)"
+  />
+</app-page-header>
+
+<ion-content>
+  <div class="search ion-padding">
+    @if (results.hasValue()) {
+      @let found = results.value();
+      @if (found.artists.length) {
+        <h2 class="search__heading">
+          {{ 'music.library.artists' | translate }}
+        </h2>
+        <ion-list>
+          @for (artist of found.artists; track artist.key) {
+            <ion-item button [routerLink]="[tab, 'artist', artist.key]">
+              <ion-label>
+                {{ artist.name ?? ('music.label.unknown-artist' | translate) }}
+              </ion-label>
+              <ion-note slot="end">
+                {{
+                  'music.label.track-count'
+                    | translate: { count: artist.trackCount }
+                }}
+              </ion-note>
+            </ion-item>
+          }
+        </ion-list>
+      }
+      @if (found.albums.length) {
+        <h2 class="search__heading">
+          {{ 'music.library.albums' | translate }}
+        </h2>
+        <app-music-album-grid
+          [albums]="found.albums"
+          [loader]="loadCover"
+          (openAlbum)="openAlbum($event)"
+        />
+      }
+      @if (found.tracks.length) {
+        <h2 class="search__heading">{{ 'music.search.tracks' | translate }}</h2>
+        <app-music-track-list
+          favorites
+          [tracks]="found.tracks"
+          [currentId]="currentId()"
+          (playTrack)="play($event)"
+          (enqueueTrack)="enqueue($event)"
+          (favoriteTrack)="favorite($event)"
+        />
+      }
+      @if (
+        !found.artists.length && !found.albums.length && !found.tracks.length
+      ) {
+        <p class="search__note">{{ 'music.search.nothing' | translate }}</p>
+      }
+    } @else if (results.isLoading()) {
+      <p class="search__note">{{ 'music.label.scanning' | translate }}</p>
+    } @else if (results.error()) {
+      <p class="search__note">{{ 'music.error.server' | translate }}</p>
+    } @else {
+      <p class="search__note">{{ 'music.search.hint' | translate }}</p>
+    }
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

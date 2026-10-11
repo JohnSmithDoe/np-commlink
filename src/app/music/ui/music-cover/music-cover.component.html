@@ -1,0 +1,5 @@
+@if (src(); as src) {
+  <img class="cover__image" [src]="src" [alt]="label()" />
+} @else {
+  <ion-icon class="cover__placeholder" name="disc-outline" aria-hidden="true" />
+}

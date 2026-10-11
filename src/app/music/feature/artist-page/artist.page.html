@@ -1,0 +1,32 @@
+<app-page-header
+  hideButtons
+  [heading]="artist()?.name ?? ('music.label.unknown-artist' | translate)"
+/>
+
+<ion-content>
+  <app-page-return />
+
+  <div class="artist ion-padding">
+    <div class="artist__actions">
+      <ion-button size="small" (click)="playAll()">
+        <ion-icon slot="start" name="play-outline" aria-hidden="true" />
+        {{ 'music.action.play-all' | translate }}
+      </ion-button>
+      <ion-button size="small" fill="outline" (click)="enqueueAll()">
+        <ion-icon slot="start" name="add-circle-outline" aria-hidden="true" />
+        {{ 'music.action.enqueue-all' | translate }}
+      </ion-button>
+    </div>
+
+    <app-music-album-grid
+      [albums]="albums()"
+      [loader]="loadCover"
+      [showArtist]="false"
+      (openAlbum)="openAlbum($event)"
+    />
+  </div>
+</ion-content>
+
+<ion-footer>
+  <app-music-player-bar />
+</ion-footer>

@@ -1,0 +1,42 @@
+.album {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.album__head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.album__cover {
+  width: 8rem;
+  flex-shrink: 0;
+}
+
+.album__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.album__artist {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--sr-amber);
+}
+
+.album__stats {
+  margin: 0;
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}
+
+.album__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

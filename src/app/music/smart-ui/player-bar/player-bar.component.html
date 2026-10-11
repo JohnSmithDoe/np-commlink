@@ -1,0 +1,41 @@
+@if (current(); as entry) {
+  <div class="bar sr-panel">
+    <a class="bar__track" routerLink="/music/queue">
+      <app-music-cover
+        class="bar__cover"
+        [cover]="entry.track.cover"
+        [loader]="loadCover"
+      />
+      <span class="bar__text">
+        <span class="bar__title">{{ entry.track.title }}</span>
+        <span class="bar__artist">
+          {{ entry.track.artist ?? ('music.label.unknown-artist' | translate) }}
+        </span>
+      </span>
+    </a>
+    <ion-button
+      fill="clear"
+      [attr.aria-label]="
+        (playing() ? 'music.action.pause' : 'music.action.play') | translate
+      "
+      (click)="togglePlay()"
+    >
+      <ion-icon
+        slot="icon-only"
+        aria-hidden="true"
+        [name]="playing() ? 'pause-outline' : 'play-outline'"
+      />
+    </ion-button>
+    <ion-button
+      fill="clear"
+      [attr.aria-label]="'music.action.next' | translate"
+      (click)="next()"
+    >
+      <ion-icon
+        slot="icon-only"
+        name="play-skip-forward-outline"
+        aria-hidden="true"
+      />
+    </ion-button>
+  </div>
+}
