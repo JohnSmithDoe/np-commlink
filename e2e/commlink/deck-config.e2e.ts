@@ -141,9 +141,8 @@ test.describe('deck configuration', () => {
     page,
   }) => {
     await openDeck(page);
-    const denominator = (await statusStrip(page).textContent())?.match(
-      /\d+\/(\d+)/
-    )?.[1];
+    const strip = await statusStrip(page).textContent();
+    const denominator = strip?.match(/\d+\/(\d+)/)?.[1];
     expect(Number(denominator)).toBeGreaterThan(1);
 
     await openDeckConfig(page);
