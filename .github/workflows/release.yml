@@ -152,28 +152,31 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           cat > notes.md <<'EOF'
+          ## Breaking
+
+          - **BIOMON starts with an empty profile list** — people and pets now come from SIN,
+            the new shared list, and existing BIOMON profiles are not carried over. Add them
+            again in SIN; their weights and medicines from before stay hidden.
+
           ## New
 
-          - **AGENDA · A repeating task reopens itself** — until now it waited in Done until
-            you noticed it. Now it comes back to your open list on its own, on the day it is
-            due again, with nothing to remember and nothing to retype.
-          - **AGENDA · Decide how much notice you get** — say how far ahead each task should
-            reopen: on the day itself, a few days or weeks before, or at the start of its
-            week, month or year. Only the spans that fit the task's own rhythm are offered,
-            so a daily chore is never asked whether it wants a week's warning.
-          - **AGENDA · Repeat in the months you choose** — for the things that happen in March
-            and June rather than every so many weeks. Tap the months and the task lands at
-            the start of each one.
-          - **AGENDA · Count from the deadline, or from the day you did it** — an annual
-            renewal keeps its date year after year, while a filter you change every three
-            months counts three months from the day you actually changed it. Each task
-            decides for itself.
-          - **AGENDA · The rhythm, right in the list** — a repeating task now states how often
-            it comes round in its own row, so you can read it without opening anything.
-          - **AGENDA · A settings screen of its own** — choose whether tasks start warning you
-            earlier or later than usual, and what a new task should count from by default.
-          - **Roomier edit dialogs** — the fields in every dialog across the deck now sit
-            apart from one another instead of flush together.
+          - **SIMSENSE · Your own music, on your own deck** — a music player for the songs you
+            already have: in the Android app, pick a folder on your phone and play albums, artists or whole folders.
+            It keeps playing with the screen off, with controls on the lock screen.
+          - **SIMSENSE · Stream from your jamserve server** — connect your own jamserve server
+            and its library sits right beside the music on your phone, in one list and one
+            queue, with recently played, favourites and playlists.
+          - **SIN · Everyone in one place** — the people and pets on your deck now live in one
+            list, with birthdays, clothing and shoe sizes and addresses. BIOMON and TRACKPLAY
+            both read it, so you add someone once and they turn up in both.
+          - **CHRONO · Fix the time you tracked** — the clock ran through lunch, or you forgot
+            to start it: correct the tracked time in steps or to the second, even while the
+            clock is still running, and after saving from the day's log.
+          - **BIOMON · The Chinese zodiac** — next to the star sign you now see the Chinese
+            animal, its element and yin or yang, with the year starting at the lunar new year
+            and a page for each of the twelve animals.
+          - **SIGIL · Today's date in one tap** — a button puts the date where you are typing,
+            so a running log stays one tap per entry.
 
           ---
 
