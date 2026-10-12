@@ -94,6 +94,9 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 **a reading keeps its date in `name`**, not `createdAt` (an empty `name` paints "Invalid Date" ticks), and
 **Playwright wipes `outputDir` on every run**, so shots must be written outside it.
 
+**SIN and SIMSENSE have pages but no figures** — no `e2e/handbook/*.shots.ts` covers them yet, so no flag
+can name them. Write both scripts before the next release's `handbook:shots` run.
+
 ## Waiting on upstream
 
 - **Angular 22 is gated on NgRx.** On `21.2.18` (`v21-lts`, supported, not urgent); `@ngrx/*` latest is
@@ -115,8 +118,16 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
   clipping is fixed, and that shared the condition.
 - **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
   chrome in the app.
+- **Enter in BIOMON's profile and medicine search does nothing.** `profiles-page.facade.ts` and
+  `pills-page.facade.ts` hand their whole action group to `itemListCommands`, so Enter dispatches an
+  `addItemFromSearch` that `create: null` answers with nothing. SIN had the same shape, fixed by passing
+  only `updateSearch`/`updateSort`; for profiles the create path is SIN itself.
 
 ## Known cost, not yet paid
+
+- **The function-coverage floor clears by 0.34 points** (80.34% against 80 at v1.5.0). A floor on the
+  aggregate lets one well-tested domain hide an untested one, so the next untested feature reds it again.
+  The fix is a floor per domain or on the diff, not a lower number.
 
 - **The notes list decodes a full picture into a 48px box.** `MAX_EDGE` is two screens, so every thumbnail
   costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
