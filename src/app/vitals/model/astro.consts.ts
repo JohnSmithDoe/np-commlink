@@ -154,7 +154,7 @@ export const CHINESE_POLARITY_LABEL_KEYS: Record<ChinesePolarity, Marker> = {
   yin: marker('vitals.chinese.polarity.yin'),
 };
 
-export const CHINESE_BY_ANIMAL: Record<ChineseAnimal, ChineseSignRecord> = {
+const CHINESE_BY_ANIMAL: Record<ChineseAnimal, ChineseSignRecord> = {
   rat: {
     animal: 'rat',
     glyph: '鼠',

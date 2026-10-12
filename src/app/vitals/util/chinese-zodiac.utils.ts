@@ -26,7 +26,7 @@ import {
 import { ISODate } from '../model/vitals.types';
 import { SeasonPhase } from './zodiac.utils';
 
-export interface ChineseYear {
+interface ChineseYear {
   year: number;
   sign: ChineseSignRecord;
   element: ChineseElement;
@@ -86,13 +86,13 @@ export const chineseYearFor = (iso: ISODate): number | undefined => {
   return date.isValid() ? lunarYearOf(date) : undefined;
 };
 
-export const chineseSignOfYear = (year: number): ChineseSignRecord =>
+const chineseSignOfYear = (year: number): ChineseSignRecord =>
   CHINESE_SIGNS[modulo(year - 4, 12)]!;
 
 export const chineseElementOfYear = (year: number): ChineseElement =>
   CHINESE_ELEMENTS[Math.floor(modulo(year - 4, 10) / 2)]!;
 
-export const chinesePolarityOfYear = (year: number): ChinesePolarity =>
+const chinesePolarityOfYear = (year: number): ChinesePolarity =>
   modulo(year - 4, 2) === 0 ? 'yang' : 'yin';
 
 export const chineseSignFor = (iso: ISODate): ChineseSignRecord | undefined => {

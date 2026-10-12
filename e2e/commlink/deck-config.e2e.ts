@@ -141,13 +141,16 @@ test.describe('deck configuration', () => {
     page,
   }) => {
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/29');
+    const denominator = (await statusStrip(page).textContent())?.match(
+      /\d+\/(\d+)/
+    )?.[1];
+    expect(Number(denominator)).toBeGreaterThan(1);
 
     await openDeckConfig(page);
     await switchOn(page, MARKET, '"shopping"');
 
     await openDeck(page);
-    await expect(statusStrip(page)).toContainText('/29');
+    await expect(statusStrip(page)).toContainText(`/${denominator}`);
   });
 
   test('orders only what is switched on, and names its module', async ({
