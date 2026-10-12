@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
 import {
+  createDialog,
   editDialog,
   gotoPage,
+  nameBox,
   listRow,
   pageRoot,
   pickSelectOption,
+  searchInput,
   slideDelete,
   waitForPersisted,
 } from '../helpers';
@@ -48,6 +51,20 @@ test.describe('People', () => {
     await expect(undo).toBeVisible({ timeout: 10_000 });
     await undo.click();
     await expect(listRow(page, 'Rita')).toBeVisible();
+  });
+
+  test('opens the create dialog from the search bar on enter', async ({
+    page,
+  }) => {
+    await gotoPage(page, 'people', PEOPLE_PAGE);
+    const input = searchInput(page, pageRoot(page, PEOPLE_PAGE));
+    await input.fill('Ronja');
+    await page.waitForTimeout(400); // > searchbar debounce (250ms)
+    await input.press('Enter');
+
+    const dialog = createDialog(page);
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+    await expect(nameBox(dialog)).toHaveValue('Ronja');
   });
 
   test('is reachable from its own route', async ({ page }) => {

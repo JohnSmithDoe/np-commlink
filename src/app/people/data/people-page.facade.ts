@@ -19,7 +19,10 @@ export class PeoplePageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #people = inject(PeopleFacade);
 
-  protected readonly commands = itemListCommands(this.#store, PeopleActions);
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: PeopleActions.updateSearch,
+    updateSort: PeopleActions.updateSort,
+  });
 
   readonly state = this.#people.state;
   readonly undoScope = signal(PEOPLE_LIST_ID);
