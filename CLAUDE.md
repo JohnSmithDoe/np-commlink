@@ -56,6 +56,7 @@ boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets an
 | `pnpm exec sheriff verify src/main.ts` | module boundaries |
 | `pnpm run i18n:extract` | rewrite both bundles from the `marker(...)` literals, `--clean` included |
 | `pnpm run emoji:build` | regenerate the emoji catalog from CLDR (output is committed; not in CI) |
+| `pnpm run jam:update [url]` | replace `src/vendor/jam/` with a running jamserve's generated axios client, version in its `VERSION` |
 | `pnpm run handbook:shots` | the whole figure pipeline: shoot, convert to WebP, clear the stale flags (release only — see below) |
 | `pnpm run apk:build` | web build + `cap sync android` + postsync patches |
 | `pnpm run apk:debug` / `apk:release` / `apk:open` | Gradle assemble (release collects to `releases/`) / Android Studio |
