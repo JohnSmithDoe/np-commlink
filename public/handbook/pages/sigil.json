@@ -4,7 +4,6 @@
   "plain": "Notizen",
   "route": "/notes",
   "summary": "Notizen aus Titel, Freitext und Fotos — ohne Speichern-Knopf, mit angehefteter Spitze.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -48,6 +47,14 @@
         {
           "type": "p",
           "html": "Jeder Tastenanschlag zählt, gespeichert wird gesammelt kurz nach dem Tippen und außerdem beim Verlassen der Seite. Ein Reload landet wieder im Editor mit dem gleichen Stand. Notizen ohne Titel erscheinen in der Liste als <strong>Ohne Titel</strong>; in der Zeile steht zusätzlich der Anfang des Textes."
+        },
+        {
+          "type": "h3",
+          "html": "Datum einfügen"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Datum einfügen</strong> unter dem Text schreibt das heutige Datum dorthin, wo der Cursor steht — im Format der eingestellten Sprache (<code>12.10.2026</code>). Ist Text markiert, wird er ersetzt. So bleibt ein fortlaufendes Protokoll ein Tipp pro Eintrag."
         },
         {
           "type": "figure",

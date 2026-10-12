@@ -4,7 +4,6 @@
   "plain": "Gesundheit",
   "route": "/vitals",
   "summary": "Gewichtsverlauf für Menschen und Tiere, plus Medikamentenpläne mit Wochentagen, Uhrzeit und Erinnerung.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -12,7 +11,7 @@
       "blocks": [
         {
           "type": "p",
-          "html": "BIOMON (Gesundheit) ist Wiegebuch und Medikamentenplan in einem. Jede Person und jedes Tier aus <strong>SIN</strong> (Personen) hat hier ein Profil, darunter hängen ein Gewichtseintrag pro Tag und beliebig viele Medikamente mit festen Zeiten. Ziele, Bewertungen und weitere Auswertungen gibt es nicht."
+          "html": "BIOMON (Gesundheit) ist Wiegebuch und Medikamentenplan in einem. Jede Person und jedes Tier aus <strong>SIN</strong> (Personen) hat hier ein Profil, darunter hängen ein Gewichtseintrag pro Tag und beliebig viele Medikamente mit festen Zeiten. Ziele, Bewertungen und weitere Auswertungen gibt es nicht. Daneben hat BIOMON eine Ecke für Sterne und Zeichen: Sternzeichen, chinesischer Tierkreis und I Ging, aus dem Geburtsdatum gelesen."
         }
       ]
     },
@@ -46,7 +45,7 @@
         },
         {
           "type": "p",
-          "html": "Name, <strong>Person</strong> oder <strong>Tier</strong> und Geburtstag kommen aus <strong>SIN</strong> und werden dort geändert. Der Typ entscheidet das Symbol in der Zeile (Kopf oder Pfote) und ob beim Eintragen der Rechner „Zusammen gewogen\" erscheint. BIOMON selbst speichert zu einem Profil nur Sternzeichen- und Aszendent-Korrekturen und den Stern für die bevorzugte Person."
+          "html": "Name, <strong>Person</strong> oder <strong>Haustier</strong> und Geburtstag kommen aus <strong>SIN</strong> und werden dort geändert. Der Typ entscheidet das Symbol in der Zeile (Kopf oder Pfote) und ob beim Eintragen der Rechner „Zusammen gewogen\" erscheint. BIOMON selbst speichert zu einem Profil nur Sternzeichen- und Aszendent-Korrekturen und den Stern für die bevorzugte Person."
         },
         {
           "type": "p",
@@ -135,6 +134,26 @@
         {
           "type": "p",
           "html": "<strong>Erinnern</strong> stellt pro gewähltem Wochentag eine wöchentliche Systembenachrichtigung zur eingetragenen Uhrzeit (<em>Zeit für Magnesium</em> / <em>2 × Magnesium für Martin</em>). Das übernimmt das Betriebssystem, nicht die App — und darum funktioniert es <strong>nur in der Android-App</strong>; im Browser und in der PWA passiert wortlos nichts, wie der Hinweis unter den Schaltern sagt. Verweigert Android die Erlaubnis, erscheint <em>Erinnerung konnte nicht gestellt werden</em>. Bei jeder Änderung und bei jedem App-Start werden alle Erinnerungen neu gestellt. Ein abgehaktes „Heute genommen\" hält sie <strong>nicht</strong> auf: sie kommt trotzdem."
+        },
+        {
+          "type": "h3",
+          "html": "Sternzeichen und chinesisches Zeichen"
+        },
+        {
+          "type": "p",
+          "html": "Das Planeten-Symbol oben auf der Profilseite öffnet <strong>Sternzeichen</strong>. Oben steht das Geburtsdatum aus SIN; darunter <strong>Dein Zeichen</strong> mit Element und Aszendent und <strong>Dein chinesisches Zeichen</strong>: Tier, Element und Yin oder Yang, dazu die Spanne des <strong>Mondjahrs</strong>. Das chinesische Jahr beginnt mit dem Mondneujahr zwischen 21. Januar und 20. Februar — wer im Januar geboren ist, gehört oft noch zum Tier des Vorjahres."
+        },
+        {
+          "type": "p",
+          "html": "Das Datum lässt sich auf der Seite ändern, um jemanden ohne Profil nachzuschlagen; gespeichert wird das nicht, und der Aszendent steht dann auf <em>nicht gesetzt</em> — er braucht Geburtszeit und -ort. Darunter folgen <strong>Sonnenstand heute</strong> und <strong>Chinesisches Jahr heute</strong> (jeweils Davor, Jetzt, Danach; ein Tipp öffnet das Zeichen) und die <strong>Weltzeitalter</strong>."
+        },
+        {
+          "type": "h3",
+          "html": "I Ging und Nachschlagen"
+        },
+        {
+          "type": "p",
+          "html": "Das Stapel-Symbol daneben führt zum <strong>I Ging</strong> des Profils; das <strong>Münzorakel</strong> wirft die Münzen für ein Hexagramm. <strong>Nachschlagen</strong> sammelt alle Tabellen unabhängig von deinem Datum: Tierkreis, Chinesischer Tierkreis, Hexagramme, Ki-Sterne und Lebenszahlen. I Ging, Münzorakel und Nachschlagen lassen sich in der Deck-Konfiguration als eigene Kacheln einschalten."
         }
       ]
     },

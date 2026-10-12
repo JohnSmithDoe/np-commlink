@@ -77,7 +77,7 @@
         },
         {
           "type": "p",
-          "html": "Jedes Programm meldet genau eine Zahl: CHRONO <em>Anzahl Einträge</em>, MEATSPACE <em>Bürotage</em>, COMMS <em>ungelesen</em>, SIGIL <em>Anzahl Notizen</em>, SOYKAF <em>Anzahl Rezepte</em>, MARKET <em>aktive Zeilen</em>, STASH <em>knappe Bestände</em>, AGENDA <em>offene Aufgaben</em>, CATALOG <em>Anzahl Produkte</em>, CREDSTICK <em>Kontostand</em> (als Betrag, nicht als Anzahl), TRACKPLAY <em>Spiele</em>, BIOMON <em>Anzahl Messungen</em>, DAILY RUN <em>erledigt</em>. SYSOP und GEIST melden nichts. <strong>Eine Null wird nicht angezeigt</strong> — keine Kennzahl heißt: da liegt nichts an."
+          "html": "Jedes Programm meldet genau eine Zahl: CHRONO <em>Anzahl Einträge</em>, MEATSPACE <em>Bürotage</em>, COMMS <em>ungelesen</em>, SIGIL <em>Anzahl Notizen</em>, SOYKAF <em>Anzahl Rezepte</em>, MARKET <em>aktive Zeilen</em>, STASH <em>knappe Bestände</em>, AGENDA <em>offene Aufgaben</em>, CATALOG <em>Anzahl Produkte</em>, CREDSTICK <em>Kontostand</em> (als Betrag, nicht als Anzahl), TRACKPLAY <em>Spiele</em>, BIOMON <em>Anzahl Messungen</em>, SIN <em>Anzahl Personen</em>, DAILY RUN <em>erledigt</em>. SYSOP, GEIST und SIMSENSE melden nichts. <strong>Eine Null wird nicht angezeigt</strong> — keine Kennzahl heißt: da liegt nichts an."
         },
         {
           "type": "h3",
@@ -90,7 +90,7 @@
         },
         {
           "type": "p",
-          "html": "Ehrlich gemessen sind nur: <strong>RAUSCHEN</strong> (ungelesene Meldungen aus COMMS), die <strong>Uhr</strong> und <strong>LAUFZEIT</strong> (die aktuelle Zeit), das Datum, <strong>RES</strong> (dein Büroziel aus MEATSPACE, umgerechnet auf eine Skala 0–6), <strong>n/15 PROGRAMME GELADEN</strong> und <strong>NUYEN</strong> (Kontostand aus CREDSTICK)."
+          "html": "Ehrlich gemessen sind nur: <strong>RAUSCHEN</strong> (ungelesene Meldungen aus COMMS), die <strong>Uhr</strong> und <strong>LAUFZEIT</strong> (die aktuelle Zeit), das Datum, <strong>RES</strong> (dein Büroziel aus MEATSPACE, umgerechnet auf eine Skala 0–6), <strong>n/m PROGRAMME GELADEN</strong> und <strong>NUYEN</strong> (Kontostand aus CREDSTICK)."
         },
         {
           "type": "p",
@@ -147,7 +147,7 @@
           "items": [
             "<strong>Zurücksetzen stellt keine Standardauswahl her</strong>, es leert das Deck. Danach fängst du bei <em>KEINE PROGRAMME GELADEN</em> an.",
             "<strong>Ausschalten löscht nichts.</strong> Ein ausgeschaltetes Programm verschwindet aus Kacheln und Menü, seine Daten bleiben vollständig liegen; schaltest du es wieder ein, ist alles da.",
-            "<strong>n/15</strong> zählt den ganzen Katalog, nicht dein Deck. Auf einem leeren Deck steht dort schon 2/15 — gezählt wird, was gemeldet hat, nicht was du siehst.",
+            "<strong>n/m</strong> zählt den ganzen Katalog, nicht dein Deck: <strong>m</strong> sind alle Programme, die eine Kachel haben können, <strong>n</strong> die, die in dieser Sitzung gemeldet haben — auch auf einem leeren Deck steht vorn nicht unbedingt eine Null.",
             "<strong>GRID ONLINE heißt nicht \"verbunden\".</strong> Deine Daten liegen ausschließlich in dieser Installation. Browserdaten löschen oder die App deinstallieren heißt: weg. Es gibt keine Kopie in der Cloud.",
             "Erscheint unten die Meldung <em>Eine neue Version ist bereit</em>, lädt <strong>Neu laden</strong> die neue Fassung. Daten gehen dabei nicht verloren."
           ]

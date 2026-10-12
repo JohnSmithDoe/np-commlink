@@ -4,7 +4,6 @@
   "plain": "Spielstände",
   "route": "/trackplay",
   "summary": "Der Punkteblock: Spieler, Spielarten und Partien mit Runde-für-Runde-Wertung, Sieger und Bilanz.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",
@@ -126,7 +125,7 @@
         },
         {
           "type": "p",
-          "html": "Ein Tipp auf eine Spielerzeile öffnet dessen eigene Seite: oben die Bilanz <strong>1/0/1</strong> und <strong>Gespielt: 2</strong>, darunter nur die Partien dieses Spielers. <strong>+</strong> legt hier eine Partie an, in der er schon angehakt ist, der <strong>Stift</strong> benennt ihn um."
+          "html": "Ein Tipp auf eine Spielerzeile öffnet dessen eigene Seite: oben die Bilanz <strong>1/0/1</strong> und <strong>Gespielt: 2</strong>, darunter nur die Partien dieses Spielers. <strong>+</strong> legt hier eine Partie an, in der er schon angehakt ist, der <strong>Stift</strong> führt zur Personenliste in SIN, wo du ihn umbenennst."
         },
         {
           "type": "p",

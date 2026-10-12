@@ -4,7 +4,6 @@
   "plain": "Finanzen",
   "route": "/cash",
   "summary": "Konten, Kontostände und Buchungen — das Kassenbuch des Decks.",
-  "shotsStale": true,
   "sections": [
     {
       "kind": "why",

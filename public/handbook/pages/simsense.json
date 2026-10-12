@@ -1,0 +1,143 @@
+{
+  "slug": "simsense",
+  "title": "SIMSENSE",
+  "plain": "Musik",
+  "route": "/music/home",
+  "summary": "Eigene Musik vom jamserve-Server und aus Ordnern auf dem Gerät — eine Bibliothek, eine Warteschlange, spielt auch bei ausgeschaltetem Bildschirm.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "SIMSENSE (Musik) spielt <em>deine</em> Musik: von einem eigenen <strong>jamserve</strong>-Server und aus Ordnern auf dem Gerät. Beide Quellen landen in einer Bibliothek und einer Warteschlange. Kein Streamingdienst, kein Konto bei uns — was nicht auf deinem Server oder deinem Telefon liegt, gibt es hier nicht."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "SIMSENSE auf dem Deck antippen. Ohne Quelle steht dort <strong>Noch keine Musikquelle</strong>; <strong>Quelle hinzufügen</strong> führt zu <strong>Quellen</strong>.",
+            "Für einen Server <strong>Server-Adresse</strong>, <strong>Benutzername</strong> und <strong>Passwort</strong> eintragen und <strong>Verbinden</strong>. Ohne <code>https://</code> wird es ergänzt.",
+            "In der Android-App alternativ oder zusätzlich <strong>Ordner hinzufügen</strong> und den Ordner mit deiner Musik wählen. Die App liest nur diesen Ordner.",
+            "Unten über die Reiter zur <strong>Bibliothek</strong>, ein Album öffnen und <strong>Alle abspielen</strong>."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Fünf Reiter"
+        },
+        {
+          "type": "p",
+          "html": "Unten wechseln die Reiter <strong>Musik</strong> (Start), <strong>Bibliothek</strong>, <strong>Suche</strong>, <strong>Warteschlange</strong> und <strong>Quellen</strong>. Jeder Reiter lässt sich in der Deck-Konfiguration auch als eigene Kachel einschalten. Die Kacheln zeigen keine Zahl."
+        },
+        {
+          "type": "h3",
+          "html": "Start"
+        },
+        {
+          "type": "p",
+          "html": "<strong>Zuletzt gehört</strong>, <strong>Oft gehört</strong>, <strong>Favoriten</strong> und <strong>Zufällig</strong>, je bis zu zwölf Alben, darunter die <strong>Playlists</strong> des Servers. Ein leerer Abschnitt wird ausgeblendet. Nur <strong>Zufällig</strong> mischt Server und Gerät — alles andere kommt vom Server, der mitschreibt, was du hörst. <strong>Favorisierte Titel</strong> öffnet die einzeln markierten Titel."
+        },
+        {
+          "type": "h3",
+          "html": "Bibliothek"
+        },
+        {
+          "type": "p",
+          "html": "Oben umschalten zwischen <strong>Interpreten</strong>, <strong>Alben</strong> und <strong>Ordner</strong>. Interpreten und Alben aus beiden Quellen werden nach Namen zusammengelegt; Titel vom Telefon tragen <em>· auf dem Gerät</em>. Album- und Interpretenseiten bieten <strong>Alle abspielen</strong> und <strong>Alle anhängen</strong>."
+        },
+        {
+          "type": "p",
+          "html": "In einer Titelliste spielt ein Tipp die ganze Liste ab diesem Titel und <strong>ersetzt</strong> die Warteschlange. Das <strong>⊕</strong> hängt nur diesen Titel hinten an, der <strong>Stern</strong> markiert ihn als Favorit (nur Server-Titel)."
+        },
+        {
+          "type": "h3",
+          "html": "Suche"
+        },
+        {
+          "type": "p",
+          "html": "Die Suchleiste findet Interpreten, Alben und Titel auf dem Server und in den Ordnern auf dem Gerät, gruppiert in drei Abschnitte. Ein Tipp auf einen Titel spielt alle gefundenen Titel ab diesem."
+        },
+        {
+          "type": "h3",
+          "html": "Abspielen und Warteschlange"
+        },
+        {
+          "type": "p",
+          "html": "Läuft etwas, steht unten auf jeder Musikseite die Leiste mit Cover, Pause und <strong>Nächster Titel</strong>; ein Tipp auf Cover oder Titel öffnet die <strong>Warteschlange</strong>. Dort: Positionsregler (greift beim Loslassen), Zurück, Abspielen, Weiter, <strong>Wiederholen</strong> (Tippen schaltet aus → alle → ein Titel) und <strong>Mischen</strong>, das die restlichen Titel einmal durchmischt — es ist kein Schalter."
+        },
+        {
+          "type": "p",
+          "html": "In der Liste darunter springt ein Tipp zu einem Eintrag, der Papierkorb entfernt ihn. In der Android-App spielt die Musik bei ausgeschaltetem Bildschirm weiter und lässt sich über Benachrichtigung und Sperrbildschirm steuern; im Browser über die Mediensteuerung des Systems."
+        },
+        {
+          "type": "h3",
+          "html": "Quellen"
+        },
+        {
+          "type": "p",
+          "html": "Ein verbundener Server zeigt <em>Angemeldet als …</em>. <strong>Abmelden</strong> behält Adresse und Benutzername, der rote Papierkorb entfernt den Server ganz. Das Passwort wird nie gespeichert, nur die Anmeldung — lehnt der Server sie ab, steht dort <em>Die Anmeldung ist abgelaufen</em> und du gibst nur das Passwort erneut ein. Es gibt einen Server zur Zeit."
+        },
+        {
+          "type": "p",
+          "html": "Ordner auf dem Gerät zeigen ihre Titelzahl, <strong>Neu einlesen</strong> liest sie sofort wieder ein. Steht <em>Zugriff verloren – bitte erneut hinzufügen</em> an einem Ordner, hat Android die Freigabe entzogen: Ordner entfernen und neu hinzufügen."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "Keine. SIMSENSE hat kein Wischen, keinen Lang-Druck und keinen Sortier-Griff — jede Aktion ist ein sichtbarer Knopf. Die Warteschlange lässt sich darum auch nicht umsortieren."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Ordner auf dem Gerät gibt es nur in der Android-App.</strong> Im Browser bleibt nur der Server.",
+            "<strong>Die Warteschlange wird nicht gespeichert.</strong> Nach einem Neustart ist sie leer.",
+            "<strong>Ein Lied auf Server und Telefon steht zweimal da.</strong> Zusammengelegt wird nur nach Namen; anders geschriebene Interpreten bleiben getrennt.",
+            "<strong>Favoriten, Playlists, Zuletzt und Oft gehört brauchen den Server.</strong> Titel vom Gerät haben keinen Stern und zählen nicht mit.",
+            "<strong>Ordner werden bei jedem Start neu gelesen.</strong> Eine sehr große Sammlung braucht dann einen Moment; Dateien ohne Tags erscheinen mit ihrem Dateinamen.",
+            "<strong>Im Browser</strong> muss der jamserve-Server die Adresse der App zulassen, sonst meldet er <em>Der Server hat diese App abgelehnt</em>. Die Android-App betrifft das nicht.",
+            "Die Bibliothek startet immer auf <strong>Interpreten</strong> — die gewählte Ansicht wird nicht gemerkt."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/start\">COMMLINK</a> — das Deck; die fünf SIMSENSE-Reiter gibt es dort auch als einzelne Kacheln",
+            "<a href=\"#/handbook/sysop\">SYSOP</a> — Einstellungen und gespeicherte Daten"
+          ]
+        }
+      ]
+    }
+  ]
+}

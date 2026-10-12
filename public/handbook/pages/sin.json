@@ -1,0 +1,112 @@
+{
+  "slug": "sin",
+  "title": "SIN",
+  "plain": "Personen",
+  "route": "/people",
+  "summary": "Eine Liste aller Menschen und Haustiere — mit Geburtstag, Größen und Adressen. BIOMON und TRACKPLAY lesen sie.",
+  "sections": [
+    {
+      "kind": "why",
+      "heading": "Wozu",
+      "blocks": [
+        {
+          "type": "p",
+          "html": "SIN (Personen) ist das Adressbuch des Decks: jeder Mensch und jedes Haustier steht hier genau einmal, mit Geburtstag, Kleider- und Schuhgrößen und beliebig vielen Adressen. Andere Programme legen keine eigenen Personen an, sondern lesen diese Liste — <strong>BIOMON</strong> macht aus jedem Eintrag ein Profil, <strong>TRACKPLAY</strong> aus jedem Menschen einen Spieler."
+        }
+      ]
+    },
+    {
+      "kind": "steps",
+      "heading": "Erste Schritte",
+      "blocks": [
+        {
+          "type": "ol",
+          "items": [
+            "SIN/<strong>Personen</strong> auf dem Deck antippen. Aus BIOMON und TRACKPLAY führt das <strong>+</strong> der Profil- bzw. Spielerliste ebenfalls hierher.",
+            "Einen Namen in die Suchleiste tippen und Enter, oder oben rechts auf <strong>+</strong>. Der Dialog übernimmt, was in der Suchleiste steht, als Namen.",
+            "<strong>Name</strong> eintragen — das einzige Pflichtfeld — und <strong>Person</strong> oder <strong>Haustier</strong> wählen.",
+            "Optional <strong>Geburtstag</strong>, Größen und Adressen, dann <strong>Anlegen</strong>."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "features",
+      "heading": "Funktionen",
+      "blocks": [
+        {
+          "type": "h3",
+          "html": "Ein Eintrag"
+        },
+        {
+          "type": "p",
+          "html": "Der <strong>Geburtstag</strong> kommt aus einem Datumswähler; <strong>Löschen</strong> darin entfernt ihn wieder. Für Personen gibt es <strong>Oberteil</strong>, <strong>Hose</strong> (beide XS bis 3XL oder Kindergrößen 50 bis 176) und <strong>Schuhgröße (EU)</strong> von 16 bis 50 — alles zum Antippen, „—\" heißt nicht gesetzt."
+        },
+        {
+          "type": "p",
+          "html": "<strong>Adresse hinzufügen</strong> hängt einen Block mit Straße und Hausnummer, PLZ, Ort und Land an; das X entfernt ihn. Ein ganz leerer Block wird beim Speichern verworfen."
+        },
+        {
+          "type": "h3",
+          "html": "Die Liste"
+        },
+        {
+          "type": "p",
+          "html": "Jede Zeile zeigt Kopf oder Pfote, den Namen, den Geburtstag mit Alter (<code>26.01.1990 · 36 Jahre</code>), die Größen, sofern gesetzt, und die <em>erste</em> Adresse. Sortiert wird nach <strong>A-Z</strong> oder <strong>Geburtstag</strong>; ein zweiter Tipp auf den aktiven Knopf dreht die Richtung. Die Suchleiste filtert nach Namen; Enter öffnet den Dialog für einen neuen Eintrag. Die Kachel auf dem Deck zählt alle Einträge, Menschen und Haustiere zusammen."
+        },
+        {
+          "type": "h3",
+          "html": "Was die anderen Programme davon sehen"
+        },
+        {
+          "type": "p",
+          "html": "Name, Typ und Geburtstag werden <strong>nur hier</strong> geändert. BIOMON rechnet aus dem Geburtstag die Sternzeichen; TRACKPLAY zeigt nur Personen, keine Haustiere. Eine Änderung hier steht dort sofort."
+        }
+      ]
+    },
+    {
+      "kind": "gestures",
+      "heading": "Verborgene Gesten",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Tipp</strong> auf eine Zeile öffnet den Bearbeiten-Dialog.",
+            "<strong>Nach links wischen</strong> → rotes <strong>Löschen</strong>; vollständig durchwischen löscht sofort, ohne Nachfrage. Unten steht kurz <em>„… gelöscht\"</em>; der Pfeil oben in der Kopfzeile holt den Eintrag zurück.",
+            "Kein Wischen nach rechts, kein Lang-Druck, kein Sortier-Griff."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "pitfalls",
+      "heading": "Fallstricke",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<strong>Jeder Name nur einmal.</strong> Zwei „Max\" brauchen unterschiedliche Namen (Groß-/Kleinschreibung zählt nicht).",
+            "<strong>Löschen blendet aus, was an der Person hängt.</strong> Ihr BIOMON-Profil verschwindet samt Erinnerungen, in TRACKPLAY-Partien steht statt ihres Namens —. Gelöscht wird dort nichts: <strong>Rückgängig</strong> holt alles zurück.",
+            "<strong>Auf Haustier umstellen löscht beim Speichern die Größen</strong> und nimmt den Eintrag aus der TRACKPLAY-Spielerliste.",
+            "<strong>Geburtstag sortiert nach Geburtsdatum</strong>, nicht nach dem nächsten Geburtstag im Jahr.",
+            "Wer aus BIOMON oder TRACKPLAY herkommt, landet nach dem Anlegen nicht automatisch dort zurück."
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "seealso",
+      "heading": "Siehe auch",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            "<a href=\"#/handbook/biomon\">BIOMON</a> — Gewicht, Medikamente und Sternzeichen zu jedem Eintrag",
+            "<a href=\"#/handbook/trackplay\">TRACKPLAY</a> — Spielstände; Mitspieler sind Personen aus SIN",
+            "<a href=\"#/handbook/gesten\">BEDIENUNG</a> — Wischen, Suchleiste und Dialoge, wie sie überall funktionieren"
+          ]
+        }
+      ]
+    }
+  ]
+}
