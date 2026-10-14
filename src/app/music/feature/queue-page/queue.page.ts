@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  signal,
 } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
@@ -69,6 +70,10 @@ export class MusicQueuePage {
   readonly playing = this.#player.playing;
   readonly positionMs = this.#player.positionMs;
   readonly durationMs = this.#player.durationMs;
+  readonly #scrubMs = signal<number | undefined>(undefined);
+  readonly shownPositionMs = computed(
+    () => this.#scrubMs() ?? this.positionMs()
+  );
   readonly repeat = this.#player.repeat;
   readonly repeatLabel = computed(() => REPEAT_LABELS[this.repeat()]);
   readonly loadCover = (cover: CoverRef) => this.#covers.load(cover);
@@ -85,9 +90,15 @@ export class MusicQueuePage {
     });
   }
 
-  seek(event: RangeCustomEvent): void {
+  scrub(event: RangeCustomEvent): void {
     const value = event.detail.value;
-    if (typeof value === 'number') void this.#player.seek(value);
+    if (typeof value === 'number') this.#scrubMs.set(value);
+  }
+
+  async seek(event: RangeCustomEvent): Promise<void> {
+    const value = event.detail.value;
+    if (typeof value === 'number') await this.#player.seek(value);
+    this.#scrubMs.set(undefined);
   }
 
   togglePlay(): void {

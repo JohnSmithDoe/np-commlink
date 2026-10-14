@@ -20,12 +20,14 @@
           [attr.aria-label]="'music.queue.a11y.seek' | translate"
           [min]="0"
           [max]="durationMs() ?? 0"
-          [value]="positionMs()"
+          [value]="shownPositionMs()"
           [disabled]="!durationMs()"
+          (ionKnobMoveStart)="scrub($event)"
+          (ionInput)="scrub($event)"
           (ionKnobMoveEnd)="seek($event)"
         >
           <span slot="start" class="queue__time">{{
-            positionMs() | trackTime
+            shownPositionMs() | trackTime
           }}</span>
           <span slot="end" class="queue__time">{{
             durationMs() | trackTime

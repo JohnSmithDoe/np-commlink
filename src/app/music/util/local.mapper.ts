@@ -1,11 +1,11 @@
 import { FolderSource, LocalTrackTags, Track } from '../model/music.types';
-import { albumKeyOf, libraryKey } from './library.utils';
+import { albumKeyOf, groupArtistOf, libraryKey } from './library.utils';
 
 export const toLocalTrack = (
   source: FolderSource,
   tags: LocalTrackTags
 ): Track => {
-  const artistKey = libraryKey(tags.artist);
+  const artistKey = libraryKey(groupArtistOf(tags));
   return {
     ...tags,
     id: tags.uri,

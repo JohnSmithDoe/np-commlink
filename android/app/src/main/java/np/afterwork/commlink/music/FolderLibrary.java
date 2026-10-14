@@ -116,6 +116,7 @@ final class FolderLibrary {
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
             ));
+            putTag(track, "albumArtist", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST));
             putTag(track, "album", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
             putNumber(track, "durationMs", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
             putNumber(track, "trackNumber", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER));

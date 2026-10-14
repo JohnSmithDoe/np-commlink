@@ -46,6 +46,7 @@ export type LocalTrackTags = {
   path: string;
   title: string;
   artist?: string;
+  albumArtist?: string;
   album?: string;
   durationMs?: number;
   trackNumber?: number;
@@ -60,6 +61,7 @@ export type Track = {
   uri: string;
   title: string;
   artist?: string;
+  albumArtist?: string;
   album?: string;
   albumKey: string;
   artistKey: string;

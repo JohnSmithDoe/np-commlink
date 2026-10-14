@@ -2,6 +2,7 @@ import type { Jam } from '../../../vendor/jam';
 import { FolderEntry, PlaylistEntry, Track } from '../model/music.types';
 import {
   albumKeyOf,
+  groupArtistOf,
   libraryKey,
   ServerAlbum,
   ServerArtist,
@@ -15,7 +16,7 @@ export const toJamTrack = (
   track: Jam.MediaBase,
   streamUrl: string
 ): Track => {
-  const artistKey = libraryKey(track.tag?.artist);
+  const artistKey = libraryKey(groupArtistOf(track.tag ?? {}));
   return {
     id: track.id,
     sourceId,
