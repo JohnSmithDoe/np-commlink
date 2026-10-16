@@ -57,9 +57,10 @@ export class SourcesFacade {
       ? this.#plugin.releaseFolder({ folderUri: source.uri })
       : this.#jam.signOut());
     this.#store.dispatch(MusicActions.removeSource(source.id));
+    if (source.kind === 'folder') await this.#local.forget(source.id);
   }
 
-  rescan(): void {
-    this.#local.reload();
+  rescan(): Promise<void> {
+    return this.#local.rescan();
   }
 }

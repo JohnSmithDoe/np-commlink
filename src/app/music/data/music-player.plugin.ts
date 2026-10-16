@@ -4,6 +4,7 @@ import {
   LocalTrackTags,
   MusicFolder,
   PlayableTrack,
+  PlaybackFailed,
   PlaybackState,
   RepeatMode,
 } from '../model/music.types';
@@ -39,6 +40,10 @@ export type MusicPlayerPlugin = {
   addListener(
     event: 'authRefused',
     listener: () => void
+  ): Promise<PluginListenerHandle>;
+  addListener(
+    event: 'playbackFailed',
+    listener: (failure: PlaybackFailed) => void
   ): Promise<PluginListenerHandle>;
 };
 

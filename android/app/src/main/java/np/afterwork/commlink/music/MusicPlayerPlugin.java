@@ -53,7 +53,16 @@ public class MusicPlayerPlugin extends Plugin {
 
                         @Override
                         public void onPlayerError(PlaybackException error) {
-                            if (JamAuth.consumeRefused()) notifyListeners("authRefused", new JSObject());
+                            if (JamAuth.consumeRefused()) {
+                                notifyListeners("authRefused", new JSObject());
+                                return;
+                            }
+                            JSObject failure = new JSObject();
+                            failure.put("reason", PlaybackFailures.consume());
+                            failure.put("resume", controller.getPlayWhenReady());
+                            MediaItem item = controller.getCurrentMediaItem();
+                            if (item != null) failure.put("entryId", item.mediaId);
+                            notifyListeners("playbackFailed", failure);
                         }
                     }
                 );
@@ -205,7 +214,13 @@ public class MusicPlayerPlugin extends Plugin {
 
     @PluginMethod
     public void play(PluginCall call) {
-        withController(call, Player::play);
+        withController(
+            call,
+            (controller) -> {
+                if (controller.getPlaybackState() == Player.STATE_IDLE) controller.prepare();
+                controller.play();
+            }
+        );
     }
 
     @PluginMethod

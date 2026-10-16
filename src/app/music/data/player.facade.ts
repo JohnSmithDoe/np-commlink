@@ -10,6 +10,7 @@ import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notificati
 import { POSITION_POLL_MS } from '../model/music.consts';
 import {
   PlayableTrack,
+  PlaybackFailed,
   PlaybackState,
   QueueEntry,
   RepeatMode,
@@ -18,6 +19,7 @@ import {
 import { shuffled, toQueue, withoutEntry } from '../util/queue.utils';
 import { CoverStore } from './cover.store';
 import { JamGateway } from './jam.gateway';
+import { LocalLibraryStore } from './local-library.store';
 import { MUSIC_PLAYER, PlayerEvent } from './music-player';
 
 const REPEAT_CYCLE: Record<RepeatMode, RepeatMode> = {
@@ -31,6 +33,7 @@ export class PlayerFacade {
   readonly #player = inject(MUSIC_PLAYER);
   readonly #jam = inject(JamGateway);
   readonly #covers = inject(CoverStore);
+  readonly #local = inject(LocalLibraryStore);
   readonly #native = inject(IS_NATIVE_PLATFORM);
   readonly #queue = signal<QueueEntry[]>([]);
   readonly #playback = signal<PlaybackState>({ playing: false });
@@ -138,10 +141,36 @@ export class PlayerFacade {
       await this.#jam.expire();
       return;
     }
+    const failed = this.#queue().find(
+      (entry) => entry.entryId === event.entryId
+    );
+    if (failed?.track.onDevice && event.reason !== 'other') {
+      await this.#dropUnreachable(failed, event);
+      return;
+    }
     if (this.current()?.track.onDevice === false) {
       await this.#jam.verify().catch(() => {});
       if (!this.#jam.connected()) await this.#player.stop();
     }
+  }
+
+  async #dropUnreachable(
+    { track }: QueueEntry,
+    { reason, resume }: PlaybackFailed
+  ): Promise<void> {
+    const unreachable =
+      reason === 'notFound'
+        ? (entry: QueueEntry) => entry.track.uri === track.uri
+        : (entry: QueueEntry) =>
+            entry.track.onDevice && entry.track.sourceId === track.sourceId;
+    await (reason === 'notFound'
+      ? this.#local.markMissing(track.sourceId, track.uri)
+      : this.#local.markLost(track.sourceId));
+    for (const entry of this.#queue()
+      .filter((entry) => unreachable(entry))
+      .toReversed())
+      await this.remove(entry);
+    if (resume) await this.#player.play();
   }
 
   #playable({ entryId, track }: QueueEntry): PlayableTrack {

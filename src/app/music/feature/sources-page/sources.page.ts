@@ -125,7 +125,7 @@ export class MusicSourcesPage {
   }
 
   rescan(): void {
-    this.#sources.rescan();
+    void this.#sources.rescan();
   }
 
   remove(source: Source): void {

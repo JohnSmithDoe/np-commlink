@@ -467,8 +467,16 @@ Kármán-Linie`. A name that costs a lookup is the failure the feature exists to
   library and one queue.** Nothing is matched across sources: a local file is a local track marked "on
   device". Artists and albums are merged for DISPLAY by normalized name — a label, never an identity —
   and each merged entry keeps one ref per source, so a detail page asks every source it came from.
-- **Local folders are re-read on every start.** Tags come from `MediaMetadataRetriever`; an untagged
-  file shows its file name. No index is stored until a real library proves the scan too slow.
+- **A folder is scanned once, then read from its snapshot** (`music-folder:<sourceId>`, tags only, no
+  covers), because a scan opens every file on the device. A new folder scans at once; the sources page's
+  rescan replaces every snapshot whole — no diff, so a retag waits for it. Tags come from
+  `MediaMetadataRetriever`; an untagged file shows its file name. A snapshot is deleted only when its
+  folder is removed — never because the source list read back empty, which a failed slice load also does.
+- **Between scans the only news is a failed playback.** `PlaybackService` classifies it while it still
+  holds the whole exception — the copy a `MediaController` receives keeps one level of cause — and the
+  plugin names the failing entry: a missing file (`ERROR_CODE_IO_FILE_NOT_FOUND`) is hidden and skipped, a revoked grant
+  (a `SecurityException` in the cause chain — SAF never yields `IO_NO_PERMISSION`) marks its folder
+  "access lost", anything else leaves the track alone. The next rescan clears every mark.
 - **The source list is the `music` slice; the native side keeps only the Storage Access Framework
   grants.** A folder whose grant is gone shows "access lost" rather than disappearing.
 - **The password is never stored; the JWT is, until the server refuses it.** A 401/403 anywhere — an API

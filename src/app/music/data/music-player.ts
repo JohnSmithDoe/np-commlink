@@ -1,13 +1,18 @@
 import { inject, InjectionToken } from '@angular/core';
 import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
-import { PlayableTrack, PlaybackState, RepeatMode } from '../model/music.types';
+import {
+  PlayableTrack,
+  PlaybackFailed,
+  PlaybackState,
+  RepeatMode,
+} from '../model/music.types';
 import { nextIndex, previousIndex } from '../util/queue.utils';
 import { MUSIC_PLAYER_PLUGIN, MusicPlayerPlugin } from './music-player.plugin';
 
 export type PlayerEvent =
   | { kind: 'state'; state: PlaybackState }
   | { kind: 'authRefused' }
-  | { kind: 'failed' };
+  | ({ kind: 'failed' } & PlaybackFailed);
 
 type MusicPlayer = {
   setQueue(tracks: PlayableTrack[], startIndex: number): Promise<void>;
@@ -98,6 +103,9 @@ class NativeMusicPlayer implements MusicPlayer {
     void this.plugin.addListener('authRefused', () =>
       listener({ kind: 'authRefused' })
     );
+    void this.plugin.addListener('playbackFailed', (failure) =>
+      listener({ kind: 'failed', ...failure })
+    );
   }
 }
 
@@ -118,7 +126,9 @@ class WebMusicPlayer implements MusicPlayer {
       this.#audio.addEventListener(type, () => this.#emitState());
     }
     this.#audio.addEventListener('ended', () => void this.#advance());
-    this.#audio.addEventListener('error', () => this.#emit({ kind: 'failed' }));
+    this.#audio.addEventListener('error', () =>
+      this.#emit({ kind: 'failed', reason: 'other' })
+    );
     this.#bindMediaSession();
   }
 
@@ -179,7 +189,9 @@ class WebMusicPlayer implements MusicPlayer {
   }
 
   play(): Promise<void> {
-    return this.#audio.play().catch(() => this.#emit({ kind: 'failed' }));
+    return this.#audio
+      .play()
+      .catch(() => this.#emit({ kind: 'failed', reason: 'other' }));
   }
 
   pause(): Promise<void> {

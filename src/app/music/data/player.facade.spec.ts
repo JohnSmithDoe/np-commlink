@@ -3,11 +3,13 @@ import { TestBed } from '@angular/core/testing';
 import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import {
   fakeJamGateway,
+  fakeLocalLibrary,
   mockJamSource,
   mockTrack,
 } from '../testing/music.fakes';
 import { CoverStore } from './cover.store';
 import { JamGateway } from './jam.gateway';
+import { LocalLibraryStore } from './local-library.store';
 import { MUSIC_PLAYER, PlayerEvent } from './music-player';
 import { PlayerFacade } from './player.facade';
 
@@ -41,23 +43,26 @@ function fakeMusicPlayer() {
 }
 
 describe('PlayerFacade', () => {
-  const first = mockTrack({ id: 'a', title: 'Roads' });
-  const second = mockTrack({ id: 'b', title: 'Glory Box' });
-  const third = mockTrack({ id: 'c', title: 'Sour Times' });
+  const first = mockTrack({ id: 'a', uri: 'content://a', title: 'Roads' });
+  const second = mockTrack({ id: 'b', uri: 'content://b', title: 'Glory Box' });
+  const third = mockTrack({ id: 'c', uri: 'content://c', title: 'Sour Times' });
 
   let player: ReturnType<typeof fakeMusicPlayer>;
   let jam: ReturnType<typeof fakeJamGateway>;
+  let local: ReturnType<typeof fakeLocalLibrary>;
   let facade: PlayerFacade;
 
   beforeEach(() => {
     player = fakeMusicPlayer();
     jam = fakeJamGateway();
+    local = fakeLocalLibrary();
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         PlayerFacade,
         { provide: MUSIC_PLAYER, useValue: player },
         { provide: JamGateway, useValue: jam },
+        { provide: LocalLibraryStore, useValue: local },
         { provide: CoverStore, useValue: { load: () => Promise.resolve() } },
         { provide: IS_NATIVE_PLATFORM, useValue: false },
       ],
@@ -174,9 +179,64 @@ describe('PlayerFacade', () => {
     await facade.play([mockTrack({ id: 's', onDevice: false })]);
     playing(0);
 
-    player.emit({ kind: 'failed' });
+    player.emit({ kind: 'failed', reason: 'other' });
     await vi.waitFor(() => expect(player.stop).toHaveBeenCalled());
     expect(jam.verify).toHaveBeenCalled();
+  });
+
+  it('hides a vanished file, drops it from the queue and plays on', async () => {
+    await facade.play([first, second]);
+    const [gone] = facade.queue();
+
+    player.emit({
+      kind: 'failed',
+      reason: 'notFound',
+      entryId: gone?.entryId,
+      resume: true,
+    });
+
+    await vi.waitFor(() => expect(player.play).toHaveBeenCalled());
+    expect(local.markMissing).toHaveBeenCalledWith('folder-1', first.uri);
+    expect(player.removeAt).toHaveBeenCalledWith(0);
+    expect(facade.queue().map((entry) => entry.track.id)).toEqual(['b']);
+  });
+
+  it('marks the folder lost and drops every entry it holds', async () => {
+    const elsewhere = mockTrack({ id: 'x', sourceId: 'folder-2' });
+    await facade.play([first, elsewhere, second]);
+    const [refused] = facade.queue();
+
+    player.emit({
+      kind: 'failed',
+      reason: 'noPermission',
+      entryId: refused?.entryId,
+      resume: true,
+    });
+
+    await vi.waitFor(() => expect(player.play).toHaveBeenCalled());
+    expect(local.markLost).toHaveBeenCalledExactlyOnceWith('folder-1');
+    expect(facade.queue().map((entry) => entry.track.id)).toEqual(['x']);
+  });
+
+  it('stays paused when the failure struck a paused player', async () => {
+    await facade.play([first, second]);
+    const [gone] = facade.queue();
+
+    player.emit({ kind: 'failed', reason: 'notFound', entryId: gone?.entryId });
+
+    await vi.waitFor(() => expect(player.removeAt).toHaveBeenCalled());
+    expect(player.play).not.toHaveBeenCalled();
+  });
+
+  it('keeps a local track that failed for any other reason', async () => {
+    await facade.play([first]);
+    const [entry] = facade.queue();
+
+    player.emit({ kind: 'failed', reason: 'other', entryId: entry?.entryId });
+    await Promise.resolve();
+
+    expect(local.markMissing).not.toHaveBeenCalled();
+    expect(facade.queue()).toHaveLength(1);
   });
 
   it('scrobbles a server track once it starts, and never a local one', async () => {

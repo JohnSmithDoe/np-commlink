@@ -81,6 +81,7 @@ public class PlaybackService extends MediaSessionService {
         return new Player.Listener() {
             @Override
             public void onPlayerError(PlaybackException error) {
+                PlaybackFailures.record(error);
                 if (isRefused(error)) {
                     JamAuth.markRefused();
                     player.stop();

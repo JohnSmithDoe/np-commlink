@@ -74,5 +74,9 @@ export function fakeLocalLibrary(scans: FolderScan[] = []) {
     scanning: signal(false),
     scans: all,
     tracks: computed(() => all().flatMap((scan) => scan.tracks)),
+    rescan: vi.fn(() => Promise.resolve()),
+    markMissing: vi.fn(() => Promise.resolve()),
+    markLost: vi.fn(() => Promise.resolve()),
+    forget: vi.fn(() => Promise.resolve()),
   };
 }

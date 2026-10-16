@@ -118,6 +118,21 @@ export type FolderScan = {
   tracks: Track[];
 };
 
+export type FolderSnapshot = {
+  sourceId: string;
+  granted: boolean;
+  tracks: LocalTrackTags[];
+  missing: string[];
+};
+
+export type PlaybackFailure = 'notFound' | 'noPermission' | 'other';
+
+export type PlaybackFailed = {
+  reason: PlaybackFailure;
+  entryId?: string;
+  resume?: boolean;
+};
+
 export type QueueEntry = {
   entryId: string;
   track: Track;

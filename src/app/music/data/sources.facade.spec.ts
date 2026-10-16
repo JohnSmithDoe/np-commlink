@@ -30,7 +30,7 @@ const setup = () => {
       { source: folder, granted: true, tracks: [mockTrack(), mockTrack()] },
       { source: lost, granted: false, tracks: [] },
     ]),
-    reload: vi.fn(),
+    rescan: vi.fn(() => Promise.resolve()),
   };
   const plugin = {
     pickFolder: vi.fn(() =>
@@ -95,7 +95,7 @@ describe('SourcesFacade', () => {
   });
 
   it('releases a folder’s grant, and signs a server out, before removing it', async () => {
-    const { facade, plugin, signOut, dispatch } = setup();
+    const { facade, plugin, signOut, dispatch, local } = setup();
 
     await facade.removeSource(folder);
     await facade.removeSource(mockJamSource());
@@ -105,13 +105,14 @@ describe('SourcesFacade', () => {
     });
     expect(signOut).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith(MusicActions.removeSource('jam-1'));
+    expect(local.forget).toHaveBeenCalledExactlyOnceWith('folder-1');
   });
 
-  it('rescans through the local library', () => {
+  it('rescans through the local library', async () => {
     const { facade, local } = setup();
 
-    facade.rescan();
+    await facade.rescan();
 
-    expect(local.reload).toHaveBeenCalled();
+    expect(local.rescan).toHaveBeenCalled();
   });
 });

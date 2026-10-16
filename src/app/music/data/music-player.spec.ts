@@ -121,7 +121,7 @@ describe('MUSIC_PLAYER on the web', () => {
 
     await player.setQueue([track('a')], 0);
 
-    expect(states).toContainEqual({ kind: 'failed' });
+    expect(states).toContainEqual({ kind: 'failed', reason: 'other' });
   });
 
   it('stops and forgets the position', async () => {
