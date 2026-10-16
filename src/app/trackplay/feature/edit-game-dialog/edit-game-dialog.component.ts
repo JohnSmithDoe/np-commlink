@@ -2,6 +2,11 @@
  * "Weiter" no longer re-saves to learn the id. A `Game` is a `BaseItem`
  * now, so the draft already carries the id it will be stored under —
  * saving and navigating are two independent steps over one known id.
+ *
+ * `rounds` stays out of the form: Signal Forms stamps a tracking symbol
+ * onto every object in an array it models, and a played game's rounds are
+ * frozen store state — the dialog would throw on open. Saving spreads the
+ * draft over the seed, so the rounds survive untouched.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
@@ -32,6 +37,8 @@ import { gameTypeIdOf } from '../../util/game-type.utils';
 import { createGame } from '../../util/trackplay.factory';
 import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-select.component';
 
+type GameForm = Omit<Game, 'rounds'>;
+
 @Component({
   selector: 'app-edit-game-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,7 +56,10 @@ import { TrackplayPlayerSelectComponent } from '../../ui/player-select/player-se
     TrackplayPlayerSelectComponent,
   ],
 })
-export class EditGameDialogComponent extends BaseEditItemDialog<Game> {
+export class EditGameDialogComponent extends BaseEditItemDialog<
+  Game,
+  GameForm
+> {
   readonly #games = inject(GamesFacade);
   readonly #players = inject(PlayersFacade);
   readonly #router = inject(Router);
@@ -75,6 +85,10 @@ export class EditGameDialogComponent extends BaseEditItemDialog<Game> {
 
   protected blank(): Game {
     return createGame('');
+  }
+
+  protected override toForm({ rounds: _played, ...form }: Game): GameForm {
+    return form;
   }
 
   protected save(item: Game): void {

@@ -10,7 +10,7 @@
 import { Game, TrackplayId } from '../model/trackplay.types';
 import { DEFAULT_GAME_TYPE_ID } from './trackplay.factory';
 
-export const gameTypeIdOf = (game: Game): TrackplayId =>
+export const gameTypeIdOf = (game: Pick<Game, 'categoryIds'>): TrackplayId =>
   game.categoryIds?.[0] ?? DEFAULT_GAME_TYPE_ID;
 
 export const withGameTypeId = (game: Game, typeId: TrackplayId): Game => ({

@@ -10,7 +10,6 @@ import {
   CheckboxCustomEvent,
   IonCheckbox,
   IonItem,
-  IonLabel,
   IonList,
 } from '@ionic/angular/standalone';
 import { Player, TrackplayId } from '../../model/trackplay.types';
@@ -20,7 +19,7 @@ import { Player, TrackplayId } from '../../model/trackplay.types';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './player-select.component.html',
   styleUrls: ['./player-select.component.scss'],
-  imports: [IonList, IonItem, IonCheckbox, IonLabel],
+  imports: [IonList, IonItem, IonCheckbox],
 })
 export class TrackplayPlayerSelectComponent {
   readonly players = input.required<Player[]>();

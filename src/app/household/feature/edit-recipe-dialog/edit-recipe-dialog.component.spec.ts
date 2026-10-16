@@ -133,6 +133,20 @@ describe('EditRecipeDialogComponent', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  it('edits a recipe whose ingredient lines are frozen store state', async () => {
+    const a = Object.freeze(line('l-milk', milk.id));
+    const recipe = await open(
+      mockRecipe({ ingredients: Object.freeze([a]) as never })
+    );
+
+    component.setServings(6);
+    component.confirm();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      RecipesActions.updateItem({ ...recipe, servings: 6 })
+    );
+  });
+
   it('saves the whole draft on confirm and closes the dialog', async () => {
     const recipe = await open();
     component.setServings(6);

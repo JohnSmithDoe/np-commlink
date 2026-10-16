@@ -81,6 +81,18 @@ describe('EditGameDialogComponent', () => {
     );
   });
 
+  it('edits a played game whose rounds are frozen store state', () => {
+    const rounds = [Object.freeze({ id: 'r1', values: { p1: 7 } })];
+    setup(mockGame({ ...skat, rounds: Object.freeze(rounds) as never }));
+
+    component.form.name().value.set('Doppelkopf');
+    component.confirm();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      GamesActions.addOrUpdateItem({ ...skat, name: 'Doppelkopf', rounds })
+    );
+  });
+
   it('offers players sorted by name', () => {
     setup();
 

@@ -1,3 +1,10 @@
+/* ─── why ─────────────────────────────────────────────────────────
+ * Ingredient lines are rebuilt field by field on the way into the form
+ * and out of it. Signal Forms stamps a tracking symbol onto each object in
+ * an array it models: a saved recipe's lines are frozen store state, so
+ * modelled as they are the dialog throws on open — and a spread copy
+ * would carry the stamp back into the store on save.
+ * ───────────────────────────────────────────────────────────────── */
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   ChangeDetectionStrategy,
@@ -46,6 +53,13 @@ const UNIT_LABEL_KEYS: Record<ItemUnit, Marker> = {
   ml: marker('household.unit.ml'),
 };
 
+const ownLine = ({
+  id,
+  productId,
+  amount,
+  unit,
+}: RecipeIngredient): RecipeIngredient => ({ id, productId, amount, unit });
+
 @Component({
   selector: 'app-edit-recipe-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,6 +82,21 @@ const UNIT_LABEL_KEYS: Record<ItemUnit, Marker> = {
 export class EditRecipeDialogComponent extends BaseEditItemDialog<Recipe> {
   protected blank(): Recipe {
     return createRecipe('');
+  }
+
+  protected override toForm(recipe: Recipe): Recipe {
+    return {
+      ...recipe,
+      ingredients: recipe.ingredients.map((line) => ownLine(line)),
+    };
+  }
+
+  protected override fromForm(draft: Recipe, seed: Recipe): Recipe {
+    return {
+      ...seed,
+      ...draft,
+      ingredients: draft.ingredients.map((line) => ownLine(line)),
+    };
   }
 
   readonly #facade = inject(RecipesFacade);
