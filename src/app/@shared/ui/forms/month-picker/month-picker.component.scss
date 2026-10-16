@@ -1,11 +1,4 @@
-.month-picker {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.25rem;
-  padding-block: 0.5rem;
-}
-
-.month-picker__month {
-  min-width: 0;
-  margin: 0;
+app-option-chips {
+  --option-chips-gutter: 0;
+  --option-chips-block: var(--space-2);
 }

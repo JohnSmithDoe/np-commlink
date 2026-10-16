@@ -75,7 +75,8 @@ test.describe('the due-date picker', () => {
     const dialog = page.locator('ion-modal.show-modal').first();
 
     await dialog
-      .getByTestId('date-shortcut')
+      .locator('app-date-shortcuts')
+      .getByTestId('chip')
       .filter({ hasText: 'Morgen' })
       .click();
 
@@ -96,13 +97,16 @@ test.describe('the due-date picker', () => {
   }) => {
     await dueDateField(page, 'Steuer');
     const dialog = page.locator('ion-modal.show-modal').first();
-    const clear = dialog.getByTestId('date-shortcut-clear');
+    const clear = dialog
+      .locator('app-date-shortcuts')
+      .getByTestId('chip-clear');
     const box = dateBox(dialog.locator('app-date-input'));
 
     await expect(clear).toHaveAttribute('aria-disabled', 'true');
 
     await dialog
-      .getByTestId('date-shortcut')
+      .locator('app-date-shortcuts')
+      .getByTestId('chip')
       .filter({ hasText: 'Heute' })
       .click();
     await expect(box).not.toHaveValue('');

@@ -70,7 +70,7 @@ test.describe('BIOMON — pills', () => {
     await dialogNameBox(dialog).fill('Vitamin D');
     await expect(dialogNameBox(dialog)).toHaveValue('Vitamin D');
 
-    const days = dialog.getByTestId('weekday');
+    const days = dialog.locator('app-weekday-picker').getByTestId('chip');
     for (let index = 0; index < 7; index++) {
       await days.nth(index).click();
     }
@@ -88,7 +88,7 @@ test.describe('BIOMON — pills', () => {
     await dialogNameBox(dialog).fill('ASS 100');
     await expect(dialogNameBox(dialog)).toHaveValue('ASS 100');
 
-    const days = dialog.getByTestId('weekday');
+    const days = dialog.locator('app-weekday-picker').getByTestId('chip');
     for (const index of [1, 3, 4, 5, 6]) {
       await days.nth(index).click();
     }

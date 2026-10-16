@@ -302,9 +302,9 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   of zero days open the task on the same date, so a clear button offered a second spelling of the first
   chip — and a new task, seeded with no lead, showed an empty row that was quietly already behaving as
   "on the day". The dialog reads `lead ?? ON_DAY_LEAD`, so one chip is always lit and the stored shape is
-  untouched: `undefined` still means on the day. `app-option-chips` therefore has no clear affordance at
-  all and emits `T` rather than `T | undefined`; `app-number-select` keeps its own, because a priority
-  genuinely has no neutral value to fall back to.
+  untouched: `undefined` still means on the day. The lead row therefore passes `app-option-chips` no
+  `clearLabel`, and so never offers the X; `app-number-select` opts in, because a priority genuinely has
+  no neutral value to fall back to.
 - **The lead CHIPS are capped by the same rule, so the clamp is a floor nobody reaches.** `leadOptionsFor`
   offers nothing whose worst reach is not shorter than the cadence's widest gap — five days for "Mon and
   Tue", one for "Mon, Wed, Fri, Sun", none at all for a chore on every weekday. Two things follow that are

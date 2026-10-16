@@ -52,6 +52,9 @@ interface LeadOption {
 
 export const ON_DAY_LEAD: TaskLead = { kind: 'days', days: 0 };
 
+export const leadKey = (lead: TaskLead): string =>
+  lead.kind === 'days' ? `days:${lead.days}` : `startOf:${lead.unit}`;
+
 const onDay: LeadOption = { lead: ON_DAY_LEAD, key: ON_DAY };
 
 const daysBefore = (days: number): LeadOption => ({

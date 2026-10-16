@@ -55,7 +55,7 @@
       <app-option-chips
         [label]="'tasks.item.anchor' | translate"
         [options]="anchorOptions()"
-        [value]="draft().anchor ?? 'done'"
+        [selected]="draft().anchor ?? 'done'"
         (picked)="updateAnchor($event)"
       />
     }
@@ -63,7 +63,7 @@
     <app-option-chips
       [label]="'tasks.item.lead' | translate"
       [options]="leadOptions()"
-      [value]="draft().lead ?? onDayLead"
+      [selected]="selectedLead()"
       (picked)="updateLead($event)"
     />
   }

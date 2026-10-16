@@ -15,7 +15,11 @@ import {
 } from '../../model/task.types';
 import { createTaskItem } from '../../util/task.factory';
 import { ANCHOR_OPTIONS } from '../../util/task-anchor.utils';
-import { leadOptionsFor, ON_DAY_LEAD } from '../../util/task-lead.utils';
+import {
+  leadKey,
+  leadOptionsFor,
+  ON_DAY_LEAD,
+} from '../../util/task-lead.utils';
 import { nextDueForCadence } from '../../util/task.utils';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
@@ -71,10 +75,13 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
   readonly categories = this.#facade.catalog;
   readonly siblings = this.#facade.allItems;
 
-  readonly onDayLead = ON_DAY_LEAD;
+  readonly selectedLead = computed(() =>
+    leadKey(this.draft().lead ?? ON_DAY_LEAD)
+  );
 
   readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() =>
     ANCHOR_OPTIONS.map((anchor) => ({
+      key: anchor.value,
       value: anchor.value,
       label: this.#translate.instant(anchor.key),
     }))
@@ -89,6 +96,7 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
     const interval = this.draft().interval;
     if (!interval) return [];
     return leadOptionsFor(interval).map((option) => ({
+      key: leadKey(option.lead),
       value: option.lead,
       label: this.#translate.instant(option.key, option.params),
     }));

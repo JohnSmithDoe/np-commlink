@@ -54,11 +54,11 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
   state binding loses its `attr.` prefix and its ternary because the directive declares `aria-pressed` as
   a typed input (`[aria-pressed]="bold.selected()"`). Gated on Angular 22, which is gated on NgRx; see
   [state.md](./state.md).
-  **The cost is not the upgrade, it is the element.** Those directives target native elements, and all
-  three pickers are `ion-button` — which relocates a host's `aria-*` into its shadow root
-  ([footguns.md](./footguns.md)), so a directive writing to the host would be writing to the wrong place.
-  Adopting means moving the three pickers to plain `<button>` and styling them, which also retires that
-  footgun for this code. **Decide that before the package**: it is the same "a chip is the shape, never
+  **The cost is not the upgrade, it is the element.** Those directives target native elements, and every
+  picker renders `app-option-chips`, whose chips are `ion-button` — which relocates a host's `aria-*` into
+  its shadow root ([footguns.md](./footguns.md)), so a directive writing to the host would be writing to
+  the wrong place. Adopting means moving that one row to plain `<button>` and styling it, which also
+  retires that footgun for this code. **Decide that before the package**: it is the same "a chip is the shape, never
   the element" question `date-shortcuts` already answered once, asked now about the button underneath.
 
 ## Measured costs

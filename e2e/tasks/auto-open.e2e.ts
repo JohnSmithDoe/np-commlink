@@ -61,7 +61,7 @@ test.describe('a repeating task', () => {
   test('names the months it falls in, without a count', async ({ page }) => {
     await pickUnit(page, 'Im Monat');
 
-    const months = dialog(page).getByTestId('month');
+    const months = dialog(page).locator('app-month-picker').getByTestId('chip');
     await expect(months).toHaveCount(12);
     await expect(dialog(page).getByTestId('interval-summary')).toHaveText(
       'Noch kein Monat gewählt'
@@ -81,7 +81,8 @@ test.describe('a repeating task', () => {
     await expect(chipRow(page, 'Nächster Termin')).toHaveCount(0);
 
     await dialog(page)
-      .getByTestId('date-shortcut')
+      .locator('app-date-shortcuts')
+      .getByTestId('chip')
       .filter({ hasText: 'Morgen' })
       .click();
 

@@ -1,15 +1,7 @@
-<div class="weekday-picker" role="group" [attr.aria-label]="groupLabel()">
-  @for (day of days; track day) {
-    <ion-button
-      class="weekday-picker__day"
-      size="small"
-      data-testid="weekday"
-      [fill]="isOn(day) ? 'solid' : 'outline'"
-      [attr.aria-pressed]="isOn(day)"
-      [attr.aria-label]="fullLabel(day)"
-      (click)="toggled.emit(day)"
-    >
-      {{ label(day) }}
-    </ion-button>
-  }
-</div>
+<app-option-chips
+  stretch
+  [options]="options"
+  [selected]="selected()"
+  [groupLabel]="groupLabel()"
+  (picked)="toggled.emit($event)"
+/>

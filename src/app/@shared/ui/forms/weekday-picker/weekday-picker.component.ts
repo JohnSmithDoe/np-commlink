@@ -7,36 +7,38 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
 } from '@angular/core';
-import { IonButton } from '@ionic/angular/standalone';
 import { ISO_WEEKDAYS, IsoWeekday } from '../../../model/app.types';
 import { localizedWeekday } from '../../../util/formatting/date-format.utils';
+import {
+  ChipOption,
+  OptionChipsComponent,
+} from '../option-chips/option-chips.component';
+
+const weekdayOptions = (): ChipOption<IsoWeekday>[] =>
+  ISO_WEEKDAYS.map((day) => ({
+    key: String(day),
+    value: day,
+    label: localizedWeekday(day, 'short'),
+    a11yLabel: localizedWeekday(day, 'long'),
+  }));
 
 @Component({
   selector: 'app-weekday-picker',
   templateUrl: './weekday-picker.component.html',
-  styleUrls: ['./weekday-picker.component.scss'],
+  styleUrl: './weekday-picker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonButton],
+  imports: [OptionChipsComponent],
 })
 export class WeekdayPickerComponent {
   readonly weekdays = input.required<readonly IsoWeekday[]>();
   readonly groupLabel = input<string>();
   readonly toggled = output<IsoWeekday>();
 
-  readonly days = ISO_WEEKDAYS;
+  protected readonly options = weekdayOptions();
 
-  label(day: IsoWeekday): string {
-    return localizedWeekday(day, 'short');
-  }
-
-  fullLabel(day: IsoWeekday): string {
-    return localizedWeekday(day, 'long');
-  }
-
-  isOn(day: IsoWeekday): boolean {
-    return this.weekdays().includes(day);
-  }
+  protected readonly selected = computed(() => this.weekdays().map(String));
 }

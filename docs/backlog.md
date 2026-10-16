@@ -35,23 +35,6 @@ _Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, a
 is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
 outside AGENDA._
 
-- **A4 · `month-picker` is `weekday-picker` line for line.** Same class shape, same template down to
-  the `[fill]`/`aria-pressed`/`aria-label` triple, SCSS differing only in `grid` vs `flex-wrap`. The
-  same diff added `option-chips`, which *is* the general mechanism and was not used for the case that
-  motivated it — `@shared/ui/forms` now holds three near-identical button rows, each satisfying the
-  eight `a11y-*` rules independently. The merge costs one static `data-testid` (composed ids are
-  banned), so `getByTestId('weekday'|'month')` in `e2e/vitals/pills.e2e.ts`, `e2e/handbook/biomon.shots.ts`
-  and `e2e/tasks/auto-open.e2e.ts` become role locators — which is what the auto-open banner argues for
-  anyway. Touching the shots source makes BIOMON figures stale.
-- **A6 · `option-chips` and `number-select` are one component apart.** Identical templates and
-  property-for-property identical SCSS; `NumberSelectComponent` is `OptionChipsComponent<number>` plus a
-  clear button. `date-shortcuts.component.scss` is a third copy of the same chip-row styling, so a
-  retheme has to find three files sharing no selector.
-- **A7 · `ChipOption<T>` has no identity, so the shared row invents one.** `JSON.stringify` equality
-  and `track option.label`. It holds because every lead comes from one factory, so key order matches; it
-  stops holding the first time a lead is built or migrated elsewhere, and the failure is "no chip looks
-  selected" — which no test would catch. A `key: string` on `ChipOption` moves identity to the domain
-  that owns the value.
 - **A8 · `interval-input` takes a group label per unit from its caller.** It owns `interval.unit.*`,
   `interval.count` and `interval.summary.*`, but its group names arrive as `tasks.item.interval.weekdays`
   / `.months` — wording that says what the picker beside them is for, not anything a task owns. One

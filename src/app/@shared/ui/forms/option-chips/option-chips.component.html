@@ -3,16 +3,39 @@
     <h3 class="option-chips__label">{{ caption }}</h3>
   }
 
-  <div class="option-chips__row" role="group" [attr.aria-label]="label()">
-    @for (option of options(); track option.label) {
+  <div
+    class="option-chips__row"
+    role="group"
+    [class.option-chips__row--stretch]="stretch()"
+    [class.option-chips__row--grid]="columns()"
+    [style.--option-chips-columns]="columns()"
+    [attr.aria-label]="label() ?? groupLabel()"
+  >
+    @for (option of options(); track option.key) {
       <ion-button
         size="small"
         class="option-chips__pick"
+        data-testid="chip"
         [fill]="isOn(option) ? 'solid' : 'outline'"
         [attr.aria-pressed]="isOn(option) ? 'true' : 'false'"
+        [attr.aria-label]="option.a11yLabel"
         (click)="picked.emit(option.value)"
       >
         {{ option.label }}
+      </ion-button>
+    }
+
+    @if (clearLabel(); as clearName) {
+      <ion-button
+        size="small"
+        fill="clear"
+        class="option-chips__clear"
+        data-testid="chip-clear"
+        [disabled]="clearOff()"
+        [attr.aria-label]="clearName"
+        (click)="cleared.emit()"
+      >
+        <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
       </ion-button>
     }
   </div>

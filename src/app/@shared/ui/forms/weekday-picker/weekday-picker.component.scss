@@ -1,12 +1,4 @@
-.weekday-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  padding-block: 0.5rem;
-}
-
-.weekday-picker__day {
-  flex: 1 1 auto;
-  min-width: var(--sr-touch);
-  margin: 0;
+app-option-chips {
+  --option-chips-gutter: 0;
+  --option-chips-block: var(--space-2);
 }

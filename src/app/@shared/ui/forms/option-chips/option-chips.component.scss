@@ -2,7 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding-inline: var(--space-4);
+  padding-inline: var(--option-chips-gutter, var(--space-4));
+  padding-block: var(--option-chips-block, 0);
 }
 
 .option-chips__label {
@@ -17,11 +18,29 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
+  align-items: center;
+}
+
+.option-chips__row--grid {
+  display: grid;
+  grid-template-columns: repeat(var(--option-chips-columns), 1fr);
 }
 
 .option-chips__pick {
   margin: 0;
+  min-width: 0;
   font-size: var(--fs-xsmall);
   --padding-start: var(--space-3);
   --padding-end: var(--space-3);
+}
+
+.option-chips__row--stretch .option-chips__pick {
+  flex: 1 1 auto;
+  min-width: var(--sr-touch);
+}
+
+.option-chips__clear {
+  margin: 0;
+  --padding-start: var(--space-2);
+  --padding-end: var(--space-2);
 }

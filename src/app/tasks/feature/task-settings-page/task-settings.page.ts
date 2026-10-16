@@ -66,6 +66,7 @@ export class TaskSettingsPage {
 
   readonly warnOptions = computed<ChipOption<TaskWarnShift>[]>(() =>
     TASK_WARN_SHIFTS.map((shift) => ({
+      key: shift,
       value: shift,
       label: this.#translate.instant(WARN_LABELS[shift]),
     }))
@@ -73,6 +74,7 @@ export class TaskSettingsPage {
 
   readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() =>
     ANCHOR_OPTIONS.map((anchor) => ({
+      key: anchor.value,
       value: anchor.value,
       label: this.#translate.instant(anchor.key),
     }))

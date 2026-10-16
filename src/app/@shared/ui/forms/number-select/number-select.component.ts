@@ -6,9 +6,7 @@
  * runs out at six, a cadence at twelve.
  *
  * `clearBtn` is opt-in rather than always on: where the value cannot be
- * absent, an X that does nothing is worse than no X. It is disabled
- * rather than hidden, because clearing is what empties the value and a
- * control that unmounts on its own click drops the focus it held.
+ * absent, an X that does nothing is worse than no X.
  * ───────────────────────────────────────────────────────────────── */
 import {
   booleanAttribute,
@@ -19,15 +17,15 @@ import {
   numberAttribute,
   output,
 } from '@angular/core';
-import { IonButton, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { closeOutline } from 'ionicons/icons';
+import {
+  ChipOption,
+  OptionChipsComponent,
+} from '../option-chips/option-chips.component';
 
 @Component({
   selector: 'app-number-select',
   templateUrl: './number-select.component.html',
-  styleUrl: './number-select.component.scss',
-  imports: [IonButton, IonIcon],
+  imports: [OptionChipsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberSelectComponent {
@@ -40,21 +38,17 @@ export class NumberSelectComponent {
 
   readonly valueChange = output<number | undefined>();
 
-  protected readonly options = computed(() => {
+  protected readonly options = computed<ChipOption<number>[]>(() => {
     const from = this.min();
     const span = Math.max(0, this.max() - from + 1);
-    return Array.from({ length: span }, (_, index) => from + index);
+    return Array.from({ length: span }, (_, index) => {
+      const option = from + index;
+      return { key: String(option), value: option, label: String(option) };
+    });
   });
 
-  constructor() {
-    addIcons({ closeOutline });
-  }
-
-  protected pick(option: number): void {
-    this.valueChange.emit(option);
-  }
-
-  protected clear(): void {
-    this.valueChange.emit(undefined);
-  }
+  protected readonly selected = computed(() => {
+    const value = this.value();
+    return value === undefined ? undefined : String(value);
+  });
 }

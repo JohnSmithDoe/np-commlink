@@ -15,7 +15,7 @@
       <app-option-chips
         [label]="'tasks.settings.warn' | translate"
         [options]="warnOptions()"
-        [value]="settings().warnShift"
+        [selected]="settings().warnShift"
         (picked)="setWarnShift($event)"
       />
     </ion-item>
@@ -30,7 +30,7 @@
       <app-option-chips
         [label]="'tasks.item.anchor' | translate"
         [options]="anchorOptions()"
-        [value]="settings().defaultAnchor"
+        [selected]="settings().defaultAnchor"
         (picked)="setDefaultAnchor($event)"
       />
     </ion-item>

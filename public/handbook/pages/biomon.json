@@ -1,5 +1,6 @@
 {
   "slug": "biomon",
+  "shotsStale": true,
   "title": "BIOMON",
   "plain": "Gesundheit",
   "route": "/vitals",

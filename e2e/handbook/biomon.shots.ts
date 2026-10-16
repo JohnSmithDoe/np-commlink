@@ -98,7 +98,11 @@ async function createPill(
   await dialog.getByTestId('vitals-pill-dose').locator('input').fill(dose);
   await dialog.getByTestId('vitals-pill-time').locator('input').fill(time);
   for (const index of daysOff) {
-    await dialog.getByTestId('weekday').nth(index).click();
+    await dialog
+      .locator('app-weekday-picker')
+      .getByTestId('chip')
+      .nth(index)
+      .click();
   }
   if (shotName) await shot(page, shotName);
   await saveNew(dialog);

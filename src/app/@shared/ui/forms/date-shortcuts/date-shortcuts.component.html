@@ -1,29 +1,9 @@
-<div
-  class="date-shortcuts"
-  role="group"
-  [attr.aria-label]="'date-picker.shortcuts' | translate"
->
-  @for (id of ids; track id) {
-    <ion-button
-      size="small"
-      class="date-shortcuts__pick"
-      data-testid="date-shortcut"
-      [fill]="activeId() === id ? 'solid' : 'outline'"
-      (click)="pick(id)"
-    >
-      {{ labels[id] | translate }}
-    </ion-button>
-  }
-
-  <ion-button
-    size="small"
-    fill="clear"
-    class="date-shortcuts__clear"
-    data-testid="date-shortcut-clear"
-    [disabled]="!value()"
-    [attr.aria-label]="'date-picker.clear' | translate"
-    (click)="clear()"
-  >
-    <ion-icon slot="icon-only" name="close-outline" aria-hidden="true" />
-  </ion-button>
-</div>
+<app-option-chips
+  [options]="options"
+  [selected]="activeId()"
+  [groupLabel]="'date-picker.shortcuts' | translate"
+  [clearLabel]="'date-picker.clear' | translate"
+  [clearDisabled]="!value()"
+  (picked)="pick($event)"
+  (cleared)="clear()"
+/>

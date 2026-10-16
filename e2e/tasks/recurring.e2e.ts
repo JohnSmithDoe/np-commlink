@@ -22,7 +22,7 @@ const TASK = 'Heizungswartung';
 const ONCE = 'Briefmarken';
 
 function numberOption(scope: Locator, value: number): Locator {
-  return scope.getByTestId('number-select-option').nth(value - 1);
+  return scope.getByTestId('chip').nth(value - 1);
 }
 
 async function chooseInterval(
@@ -134,7 +134,7 @@ test.describe('a task priority', () => {
       .first()
       .locator('app-number-select')
       .filter({ hasText: 'Priorität' });
-    const clear = prio.getByTestId('number-select-clear');
+    const clear = prio.getByTestId('chip-clear');
 
     await expect(clear).toHaveAttribute('aria-disabled', 'true');
 
