@@ -10,7 +10,8 @@ import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page/list-page.component';
 import { ItemListQuickAddComponent } from '../../smart-ui/item-list-quick-add/item-list-quick-add.component';
 import { HouseholdSearchPanelComponent } from '../../smart-ui/household-search-panel/household-search-panel.component';
-import { HouseholdListSettingsButtonComponent } from '../../ui/household-list-settings-button/household-list-settings-button.component';
+import { SettingsLinkButtonComponent } from '../../../@shared/ui/settings-link-button/settings-link-button.component';
+import { LIST_SETTINGS_LABEL } from '../../util/household-list.utils';
 import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-item.component';
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-dialog.component';
@@ -28,7 +29,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
     ListPageComponent,
     ItemListQuickAddComponent,
     HouseholdSearchPanelComponent,
-    HouseholdListSettingsButtonComponent,
+    SettingsLinkButtonComponent,
     ListItemComponent,
     EditShoppingItemDialogComponent,
     EditProductDialogComponent,
@@ -37,6 +38,7 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
   providers: [{ provide: LIST_FACADE, useExisting: HouseholdListPageFacade }],
 })
 export class ShoppingPage {
+  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
   readonly facade = inject(HouseholdListPageFacade);
   readonly #shopping = inject(ShoppingFacade);
   readonly state = this.#shopping.state;

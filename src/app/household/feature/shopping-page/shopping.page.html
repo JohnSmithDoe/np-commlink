@@ -15,7 +15,11 @@
       </ion-button>
     }
   </ng-container>
-  <app-household-list-settings-button toolbarActionsEnd />
+  <app-settings-link-button
+    route="/household/list-settings"
+    toolbarActionsEnd
+    [label]="listSettingsLabel"
+  />
 </app-list-page>
 
 <ng-template

@@ -98,7 +98,7 @@ test.describe('household navigation', () => {
     ).toHaveCount(0);
 
     await pageRoot(page, 'app-page-storage')
-      .getByTestId('household-list-settings-link')
+      .getByTestId('settings-link')
       .click();
 
     await expect(page).toHaveURL(/list-settings/);

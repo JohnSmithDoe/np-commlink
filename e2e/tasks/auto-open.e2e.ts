@@ -119,7 +119,7 @@ test.describe('the agenda settings', () => {
     await page.goto('/#/tasks/list');
     await waitForListPage(page);
 
-    await page.getByTestId('task-settings-link').click();
+    await page.getByTestId('settings-link').click();
     await expect(page).toHaveURL(/tasks\/settings/);
 
     const warn = () =>

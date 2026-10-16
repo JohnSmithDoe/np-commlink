@@ -5,7 +5,11 @@
 >
   <app-item-list-quick-add beforeList />
   <app-household-search-panel beforeList />
-  <app-household-list-settings-button toolbarActionsEnd />
+  <app-settings-link-button
+    route="/household/list-settings"
+    toolbarActionsEnd
+    [label]="listSettingsLabel"
+  />
 </app-list-page>
 
 <ng-template

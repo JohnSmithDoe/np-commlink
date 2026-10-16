@@ -29,7 +29,7 @@ import { ListItemComponent } from '../../../@shared/ui/base-item/list-item/list-
 import { StartSwipeAction } from '../../../@shared/ui/base-item/base-swipe-row';
 import { TasksListPageFacade } from '../../data';
 import { EditTaskItemDialogComponent } from '../edit-task-item-dialog/edit-task-item-dialog.component';
-import { TaskSettingsButtonComponent } from '../../ui/task-settings-button/task-settings-button.component';
+import { SettingsLinkButtonComponent } from '../../../@shared/ui/settings-link-button/settings-link-button.component';
 
 const MARK_DONE: StartSwipeAction = {
   labelKey: marker('tasks.action.done'),
@@ -43,6 +43,7 @@ const REOPEN: StartSwipeAction = {
 
 const RECURS_NOTE = marker('tasks.item.recurs.note');
 const DUE_NOTE = marker('tasks.item.due.note');
+const SETTINGS_LABEL = marker('tasks.a11y.settings');
 
 @Component({
   selector: 'app-page-tasks',
@@ -55,11 +56,12 @@ const DUE_NOTE = marker('tasks.item.due.note');
     ListPageComponent,
     ListItemComponent,
     EditTaskItemDialogComponent,
-    TaskSettingsButtonComponent,
+    SettingsLinkButtonComponent,
   ],
   providers: [{ provide: LIST_FACADE, useExisting: TasksListPageFacade }],
 })
 export class TasksPage {
+  protected readonly settingsLabel = SETTINGS_LABEL;
   readonly #facade = inject(TasksListPageFacade);
   readonly #today = inject(TodayService).today;
   readonly #now = computed(() => dayjs(this.#today()));

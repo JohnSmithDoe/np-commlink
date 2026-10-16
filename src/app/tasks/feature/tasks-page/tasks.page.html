@@ -3,7 +3,11 @@
   pageHeader="page-title.tasks"
   [itemTemplate]="taskItem"
 >
-  <app-task-settings-button toolbarActionsEnd />
+  <app-settings-link-button
+    route="/tasks/settings"
+    toolbarActionsEnd
+    [label]="settingsLabel"
+  />
 </app-list-page>
 
 <ng-template

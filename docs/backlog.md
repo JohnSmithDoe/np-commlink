@@ -43,11 +43,6 @@ outside AGENDA._
   banned), so `getByTestId('weekday'|'month')` in `e2e/vitals/pills.e2e.ts`, `e2e/handbook/biomon.shots.ts`
   and `e2e/tasks/auto-open.e2e.ts` become role locators — which is what the auto-open banner argues for
   anyway. Touching the shots source makes BIOMON figures stale.
-- **A5 · `settings-link-button` is now in three domains.** `TaskSettingsButtonComponent` is
-  `HouseholdListSettingsButtonComponent` byte for byte, `display:contents` banner included — and that
-  file's own banner records the shape being copied twice before. `domain:tasks → domain:household` is
-  sealed, so the fix is one `@shared/ui` component taking `route` and `label`; both wrappers then
-  delete, and two e2e testids converge.
 - **A6 · `option-chips` and `number-select` are one component apart.** Identical templates and
   property-for-property identical SCSS; `NumberSelectComponent` is `OptionChipsComponent<number>` plus a
   clear button. `date-shortcuts.component.scss` is a third copy of the same chip-row styling, so a

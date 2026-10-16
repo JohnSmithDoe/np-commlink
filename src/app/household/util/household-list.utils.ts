@@ -136,3 +136,5 @@ export const addShoppinglistToStorage = (
   }
   return nextState;
 };
+
+export const LIST_SETTINGS_LABEL = marker('household.a11y.list-settings');
