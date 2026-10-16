@@ -4,6 +4,7 @@ import {
   closedTask,
   reopenedTask,
   dueStatusColor,
+  nextDueForCadence,
   nextDueOf,
   opensAt,
   tasksDueToReopen,
@@ -80,6 +81,31 @@ describe('dueStatusColor', () => {
     const item = mockTaskItem({ dueAt: '2026-07-31' });
     expect(dueStatusColor(item, NOW)).toBe('success');
     expect(dueStatusColor(item, NOW, 'earlier')).toBe('warning');
+  });
+});
+
+describe('nextDueForCadence', () => {
+  it('reschedules a task whose due date is gone from today', () => {
+    const item = mockTaskItem({
+      dueAt: '2026-01-06',
+      nextDueAt: '2026-07-28',
+      interval: { every: 1, unit: 'week' },
+    });
+    expect(nextDueForCadence(item, { every: 2, unit: 'week' }, NOW)).toBe(
+      '2026-08-09'
+    );
+  });
+
+  it('keeps a due date that has not arrived yet', () => {
+    const item = mockTaskItem({ dueAt: '2026-08-01' });
+    expect(nextDueForCadence(item, { every: 1, unit: 'week' }, NOW)).toBe(
+      '2026-08-01'
+    );
+  });
+
+  it('keeps the due day of the month when stepping from today', () => {
+    const item = mockTaskItem({ dueAt: '2026-01-01' });
+    expect(nextDueForCadence(item, MONTHLY, NOW)).toBe('2026-08-01');
   });
 });
 

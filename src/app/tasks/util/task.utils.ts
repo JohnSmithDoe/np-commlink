@@ -124,6 +124,17 @@ const advanceFrom = (
   return { next: cursor && isoDay(cursor), missed };
 };
 
+export const nextDueForCadence = (
+  item: TaskItem,
+  interval: Interval | undefined,
+  now: Dayjs = dayjs()
+): Timestamp | undefined => {
+  const due = item.dueAt ? dayjs(item.dueAt) : undefined;
+  if (!interval || !due || !due.isBefore(now, 'day')) return item.dueAt;
+  const next = stepFrom(now, interval, anchorDayOf(item));
+  return next ? isoDay(next) : item.dueAt;
+};
+
 export const recursAt = (item: TaskItem): Timestamp | undefined =>
   item.doneAt && item.interval ? nextDueOf(item) : undefined;
 

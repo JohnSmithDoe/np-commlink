@@ -35,12 +35,6 @@ _Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, a
 is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
 outside AGENDA._
 
-- **A2 · `nextDueAt` is reconciled by two form handlers.** `updateDueAt` and `updateInterval` each
-  re-derive it; the field's other writers are `closedTask` and the migration. A third writer of `dueAt`
-  — a swipe edit, an import — would leave it stale, and the list sorts and colours on it. The seam is
-  `fromForm`, or a `normalizedTask` applied by the reducer. Not a straight move:
-  `fromForm` cannot tell an untouched draft from a retyped one, and clobbering `nextDueAt` on a
-  name-only edit would discard a closed task's schedule position.
 - **A3 · `TaskSettings.defaultLead` has no writer.** Read by `seededTaskDefaults`, set by nothing —
   the settings page ships `warnShift` and `defaultAnchor` only. Either ship the control or drop the
   field. It is in a persisted shape, so dropping it is a question, not a cleanup.

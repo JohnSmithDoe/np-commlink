@@ -271,8 +271,11 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   back to `dueAt` — that fallback is why tasks written before the split answer correctly and **no rung
   beyond the existing one is owed**. Closing writes only `nextDueAt`; **editing either input in the
   dialog discards it**, because a date derived from a cadence the reader has just replaced is a date
-  nothing stands behind. Changing the due date writes both, changing the cadence resets `nextDueAt` to
-  `dueAt`, and the next close recomputes from there. The shared list comparator reads a raw key
+  nothing stands behind. Changing the due date writes both. Changing the cadence keeps a `dueAt` that has
+  not arrived and otherwise steps the new cadence once from **today** (`nextDueForCadence`) — resetting
+  to a long-gone `dueAt` painted a kept schedule overdue on save. The dialog is the only writer of either
+  input, so the reconciling lives there; a second writer (a swipe edit, an import) is what would earn it
+  a seam in the reducer. The shared list comparator reads a raw key
   and cannot fall back, so the sort moved to `nextDueAt` and the rung backfills it onto every dated
   task, not only the recurring ones.
 - **A monthly cadence keeps the day the reader chose, because `dueAt` still holds it.** A month added to

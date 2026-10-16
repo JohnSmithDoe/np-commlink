@@ -16,6 +16,7 @@ import {
 import { createTaskItem } from '../../util/task.factory';
 import { ANCHOR_OPTIONS } from '../../util/task-anchor.utils';
 import { leadOptionsFor, ON_DAY_LEAD } from '../../util/task-lead.utils';
+import { nextDueForCadence } from '../../util/task.utils';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
@@ -115,7 +116,11 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
   }
 
   updateInterval(interval: Interval | undefined) {
-    this.patch({ interval, lead: undefined, nextDueAt: this.draft().dueAt });
+    this.patch({
+      interval,
+      lead: undefined,
+      nextDueAt: nextDueForCadence(this.draft(), interval),
+    });
   }
 
   updateAnchor(anchor: TaskAnchor) {

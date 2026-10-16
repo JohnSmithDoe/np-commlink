@@ -76,11 +76,11 @@ describe('EditTaskItemDialogComponent', () => {
   });
 
   it('drops the derived date when either input changes', () => {
-    component.updateDueAt('2026-08-20');
-    expect(component.draft().nextDueAt).toBe('2026-08-20');
+    component.updateDueAt('2099-08-20');
+    expect(component.draft().nextDueAt).toBe('2099-08-20');
 
     component.updateInterval({ unit: 'week', every: 1 });
-    expect(component.draft().nextDueAt).toBe('2026-08-20');
+    expect(component.draft().nextDueAt).toBe('2099-08-20');
 
     component.updateDueAt('');
     component.updateInterval({ unit: 'day', weekdays: [1, 2] });
