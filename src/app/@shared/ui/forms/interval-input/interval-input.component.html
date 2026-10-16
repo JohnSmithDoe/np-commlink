@@ -24,7 +24,7 @@
   @if (daily(); as everyDay) {
     <app-weekday-picker
       [weekdays]="everyDay.weekdays"
-      [groupLabel]="weekdayLabel()"
+      [groupLabel]="'interval.weekdays' | translate"
       (toggled)="toggleWeekday($event)"
     />
   }
@@ -32,7 +32,7 @@
   @if (monthly(); as inMonths) {
     <app-month-picker
       [months]="inMonths.months"
-      [groupLabel]="monthLabel()"
+      [groupLabel]="'interval.months' | translate"
       (toggled)="toggleMonth($event)"
     />
   }

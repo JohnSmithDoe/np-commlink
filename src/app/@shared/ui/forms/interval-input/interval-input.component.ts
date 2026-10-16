@@ -82,8 +82,6 @@ const sorted = <T extends number>(values: readonly T[]): T[] =>
 export class IntervalInputComponent {
   readonly value = input<Interval | undefined>();
   readonly label = input<string>();
-  readonly weekdayLabel = input<string>();
-  readonly monthLabel = input<string>();
   readonly valueChange = output<Interval | undefined>();
 
   protected readonly none = NONE;

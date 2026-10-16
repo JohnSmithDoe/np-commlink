@@ -35,10 +35,6 @@ _Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, a
 is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
 outside AGENDA._
 
-- **A8 · `interval-input` takes a group label per unit from its caller.** It owns `interval.unit.*`,
-  `interval.count` and `interval.summary.*`, but its group names arrive as `tasks.item.interval.weekdays`
-  / `.months` — wording that says what the picker beside them is for, not anything a task owns. One
-  input per unit added is the cost of leaving it; `@shared` already owns the `interval.*` family.
 - **A9 · `closings` is written and never read.** Capped at 200 entries per task, stripped by the edit
   dialog, and ridden along by every save — `createSaveSliceEffect` has no debounce, so the whole tasks
   document is re-serialized on each mutation. Cap it at what a reader would plausibly show, or persist

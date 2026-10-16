@@ -44,8 +44,6 @@
 
   <app-interval-input
     [label]="'tasks.item.interval' | translate"
-    [weekdayLabel]="'tasks.item.interval.weekdays' | translate"
-    [monthLabel]="'tasks.item.interval.months' | translate"
     [value]="draft().interval"
     (valueChange)="updateInterval($event)"
   />
