@@ -4,12 +4,17 @@ import {
   importProvidersFrom,
   Provider,
   provideZonelessChangeDetection,
+  ValueProvider,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { provideMockStore } from '@ngrx/store/testing';
 import { provideTranslateService } from '@ngx-translate/core';
+import {
+  PERSON_EDITOR,
+  PersonEditor,
+} from '../util/people/person-editor.token';
 import { mockKernelState, MockState } from './test-data';
 
 type TestProvider = Provider | EnvironmentProviders;
@@ -33,3 +38,8 @@ export function provideTestingProviders(
 }
 
 export const COMMON_TEST_PROVIDERS: TestProvider[] = provideTestingProviders();
+
+export const providePersonEditor = (editor: PersonEditor): ValueProvider => ({
+  provide: PERSON_EDITOR,
+  useValue: editor,
+});

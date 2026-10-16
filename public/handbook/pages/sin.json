@@ -22,7 +22,7 @@
         {
           "type": "ol",
           "items": [
-            "SIN/<strong>Personen</strong> auf dem Deck antippen. Aus BIOMON und TRACKPLAY führt das <strong>+</strong> der Profil- bzw. Spielerliste ebenfalls hierher.",
+            "SIN/<strong>Personen</strong> auf dem Deck antippen. Das <strong>+</strong> der Profilliste in BIOMON und der Spielerliste in TRACKPLAY öffnet denselben Dialog an Ort und Stelle; die Person landet trotzdem hier.",
             "Einen Namen in die Suchleiste tippen und Enter, oder oben rechts auf <strong>+</strong>. Der Dialog übernimmt, was in der Suchleiste steht, als Namen.",
             "<strong>Name</strong> eintragen — das einzige Pflichtfeld — und <strong>Person</strong> oder <strong>Haustier</strong> wählen.",
             "Optional <strong>Geburtstag</strong>, Größen und Adressen, dann <strong>Anlegen</strong>."

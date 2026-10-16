@@ -222,6 +222,10 @@ stars, nine life numbers, own deck program, every detail route deep-linkable. Le
   single figure and that it answers to numerology rather than the Ki cycle; and the coins — three per line,
   heads 3 and tails 2, sum 6 to 9, parity carrying yang and 6 or 9 marking the line as changing, read bottom
   to top.
+- **A profile edits the astro signs only; the person behind it is edited in SIN.** `PERSON_EDITOR` (the
+  `@shared` port `people` fills, like `PEOPLE`) carries `create` and nothing else. Whether BIOMON's tap
+  should also reach the person's name and address is part of the BIOMON UI rework — add `edit(id)` to the
+  port then, not before.
 
 ## AGENDA
 

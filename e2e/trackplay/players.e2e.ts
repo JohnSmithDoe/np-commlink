@@ -5,10 +5,16 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { expect, test } from '@playwright/test';
-import { listRow, waitForPersisted } from '../helpers';
-import { createPerson, PEOPLE_PAGE } from '../people/helpers';
 import {
-  addButton,
+  createDialog,
+  CREATE_BUTTON,
+  listRow,
+  nameBox,
+  searchInput,
+  waitForPersisted,
+} from '../helpers';
+import { createPerson } from '../people/helpers';
+import {
   createPlayer,
   gotoPage,
   mainContent,
@@ -32,13 +38,23 @@ test.describe('trackplay players', () => {
     await expect(rows.filter({ hasText: 'Bob' })).toBeVisible();
   });
 
-  test('sends the add button to the people program', async ({ page }) => {
+  test('creates a person from the search on Enter, without leaving', async ({
+    page,
+  }) => {
     await gotoPage(page, 'trackplay/players', PLAYERS_PAGE);
+    const input = searchInput(page, pageRoot(page, PLAYERS_PAGE));
+    await input.fill('Dunkelzahn');
+    await page.waitForTimeout(400); // > searchbar debounce (250ms)
+    await input.press('Enter');
 
-    await addButton(pageRoot(page, PLAYERS_PAGE)).click();
+    const dialog = createDialog(page);
+    await expect(nameBox(dialog)).toHaveValue('Dunkelzahn');
+    await dialog.getByRole('button', { name: CREATE_BUTTON }).click();
+    await expect(dialog).toBeHidden();
 
-    await expect(page).toHaveURL(/#\/people$/);
-    await expect(mainContent(page).locator(PEOPLE_PAGE)).toBeVisible();
+    await expect(page).toHaveURL(/#\/trackplay\/players$/);
+    await expect(listRow(page, 'Dunkelzahn')).toBeVisible();
+    await waitForPersisted(page, 'people', 'Dunkelzahn');
   });
 
   test('keeps players across a full reload', async ({ page }) => {

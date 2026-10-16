@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { provideTestingProviders } from '../../../@shared/testing/test-providers';
+import {
+  providePersonEditor,
+  provideTestingProviders,
+} from '../../../@shared/testing/test-providers';
+import { PersonEditor } from '../../../@shared/util/people/person-editor.token';
 import {
   mockGame,
   mockGamesState,
   mockPlayer,
+  mockPlayersState,
   mockTrackplayState,
   providePeople,
 } from '../../testing/trackplay.test-data';
@@ -13,27 +17,31 @@ import { TrackplayPlayersPage } from './players.page';
 
 describe('TrackplayPlayersPage', () => {
   let component: TrackplayPlayersPage;
+  let editor: PersonEditor;
 
   const setup = (state = mockTrackplayState()) => {
+    editor = { create: vi.fn() };
     TestBed.configureTestingModule({
       imports: [TrackplayPlayersPage],
       providers: [
         provideTestingProviders({ trackplay: state }),
         providePeople([mockPlayer({ id: 'p1' }), mockPlayer({ id: 'p2' })]),
+        providePersonEditor(editor),
       ],
     });
     component = TestBed.createComponent(TrackplayPlayersPage).componentInstance;
   };
 
-  it('sends the add button to the people program', () => {
-    setup();
-    const navigate = vi
-      .spyOn(TestBed.inject(Router), 'navigate')
-      .mockResolvedValue(true);
+  it('creates a person from the search term on Enter, without leaving', () => {
+    setup(
+      mockTrackplayState({
+        players: mockPlayersState({ searchQuery: 'Dunkelzahn' }),
+      })
+    );
 
     TestBed.inject(PlayersPageFacade).addItemFromSearch();
 
-    expect(navigate).toHaveBeenCalledWith(['/people']);
+    expect(editor.create).toHaveBeenCalledWith('Dunkelzahn');
   });
 
   it('returns per-player stats, falling back to empty stats', () => {

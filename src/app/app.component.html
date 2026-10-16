@@ -85,4 +85,7 @@
     "
     (ionToastDidDismiss)="dismissUpdate()"
   />
+  @defer (when personDialogRequested()) {
+    <app-edit-person-dialog />
+  }
 </ion-app>

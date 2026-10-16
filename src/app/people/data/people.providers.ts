@@ -3,8 +3,13 @@ import { Store } from '@ngrx/store';
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { PEOPLE } from '../../@shared/util/people/people.token';
+import {
+  PERSON_EDITOR,
+  PersonEditor,
+} from '../../@shared/util/people/person-editor.token';
 import { peopleListEffects } from './people-list.effects';
 import { PeopleActions } from './people.actions';
+import { PeopleFacade } from './people.facade';
 import { peopleReducer } from './people.reducer';
 import {
   PEOPLE_STATE_KEY,
@@ -16,6 +21,14 @@ import {
 const peopleProvider = {
   provide: PEOPLE,
   useFactory: () => inject(Store).selectSignal(selectPersonItems),
+};
+
+const personEditorProvider = {
+  provide: PERSON_EDITOR,
+  useFactory: (): PersonEditor => {
+    const people = inject(PeopleFacade);
+    return { create: (name) => people.showCreateDialog(name) };
+  },
 };
 
 export const peopleContext = providePersistedContext({
@@ -33,5 +46,5 @@ export const peopleContext = providePersistedContext({
   ],
   hydrate: 'boot',
   effects: [peopleListEffects],
-  publishes: [peopleProvider],
+  publishes: [peopleProvider, personEditorProvider],
 });

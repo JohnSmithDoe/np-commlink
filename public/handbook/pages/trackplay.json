@@ -23,7 +23,7 @@
           "type": "ol",
           "items": [
             "TRACKPLAY/<strong>Spielstände</strong> auf dem Deck antippen oder im Menü <strong>Spiele</strong> wählen.",
-            "Mitspieler sind Personen: Jeder wird einmal unter <strong>SIN</strong>/<strong>Personen</strong> angelegt und steht dann hier unter <strong>Spieler</strong>. Das <strong>+</strong> auf der Spielerliste führt direkt dorthin.",
+            "Mitspieler sind Personen: Jeder steht einmal unter <strong>SIN</strong>/<strong>Personen</strong> und damit hier unter <strong>Spieler</strong>. Das <strong>+</strong> auf der Spielerliste legt eine neue Person direkt hier an.",
             "Zurück zu <strong>Spiele</strong> — mit der Zurück-Geste des Geräts oder über das Menü —, dann <strong>+</strong>: <strong>Name</strong> der Partie, <strong>Spielart</strong> wählen, Spieler anhaken.",
             "<strong>WEITER</strong> speichert und öffnet direkt den Punkteblock; <strong>ANLEGEN</strong> speichert nur."
           ]

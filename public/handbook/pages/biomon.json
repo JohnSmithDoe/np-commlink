@@ -23,7 +23,7 @@
           "type": "ol",
           "items": [
             "BIOMON/<strong>Gesundheit</strong> auf dem Deck antippen oder im Menü wählen. Die Liste startet leer.",
-            "Personen und Tiere legst du in <strong>SIN</strong> (Personen) an — oben rechts <strong>+</strong> in der Profilliste führt dorthin. Zurück in BIOMON steht der Eintrag sofort in der Liste.",
+            "Personen und Tiere gehören zu <strong>SIN</strong> (Personen) — oben rechts <strong>+</strong> in der Profilliste legt sie gleich hier an, ohne BIOMON zu verlassen. Der Eintrag steht sofort in der Liste.",
             "Die Zeile antippen, auf der Profilseite wieder <strong>+</strong>: <strong>Datum</strong> steht auf heute, <strong>Gewicht</strong> eintragen, <strong>ANLEGEN</strong>.",
             "Ab dem zweiten Eintrag erscheint über der Liste die Kurve."
           ]
@@ -167,7 +167,7 @@
             "<strong>Nach rechts wischen</strong> auf einer Zeile (Profil, Eintrag oder Medikament) → grüne Fläche <strong>Bearbeiten</strong>, öffnet denselben Dialog wie ein Tipp.",
             "<strong>Nach links wischen</strong> auf einem Eintrag oder Medikament → rotes <strong>LÖSCHEN</strong>; vollständig durchwischen löscht sofort. Danach steht fünf Sekunden lang unten <em>„… gelöscht\"</em>; <strong>Rückgängig</strong> steht oben in der Kopfzeile. Profile werden nur in <strong>SIN</strong> gelöscht.",
             "<strong>Tipp</strong> auf eine Profilzeile öffnet das Profil, auf eine Eintrags- oder Medikamentenzeile den Bearbeiten-Dialog.",
-            "Die Suchleiste der Profilliste filtert nur; neue Personen entstehen in <strong>SIN</strong>. In der Medikamentenliste geht Neues ausschließlich über <strong>+</strong>.",
+            "Die Suchleiste filtert; <strong>Enter</strong> legt den gesuchten Namen neu an — in der Profilliste als Person in <strong>SIN</strong>, in der Medikamentenliste als Medikament.",
             "<strong>Köfferchen</strong> auf der Profilseite → Medikamente, <strong>Stift</strong> → Sternzeichen und Aszendent korrigieren.",
             "Kein Lang-Druck, kein Sortier-Griff, kein Drei-Punkte-Menü in BIOMON."
           ]

@@ -15,7 +15,10 @@ export class PillsPageFacade extends BaseListPageFacade {
   readonly #pills = inject(PillsFacade);
   readonly #profiles = inject(ProfilesFacade);
 
-  protected readonly commands = itemListCommands(this.#store, PillsActions);
+  protected readonly commands = itemListCommands(this.#store, {
+    updateSearch: PillsActions.updateSearch,
+    updateSort: PillsActions.updateSort,
+  });
 
   readonly state = this.#pills.state;
   readonly items = this.#pills.items;

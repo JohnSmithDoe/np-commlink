@@ -17,6 +17,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -55,11 +56,14 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { APP_WORDMARK } from './@shared/model/app.consts';
+import { ItemDialogService } from './@shared/data/item-lists/item-dialog.service';
 import { AppUpdateService } from './@shared/data/service-worker/app-update.service';
 import { DashboardFacade, DeckFacade } from './commlink/data';
 import { DECK_ICONS } from './commlink/model/deck.icons';
 import { DeckProgram } from './commlink/model/deck.types';
 import { badgeValue } from './commlink/util/deck.utils';
+import { EditPersonDialogComponent } from './people/feature/edit-person-dialog/edit-person-dialog.component';
+import { PEOPLE_LIST_ID } from './people/model/people.types';
 
 @Component({
   selector: 'app-root',
@@ -88,6 +92,7 @@ import { badgeValue } from './commlink/util/deck.utils';
     RouterLink,
     IonMenuToggle,
     TranslatePipe,
+    EditPersonDialogComponent,
   ],
 })
 export class AppComponent {
@@ -100,6 +105,11 @@ export class AppComponent {
   readonly navigating = this.#navigating.asReadonly();
 
   readonly menuEntries = this.#deck.menuEntries;
+
+  readonly #dialogs = inject(ItemDialogService);
+  readonly personDialogRequested = computed(
+    () => this.#dialogs.request()?.listId === PEOPLE_LIST_ID
+  );
 
   readonly #telemetry = this.#dashboard.dashboardState;
 

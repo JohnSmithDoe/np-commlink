@@ -1,12 +1,11 @@
 /* ─── why ─────────────────────────────────────────────────────────
  * A profile is a person from `PEOPLE` seen through BIOMON: the person
  * brings name, kind and birthday, this slice only the astro overrides and
- * the go-to star. Who exists is not BIOMON's to decide, so creating sends
- * the user to the people program and nothing here removes anyone.
+ * the go-to star. Who exists is not BIOMON's to decide, so creating opens
+ * the people program's own dialog and nothing here removes anyone.
  * ───────────────────────────────────────────────────────────────── */
 
 import { computed, inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
@@ -15,10 +14,8 @@ import {
   filterAndSortItemList,
   filterListBySearchQuery,
 } from '../../../@shared/util/item-lists/list.selector';
-import {
-  PEOPLE,
-  PEOPLE_ROUTE,
-} from '../../../@shared/util/people/people.token';
+import { PEOPLE } from '../../../@shared/util/people/people.token';
+import { PERSON_EDITOR } from '../../../@shared/util/people/person-editor.token';
 import {
   AstroOverride,
   Profile,
@@ -36,9 +33,9 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ProfilesFacade {
   readonly #store = inject(Store);
-  readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
   readonly #people = inject(PEOPLE);
+  readonly #personEditor = inject(PERSON_EDITOR);
   readonly #view = this.#store.selectSignal(selectProfilesList);
   readonly #astro = this.#store.selectSignal(selectAstroOverrides);
   readonly #favoriteId = this.#store.selectSignal(selectFavoriteId);
@@ -65,7 +62,7 @@ export class ProfilesFacade {
   );
 
   showCreateDialog(): void {
-    void this.#router.navigateByUrl(PEOPLE_ROUTE);
+    this.#personEditor.create(this.state().searchQuery);
   }
 
   showEditDialog(item: Profile): void {

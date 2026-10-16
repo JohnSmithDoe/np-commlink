@@ -118,10 +118,6 @@ can name them. Write both scripts before the next release's `handbook:shots` run
   clipping is fixed, and that shared the condition.
 - **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
   chrome in the app.
-- **Enter in BIOMON's profile and medicine search does nothing.** `profiles-page.facade.ts` and
-  `pills-page.facade.ts` hand their whole action group to `itemListCommands`, so Enter dispatches an
-  `addItemFromSearch` that `create: null` answers with nothing. SIN had the same shape, fixed by passing
-  only `updateSearch`/`updateSort`; for profiles the create path is SIN itself.
 
 ## Known cost, not yet paid
 

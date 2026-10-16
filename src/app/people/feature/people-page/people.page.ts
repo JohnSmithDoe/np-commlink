@@ -11,7 +11,6 @@ import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
 import { PeopleFacade, PeoplePageFacade } from '../../data';
 import { Person } from '../../model/people.types';
 import { addressLines, ageOn } from '../../util/people.utils';
-import { EditPersonDialogComponent } from '../edit-person-dialog/edit-person-dialog.component';
 
 @Component({
   selector: 'app-page-people',
@@ -24,7 +23,6 @@ import { EditPersonDialogComponent } from '../edit-person-dialog/edit-person-dia
     TranslatePipe,
     ListPageComponent,
     ListItemComponent,
-    EditPersonDialogComponent,
   ],
   providers: [{ provide: LIST_FACADE, useExisting: PeoplePageFacade }],
 })
