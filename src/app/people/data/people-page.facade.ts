@@ -31,6 +31,6 @@ export class PeoplePageFacade extends BaseListPageFacade {
   readonly sortOptions = signal(SORT_OPTIONS);
 
   showCreateDialog(): void {
-    this.#people.showCreateDialog();
+    this.#people.showCreateDialog(this.state().searchQuery ?? '');
   }
 }

@@ -21,7 +21,7 @@ export class PeopleFacade {
   readonly items = this.#store.selectSignal(selectPeopleListItems);
   readonly searchResult = this.#store.selectSignal(selectPeopleSearchResult);
 
-  showCreateDialog(name = this.state().searchQuery ?? ''): void {
+  showCreateDialog(name: string): void {
     this.#dialogs.open({
       item: createPerson(name),
       listId: PEOPLE_LIST_ID,

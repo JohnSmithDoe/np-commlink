@@ -27,7 +27,7 @@ const personEditorProvider = {
   provide: PERSON_EDITOR,
   useFactory: (): PersonEditor => {
     const people = inject(PeopleFacade);
-    return { create: (name) => people.showCreateDialog(name) };
+    return { create: (name = '') => people.showCreateDialog(name) };
   },
 };
 
