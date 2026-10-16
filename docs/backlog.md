@@ -29,19 +29,6 @@ pinned. One entry is left, and it is a gate that cannot see what it was written 
 
 ---
 
-## AGENDA — what the recurring/auto-open pass left standing
-
-_Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, altitude. The cheap half
-is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
-outside AGENDA._
-
-- **A9 · `closings` is written and never read.** Capped at 200 entries per task, stripped by the edit
-  dialog, and ridden along by every save — `createSaveSliceEffect` has no debounce, so the whole tasks
-  document is re-serialized on each mutation. Cap it at what a reader would plausibly show, or persist
-  real closes without the `missed` runs, until one exists.
-
----
-
 ## SIN — the people module is a first cut
 
 Landed working and gated, but Martin's verdict is that it needs work. Known rough edges:

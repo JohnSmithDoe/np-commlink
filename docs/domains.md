@@ -333,7 +333,10 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   at the edge, which is also what lets the specs pin dates.
 - **`closings` is capped and never pruned by age.** A daily chore closed for two years is 730 entries on
   a slice loaded at boot, so the log keeps its most recent entries and drops the oldest — a bound the
-  reducer applies, not the view. Age would make the cap depend on the cadence.
+  reducer applies, not the view. Age would make the cap depend on the cadence. **The cap stays at 200 and
+  the misses stay in it until the history screen exists**: the misses are what that screen measures, a
+  lower cap truncates logs real users already hold, and a full log is ~6 KB per task. The screen sets
+  the real number.
 
 ## SIGIL — notes
 
