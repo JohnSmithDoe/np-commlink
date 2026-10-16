@@ -20,7 +20,7 @@ type MonthsInterval = {
   unit: 'monthsOfYear';
   months: readonly IsoMonth[];
 };
-type ElapsedInterval = { unit: PeriodUnit; every: number };
+export type ElapsedInterval = { unit: PeriodUnit; every: number };
 
 export type Interval = WeekdayInterval | MonthsInterval | ElapsedInterval;
 

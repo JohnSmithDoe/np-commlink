@@ -65,10 +65,6 @@ outside AGENDA._
   dialog, and ridden along by every save — `createSaveSliceEffect` has no debounce, so the whole tasks
   document is re-serialized on each mutation. Cap it at what a reader would plausibly show, or persist
   real closes without the `missed` runs, until one exists.
-- **A10 · The roll-forward loop is the only unbounded one here.** `advanceFrom` walks up to
-  `MAX_ROLL_STEPS` (500), each step allocating a `Dayjs` per weekday plus a sort — reachable from one
-  swipe on a due-anchored task whose `dueAt` the migration left far in the past. For the elapsed units
-  the same answer is one `diff` and one step.
 
 ---
 

@@ -26,7 +26,11 @@ import {
   IsoWeekday,
   Timestamp,
 } from '../../@shared/model/app.types';
-import { Interval } from '../../@shared/model/interval.types';
+import {
+  ElapsedInterval,
+  Interval,
+  isCalendarInterval,
+} from '../../@shared/model/interval.types';
 import { isoDay } from '../../@shared/util/formatting/date-format.utils';
 import { nextWeekday } from '../../@shared/util/formatting/date-shortcuts.utils';
 import {
@@ -104,6 +108,57 @@ const seedFor = (item: TaskItem, now: Dayjs): Dayjs => {
   return anchorOf(item) === 'due' && due ? dayjs(due) : now;
 };
 
+const nthElapsedStep = (
+  seed: Dayjs,
+  interval: ElapsedInterval,
+  steps: number,
+  anchorDay?: number
+): Dayjs => {
+  const next = seed.add(steps * interval.every, interval.unit);
+  return anchorDay && interval.unit !== 'week'
+    ? next.date(Math.min(anchorDay, next.daysInMonth()))
+    : next;
+};
+
+const advanceElapsed = (
+  seed: Dayjs,
+  interval: ElapsedInterval,
+  now: Dayjs,
+  anchorDay?: number
+): { next: Timestamp; missed: Timestamp[] } => {
+  const nth = (steps: number) =>
+    nthElapsedStep(seed, interval, steps, anchorDay);
+  let steps = Math.max(
+    1,
+    Math.floor(now.diff(seed, interval.unit) / interval.every)
+  );
+  while (!nth(steps).isAfter(now)) steps++;
+  while (steps > 1 && nth(steps - 1).isAfter(now)) steps--;
+
+  const firstLogged = Math.max(1, steps - MAX_CLOSINGS);
+  const missed = Array.from({ length: steps - firstLogged }, (_, index) =>
+    isoDay(nth(firstLogged + index))
+  );
+  return { next: isoDay(nth(steps)), missed };
+};
+
+const advancePositioned = (
+  seed: Dayjs,
+  interval: Interval,
+  now: Dayjs
+): { next?: Timestamp; missed: Timestamp[] } => {
+  const missed: Timestamp[] = [];
+  let cursor = stepFrom(seed, interval);
+  for (let step = 0; step < MAX_ROLL_STEPS; step++) {
+    if (!cursor || cursor.isAfter(now)) break;
+    missed.push(isoDay(cursor));
+    const following = stepFrom(cursor, interval);
+    if (!following?.isAfter(cursor)) break;
+    cursor = following;
+  }
+  return { next: cursor && isoDay(cursor), missed };
+};
+
 const advanceFrom = (
   seed: Dayjs,
   interval: Interval,
@@ -111,17 +166,9 @@ const advanceFrom = (
   anchorDay?: number
 ): { next?: Timestamp; missed: Timestamp[] } => {
   if (seed.isAfter(now, 'day')) return { next: isoDay(seed), missed: [] };
-
-  const missed: Timestamp[] = [];
-  let cursor = stepFrom(seed, interval, anchorDay);
-  for (let step = 0; step < MAX_ROLL_STEPS; step++) {
-    if (!cursor || cursor.isAfter(now)) break;
-    missed.push(isoDay(cursor));
-    const following = stepFrom(cursor, interval, anchorDay);
-    if (!following?.isAfter(cursor)) break;
-    cursor = following;
-  }
-  return { next: cursor && isoDay(cursor), missed };
+  return isCalendarInterval(interval) || interval.every < 1
+    ? advancePositioned(seed, interval, now)
+    : advanceElapsed(seed, interval, now, anchorDay);
 };
 
 export const nextDueForCadence = (

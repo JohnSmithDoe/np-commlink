@@ -154,6 +154,27 @@ describe('closedTask', () => {
     expect(thrice.dueAt).toBe('2026-07-21');
   });
 
+  it('lands after today however far back the due date lies', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2006-07-04',
+      interval: { every: 1, unit: 'week' },
+    });
+    const closed = closedTask(item, NOW);
+
+    expect(nextDueOf(closed)).toBe('2026-07-28');
+    expect(closed.closings).toHaveLength(200);
+  });
+
+  it('keeps the anchor day across a jump of many months', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2024-01-31',
+      interval: MONTHLY,
+    });
+    expect(nextDueOf(closedTask(item, NOW))).toBe('2026-07-31');
+  });
+
   it('logs the dates it stepped over as misses, and the close itself', () => {
     const item = mockTaskItem({
       anchor: 'due',
