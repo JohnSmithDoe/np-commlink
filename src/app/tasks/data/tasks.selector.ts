@@ -17,6 +17,7 @@ import {
 } from '../../@shared/model/category.types';
 import { SearchResult } from '../../@shared/model/item-list.types';
 import { idsTaggedWith } from '../../@shared/util/categories/category-list.utils';
+import { seededTaskDefaults } from '../util/task.utils';
 
 export const TASKS_STATE_KEY = 'tasks';
 
@@ -91,6 +92,11 @@ export const selectTaskTaggedByCategory = createSelector(
 export const selectTaskSettings = createSelector(
   selectTasksState,
   (state): TaskSettings => state.settings
+);
+
+export const selectNewTaskDefaults = createSelector(
+  selectTaskSettings,
+  seededTaskDefaults
 );
 
 export const selectOpenTaskCount = createSelector(

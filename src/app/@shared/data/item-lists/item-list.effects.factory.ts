@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, ActionCreator, MemoizedSelector, Store } from '@ngrx/store';
-import { EMPTY, map, withLatestFrom } from 'rxjs';
+import { EMPTY, map, of, withLatestFrom } from 'rxjs';
 import { BaseItem, UpdateDTO } from '../../model/base-item.types';
 import { ItemList, ItemListId } from '../../model/item-list.types';
 import { findMatchingItem } from '../../util/app.utils';
@@ -66,6 +66,7 @@ export const pushUndoOnDelete = <T extends BaseItem>(
 
 type Matcher<T extends BaseItem> = (item: T, items: T[]) => T | undefined;
 type ItemFromSearch<T> = (name: string, filterBy?: string) => T;
+type ItemDefaults<T> = MemoizedSelector<object, Partial<T>>;
 
 const matcherOf = <T extends BaseItem>(match?: Matcher<T>): Matcher<T> =>
   match ?? findMatchingItem;
@@ -74,16 +75,23 @@ const addFromSearch = <T extends BaseItem, S extends ItemList<T>>(
   actions: ListFlowActions<T>,
   select: MemoizedSelector<object, S>,
   create: ItemFromSearch<T> | null,
-  match: Matcher<T>
+  match: Matcher<T>,
+  defaults?: ItemDefaults<T>
 ) =>
   createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
       if (!create) return EMPTY;
       return actions$.pipe(
         ofType(actions.addItemFromSearch),
-        withLatestFrom(store.select(select), (_, list) => list),
-        map((list) => {
-          const item = create(list.searchQuery ?? '', list.filterBy);
+        withLatestFrom(
+          store.select(select),
+          defaults ? store.select(defaults) : of({})
+        ),
+        map(([, list, seed]) => {
+          const item: T = {
+            ...create(list.searchQuery ?? '', list.filterBy),
+            ...seed,
+          };
           const duplicate = match(item, list.items);
           return duplicate
             ? actions.addItemFailure(duplicate)
@@ -101,6 +109,7 @@ export const createItemListEffects = <
   actions: ListFlowActions<T>;
   select: MemoizedSelector<object, S>;
   create: ItemFromSearch<T> | null;
+  defaults?: ItemDefaults<T>;
   match?: Matcher<T>;
   undoableDelete?: {
     scope: ItemListId;
@@ -111,7 +120,8 @@ export const createItemListEffects = <
     cfg.actions,
     cfg.select,
     cfg.create,
-    matcherOf(cfg.match)
+    matcherOf(cfg.match),
+    cfg.defaults
   ),
 
   addOrUpdateItem$: createEffect(

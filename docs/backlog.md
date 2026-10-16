@@ -35,18 +35,10 @@ _Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, a
 is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
 outside AGENDA._
 
-- **A1 · New-task defaults reach one of three creation paths.** `seededTaskDefaults` is spread in
-  `TasksListPageFacade.showCreateDialog` only. `tasksListEffects`' `create:` (the add-from-search path —
-  the primary one, and the one the new e2e uses) and `EditTaskItemDialogComponent.blank()` get nothing,
-  so a setting the page advertises as a default for new tasks applies or not depending on which button
-  was pressed. The seam that covers all three is the reducer's `addItem`, which already holds
-  `state.settings`; the facade seed stays, so the dialog still *shows* the default. Behaviour change on
-  two paths (quick-add, and undo-restore, which replays `addItem` with an older item) — hence not
-  applied.
 - **A2 · `nextDueAt` is reconciled by two form handlers.** `updateDueAt` and `updateInterval` each
   re-derive it; the field's other writers are `closedTask` and the migration. A third writer of `dueAt`
   — a swipe edit, an import — would leave it stale, and the list sorts and colours on it. The seam is
-  `fromForm`, or a `normalizedTask` applied by the reducer (same seam as A1). Not a straight move:
+  `fromForm`, or a `normalizedTask` applied by the reducer. Not a straight move:
   `fromForm` cannot tell an untouched draft from a retyped one, and clobbering `nextDueAt` on a
   name-only edit would discard a closed task's schedule position.
 - **A3 · `TaskSettings.defaultLead` has no writer.** Read by `seededTaskDefaults`, set by nothing —

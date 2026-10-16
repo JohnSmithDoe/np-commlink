@@ -8,7 +8,11 @@ import { createCategory } from '../../@shared/util/app.factory';
 import { TASKS_LIST_ID } from '../model/task.types';
 import { createTaskItem } from '../util/task.factory';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
-import { selectTaskCategoryList, selectTasksList } from './tasks.selector';
+import {
+  selectNewTaskDefaults,
+  selectTaskCategoryList,
+  selectTasksList,
+} from './tasks.selector';
 
 export const tasksRouteFilterEffects = {
   drilledFilter$: categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
@@ -21,6 +25,7 @@ export const tasksListEffects = {
     actions: TasksActions,
     select: selectTasksList,
     create: (name, filterBy) => createTaskItem(name, filterBy),
+    defaults: selectNewTaskDefaults,
     undoableDelete: {
       scope: TASKS_LIST_ID,
       removeItem: TasksActions.removeItem,

@@ -39,6 +39,26 @@ describe('tasksListEffects', () => {
     );
   });
 
+  it('addItemFromSearch$ seeds the new-task defaults from the settings', async () => {
+    setup({
+      tasks: mockTasksState({
+        list: { searchQuery: 'Call', items: [] },
+        settings: { defaultAnchor: 'due' },
+      }),
+    });
+    actions$ = of(TasksActions.addItemFromSearch());
+
+    const emitted = await firstValueFrom(
+      run(tasksListEffects.addItemFromSearch$)
+    );
+
+    expect(emitted).toEqual(
+      TasksActions.addItem(
+        expect.objectContaining({ name: 'Call', anchor: 'due' }) as never
+      )
+    );
+  });
+
   it('addItemFromSearch$ reports a duplicate instead of adding it again', async () => {
     const existing = mockTaskItem({ name: 'Call' });
     setup({
