@@ -35,9 +35,6 @@ _Quality pass over the v1.4.0 working tree: reuse, simplification, efficiency, a
 is applied; these are the entries whose fix changes behaviour, moves a persisted shape, or reaches
 outside AGENDA._
 
-- **A3 · `TaskSettings.defaultLead` has no writer.** Read by `seededTaskDefaults`, set by nothing —
-  the settings page ships `warnShift` and `defaultAnchor` only. Either ship the control or drop the
-  field. It is in a persisted shape, so dropping it is a question, not a cleanup.
 - **A4 · `month-picker` is `weekday-picker` line for line.** Same class shape, same template down to
   the `[fill]`/`aria-pressed`/`aria-label` triple, SCSS differing only in `grid` vs `flex-wrap`. The
   same diff added `option-chips`, which *is* the general mechanism and was not used for the case that

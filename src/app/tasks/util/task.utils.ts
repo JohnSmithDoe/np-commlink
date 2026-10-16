@@ -233,7 +233,6 @@ export const dueStatusColor = (
 
 export const seededTaskDefaults = (
   settings: TaskSettings
-): Pick<TaskItem, 'anchor' | 'lead'> => ({
+): Pick<TaskItem, 'anchor'> => ({
   anchor: settings.defaultAnchor,
-  lead: settings.defaultLead,
 });

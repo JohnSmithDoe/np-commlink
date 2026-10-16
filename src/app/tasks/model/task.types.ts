@@ -37,7 +37,6 @@ export const TASK_WARN_SHIFTS = [
 export interface TaskSettings {
   warnShift: TaskWarnShift;
   defaultAnchor: TaskAnchor;
-  defaultLead?: TaskLead;
 }
 
 export const DEFAULT_TASK_SETTINGS: TaskSettings = {
