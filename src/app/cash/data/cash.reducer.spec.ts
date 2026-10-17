@@ -96,6 +96,43 @@ describe('cashReducer', () => {
     ]);
   });
 
+  it('books a pending row in place when the import confirms it', () => {
+    const pending = mockCashTransaction({
+      id: 'p1',
+      source: 'imported',
+      status: 'pending',
+      importKey: 'giro|DERIVED',
+      dateISO: '2026-01-05T00:00:00+01:00',
+    });
+    const otherPending = mockCashTransaction({ id: 'p2', status: 'pending' });
+    const start = mockCashState({ transactions: [pending, otherPending] });
+    const fresh = mockCashTransaction({ id: 'i1', source: 'imported' });
+
+    const state = cashReducer(
+      start,
+      CashTransactionsActions.importItems(
+        [fresh],
+        [
+          {
+            id: 'p1',
+            importKey: 'giro|REF-1',
+            dateISO: '2026-01-07T00:00:00+01:00',
+          },
+        ]
+      )
+    );
+
+    const [booked, untouched, appended] = state.transactions.items;
+    expect(booked).toEqual({
+      ...pending,
+      status: 'confirmed',
+      importKey: 'giro|REF-1',
+      dateISO: '2026-01-07T00:00:00+01:00',
+    });
+    expect(untouched).toBe(otherPending);
+    expect(appended).toBe(fresh);
+  });
+
   it('sets a transaction category id and flags it as manual', () => {
     const txn = mockCashTransaction({ id: 't1', categoryIds: ['household'] });
     const start = mockCashState({ transactions: [txn] });

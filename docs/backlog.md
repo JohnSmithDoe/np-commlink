@@ -29,20 +29,6 @@ pinned. One entry is left, and it is a gate that cannot see what it was written 
 
 ---
 
-## SIN — the people module is a first cut
-
-Landed working and gated, but Martin's verdict is that it needs work. Known rough edges:
-
-- **No person page.** A tap opens the edit dialog; the row shows only the first address, and nothing
-  links from a person to their BIOMON profile or TRACKPLAY record.
-- **Sizes are one list for top and trousers** (letters, then children's heights) plus EU shoes — no
-  jeans W/L, no per-garment notes. Untested against how sizes are actually bought.
-- **The BIOMON astro dialog has no name field and a generic title** — it does not say whose signs it edits.
-- **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" counts
-  a game nobody has scored yet — a new game starts with `updatedAt = createdAt`.
-
----
-
 ## Tests — what they assert, not whether they pass
 
 _Audited 2026-10-17: every unit spec, the e2e suite minus handbook shots, and the RuleTester specs.
@@ -112,12 +98,10 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 ### Gaps — risky code with no meaningful test
 
-- **CREDSTICK:** `CashImportFacade.commit` (no spec); the reducer branch confirming pending rows; the
-  balance check's PDNG skip; camt `ValDt` fallback, multi-statement documents, >2 decimals truncated;
+- **CREDSTICK:** camt `ValDt` fallback, multi-statement documents, >2 decimals truncated;
   encoding — a declared ISO-8859-1 file end to end, bytes 0x80–0x9F, mixed files; burndown counting
   `excludedFromAllowance` accounts.
-- **AGENDA:** `reopenDue`, `tasks-day-rollover.effects`, `reopen-due-tasks.resolver` and `toggleDone`
-  have no spec; `advancePositioned` catch-up; due today paints 'danger' all day.
+- **AGENDA:** `advancePositioned` catch-up; due today paints 'danger' all day.
 - **Time:** `calculateStats.remaining` and weekend holidays; wordclock
   23:58 / 12:58; no e2e runs a timer across a reload.
 - **Lint plugin:** 11 of 20 rules have no RuleTester spec — `comments-header-only`,

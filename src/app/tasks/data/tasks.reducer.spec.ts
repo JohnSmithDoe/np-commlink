@@ -129,4 +129,27 @@ describe('tasksReducer', () => {
     expect(state.list.searchQuery).toBeUndefined();
     expect(state.list.filterBy).toBeUndefined();
   });
+  it('reopens exactly the due tasks, keeping their schedule', () => {
+    const due = mockTaskItem({
+      id: 'due',
+      doneAt: '2026-10-10T08:00:00.000Z',
+      nextDueAt: '2026-10-17',
+    });
+    const other = mockTaskItem({
+      id: 'other',
+      doneAt: '2026-10-10T08:00:00.000Z',
+    });
+    const start = mockTasksState({ list: { items: [due, other] } });
+
+    const state = tasksReducer(start, TasksActions.reopenDue([due]));
+
+    expect(state.list.items).toEqual([{ ...due, doneAt: undefined }, other]);
+    expect(state.list.items[1]).toBe(other);
+  });
+
+  it('returns the same state when nothing is due', () => {
+    const start = mockTasksState({ list: { items: [mockTaskItem()] } });
+
+    expect(tasksReducer(start, TasksActions.reopenDue([]))).toBe(start);
+  });
 });

@@ -55,6 +55,16 @@ describe('balanceDifferenceCents', () => {
       ])
     ).toBe(0);
   });
+
+  it('ignores a pending row the bank has not booked yet', () => {
+    const pending = txn({ id: 'txn-2', amountCents: -2500, status: 'pending' });
+    expect(
+      balanceDifferenceCents(9000, '2026-01-31', 'giro', 10_000, [
+        txn(),
+        pending,
+      ])
+    ).toBe(0);
+  });
 });
 
 describe('lastEntryDateISO', () => {

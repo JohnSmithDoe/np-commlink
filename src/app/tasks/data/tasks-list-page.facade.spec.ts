@@ -4,6 +4,7 @@ import { MockStore } from '@ngrx/store/testing';
 import { mockCategory } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
+import { UndoActions } from '../../@shared/data/undo/undo.actions';
 import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { TaskCategoriesActions, TasksActions } from './tasks.actions';
 import { TasksListPageFacade } from './tasks-list-page.facade';
@@ -95,5 +96,82 @@ describe('TasksListPageFacade', () => {
     facade.manageCategories();
 
     expect(navigate).toHaveBeenCalledWith(['/tasks/categories']);
+  });
+  describe('toggleDone', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-10-17T09:00:00.000Z'));
+    });
+    afterEach(() => vi.useRealTimers());
+
+    it('pushes the open task as the undo, then closes it', () => {
+      setup();
+      const open = mockTaskItem();
+
+      facade.toggleDone(open);
+
+      expect(dispatch.mock.calls).toEqual([
+        [
+          UndoActions.pushed({
+            scope: '_tasks',
+            name: 'Clean the kitchen',
+            action: TasksActions.addOrUpdateItem(open),
+            toastKey: 'tasks.toast.done',
+          }),
+        ],
+        [
+          TasksActions.addOrUpdateItem({
+            ...open,
+            doneAt: '2026-10-17T09:00:00.000Z',
+            closings: [{ on: '2026-10-17' }],
+          }),
+        ],
+      ]);
+    });
+
+    it('pushes the done task as the undo, then reopens it', () => {
+      setup();
+      const done = mockTaskItem({ doneAt: '2026-10-16T09:00:00.000Z' });
+
+      facade.toggleDone(done);
+
+      expect(dispatch.mock.calls).toEqual([
+        [
+          UndoActions.pushed({
+            scope: '_tasks',
+            name: 'Clean the kitchen',
+            action: TasksActions.addOrUpdateItem(done),
+            toastKey: 'tasks.toast.reopened',
+          }),
+        ],
+        [TasksActions.addOrUpdateItem({ ...done, doneAt: undefined })],
+      ]);
+    });
+  });
+
+  it('removing a category pushes an undo that restores it on the tasks it tagged', () => {
+    const home = mockCategory({ id: 'cat-1', name: 'Home' });
+    setup({
+      categoryList: { items: [home] },
+      list: {
+        items: [
+          mockTaskItem({ id: 't1', categoryIds: ['cat-1'] }),
+          mockTaskItem({ id: 't2', categoryIds: ['cat-2'] }),
+        ],
+      },
+    });
+
+    facade.removeCategory('cat-1');
+
+    expect(dispatch.mock.calls).toEqual([
+      [
+        UndoActions.pushed({
+          scope: '_task-categories',
+          name: 'Home',
+          action: TasksActions.restoreCategory(home, ['t1']),
+        }),
+      ],
+      [TaskCategoriesActions.removeItem(home)],
+    ]);
   });
 });
