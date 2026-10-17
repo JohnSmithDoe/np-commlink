@@ -110,6 +110,11 @@ describe('wordclock.utils', () => {
     it('rounds :58 up into the next full hour', () => {
       expect(words(base, '09:58')).toEqual(['ES', 'IST', 'UHR', 'ZEHN']);
     });
+
+    it('rolls :58 over midnight and noon into the twelve-hour dial', () => {
+      expect(words(base, '23:58')).toEqual(['ES', 'IST', 'UHR', 'ZWÖLF']);
+      expect(words(base, '12:58')).toEqual(['ES', 'IST', 'UHR', 'EIN']);
+    });
   });
 
   describe('computeFace — German regional variants', () => {
@@ -159,6 +164,32 @@ describe('wordclock.utils', () => {
         topRight: true,
         botRight: true,
         botLeft: true,
+      });
+    });
+
+    it('rounds :58 down and shows the rest in the corners', () => {
+      const config = { ...base, showCorners: true };
+      const at58 = (time: string) => computeFace(at(time), config);
+
+      expect(at58('23:58').activeWords.map((w) => w.word)).toEqual([
+        'ES',
+        'IST',
+        'FÜNF',
+        'VOR',
+        'ZWÖLF',
+      ]);
+      expect(at58('12:58').activeWords.map((w) => w.word)).toEqual([
+        'ES',
+        'IST',
+        'FÜNF',
+        'VOR',
+        'EINS',
+      ]);
+      expect(at58('12:58').corners).toEqual({
+        topLeft: true,
+        topRight: true,
+        botRight: true,
+        botLeft: false,
       });
     });
 

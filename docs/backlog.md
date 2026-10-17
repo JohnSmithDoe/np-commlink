@@ -63,14 +63,14 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 ### Gaps — risky code with no meaningful test
 
-- **CREDSTICK:** camt `ValDt` fallback, multi-statement documents, >2 decimals truncated;
-  encoding — a declared ISO-8859-1 file end to end, bytes 0x80–0x9F, mixed files; burndown counting
-  `excludedFromAllowance` accounts.
-- **AGENDA:** `advancePositioned` catch-up; due today paints 'danger' all day.
-- **Time:** `calculateStats.remaining` and weekend holidays; wordclock
-  23:58 / 12:58; no e2e runs a timer across a reload.
-- Smaller: `ageOn` on 29 Feb; the vitals weight recompute on a date change and a negative result;
-  board reducer success paths.
+- **CREDSTICK:** camt `1.005` truncated to 100 cents instead of rejected (`camt.parser.spec`); a
+  mostly-UTF-8 file with one stray Latin-1 byte decodes whole as Windows-1252, every umlaut turning
+  to mojibake (`read-bank-file.spec`); burndown counts `excludedFromAllowance` accounts' spends while
+  the balance excludes them (`cash-burndown.facade.spec`).
+- **AGENDA:** `advancePositioned` past `MAX_ROLL_STEPS` lands in the past; due today paints 'danger'
+  all day (`task.utils.spec`).
+- **Time:** no e2e runs a timer across a reload.
+- Smaller: the vitals calculator saves a negative weight (`edit-reading-dialog.component.spec`).
 
 ## What the next reviewer should look for
 

@@ -65,4 +65,72 @@ describe('boardReducer', () => {
 
     expect(next).toEqual(seated());
   });
+
+  it('moves a figure and throws the one it lands on home', () => {
+    const state = {
+      ...initialBoardState,
+      figures: [figure, { player: 1, piece: 0, fieldId: 'track-8' }],
+    };
+
+    const next = boardReducer(state, BoardActions.moveFigure('track-5', 3));
+
+    expect(next.figures).toHaveLength(2);
+    expect(next.figures).toContainEqual({ ...figure, fieldId: 'track-8' });
+    expect(next.figures).toContainEqual({
+      player: 1,
+      piece: 0,
+      fieldId: 'nest-1-0',
+    });
+  });
+
+  it('moves by the rules the board holds', () => {
+    const inYard = { ...figure, fieldId: 'nest-0-0' };
+    const state = { ...initialBoardState, figures: [inYard] };
+    const leave = BoardActions.moveFigure('nest-0-0', 1);
+
+    expect(boardReducer(state, leave)).toBe(state);
+
+    const loose = boardReducer(state, BoardActions.setRules({ entryRoll: 1 }));
+    expect(boardReducer(loose, leave).figures).toEqual([
+      { ...inYard, fieldId: 'start-0' },
+    ]);
+  });
+
+  it('places the next figure on a free field and refuses foreign ground', () => {
+    const placed = boardReducer(
+      initialBoardState,
+      BoardActions.placeOn('track-7')
+    );
+
+    expect(placed.figures).toEqual([
+      { player: 0, piece: 0, fieldId: 'track-7' },
+    ]);
+    expect(boardReducer(placed, BoardActions.placeOn('nest-1-0')).figures).toBe(
+      placed.figures
+    );
+  });
+
+  it('loads a valid setting with its own seat count', () => {
+    const setting = [figure, { player: 5, piece: 0, fieldId: 'nest-5-0' }];
+
+    const next = boardReducer(seated(), BoardActions.loadSetting(6, setting));
+
+    expect(next.players).toBe(6);
+    expect(next.figures).toEqual(setting);
+    expect(next.rules).toBe(initialBoardState.rules);
+  });
+
+  it('merges a partial rule change into the rules it has', () => {
+    const next = boardReducer(
+      seated(),
+      BoardActions.setRules({ blockOwn: true, exactHome: false })
+    );
+
+    expect(next.rules).toEqual({
+      ...MADN_RULES,
+      blockOwn: true,
+      exactHome: false,
+    });
+    expect(next.figures).toEqual([figure]);
+  });
 });

@@ -204,3 +204,46 @@ describe('office-time.utils', () => {
     });
   });
 });
+
+describe('calculateStats — remaining days and holidays in July 2026', () => {
+  const WEDNESDAY_15 = dayjs('2026-07-15').hour(12);
+  const julyWith = (freedays: string[], holidays: HolidayMap) => {
+    const days = freedays.map((date) => dayjs(date).hour(12));
+    return calculateStats(
+      'month',
+      statsKeysFrom({
+        officedays: {},
+        freedays: dayMap(...days),
+        holidays,
+        targetOfficeDaysPerWeek: 3,
+      }),
+      WEDNESDAY_15
+    );
+  };
+
+  it('counts the workdays left from today on, today included', () => {
+    expect(julyWith([], {}).remaining).toBe(13);
+    expect(julyWith(['2026-07-14'], {}).remaining).toBe(13);
+    expect(julyWith(['2026-07-15'], {}).remaining).toBe(12);
+    expect(julyWith([], { Feiertag: '2026-07-16' }).remaining).toBe(12);
+  });
+
+  it('counts a holiday on a weekend as a holiday that costs no workday', () => {
+    const stats = julyWith([], { Feiertag: '2026-07-18' });
+
+    expect(stats.holidays).toBe(1);
+    expect(stats.holidaysNotOnWeekend).toBe(0);
+    expect(stats.workdays).toBe(23);
+    expect(stats.workdaysTotal).toBe(23);
+  });
+
+  it('takes a day that is both free and a holiday off the workdays once', () => {
+    const stats = julyWith(['2026-07-22'], { Feiertag: '2026-07-22' });
+
+    expect(stats.freedays).toBe(1);
+    expect(stats.holidays).toBe(1);
+    expect(stats.holidaysNotOnWeekend).toBe(1);
+    expect(stats.workdays).toBe(22);
+    expect(stats.remaining).toBe(12);
+  });
+});
