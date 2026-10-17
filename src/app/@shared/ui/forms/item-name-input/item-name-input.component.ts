@@ -72,7 +72,7 @@ export class ItemNameInputComponent implements FormValueControl<string> {
     addIcons({ happyOutline });
   }
 
-  readonly touchedChange = output<boolean>();
+  readonly touch = output<void>();
   readonly submitted = output<void>();
 
   readonly errorText = computed(() => {
@@ -91,7 +91,7 @@ export class ItemNameInputComponent implements FormValueControl<string> {
   }
 
   protected submit(): void {
-    this.touchedChange.emit(true);
+    this.touch.emit();
     this.submitted.emit();
   }
 

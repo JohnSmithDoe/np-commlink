@@ -6,6 +6,6 @@
     [label]="label()"
     [value]="raw()"
     (ionInput)="onInput($event)"
-    (ionBlur)="touchedChange.emit(true)"
+    (ionBlur)="touch.emit()"
   />
 </ion-item>

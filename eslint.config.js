@@ -1,7 +1,7 @@
 // @ts-check
 const { defineConfig, globalIgnores } = require('eslint/config');
 const angular = require('angular-eslint');
-const ngrx = require('@ngrx/eslint-plugin/v9');
+const ngrx = require('@ngrx/eslint-plugin');
 const sheriff = require('@softarc/eslint-plugin-sheriff');
 const commlink = require('./eslint-plugin-commlink');
 const prettierPlugin = require('eslint-plugin-prettier');

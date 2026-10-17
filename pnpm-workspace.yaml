@@ -4,3 +4,6 @@ allowBuilds:
   lefthook: false
   lmdb: false
   msgpackr-extract: false
+hoistPattern:
+  - '*'
+  - '!zone.js'

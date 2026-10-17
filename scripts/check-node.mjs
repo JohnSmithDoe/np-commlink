@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-// Gate: this repo does not build on a Node older than `engines.node`.
+// Gate: this repo does not build on a Node outside `engines.node`.
 //
-// Node >= 22.18 is a hard floor, not a preference: `eslint.config.js` `require()`s
-// the plugin's `.ts` sources directly and relies on native type stripping to load
-// them. Below the floor the failure is `Unknown file extension ".ts"` thrown from
-// inside ESLint's config loader — which names neither Node, nor the version, nor
-// the plugin, so the first hour goes into the wrong file.
+// The range is Angular's builder's own. Inside it sits a floor that matters more
+// than it looks: `eslint.config.js` `require()`s the plugin's `.ts` sources and
+// relies on native type stripping (Node >= 22.18). Below that the failure is
+// `Unknown file extension ".ts"` thrown from inside ESLint's config loader — which
+// names neither Node, nor the version, nor the plugin.
 //
 // `engines` alone does not stop it. Measured against pnpm 11.18: an unmet root
 // `engines.node` is a **warning** and the install still exits 0, with or without
 // `engine-strict=true` (that setting governs DEPENDENCIES' engines, not the
 // consuming project's). So the declaration stays — it is the readable source of
-// truth, and this reads the floor OUT of it rather than restating it — and this is
+// truth, and this reads the range OUT of it rather than restating it — and this is
 // what actually fails.
 //
 // Runs as `preinstall`, so it fires before anything else can produce a confusing
@@ -27,17 +27,23 @@ const required = JSON.parse(
   readFileSync(join(HERE, '..', 'package.json'), 'utf8')
 ).engines?.node;
 
-// Only the `>=x.y[.z]` form this repo declares. A different range is a change to
-// `engines` that should come with a change here, so it says so rather than guess.
-const declared = /^>=\s*(\d+)\.(\d+)(?:\.(\d+))?$/.exec(required ?? '');
-if (!declared) {
-  console.error(
-    `check-node: cannot read a ">=x.y" floor out of engines.node (${required ?? 'missing'}).`
-  );
-  process.exit(1);
-}
+// Only `||`-joined `^x.y.z` and `>=x[.y[.z]]` alternatives — the forms Angular
+// declares. Anything else is a change to `engines` that should come with a change
+// here, so it says so rather than guess.
+const ALTERNATIVE = /^(\^|>=)\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?$/;
 
-const floor = [declared[1], declared[2], declared[3] ?? '0'].map(Number);
+const alternatives = (required ?? '').split('||').map((part) => {
+  const match = ALTERNATIVE.exec(part.trim());
+  if (!match) {
+    console.error(
+      `check-node: cannot read "${part.trim()}" in engines.node (${required ?? 'missing'}).`
+    );
+    process.exit(1);
+  }
+  const [, operator, ...parts] = match;
+  return { caret: operator === '^', floor: parts.map((p) => Number(p ?? 0)) };
+});
+
 const actual = process.versions.node.split('.').map(Number);
 
 // The FIRST differing component decides and the rest are irrelevant — which is
@@ -52,14 +58,17 @@ const compareVersions = (left, right) => {
   return 0;
 };
 
-if (compareVersions(actual, floor) < 0) {
+const satisfies = ({ caret, floor }) =>
+  compareVersions(actual, floor) >= 0 && (!caret || actual[0] === floor[0]);
+
+if (!alternatives.some(satisfies)) {
   console.error(
     [
       '',
       `This repo needs Node ${required} — you are on v${process.versions.node}.`,
       '',
-      'Below 22.18, Node cannot strip types from a required .ts file, so the lint',
-      'config fails to load with a message that names none of this.',
+      'Angular 22 refuses anything else, and below 22.18 the lint config fails to',
+      'load with a message that names none of this.',
       '',
       '  nvm install && nvm use     (.nvmrc pins the line)',
       '',

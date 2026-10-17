@@ -251,6 +251,10 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
   spec has to freeze the fixture itself to see it.
   An array the form DOES edit (a person's addresses) is cloned per element in `toForm`, and the Symbol
   then rides back OUT: `fromForm` rebuilds each element field by field, or the tag reaches the store.
+- **A custom control's contract outputs are matched by NAME and never type-checked** — `touch` (an
+  `output<void>()`, emitted on blur and on Enter) is optional on `FormUiControl`, so a misspelt or
+  outdated name compiles and the field simply never turns touched: no error note appears. Only the e2e
+  that presses Enter on an empty name sees it.
 
 ## Layout units that lie
 
@@ -306,6 +310,10 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **The collected APK name follows the signature** (`np-commlink.apk` vs `-unsigned.apk`), and its source
   filename comes from AGP's `output-metadata.json`, never a glob — both outputs live in one directory and
   neither build deletes the other.
+- **`zone.js` must stay out of pnpm's hoist** (`hoistPattern` in `pnpm-workspace.yaml`). It is installed
+  as a peer of `@ionic/angular`; the `ng` shim puts `node_modules/.pnpm/node_modules` on `NODE_PATH`, and
+  Angular 22's unit-test builder, finding `zone.js` resolvable there, injects a top-level
+  `await import('zone.js/testing')` that fails every test build with "Top-level await is not available".
 
 ## The generated Jam client and the APK shell
 

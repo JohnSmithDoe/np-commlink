@@ -6,7 +6,7 @@
  * separators, grams accept a `kg` suffix and round to 100 g.
  *
  * `@Directive()` and not a plain base class, because `value`, `label` and
- * `touchedChange` have to be inherited as real inputs and outputs — an
+ * `touch` have to be inherited as real inputs and outputs — an
  * undecorated base declares fields the compiler will not bind.
  * ───────────────────────────────────────────────────────────────── */
 import { Directive, inject, input, model, output } from '@angular/core';
@@ -26,7 +26,7 @@ export abstract class BaseDecimalInput implements FormValueControl<
   readonly value = model<number | null>(null);
   readonly label = input<string>();
 
-  readonly touchedChange = output<boolean>();
+  readonly touch = output<void>();
 
   protected readonly language = inject(APP_LANGUAGE);
 

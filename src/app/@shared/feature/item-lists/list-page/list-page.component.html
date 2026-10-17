@@ -13,7 +13,7 @@
 
   @if (facade.searchable?.() ?? true) {
     <app-item-list-searchbar
-      [query]="facade.state()?.searchQuery"
+      [query]="$safeNavigationMigration(facade.state()?.searchQuery)"
       (queryChange)="facade.search($event)"
       (hitEnter)="facade.addItemFromSearch()"
     />
@@ -28,7 +28,7 @@
   }
   @if (facade.hasToolbar?.() ?? true) {
     <app-item-list-toolbar
-      [activeSort]="facade.state()?.sort"
+      [activeSort]="$safeNavigationMigration(facade.state()?.sort)"
       [options]="facade.sortOptions?.() ?? []"
       [sortable]="facade.sortable?.() ?? true"
       (selectSortMode)="facade.setSortMode($event)"
@@ -54,7 +54,7 @@
     <app-category-filter-bar
       [catalog]="facade.catalog?.() ?? []"
       [extraFilters]="extraFilters()"
-      [active]="facade.state()?.filterBy"
+      [active]="$safeNavigationMigration(facade.state()?.filterBy)"
       (selectCategory)="facade.selectCategory?.($event)"
       (clearFilter)="clearFilter()"
     />
@@ -94,7 +94,7 @@
     [isSearchable]="facade.searchable?.() ?? true"
     [isSearching]="!!facade.searchResult()"
     [isFiltered]="!!facade.state()?.filterBy"
-    [searchTerm]="facade.searchResult()?.searchTerm"
+    [searchTerm]="$safeNavigationMigration(facade.searchResult()?.searchTerm)"
     [label]="emptyLabel()"
     [note]="emptyNote()"
     (emptyList)="facade.showCreateDialog()"

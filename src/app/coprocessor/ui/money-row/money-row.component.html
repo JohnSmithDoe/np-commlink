@@ -23,10 +23,15 @@
           'coprocessor.money.anchor-line'
             | translate
               : {
-                  multiple: anchorParams()?.multiple,
+                  multiple: $safeNavigationMigration(anchorParams()?.multiple),
                   anchor:
                     anchor.anchor.labelKey
-                    | translate: { value: anchorParams()?.value },
+                    | translate
+                      : {
+                          value: $safeNavigationMigration(
+                            anchorParams()?.value
+                          ),
+                        },
                 }
         }}
       </p>

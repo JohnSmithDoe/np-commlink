@@ -5,7 +5,7 @@
     [placeholder]="'edit.item.dialog.name.placeholder' | translate"
     [value]="value()"
     (ionInput)="onInput($event)"
-    (ionBlur)="touchedChange.emit(true)"
+    (ionBlur)="touch.emit()"
     (keydown.enter)="submit()"
   >
     @if (offersEmojiPicker) {

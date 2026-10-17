@@ -42,7 +42,7 @@
           labelPlacement="stacked"
           data-testid="spend-account"
           [label]="'cash.spend.account' | translate"
-          [value]="account()?.id"
+          [value]="$safeNavigationMigration(account()?.id)"
           (ionChange)="chooseAccount($event.detail.value)"
         >
           @for (option of accounts(); track option.id) {
