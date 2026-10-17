@@ -122,17 +122,6 @@ describe('spiralSquares', () => {
     }
   });
 
-  it('keeps every square inside the figure', () => {
-    const plan = spiralSquares(1920, 1080);
-
-    for (const square of plan.squares) {
-      expect(square.x).toBeGreaterThanOrEqual(-1e-9);
-      expect(square.y).toBeGreaterThanOrEqual(-1e-9);
-      expect(square.x + square.size).toBeLessThanOrEqual(plan.width + 1e-9);
-      expect(square.y + square.size).toBeLessThanOrEqual(plan.height + 1e-9);
-    }
-  });
-
   it('emits one arc per square', () => {
     const plan = spiralSquares(1920, 1080);
     expect(plan.path.match(/A /g)).toHaveLength(plan.squares.length);

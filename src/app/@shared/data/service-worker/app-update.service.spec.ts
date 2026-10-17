@@ -65,13 +65,23 @@ describe('AppUpdateService', () => {
 
   it('activates before reloading, because activating alone swaps nothing', async () => {
     const service = serviceWith(true);
+    let activated!: (isSwapped: boolean) => void;
+    activateUpdate.mockReturnValueOnce(
+      new Promise<boolean>((resolve) => (activated = resolve))
+    );
     versionUpdates.next(versionReady());
 
     service.applyUpdate();
     await Promise.resolve();
 
-    expect(activateUpdate).toHaveBeenCalled();
-    expect(reload).toHaveBeenCalled();
+    expect(activateUpdate).toHaveBeenCalledTimes(1);
+    expect(reload).not.toHaveBeenCalled();
+
+    activated(true);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(reload).toHaveBeenCalledTimes(1);
   });
 
   it('withdraws the offer when activation fails', async () => {

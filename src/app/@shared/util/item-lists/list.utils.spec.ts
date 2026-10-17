@@ -8,6 +8,7 @@ import {
   updateListItem,
   updateListSearch,
   updateListSort,
+  withList,
 } from './list.utils';
 
 const item = (over: Partial<BaseItem> = {}): BaseItem => {
@@ -31,6 +32,22 @@ const probeList = (
 
 const sorted = (sortDirection: ItemListSortDirection) =>
   probeList({ sort: { sortBy: 'name', sortDirection } });
+
+describe('withList', () => {
+  it('keeps the SAME parent when the nested list did not change', () => {
+    const list = probeList();
+    const parent = { list, other: 1 };
+
+    expect(withList(parent, 'list', list)).toBe(parent);
+  });
+
+  it('swaps in a changed nested list and keeps the rest', () => {
+    const parent = { list: probeList(), other: 1 };
+    const next = probeList({ searchQuery: 'milk' });
+
+    expect(withList(parent, 'list', next)).toEqual({ list: next, other: 1 });
+  });
+});
 
 describe('addListItem', () => {
   it('prepends the item without deriving categories', () => {

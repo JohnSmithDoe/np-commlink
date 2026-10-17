@@ -29,7 +29,6 @@ export const officeTimeContext = providePersistedContext({
   select: selectOfficeTimeState,
   save: {
     on: [
-      OfficeTimeActions.addFreeday,
       OfficeTimeActions.addOfficeTime,
       OfficeTimeActions.resetData,
       OfficeTimeActions.saveDashboardSettings,

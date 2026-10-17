@@ -12,32 +12,17 @@ import {
 } from '../../testing/household.test-data';
 
 describe('recipesReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = recipesReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
-
-  it('adds a recipe', () => {
-    const recipe = mockRecipe();
-    const state = recipesReducer(initialState, RecipesActions.addItem(recipe));
-    expect(state.items).toEqual([recipe]);
-  });
-
-  it('removes a recipe by id', () => {
-    const recipe = mockRecipe();
-    const start = mockRecipesState({ items: [recipe] });
-    const state = recipesReducer(start, RecipesActions.removeItem(recipe));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('updates a recipe', () => {
+  it('wires its list actions to the shared list utils', () => {
     const recipe = mockRecipe({ servings: 2 });
-    const start = mockRecipesState({ items: [recipe] });
-    const state = recipesReducer(
-      start,
+    const added = recipesReducer(initialState, RecipesActions.addItem(recipe));
+    const updated = recipesReducer(
+      added,
       RecipesActions.updateItem({ ...recipe, servings: 6 })
     );
-    expect(state.items[0].servings).toBe(6);
+    const removed = recipesReducer(updated, RecipesActions.removeItem(recipe));
+
+    expect(updated.items).toEqual([{ ...recipe, servings: 6 }]);
+    expect(removed.items).toEqual([]);
   });
 
   it('strips a deleted product from every recipe (no dangling reference)', () => {

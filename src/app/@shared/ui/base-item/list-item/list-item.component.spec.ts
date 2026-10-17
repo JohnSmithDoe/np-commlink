@@ -1,16 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonList } from '@ionic/angular';
-import { IonDragEvent } from '../../../model/app.types';
 import { getByTestId, queryByTestId } from '../../../testing/dom';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import { mockBaseItem, mockCategory } from '../../../testing/test-data';
 import { ListItemComponent } from './list-item.component';
-
-const dragEvent = (amount: number): IonDragEvent =>
-  ({ detail: { amount, ratio: 0 } }) as unknown as IonDragEvent;
-
-const settle = (): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('ListItemComponent', () => {
   let fixture: ComponentFixture<ListItemComponent>;
@@ -106,59 +99,6 @@ describe('ListItemComponent', () => {
     getByTestId(fixture, 'list-row-select').click();
 
     expect(selected).toHaveLength(1);
-  });
-
-  it('emits delete and closes sliding items', async () => {
-    const deleted: unknown[] = [];
-    component.deletionRequested.subscribe(() => {
-      deleted.push(true);
-    });
-
-    await component.emitDeleteItem();
-
-    expect(ionList.closeSlidingItems).toHaveBeenCalledTimes(1);
-    expect(deleted).toHaveLength(1);
-  });
-
-  it('emits cart and closes sliding items', async () => {
-    const carted: unknown[] = [];
-    component.startSwipe.subscribe(() => {
-      carted.push(true);
-    });
-
-    await component.emitStartSwipe();
-
-    expect(ionList.closeSlidingItems).toHaveBeenCalledTimes(1);
-    expect(carted).toHaveLength(1);
-  });
-
-  it('routes end drag to delete', async () => {
-    const deleted: unknown[] = [];
-    component.deletionRequested.subscribe(() => {
-      deleted.push(true);
-    });
-
-    component.onSwipe(dragEvent(200));
-
-    await vi.waitFor(() => expect(deleted).toHaveLength(1));
-  });
-
-  it('routes start drag to cart only once the host has named the action', async () => {
-    const carted: unknown[] = [];
-    component.startSwipe.subscribe(() => {
-      carted.push(true);
-    });
-
-    component.onSwipe(dragEvent(-200));
-    await settle();
-    expect(carted).toHaveLength(0);
-
-    fixture.componentRef.setInput('startSwipeAction', {
-      labelKey: 'household.a11y.buy-item',
-      icon: 'cart-outline',
-    });
-    component.onSwipe(dragEvent(-200));
-    await vi.waitFor(() => expect(carted).toHaveLength(1));
   });
 
   it('shows a status bar when a status color is set', () => {

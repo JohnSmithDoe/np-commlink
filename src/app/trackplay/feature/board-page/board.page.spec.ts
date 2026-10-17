@@ -33,6 +33,16 @@ const everyFigure = (): readonly BoardFigure[] => {
   return placed;
 };
 
+const standing = (...moved: BoardFigure[]): readonly BoardFigure[] => {
+  return everyFigure().map((figure) => {
+    return (
+      moved.find(
+        (one) => one.player === figure.player && one.piece === figure.piece
+      ) ?? figure
+    );
+  });
+};
+
 describe('TrackplayBoardPage', () => {
   let component: TrackplayBoardPage;
   let dispatch: ReturnType<typeof vi.spyOn>;
@@ -108,6 +118,47 @@ describe('TrackplayBoardPage', () => {
 
       expect(component.moveRefused()).toBe('needs-six');
       expect(component.picked()).toBe('nest-0-0');
+    });
+
+    it('names the refusal for a roll that overshoots the home column', () => {
+      setup(seated(standing({ player: 0, piece: 0, fieldId: 'goal-0-2' })));
+      component.tapField('goal-0-2');
+
+      component.moveBy(3);
+
+      expect(component.moveRefused()).toBe('overshoots-home');
+    });
+
+    it('names the refusal for a roll that lands on an own piece', () => {
+      setup(
+        seated(
+          standing(
+            { player: 0, piece: 0, fieldId: 'track-3' },
+            { player: 0, piece: 1, fieldId: 'track-5' }
+          )
+        )
+      );
+      component.tapField('track-3');
+
+      component.moveBy(2);
+
+      expect(component.moveRefused()).toBe('own-piece');
+    });
+
+    it('names the refusal for a roll that jumps an own piece in the home column', () => {
+      setup(
+        seated(
+          standing(
+            { player: 0, piece: 0, fieldId: 'goal-0-0' },
+            { player: 0, piece: 1, fieldId: 'goal-0-2' }
+          )
+        )
+      );
+      component.tapField('goal-0-0');
+
+      component.moveBy(2);
+
+      expect(component.moveRefused()).toBe('blocked-in-home');
     });
 
     it('moves on a roll that works, and lets the field go', () => {

@@ -115,26 +115,6 @@ describe('DashboardEffects', () => {
       );
     });
 
-    it('persists a report that arrives before this boot read resolves', async () => {
-      setup();
-      actions$ = of(
-        DashboardActions.report({
-          source: 'office-time',
-          metrics: { officedays: 12 },
-        })
-      );
-
-      await firstValueFrom(effects.persistSummary$.pipe(toArray()));
-
-      expect(database.save).toHaveBeenCalledWith(
-        'summary-office-time',
-        wrapVersioned(APP_VERSION, {
-          source: 'office-time',
-          metrics: { officedays: 12 },
-        })
-      );
-    });
-
     it('reports a failed write once, rather than dropping it silently', async () => {
       setup();
       database.save.mockRejectedValue(new Error('quota exceeded'));

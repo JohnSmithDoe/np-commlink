@@ -8,55 +8,22 @@ import {
 } from '../../testing/household.test-data';
 
 describe('productsReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = productsReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
-
-  it('adds an item', () => {
-    const item = mockProduct({ name: 'Sugar', categoryIds: ['baking'] });
-    const state = productsReducer(initialState, ProductsActions.addItem(item));
-    expect(state.items).toEqual([item]);
-  });
-
-  it('removes an item by id', () => {
-    const item = mockProduct({ id: 'a' });
-    const start = mockProductsState({ items: [item] });
-    const state = productsReducer(start, ProductsActions.removeItem(item));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('updates an existing item', () => {
-    const item = mockProduct({ id: 'a', name: 'Old' });
-    const start = mockProductsState({ items: [item] });
-    const state = productsReducer(
-      start,
-      ProductsActions.updateItem({ ...item, name: 'New' })
+  it('wires its list actions to the shared list utils', () => {
+    const item = mockProduct({ id: 'a', name: 'Sugar' });
+    const added = productsReducer(initialState, ProductsActions.addItem(item));
+    const updated = productsReducer(
+      added,
+      ProductsActions.updateItem({ ...item, name: 'Salt' })
     );
-    expect(state.items[0].name).toBe('New');
-  });
+    const narrowed = productsReducer(
+      productsReducer(updated, ProductsActions.updateSearch('salt')),
+      ProductsActions.updateFilter('baking')
+    );
+    const removed = productsReducer(narrowed, ProductsActions.removeItem(item));
 
-  it('stores the search query verbatim and only updates when it changed', () => {
-    const start = mockProductsState({ searchQuery: 'sugar' });
-    const unchanged = productsReducer(
-      start,
-      ProductsActions.updateSearch('sugar')
-    );
-    expect(unchanged).toBe(start);
-    const changed = productsReducer(
-      start,
-      ProductsActions.updateSearch('  salt  ')
-    );
-    expect(changed.searchQuery).toBe('  salt  ');
-  });
-
-  it('sets a filter', () => {
-    const start = mockProductsState();
-    const state = productsReducer(
-      start,
-      ProductsActions.updateFilter('Baking')
-    );
-    expect(state.filterBy).toBe('Baking');
+    expect(updated.items).toEqual([{ ...item, name: 'Salt' }]);
+    expect(narrowed).toMatchObject({ searchQuery: 'salt', filterBy: 'baking' });
+    expect(removed.items).toEqual([]);
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {

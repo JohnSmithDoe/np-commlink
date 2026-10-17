@@ -62,11 +62,6 @@ describe('deriveIonicColorSet', () => {
     });
   });
 
-  it('picks black contrast for a mid-luminance color close to the threshold', () => {
-    const { contrast } = deriveIonicColorSet('#32aea6');
-    expect(contrast).toBe('#000000');
-  });
-
   it('rejects a non-hex input', () => {
     expect(() => deriveIonicColorSet('not-a-color')).toThrow();
   });

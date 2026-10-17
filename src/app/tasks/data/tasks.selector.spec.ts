@@ -8,22 +8,10 @@ import {
   selectOpenTasks,
   selectTasksListItems,
   selectTasksListSearchResult,
-  selectTasksState,
 } from './tasks.selector';
-import { mockKernelState } from '../../@shared/testing/test-data';
-import {
-  mockTaskItem,
-  mockTasksList,
-  mockTasksState,
-} from '../testing/tasks.test-data';
+import { mockTaskItem, mockTasksList } from '../testing/tasks.test-data';
 
 describe('tasks.selector', () => {
-  it('selects the tasks feature slice', () => {
-    const tasks = mockTasksState();
-    const state = mockKernelState({ tasks });
-    expect(selectTasksState(state)).toBe(tasks);
-  });
-
   describe('selectTasksListSearchResult', () => {
     it('returns undefined without a search query', () => {
       const listState = mockTasksList();
@@ -78,12 +66,22 @@ describe('tasks.selector', () => {
       ).toEqual(['low', 'high']);
     });
 
-    it('sorts task items by due date, falling back to name when both are unset', () => {
+    it('sorts task items by next due date, falling back to name when both are unset', () => {
       const dated = mockTasksList({
-        sort: { sortBy: 'dueAt', sortDirection: 'asc' },
+        sort: { sortBy: 'nextDueAt', sortDirection: 'asc' },
         items: [
-          mockTaskItem({ id: 'l', name: 'Aaa', dueAt: '2024-12-01' }),
-          mockTaskItem({ id: 'e', name: 'Zzz', dueAt: '2024-01-01' }),
+          mockTaskItem({
+            id: 'l',
+            name: 'Aaa',
+            dueAt: '2024-01-01',
+            nextDueAt: '2024-12-01',
+          }),
+          mockTaskItem({
+            id: 'e',
+            name: 'Zzz',
+            dueAt: '2024-12-01',
+            nextDueAt: '2024-01-01',
+          }),
         ],
       });
       expect(
@@ -91,7 +89,7 @@ describe('tasks.selector', () => {
       ).toEqual(['e', 'l']);
 
       const undated = mockTasksList({
-        sort: { sortBy: 'dueAt', sortDirection: 'asc' },
+        sort: { sortBy: 'nextDueAt', sortDirection: 'asc' },
         items: [
           mockTaskItem({ id: '1', name: 'B' }),
           mockTaskItem({ id: '2', name: 'A' }),
@@ -104,12 +102,22 @@ describe('tasks.selector', () => {
       ).toEqual(['A', 'B']);
     });
 
-    it('sorts task items by due date descending, latest first', () => {
+    it('sorts task items by next due date descending, latest first', () => {
       const state = mockTasksList({
-        sort: { sortBy: 'dueAt', sortDirection: 'desc' },
+        sort: { sortBy: 'nextDueAt', sortDirection: 'desc' },
         items: [
-          mockTaskItem({ id: 'e', name: 'early', dueAt: '2024-01-01' }),
-          mockTaskItem({ id: 'l', name: 'late', dueAt: '2024-12-01' }),
+          mockTaskItem({
+            id: 'e',
+            name: 'Zzz',
+            dueAt: '2024-12-01',
+            nextDueAt: '2024-01-01',
+          }),
+          mockTaskItem({
+            id: 'l',
+            name: 'Aaa',
+            dueAt: '2024-01-01',
+            nextDueAt: '2024-12-01',
+          }),
         ],
       });
       expect(

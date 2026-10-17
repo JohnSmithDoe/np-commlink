@@ -1,5 +1,4 @@
 import {
-  selectDoneCollapsed,
   selectDoneNotifications,
   selectNotificationsBadgeCount,
   selectOpenNotifications,
@@ -63,12 +62,6 @@ describe('notifications.selector', () => {
     expect(
       selectDoneNotifications.projector(state({ items })).map((n) => n.id)
     ).toEqual(['d1']);
-  });
-
-  it('exposes the done-collapsed flag', () => {
-    expect(selectDoneCollapsed.projector(state({ doneCollapsed: false }))).toBe(
-      false
-    );
   });
 
   it('counts only new notifications updated since the last view', () => {

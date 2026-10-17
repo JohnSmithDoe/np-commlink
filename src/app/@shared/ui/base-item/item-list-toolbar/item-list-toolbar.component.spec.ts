@@ -16,17 +16,6 @@ describe('ItemListToolbarComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('emits the selected sort mode', () => {
-    const emitted: string[] = [];
-    component.selectSortMode.subscribe((v) => {
-      emitted.push(v);
-    });
-
-    component.selectSortMode.emit('name');
-
-    expect(emitted).toEqual(['name']);
-  });
-
   it('emits a sort mode when the A-Z button is clicked', () => {
     fixture.detectChanges();
     const emitted: string[] = [];

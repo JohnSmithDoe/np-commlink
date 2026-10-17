@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import dayjs from 'dayjs';
 import { MockStore } from '@ngrx/store/testing';
 import { mockRouterState } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
@@ -67,13 +68,19 @@ describe('NoteEditorFacade', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('stamps every write, so the list can sort by last edited', () => {
+  it('stamps every write with the moment it is written', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-08-22T10:00:00'));
     setup();
 
     facade.edit({ body: 'Milch' });
+    vi.setSystemTime(new Date('2026-08-22T10:05:00'));
     facade.flush();
+    vi.useRealTimers();
 
-    expect(lastUpdate()?.item.updatedAt).toBeDefined();
+    expect(lastUpdate()?.item.updatedAt).toBe(
+      dayjs('2026-08-22T10:05:00').format()
+    );
   });
 
   it('appends an image as an id, and never as bytes in the slice', () => {

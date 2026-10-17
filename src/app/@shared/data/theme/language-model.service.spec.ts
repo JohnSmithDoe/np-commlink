@@ -85,7 +85,7 @@ describe('LanguageModelService', () => {
 
     await Promise.all([service.probe(), service.probe(), service.probe()]);
 
-    expect(availability.mock.calls.length).toBeLessThanOrEqual(1);
+    expect(availability).toHaveBeenCalledTimes(1);
   });
 
   it('marks the model available once a session is created', async () => {

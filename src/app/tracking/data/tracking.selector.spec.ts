@@ -85,14 +85,6 @@ describe('tracking.selector', () => {
 });
 
 describe('selectTrackingItemCount', () => {
-  it('counts the list items', () => {
-    expect(
-      selectTrackingItemCount.projector({
-        items: [track()],
-      } as TrackingState)
-    ).toBe(1);
-  });
-
   it('falls back to 0 for an unregistered slice', () => {
     expect(selectTrackingItemCount.projector(undefined as never)).toBe(0);
   });

@@ -1,6 +1,8 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { MockStore } from '@ngrx/store/testing';
 import { TodayService } from '../../@shared/data/services/today.service';
+import { mockKernelState } from '../../@shared/testing/test-data';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
 import {
   mockRitualCompletion,
@@ -53,8 +55,19 @@ describe('RitualPageFacade', () => {
 
   it('keeps a reroll until the day itself moves on', () => {
     setup();
+    const drawn = facade.prompt().id;
     facade.draw();
     const rerolled = facade.prompt().id;
+    expect(rerolled).not.toBe(drawn);
+
+    const yesterday = mockRitualCompletion({
+      completedAt: '2026-07-19T08:00:00.000',
+    });
+    TestBed.inject(MockStore).setState(
+      mockKernelState({
+        ritual: mockRitualState({ completions: [yesterday] }),
+      })
+    );
 
     expect(facade.prompt().id).toBe(rerolled);
 

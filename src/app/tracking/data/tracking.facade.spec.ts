@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import dayjs from 'dayjs';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { mockKernelState } from '../../@shared/testing/test-data';
 import {
@@ -39,6 +40,8 @@ describe('TrackingFacade', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   });
 
+  afterEach(() => vi.useRealTimers());
+
   it('reads the archive through the view the slice holds', () => {
     expect(facade.viewMode()).toBe('all');
     expect(facade.sessionsByView().map((row) => row.name)).toEqual([
@@ -58,14 +61,16 @@ describe('TrackingFacade', () => {
   });
 
   it('stamps the toggle with the moment it happened', () => {
+    const moment = '2026-06-01T10:00:00';
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(moment));
     const item = mockTrackingItem({ id: 't1' });
+
     facade.toggleTracking(item);
 
-    const action = dispatch.mock.calls[0][0] as ReturnType<
-      typeof TrackingActions.toggleTrackingItem
-    >;
-    expect(action.type).toBe(TrackingActions.toggleTrackingItem(item, '').type);
-    expect(action.now).toBeTruthy();
+    expect(dispatch).toHaveBeenCalledWith(
+      TrackingActions.toggleTrackingItem(item, dayjs(moment).format())
+    );
   });
 
   it('dispatches the reset, archive and export commands', () => {

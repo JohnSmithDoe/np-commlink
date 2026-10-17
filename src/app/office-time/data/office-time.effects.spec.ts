@@ -64,12 +64,6 @@ describe('OfficeTimeEffects', () => {
       const today = new Date();
       expect(emitted.holidays['Neujahr']).toBe(`${today.getFullYear()}-01-01`);
     });
-
-    it('has no failure path left that could clear the map', () => {
-      expect(
-        (OfficeTimeActions as Record<string, unknown>)['loadHolidaysFailure']
-      ).toBeUndefined();
-    });
   });
 
   describe('refreshOnYearRollover$', () => {

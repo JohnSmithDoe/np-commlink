@@ -71,7 +71,7 @@ describe('EditTaskItemDialogComponent', () => {
     expect(host.request()).toBeNull();
   });
 
-  it('drops the derived date when either input changes', () => {
+  it('re-derives the next due date from the date and the cadence', () => {
     component.updateDueAt('2099-08-20');
     expect(component.draft().nextDueAt).toBe('2099-08-20');
 

@@ -73,11 +73,6 @@ describe('recipes.selector', () => {
     expect(matches).toHaveLength(1);
   });
 
-  it('selects the recipes slice items', () => {
-    const state = mockRecipesState({ items: [mockRecipe()] });
-    expect(selectRecipes.projector(state)).toEqual(state.items);
-  });
-
   describe('the rendered order', () => {
     const alpha = mockRecipe({ id: 'r-alpha', name: 'Alpha', prepMinutes: 90 });
     const beta = mockRecipe({ id: 'r-beta', name: 'Beta', prepMinutes: 10 });

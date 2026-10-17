@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {
   createProduct,
   createProductFrom,
@@ -35,12 +36,16 @@ describe('household.factory', () => {
     });
 
     it('computes a best-before date for a time-limited item', () => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-03-10T09:00:00'));
       const global = mockProduct({
         bestBeforeTimespan: 'days',
         bestBeforeTimevalue: 5,
       });
       const item = createStorageItemFromProduct(global, 2);
-      expect(item.bestBefore).toBeTruthy();
+      vi.useRealTimers();
+
+      expect(item.bestBefore).toBe(dayjs('2026-03-15T09:00:00').format());
       expect(item.quantity).toBe(2);
       expect(item.name).toBe(global.name);
     });

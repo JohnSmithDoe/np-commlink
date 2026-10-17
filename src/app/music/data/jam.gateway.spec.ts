@@ -17,11 +17,8 @@ function fakeJamClient(isLoggedIn = true) {
     },
     session: { session: vi.fn(() => Promise.resolve({ user: { id: 'u' } })) },
     nowplaying: { scrobble: vi.fn(() => Promise.resolve()) },
-    stream: { streamUrl: ({ id }: { id: string }) => `stream/${id}` },
-    image: {
-      imageUrl: ({ id, size }: { id: string; size: number }) =>
-        `image/${id}/${size}`,
-    },
+    stream: { streamUrl: vi.fn(() => 'https://jam/stream') },
+    image: { imageUrl: vi.fn(() => 'https://jam/image') },
   };
 }
 
@@ -73,10 +70,13 @@ describe('JamGateway', () => {
 
   it('restores a stored login before the first request', async () => {
     const { gateway, client } = setup(fakeJamClient(false));
+    const call = vi.fn(() => Promise.resolve('ok'));
 
-    await gateway.request(() => Promise.resolve('ok'));
+    await gateway.request(call);
 
-    expect(client.auth.load).toHaveBeenCalled();
+    expect(client.auth.load.mock.invocationCallOrder[0]).toBeLessThan(
+      call.mock.invocationCallOrder[0]
+    );
   });
 
   it('drops the session when the server refuses a request', async () => {
@@ -121,7 +121,9 @@ describe('JamGateway', () => {
     await gateway.scrobble('t1');
 
     expect(client.nowplaying.scrobble).toHaveBeenCalledWith({ id: 't1' });
-    expect(gateway.streamUrl('t1')).toBe('stream/t1');
-    expect(gateway.imageUrl('a1', 300)).toBe('image/a1/300');
+    expect(gateway.streamUrl('t1')).toBe('https://jam/stream');
+    expect(client.stream.streamUrl).toHaveBeenCalledWith({ id: 't1' });
+    expect(gateway.imageUrl('a1', 300)).toBe('https://jam/image');
+    expect(client.image.imageUrl).toHaveBeenCalledWith({ id: 'a1', size: 300 });
   });
 });

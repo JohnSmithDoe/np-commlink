@@ -26,7 +26,6 @@ export const OfficeTimeActions = createActionGroup({
     },
     addOfficeTime: (today: Dayjs) => ({ today }),
     setOfficedays: (officedays: string[]) => ({ officedays }),
-    addFreeday: (freeday: Dayjs) => ({ freeday }),
     setFreedays: (freedays: string[]) => ({ freedays }),
     saveDashboardSettings: (key: DashboardSettingsType, isActive: boolean) => {
       return {

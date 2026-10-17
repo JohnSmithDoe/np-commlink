@@ -6,7 +6,6 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import dayjs from 'dayjs';
-import { TEST_TIMESTAMP } from '../../@shared/testing/test-data';
 import { TrackplayState } from '../model/trackplay.types';
 import { gameTypeIdOf } from '../util/game-type.utils';
 import { gamesWithType } from '../util/trackplay.cascade';
@@ -124,18 +123,20 @@ describe('trackplayReducer — scoring stamps the game', () => {
     GamesActions.setRoundValue('g', 'r0', 'p1', 20, AT, 'r1')
   );
 
+  afterEach(() => vi.useRealTimers());
+
   it('stamps the game with the action clock', () => {
     expect(theGame(state)?.updatedAt).toBe(AT);
   });
 
   it('reads the clock at dispatch time, not while reducing', () => {
-    const defaulted = trackplayReducer(
-      start,
-      GamesActions.setRoundValue('g', 'r0', 'p1', 20)
-    );
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(AT));
+    const action = GamesActions.setRoundValue('g', 'r0', 'p1', 20);
+    vi.setSystemTime(new Date('2026-05-02T08:00:00.000Z'));
 
-    expect(dayjs(theGame(defaulted)?.updatedAt).isAfter(TEST_TIMESTAMP)).toBe(
-      true
+    expect(theGame(trackplayReducer(start, action))?.updatedAt).toBe(
+      dayjs(AT).format()
     );
   });
 

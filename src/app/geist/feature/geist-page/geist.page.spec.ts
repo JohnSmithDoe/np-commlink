@@ -8,12 +8,14 @@ import { GEIST_PERSONAS } from '../../model/geist.consts';
 import { GeistPage } from './geist.page';
 
 const fakeSession = (
-  gauge: { contextUsage?: number; contextWindow?: number } = {}
+  gauge: { contextUsage?: number; contextWindow?: number } = {},
+  answer: string[] = []
 ) => {
   return {
     contextUsage: 0,
     contextWindow: 0,
     destroy: vi.fn(),
+    promptStreaming: vi.fn(() => answer),
     ...gauge,
   };
 };
@@ -181,16 +183,29 @@ describe('GeistPage', () => {
   });
 
   describe('the send shortcut', () => {
-    it('sends the query and swallows the newline the textarea would insert', () => {
-      const page = setup().componentInstance;
-      page.link.set('jacked-in');
-      page.query.set('wer ist Mr. Johnson?');
+    it('sends the query and swallows the newline the textarea would insert', async () => {
+      const session = fakeSession({}, ['Ein ', 'Fixer.']);
+      const page = setup('available', session).componentInstance;
+      await settle();
+      page.query.set('  wer ist Mr. Johnson? ');
       const event = { preventDefault: vi.fn() } as unknown as Event;
 
       page.sendShortcut(event);
+      await settle();
 
       expect(event.preventDefault).toHaveBeenCalled();
-      expect(page.turns()).toHaveLength(1);
+      expect(session.promptStreaming).toHaveBeenCalledExactlyOnceWith(
+        'wer ist Mr. Johnson?',
+        expect.anything()
+      );
+      expect(page.turns()).toEqual([
+        expect.objectContaining({
+          query: 'wer ist Mr. Johnson?',
+          answer: 'Ein Fixer.',
+          streaming: false,
+          note: null,
+        }),
+      ]);
       expect(page.query()).toBe('');
     });
 

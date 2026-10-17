@@ -19,6 +19,7 @@ const catalogPrograms = DECK_CATALOG.filter((entry) => entry.onDeck).map(
 describe('CommlinkPage', () => {
   const availability = signal<LanguageModelAvailability>('probing');
   const skin = signal<Skin>('cyberpunk');
+  const onScreen = signal(catalogPrograms);
   const bySource = signal<
     Record<
       string,
@@ -30,6 +31,7 @@ describe('CommlinkPage', () => {
     availability.set('probing');
     skin.set('cyberpunk');
     bySource.set({});
+    onScreen.set(catalogPrograms);
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -41,14 +43,13 @@ describe('CommlinkPage', () => {
           provide: DashboardFacade,
           useValue: {
             dashboardState: () => ({ bySource: bySource() }),
-            notificationsUnread: () =>
-              Number(bySource()['notifications']?.metrics['unread'] ?? 0),
+            notificationsUnread: () => 0,
           },
         },
         {
           provide: DeckFacade,
           useValue: {
-            programs: () => catalogPrograms,
+            programs: onScreen,
             allPrograms: () => catalogPrograms,
             slotCount: catalogPrograms.length,
           },
@@ -78,11 +79,14 @@ describe('CommlinkPage', () => {
       expect(page.onlineCount()).toBe(whileProbing);
     });
 
-    it('never exceeds the declared program total', () => {
+    it('counts every slot, not only the tiles left on screen', () => {
       const page = setup();
-      availability.set('available');
-      expect(page.onlineCount()).toBeLessThanOrEqual(page.total);
-      expect(page.total).toBe(page.programs().length);
+      bySource.set({ tracking: { metrics: {}, status: 'online' } });
+      const withEveryTile = page.onlineCount();
+
+      onScreen.set([]);
+
+      expect(page.onlineCount()).toBe(withEveryTile);
     });
   });
 
@@ -135,20 +139,17 @@ describe('CommlinkPage', () => {
   describe('the status-strip readouts', () => {
     it('default to zero before any source reports', () => {
       const page = setup();
-      expect(page.noise()).toBe(0);
       expect(page.nuyenLabel()).toBe('¥ 0 nyen');
       expect(page.resonanceRating()).toBe('0.0');
     });
 
-    it('derive from the notifications, cash and office-time telemetry', () => {
+    it('derive from the cash and office-time telemetry', () => {
       const page = setup();
       bySource.set({
-        notifications: { metrics: { unread: 3 } },
         cash: { metrics: { balance: 42 } },
         'office-time': { metrics: { officedays: 42, percentage: 50 } },
       });
 
-      expect(page.noise()).toBe(3);
       expect(page.nuyenLabel()).toBe('¥ 42 nyen');
       expect(page.resonanceRating()).toBe('3.0');
     });

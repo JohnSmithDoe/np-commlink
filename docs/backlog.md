@@ -22,44 +22,10 @@ _Audited 2026-10-17: every unit spec, the e2e suite minus handbook shots, and th
 No test asserts behaviour the app lacks. The faults are tests that cannot fail, fixtures the real
 pipeline never emits, and gaps exactly where the risk sits. Each suspected bug gets a red spec before its fix._
 
-### Tests that cannot fail
-
-- `list-page.component` reorder calls the fake facade directly; `commlink.page` `total` and `noise`
-  echo the fake's own logic; `ritual-page.facade` reads one signal twice.
-- `item-list-toolbar` emits its own `output()`; `jam.gateway` URL lines echo the fake client.
-- `error-boundary.spec` tests local copies of the shells, not the real ones.
-
-### Names that claim more than the body
-
-- `dashboard.effects` "persists a report that arrives before this boot read" — no such gate exists;
-  the body repeats the test above it.
-- `tasks.selector` sorts by `dueAt`; the app only offers `nextDueAt`.
-- `office-time.reducer` tests `addFreeday`, which nothing dispatches — delete test and action.
-  `office-time.effects` "has no failure path left" asserts an undefined key.
-- "before" never checks order: `app-update.service`, `sources.facade`, `jam.gateway`,
-  `database.service` ×3.
-- `base-modal-dialog` "does not fall back to create mode" — it does. `edit-task-item-dialog` "drops the
-  derived date" — it keeps it. `task-lead.utils` uses a different worst case than production.
-  `board.page.spec`'s banner claims every refusal is asserted; three of six are —
-  `overshoots-home`, `own-piece` and `blocked-in-home` are reachable and unasserted.
-- `geist.page` "sends the query" forces `jacked-in` with no session, so nothing streams.
-
 ### Weak oracles
 
-- Clock assertions that are always true: trackplay "reads the clock at dispatch time" (`isAfter(2024)`),
-  `tracking.facade` truthy `now`, `household.factory` truthy `bestBefore`, `note-editor.facade`,
-  `clock.spec`, `notifications.reducer` `not.toBe(...)`. Fake the clock, assert the value.
-- `language-model.service` `toBeLessThanOrEqual(1)` passes on zero calls.
 - `e2e/helpers.ts` `addViaSearch` sleeps `waitForTimeout(400)` twice, and every add-flow inherits it;
   six specs copy the sleep. Wait on the row or `waitForPersisted`.
-
-### Re-tested elsewhere — delete
-
-- Generic list reducer/effects mechanics re-tested in ~8 domain specs; `item-list.effects.factory.spec`
-  covers only undo. Move the generic cases there, keep per-module wiring.
-- Feature-slice selectors and `state => state.x` projectors.
-- `list-item.component` repeats `base-swipe-row.spec`; single `it.each` rows repeated in
-  `golden.utils` and `ionic-color.utils`; `settings.effects` asserts a save no path makes.
 
 ### Gaps — risky code with no meaningful test
 

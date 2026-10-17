@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationsInboxActions } from './notifications.actions';
 import {
@@ -47,7 +48,11 @@ const projected = (
   };
 };
 
+const NOW = '2026-06-02T09:30:00';
+
 describe('notificationsReducer', () => {
+  afterEach(() => vi.useRealTimers());
+
   it('prepends a published notification and replaces one with the same id', () => {
     const added = notificationsReducer(
       initialNotificationsState,
@@ -132,6 +137,8 @@ describe('notificationsReducer', () => {
         }),
       ]);
 
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date(NOW));
       const next = notificationsReducer(
         state,
         NotificationsActions.project('tracking', [
@@ -139,7 +146,7 @@ describe('notificationsReducer', () => {
         ])
       );
 
-      expect(next.items[0].updatedAt).not.toBe('OLD');
+      expect(next.items[0].updatedAt).toBe(dayjs(NOW).format());
     });
 
     it('honours an updatedAt the producer stamped itself', () => {
@@ -265,13 +272,13 @@ describe('notificationsReducer', () => {
     );
     expect(toggled.doneCollapsed).toBe(false);
 
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(NOW));
     const viewed = notificationsReducer(
       initialNotificationsState,
       NotificationsInboxActions.markPageViewed()
     );
-    expect(viewed.lastViewedAt).not.toBe(
-      initialNotificationsState.lastViewedAt
-    );
+    expect(viewed.lastViewedAt).toBe(dayjs(NOW).format());
   });
 
   it('gives a field an older document lacks its default', () => {

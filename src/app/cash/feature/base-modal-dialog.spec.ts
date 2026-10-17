@@ -96,7 +96,7 @@ describe('BaseModalDialog', () => {
     expect(modal.draft()).toEqual({ name: 'half typed' });
   });
 
-  it('keeps the draft and does not fall back to create mode when the entity is deleted', () => {
+  it('keeps the draft when the entity under edit is deleted', () => {
     modal.edit('a');
     modal.patch({ name: 'half typed' });
 

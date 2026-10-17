@@ -26,7 +26,6 @@ import {
 } from './household-list.effects';
 import { HouseholdState } from '../../model/household.types';
 import { mockKernelState } from '../../../@shared/testing/test-data';
-import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
 import {
   mockHouseholdState,
   mockProduct,
@@ -183,64 +182,5 @@ describe('the per-slice list flow', () => {
     );
     expect(emitted.type).toBe('[Products] addItem');
     expect(emitted.item.name).toBe('Milk');
-  });
-
-  it('storage updates an item it already holds', async () => {
-    const item = mockStorageItem();
-    setup({ storage: mockStorageState({ items: [item] }) });
-    actions$ = of(StorageActions.addOrUpdateItem(item));
-
-    expect(
-      await firstValueFrom(run(storageListEffects.addOrUpdateItem$))
-    ).toEqual(StorageActions.updateItem(item));
-  });
-
-  it('storage adds an item it does not hold', async () => {
-    const item = mockStorageItem();
-    setup({ storage: mockStorageState({ items: [] }) });
-    actions$ = of(StorageActions.addOrUpdateItem(item));
-
-    expect(
-      await firstValueFrom(run(storageListEffects.addOrUpdateItem$))
-    ).toEqual(StorageActions.addItem(item));
-  });
-
-  it('storage clears its search once an item lands', async () => {
-    setup();
-    actions$ = of(StorageActions.addItem(mockStorageItem()));
-    expect(await firstValueFrom(run(storageListEffects.clearSearch$))).toEqual(
-      StorageActions.updateSearch('')
-    );
-  });
-
-  const duplicateToast = NotificationsActions.toast({
-    key: 'toast.add.item.failure',
-    parameters: { name: 'Milk' },
-    color: 'medium',
-  });
-
-  it('each slice toasts its own duplicate-name notice', async () => {
-    setup();
-
-    actions$ = of(
-      ShoppingActions.addItemFailure(mockShoppingItem({ name: 'Milk' }))
-    );
-    expect(
-      await firstValueFrom(run(shoppingListEffects.addItemFailure$))
-    ).toEqual(duplicateToast);
-
-    actions$ = of(
-      StorageActions.addItemFailure(mockStorageItem({ name: 'Milk' }))
-    );
-    expect(
-      await firstValueFrom(run(storageListEffects.addItemFailure$))
-    ).toEqual(duplicateToast);
-
-    actions$ = of(
-      ProductsActions.addItemFailure(mockProduct({ name: 'Milk' }))
-    );
-    expect(
-      await firstValueFrom(run(productsListEffects.addItemFailure$))
-    ).toEqual(duplicateToast);
   });
 });

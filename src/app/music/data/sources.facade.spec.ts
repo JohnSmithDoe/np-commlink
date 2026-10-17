@@ -23,6 +23,9 @@ const folder: FolderSource = {
 };
 const lost: FolderSource = { ...folder, id: 'folder-2', uri: 'content://old' };
 
+const firstCall = (mock: { mock: { invocationCallOrder: number[] } }) =>
+  mock.mock.invocationCallOrder[0];
+
 const setup = () => {
   const gateway = fakeJamGateway();
   const local = {
@@ -98,14 +101,24 @@ describe('SourcesFacade', () => {
     const { facade, plugin, signOut, dispatch, local } = setup();
 
     await facade.removeSource(folder);
-    await facade.removeSource(mockJamSource());
 
     expect(plugin.releaseFolder).toHaveBeenCalledWith({
       folderUri: 'content://music',
     });
-    expect(signOut).toHaveBeenCalledTimes(1);
-    expect(dispatch).toHaveBeenCalledWith(MusicActions.removeSource('jam-1'));
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
+      MusicActions.removeSource('folder-1')
+    );
+    expect(firstCall(plugin.releaseFolder)).toBeLessThan(firstCall(dispatch));
     expect(local.forget).toHaveBeenCalledExactlyOnceWith('folder-1');
+
+    dispatch.mockClear();
+    await facade.removeSource(mockJamSource());
+
+    expect(signOut).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledExactlyOnceWith(
+      MusicActions.removeSource('jam-1')
+    );
+    expect(firstCall(signOut)).toBeLessThan(firstCall(dispatch));
   });
 
   it('rescans through the local library', async () => {

@@ -19,11 +19,6 @@ import { categoryIdOf } from '../util/cash-category.utils';
 const initialState = mockCashState();
 
 describe('cashReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = cashReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
-
   it('adds an account', () => {
     const account = mockCashAccount();
     const state = cashReducer(

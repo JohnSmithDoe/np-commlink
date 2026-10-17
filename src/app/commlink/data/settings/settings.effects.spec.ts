@@ -16,10 +16,7 @@ describe('SettingsEffects', () => {
   let actions$: Observable<Action>;
   let theme: { apply: ReturnType<typeof vi.fn> };
   let splash: { reveal: ReturnType<typeof vi.fn> };
-  let database: {
-    save: ReturnType<typeof vi.fn>;
-    settled: ReturnType<typeof vi.fn>;
-  };
+  let database: { settled: ReturnType<typeof vi.fn> };
   let language: { apply: ReturnType<typeof vi.fn> };
   let reload: { reload: ReturnType<typeof vi.fn> };
   let store: MockStore;
@@ -27,10 +24,7 @@ describe('SettingsEffects', () => {
   const setup = (settings = mockSettingsState()) => {
     theme = { apply: vi.fn() };
     splash = { reveal: vi.fn() };
-    database = {
-      save: vi.fn().mockResolvedValue(undefined),
-      settled: vi.fn().mockResolvedValue(undefined),
-    };
+    database = { settled: vi.fn().mockResolvedValue(undefined) };
     language = { apply: vi.fn() };
     reload = { reload: vi.fn() };
     TestBed.configureTestingModule({
@@ -158,15 +152,6 @@ describe('SettingsEffects', () => {
 
       expect(order).toEqual(['apply', 'reveal']);
     });
-  });
-
-  it('writes nothing on a null load — the descriptor owns the only save path', async () => {
-    const effects = setup();
-    actions$ = of(SettingsActions.loaded(null));
-
-    await firstValueFrom(effects.applyTheme$.pipe(toArray()));
-
-    expect(database.save).not.toHaveBeenCalled();
   });
 
   describe('applyLanguage$', () => {

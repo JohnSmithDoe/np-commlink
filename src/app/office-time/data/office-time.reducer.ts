@@ -109,12 +109,6 @@ export const officeTimeReducer = createReducer(
       holidays: state.holidays,
     };
   }),
-  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState => {
-    return {
-      ...state,
-      freedays: { ...state.freedays, [dayjsToString(freeday)]: true },
-    };
-  }),
   on(OfficeTimeActions.setFreedays, (state, { freedays }): OfficeTimeState => {
     return {
       ...state,

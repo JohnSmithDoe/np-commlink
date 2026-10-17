@@ -4,47 +4,23 @@ import { mockTaskItem, mockTasksState } from '../testing/tasks.test-data';
 import { mockCategory } from '../../@shared/testing/test-data';
 
 describe('tasksReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = tasksReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
-
-  it('adds an item without touching the catalog', () => {
-    const item = mockTaskItem({ name: 'Sweep', categoryIds: ['chores'] });
-    const state = tasksReducer(initialState, TasksActions.addItem(item));
-    expect(state.list.items).toEqual([item]);
-    expect(state.categoryList.items).toEqual([]);
-  });
-
-  it('removes an item by id', () => {
-    const item = mockTaskItem({ id: 'a' });
-    const start = mockTasksState({ list: { items: [item] } });
-    const state = tasksReducer(start, TasksActions.removeItem(item));
-    expect(state.list.items).toHaveLength(0);
-  });
-
-  it('updates an existing item', () => {
-    const item = mockTaskItem({ id: 'a', name: 'Old' });
-    const start = mockTasksState({ list: { items: [item] } });
-    const state = tasksReducer(
-      start,
-      TasksActions.updateItem({ ...item, name: 'New' })
+  it('wires its list actions to the task list, never the catalog', () => {
+    const item = mockTaskItem({ id: 'a', name: 'Sweep', categoryIds: ['c1'] });
+    const added = tasksReducer(initialState, TasksActions.addItem(item));
+    const updated = tasksReducer(
+      added,
+      TasksActions.updateItem({ ...item, name: 'Mop' })
     );
-    expect(state.list.items[0].name).toBe('New');
-  });
+    const narrowed = tasksReducer(
+      tasksReducer(updated, TasksActions.updateSearch('mop')),
+      TasksActions.updateFilter('c1')
+    );
+    const removed = tasksReducer(narrowed, TasksActions.removeItem(item));
 
-  it('stores the search query verbatim and only updates when it changed', () => {
-    const start = mockTasksState({ list: { searchQuery: 'milk' } });
-    const unchanged = tasksReducer(start, TasksActions.updateSearch('milk'));
-    expect(unchanged).toBe(start);
-    const changed = tasksReducer(start, TasksActions.updateSearch('  bread  '));
-    expect(changed.list.searchQuery).toBe('  bread  ');
-  });
-
-  it('sets a filter', () => {
-    const start = mockTasksState();
-    const state = tasksReducer(start, TasksActions.updateFilter('Chores'));
-    expect(state.list.filterBy).toBe('Chores');
+    expect(updated.list.items).toEqual([{ ...item, name: 'Mop' }]);
+    expect(narrowed.list).toMatchObject({ searchQuery: 'mop', filterBy: 'c1' });
+    expect(removed.list.items).toEqual([]);
+    expect(removed.categoryList).toBe(initialState.categoryList);
   });
 
   it('adds and removes catalog entries through the catalog list', () => {

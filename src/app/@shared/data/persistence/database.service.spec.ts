@@ -3,6 +3,8 @@ import { Storage } from '@ionic/storage-angular';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-providers';
 import { DatabaseService } from './database.service';
 
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
 describe('DatabaseService', () => {
   let service: DatabaseService;
   let mockStorage: {
@@ -12,6 +14,14 @@ describe('DatabaseService', () => {
     clear: ReturnType<typeof vi.fn>;
     forEach: ReturnType<typeof vi.fn>;
     keys: ReturnType<typeof vi.fn>;
+  };
+
+  const holdCreate = (): (() => void) => {
+    let release!: () => void;
+    mockStorage.create.mockReturnValue(
+      new Promise<void>((resolve) => (release = resolve))
+    );
+    return () => release();
   };
 
   beforeEach(() => {
@@ -42,9 +52,18 @@ describe('DatabaseService', () => {
     });
 
     it('initializes the storage backend before writing', async () => {
-      await service.save('listSettings', { showQuickAdd: true } as never);
+      const release = holdCreate();
+      const saving = service.save('listSettings', {
+        showQuickAdd: true,
+      } as never);
+      await settle();
 
-      expect(mockStorage.create).toHaveBeenCalled();
+      expect(mockStorage.set).not.toHaveBeenCalled();
+
+      release();
+      await saving;
+
+      expect(mockStorage.set).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -75,9 +94,16 @@ describe('DatabaseService', () => {
     });
 
     it('initializes the storage backend before reading', async () => {
-      await service.loadPrefixed('summary-');
+      const release = holdCreate();
+      const loading = service.loadPrefixed('summary-');
+      await settle();
 
-      expect(mockStorage.create).toHaveBeenCalled();
+      expect(mockStorage.keys).not.toHaveBeenCalled();
+
+      release();
+      await loading;
+
+      expect(mockStorage.keys).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -108,9 +134,16 @@ describe('DatabaseService', () => {
     });
 
     it('initializes the storage backend before reading', async () => {
-      await service.load('cash');
+      const release = holdCreate();
+      const loading = service.load('cash');
+      await settle();
 
-      expect(mockStorage.create).toHaveBeenCalled();
+      expect(mockStorage.get).not.toHaveBeenCalled();
+
+      release();
+      await loading;
+
+      expect(mockStorage.get).toHaveBeenCalledExactlyOnceWith('npc-cash');
     });
   });
 

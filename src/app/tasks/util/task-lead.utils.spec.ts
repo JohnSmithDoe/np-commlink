@@ -1,5 +1,11 @@
-import { Interval } from '../../@shared/model/interval.types';
+import { Interval, PeriodUnit } from '../../@shared/model/interval.types';
 import { gapDaysOf, leadOptionsFor } from './task-lead.utils';
+
+const BOUNDARY_WORST_REACH: Record<PeriodUnit, number> = {
+  week: 6,
+  month: 29,
+  year: 359,
+};
 
 const daysOffered = (interval: Interval): number[] => {
   return leadOptionsFor(interval)
@@ -79,7 +85,8 @@ describe('leadOptionsFor', () => {
     for (const interval of cadences) {
       const gap = gapDaysOf(interval);
       for (const { lead } of leadOptionsFor(interval)) {
-        const reach = lead.kind === 'days' ? lead.days : 0;
+        const reach =
+          lead.kind === 'days' ? lead.days : BOUNDARY_WORST_REACH[lead.unit];
         expect(reach).toBeLessThan(gap);
       }
     }

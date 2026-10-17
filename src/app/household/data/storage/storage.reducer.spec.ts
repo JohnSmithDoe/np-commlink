@@ -9,55 +9,22 @@ import {
 } from '../../testing/household.test-data';
 
 describe('storageReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = storageReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
-
-  it('adds an item', () => {
-    const item = mockStorageItem({ name: 'Milk', categoryIds: ['dairy'] });
-    const state = storageReducer(initialState, StorageActions.addItem(item));
-    expect(state.items).toEqual([item]);
-  });
-
-  it('does not add an item with a blank name', () => {
-    const item = mockStorageItem({ name: ' '.repeat(3) });
-    const state = storageReducer(initialState, StorageActions.addItem(item));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('removes an item by id', () => {
-    const item = mockStorageItem({ id: 'a' });
-    const start = mockStorageState({ items: [item] });
-    const state = storageReducer(start, StorageActions.removeItem(item));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('updates an existing item', () => {
+  it('wires its list actions to the shared list utils', () => {
     const item = mockStorageItem({ id: 'a', quantity: 1 });
-    const start = mockStorageState({ items: [item] });
-    const state = storageReducer(
-      start,
+    const added = storageReducer(initialState, StorageActions.addItem(item));
+    const updated = storageReducer(
+      added,
       StorageActions.updateItem({ ...item, quantity: 5 })
     );
-    expect(state.items[0].quantity).toBe(5);
-  });
-
-  it('updates the search query only when it changed', () => {
-    const start = mockStorageState({ searchQuery: 'milk' });
-    const unchanged = storageReducer(
-      start,
-      StorageActions.updateSearch('milk')
+    const narrowed = storageReducer(
+      storageReducer(updated, StorageActions.updateSearch('milk')),
+      StorageActions.updateFilter('dairy')
     );
-    expect(unchanged).toBe(start);
-    const changed = storageReducer(start, StorageActions.updateSearch('bread'));
-    expect(changed.searchQuery).toBe('bread');
-  });
+    const removed = storageReducer(narrowed, StorageActions.removeItem(item));
 
-  it('sets a filter', () => {
-    const start = mockStorageState();
-    const state = storageReducer(start, StorageActions.updateFilter('Dairy'));
-    expect(state.filterBy).toBe('Dairy');
+    expect(updated.items).toEqual([{ ...item, quantity: 5 }]);
+    expect(narrowed).toMatchObject({ searchQuery: 'milk', filterBy: 'dairy' });
+    expect(removed.items).toEqual([]);
   });
 
   it('adds a shopping list into storage and merges quantities', () => {

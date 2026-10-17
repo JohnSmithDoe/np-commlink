@@ -37,19 +37,6 @@ describe('officeTimeReducer', () => {
     expect(state.dashboardSettings.showWordclockCard).toBe(true);
   });
 
-  it('does not add the same freeday twice', () => {
-    const once = officeTimeReducer(
-      initialOfficeTime,
-      OfficeTimeActions.addFreeday(dayjs('2026-07-01'))
-    );
-    const twice = officeTimeReducer(
-      once,
-      OfficeTimeActions.addFreeday(dayjs('2026-07-01'))
-    );
-    expect(Object.keys(once.freedays)).toEqual(['2026-07-01']);
-    expect(Object.keys(twice.freedays)).toEqual(['2026-07-01']);
-  });
-
   it('does not add the same officeday twice', () => {
     const once = officeTimeReducer(
       initialOfficeTime,

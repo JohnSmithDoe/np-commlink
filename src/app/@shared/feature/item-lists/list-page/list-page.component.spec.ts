@@ -1,5 +1,6 @@
 import { signal, TemplateRef, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
@@ -13,6 +14,7 @@ import { BaseItem } from '../../../model/base-item.types';
 import { Category } from '../../../model/category.types';
 import { ItemList, SearchResult } from '../../../model/item-list.types';
 import { ITEM_FILTERS } from '../../../util/item-lists/list-filter';
+import { ItemListComponent } from '../../../ui/base-item/item-list/item-list.component';
 
 const mockListState = (
   overrides: Partial<ItemList<BaseItem>> = {}
@@ -258,8 +260,17 @@ describe('ListPageComponent', () => {
     expect(component.reorderArmed()).toBe(false);
   });
 
-  it('reports a reorder under the section it happened in', () => {
-    component.facade.reorder?.(['b', 'a'], 'pinned');
+  it('reports a reorder under the section it happened in', async () => {
+    facade.sections = signal<ListSection[]>([
+      { id: 'pinned', labelKey: 'a.pinned', items: [] },
+    ]);
+    fixture.componentRef.setInput('itemTemplate', {} as TemplateRef<unknown>);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const list = fixture.debugElement.query(By.directive(ItemListComponent))
+      .componentInstance as ItemListComponent;
+
+    list.reorder.emit(['b', 'a']);
 
     expect(facade.reordered).toEqual([
       { ids: ['b', 'a'], sectionId: 'pinned' },

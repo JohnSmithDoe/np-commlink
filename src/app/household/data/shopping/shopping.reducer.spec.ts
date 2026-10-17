@@ -8,28 +8,22 @@ import {
 } from '../../testing/household.test-data';
 
 describe('shoppingReducer', () => {
-  it('returns the initial state for an unknown action', () => {
-    const state = shoppingReducer(initialState, { type: 'noop' } as never);
-    expect(state).toBe(initialState);
-  });
+  it('wires its list actions to the shared list utils', () => {
+    const item = mockShoppingItem({ id: 'a', quantity: 1 });
+    const added = shoppingReducer(initialState, ShoppingActions.addItem(item));
+    const updated = shoppingReducer(
+      added,
+      ShoppingActions.updateItem({ ...item, quantity: 5 })
+    );
+    const narrowed = shoppingReducer(
+      shoppingReducer(updated, ShoppingActions.updateSearch('milk')),
+      ShoppingActions.updateFilter('dairy')
+    );
+    const removed = shoppingReducer(narrowed, ShoppingActions.removeItem(item));
 
-  it('adds an item', () => {
-    const item = mockShoppingItem({ name: 'Milk', categoryIds: ['dairy'] });
-    const state = shoppingReducer(initialState, ShoppingActions.addItem(item));
-    expect(state.items).toEqual([item]);
-  });
-
-  it('does not add an item with a blank name', () => {
-    const item = mockShoppingItem({ name: ' '.repeat(3) });
-    const state = shoppingReducer(initialState, ShoppingActions.addItem(item));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('removes an item by id', () => {
-    const item = mockShoppingItem({ id: 'a' });
-    const start = mockShoppingState({ items: [item] });
-    const state = shoppingReducer(start, ShoppingActions.removeItem(item));
-    expect(state.items).toHaveLength(0);
+    expect(updated.items).toEqual([{ ...item, quantity: 5 }]);
+    expect(narrowed).toMatchObject({ searchQuery: 'milk', filterBy: 'dairy' });
+    expect(removed.items).toEqual([]);
   });
 
   it('removes multiple items by id', () => {
@@ -39,36 +33,6 @@ describe('shoppingReducer', () => {
     const start = mockShoppingState({ items: [a, b, c] });
     const state = shoppingReducer(start, ShoppingActions.removeItems([a, c]));
     expect(state.items.map((index) => index.id)).toEqual(['b']);
-  });
-
-  it('updates an existing item', () => {
-    const item = mockShoppingItem({ id: 'a', quantity: 1 });
-    const start = mockShoppingState({ items: [item] });
-    const state = shoppingReducer(
-      start,
-      ShoppingActions.updateItem({ ...item, quantity: 5 })
-    );
-    expect(state.items[0].quantity).toBe(5);
-  });
-
-  it('updates the search query only when it changed', () => {
-    const start = mockShoppingState({ searchQuery: 'milk' });
-    const unchanged = shoppingReducer(
-      start,
-      ShoppingActions.updateSearch('milk')
-    );
-    expect(unchanged).toBe(start);
-    const changed = shoppingReducer(
-      start,
-      ShoppingActions.updateSearch('bread')
-    );
-    expect(changed.searchQuery).toBe('bread');
-  });
-
-  it('sets a filter', () => {
-    const start = mockShoppingState();
-    const state = shoppingReducer(start, ShoppingActions.updateFilter('Dairy'));
-    expect(state.filterBy).toBe('Dairy');
   });
 
   it('shows the action sheet', () => {
