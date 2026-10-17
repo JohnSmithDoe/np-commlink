@@ -186,6 +186,7 @@ $round-width: 3rem;
     display: block;
     width: 150%;
     height: 150%;
+    /* stylelint-disable-next-line commlink/muted-text-uses-token -- victory rays, no text. */
     opacity: 0.55;
     background: repeating-conic-gradient(
       from 0deg,

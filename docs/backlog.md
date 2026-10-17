@@ -12,20 +12,7 @@ deck/nav shell, and state/tests/docs. Every gate was green at the time — every
 to all of them, which is the point. The bug findings, the shell's shape and the whole duplication pass
 have since been settled — four extractions done, five declined in
 [decisions.md](./decisions.md) with the reason, the doc drift is closed and the four test gaps are
-pinned. One entry is left, and it is a gate that cannot see what it was written to catch._
-
----
-
-## Patterns — forked, or one too many
-
-- **P8 · Dimming text with `opacity` walks past the muted-text gate.** The rule exists so muted text
-  keeps a legible contrast ratio: it rejects the accent at an alpha and demands `--sr-text-dim`. But it
-  only inspects `color:` declarations. `opacity: 0.5` on a row's `ion-label` — which is what
-  `deck-config.page.scss` does for an off-deck tile — halves the ratio of everything inside it and the
-  rule never looks. Same failure, different property, no report. It is not one site: geist, the deck
-  config and notifications all dim this way, so the honest fix is a sweep plus a rule that also flags a
-  low `opacity` on a block that paints text. Low urgency — nothing here is unreadable today; the point is
-  that the gate would not tell us if it became so.
+pinned._
 
 ---
 
@@ -117,7 +104,8 @@ The shapes this review turned up, kept because they will recur. Each is invisibl
    is not a finding, and this review produced four of those (see the declined extractions in
    [decisions.md](./decisions.md)). The question is never "how many copies", it is "would a bug be in
    all of them".
-4. **A gate that is green for a structural reason.** The muted-text rule is blind to `opacity`; a rule
+4. **A gate that is green for a structural reason.** The muted-text rule was blind to `opacity` until it
+   was taught it; a rule
    with no RuleTester spec is indistinguishable from a dead one. When a rule reports zero violations,
    ask what would happen if it had stopped matching.
 5. **A hand-maintained enumeration** — `save.sources`, an opt-in roster in a doc. Forgetting an

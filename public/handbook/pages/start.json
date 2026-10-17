@@ -1,5 +1,6 @@
 {
   "slug": "start",
+  "shotsStale": true,
   "title": "COMMLINK",
   "plain": "Startdeck",
   "route": "/commlink",

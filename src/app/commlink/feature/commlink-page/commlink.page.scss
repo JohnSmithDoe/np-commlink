@@ -88,7 +88,6 @@
   margin: 0 0 var(--space-3);
   color: var(--sr-cyan);
   font-size: var(--fs-small);
-  opacity: 0.85;
 }
 .cl-hero__title {
   position: relative;
@@ -247,6 +246,7 @@
 
 .cl-node--offline {
   pointer-events: none;
+  /* stylelint-disable-next-line commlink/muted-text-uses-token -- an inactive control owes no ratio. */
   opacity: 0.6;
   border-style: dashed;
   filter: grayscale(0.5);
@@ -258,6 +258,7 @@
 .cl-node--offline::before,
 .cl-node--offline::after {
   border-color: var(--sr-red);
+  /* stylelint-disable-next-line commlink/muted-text-uses-token -- a corner bracket, no text. */
   opacity: 0.5;
 }
 

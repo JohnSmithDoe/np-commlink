@@ -28,7 +28,10 @@
 }
 
 .notification.done {
-  opacity: 0.55;
+  ion-label,
+  ion-label p {
+    color: var(--sr-text-dim);
+  }
 
   ion-label h3 {
     text-decoration: line-through;

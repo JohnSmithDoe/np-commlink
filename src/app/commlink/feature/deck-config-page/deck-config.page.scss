@@ -24,6 +24,7 @@ ion-accordion [slot='content'] ion-item {
   margin-block: var(--space-3);
 }
 
-.deck-config__row--off-deck ion-label {
-  opacity: 0.5;
+.deck-config__row--off-deck ion-label,
+.deck-config__row--off-deck ion-label p {
+  color: var(--sr-text-dim);
 }
