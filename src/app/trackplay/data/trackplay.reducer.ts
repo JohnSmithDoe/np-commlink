@@ -11,6 +11,7 @@ import {
   deleteGameCascade,
   deleteGameTypeCascade,
   restoreGameTypeCascade,
+  sweepOrphanGames,
 } from '../util/trackplay.cascade';
 import { DEFAULT_GAME_TYPE_ID } from '../util/trackplay.factory';
 import { boardReducer } from './board/board.reducer';
@@ -42,7 +43,9 @@ const trackplayCascade = createReducer(
     item.id === DEFAULT_GAME_TYPE_ID ? state : deleteGameTypeCascade(state, item)),
 
   on(TrackplayActions.restoreGameType, (state, { gameType, games }): TrackplayState =>
-    restoreGameTypeCascade(state, gameType, games))
+    restoreGameTypeCascade(state, gameType, games)),
+  on(TrackplayActions.sweepOrphans, (state, { people }): TrackplayState =>
+    sweepOrphanGames(state, new Set(people)))
 );
 
 export const initialState: TrackplayState = perAggregate(undefined, {

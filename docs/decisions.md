@@ -62,9 +62,13 @@ or a count the code owns.
   the roster read-only behind `PEOPLE` (`@shared/util/people/people.token.ts`), the `RECENT_EMOJIS` shape:
   a port, not a replicated copy, so a rename cannot drift and no slice hydrates someone else's data.
   BIOMON and TRACKPLAY key their own records on the person's id and keep only what is theirs.
-- **A reference outlives its person; nothing cascades across a domain seal.** A removed id stops
-  resolving — its readings, pills and games stay on disk, unread — and `people`'s undo makes it resolve
-  again. A cross-slice cascade would need a cross-slice undo; orphans are the price, and they are inert.
+- **A reference outlives its person until the next load; nothing cascades across a domain seal.** A
+  removed id stops resolving at once and `people`'s undo makes it resolve again. Each domain sweeps its
+  own orphans when its slice next hydrates — never on a delete event, which a route-hydrated slice would
+  miss — and only against a roster that has been READ: `PEOPLE` answers `undefined` until then, because
+  an empty roster would sweep everything. **Deleting a person is final** for all that hangs off them: a
+  game seating them goes, co-players' results with it, and the delete names none of it. A slice first
+  opened inside the person's undo window sweeps before the undo can land.
 - **Comparing by name is legitimate in exactly one place** — the recipe matcher's fallback for a storage
   row with no `productId`.
 

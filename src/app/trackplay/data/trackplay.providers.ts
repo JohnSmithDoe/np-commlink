@@ -2,6 +2,7 @@ import { providePersistedContext } from '../../@shared/data/persisted-states/per
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
 import { selectGameCount } from './games/games.selector';
 import { TrackplayActions } from './trackplay.actions';
+import { TrackplayOrphansEffects } from './trackplay-orphans.effects';
 import { trackplayReducer } from './trackplay.reducer';
 import {
   gamesListEffects,
@@ -30,5 +31,6 @@ export const trackplayContext = providePersistedContext({
     gamesListEffects,
     gameTypesListEffects,
     trackplayRouteFilterEffects,
+    TrackplayOrphansEffects,
   ],
 });

@@ -1,4 +1,6 @@
 import {
+  mockPill,
+  mockPillsState,
   mockProfilesState,
   mockReading,
   mockReadingsState,
@@ -109,5 +111,36 @@ describe('vitalsReducer — the roster BIOMON used to own', () => {
 
     expect(next.profiles).toEqual(mockProfilesState());
     expect(next.readings.items).toEqual([mine]);
+  });
+});
+
+describe('vitalsReducer — sweeping orphans', () => {
+  it("drops a removed person's readings, pills, intakes, signs and star", () => {
+    const keptPill = mockPill({ id: 'kept', profileId: 'ann' });
+    const lostPill = mockPill({ id: 'lost', profileId: 'carl' });
+    const state = mockVitalsState({
+      profiles: mockProfilesState({
+        astro: { ann: { sun: 'leo' }, carl: { sun: 'aries' } },
+        favoriteId: 'carl',
+      }),
+      readings: mockReadingsState([
+        mockReading({ id: 'a', profileId: 'ann' }),
+        mockReading({ id: 'c', profileId: 'carl' }),
+      ]),
+      pills: mockPillsState([keptPill, lostPill], { nextSlot: 2 }),
+      intakes: [
+        { pillId: 'kept', takenOn: '2026-10-01' },
+        { pillId: 'lost', takenOn: '2026-10-01' },
+      ],
+    });
+
+    const swept = vitalsReducer(state, VitalsActions.sweepOrphans(['ann']));
+
+    expect(swept.readings.items.map(({ id }) => id)).toEqual(['a']);
+    expect(swept.pills.items).toEqual([keptPill]);
+    expect(swept.pills.nextSlot).toBe(2);
+    expect(swept.intakes).toEqual([{ pillId: 'kept', takenOn: '2026-10-01' }]);
+    expect(swept.profiles.astro).toEqual({ ann: { sun: 'leo' } });
+    expect(swept.profiles.favoriteId).toBeUndefined();
   });
 });

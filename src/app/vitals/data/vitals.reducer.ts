@@ -1,6 +1,10 @@
 import { Action, combineReducers, createReducer, on } from '@ngrx/store';
 import { VitalsState } from '../model/vitals.types';
-import { deletePillCascade, restorePillCascade } from '../util/vitals.cascade';
+import {
+  deletePillCascade,
+  restorePillCascade,
+  sweepOrphans,
+} from '../util/vitals.cascade';
 import { intakesReducer } from './pills/intakes.reducer';
 import { PillsActions } from './pills/pills.actions';
 import { pillsReducer } from './pills/pills.reducer';
@@ -20,7 +24,8 @@ const vitalsCascade = createReducer(
   {} as VitalsState,
 
   on(PillsActions.removeItem, (state, { item }): VitalsState => deletePillCascade(state, item)),
-  on(VitalsActions.restorePill, (state, { pill, intakes }): VitalsState => restorePillCascade(state, pill, intakes))
+  on(VitalsActions.restorePill, (state, { pill, intakes }): VitalsState => restorePillCascade(state, pill, intakes)),
+  on(VitalsActions.sweepOrphans, (state, { people }): VitalsState => sweepOrphans(state, new Set(people)))
 );
 
 export const vitalsReducer = (

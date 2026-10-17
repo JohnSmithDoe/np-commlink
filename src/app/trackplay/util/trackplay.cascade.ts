@@ -6,15 +6,17 @@
  * `removeItem`s and the restore therefore live here and nowhere else;
  * `trackplay.reducer.ts` says so again next to the wiring.
  *
- * No cascade follows a player: a player is a person the kernel publishes,
- * and a game keeps the id of one who is gone, so an undo in `people`
- * brings their seat back with no write here.
+ * No cascade follows a player at delete time: a player is a person the
+ * kernel publishes, so an undo in `people` brings their seat back with no
+ * write here. A game holding a seat nobody resolves to is swept on the
+ * next load, co-players' results with it — deleting a person is final.
  * ───────────────────────────────────────────────────────────────── */
 
 import {
   addListItem,
   removeListItem,
 } from '../../@shared/util/item-lists/list.utils';
+import { PersonId } from '../../@shared/model/person.types';
 import {
   Game,
   GamesState,
@@ -88,4 +90,25 @@ export const restoreGameTypeCascade = (
   ...state,
   gameTypes: addListItem<GameTypesState, GameType>(state.gameTypes, gameType),
   games: writtenBack(state.games, games),
+});
+
+const seatsResolve =
+  (people: ReadonlySet<PersonId>) =>
+  (game: Game): boolean =>
+    game.playerIds.every((id) => people.has(id));
+
+export const hasOrphanGames = (
+  state: TrackplayState,
+  people: ReadonlySet<PersonId>
+): boolean => !state.games.items.every(seatsResolve(people));
+
+export const sweepOrphanGames = (
+  state: TrackplayState,
+  people: ReadonlySet<PersonId>
+): TrackplayState => ({
+  ...state,
+  games: {
+    ...state.games,
+    items: state.games.items.filter(seatsResolve(people)),
+  },
 });

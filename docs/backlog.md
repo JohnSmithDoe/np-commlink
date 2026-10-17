@@ -37,8 +37,6 @@ Landed working and gated, but Martin's verdict is that it needs work. Known roug
   links from a person to their BIOMON profile or TRACKPLAY record.
 - **Sizes are one list for top and trousers** (letters, then children's heights) plus EU shoes — no
   jeans W/L, no per-garment notes. Untested against how sizes are actually bought.
-- **Orphans accumulate.** A deleted person's readings, pills and games stay on disk, unread, with no
-  sweep and no way to see them.
 - **The BIOMON astro dialog has no name field and a generic title** — it does not say whose signs it edits.
 - **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" moves on
   any game edit, not only on a scored round.

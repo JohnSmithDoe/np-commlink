@@ -1,4 +1,5 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
+import { PersonId } from '../../@shared/model/person.types';
 import { Game, GameType, TrackplayState } from '../model/trackplay.types';
 
 export const TrackplayActions = createActionGroup({
@@ -10,5 +11,6 @@ export const TrackplayActions = createActionGroup({
       gameType,
       games,
     }),
+    sweepOrphans: (people: readonly PersonId[]) => ({ people }),
   },
 });

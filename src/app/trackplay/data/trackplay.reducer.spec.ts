@@ -158,3 +158,22 @@ describe('trackplayReducer — hydration', () => {
     expect(state.gameTypes.items).toHaveLength(3);
   });
 });
+
+describe('trackplayReducer — sweeping orphans', () => {
+  it('drops every game seating a removed person, co-players included', () => {
+    const state = mockTrackplayState({
+      games: mockGamesState([
+        mockGame({ id: 'kept', playerIds: ['ann', 'ben'] }),
+        mockGame({ id: 'lost', playerIds: ['ann', 'carl'] }),
+        mockGame({ id: 'empty', playerIds: [] }),
+      ]),
+    });
+
+    const swept = trackplayReducer(
+      state,
+      TrackplayActions.sweepOrphans(['ann', 'ben'])
+    );
+
+    expect(swept.games.items.map(({ id }) => id)).toEqual(['kept', 'empty']);
+  });
+});
