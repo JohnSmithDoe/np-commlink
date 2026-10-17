@@ -24,7 +24,7 @@
 
 import type { Rule } from 'eslint';
 
-const SOURCE_AND_EVENT = /^\[[A-Z][A-Za-z0-9]*]\s+\S/;
+const SOURCE_AND_EVENT = /^\[[A-Z][A-Za-z0-9 ]*]\s+\S/;
 
 export const rule: Rule.RuleModule = {
   meta: {

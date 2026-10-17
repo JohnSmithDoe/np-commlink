@@ -29,6 +29,10 @@ typescript.run('spec-resets-mock-selectors', specResetsMockSelectors, {
       code: `const seed = () => store.overrideSelector(selectThing, 1);
              afterEach(() => store.resetSelectors());`,
     },
+    {
+      code: `store.overrideSelector(selectThing, 1);
+             afterEach(() => store?.resetSelectors());`,
+    },
     { code: 'expect(store.select(selectThing)).toBeTruthy();' },
   ],
   invalid: [
@@ -43,6 +47,11 @@ typescript.run('spec-resets-mock-selectors', specResetsMockSelectors, {
         { messageId: 'overrideWithoutReset' },
         { messageId: 'overrideWithoutReset' },
       ],
+    },
+    {
+      code: `store.overrideSelector(selectThing, 1);
+             afterEach(store.resetSelectors);`,
+      errors: [{ messageId: 'overrideWithoutReset' }],
     },
   ],
 });

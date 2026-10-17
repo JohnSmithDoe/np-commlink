@@ -28,7 +28,7 @@ const NAME_SOURCES: Record<string, string[]> = {
   'ion-input': ['label', 'slot'],
   'ion-textarea': ['label', 'slot'],
   'ion-select': ['label', 'slot'],
-  'ion-range': ['label'],
+  'ion-range': ['label', 'slot'],
   'ion-checkbox': ['text'],
   'ion-toggle': ['text'],
 };

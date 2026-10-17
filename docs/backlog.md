@@ -78,11 +78,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 - **AGENDA:** `advancePositioned` catch-up; due today paints 'danger' all day.
 - **Time:** `calculateStats.remaining` and weekend holidays; wordclock
   23:58 / 12:58; no e2e runs a timer across a reload.
-- **Lint plugin:** 11 of 20 rules have no RuleTester spec — `comments-header-only`,
-  `ngrx-data-layer-only`, `marker-argument-is-literal`, `testid-is-static`, `no-barrel-outside-data`
-  among them (shape 4). `a11y.spec` lacks `[attr.aria-label]`, `[label]` and `ion-select` /
-  `-textarea` / `-range` / `-checkbox`; `spec-resets-mock-selectors` would misreport
-  `afterEach(store.resetSelectors)`.
 - Smaller: `ageOn` on 29 Feb; the vitals weight recompute on a date change and a negative result;
   board reducer success paths.
 

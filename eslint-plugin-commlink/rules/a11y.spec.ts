@@ -2,11 +2,10 @@
  * One valid and one invalid case per a11y rule. Not coverage — a
  * liveness check, and it exists because the absence of one hid a dead
  * gate for as long as nobody measured it: R6's receiver regex required a
- * `Ctrl`/`Controller` suffix, `trackplay.effects.ts` named its injection
- * `#toast`, and the single actionable toast in the app went unreported.
- * A naming-convention gate decays silently as names drift, so the pair
- * that matters most here is `overlayKind`'s — every receiver spelling
- * the app actually uses is asserted below, by name.
+ * `Ctrl`/`Controller` suffix, and a receiver named `#toast` went
+ * unreported. A naming-convention gate decays silently as names drift,
+ * so the pair that matters most here is `overlayKind`'s — every receiver
+ * spelling the app actually uses is asserted below, by name.
  *
  * `inClass` is not decoration: a `#private` receiver is a parse error
  * outside a class body, so a bare `this.#toast.create(…)` fixture fails
@@ -53,6 +52,8 @@ template.run('a11y-icon-is-hidden-or-named', iconIsHiddenOrNamed, {
   valid: [
     { code: '<ion-icon name="cart" aria-hidden="true"></ion-icon>' },
     { code: '<ion-icon name="cart" aria-label="Cart"></ion-icon>' },
+    { code: '<ion-icon name="cart" [attr.aria-hidden]="true"></ion-icon>' },
+    { code: '<ion-icon name="cart" [attr.aria-label]="label"></ion-icon>' },
   ],
   invalid: [
     {
@@ -75,6 +76,12 @@ template.run('a11y-icon-only-control-has-name', iconOnlyControlHasName, {
       code: '<ion-button>Delete<ion-icon name="trash" aria-hidden="true"></ion-icon></ion-button>',
     },
     { code: '<ion-button><span>Delete</span></ion-button>' },
+    {
+      code: '<ion-button [attr.aria-label]="\'a11y.edit\' | translate"><ion-icon name="create" aria-hidden="true"></ion-icon></ion-button>',
+    },
+    {
+      code: '<ion-button>@if (open) { {{ label }} }<ion-icon name="add" aria-hidden="true"></ion-icon></ion-button>',
+    },
   ],
   invalid: [
     {
@@ -93,6 +100,21 @@ template.run('a11y-form-control-has-label', formControlHasLabel, {
     { code: '<ion-input label="Name"></ion-input>' },
     { code: '<ion-input aria-label="Name"></ion-input>' },
     { code: '<ion-checkbox>Confirm</ion-checkbox>' },
+    { code: '<ion-input [label]="nameLabel"></ion-input>' },
+    { code: '<ion-input [attr.aria-label]="nameLabel"></ion-input>' },
+    { code: '<ion-input><div slot="label">Name</div></ion-input>' },
+    { code: '<ion-select label="Kind"></ion-select>' },
+    { code: '<ion-select [label]="kindLabel"></ion-select>' },
+    {
+      code: '<ion-select><div slot="label">{{ kindLabel }}</div></ion-select>',
+    },
+    { code: '<ion-textarea label="Note"></ion-textarea>' },
+    { code: '<ion-textarea aria-label="Note"></ion-textarea>' },
+    { code: '<ion-range label="Volume"></ion-range>' },
+    { code: '<ion-range [attr.aria-label]="volumeLabel"></ion-range>' },
+    { code: '<ion-range><div slot="label">Volume</div></ion-range>' },
+    { code: '<ion-checkbox>{{ item.name }}</ion-checkbox>' },
+    { code: '<ion-checkbox [attr.aria-label]="item.name"></ion-checkbox>' },
   ],
   invalid: [
     {
@@ -103,6 +125,30 @@ template.run('a11y-form-control-has-label', formControlHasLabel, {
       code: '<ion-toggle></ion-toggle>',
       errors: [{ messageId: 'controlNeedsName' }],
     },
+    {
+      code: '<ion-select interface="popover"></ion-select>',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
+    {
+      code: '<ion-select><div slot="start">Kind</div></ion-select>',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
+    {
+      code: '<ion-textarea placeholder="Note"></ion-textarea>',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
+    {
+      code: '<ion-range min="0" max="100"></ion-range>',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
+    {
+      code: '<ion-checkbox />',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
+    {
+      code: '<ion-checkbox>\n  <ion-icon name="star" aria-hidden="true"></ion-icon>\n</ion-checkbox>',
+      errors: [{ messageId: 'controlNeedsName' }],
+    },
   ],
 });
 
@@ -111,6 +157,8 @@ template.run('a11y-overlay-has-name', overlayHasName, {
     { code: '<ion-modal aria-label="Edit player"></ion-modal>' },
     { code: '<ion-alert header="Delete?"></ion-alert>' },
     { code: '<ion-loading message="Loading"></ion-loading>' },
+    { code: '<ion-modal [attr.aria-label]="title"></ion-modal>' },
+    { code: '<ion-alert [header]="header"></ion-alert>' },
   ],
   invalid: [
     {
@@ -152,10 +200,15 @@ template.run('a11y-aria-label-needs-role', ariaLabelNeedsRole, {
   valid: [
     { code: '<div role="status" aria-label="Saved"></div>' },
     { code: '<ion-button aria-label="Delete"></ion-button>' },
+    { code: '<span role="img" [attr.aria-label]="label"></span>' },
   ],
   invalid: [
     {
       code: '<div aria-label="Saved"></div>',
+      errors: [{ messageId: 'ariaLabelNeedsRole' }],
+    },
+    {
+      code: '<span [attr.aria-label]="label"></span>',
       errors: [{ messageId: 'ariaLabelNeedsRole' }],
     },
     {
@@ -170,6 +223,10 @@ typescript.run('a11y-overlay-options-have-name', overlayOptionsHaveName, {
     { code: create('#alertCtrl', '{ header: "Delete?" }') },
     { code: create('#alerts', '{ message: "Gone" }') },
     { code: create('#loadingController', '{ message: "Load" }') },
+    { code: create('#loadingCtrl', '{ message: "Load" }') },
+    {
+      code: 'const present = (modalCtrl) => modalCtrl.create({ component: Cmp, htmlAttributes: { "aria-label": label } });',
+    },
     { code: create('#modalCtrl', '{ htmlAttributes: { "aria-label": "x" } }') },
     { code: create('#storageService', '{ name: "db" }') },
     { code: create('#alertCtrl', '{ ...options }') },
@@ -187,6 +244,14 @@ typescript.run('a11y-overlay-options-have-name', overlayOptionsHaveName, {
       code: create('#modalCtrl', '{ component: Cmp }'),
       errors: [{ messageId: 'overlayOptionsNeedName' }],
     },
+    {
+      code: create('#loadingCtrl', '{ spinner: "dots" }'),
+      errors: [{ messageId: 'overlayOptionsNeedName' }],
+    },
+    {
+      code: 'const present = (modalCtrl) => modalCtrl.create({ component: Cmp });',
+      errors: [{ messageId: 'overlayOptionsNeedName' }],
+    },
   ],
 });
 
@@ -197,6 +262,12 @@ typescript.run('a11y-no-actionable-toast-button', noActionableToastButton, {
       code: create(
         '#toast',
         '{ buttons: [{ text: "Close", role: "cancel" }] }'
+      ),
+    },
+    {
+      code: create(
+        '#toastController',
+        '{ buttons: [{ text: "X", role: "cancel" }], message: text }'
       ),
     },
     {
