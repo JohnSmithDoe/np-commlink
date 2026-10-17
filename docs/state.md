@@ -61,25 +61,11 @@ recognise them: clear the cash slice there rather than reading the duplicate cou
 
 ## Blocked — needs something only the owner can supply
 
-- **Any camt import driven live, against a file a bank actually produced.** The parser is unit-tested
-  against synthetic documents only. The exports in `docs/cash/` (gitignored) carry Volksbank's real
-  **shape** — tag nesting, ISO-8859-1 bytes, 150-entry pagination, the 140-character `Ustrd` truncation
-  that splits an IBAN across two — with invented **value**. Volksbank, DKB and ING each need their own
-  first run: which optional elements a bank fills is not part of the format, `AcctSvcrRef` above all, since
-  its absence silently downgrades every key on the statement to a derived one.
 - **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE.
   Published schemes disagree by centuries. Swapping the table in `src/app/vitals/model/astro.consts.ts` is
   one edit once the owner names a school.
-- **`en.json` and `fr.json` read by a human.** All three bundles hold the same keys, and neither
-  translation has been proofread by anyone who speaks the language. The first session in each is the
-  first proofread.
-- **SIMSENSE has played only on an emulator.** Verified 2026-10-11 against a local jamserve through
-  `adb reverse`: native login, browsing, covers, ExoPlayer streaming with the bearer header, and the media
-  notification. Only a phone can show the screen-off run on Wi-Fi, the lock screen, surviving a swipe-away,
-  and an internet server behind TLS. `media3Version` in `android/variables.gradle` is unverified against
-  the latest release.
-- **The APK has not run on a device since Capacitor 8.5 and Ionic 9.** `apk:build` syncs and every
-  postsync patch applies; `pnpm run apk:debug` on a phone is the check left.
+- **`media3Version` in `android/variables.gradle` is unverified against the latest release** — a lookup
+  this project only makes when the owner asks for the network.
 
 ## Handbook figures flagged stale
 
