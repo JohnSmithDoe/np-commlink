@@ -117,7 +117,7 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
       match: rule.match,
       categoryId: rule.categoryId,
       conditions: rule.conditions.map((condition) =>
-        toConditionForm(condition)
+        toConditionForm(condition, this.#language())
       ),
     };
   }

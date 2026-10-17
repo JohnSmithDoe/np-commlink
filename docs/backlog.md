@@ -53,9 +53,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
 
 ### Suspected bugs, found by reading
 
-- **T1 · A rule or schedule threshold grows ×100 under English.** `toConditionForm` shows the stored
-  `'12,34'` verbatim; `toStoredThreshold` re-parses it in the current language, so `en` saves `1234,00`.
-  Opening and saving is enough. Same path in `edit-cash-schedule-dialog`; no spec runs either under `en`.
 - **T2 · A pending row that books on another day imports twice.** `derivedBase` keys on date, amount and
   text, so a PDNG row whose date or wording moves at booking gets a new key. The `plan-import` spec
   "confirms a pending row that books later" passes only because its `derivedKey` is hand-written to

@@ -33,20 +33,48 @@ describe('rule-form.utils', () => {
   describe('toConditionForm', () => {
     it('fills the optional case flag so the toggle has a boolean to bind', () => {
       expect(
-        toConditionForm({
-          field: 'description',
-          op: 'contains',
-          value: 'Nordkauf',
-        }).caseSensitive
+        toConditionForm(
+          {
+            field: 'description',
+            op: 'contains',
+            value: 'Nordkauf',
+          },
+          'de'
+        ).caseSensitive
       ).toBe(false);
       expect(
-        toConditionForm({
-          field: 'description',
-          op: 'contains',
-          value: 'Nordkauf',
-          caseSensitive: true,
-        }).caseSensitive
+        toConditionForm(
+          {
+            field: 'description',
+            op: 'contains',
+            value: 'Nordkauf',
+            caseSensitive: true,
+          },
+          'de'
+        ).caseSensitive
       ).toBe(true);
+    });
+
+    it.each(['de', 'en'] as const)(
+      'round-trips a stored threshold unchanged under %s',
+      (language) => {
+        const stored = {
+          field: 'amount' as const,
+          op: 'gt' as const,
+          value: '12,34',
+        };
+        const form = toConditionForm(stored, language);
+        expect(toCondition(form, language).value).toBe('12,34');
+      }
+    );
+
+    it('shows a stored threshold in the reader’s convention', () => {
+      const stored = {
+        field: 'amount' as const,
+        op: 'gt' as const,
+        value: '1234,56',
+      };
+      expect(toConditionForm(stored, 'en').value).toBe('1234.56');
     });
   });
 

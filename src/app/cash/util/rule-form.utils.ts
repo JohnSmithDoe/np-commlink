@@ -75,16 +75,19 @@ export const blankCondition = (): ConditionForm => {
   };
 };
 
-export const toConditionForm = ({
-  field,
-  op,
-  value,
-  caseSensitive = false,
-}: CashFilterCondition): ConditionForm => {
+const toShownThreshold = (stored: string, language: Language): string => {
+  const cents = eurToCents(stored);
+  return cents === null ? stored : centsToInput(cents, language);
+};
+
+export const toConditionForm = (
+  { field, op, value, caseSensitive = false }: CashFilterCondition,
+  language: Language
+): ConditionForm => {
   return {
     field,
     op,
-    value,
+    value: isTextFilterField(field) ? value : toShownThreshold(value, language),
     caseSensitive,
   };
 };

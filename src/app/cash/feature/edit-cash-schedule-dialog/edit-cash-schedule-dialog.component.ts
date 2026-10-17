@@ -148,7 +148,7 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
       periodMonths: schedule.periodMonths,
       nextDue: dayjs(schedule.nextDueISO).format('YYYY-MM-DD'),
       conditions: schedule.conditions.map((condition) =>
-        toConditionForm(condition)
+        toConditionForm(condition, this.#language())
       ),
     };
   }
