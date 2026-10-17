@@ -9,24 +9,16 @@ CLAUDE.md row go with the last one. Versions and peer ranges are as read from th
 | Group | Now → target | What gates it |
 | --- | --- | --- |
 | Ionic (angular, core) + ionicons | 8.8 → 9.0, 7.4 → 8.1 | its own major — phase 7 |
-| Vitest + coverage-v8, jsdom | 4.1 → 5.0, 29 → 30 | Angular's builder 22 accepts Vitest `^4.0.8 \|\| ^5` |
 | ng2-charts | 9 → 11 | 11 requires Angular `>=22` |
 | ngx-translate-extract-marker | 2.0 → 3.0 | none |
 
 TypeScript stays on 6.0: **7.x is out of reach** — Angular, typescript-eslint and the Ionic toolkit all
 cap `<6.1`.
 
-Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 6–8
+Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 7 and 8
 are independent.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
-
-## Phase 6 — Vitest 5
-
-- Vitest and coverage-v8 to 5, jsdom to 30.
-- Vitest 5 clears mocks before each test by default. Keep that default; fix any spec that counted
-  calls across tests.
-- The coverage floors in `angular.json` must still hold.
 
 ## Phase 7 — Ionic 9 and ionicons 8
 

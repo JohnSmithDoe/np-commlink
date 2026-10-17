@@ -103,14 +103,14 @@
     "@types/dom-chromium-ai": "^0.0.17",
     "@types/node": "26.6.5",
     "@vendure/ngx-translate-extract": "^10.3.1",
-    "@vitest/coverage-v8": "^4.1.12",
+    "@vitest/coverage-v8": "^5.0.5",
     "angular-eslint": "^22.6.0",
     "emojibase-data": "^17.0.0",
     "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-unicorn": "^78.0.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.1.3",
     "lefthook": "^2.2.2",
     "postcss-scss": "^4.0.9",
     "prettier": "^3.9.10",
@@ -118,6 +118,6 @@
     "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.2",
-    "vitest": "^4.1.12"
+    "vitest": "^5.0.5"
   }
 }
