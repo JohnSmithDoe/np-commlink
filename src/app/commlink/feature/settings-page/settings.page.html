@@ -66,6 +66,8 @@
       <ion-label>{{ 'settings.accent.primary' | translate }}</ion-label>
       <input
         type="color"
+        class="sysop-swatch"
+        [attr.aria-label]="'settings.accent.primary' | translate"
         [value]="primarySwatch()"
         (change)="changePrimaryAccent($any($event.target).value)"
       />
@@ -74,6 +76,8 @@
       <ion-label>{{ 'settings.accent.secondary' | translate }}</ion-label>
       <input
         type="color"
+        class="sysop-swatch"
+        [attr.aria-label]="'settings.accent.secondary' | translate"
         [value]="secondarySwatch()"
         (change)="changeSecondaryAccent($any($event.target).value)"
       />

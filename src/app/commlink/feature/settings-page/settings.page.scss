@@ -23,3 +23,33 @@ ion-list-header {
   color: var(--sr-text-dim);
   font-size: var(--fs-small);
 }
+
+.sysop-swatch {
+  appearance: none;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: var(--space-1);
+  border: 1px solid var(--sr-line);
+  border-radius: var(--sr-radius);
+  background: var(--sr-panel);
+  cursor: pointer;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--sr-radius) / 2);
+  }
+
+  &::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--sr-radius) / 2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--sr-amber);
+    outline-offset: 2px;
+  }
+}

@@ -99,11 +99,6 @@ grep -l '"shotsStale": true' public/handbook/pages/*.json
   `@ionic/angular-toolkit` all cap TypeScript `<6.1`. None of the options TS 6 deprecates for removal in 7
   is set here.
 
-## Open defects
-
-- **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
-  chrome in the app.
-
 ## Known cost, not yet paid
 
 - **The initial bundle sits over its 1.6 MB warning** — 1.67 MB after Angular 22 and Ionic 9, under the
