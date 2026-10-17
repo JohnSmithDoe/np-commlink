@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
 import { CashTransaction } from '../model/transaction.types';
 
-const WINDOW_DAYS = 3;
+export const SAME_SPEND_WINDOW_DAYS = 3;
+
+export const calendarDaysApart = (a: string, b: string): number =>
+  Math.abs(dayjs(a).startOf('day').diff(dayjs(b).startOf('day'), 'day'));
 
 export function findReconciliationCandidates(
   pending: CashTransaction,
@@ -15,11 +18,6 @@ export function findReconciliationCandidates(
   const pendingDate = dayjs(pending.dateISO);
   const millisApart = (txn: CashTransaction) =>
     Math.abs(dayjs(txn.dateISO).diff(pendingDate));
-  const daysApart = (txn: CashTransaction) => {
-    return Math.abs(
-      dayjs(txn.dateISO).startOf('day').diff(pendingDate.startOf('day'), 'day')
-    );
-  };
 
   const isCouldBeSameSpend = (txn: CashTransaction): boolean => {
     return (
@@ -28,7 +26,7 @@ export function findReconciliationCandidates(
       txn.accountId === pending.accountId &&
       txn.amountCents === pending.amountCents &&
       !claimedSurvivorIds.has(txn.id) &&
-      daysApart(txn) <= WINDOW_DAYS
+      calendarDaysApart(txn.dateISO, pending.dateISO) <= SAME_SPEND_WINDOW_DAYS
     );
   };
 

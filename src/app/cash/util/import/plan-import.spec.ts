@@ -110,14 +110,19 @@ describe('planImport', () => {
     expect(result.duplicates).toBe(0);
   });
 
-  it('confirms a pending row that books later with a bank reference', () => {
+  it('confirms a pending row that books a day later with a bank reference', () => {
     const pending = imported({
       id: 'pending-1',
       status: 'pending',
       importKey: '20260106|-4299|NORDKAUF|1',
     });
     const result = plan(
-      [row({ dateISO: '2026-01-07T00:00:00+01:00' })],
+      [
+        row({
+          dateISO: '2026-01-07T00:00:00+01:00',
+          derivedKey: '20260107|-4299|NORDKAUF|1',
+        }),
+      ],
       [pending]
     );
 
@@ -194,5 +199,67 @@ describe('planImport', () => {
   it('carries the rejected count through untouched', () => {
     const plan = planImport(parsed([row()], 3), 'acc', [], [], 'batch', ids());
     expect(plan.rejected).toBe(3);
+  });
+});
+
+const unkeyedPending = imported({
+  id: 'pending-1',
+  status: 'pending',
+  importKey: '20260106|-4299|NORDKAUF|1',
+});
+const booked = (over: Partial<ParsedRow> = {}) => {
+  return row({
+    dateISO: '2026-01-08T00:00:00+01:00',
+    description: 'NORDKAUF SAGT DANKE',
+    derivedKey: '20260108|-4299|NORDKAUF SAGT DANKE|1',
+    ...over,
+  });
+};
+
+describe('planImport · a pending row the booking no longer keys to', () => {
+  it('confirms it when the same amount books within three days', () => {
+    const result = plan([booked()], [unkeyedPending]);
+
+    expect(result.toImport).toEqual([]);
+    expect(result.toConfirm).toEqual([
+      {
+        id: 'pending-1',
+        importKey: '2026010638472910064',
+        dateISO: '2026-01-08T00:00:00+01:00',
+      },
+    ]);
+  });
+
+  it('confirms it once, so a second booking of that amount is new', () => {
+    const second = booked({
+      bankRef: '2026010838472910099',
+      derivedKey: '20260108|-4299|NORDKAUF SAGT DANKE|2',
+    });
+    const result = plan([booked(), second], [unkeyedPending]);
+
+    expect(result.toConfirm).toHaveLength(1);
+    expect(result.toImport).toHaveLength(1);
+  });
+
+  it('imports a booking of another amount, or a week later, as new', () => {
+    const result = plan(
+      [
+        booked({ amountCents: -4300, derivedKey: 'other-amount' }),
+        booked({
+          dateISO: '2026-01-13T00:00:00+01:00',
+          bankRef: '2026011338472910001',
+          derivedKey: 'a-week-later',
+        }),
+      ],
+      [unkeyedPending]
+    );
+
+    expect(result.toConfirm).toEqual([]);
+    expect(result.toImport).toHaveLength(2);
+  });
+
+  it('never confirms a pending row with a pending one', () => {
+    const result = plan([booked({ status: 'pending' })], [unkeyedPending]);
+    expect(result.toConfirm).toEqual([]);
   });
 });

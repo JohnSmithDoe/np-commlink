@@ -8,6 +8,8 @@
  * merely a duplicate: it is the same spend, arriving with the reference the
  * intraday export withheld. Confirming that row in place keeps whatever
  * manual spend was reconciled against it, which re-importing would orphan.
+ * The bank may book it on a later day or under new wording, so a booked row
+ * that keys to nothing still confirms the nearest pending row of its amount.
  *
  * The account prefixes the key because a reference is only unique WITHIN
  * the account that issued it, and the same statement imported into two
@@ -24,6 +26,7 @@ import { CashRule } from '../../model/rule.types';
 import { CamtDetails, CashTransaction } from '../../model/transaction.types';
 import { withCategory } from '../cash-category.utils';
 import { categorizeOrdered, rulesByOrder } from '../categorize.utils';
+import { calendarDaysApart, SAME_SPEND_WINDOW_DAYS } from '../reconcile.utils';
 import { importKeyOf, ParsedRow, ParseResult } from './parsed-row';
 
 const scopedKey = (accountId: string, importKey: string): string =>
@@ -76,6 +79,23 @@ const transactionFromRow = (
   };
 };
 
+const pendingBookedAs = (
+  row: ParsedRow,
+  pending: Iterable<CashTransaction>
+): CashTransaction | undefined => {
+  const daysFromRow = (txn: CashTransaction) =>
+    calendarDaysApart(txn.dateISO, row.dateISO);
+  return [...pending]
+    .filter((txn) => {
+      return (
+        txn.amountCents === row.amountCents &&
+        daysFromRow(txn) <= SAME_SPEND_WINDOW_DAYS
+      );
+    })
+    .toSorted((a, b) => daysFromRow(a) - daysFromRow(b))
+    .at(0);
+};
+
 const autoCategorized = (
   txn: CashTransaction,
   ordered: readonly CashRule[]
@@ -96,14 +116,30 @@ export function planImport(
   const known = importedByKey(existing);
   const toImport: CashTransaction[] = [];
   const toConfirm: ImportConfirmation[] = [];
+  const unconfirmed = new Map(
+    existing
+      .filter((txn) => {
+        return (
+          txn.source === 'imported' &&
+          txn.status === 'pending' &&
+          txn.accountId === accountId
+        );
+      })
+      .map((txn) => [txn.id, txn])
+  );
   let duplicates = 0;
   for (const row of parsed.rows) {
     const key = scopedKey(accountId, importKeyOf(row));
     const derived = scopedKey(accountId, row.derivedKey);
-    const already = known.get(key) ?? known.get(derived);
+    const isBooked = row.status === 'confirmed';
+    const already =
+      known.get(key) ??
+      known.get(derived) ??
+      (isBooked ? pendingBookedAs(row, unconfirmed.values()) : undefined);
     if (already) {
       duplicates++;
-      if (already.status === 'pending' && row.status === 'confirmed') {
+      known.set(key, already);
+      if (isBooked && unconfirmed.delete(already.id)) {
         toConfirm.push({
           id: already.id,
           importKey: importKeyOf(row),
