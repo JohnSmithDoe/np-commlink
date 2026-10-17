@@ -31,7 +31,12 @@ import { debounceTime, Subject } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { UpdateDTO } from '../../@shared/model/base-item.types';
 import { uuidv4 } from '../../@shared/util/app.utils';
-import { Note, NoteImage, NoteImageId } from '../model/notes.types';
+import {
+  Note,
+  NoteImage,
+  NoteImageId,
+  NotePicture,
+} from '../model/notes.types';
 import { isBlankNote } from '../util/notes.factory';
 import { resolveImages } from '../util/notes.utils';
 import { NoteImageStore } from './note-image.store';
@@ -95,11 +100,11 @@ export class NoteEditorFacade {
     }
   }
 
-  addImage(dataUrl: string): void {
+  addImage(picture: NotePicture): void {
     this.flush();
     const note = this.note();
     if (!note) return;
-    this.#store.dispatch(NotesActions.addImage(note.id, uuidv4(), dataUrl));
+    this.#store.dispatch(NotesActions.addImage(note.id, uuidv4(), picture));
   }
 
   removeImage(imageId: NoteImageId): void {

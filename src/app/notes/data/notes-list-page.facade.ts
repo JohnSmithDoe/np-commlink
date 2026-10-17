@@ -36,6 +36,7 @@ export class NotesListPageFacade extends BaseListPageFacade {
   readonly #images = inject(NoteImageStore);
 
   readonly imageUrls = this.#images.urls;
+  readonly thumbUrls = this.#images.thumbUrls;
 
   readonly state = this.#store.selectSignal(selectNotesList);
   readonly items = this.#store.selectSignal(selectVisibleNotes);

@@ -38,13 +38,37 @@ describe('NoteImageStore', () => {
   it('writes one key per picture, so a note is text on disk', async () => {
     setup();
 
-    await store.put('img-1', 'data:a');
+    await store.put('img-1', { dataUrl: 'data:a', thumbUrl: 'thumb:a' });
 
     expect(database.save).toHaveBeenCalledWith('note-image:img-1', {
       id: 'img-1',
       dataUrl: 'data:a',
+      thumbUrl: 'thumb:a',
     });
     expect(store.urls()).toEqual({ 'img-1': 'data:a' });
+    expect(store.thumbUrls()).toEqual({ 'img-1': 'thumb:a' });
+  });
+
+  it('shows the full picture in the list where no thumbnail was stored', async () => {
+    setup([
+      { id: 'img-1', dataUrl: 'data:a' },
+      { id: 'img-2', dataUrl: 'data:b', thumbUrl: 'thumb:b' },
+    ]);
+    await store.hydrate();
+
+    expect(store.thumbUrls()).toEqual({
+      'img-1': 'data:a',
+      'img-2': 'thumb:b',
+    });
+  });
+
+  it('drops a stale thumbnail when a picture is rewritten without one', async () => {
+    setup([{ id: 'img-1', dataUrl: 'data:a', thumbUrl: 'thumb:a' }]);
+    await store.hydrate();
+
+    await store.put('img-1', { dataUrl: 'data:turned' });
+
+    expect(store.thumbUrls()).toEqual({ 'img-1': 'data:turned' });
   });
 
   it('drops what it is told to drop, from disk and from memory', async () => {

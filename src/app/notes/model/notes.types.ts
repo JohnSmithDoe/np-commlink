@@ -6,9 +6,13 @@ export const NOTES_LIST_ID = '_notes';
 
 export type NoteImageId = string;
 
-export interface NoteImage {
-  id: NoteImageId;
+export interface NotePicture {
   dataUrl: string;
+  thumbUrl?: string;
+}
+
+export interface NoteImage extends NotePicture {
+  id: NoteImageId;
 }
 
 export interface Note extends BaseItem {

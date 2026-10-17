@@ -9,6 +9,7 @@ import {
 const BADGE_URL = 'data:image/png;base64,BADGE';
 const PHOTO_URL = 'data:image/jpeg;base64,PHOTO';
 const ROTATED_URL = 'data:image/png;base64,ROTATED';
+const THUMB_URL = 'data:image/jpeg;base64,THUMB';
 
 type FakeCanvas = {
   width: number;
@@ -46,6 +47,8 @@ const list = (searchQuery?: string): NotesList => {
 
 describe('notes.utils', () => {
   let canvas: FakeCanvas;
+  let canvases: FakeCanvas[];
+  let contextOfCanvas: unknown;
   let context: ReturnType<typeof fake2dContext>;
   let requestedSource: string | undefined;
   let encodedAs: [string?, number?];
@@ -79,26 +82,37 @@ describe('notes.utils', () => {
   };
 
   const givenCanvasContext = (context2d: unknown) => {
-    canvas = {
+    contextOfCanvas = context2d;
+  };
+
+  const madeCanvas = (): FakeCanvas => {
+    const isThumbnail = canvases.length > 0;
+    const made: FakeCanvas = {
       width: 0,
       height: 0,
-      getContext: () => context2d,
+      getContext: () => contextOfCanvas,
       toDataURL: (type, quality) => {
         encodedAs = [type, quality];
-        return ROTATED_URL;
+        return isThumbnail ? THUMB_URL : ROTATED_URL;
       },
     };
+    canvases.push(made);
+    canvas = canvases[0]!;
+    return made;
   };
 
   beforeEach(() => {
     encodedAs = [];
+    canvases = [];
     givenScreen();
     context = fake2dContext();
     givenCanvasContext(context);
     const createElement = document.createElement.bind(document);
-    vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
-      tag === 'canvas' ? (canvas as unknown as HTMLElement) : createElement(tag)
-    );
+    vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      return tag === 'canvas'
+        ? (madeCanvas() as unknown as HTMLElement)
+        : createElement(tag);
+    });
   });
 
   afterEach(() => {
@@ -138,7 +152,10 @@ describe('notes.utils', () => {
     it('hands back the repainted canvas as a data URL', async () => {
       givenImage(100, 40);
 
-      expect(await rotateBase64(BADGE_URL)).toBe(ROTATED_URL);
+      expect(await rotateBase64(BADGE_URL)).toEqual({
+        dataUrl: ROTATED_URL,
+        thumbUrl: THUMB_URL,
+      });
       expect(requestedSource).toBe(BADGE_URL);
     });
 
@@ -177,7 +194,10 @@ describe('notes.utils', () => {
     it('re-encodes a picked image as a stored jpeg', async () => {
       givenImage(100, 40);
 
-      expect(await readNoteImage(pickedFile())).toBe(ROTATED_URL);
+      expect(await readNoteImage(pickedFile())).toEqual({
+        dataUrl: ROTATED_URL,
+        thumbUrl: THUMB_URL,
+      });
       expect(encodedAs).toEqual(['image/jpeg', 0.85]);
     });
 
@@ -195,6 +215,22 @@ describe('notes.utils', () => {
       await readNoteImage(pickedFile());
 
       expect([canvas.width, canvas.height]).toEqual([1600, 1200]);
+    });
+
+    it('draws the list thumbnail off the stored canvas, 192px on its longest edge', async () => {
+      givenImage(4000, 3000);
+
+      await readNoteImage(pickedFile());
+
+      const [stored, thumbnail] = canvases;
+      expect([thumbnail?.width, thumbnail?.height]).toEqual([192, 144]);
+      expect(context.drawImage).toHaveBeenLastCalledWith(
+        stored,
+        0,
+        0,
+        192,
+        144
+      );
     });
 
     it('takes the budget from the screen it was picked on', async () => {

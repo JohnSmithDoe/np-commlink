@@ -86,14 +86,17 @@ describe('NoteEditorFacade', () => {
   it('appends an image as an id, and never as bytes in the slice', () => {
     setup(mockNote({ images: ['img-1'] }));
 
-    facade.addImage('data:b');
+    facade.addImage({ dataUrl: 'data:b', thumbUrl: 'thumb:b' });
 
     type AddAction = ReturnType<typeof NotesActions.addImage>;
     const added = (dispatch.mock.calls as AddAction[][])
       .map(([action]) => action)
       .findLast((action) => action.type === NotesActions.addImage.type);
 
-    expect(added).toMatchObject({ noteId: 'note-1', dataUrl: 'data:b' });
+    expect(added).toMatchObject({
+      noteId: 'note-1',
+      picture: { dataUrl: 'data:b', thumbUrl: 'thumb:b' },
+    });
     expect(added?.imageId).toBeTruthy();
     expect(lastUpdate()).toBeUndefined();
   });

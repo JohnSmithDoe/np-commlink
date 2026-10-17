@@ -18,7 +18,7 @@ import { catchError, concatMap, EMPTY, filter, from } from 'rxjs';
 import { pushUndoOnDelete } from '../../@shared/data/item-lists/item-list.effects.factory';
 import { rotateBase64 } from '../util/notes.utils';
 import { NoteImageStore } from './note-image.store';
-import { NOTES_LIST_ID } from '../model/notes.types';
+import { NOTES_LIST_ID, NotePicture } from '../model/notes.types';
 import { NotesActions } from './notes.actions';
 
 export const notesListEffects = {
@@ -32,8 +32,8 @@ export const notesListEffects = {
     (actions$ = inject(Actions), images = inject(NoteImageStore)) => {
       return actions$.pipe(
         ofType(NotesActions.addImage),
-        concatMap(({ imageId, dataUrl }) =>
-          from(images.put(imageId, dataUrl)).pipe(catchError(() => EMPTY))
+        concatMap(({ imageId, picture }) =>
+          from(images.put(imageId, picture)).pipe(catchError(() => EMPTY))
         )
       );
     },
@@ -58,7 +58,7 @@ export const notesListEffects = {
         ofType(NotesActions.rotateImage),
         concatMap(({ imageId }) => {
           return from(rotateBase64(images.urlOf(imageId))).pipe(
-            filter((rotated): rotated is string => !!rotated),
+            filter((rotated): rotated is NotePicture => !!rotated),
             concatMap((rotated) => images.put(imageId, rotated)),
             catchError(() => EMPTY)
           );

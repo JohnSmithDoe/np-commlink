@@ -1,7 +1,12 @@
 import { createActionGroup, emptyProps } from '@ngrx/store';
 import dayjs from 'dayjs';
 import { createItemListActionEvents } from '../../@shared/data/item-lists/item-list.actions.factory';
-import { Note, NoteImageId, NotesState } from '../model/notes.types';
+import {
+  Note,
+  NoteImageId,
+  NotePicture,
+  NotesState,
+} from '../model/notes.types';
 
 export const NotesActions = createActionGroup({
   source: 'Notes',
@@ -23,9 +28,9 @@ export const NotesActions = createActionGroup({
     addImage: (
       noteId: string,
       imageId: NoteImageId,
-      dataUrl: string,
+      picture: NotePicture,
       at: string = dayjs().format()
-    ) => ({ noteId, imageId, dataUrl, at }),
+    ) => ({ noteId, imageId, picture, at }),
     removeImage: (
       noteId: string,
       imageId: NoteImageId,

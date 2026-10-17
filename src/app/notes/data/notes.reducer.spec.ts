@@ -128,22 +128,28 @@ describe('notesReducer images', () => {
   it('keeps only the id, so a picture never enters the slice', () => {
     const next = notesReducer(
       stateWith(note('a', 'Ausweis')),
-      NotesActions.addImage('a', 'img-1', 'data:a', AT)
+      NotesActions.addImage(
+        'a',
+        'img-1',
+        { dataUrl: 'data:a', thumbUrl: 'thumb:a' },
+        AT
+      )
     );
 
     expect(next.list.items[0]?.images).toEqual(['img-1']);
     expect(JSON.stringify(next)).not.toContain('data:a');
+    expect(JSON.stringify(next)).not.toContain('thumb:a');
     expect(next.list.items[0]?.updatedAt).toBe(AT);
   });
 
   it('removes the id it is given and leaves the rest arranged', () => {
     const withOne = notesReducer(
       stateWith(note('a', 'Ausweis')),
-      NotesActions.addImage('a', 'img-1', 'data:a', AT)
+      NotesActions.addImage('a', 'img-1', { dataUrl: 'data:a' }, AT)
     );
     const withTwo = notesReducer(
       withOne,
-      NotesActions.addImage('a', 'img-2', 'data:b', AT)
+      NotesActions.addImage('a', 'img-2', { dataUrl: 'data:b' }, AT)
     );
 
     const next = notesReducer(

@@ -9,11 +9,19 @@
  * Rotating goes through the SAME budget as importing — one `encoded`, one
  * quality, one cap. Written its own way it re-encoded at a HIGHER quality
  * than the picture was stored at and skipped the cap entirely, so every
- * rotation grew the file it was only supposed to turn.
+ * rotation grew the file it was only supposed to turn. Both also draw the
+ * list's thumbnail off the canvas they just painted, so a 48px row never
+ * decodes a two-screen picture.
  * ───────────────────────────────────────────────────────────────── */
 
 import { SearchResult } from '../../@shared/model/item-list.types';
-import { Note, NoteImage, NoteImageId, NotesList } from '../model/notes.types';
+import {
+  Note,
+  NoteImage,
+  NoteImageId,
+  NotePicture,
+  NotesList,
+} from '../model/notes.types';
 
 const RADIANS_PER_DEGREE = Math.PI / 180;
 
@@ -21,6 +29,7 @@ const SCREENS_OF_HEADROOM = 2;
 const FALLBACK_SCREEN_EDGE = 1024;
 const STORED_MIME_TYPE = 'image/jpeg';
 const STORED_QUALITY = 0.85;
+const THUMB_EDGE = 192;
 
 const maxEdge = (): number => {
   const screen = globalThis.screen;
@@ -55,8 +64,7 @@ const readAsDataUrl = (file: File): Promise<string | undefined> => {
 const encoded = (canvas: HTMLCanvasElement): string =>
   canvas.toDataURL(STORED_MIME_TYPE, STORED_QUALITY);
 
-const capped = (width: number, height: number) => {
-  const limit = maxEdge();
+const capped = (width: number, height: number, limit = maxEdge()) => {
   const longest = Math.max(width, height);
   const ratio = longest > limit ? limit / longest : 1;
   return {
@@ -77,9 +85,27 @@ const rotatedFrame = (img: HTMLImageElement, radians: number) => {
 const scaledFrame = (img: HTMLImageElement) =>
   capped(img.naturalWidth, img.naturalHeight);
 
+const thumbnailOf = (source: HTMLCanvasElement): string | undefined => {
+  const { width, height } = capped(source.width, source.height, THUMB_EDGE);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d');
+  if (!context) return;
+  context.drawImage(source, 0, 0, width, height);
+  return encoded(canvas);
+};
+
+const pictureOf = (canvas: HTMLCanvasElement): NotePicture => {
+  return {
+    dataUrl: encoded(canvas),
+    thumbUrl: thumbnailOf(canvas),
+  };
+};
+
 export const readNoteImage = async (
   file: File
-): Promise<string | undefined> => {
+): Promise<NotePicture | undefined> => {
   const dataUrl = await readAsDataUrl(file);
   if (!dataUrl) return;
 
@@ -95,13 +121,16 @@ export const readNoteImage = async (
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext('2d');
-  if (!context) return dataUrl;
+  if (!context) return { dataUrl };
 
   context.drawImage(img, 0, 0, width, height);
-  return encoded(canvas);
+  return pictureOf(canvas);
 };
 
-export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
+export const rotateBase64 = async (
+  dataUrl?: string,
+  deg = 90
+): Promise<NotePicture | undefined> => {
   if (!dataUrl) return;
 
   const img = await loadImage(dataUrl);
@@ -121,7 +150,7 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
   context.scale(scale, scale);
   context.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
 
-  return encoded(canvas);
+  return pictureOf(canvas);
 };
 
 export const resolveImages = (

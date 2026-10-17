@@ -91,8 +91,3 @@ grep -l '"shotsStale": true' public/handbook/pages/*.json
 - **The function-coverage floor clears by 0.34 points** (80.34% against 80 at v1.5.0). A floor on the
   aggregate lets one well-tested domain hide an untested one, so the next untested feature reds it again.
   The fix is a floor per domain or on the diff, not a lower number.
-
-- **The notes list decodes a full picture into a 48px box.** `maxEdge()` is two screens, so every thumbnail
-  costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
-  canvas pass at import would store a ~192px `thumbUrl` beside the picture. Free as a shape change (`notes`
-  is dev-only), and the list is also unwindowed — the two belong in one pass.
