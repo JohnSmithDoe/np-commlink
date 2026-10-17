@@ -16,13 +16,55 @@
 const ZIP_MAGIC = [0x50, 0x4b, 0x03, 0x04];
 const byPage = new Intl.Collator('en', { numeric: true });
 
-export function decodeBankFile(bytes: ArrayBuffer | Uint8Array): string {
+const utf8 = new TextDecoder('utf-8', { fatal: true });
+const windows1252 = new TextDecoder('windows-1252');
+
+const isContinuation = (byte: number | undefined): boolean =>
+  byte !== undefined && byte >= 0x80 && byte <= 0xbf;
+
+const leadLength = (byte: number): number => {
+  if (byte < 0x80) return 1;
+  if (byte >= 0xc2 && byte <= 0xdf) return 2;
+  if (byte >= 0xe0 && byte <= 0xef) return 3;
+  return byte >= 0xf0 && byte <= 0xf4 ? 4 : 0;
+};
+
+const utf8SequenceAt = (bytes: Uint8Array, at: number): number => {
+  const length = leadLength(bytes[at] ?? 0);
+  for (let offset = 1; offset < length; offset++) {
+    if (!isContinuation(bytes[at + offset])) return 0;
+  }
+  return length;
+};
+
+const utf8OrNull = (slice: Uint8Array): string | null => {
   try {
-    const strictUtf8 = new TextDecoder('utf-8', { fatal: true });
-    return strictUtf8.decode(bytes);
+    return utf8.decode(slice);
   } catch {
-    const latin = new TextDecoder('windows-1252');
-    return latin.decode(bytes);
+    return null;
+  }
+};
+
+const decodeMixed = (bytes: Uint8Array): string => {
+  let text = '';
+  let at = 0;
+  while (at < bytes.length) {
+    const length = utf8SequenceAt(bytes, at);
+    const decoded =
+      length > 0 ? utf8OrNull(bytes.subarray(at, at + length)) : null;
+    const end = at + (decoded === null ? 1 : length);
+    text += decoded ?? windows1252.decode(bytes.subarray(at, end));
+    at = end;
+  }
+  return text;
+};
+
+export function decodeBankFile(bytes: ArrayBuffer | Uint8Array): string {
+  const view = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  try {
+    return utf8.decode(view);
+  } catch {
+    return decodeMixed(view);
   }
 }
 
