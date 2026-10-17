@@ -61,9 +61,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
 - **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
   booking three days earlier, and DST moves the edge by an hour.
-- **T9 · `setRoundValue` on an ended game** still appends a blank round; `ensureTrailingBlankRound`
-  refuses to.
-- **T10 · The trackplay orphan sweep with an empty roster `[]`** deletes every game. Untested.
 
 ### Tests that cannot fail
 
@@ -204,7 +201,10 @@ lack `bad-roll`, `unknown-field`, `too-many` and `no-room-at-home` on purpose: n
 page — the pips are 1–6, every tap is a rendered field, placing stops once the set is complete, and a
 thrown figure left the ring, so its own yard has a slot. `selectDashboardStatsYear` reading `dayjsToday()` inside a
 memoized projector is not stale where it matters: its one consumer, telemetry, reads `officedays` and
-`percentage`, which turn only with the year, and the year turning reloads the holidays and so the keys.
+`percentage`, which turn only with the year, and the year turning reloads the holidays and so the keys. Scoring an
+ended game is unreachable: the grid is gone once it ends. The trackplay orphan sweep against an empty
+roster deleting every game is the design — `PEOPLE` stays `undefined` until people is read, a failed
+read included.
 
 Tests that earn their keep and serve as the model: the camt parser variants and `read-statement`
 occurrence keys, `money.parseMagnitude`, holidays checked against the published Berlin JSON, the
