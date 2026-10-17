@@ -41,7 +41,9 @@ export class ProfilesFacade {
   readonly #favoriteId = this.#store.selectSignal(selectFavoriteId);
   readonly #routeId = this.#store.selectSignal(selectRouteEntityId);
 
-  readonly allItems = computed(() => profilesOf(this.#people(), this.#astro()));
+  readonly allItems = computed(() =>
+    profilesOf(this.#people() ?? [], this.#astro())
+  );
   readonly state = computed(() => ({
     ...this.#view(),
     items: this.allItems(),

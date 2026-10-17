@@ -26,7 +26,7 @@ export class PlayersFacade {
   readonly #routeId = this.#store.selectSignal(selectRouteEntityId);
 
   readonly allItems = computed(() =>
-    playersFrom(this.#people(), this.#games())
+    playersFrom(this.#people() ?? [], this.#games())
   );
   readonly state = computed(() => ({
     ...this.#view(),
@@ -46,7 +46,8 @@ export class PlayersFacade {
   );
 
   readonly #names = computed(
-    () => new Map(this.#people().map((person) => [person.id, person.name]))
+    () =>
+      new Map((this.#people() ?? []).map((person) => [person.id, person.name]))
   );
 
   nameOf(id: TrackplayId): string {

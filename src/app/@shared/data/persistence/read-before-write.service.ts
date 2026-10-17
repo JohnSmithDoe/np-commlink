@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ReadBeforeWriteService {
-  readonly #read = new Set<string>();
+  readonly #read = signal<ReadonlySet<string>>(new Set());
 
   recordRead(key: string): void {
-    this.#read.add(key);
+    this.#read.update((read) => new Set(read).add(key));
   }
 
   mayPersist(key: string): boolean {
-    return this.#read.has(key);
+    return this.#read().has(key);
   }
 }

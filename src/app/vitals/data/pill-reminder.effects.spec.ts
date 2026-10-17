@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Action } from '@ngrx/store';
@@ -8,6 +9,7 @@ import {
   LocalNotificationsService,
   ReminderOutcome,
 } from '../../@shared/data/services/local-notifications.service';
+import { PEOPLE, Roster } from '../../@shared/util/people/people.token';
 import { VitalsState } from '../model/vitals.types';
 import {
   mockPill,
@@ -194,6 +196,63 @@ describe('PillReminderEffects', () => {
     actions$ = of(PillsActions.addItem(pill));
 
     expect(await drain(effects.changeReminders$)).toEqual([]);
+  });
+
+  describe('when vitals hydrates before people', () => {
+    const roster = signal<Roster>(undefined);
+
+    const setupUnreadRoster = (pill: ReturnType<typeof mockPill>) => {
+      roster.set(undefined);
+      notifications = {
+        cancelIds: vi.fn().mockResolvedValue(undefined),
+        scheduleWeekly: vi.fn().mockResolvedValue('armed'),
+      };
+      TestBed.configureTestingModule({
+        providers: [
+          PillReminderEffects,
+          provideMockActions(() => actions$),
+          provideMockStore({
+            initialState: { [VITALS_STATE_KEY]: stateWith(pill) },
+          }),
+          { provide: LocalNotificationsService, useValue: notifications },
+          { provide: PEOPLE, useValue: roster },
+        ],
+      });
+      effects = TestBed.inject(PillReminderEffects);
+    };
+
+    it('disarms nothing until the roster is read, then re-arms', async () => {
+      const pill = mockPill({ slot: 0, weekdays: [2] });
+      setupUnreadRoster(pill);
+      actions$ = of(VitalsActions.loaded(null));
+      effects.rosterReminders$.subscribe();
+      TestBed.tick();
+
+      await drain(effects.restoreReminders$);
+      expect(notifications.cancelIds).not.toHaveBeenCalled();
+      expect(notifications.scheduleWeekly).not.toHaveBeenCalled();
+
+      roster.set([martin]);
+      TestBed.tick();
+      await vi.waitFor(() =>
+        expect(notifications.scheduleWeekly).toHaveBeenCalledTimes(1)
+      );
+    });
+
+    it('re-arms when the roster lands before its watcher first looks', async () => {
+      const pill = mockPill({ slot: 0, weekdays: [2] });
+      setupUnreadRoster(pill);
+      actions$ = of(VitalsActions.loaded(null));
+      effects.rosterReminders$.subscribe();
+
+      await drain(effects.restoreReminders$);
+      roster.set([martin]);
+      TestBed.tick();
+
+      await vi.waitFor(() =>
+        expect(notifications.scheduleWeekly).toHaveBeenCalledTimes(1)
+      );
+    });
   });
 
   it('leaves a taken-today tick alone — it is not a schedule change', async () => {

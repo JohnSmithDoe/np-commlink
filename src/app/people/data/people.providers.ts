@@ -1,8 +1,9 @@
-import { inject } from '@angular/core';
+import { computed, inject, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { providePersistedContext } from '../../@shared/data/persisted-states/persisted-context.provider';
 import { createMetric } from '../../@shared/data/persisted-states/persisted-slice.effects.factory';
-import { PEOPLE } from '../../@shared/util/people/people.token';
+import { ReadBeforeWriteService } from '../../@shared/data/persistence/read-before-write.service';
+import { PEOPLE, Roster } from '../../@shared/util/people/people.token';
 import {
   PERSON_EDITOR,
   PersonEditor,
@@ -20,7 +21,13 @@ import {
 
 const peopleProvider = {
   provide: PEOPLE,
-  useFactory: () => inject(Store).selectSignal(selectPersonItems),
+  useFactory: (): Signal<Roster> => {
+    const people = inject(Store).selectSignal(selectPersonItems);
+    const reads = inject(ReadBeforeWriteService);
+    return computed(() =>
+      reads.mayPersist(PEOPLE_STATE_KEY) ? people() : undefined
+    );
+  },
 };
 
 const personEditorProvider = {

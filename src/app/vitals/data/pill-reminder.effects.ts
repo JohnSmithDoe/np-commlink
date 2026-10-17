@@ -7,8 +7,10 @@
  * pill's due days.
  *
  * The roster is a trigger too: a rename changes the body, and a pill whose
- * person no longer resolves is not armed. A load re-arms in silence; only
- * a `refused` outcome speaks, so off native nothing toasts.
+ * person no longer resolves is not armed. Until the roster is READ nothing
+ * is touched — an unread roster would disarm every pill — so its first
+ * answer reconciles, whichever of it and the vitals load lands last. A
+ * load re-arms in silence; only a `refused` outcome speaks.
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Injectable } from '@angular/core';
@@ -26,7 +28,6 @@ import {
   map,
   Observable,
   of,
-  skip,
 } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import {
@@ -67,11 +68,11 @@ export class PillReminderEffects {
   rosterReminders$ = createEffect(
     () => {
       return this.#roster$.pipe(
+        filter((people) => people !== undefined),
         map((people) =>
           people.map(({ id, name }) => `${id}:${name}`).join('|')
         ),
         distinctUntilChanged(),
-        skip(1),
         concatLatestFrom(() => this.#store.select(selectPillsList)),
         concatMap(([, pills]) => this.#reconcile(pills))
       );
@@ -97,7 +98,9 @@ export class PillReminderEffects {
   });
 
   #reconcile(pills: PillsState): Observable<ReminderOutcome[]> {
-    return from(this.#sweep(pills, this.#people())).pipe(
+    const people = this.#people();
+    if (!people) return of([]);
+    return from(this.#sweep(pills, people)).pipe(
       catchError(() => of<ReminderOutcome[]>(['refused']))
     );
   }
