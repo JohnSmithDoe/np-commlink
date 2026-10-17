@@ -114,6 +114,114 @@ describe('trackingReducer', () => {
       expect(next.items[0].state).toBe('paused');
       expect(next.items[0].breakTime).toBe(now);
     });
+
+    it('adds the paused stretch to the break when the item resumes', () => {
+      const running = withItems([
+        track({
+          id: 'a',
+          state: 'running',
+          startTime: '2026-06-01T08:00:00',
+          trackedTimeInSeconds: 7200,
+        }),
+      ]);
+      const paused = trackingReducer(
+        running,
+        TrackingActions.toggleTrackingItem(running.items[0], now)
+      );
+      const resumed = trackingReducer(
+        paused,
+        TrackingActions.toggleTrackingItem(
+          paused.items[0],
+          '2026-06-01T10:15:00'
+        )
+      );
+      const ticked = trackingReducer(
+        resumed,
+        TrackingActions.updateTracking(resumed.items[0], '2026-06-01T11:00:00')
+      );
+
+      expect(resumed.items[0]).toMatchObject({
+        state: 'running',
+        startTime: '2026-06-01T08:00:00',
+        breakTime: undefined,
+        breakInSeconds: 900,
+        trackedTimeInSeconds: 7200,
+      });
+      expect(ticked.items[0].trackedTimeInSeconds).toBe(9900);
+    });
+
+    it('accumulates a second pause on top of the first', () => {
+      const state = withItems([
+        track({
+          id: 'a',
+          state: 'paused',
+          startTime: '2026-06-01T08:00:00',
+          breakTime: '2026-06-01T09:00:00',
+          breakInSeconds: 300,
+        }),
+      ]);
+      const resumed = trackingReducer(
+        state,
+        TrackingActions.toggleTrackingItem(state.items[0], now)
+      );
+
+      expect(resumed.items[0].breakInSeconds).toBe(3900);
+    });
+
+    it('counts the time an item sat stopped by another timer as break when it restarts', () => {
+      const state = withItems([
+        track({ id: 'a', state: 'stopped' }),
+        track({
+          id: 'b',
+          state: 'running',
+          startTime: '2026-06-01T08:00:00',
+          breakInSeconds: 60,
+        }),
+      ]);
+      const switched = trackingReducer(
+        state,
+        TrackingActions.toggleTrackingItem(state.items[0], now)
+      );
+      const back = trackingReducer(
+        switched,
+        TrackingActions.toggleTrackingItem(
+          switched.items[1],
+          '2026-06-01T10:30:00'
+        )
+      );
+
+      const a = back.items.find((index) => index.id === 'a')!;
+      const b = back.items.find((index) => index.id === 'b')!;
+      expect(b).toMatchObject({
+        state: 'running',
+        startTime: '2026-06-01T08:00:00',
+        breakTime: undefined,
+        breakInSeconds: 1860,
+      });
+      expect(a.state).toBe('stopped');
+      expect(a.breakTime).toBe('2026-06-01T10:30:00');
+    });
+
+    it('does not move the break clock of an item that was already stopped', () => {
+      const state = withItems([
+        track({ id: 'a', state: 'stopped' }),
+        track({
+          id: 'b',
+          state: 'paused',
+          startTime: '2026-06-01T08:00:00',
+          breakTime: '2026-06-01T09:00:00',
+        }),
+      ]);
+      const next = trackingReducer(
+        state,
+        TrackingActions.toggleTrackingItem(state.items[0], now)
+      );
+
+      expect(next.items[1]).toMatchObject({
+        state: 'stopped',
+        breakTime: '2026-06-01T09:00:00',
+      });
+    });
   });
 
   it('computes elapsed time on updateTracking, minus break time', () => {
@@ -137,13 +245,13 @@ describe('trackingReducer', () => {
       track({
         id: 'a',
         state: 'running',
-        startTime: 'x',
+        startTime: '2026-06-01T08:00:00',
         trackedTimeInSeconds: 99,
       }),
       track({
         id: 'b',
         state: 'paused',
-        startTime: 'y',
+        startTime: '2026-06-01T09:00:00',
         trackedTimeInSeconds: 5,
       }),
     ]);

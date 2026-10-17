@@ -117,11 +117,12 @@ describe('office-time.utils', () => {
     const keysFor = (
       officedays: dayjs.Dayjs[] = [TODAY],
       holidays: HolidayMap = {},
-      targetOfficeDaysPerWeek = 3
+      targetOfficeDaysPerWeek = 3,
+      freedays: dayjs.Dayjs[] = []
     ) => {
       return statsKeysFrom({
         officedays: dayMap(...officedays),
-        freedays: dayMap(),
+        freedays: dayMap(...freedays),
         holidays,
         targetOfficeDaysPerWeek,
       });
@@ -144,10 +145,9 @@ describe('office-time.utils', () => {
       expect(stats.officedays).toBe(3);
       expect(stats.freedays).toBe(0);
       expect(stats.holidays).toBe(0);
-      expect(stats.workdays).toBe(stats.workdaysTotal);
-      expect(stats.targetdays).toBe(
-        Math.round(((stats.workdays * 2.5) / 5) * 2) / 2
-      );
+      expect(stats.workdays).toBe(21);
+      expect(stats.workdaysTotal).toBe(21);
+      expect(stats.targetdays).toBe(10.5);
     });
 
     it('counts an office day today in every period', () => {
@@ -179,16 +179,20 @@ describe('office-time.utils', () => {
     });
 
     it('excludes free days and holidays from the workday count', () => {
+      const freeday = TODAY.startOf('week').add(2, 'day');
       const holiday = TODAY.startOf('week').add(3, 'day');
       const plain = calculateStats('week', keysFor([]), TODAY);
       const reduced = calculateStats(
         'week',
-        keysFor([], { Feiertag: dayjsToString(holiday) }),
+        keysFor([], { Feiertag: dayjsToString(holiday) }, 3, [freeday]),
         TODAY
       );
 
+      expect(plain.workdays).toBe(5);
+      expect(reduced.freedays).toBe(1);
       expect(reduced.holidays).toBe(1);
-      expect(reduced.workdays).toBe(plain.workdays - 1);
+      expect(reduced.workdays).toBe(3);
+      expect(reduced.workdaysTotal).toBe(5);
     });
 
     it('reports a different window when the day rolls into a new month', () => {

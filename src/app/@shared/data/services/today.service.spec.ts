@@ -27,12 +27,23 @@ describe('TodayService', () => {
     expect(refresh).toHaveBeenCalled();
     expect(service.today()).toBe(todayISO());
   });
+});
 
-  it('does not notify when the day has not changed', () => {
-    const before = service.today();
+describe('TodayService at midnight', () => {
+  afterEach(() => vi.useRealTimers());
 
-    service.refresh();
+  it('rolls over to the next day without being asked, and keeps doing so', () => {
+    vi.useFakeTimers({ now: new Date('2026-10-17T23:59:59') });
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
+    const service = TestBed.inject(TodayService);
+    expect(service.today()).toBe('2026-10-17');
 
-    expect(service.today()).toBe(before);
+    vi.advanceTimersByTime(2000);
+    expect(service.today()).toBe('2026-10-18');
+
+    vi.advanceTimersByTime(24 * 60 * 60 * 1000);
+    expect(service.today()).toBe('2026-10-19');
   });
 });

@@ -4,6 +4,7 @@ import { Action } from '@ngrx/store';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { mockOfficeTimeState } from '../testing/office-time.test-data';
+import { holidayMapFrom } from '../util/office-time.utils';
 import { OfficeTimeActions } from './office-time.actions';
 import { OfficeTimeEffects } from './office-time.effects';
 
@@ -23,7 +24,31 @@ describe('OfficeTimeEffects', () => {
     return TestBed.inject(OfficeTimeEffects);
   };
 
-  afterEach(() => store?.resetSelectors());
+  const emittedOn = (
+    visibility: DocumentVisibilityState,
+    heldYear: string
+  ): Action[] => {
+    vi.useFakeTimers({ now: new Date('2027-01-02T09:00:00') });
+    const effects = setup(
+      mockOfficeTimeState({
+        holidays: holidayMapFrom({ Neujahr: `${heldYear}-01-01` }),
+      })
+    );
+    const emitted: Action[] = [];
+    const subscription = effects.refreshOnYearRollover$.subscribe((action) => {
+      emitted.push(action);
+    });
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue(visibility);
+    document.dispatchEvent(new Event('visibilitychange'));
+    subscription.unsubscribe();
+    return emitted;
+  };
+
+  afterEach(() => {
+    store?.resetSelectors();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
 
   describe('loadHolidays$', () => {
     it('computes the current year‘s Berlin holidays instead of fetching them', async () => {
@@ -44,6 +69,22 @@ describe('OfficeTimeEffects', () => {
       expect(
         (OfficeTimeActions as Record<string, unknown>)['loadHolidaysFailure']
       ).toBeUndefined();
+    });
+  });
+
+  describe('refreshOnYearRollover$', () => {
+    it('reloads the holidays when the app comes back in a new year', () => {
+      expect(emittedOn('visible', '2026')).toEqual([
+        OfficeTimeActions.loadHolidays(),
+      ]);
+    });
+
+    it('keeps the holidays that already belong to the current year', () => {
+      expect(emittedOn('visible', '2027')).toEqual([]);
+    });
+
+    it('waits while the page is hidden', () => {
+      expect(emittedOn('hidden', '2026')).toEqual([]);
     });
   });
 });

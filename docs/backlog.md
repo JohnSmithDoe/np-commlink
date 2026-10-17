@@ -58,7 +58,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 ### Tests that cannot fail
 
 - `tracking-notifications.effects` start/pause: the fixture state already equals the expected hint.
-- `office-time.utils` `targetdays` copies the production formula into the expectation.
 - `players.facade` last-played sort: that order is also the name order.
 - `notifications.selector` "newest first": input already sorted.
 - `pills.reducer` "keeps the slot across an edit" sends the same slot — and `updateListItem` would
@@ -83,8 +82,7 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 - `base-modal-dialog` "does not fall back to create mode" — it does. `edit-task-item-dialog` "drops the
   derived date" — it keeps it. `task-lead.utils` uses a different worst case than production.
   `board.page.spec`'s banner claims every refusal is asserted; three of six are —
-  `overshoots-home`, `own-piece` and `blocked-in-home` are reachable and unasserted. `office-time.utils`
-  "excludes free days" sets none.
+  `overshoots-home`, `own-piece` and `blocked-in-home` are reachable and unasserted.
 - `geist.page` "sends the query" forces `jacked-in` with no session, so nothing streams.
 - e2e: `e2e/office-time/first-paint.e2e.ts` banner says array, asserts a map (the legacy upgrade is untested);
   `e2e/household/manage-categories.e2e.ts` undo — no item ever carried the category; `e2e/vitals/pills.e2e.ts` "keeps the
@@ -120,8 +118,7 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
   `excludedFromAllowance` accounts.
 - **AGENDA:** `reopenDue`, `tasks-day-rollover.effects`, `reopen-due-tasks.resolver` and `toggleDone`
   have no spec; `advancePositioned` catch-up; due today paints 'danger' all day.
-- **Time:** tracking pause → resume break accrual; `refreshOnYearRollover$`; `OfficeTimeFacade` (no
-  spec); `TodayService` midnight timer; `calculateStats.remaining` and weekend holidays; wordclock
+- **Time:** `calculateStats.remaining` and weekend holidays; wordclock
   23:58 / 12:58; no e2e runs a timer across a reload.
 - **Lint plugin:** 11 of 20 rules have no RuleTester spec — `comments-header-only`,
   `ngrx-data-layer-only`, `marker-argument-is-literal`, `testid-is-static`, `no-barrel-outside-data`
