@@ -1,5 +1,6 @@
 {
   "slug": "chrono",
+  "shotsStale": true,
   "title": "CHRONO",
   "plain": "Zeiterfassung",
   "route": "/tracking",

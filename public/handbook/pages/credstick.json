@@ -1,5 +1,6 @@
 {
   "slug": "credstick",
+  "shotsStale": true,
   "title": "CREDSTICK",
   "plain": "Finanzen",
   "route": "/cash",

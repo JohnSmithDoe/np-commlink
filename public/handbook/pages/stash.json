@@ -1,5 +1,6 @@
 {
   "slug": "stash",
+  "shotsStale": true,
   "title": "STASH",
   "plain": "Vorräte",
   "route": "/household/storage",
