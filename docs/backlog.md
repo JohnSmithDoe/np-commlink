@@ -42,6 +42,120 @@ Landed working and gated, but Martin's verdict is that it needs work. Known roug
   any game edit, not only on a scored round.
 - **No handbook page for SIN**; the BIOMON and TRACKPLAY pages were reworded, their figures stale.
 
+---
+
+## Tests — what they assert, not whether they pass
+
+_Audited 2026-10-17: every unit spec, the e2e suite minus handbook shots, and the RuleTester specs.
+No test asserts behaviour the app lacks. The faults are tests that cannot fail, fixtures the real
+pipeline never emits, and gaps exactly where the risk sits. The shell is mid-move to `src/app/shell/`
+— re-check the shell-touching entries once it lands. Each suspected bug gets a red spec before its fix._
+
+### Suspected bugs, found by reading
+
+- **T1 · A rule or schedule threshold grows ×100 under English.** `toConditionForm` shows the stored
+  `'12,34'` verbatim; `toStoredThreshold` re-parses it in the current language, so `en` saves `1234,00`.
+  Opening and saving is enough. Same path in `edit-cash-schedule-dialog`; no spec runs either under `en`.
+- **T2 · A pending row that books on another day imports twice.** `derivedBase` keys on date, amount and
+  text, so a PDNG row whose date or wording moves at booking gets a new key. The `plan-import` spec
+  "confirms a pending row that books later" passes only because its `derivedKey` is hand-written to
+  the old date — the reader would never emit it.
+- **T3 · Four board refusals render nothing.** `board.page.html` has no `@case` for `bad-roll`,
+  `no-room-at-home`, `unknown-field`, `too-many`, and no `@default`. Check which the UI can reach.
+- **T4 · Import sightings rewrite schedules.** `scheduleSightingsFor` / `applyAmountChanges`: a refund
+  matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
+- **T5 · Closing a recurring task from its dialog never advances it** — `updateDone` sets `doneAt`
+  without `closedTask`, so no next due date and no log entry.
+- **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
+  booking three days earlier, and DST moves the edge by an hour.
+- **T7 · `selectDashboardStatsYear` calls `dayjsToday()` inside a memoized projector** — stale across
+  midnight and New Year until state changes.
+- **T8 · Hydration without defaults** in `notifications.reducer` and `list-settings.reducer` — shape 6
+  below. An older notifications doc leaves `lastViewedAt` undefined and the unread badge compares to it.
+- **T9 · `setRoundValue` on an ended game** still appends a blank round; `ensureTrailingBlankRound`
+  refuses to.
+- **T10 · The trackplay orphan sweep with an empty roster `[]`** deletes every game. Untested.
+
+### Tests that cannot fail
+
+- `settings.reducer` `setMode` starts with no accents — `toEqual` cannot see `customAccents` cleared.
+- `tracking-notifications.effects` start/pause: the fixture state already equals the expected hint.
+- `office-time.utils` `targetdays` copies the production formula into the expectation.
+- `players.facade` last-played sort: that order is also the name order.
+- `notifications.selector` "newest first": input already sorted.
+- `pills.reducer` "keeps the slot across an edit" sends the same slot — and `updateListItem` would
+  overwrite a different one, so the protection the name claims is absent.
+- `list-page.component` reorder calls the fake facade directly; `commlink.page` `total` and `noise`
+  echo the fake's own logic; `ritual-page.facade` reads one signal twice.
+- `item-list-toolbar` emits its own `output()`; `today.service` "does not notify" tests signal
+  equality; `jam.gateway` URL lines echo the fake client.
+- `error-boundary.spec` tests local copies of the shells, not the real ones.
+
+### Names that claim more than the body
+
+- `dashboard.effects` "persists a report that arrives before this boot read" — no such gate exists;
+  the body repeats the test above it.
+- `edit-cash-rule-dialog` "refuses a blank name" contradicts the component's banner and the
+  `rule.name || categoryName` fallback — one of them is wrong.
+- `tasks.selector` sorts by `dueAt`; the app only offers `nextDueAt`.
+- `office-time.reducer` tests `addFreeday`, which nothing dispatches — delete test and action.
+  `office-time.effects` "has no failure path left" asserts an undefined key.
+- "before" never checks order: `app-update.service`, `sources.facade`, `jam.gateway`,
+  `database.service` ×3.
+- `base-modal-dialog` "does not fall back to create mode" — it does. `edit-task-item-dialog` "drops the
+  derived date" — it keeps it. `task-lead.utils` uses a different worst case than production.
+  `board.page.spec`'s banner claims every refusal is asserted; three are. `office-time.utils`
+  "excludes free days" sets none.
+- `geist.page` "sends the query" forces `jacked-in` with no session, so nothing streams.
+- e2e: `e2e/office-time/first-paint.e2e.ts` banner says array, asserts a map (the legacy upgrade is untested);
+  `e2e/household/manage-categories.e2e.ts` undo — no item ever carried the category; `e2e/vitals/pills.e2e.ts` "keeps the
+  reminder switch" tests the non-native refusal.
+- `persisted-slice.effects.factory` one case never assigns `actions$` and leans on the previous test.
+
+### Weak oracles
+
+- **`e2e/tasks/recurring.e2e.ts` `inThreeMonths()` uses `setMonth(+3)`**, which overflows where the app
+  clamps — red on Nov 29–30 and the like. `due-date.e2e` and `notes.e2e` compute dates in the runner
+  and drift at midnight.
+- Clock assertions that are always true: trackplay "reads the clock at dispatch time" (`isAfter(2024)`),
+  `tracking.facade` truthy `now`, `household.factory` truthy `bestBefore`, `note-editor.facade`,
+  `clock.spec`, `notifications.reducer` `not.toBe(...)`. Fake the clock, assert the value.
+- `language-model.service` `toBeLessThanOrEqual(1)` passes on zero calls.
+- `e2e/helpers.ts` `addViaSearch` sleeps `waitForTimeout(400)` twice, and every add-flow inherits it;
+  about eight specs copy the sleep. Wait on the row or `waitForPersisted`.
+- 22 "should create" `toBeTruthy` specs, each in a file with real tests — delete.
+
+### Re-tested elsewhere — delete
+
+- Generic list reducer/effects mechanics re-tested in ~8 domain specs; `item-list.effects.factory.spec`
+  covers only undo. Move the generic cases there, keep per-module wiring.
+- Feature-slice selectors and `state => state.x` projectors.
+- `e2e/coprocessor/coprocessor.e2e.ts` and `e2e/vitals/astro.e2e.ts` re-check unit-tested arithmetic — one wiring value per page.
+- `list-item.component` repeats `base-swipe-row.spec`; single `it.each` rows repeated in
+  `golden.utils` and `ionic-color.utils`; `settings.effects` asserts a save no path makes.
+
+### Gaps — risky code with no meaningful test
+
+- **Persistence:** a migration step that throws → `loaded(null)` + toast with saves still blocked;
+  `notes.effects` has no spec, and `collectImages$` deletes images — `loaded(null)` must not collect;
+  legacy reminders cancel-once.
+- **CREDSTICK:** `CashImportFacade.commit` (no spec); the reducer branch confirming pending rows; the
+  balance check's PDNG skip; camt `ValDt` fallback, multi-statement documents, >2 decimals truncated;
+  encoding — a declared ISO-8859-1 file end to end, bytes 0x80–0x9F, mixed files; burndown counting
+  `excludedFromAllowance` accounts.
+- **AGENDA:** `reopenDue`, `tasks-day-rollover.effects`, `reopen-due-tasks.resolver` and `toggleDone`
+  have no spec; `advancePositioned` catch-up; due today paints 'danger' all day.
+- **Time:** tracking pause → resume break accrual; `refreshOnYearRollover$`; `OfficeTimeFacade` (no
+  spec); `TodayService` midnight timer; `calculateStats.remaining` and weekend holidays; wordclock
+  23:58 / 12:58; no e2e runs a timer across a reload.
+- **Lint plugin:** 11 of 20 rules have no RuleTester spec — `comments-header-only`,
+  `ngrx-data-layer-only`, `marker-argument-is-literal`, `testid-is-static`, `no-barrel-outside-data`
+  among them (shape 4). `a11y.spec` lacks `[attr.aria-label]`, `[label]` and `ion-select` /
+  `-textarea` / `-range` / `-checkbox`; `spec-resets-mock-selectors` would misreport
+  `afterEach(store.resetSelectors)`.
+- Smaller: `ageOn` on 29 Feb; the vitals weight recompute on a date change and a negative result;
+  board reducer success paths.
+
 ## What the next reviewer should look for
 
 The shapes this review turned up, kept because they will recur. Each is invisible to every gate here.
@@ -81,12 +195,15 @@ src/app/` should return nothing.
     writers is always a bug in the making._
 12. **A tie, an empty set, a single member.** Ranking code that never tests for equal scores, an `:id`
     catch-all with no unknown-id branch, a tab bar that renders with zero tabs. All three shipped.
+13. **A test that cannot fail.** The fixture already holds the expected value, the input is already
+    sorted, the expectation recomputes the production formula. Mutate the code under test in your
+    head: if the spec stays green, it is decoration.
 
 ### Verified clean — do not re-derive
 
 Facade discipline is uniform and unchallenged: 44 action groups, zero hand-rolled `createAction`, zero
-`@ngrx/*` outside `data/`, zero cross-domain imports outside the shell. No `I`/`T` type prefixes. No
-`expect(component).toBeTruthy()` filler anywhere. `deck.catalog.ts` is a data table with no logic crept
+`@ngrx/*` outside `data/`, zero cross-domain imports outside the shell. No `I`/`T` type prefixes.
+`deck.catalog.ts` is a data table with no logic crept
 in, and **no deck entry id has been renamed** by any recent commit. URL composition cannot break under
 `--base-href` — the app is hash-routed, so base-href touches assets only. `PROGRAM_CONTEXT` cannot throw
 `NullInjectorError`; it ships in the root injector with a factory default. `board.factory.ts`'s
@@ -94,6 +211,13 @@ ring arithmetic, `planMove`'s lap walk and home-column blocking, the notation ro
 `trackplay.cascade.ts` and `trackplay.scoring.ts` were all hand-traced and are correct. Every one of the
 13 edit dialogs uses `item-edit-modal`. `board.moves.ts` **is** covered (`board.moves.spec.ts`, 11
 cases including a Pachisi ruleset) — a stale index claimed otherwise.
+
+Tests that earn their keep and serve as the model: the camt parser variants and `read-statement`
+occurrence keys, `money.parseMagnitude`, holidays checked against the published Berlin JSON, the
+wordclock five-minute table, the board moves/setup/notation round-trips, task cadence clamping and
+`tasks.migrations`, persisted-slice save gating and the `versioned` ladder, `trackTime$` under fake
+timers, `cash-transactions.selector` against the real root state, the notifications reconcile, and the
+e2e `game-play`, `cold-launch`, `deck-visibility`, `cash/rules` and storage-undo specs.
 
 Route boilerplate across the 13 `*.routes.ts` was considered for extraction and **rejected**: the shape
 is not uniform (providers, `data`, nested children, spread contexts), a helper would grow an options bag,
