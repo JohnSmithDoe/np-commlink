@@ -26,8 +26,7 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 - `list-page.component` reorder calls the fake facade directly; `commlink.page` `total` and `noise`
   echo the fake's own logic; `ritual-page.facade` reads one signal twice.
-- `item-list-toolbar` emits its own `output()`; `today.service` "does not notify" tests signal
-  equality; `jam.gateway` URL lines echo the fake client.
+- `item-list-toolbar` emits its own `output()`; `jam.gateway` URL lines echo the fake client.
 - `error-boundary.spec` tests local copies of the shells, not the real ones.
 
 ### Names that claim more than the body
@@ -59,7 +58,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 - `language-model.service` `toBeLessThanOrEqual(1)` passes on zero calls.
 - `e2e/helpers.ts` `addViaSearch` sleeps `waitForTimeout(400)` twice, and every add-flow inherits it;
   six specs copy the sleep. Wait on the row or `waitForPersisted`.
-- 18 "should create" `toBeTruthy` specs, each in a file with real tests — delete.
 
 ### Re-tested elsewhere — delete
 
