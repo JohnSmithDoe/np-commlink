@@ -26,6 +26,7 @@ import {
   enableDeckProgram,
   gotoFeature,
   mainContent,
+  pageRoot,
   presentedDialog,
   ROUTE,
   searchInput,
@@ -121,16 +122,17 @@ test.describe('soykaf recipe book', () => {
     await expect(showProductsInStorage).toHaveAttribute('aria-checked', 'true');
 
     await gotoFeature(page, ROUTE.products);
-    await addViaSearch(page, 'Milk');
+    await addViaSearch(page, 'Milk', pageRoot(page, 'app-page-products'));
 
     await gotoFeature(page, ROUTE.storage);
-    await searchInput(page).fill('Milk');
-    const fromCatalog = page
-      .locator('app-page-storage app-household-search-panel')
+    const storage = pageRoot(page, 'app-page-storage');
+    await searchInput(page, storage).fill('Milk');
+    const fromCatalog = storage
+      .locator('app-household-search-panel')
       .locator('app-text-item', { hasText: 'Milk' });
     await expect(fromCatalog).toBeVisible({ timeout: 10_000 });
     await fromCatalog.click();
-    await searchInput(page).fill('');
+    await searchInput(page, storage).fill('');
 
     await gotoSoykaf(page);
     await createRecipe(page, 'Pancakes');

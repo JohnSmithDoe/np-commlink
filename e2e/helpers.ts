@@ -40,6 +40,15 @@ export const ROUTE = {
   products: 'household/products',
 } as const;
 
+type Route = (typeof ROUTE)[keyof typeof ROUTE];
+
+const PAGE_OF: Record<Route, string> = {
+  [ROUTE.shopping]: 'app-page-shopping',
+  [ROUTE.storage]: 'app-page-storage',
+  [ROUTE.tasks]: 'app-page-tasks',
+  [ROUTE.products]: 'app-page-products',
+};
+
 export function mainContent(page: Page): Locator {
   return page.locator('#main-content');
 }
@@ -111,8 +120,11 @@ export async function slideDelete(row: Locator): Promise<void> {
   await row.getByTestId('list-row-delete').click();
 }
 
-export async function waitForListPage(page: Page): Promise<void> {
-  await expect(searchInput(page)).toBeVisible({ timeout: 30_000 });
+export async function waitForListPage(
+  page: Page,
+  scope?: Locator
+): Promise<void> {
+  await expect(searchInput(page, scope)).toBeVisible({ timeout: 30_000 });
 }
 
 export async function addViaSearch(
@@ -314,11 +326,8 @@ export async function enableDeckProgram(
   await waitForPersisted(page, 'deck', `"${id}"`);
 }
 
-export async function gotoFeature(
-  page: Page,
-  route: (typeof ROUTE)[keyof typeof ROUTE]
-): Promise<void> {
+export async function gotoFeature(page: Page, route: Route): Promise<void> {
   await page.goto(`/#/${route}`);
   await expect(page).toHaveURL(new RegExp(route.replace('/', String.raw`\/`)));
-  await waitForListPage(page);
+  await waitForListPage(page, pageRoot(page, PAGE_OF[route]));
 }

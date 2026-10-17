@@ -345,10 +345,12 @@ test.describe('storage list', () => {
     });
 
     await gotoFeature(page, ROUTE.shopping);
-    await expect(page.getByTestId('undo-button')).toHaveCount(0);
+    await expect(
+      pageRoot(page, 'app-page-shopping').getByTestId('undo-button')
+    ).toHaveCount(0);
 
     await gotoFeature(page, ROUTE.storage);
-    const undo = page.getByTestId('undo-button');
+    const undo = pageRoot(page, 'app-page-storage').getByTestId('undo-button');
     await expect(undo).toBeVisible({ timeout: 10_000 });
 
     await undo.click();
