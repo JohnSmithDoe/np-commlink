@@ -41,10 +41,6 @@ describe('EditStorageItemDialogComponent', () => {
     ).componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('edits the local draft without dispatching per keystroke', () => {
     component.setMinAmount(5);
     component.setBestBefore('2024-12-31');

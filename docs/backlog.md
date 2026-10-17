@@ -38,9 +38,8 @@ Landed working and gated, but Martin's verdict is that it needs work. Known roug
 - **Sizes are one list for top and trousers** (letters, then children's heights) plus EU shoes — no
   jeans W/L, no per-garment notes. Untested against how sizes are actually bought.
 - **The BIOMON astro dialog has no name field and a generic title** — it does not say whose signs it edits.
-- **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" moves on
-  any game edit, not only on a scored round.
-- **No handbook page for SIN**; the BIOMON and TRACKPLAY pages were reworded, their figures stale.
+- **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" counts
+  a game nobody has scored yet — a new game starts with `updatedAt = createdAt`.
 
 ---
 
@@ -48,8 +47,7 @@ Landed working and gated, but Martin's verdict is that it needs work. Known roug
 
 _Audited 2026-10-17: every unit spec, the e2e suite minus handbook shots, and the RuleTester specs.
 No test asserts behaviour the app lacks. The faults are tests that cannot fail, fixtures the real
-pipeline never emits, and gaps exactly where the risk sits. The shell is mid-move to `src/app/shell/`
-— re-check the shell-touching entries once it lands. Each suspected bug gets a red spec before its fix._
+pipeline never emits, and gaps exactly where the risk sits. Each suspected bug gets a red spec before its fix._
 
 ### Suspected bugs, found by reading
 
@@ -85,12 +83,13 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   `database.service` ×3.
 - `base-modal-dialog` "does not fall back to create mode" — it does. `edit-task-item-dialog` "drops the
   derived date" — it keeps it. `task-lead.utils` uses a different worst case than production.
-  `board.page.spec`'s banner claims every refusal is asserted; three are. `office-time.utils`
+  `board.page.spec`'s banner claims every refusal is asserted; three of six are —
+  `overshoots-home`, `own-piece` and `blocked-in-home` are reachable and unasserted. `office-time.utils`
   "excludes free days" sets none.
 - `geist.page` "sends the query" forces `jacked-in` with no session, so nothing streams.
 - e2e: `e2e/office-time/first-paint.e2e.ts` banner says array, asserts a map (the legacy upgrade is untested);
   `e2e/household/manage-categories.e2e.ts` undo — no item ever carried the category; `e2e/vitals/pills.e2e.ts` "keeps the
-  reminder switch" tests the non-native refusal.
+  reminder switch on its own pill" seeds one pill, so the isolation is untested.
 - `persisted-slice.effects.factory` one case never assigns `actions$` and leans on the previous test.
 
 ### Weak oracles
@@ -103,8 +102,8 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   `clock.spec`, `notifications.reducer` `not.toBe(...)`. Fake the clock, assert the value.
 - `language-model.service` `toBeLessThanOrEqual(1)` passes on zero calls.
 - `e2e/helpers.ts` `addViaSearch` sleeps `waitForTimeout(400)` twice, and every add-flow inherits it;
-  about eight specs copy the sleep. Wait on the row or `waitForPersisted`.
-- 22 "should create" `toBeTruthy` specs, each in a file with real tests — delete.
+  six specs copy the sleep. Wait on the row or `waitForPersisted`.
+- 18 "should create" `toBeTruthy` specs, each in a file with real tests — delete.
 
 ### Re-tested elsewhere — delete
 

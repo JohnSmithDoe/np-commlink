@@ -16,10 +16,6 @@ describe('TextItemComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('renders the label in the heading', () => {
     fixture.componentRef.setInput('label', 'My section');
     fixture.detectChanges();

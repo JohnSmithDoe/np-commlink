@@ -32,10 +32,6 @@ describe('DatabaseService', () => {
     service = TestBed.inject(DatabaseService);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
   describe('save', () => {
     it('persists under the unified "npc-" prefixed key', async () => {
       const value = { showQuickAdd: true } as never;

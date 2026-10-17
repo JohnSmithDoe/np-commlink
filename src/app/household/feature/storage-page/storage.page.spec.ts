@@ -21,10 +21,6 @@ describe('StoragePage', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockStorageItem();
     component.removeItem(item);

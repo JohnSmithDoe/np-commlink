@@ -28,10 +28,6 @@ describe('ListSettingsPage', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('exposes the seeded settings via the settings signal', () => {
     expect(component.settings().showQuickAdd).toBe(true);
   });

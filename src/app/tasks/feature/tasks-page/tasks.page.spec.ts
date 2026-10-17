@@ -21,10 +21,6 @@ describe('TasksPage', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockTaskItem();
     component.removeItem(item);

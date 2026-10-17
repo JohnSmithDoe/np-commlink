@@ -16,10 +16,6 @@ describe('ItemListToolbarComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('emits the selected sort mode', () => {
     const emitted: string[] = [];
     component.selectSortMode.subscribe((v) => {

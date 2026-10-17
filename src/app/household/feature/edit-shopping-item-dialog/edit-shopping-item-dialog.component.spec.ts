@@ -38,10 +38,6 @@ describe('EditShoppingItemDialogComponent', () => {
     ).componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('edits the local draft without dispatching per keystroke', () => {
     component.setQuantity(4);
     component.form.name().value.set('Espresso');

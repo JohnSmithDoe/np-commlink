@@ -21,10 +21,6 @@ describe('ProductsPage', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('dispatches removeItem with the item', () => {
     const item = mockProduct();
     component.removeItem(item);

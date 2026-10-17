@@ -32,11 +32,6 @@ describe('ListItemComponent', () => {
     fixture.componentRef.setInput('ionList', ionList);
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
   it('renders the title and category note', () => {
     fixture.componentRef.setInput(
       'item',

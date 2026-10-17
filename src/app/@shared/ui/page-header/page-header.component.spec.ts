@@ -43,10 +43,6 @@ describe('PageHeaderComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('renders the (translated) label in the ion-title', () => {
     fixture.componentRef.setInput('label', 'page-title.storage');
     fixture.detectChanges();

@@ -15,10 +15,6 @@ describe('ItemListEmptyComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('shows the "is empty" message for an empty, non-searching list', () => {
     fixture.componentRef.setInput('isEmptyList', true);
     fixture.componentRef.setInput('isSearching', false);

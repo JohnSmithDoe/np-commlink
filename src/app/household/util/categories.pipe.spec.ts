@@ -14,10 +14,6 @@ describe('CategoriesPipe', () => {
     pipe = new CategoriesPipe();
   });
 
-  it('creates an instance', () => {
-    expect(pipe).toBeTruthy();
-  });
-
   it('returns "" for an item with no categories, and for no item at all', () => {
     expect(pipe.transform({} as BaseItem)).toBe('');
     expect(pipe.transform(undefined)).toBe('');

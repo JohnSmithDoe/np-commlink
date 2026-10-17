@@ -26,7 +26,6 @@ function mockResults(
 
 describe('HouseholdSearchResultComponent', () => {
   let fixture: ComponentFixture<HouseholdSearchResultComponent>;
-  let component: HouseholdSearchResultComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -34,11 +33,6 @@ describe('HouseholdSearchResultComponent', () => {
       providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
     fixture = TestBed.createComponent(HouseholdSearchResultComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('renders no rows when there are no results', () => {

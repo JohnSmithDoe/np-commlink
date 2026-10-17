@@ -30,11 +30,6 @@ describe('ShoppingActionSheetComponent', () => {
     dispatch = vi.spyOn(store, 'dispatch');
   }
 
-  it('should create', async () => {
-    await setup();
-    expect(component).toBeTruthy();
-  });
-
   it('shows only share + cancel buttons when there are no bought items', async () => {
     await setup();
     expect(component.actionSheetButtons()).toHaveLength(2);

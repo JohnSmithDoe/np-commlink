@@ -42,10 +42,6 @@ describe('EditTaskItemDialogComponent', () => {
     ).componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('edits the local draft without dispatching per keystroke', () => {
     component.updatePrio(3);
     component.updateDueAt('2024-06-01');

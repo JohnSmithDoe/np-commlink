@@ -38,10 +38,6 @@ describe('EditProductDialogComponent', () => {
     ).componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('patches the draft with timespan + a default timevalue for a finite timespan', () => {
     component.setBestBeforeTimespan({
       detail: { value: 'days' },

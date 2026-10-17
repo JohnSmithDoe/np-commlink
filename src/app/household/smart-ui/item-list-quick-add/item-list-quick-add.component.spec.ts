@@ -28,11 +28,6 @@ async function setup(household: Partial<HouseholdState> = {}) {
 const searchingForMilk = () => mockShoppingState({ searchQuery: 'Milk' });
 
 describe('ItemListQuickAddComponent', () => {
-  it('should create', async () => {
-    const { component } = await setup();
-    expect(component).toBeTruthy();
-  });
-
   it('exposes canAddLocal=true when the query is new and the setting is on', async () => {
     const { component } = await setup({
       shopping: searchingForMilk(),

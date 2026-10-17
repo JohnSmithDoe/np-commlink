@@ -27,10 +27,6 @@ describe('ItemListComponent', () => {
     fixture.componentRef.setInput('items', []);
   });
 
-  it('creates', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('reports the ids in the order the drag produced', () => {
     fixture.componentRef.setInput('items', items('a', 'b', 'c'));
     const reported: string[][] = [];

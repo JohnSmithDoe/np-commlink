@@ -98,10 +98,6 @@ describe('ListPageComponent', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('clears the filter through one action instead of touching the router', () => {
     state.set(mockListState({ filterBy: 'cat-1' }));
 
