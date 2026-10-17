@@ -35,9 +35,9 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
 
 - **A list has to declare its own sort fallback.** `filterAndSortItemList` falls back to NAME when `sort` is
   absent, so household's unmarked sort button is correct and the recipe list's absent sort means the
-  cookability ranking. Two cheap fixes fail: seeding `sort` into initial state reaches nobody who has the
-  problem (`hydratedList` takes the stored document wholesale), and reading an absent sort as "name" inside
-  the toolbar lies on the recipe list. Owed: a `defaultSort` the FACADE declares beside `sortOptions`, which
+  cookability ranking. Seeding `sort` into initial state now reaches a stored document without one — every list
+  reducer hydrates over its defaults — but cannot express the recipe list's ranking, and reading an absent
+  sort as "name" inside the toolbar lies there. Owed: a `defaultSort` the FACADE declares beside `sortOptions`, which
   the toolbar marks when `activeSort` is absent.
 - **`/cash` is not a caller of the shared toolbar at all** — the accounts page hangs its net worth in
   `toolbarActionsEnd` but renders no sort row. Worth doing after the entry above, not before.
@@ -70,7 +70,7 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
 - **The pill intake log is never pruned.** `intakes` gains one entry per pill per day forever — five pills
   over two years is ~3600 entries, carried in every vitals write. Pruning past ~90 days is a few lines, but
   `vitals` is a slice real users hold, so it owes a rung.
-- **The match preview re-scans the ledger on every keystroke.** `matchesRegexSafely` compiles a new RegExp
+- **The match preview re-scans the ledger on every keystroke.** `doesMatchRegexSafely` compiles a new RegExp
   per transaction, the amount threshold is re-parsed per transaction, and the whole matched set is sorted to
   take five. Owed: a compiled condition set, a running top-five, and a ~250ms debounce — the debounce changes
   **when** the preview updates, which is why it is not a silent cleanup.
@@ -244,6 +244,18 @@ stars, nine life numbers, own deck program, every detail route deep-linkable. Le
   across weekdays. There is no "every 14 days" cron: a period pill needs a one-shot `at:` re-armed on each
   intake, which moves the next occurrence from the OS back into the app — the exact trade the
   `LocalNotificationsService` banner took the cron to avoid. Decide that before the field.
+
+## SIN
+
+The first cut works and is gated; Martin's verdict is that it needs a second pass.
+
+- **No person page.** A tap opens the edit dialog; the row shows only the first address, and nothing
+  links from a person to their BIOMON profile or TRACKPLAY record.
+- **Sizes are one list for top and trousers** (letters, then children's heights) plus EU shoes — no
+  jeans W/L, no per-garment notes. Untested against how sizes are actually bought.
+- **The BIOMON astro dialog has no name field and a generic title** — it does not say whose signs it edits.
+- **TRACKPLAY's `createdAt` sort now sorts by when the PERSON was created**, and "last played" counts
+  a game nobody has scored yet — a new game starts with `updatedAt = createdAt`.
 
 ## TRACKPLAY
 

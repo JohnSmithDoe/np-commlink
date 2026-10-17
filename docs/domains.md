@@ -237,7 +237,7 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
 - **It is `ritual`, not a page inside `tasks`** — `tasks` means `TaskItem`, with categories, an edit dialog
   and a sort. A prompt catalog and a completion log share none of that state.
 - **The catalog lives in the translation bundle** — ~100 prompts, ~7.5 KB on a 31 KB boot fetch, keeping
-  de/en in lockstep. **Past ~250 entries**, copy the emoji catalog's per-language dynamic imports.
+  de/en/fr in lockstep. **Past ~250 entries**, copy the emoji catalog's per-language dynamic imports.
 - **Adjacency is the complaint, not recurrence** — the draw excludes the last twenty _distinct_ completed
   prompts, bounded by count rather than a day window, and falls back to the whole catalog when the pool
   would empty.
@@ -284,9 +284,10 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
   for the same fix with a `dueDay` field beside its date (`schedule.types.ts`); AGENDA needs no second
   field because the split already keeps the entry. It is excluded for `week`, where a day number means
   nothing and applying it drags the date bodily across the month.
-- **Rolling forward is one loop with one exit: the first date after today.** Both anchors feed the same
-  advance; only the seed differs — `dueAt` for an obligation, `doneAt` for maintenance. Completion
-  anchoring can never land in the past, so the loop is a no-op there, and the same code covers both.
+- **Rolling forward stops at the first date after today.** Both anchors feed the same advance; only the
+  seed differs — `dueAt` for an obligation, `doneAt` for maintenance. An elapsed cadence jumps to its
+  n-th step in one computation and keeps only the last `MAX_CLOSINGS` misses; a positioned one walks,
+  bounded by `MAX_ROLL_STEPS`.
 - **A seed already in the future is the answer, not a starting point, and that is what makes advancing
   idempotent.** Closing a due-anchored task twice used to step twice — the second close read the date
   the first one wrote, an occurrence that has not happened, and walked past it — so a stray tick and
@@ -349,7 +350,7 @@ One module's own settled reasoning — do not re-flag as work. Cross-cutting dec
 - **The editor has no save button.** Every keystroke is a candidate write and a write serialises the whole
   slice, images included, so the facade debounces and flushes on destroy. Destroy is why the note id is
   captured on the way IN: by teardown the router has moved on and a route-derived note reads as undefined.
-- **A picked image is re-encoded to a 1600px JPEG before it is stored.** The budget is about the write: the
+- **A picked image is re-encoded to a JPEG two screens on its longest edge before it is stored.** The budget is about the write: the
   whole slice is rewritten on each save, so one untouched camera photo would be paid for again on every
   keystroke of the body beneath it.
 - **Reorder is pointer-only, a known R5 gap.** Here it is cosmetic — every note stays reachable, searchable
@@ -503,7 +504,7 @@ Kármán-Linie`. A name that costs a lookup is the failure the feature exists to
   starts is scrobbled — that is what fills "recently played" and "played often".
 
 ## The deck
-- **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/commlink/deck`.
+- **A cold install ships an empty deck** — no entry listed, one `@empty` node pointing at `/settings/deck`.
   The curated four it replaced re-opened "does this one belong in the default?" for every new feature, a
   question with no checkable answer. Empty is a rule instead of a list. **No entry is ever added back as a
   special case.**

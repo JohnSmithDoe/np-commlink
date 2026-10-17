@@ -152,13 +152,10 @@ or a count the code owns.
 - **A module's tabs are its catalog entries exactly one segment below its tabs page.** `PROGRAM_CONTEXT` is
   asked with a URL PREFIX, not a module name, so the answer is a fact about the address bar: a program
   further down — `/vitals/iching/cast` under a `/vitals` tabs page — is a page inside a tab's stack, and the
-  same lookup says so with no second rule. Sibling programs must therefore share their module's prefix;
-  `/soykaf`, `/data` and `/commlink/deck` do not yet, and each costs a move plus a redirect. **A program
-  sitting AT its module's prefix is the expensive case**: the lookup answers `undefined` for a route
-  equal to the prefix, so such a program can never be a tab in its own module's bar. `/cash` and
-  `/vitals` are both there, and adopting the tabs page for them means moving a published program URL down a
-  segment — which for `vitals` touches a slice real users hold and owes the usual ask. It is what drove
-  trackplay's restructure.
+  same lookup says so with no second rule. Sibling programs must therefore share their module's prefix,
+  and a move costs a redirect. **A program sitting AT its module's prefix is the expensive case**: the
+  lookup answers `undefined` for a route equal to the prefix, so such a program can never be a tab in its
+  own module's bar — which is why every program now sits one segment below it.
 - **The tabs page is `@shared/feature/module-tabs-page`, mounted on the module's EMPTY-PATH route.** `IonTabs`
   navigates to `<its own URL>/<tab>`, so an empty path leaves the prefix at the module and every tab keeps
   the address the catalog publishes. A module root redirects to its first tab, because `ion-tab-button`
@@ -169,9 +166,8 @@ or a count the code owns.
   names its own parent — `list-settings`, and cash's `rules`, `report`, `schedules`, `categories`. No
   catalog entry contains such a page, so `PROGRAM_CONTEXT` gives it none: `returnRoute`/`returnLabel` is
   the whole mechanism, and a page that names neither renders no return row at all.
-- **A tab is labelled by the entry's `titleKey`.** The per-skin `nameKey` is the deck tile's wording and
-  a shorter one, which the bar may want if a title ever truncates; it is not free, because resolving it
-  makes the lookup skin-reactive.
+- **A tab is an icon, named by the entry's `titleKey` as its `aria-label`.** No title renders, so the
+  per-skin `nameKey` is not wanted; resolving it would make the lookup skin-reactive.
 - **Deck visibility does not trim the bar.** Hiding a tile means "not on my deck", not "not in this module".
 - **A program's URL may move for one rung-free price: a redirect.** `DeckState` persists entry IDS
   (`order`, `visibleEntries`, `hiddenTiles`); the route lives in the catalog, which is code.
@@ -256,7 +252,7 @@ or a count the code owns.
   never reach an existing one, because the item's own value wins the moment it exists. A setting no item
   field mirrors can only be a **global** — it is read at render time and therefore moves everything at
   once. So the classification is not a judgement call: AGENDA's warn-earlier/later is a global because no
-  task stores a warning window, and anchor and lead are defaults because every task stores its own.
+  task stores a warning window, and the anchor is a default because every task stores its own.
   Household's `ListSettings` is the page mechanism; `toggleFlag(flag: BooleanKeys<ListSettings>)` is the
   globals half of it and nothing there seeds an item.
 - **A date field stores a DAY, no rung.** `app-date-input` writes `YYYY-MM-DD`; the calendar emits the
@@ -373,6 +369,12 @@ Every `BaseItem` list renders `ListPageComponent`.
   does not compress. The cap keeps a headline value and a run of actions from wanting opposite things.
 - **Two lists are deliberately not candidates.** A `DeckEntry` has no `name` — its label is a per-skin
   marker. Cash's uncategorized view keeps the inert empty state, because there an empty list is a SUCCESS.
+- **Measured, not worth touching:**
+  **Neither the vitals toolbar nor the household `ion-tab-bar`.** `list-page` guards the toolbar on
+    `facade.hasToolbar?.() ?? true` and both vitals facades set it `false`, so there is no empty bar to
+    remove. The tab-bar has nothing to cap: Ionic gives it `justify-content: center` with `max-width: 168px`
+    per button, so the three are already a centred 504px cluster — padding the host moves them 0px (measured
+    at 1600px). Its band is full-bleed on the same grounds the header's is.
 
 ## Features and gates declined
 

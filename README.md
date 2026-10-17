@@ -2,7 +2,7 @@
 
 Shadowrun-styled deck merging `np-timetracker` (tracking, office-time, notifications, notes/SIGIL) with
 `np-kitchen-bot` (shopping, storage, products, tasks) and np-trackplay (gaming list) into a single
-Angular 21 / Ionic 8 / Capacitor 8 app.
+Angular 22 / Ionic 9 / Capacitor 8 app.
 
 **Live:** <https://johnsmithdoe.github.io/np-commlink/> · **Android:** [latest release](https://github.com/JohnSmithDoe/np-commlink/releases/latest)
 

@@ -117,6 +117,9 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   raw date field with `app-date-input`; `pickDate(field, iso)` is the helper it should have used, and the
   same file was already calling it correctly thirty lines away. **Whoever changes a screen greps the shots
   source for what it reads** — `tsc -p e2e/handbook/tsconfig.json` type-checks it but cannot see a selector.
+- **Handbook seeding has two traps.** A reading keeps its date in `name`, not `createdAt` — an empty `name`
+  paints "Invalid Date" ticks. Playwright wipes `outputDir` on every run, so shots are written outside it.
+  Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 - **One artifact, two writers** is always a bug in the making.
 
 ## Autofix and tooling hazards
@@ -125,9 +128,9 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   duplicate bare `mask`, dropping the clip on trackplay's victory beams; `value-keyword-case` lowercases
   `Arial` inside `--sr-sans`. Read the `--fix` diff.
 - **Markdown is outside every formatting gate.** `prettier --write` on a doc reflows the whole file. Don't.
-- **`i18n:extract` flags are load-bearing.** Both outputs must be named; `'{de,en}.json'` stays **quoted** so
+- **`i18n:extract` flags are load-bearing.** All three outputs must be named; `'{de,en,fr}.json'` stays **quoted** so
   the tool expands the braces, not the shell; use `--format-indentation '  '` and **never the `-fi` alias**
-  (with two outputs yargs reads it as clustered `-f -i`); `--trailing-newline` keeps a four-figure line churn
+  (with several outputs yargs reads it as clustered `-f -i`); `--trailing-newline` keeps a four-figure line churn
   out of the diff. **Acceptance:** `pnpm run i18n:extract` → `git diff --exit-code public/i18n/` is clean.
 - **A key passed as a STATIC attribute is invisible to the extractor, and `--clean` deletes it.**
   `labelKey="settings.theme.title"` reads as a plain string to every scanner. It fails silently, one run
@@ -271,7 +274,7 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 
 - **`vh` is not the height you can see, and it moves.** Mobile browsers resolve it against the _largest_
   viewport, so a `vh` offset is wrong on first paint. It is also blind to content. Both are why
-  `cash.empty-state` uses `consts.vertical-cut`, whose `::before` takes a share of the **free** space.
+  `item-list-empty` and the ritual page use `consts.vertical-cut`, whose `::before` takes a share of the **free** space.
 - **A `flex-grow` below 1 distributes only that fraction of the free space** (Flexbox §9.7). The container
   must have free space for it to do anything, and `justify-content` must be `flex-start` — `center` splits
   the remaining fraction across both ends and halves the offset.

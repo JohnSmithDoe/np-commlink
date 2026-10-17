@@ -37,7 +37,7 @@ one's data.
   pills keyed on those ids **are deleted by the first BIOMON load of the next tag** — the orphan sweep
   cannot tell a pre-`people` profile from a removed person. Asked and answered: swept, no rung. `people` is published from the next tag on.
 - **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` where a pre-v1.1.0
-  document carries `hiddenEntries` + `hiddenModules` (`isCurrentShape` in `deck.reducer.ts`). `settings`
+  document carries `hiddenEntries` + `hiddenModules` (`asCurrentShape` in `deck.reducer.ts`). `settings`
   splits `theme` into `skin` and `mode` and falls through `{...initialSettings, ...settings}`.
 
 ## Exemptions taken
@@ -93,10 +93,6 @@ The flags themselves are the list — restating it here only drifts:
 grep -l '"shotsStale": true' public/handbook/pages/*.json
 ```
 
-Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them. Two seeding traps:
-**a reading keeps its date in `name`**, not `createdAt` (an empty `name` paints "Invalid Date" ticks), and
-**Playwright wipes `outputDir` on every run**, so shots must be written outside it.
-
 ## Waiting on upstream
 
 - **TypeScript 7 (the native compiler) is gated on Angular.** Angular, typescript-eslint and
@@ -105,11 +101,6 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 
 ## Open defects
 
-- **Two household header actions may still be vertically clipped** — the cart on STASH and the tray on
-  MARKET, sliced by the toolbar's top edge while the tab bar renders the same glyphs whole. It reproduces
-  only where the status-bar inset is non-zero, so **re-check on the device before treating this as
-  open**: the double-inset that `.toolbar-container` (`contain: content`, `overflow: hidden`) was
-  clipping is fixed, and that shared the condition.
 - **Native controls ignore the skin** — SYSOP's two `<input type="color">` swatches, now the only unskinned
   chrome in the app.
 
@@ -123,15 +114,7 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
   aggregate lets one well-tested domain hide an untested one, so the next untested feature reds it again.
   The fix is a floor per domain or on the diff, not a lower number.
 
-- **The notes list decodes a full picture into a 48px box.** `MAX_EDGE` is two screens, so every thumbnail
+- **The notes list decodes a full picture into a 48px box.** `maxEdge()` is two screens, so every thumbnail
   costs a full-size decode; `loading="lazy"`/`decoding="async"` defer it but do not shrink it. A second
   canvas pass at import would store a ~192px `thumbUrl` beside the picture. Free as a shape change (`notes`
   is dev-only), and the list is also unwindowed — the two belong in one pass.
-
-## Measured, not worth touching
-
-- **Neither the vitals toolbar nor the household `ion-tab-bar`.** `list-page` guards the toolbar on
-  `facade.hasToolbar?.() ?? true` and both vitals facades set it `false`, so there is no empty bar to
-  remove. The tab-bar has nothing to cap: Ionic gives it `justify-content: center` with `max-width: 168px`
-  per button, so the three are already a centred 504px cluster — padding the host moves them 0px (measured
-  at 1600px). Its band is full-bleed on the same grounds the header's is.

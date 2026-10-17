@@ -12,19 +12,19 @@ Android APK.
 
 **Trunk-based: work on `main`.** If you must isolate, prefer a worktree over a branch. Commit messages
 explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
-that has to outlive its commit belongs in one of the five documents below.
+that has to outlive its commit belongs in one of the documents below.
 
-## Five documents, and the rule that keeps them small
+## Seven documents, and the rule that keeps them small
 
 | File | Holds |
 | --- | --- |
 | [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work |
-| [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, SIN, BIOMON, DAILY RUN, AGENDA, SIGIL, SOYKAF, TRACKPLAY, SIMSENSE, the deck |
+| [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, SIN, BIOMON, DAILY RUN, AGENDA, SIGIL, SOYKAF, TRACKPLAY, SIMSENSE, COPROCESSOR, the deck |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
 | [state.md](docs/state.md) | blocked work, one-way doors, open defects, costs left standing |
 | [next-version.md](docs/next-version.md) | work triaged into the next major |
 | [backlog.md](docs/backlog.md) | review findings, until the code answers them — and what the next reviewer should look for |
-| [jamserve-client.md](docs/jamserve-client.md) | research for SIMSENSE streaming from a jamserve server — nothing decided |
+| [jamserve-client.md](docs/jam/jamserve-client.md) | research for SIMSENSE streaming from a jamserve server — nothing decided |
 
 **These seven are the whole list**, and `backlog.md` is the one that empties:
 an entry is deleted once fixed, or moves to the file that owns it. A doc is updated only when a decision, a footgun, a
@@ -36,8 +36,8 @@ BLOCKED and `next-version.md` what is SCHEDULED — nothing belongs in both.
 
 An inventory that mirrors the tree needs rewriting every time the tree moves, so this repo keeps none.
 Each fact lives where it cannot drift from itself: gates in `scripts/verify-all.sh` (`GATES=(`),
-boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets and coverage floors in
-`angular.json`, the publish pipeline in `.github/workflows/release.yml`, the style layer's contract in
+boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets in `angular.json`, coverage
+floors in `vitest.config.ts`, the publish pipeline in `.github/workflows/release.yml`, the style layer's contract in
 `src/global.scss`'s banner, each lint rule's rationale in its own.
 
 ## Commands
@@ -54,7 +54,7 @@ boundaries in `sheriff.config.ts`, compiler flags in `tsconfig.json`, budgets an
 | `pnpm run verify:all` | every gate, one reported card each; `--cold` purges eslint's cache |
 | `pnpm run verify:testids` · `:icons` · `:docs` · `:exports` · `:pages` | the whole-repo scripts |
 | `pnpm exec sheriff verify src/main.ts` | module boundaries |
-| `pnpm run i18n:extract` | rewrite both bundles from the `marker(...)` literals, `--clean` included |
+| `pnpm run i18n:extract` | rewrite all three bundles from the `marker(...)` literals, `--clean` included |
 | `pnpm run emoji:build` | regenerate the emoji catalog from CLDR (output is committed; not in CI) |
 | `pnpm run jam:update [url]` | replace `src/vendor/jam/` with a running jamserve's generated axios client, version in its `VERSION` |
 | `pnpm run handbook:shots` | the whole figure pipeline: shoot, convert to WebP, clear the stale flags (release only — see below) |
@@ -95,7 +95,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | Rule | Enforced by |
 | --- | --- |
 | No `@ngrx/*` outside `data/` — every read and dispatch goes through a `<Domain>Facade` | `commlink/ngrx-data-layer-only` |
-| Domains are sealed; no feature imports another feature | Sheriff (`domain:* → sameTag, domain:shared`) |
+| Domains are sealed; no feature imports another feature — only `shell` composes across them | Sheriff (`domain:* → sameTag, domain:@shared`) |
 | No `@Service` (nor `@Injectable`) in any `util/` — every service lives in `data/`, so `ui → util` stays inert | `no-restricted-syntax` (eslint.config.js) |
 | `smart-ui` is a strict leaf — a smart component never composes another | Sheriff type axis |
 | The only `index.ts` is a `<domain>/data/` facade barrel | `commlink/no-barrel-outside-data` |
