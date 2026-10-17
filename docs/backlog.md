@@ -57,8 +57,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   text, so a PDNG row whose date or wording moves at booking gets a new key. The `plan-import` spec
   "confirms a pending row that books later" passes only because its `derivedKey` is hand-written to
   the old date — the reader would never emit it.
-- **T3 · Four board refusals render nothing.** `board.page.html` has no `@case` for `bad-roll`,
-  `no-room-at-home`, `unknown-field`, `too-many`, and no `@default`. Check which the UI can reach.
 - **T4 · Import sightings rewrite schedules.** `scheduleSightingsFor` / `applyAmountChanges`: a refund
   matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
 - **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
@@ -205,7 +203,10 @@ in, and **no deck entry id has been renamed** by any recent commit. URL composit
 ring arithmetic, `planMove`'s lap walk and home-column blocking, the notation round-trip,
 `trackplay.cascade.ts` and `trackplay.scoring.ts` were all hand-traced and are correct. Every one of the
 13 edit dialogs uses `item-edit-modal`. `board.moves.ts` **is** covered (`board.moves.spec.ts`, 11
-cases including a Pachisi ruleset) — a stale index claimed otherwise.
+cases including a Pachisi ruleset) — a stale index claimed otherwise. The board page's refusal `@switch`es
+lack `bad-roll`, `unknown-field`, `too-many` and `no-room-at-home` on purpose: none is reachable from the
+page — the pips are 1–6, every tap is a rendered field, placing stops once the set is complete, and a
+thrown figure left the ring, so its own yard has a slot.
 
 Tests that earn their keep and serve as the model: the camt parser variants and `read-statement`
 occurrence keys, `money.parseMagnitude`, holidays checked against the published Berlin JSON, the
