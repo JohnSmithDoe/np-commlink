@@ -1,5 +1,6 @@
 {
   "slug": "sin",
+  "shotsStale": true,
   "title": "SIN",
   "plain": "Personen",
   "route": "/people",
@@ -27,6 +28,11 @@
             "<strong>Name</strong> eintragen — das einzige Pflichtfeld — und <strong>Person</strong> oder <strong>Haustier</strong> wählen.",
             "Optional <strong>Geburtstag</strong>, Größen und Adressen, dann <strong>Anlegen</strong>."
           ]
+        },
+        {
+          "type": "figure",
+          "img": "sin-dialog.webp",
+          "caption": "Der Dialog: Name, Person oder Haustier, Geburtstag und Größen zum Antippen"
         }
       ]
     },
@@ -47,12 +53,27 @@
           "html": "<strong>Adresse hinzufügen</strong> hängt einen Block mit Straße und Hausnummer, PLZ, Ort und Land an; das X entfernt ihn. Ein ganz leerer Block wird beim Speichern verworfen."
         },
         {
+          "type": "figure",
+          "img": "sin-adresse.webp",
+          "caption": "Eine Adresse im Dialog — das X oben rechts entfernt den Block wieder"
+        },
+        {
           "type": "h3",
           "html": "Die Liste"
         },
         {
           "type": "p",
           "html": "Jede Zeile zeigt Kopf oder Pfote, den Namen, den Geburtstag mit Alter (<code>26.01.1990 · 36 Jahre</code>), die Größen, sofern gesetzt, und die <em>erste</em> Adresse. Sortiert wird nach <strong>A-Z</strong> oder <strong>Geburtstag</strong>; ein zweiter Tipp auf den aktiven Knopf dreht die Richtung. Die Suchleiste filtert nach Namen; Enter öffnet den Dialog für einen neuen Eintrag. Die Kachel auf dem Deck zählt alle Einträge, Menschen und Haustiere zusammen."
+        },
+        {
+          "type": "figure",
+          "img": "sin-liste.webp",
+          "caption": "Die Liste: Menschen mit Kopf, Haustiere mit Pfote, darunter Geburtstag, Größen und die erste Adresse"
+        },
+        {
+          "type": "figure",
+          "img": "sin-deck-kachel.webp",
+          "caption": "Die SIN-Kachel auf dem Deck zählt alle Einträge"
         },
         {
           "type": "h3",
@@ -75,6 +96,11 @@
             "<strong>Nach links wischen</strong> → rotes <strong>Löschen</strong>; vollständig durchwischen löscht sofort, ohne Nachfrage. Unten steht kurz <em>„… gelöscht\"</em>; der Pfeil oben in der Kopfzeile holt den Eintrag zurück.",
             "Kein Wischen nach rechts, kein Lang-Druck, kein Sortier-Griff."
           ]
+        },
+        {
+          "type": "figure",
+          "img": "sin-wischen-loeschen.webp",
+          "caption": "Nach links gewischt: LÖSCHEN liegt rechts unter der Zeile"
         }
       ]
     },

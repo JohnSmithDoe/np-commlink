@@ -94,9 +94,6 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 **a reading keeps its date in `name`**, not `createdAt` (an empty `name` paints "Invalid Date" ticks), and
 **Playwright wipes `outputDir` on every run**, so shots must be written outside it.
 
-**SIN and SIMSENSE have pages but no figures** — no `e2e/handbook/*.shots.ts` covers them yet, so no flag
-can name them. Write both scripts before the next release's `handbook:shots` run.
-
 ## Waiting on upstream
 
 - **Angular 22 is gated on NgRx.** On `21.2.18` (`v21-lts`, supported, not urgent); `@ngrx/*` latest is
