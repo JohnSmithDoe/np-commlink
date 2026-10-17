@@ -9,14 +9,11 @@ CLAUDE.md row go with the last one. Versions and peer ranges are as read from th
 | Group | Now → target | What gates it |
 | --- | --- | --- |
 | Ionic (angular, core) + ionicons | 8.8 → 9.0, 7.4 → 8.1 | its own major — phase 7 |
-| ng2-charts | 9 → 11 | 11 requires Angular `>=22` |
-| ngx-translate-extract-marker | 2.0 → 3.0 | none |
 
 TypeScript stays on 6.0: **7.x is out of reach** — Angular, typescript-eslint and the Ionic toolkit all
 cap `<6.1`.
 
-Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 7 and 8
-are independent.
+Every phase is green on lint, test and build per commit, and on `verify:all` per phase.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
 
@@ -33,11 +30,6 @@ Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
 - Visible change: flag `"shotsStale": true` on the handbook pages showing selects, modals and
   textareas.
 - CLAUDE.md's opening line moves to Ionic 9 and Angular 22.
-
-## Phase 8 — the rest
-
-- ng2-charts 11 and ngx-translate-extract-marker 3, each after reading its changelog.
-- `pnpm run i18n:extract` leaves no diff.
 
 ## When the last phase lands
 

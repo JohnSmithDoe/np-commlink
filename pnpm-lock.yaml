@@ -60,8 +60,8 @@ importers:
         specifier: ^8.0.4
         version: 8.0.4(@capacitor/core@8.5.3)
       '@colsen1991/ngx-translate-extract-marker':
-        specifier: ^2.0.8
-        version: 2.0.8(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))
+        specifier: ^3.0.1
+        version: 3.0.1(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))
       '@ionic/angular':
         specifier: ^8.8.19
         version: 8.8.19(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/forms@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2))(@angular/router@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2))(rxjs@7.8.2)(zone.js@0.16.2)
@@ -105,8 +105,8 @@ importers:
         specifier: ^7.4.0
         version: 7.4.0
       ng2-charts:
-        specifier: ^9.0.0
-        version: 9.0.0(dbe9c9d7a7990f39a2de0c715c809abd)
+        specifier: ^11.0.0
+        version: 11.0.0(dbe9c9d7a7990f39a2de0c715c809abd)
       rxjs:
         specifier: ~7.8.2
         version: 7.8.2
@@ -622,12 +622,11 @@ packages:
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
-  '@colsen1991/ngx-translate-extract-marker@2.0.8':
-    resolution: {integrity: sha512-nYcjHifvXHtF3J4thQE6Lmu+AGNORgpCLYx55PY+XxzWRWfziuKIHhoIbNf9vwc9mMOZakJqfAjvpO+pN9AWdw==}
-    engines: {node: '>=16', npm: '>=8'}
+  '@colsen1991/ngx-translate-extract-marker@3.0.1':
+    resolution: {integrity: sha512-faQeH8zTKB8U+7kdsL54Mj48uJuMKhZ0/t2qONrxyBE5GwWGWxTf778cBi4UR23nOmBzo8A2fyEXCY0gtdkOVQ==}
     peerDependencies:
-      '@angular/common': '>=13.0.0'
-      '@angular/core': '>=13.0.0'
+      '@angular/common': '>=14.2.0'
+      '@angular/core': '>=14.2.0'
 
   '@csstools/color-helpers@6.1.2':
     resolution: {integrity: sha512-grhRy3OKmniaAEKXMjua5z/EODX0MSqBGjunw8+j/3HQjOnahs2AGhvEOIYVUWcU6ScApbhLhVrQTX8XqrMrow==}
@@ -2654,6 +2653,9 @@ packages:
     resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
     engines: {node: '>= 0.4'}
 
+  es-toolkit@1.52.0:
+    resolution: {integrity: sha512-XTNEJQh1tY1ZJVcf6ayP/2n4ZPyaHlW2FWs7xvw5ddPuhUVjLD3olQVQS7kf58JbAB48iL0uL/jerTrjtV3lDA==}
+
   esbuild@0.28.2:
     resolution: {integrity: sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==}
     engines: {node: '>=18'}
@@ -3335,9 +3337,6 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
-  lodash-es@4.18.1:
-    resolution: {integrity: sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==}
-
   lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
 
@@ -3583,13 +3582,13 @@ packages:
   natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
-  ng2-charts@9.0.0:
-    resolution: {integrity: sha512-oG4VLbwDmWtSCaBoiuoi14LZR2DrOgG5WKtGm12eAQHrA32l0dc0XwKurY/dilc9bgKAiJgL/qy2hy/rcb8yog==}
+  ng2-charts@11.0.0:
+    resolution: {integrity: sha512-KHFPsGSyHtluWuvyIhWQVFNWqeQJ25Jy69XajEiAuAXknc3OM9VY45hu7vwv9p51osg+E5GnPxVdPQ3c08L9KA==}
     peerDependencies:
-      '@angular/cdk': '>=20.0.0'
-      '@angular/common': '>=20.0.0'
-      '@angular/core': '>=20.0.0'
-      '@angular/platform-browser': '>=20.0.0'
+      '@angular/cdk': '>=22.0.0'
+      '@angular/common': '>=22.0.0'
+      '@angular/core': '>=22.0.0'
+      '@angular/platform-browser': '>=22.0.0'
       chart.js: ^3.4.0 || ^4.0.0
       rxjs: ^6.5.3 || ^7.4.0
 
@@ -5080,7 +5079,7 @@ snapshots:
     dependencies:
       '@capacitor/core': 8.5.3
 
-  '@colsen1991/ngx-translate-extract-marker@2.0.8(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))':
+  '@colsen1991/ngx-translate-extract-marker@3.0.1(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))':
     dependencies:
       '@angular/common': 22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)
@@ -6698,6 +6697,8 @@ snapshots:
       has-tostringtag: 1.0.2
       hasown: 2.0.4
 
+  es-toolkit@1.52.0: {}
+
   esbuild@0.28.2:
     optionalDependencies:
       '@esbuild/aix-ppc64': 0.28.2
@@ -7388,8 +7389,6 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
-  lodash-es@4.18.1: {}
-
   lodash.truncate@4.4.2: {}
 
   log-symbols@7.0.1:
@@ -7850,14 +7849,14 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  ng2-charts@9.0.0(dbe9c9d7a7990f39a2de0c715c809abd):
+  ng2-charts@11.0.0(dbe9c9d7a7990f39a2de0c715c809abd):
     dependencies:
       '@angular/cdk': 22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/forms@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2))(@angular/platform-browser@22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
       '@angular/common': 22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
       '@angular/core': 22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2)
       '@angular/platform-browser': 22.2.3(@angular/common@22.2.3(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.2.3(@angular/compiler@22.2.3)(rxjs@7.8.2)(zone.js@0.16.2))
       chart.js: 4.5.1
-      lodash-es: 4.18.1
+      es-toolkit: 1.52.0
       rxjs: 7.8.2
       tslib: 2.8.1
 
