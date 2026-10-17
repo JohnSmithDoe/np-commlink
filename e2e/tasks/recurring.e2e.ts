@@ -64,8 +64,8 @@ function statusBar(page: Page, name: string): Locator {
 function inThreeMonths(): string {
   const today = new Date();
   const due = new Date(today.getFullYear(), today.getMonth() + 3, 1);
-  const lastDay = new Date(due.getFullYear(), due.getMonth() + 1, 0).getDate();
-  due.setDate(Math.min(today.getDate(), lastDay));
+  const lastOfMonth = new Date(due.getFullYear(), due.getMonth() + 1, 0);
+  due.setDate(Math.min(today.getDate(), lastOfMonth.getDate()));
   return due.toLocaleDateString('de-DE', {
     day: '2-digit',
     month: '2-digit',
