@@ -1,7 +1,7 @@
 # Decisions
 
-Settled — do not re-flag as work. Per-module decisions are in [domains.md](./domains.md), blocked work
-and one-way doors in [state.md](./state.md), the next major's scope in [next-version.md](./next-version.md).
+Settled — do not re-flag as work. Per-module decisions are in [domains.md](./domains.md), what comes
+next in [next-steps.md](./next-steps.md).
 
 No entry cites a commit SHA. Nothing here restates what a `why` banner already says on the file itself,
 or a count the code owns.
@@ -198,7 +198,7 @@ or a count the code owns.
 ## Persistence and the migration ladder
 
 - **A rung is owed only to data somebody else is holding** — a fact about people, so it is asked, never
-  inferred. Roster and standing instruction in [CLAUDE.md](../CLAUDE.md); exemptions in [state.md](./state.md).
+  inferred. Roster and standing instruction in [CLAUDE.md](../CLAUDE.md); exemptions below.
 - **`APP_VERSION` is global on purpose** — a slice with no entry for a hop is walked past and re-stamped,
   so the number is a floor on the whole document set.
 - **When the first real rung is written:** one per stored-shape change, never one per release; written
@@ -260,11 +260,64 @@ or a count the code owns.
   Asked and answered — AGENDA's `dueAt` is held by real users, and the old timestamps still parse and
   display, so the shapes coexist and nothing is owed.
 
+## One-way doors
+
+Each field below is one a distribution channel compares to decide _same app or different app_. The
+published tags have closed every one: changing one stands up a second app that cannot reach the first
+one's data.
+
+- **The signing key exists and custody is the whole task.** `signingConfig` is postsync patch 5, reading
+  four `NPC_*` env vars resolved into `pnpm run apk:signed`'s own process. The shipped APK verifies v2 + v3
+  and its signer SHA-256 is pinned in the README. **Back the keystore up in two places**, 25+ year
+  validity. An APK signed with a different key can **never** upgrade one signed with this one; the only way
+  in is an uninstall that wipes every tracked session, the pantry and the ledger. Deliberately not in the
+  repo despite AGPL.
+- **`enableV3Signing = true` shipped on** — set explicitly against AGP's default at `minSdk 24`. v3 carries
+  the proof-of-rotation lineage, which is what keeps rotation reachable at all.
+- **`manifest.id` shipped as `"np-commlink"`**, parsed as a URL against the **origin** — a leading or
+  trailing slash is a different identity with its own IndexedDB. Never touch.
+- **Renaming a persisted key or a deck entry id costs a ladder rung wherever somebody holds one.**
+  [CLAUDE.md](../CLAUDE.md) carries the roster and the standing instruction to **ask** rather than infer.
+- **`APP_VERSION` is 2, and the `tasks` ladder holds the repo's only rung.** It is the precedent every
+  later one copies: written against `unknown`, casting once, pinned by a spec against a literal of the v1
+  shape. The number is global, so every other slice is walked past and re-stamped on the same hop.
+- **A close that happens before `closings` exists is gone.** The log is append-only and cannot be
+  reconstructed from `doneAt`, which holds one date. That is what put the field in ahead of the screen
+  that reads it — see the persistence section; every other recurrence field describes a task's
+  future and could have waited.
+- **`vitals` and `notes` are published from v1.1.0 on**, so `VitalsState` (`profiles`, `readings`, `pills`)
+  and `notes` are somebody's data. Anything holding either from before that tag came from a locally built
+  debug APK, which a release-key install cannot upgrade.
+- **BIOMON's profiles RESET when they moved to `people`** — asked and answered, not really in use. A
+  stored `profiles.items` is dropped on load (`asCurrentShape` in `profiles.reducer.ts`). The readings and
+  pills keyed on those ids **are deleted by the first BIOMON load of v1.6.0** — the orphan sweep cannot
+  tell a pre-`people` profile from a removed person. Asked and answered: swept, no rung. `people` is
+  published from v1.6.0 on.
+- **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` where a pre-v1.1.0
+  document carries `hiddenEntries` + `hiddenModules` (`asCurrentShape` in `deck.reducer.ts`). `settings`
+  splits `theme` into `skin` and `mode` and falls through `{...initialSettings, ...settings}`.
+
+## Migration exemptions taken
+
+None is a precedent — cost is a fact about the roster, not about the change.
+
+- `groceries → household` — renamed before the first tag, dev browser the only holder.
+- cash's `bank` → `iban` + `bankRef` — breaking, free because cash has no users. **Spent**: the next cash
+  shape change once it holds real data owes the first real rung. `CashSchedule.dueDay` rides the same one.
+- `excludedFromAllowance`, `pills` + `intakes`, recipes' `sort`, `Profile.favorite`, `TaskItem.doneAt` —
+  additive and optional, so a missing key hydrates to initial state. Free by shape, not by roster:
+  `tasks` and `vitals` both have real holders.
+- deck entry id `barcode` → `notes` — the first taken against a slice real users hold. Cheap only because
+  switching one program back off is a tap.
+- `deck`'s pre-flip document — RESET. `settings`' `theme` → `skin` + `mode` — worst case one re-pick.
+- The 09:00 office nudge is cancelled once at boot — **not a rung**: what is stale is a schedule the OS
+  owns, not a shape on disk (`legacy-reminders.effects.ts`).
+
 ## Destructive actions
 
 - **A swipe deletes and does not ask, where a row is cheap to re-add** (`expandable` `ion-item-option`).
   Cash is the only swipe deliberately not expandable.
-- **Undo over confirm.** Cascades and bulk wipes are a different class, scheduled in [next-version.md](./next-version.md).
+- **Undo over confirm.** Cascades and bulk wipes are a different class, scheduled in [next-steps.md](./next-steps.md).
 - **Who opts into undo is decided by the round trip.** `undoableDelete` pushes `addItem(item)`, so a list
   qualifies only where the delete took nothing but that item. **A cascade must build its entry in the
   COMMAND** — an effect runs after the reducer, which has already dropped what the entry needs. Cash

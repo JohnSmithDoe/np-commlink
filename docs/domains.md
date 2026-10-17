@@ -1,8 +1,7 @@
 # Domain decisions
 
 One module's own settled reasoning — do not re-flag as work. Cross-cutting decisions are in
-[decisions.md](./decisions.md), blocked work in [state.md](./state.md), the next major's scope in
-[next-version.md](./next-version.md).
+[decisions.md](./decisions.md), what comes next in [next-steps.md](./next-steps.md).
 
 ## CREDSTICK — cash
 
@@ -412,7 +411,7 @@ Everything below the first entry is **v2.0.0 scope**.
   whether own pieces block or stack, whether landing throws — all of it is `BoardRules`. Mensch ärgere
   Dich nicht is one filling of that shape; Pachisi and a house rule are others, and none of them needs a
   second engine. It is also why turn order can be added later as more of the same (parked in
-  [next-version.md](./next-version.md)) rather than as a rewrite.
+  [next-steps.md](./next-steps.md)) rather than as a rewrite.
 - **The track is the only common ground.** A yard and a home column belong to the player whose colour
   they carry, so a figure may stand on any track field and on nobody's private ground but its own. One
   rule, and every way onto the board is made to ask it: the tap, the yard button, and a pasted setting

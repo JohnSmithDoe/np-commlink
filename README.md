@@ -202,4 +202,4 @@ Third-party code keeps its own terms: the dependency tree is MIT / Apache-2.0 / 
 production build emits their notices to `www/3rdpartylicenses.txt`. **The APK carries no proprietary
 component** — the barcode scanner that did (Google's ML Kit, 21 MB of it) was removed rather than
 shipped, and what a free-software replacement would cost is in
-[next-version.md](docs/next-version.md).
+[next-steps.md](docs/next-steps.md).

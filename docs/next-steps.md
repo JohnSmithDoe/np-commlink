@@ -1,8 +1,25 @@
-# Next version — what v2.0.0 owes
+# Next steps
 
-**Scheduled, not open.** Nothing here is blocked — [state.md](./state.md) holds what is, and settled
-questions are in [decisions.md](./decisions.md). Three entries change a persisted shape; AGENDA's
-recurrence ladder wrote the first rung, so they copy it rather than invent one.
+What comes next, and what v2.0.0 owes. Settled questions are in [decisions.md](./decisions.md). Three
+entries change a persisted shape; AGENDA's recurrence ladder wrote the first rung, so they copy it rather
+than invent one.
+
+## Upkeep
+
+- **TypeScript 7 (the native compiler) waits on Angular.** Angular, typescript-eslint and
+  `@ionic/angular-toolkit` all cap TypeScript `<6.1`. None of the options TS 6 deprecates for removal in 7
+  is set here.
+- **The initial bundle sits over its 1.6 MB warning** — 1.67 MB after Angular 22 and Ionic 9, under the
+  1.9 MB error. `@ionic/core` is 1.07 MB of it; the root `@ionic/angular` entry is `sideEffects: false`,
+  so the weight is Ionic's own, not an import shape.
+- **The function-coverage floor clears by 0.34 points** (80.34% against 80 at v1.5.0). A floor on the
+  aggregate lets one well-tested domain hide an untested one. Owed: a floor per domain or on the diff,
+  measured with `pnpm run test:coverage`, not a lower number.
+- **`media3Version` in `android/variables.gradle` is unverified against the latest release** — a lookup
+  made only when the owner asks for the network.
+- **`addViaSearch` in `e2e/helpers.ts` sleeps `waitForTimeout(400)` twice**, and six specs copy it. Wait
+  on the row or `waitForPersisted`.
+- **No e2e runs a tracking timer across a reload.**
 
 ## Cash
 
@@ -200,9 +217,8 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
 The browse tree **shipped** — `/vitals/browse`, twelve signs, twelve Chinese animals, 64 hexagrams, nine Ki
 stars, nine life numbers, own deck program, every detail route deep-linkable. Left:
 
-- **The world ages are still not browsable, deliberately.** Browsing them invites the question of where the
-  boundaries come from, and the answer is a pick rather than a source ([state.md](./state.md)). Settle the
-  source first.
+- **The world ages are not browsable yet.** What held them back — where the boundaries come from — is
+  answered on the zodiac page, which cites eight schools beside the equal division it computes with.
 - **Filtering the 64 by trigram** — a `computed` over `HEXAGRAMS`, and the one place a search box would earn
   itself. The index ships unfiltered because 64 cells fit a grid.
 - **The astro pages print numbers and never say where they come from.** A reader sees `2 · Erde`, `Ki-Jahr

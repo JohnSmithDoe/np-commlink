@@ -22,7 +22,7 @@ the workflow, and the keystore is on one machine on purpose (README, _Release si
 
 **No argument: propose, never pick.** Read the commit types in the range and suggest one
 (`!` → major, `feat` → minor, otherwise patch), then wait. The number is a one-way door and
-the repo's own naming — `docs/next-version.md` reserves the next major for a scope that has
+the repo's own naming — `docs/next-steps.md` reserves the next major for a scope that has
 to have *shipped* — is not derivable from the log.
 
 ## What it writes

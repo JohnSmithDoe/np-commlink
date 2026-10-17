@@ -6,7 +6,7 @@
 #
 # Framework majors are ignored, not held: a group is a batching rule, not an
 # atomicity constraint — Dependabot bumps whatever has a release and leaves the
-# pinned member behind — and state.md wants the Angular major via `ng update`, in
+# pinned member behind — and decisions.md wants the Angular major via `ng update`, in
 # its own commit. `@angular*` covers @angular-devkit and @angular-eslint too.
 # `tooling` then excludes every name the two trains own, because its dev-type
 # catch-all was claiming their dev-side members — @angular/build away from

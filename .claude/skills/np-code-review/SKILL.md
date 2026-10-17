@@ -70,8 +70,8 @@ the blast radius a diff-only reading cannot see.
   is strong for the current chapter and goes coarse behind it — blame on an older line
   reaches a chapter commit that answers *when*, not *why*. Treat a miss here as no
   evidence rather than as evidence of nothing, and fall back on #4.
-- **#4 — Documented decisions.** `docs/decisions.md` (settled questions) and `docs/state.md` (open, deferred, declined
-  work). **These are the record, not the log** — anything meant to outlive its commit is
+- **#4 — Documented decisions.** `docs/decisions.md` (settled questions, one-way doors) and `docs/next-steps.md`
+  (open and scheduled work), plus this skill's `lessons.md` (shapes past reviews found). **These are the record, not the log** — anything meant to outlive its commit is
   here. Does the change contradict a recorded decision, or re-introduce something the doc
   says was removed on purpose? If it supersedes a decision deliberately, that is not a
   finding — but the doc is now stale, which is.

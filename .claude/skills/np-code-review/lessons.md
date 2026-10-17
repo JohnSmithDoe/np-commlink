@@ -1,39 +1,9 @@
-# Backlog — found, not yet fixed
+# Lessons from past reviews
 
-Findings live here until the code answers them, then the entry is **deleted**. Nothing here is a
-decision; if a finding turns out to be the right answer, it moves to [decisions.md](./decisions.md) and
-leaves. A finding that needs a secret, a device or a human moves to [state.md](./state.md); one triaged
-into the next major moves to [next-version.md](./next-version.md). No entry belongs in two files.
+The shapes earlier reviews turned up, kept because they recur — each invisible to every gate — and what
+was verified clean, so it is not re-derived.
 
-Line numbers were true when the finding was written and the tree moves — locate by symbol, not by line.
-
-_Reviewed 2026-09-06 across five passes: pattern conformance, duplication, trackplay correctness, the
-deck/nav shell, and state/tests/docs. Every gate was green at the time — everything found was invisible
-to all of them, which is the point. The bug findings, the shell's shape and the whole duplication pass
-have since been settled — four extractions done, five declined in
-[decisions.md](./decisions.md) with the reason, the doc drift is closed and the four test gaps are
-pinned._
-
----
-
-## Tests — what they assert, not whether they pass
-
-_Audited 2026-10-17: every unit spec, the e2e suite minus handbook shots, and the RuleTester specs.
-No test asserts behaviour the app lacks. The faults are tests that cannot fail, fixtures the real
-pipeline never emits, and gaps exactly where the risk sits. Each suspected bug gets a red spec before its fix._
-
-### Weak oracles
-
-- `e2e/helpers.ts` `addViaSearch` sleeps `waitForTimeout(400)` twice, and every add-flow inherits it;
-  six specs copy the sleep. Wait on the row or `waitForPersisted`.
-
-### Gaps — risky code with no meaningful test
-
-- **Time:** no e2e runs a timer across a reload.
-
-## What the next reviewer should look for
-
-The shapes this review turned up, kept because they will recur. Each is invisible to every gate here.
+## Shapes to look for
 
 1. **A moved route leaves absolute string literals behind.** The signature failure: a program's URL
    moved, four literals were updated, and the fifth sat in a facade no compiler, lint rule or spec
@@ -47,7 +17,7 @@ The shapes this review turned up, kept because they will recur. Each is invisibl
    instead of the `@shared` factory. Ask of any new `data/` directory: which of these lines does
    `@shared` already generate? **But weigh before extracting** — a shape that repeats without drifting
    is not a finding, and this review produced four of those (see the declined extractions in
-   [decisions.md](./decisions.md)). The question is never "how many copies", it is "would a bug be in
+   [decisions.md](../../../docs/decisions.md)). The question is never "how many copies", it is "would a bug be in
    all of them".
 4. **A gate that is green for a structural reason.** The muted-text rule was blind to `opacity` until it
    was taught it; a rule
@@ -75,7 +45,7 @@ src/app/` should return nothing.
     sorted, the expectation recomputes the production formula. Mutate the code under test in your
     head: if the spec stays green, it is decoration.
 
-### Verified clean — do not re-derive
+## Verified clean — do not re-derive
 
 Facade discipline is uniform and unchallenged: 44 action groups, zero hand-rolled `createAction`, zero
 `@ngrx/*` outside `data/`, zero cross-domain imports outside the shell. No `I`/`T` type prefixes.
@@ -109,7 +79,7 @@ e2e `game-play`, `cold-launch`, `deck-visibility`, `cash/rules` and storage-undo
 Route boilerplate across the 13 `*.routes.ts` was considered for extraction and **rejected**: the shape
 is not uniform (providers, `data`, nested children, spread contexts), a helper would grow an options bag,
 and these files are the one place a reader sees a module's whole URL surface — which the module-root
-constraint in [decisions.md](./decisions.md) makes load-bearing. Also rejected: an `app-icon-button` for the 54 icon-only buttons (blocked — a third carry
+constraint in [decisions.md](../../../docs/decisions.md) makes load-bearing. Also rejected: an `app-icon-button` for the 54 icon-only buttons (blocked — a third carry
 `data-testid`s the e2e reads by literal, and `verify:testids` cannot see a pass-through input), cash's
 four `confirmDelete` wrappers (already scheduled for deletion by undo), the three swipe-action constants
 (the wording is domain-owned by design), and the per-domain `*.providers.ts` and feature-selector

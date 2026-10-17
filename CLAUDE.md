@@ -14,25 +14,23 @@ Android APK.
 explain the *why*. The log is not a source to read back — it is squashed into chapters — so anything
 that has to outlive its commit belongs in one of the documents below.
 
-## Seven documents, and the rule that keeps them small
+## Five documents, and the rule that keeps them small
 
 | File | Holds |
 | --- | --- |
 | [decisions.md](docs/decisions.md) | settled questions that CROSS domains, so they are not re-flagged as work |
 | [domains.md](docs/domains.md) | one module's own settled reasoning — CREDSTICK, SIN, BIOMON, DAILY RUN, AGENDA, SIGIL, SOYKAF, TRACKPLAY, SIMSENSE, COPROCESSOR, the deck |
 | [footguns.md](docs/footguns.md) | empirical failures that do not reproduce from a read of the source |
-| [state.md](docs/state.md) | blocked work, one-way doors, open defects, costs left standing |
-| [next-version.md](docs/next-version.md) | work triaged into the next major |
-| [backlog.md](docs/backlog.md) | review findings, until the code answers them — and what the next reviewer should look for |
+| [next-steps.md](docs/next-steps.md) | what comes next — upkeep, open findings, and what v2.0.0 owes |
 | [jamserve-client.md](docs/jam/jamserve-client.md) | research for SIMSENSE streaming from a jamserve server — nothing decided |
 
-**These seven are the whole list**, and `backlog.md` is the one that empties:
-an entry is deleted once fixed, or moves to the file that owns it. A doc is updated only when a decision, a footgun, a
-one-way door, the next version's scope or a review's findings change — **never as a follow-up to a code
-change**. Write the current state,
-not the story that reached it: **append while a decision stands, collapse it into its successor once
-one supersedes it**, and drop an entry outright once the code says it. `state.md` holds what is
-BLOCKED and `next-version.md` what is SCHEDULED — nothing belongs in both.
+**These five are the whole list.** There is no state document: the current state is read off the
+code, and an open finding is a next step. An entry in `next-steps.md` is deleted once done, or moves to
+the file that owns it. A doc is updated only when a decision, a footgun, a one-way door or the next
+steps change — **never as a follow-up to a code change**. Write the current state, not the story that
+reached it: **append while a decision stands, collapse it into its successor once one supersedes it**,
+and drop an entry outright once the code says it. What a reviewer should look for lives with the
+review skill, in `.claude/skills/np-code-review/lessons.md`.
 
 An inventory that mirrors the tree needs rewriting every time the tree moves, so this repo keeps none.
 Each fact lives where it cannot drift from itself: gates in `scripts/verify-all.sh` (`GATES=(`),
@@ -74,7 +72,7 @@ there; never run that config to check your edit.
 
 **Instead, mark what your change made stale**: set `"shotsStale": true` on each
 `public/handbook/pages/*.json` showing a screen you changed, and the article paints a warning above
-itself. No gate can see this; [state.md](docs/state.md) carries which pages are flagged.
+itself. No gate can see this; `grep -l '"shotsStale": true' public/handbook/pages/*.json` lists them.
 
 **The release run is one command:** `pnpm run handbook:shots`
 (`scripts/build-handbook-shots.mjs`) shoots every figure, converts each 786×1454 PNG to the committed
@@ -138,13 +136,13 @@ on who is running the app, which is a fact only Martin has: not the tag, not "it
 that `runMigrations` would walk past a missing step. Ask when a field is dropped or renamed, when a
 persisted key or a deck entry id moves, and before `APP_VERSION` is bumped.
 
-Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGENDA), and `vitals`
-(BIOMON)**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
+Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGENDA), `vitals`
+(BIOMON), and `people` (SIN) from v1.6.0**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
 three means having switched programs on. Every other slice — `cash`, `tracking`, `officeTime`,
 `trackplay`, `notes`, `notifications`, `dashboard` — is dev-only, and its shape changes for the price
 of a cleared browser. The user base is small enough that most changes are still free, which is what
 makes the question worth asking rather than assuming, in either direction. What a rung owes, and what
-has shipped without one, is in [decisions.md](docs/decisions.md) and [state.md](docs/state.md).
+has shipped without one, is in [decisions.md](docs/decisions.md).
 
 ## Testing shape
 
