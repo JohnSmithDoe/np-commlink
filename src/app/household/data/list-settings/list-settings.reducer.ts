@@ -20,8 +20,7 @@ export const listSettingsReducer = createReducer(
     ListSettingsActions.updateSettings,
     (_state, { settings }): ListSettings => settings
   ),
-  on(
-    HouseholdActions.loaded,
-    (state, { data }): ListSettings => data?.listSettings ?? state
+  on(HouseholdActions.loaded, (state, { data }): ListSettings =>
+    data?.listSettings ? { ...initialState, ...data.listSettings } : state
   )
 );

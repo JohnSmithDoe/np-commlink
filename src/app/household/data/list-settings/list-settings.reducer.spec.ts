@@ -1,3 +1,4 @@
+import { ListSettings } from '../../model/list-settings.types';
 import { HouseholdActions } from '../household.actions';
 import { ListSettingsActions } from './list-settings.actions';
 import { initialState, listSettingsReducer } from './list-settings.reducer';
@@ -32,7 +33,16 @@ describe('listSettingsReducer', () => {
       initialState,
       HouseholdActions.loaded(mockHouseholdState({ listSettings: loaded }))
     );
-    expect(state).toBe(loaded);
+    expect(state).toEqual(loaded);
+  });
+
+  it('gives a flag an older document lacks its default', () => {
+    const older = { showQuickAdd: true } as ListSettings;
+    const state = listSettingsReducer(
+      initialState,
+      HouseholdActions.loaded(mockHouseholdState({ listSettings: older }))
+    );
+    expect(state).toEqual({ ...initialState, showQuickAdd: true });
   });
 
   it('falls back to the current state when the loaded document is absent', () => {

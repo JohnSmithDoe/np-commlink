@@ -6,6 +6,7 @@ import {
 } from './notifications.reducer';
 import {
   InboxNotification,
+  NotificationsState,
   ProjectedNotification,
 } from '../../@shared/model/notifications.types';
 
@@ -271,5 +272,15 @@ describe('notificationsReducer', () => {
     expect(viewed.lastViewedAt).not.toBe(
       initialNotificationsState.lastViewedAt
     );
+  });
+
+  it('gives a field an older document lacks its default', () => {
+    const older = { items: [] } as unknown as NotificationsState;
+    expect(
+      notificationsReducer(
+        initialNotificationsState,
+        NotificationsInboxActions.loaded(older)
+      )
+    ).toEqual(initialNotificationsState);
   });
 });

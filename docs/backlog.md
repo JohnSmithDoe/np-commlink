@@ -61,10 +61,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
 - **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
   booking three days earlier, and DST moves the edge by an hour.
-- **T7 · `selectDashboardStatsYear` calls `dayjsToday()` inside a memoized projector** — stale across
-  midnight and New Year until state changes.
-- **T8 · Hydration without defaults** in `notifications.reducer` and `list-settings.reducer` — shape 6
-  below. An older notifications doc leaves `lastViewedAt` undefined and the unread badge compares to it.
 - **T9 · `setRoundValue` on an ended game** still appends a blank round; `ensureTrailingBlankRound`
   refuses to.
 - **T10 · The trackplay orphan sweep with an empty roster `[]`** deletes every game. Untested.
@@ -206,7 +202,9 @@ ring arithmetic, `planMove`'s lap walk and home-column blocking, the notation ro
 cases including a Pachisi ruleset) — a stale index claimed otherwise. The board page's refusal `@switch`es
 lack `bad-roll`, `unknown-field`, `too-many` and `no-room-at-home` on purpose: none is reachable from the
 page — the pips are 1–6, every tap is a rendered field, placing stops once the set is complete, and a
-thrown figure left the ring, so its own yard has a slot.
+thrown figure left the ring, so its own yard has a slot. `selectDashboardStatsYear` reading `dayjsToday()` inside a
+memoized projector is not stale where it matters: its one consumer, telemetry, reads `officedays` and
+`percentage`, which turn only with the year, and the year turning reloads the holidays and so the keys.
 
 Tests that earn their keep and serve as the model: the camt parser variants and `read-statement`
 occurrence keys, `money.parseMagnitude`, holidays checked against the published Berlin JSON, the

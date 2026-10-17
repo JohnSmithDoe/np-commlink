@@ -78,6 +78,7 @@ export const notificationsReducer = createReducer(
   ),
   on(
     NotificationsInboxActions.loaded,
-    (state, { notifications }): NotificationsState => notifications ?? state
+    (state, { notifications }): NotificationsState =>
+      notifications ? { ...initialNotificationsState, ...notifications } : state
   )
 );
