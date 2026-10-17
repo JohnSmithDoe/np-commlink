@@ -1,3 +1,4 @@
+import { ErrorDetails } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AlertController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,6 +11,15 @@ type PresentedAlert = {
   message: string;
   backdropDismiss?: boolean;
   buttons: AlertButton[];
+};
+
+class FailingPage {}
+class ShellPage {}
+
+const contained: ErrorDetails = {
+  declarationType: FailingPage,
+  declarationInstance: new FailingPage(),
+  boundary: { type: ShellPage, reset: () => {} },
 };
 
 const settle = (): Promise<void> =>
@@ -116,5 +126,27 @@ describe('GlobalErrorHandler', () => {
     await settle();
 
     expect(logged).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs a contained view error by its component and raises no alert', async () => {
+    const boom = new Error('boom');
+    handler.onViewError(boom, contained);
+    await settle();
+
+    expect(alerts.create).not.toHaveBeenCalled();
+    expect(logged).toHaveBeenCalledWith(
+      'FailingPage failed to render; contained by ShellPage',
+      boom
+    );
+  });
+
+  it('treats a view error no boundary contained as uncaught', async () => {
+    handler.onViewError(new Error('boom'), {
+      ...contained,
+      boundary: undefined,
+    });
+    await settle();
+
+    expect(alerts.create).toHaveBeenCalledTimes(1);
   });
 });

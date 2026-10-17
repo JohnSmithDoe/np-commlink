@@ -1,0 +1,9 @@
+<div class="error-fallback" role="alert">
+  <p class="error-fallback__title">{{ 'error.boundary.title' | translate }}</p>
+  @if (reason()) {
+    <p class="error-fallback__reason">{{ reason() }}</p>
+  }
+  <ion-button fill="outline" (click)="retry.emit()">
+    {{ 'error.boundary.retry' | translate }}
+  </ion-button>
+</div>

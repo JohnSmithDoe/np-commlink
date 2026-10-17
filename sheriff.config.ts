@@ -20,7 +20,7 @@ const featureMayUseSharedFeature = (context: {
  * the domain-axis doesn't restrict it.
  *
  * Type axis:
- *   shell    → routes, feature, data, util, model
+ *   shell    → routes, feature, ui, data, util, model
  *   routes   → feature, data, util             (a domain's own route manifest)
  *   feature  → smart-ui, ui, data, util, model (+ shared feature only)
  *   smart-ui → ui, data, util, model           (stateful presentational, leaf)
@@ -48,6 +48,7 @@ export const config: SheriffConfig = {
     'type:shell': [
       'type:routes',
       'type:feature',
+      'type:ui',
       'type:data',
       'type:model',
       'type:util',

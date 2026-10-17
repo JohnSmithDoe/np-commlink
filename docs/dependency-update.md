@@ -17,21 +17,10 @@ CLAUDE.md row go with the last one. Versions and peer ranges are as read from th
 TypeScript stays on 6.0: **7.x is out of reach** — Angular, typescript-eslint and the Ionic toolkit all
 cap `<6.1`.
 
-Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 4–8
+Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 5–8
 are independent.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
-
-## Phase 4 — error boundaries
-
-- **Spec first**: does `@boundary` around `ion-router-outlet` catch a routed page that throws? Yes →
-  one boundary in `src/app/@shared/feature/module-tabs-page/` and one at the root outlet. No → one per
-  program's top-level page.
-- One `@shared` fallback with a `$reset` retry; its wording is `@shared`'s own.
-- `src/app/@shared/data/errors/global-error-handler.ts` implements `onViewError`: a contained view
-  error is logged with the failing component's class and does not raise the reload alert.
-  `ErrorDetails` is developer preview in 22.2.
-- Where the boundaries sit, and why, goes into [decisions.md](./decisions.md).
 
 ## Phase 5 — ESLint 10
 

@@ -1,5 +1,6 @@
 import {
   EnvironmentProviders,
+  ErrorDetails,
   ErrorHandler,
   inject,
   makeEnvironmentProviders,
@@ -34,6 +35,17 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (this.#presented) return;
     this.#presented = true;
     void this.#present(reasonOf(error));
+  }
+
+  onViewError(error: Error, details: ErrorDetails): void {
+    if (!details.boundary) {
+      this.handleError(error);
+      return;
+    }
+    console.error(
+      `${details.declarationType.name} failed to render; contained by ${details.boundary.type.name}`,
+      error
+    );
   }
 
   async #present(reason: string): Promise<void> {

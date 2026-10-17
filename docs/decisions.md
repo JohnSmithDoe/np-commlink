@@ -180,6 +180,14 @@ or a count the code owns.
   `PROGRAM_CONTEXT` resolves the page's URL against `DECK_CATALOG`, so a page that IS an entry renders
   nothing; a page may name a narrower parent but `isProgram` outranks it. The lookup takes the page's own
   `ActivatedRoute`, never "where is the app now" — Ionic keeps the leaving page mounted through a transition.
+- **Two `@boundary` blocks, both at an outlet: around the root `ion-router-outlet` and around `ion-tabs`
+  in the module shell.** A page an Ionic outlet inserts hangs off the outlet's view, so a page that throws
+  while RENDERING is caught by the nearest enclosing boundary — the shell's for a tab page, which keeps the
+  menu up, the root's for everything else. A page whose CONSTRUCTOR throws fails the navigation instead,
+  before any boundary exists, and reaches the global handler's reload alert; a boundary per page would
+  catch no more. `error-boundary.spec.ts` pins all three, and is what re-answers this on an Ionic upgrade.
+- **A contained view error is logged, not alerted.** `onViewError` names the failing component and the
+  boundary that held it; only an error no boundary contained raises the reload alert.
 
 ## Reducer purity
 

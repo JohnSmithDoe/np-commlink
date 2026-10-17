@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.error-fallback {
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  letter-spacing: var(--sr-label-tracking);
+}
+
+.error-fallback__title {
+  margin: 0;
+}
+
+.error-fallback__reason {
+  margin: var(--space-2) 0 var(--space-4);
+  font-size: var(--fs-small);
+  color: var(--sr-text-dim);
+}

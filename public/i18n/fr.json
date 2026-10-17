@@ -737,6 +737,8 @@
   "emoji-picker.retry": "Réessayer",
   "emoji-picker.search": "Rechercher un emoji",
   "emoji-picker.text": "Texte",
+  "error.boundary.retry": "Réessayer",
+  "error.boundary.title": "Cette vue n’a pas pu être affichée",
   "error.uncaught.message": "Erreur inattendue : {{reason}}. Toutes les données sont enregistrées — recharger règle le problème la plupart du temps.",
   "error.uncaught.reload": "Recharger",
   "error.uncaught.title": "Quelque chose a mal tourné",

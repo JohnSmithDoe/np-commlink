@@ -70,7 +70,11 @@
           [attr.aria-label]="'a11y.loading' | translate"
         />
       }
-      <ion-router-outlet />
+      @boundary {
+        <ion-router-outlet />
+      } @error {
+        <app-error-fallback [reason]="$error.message" (retry)="$reset()" />
+      }
     </div>
   </ion-split-pane>
   <ion-toast

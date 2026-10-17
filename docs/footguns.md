@@ -83,9 +83,9 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   dropped wherever a later block sets the same rule id. Hence the i18n and NgRx checks are rule **ids**.
 - **`extends` applies the enclosing block's `files` to everything it extends**, so a template-scoped set
   nested under a `**/*.ts` parent intersects to **nothing**.
-- **Editing a rule's source does not invalidate the ESLint cache** — it hashes the resolved config, not the
-  plugin files. Develop with `--no-cache`; `rm -rf .eslintcache` (the builder makes that path a _directory_).
-  The cache is per-file while Sheriff is cross-file.
+- **Editing a rule's source, or `sheriff.config.ts`, does not invalidate the ESLint cache** — it hashes the
+  resolved config, not the plugin files. Develop with `--no-cache`; `rm -rf .eslintcache` (the builder makes
+  that path a _directory_). The cache is per-file while Sheriff is cross-file.
 - **`build` and `test` run on esbuild (transpile-only)**, so a broken _type-only_ import passes both. Always
   run both `tsc --noEmit` passes.
 - **Verify a new gate by breaking what it should catch.** `i18n-key-ownership` needs **two** node types — a

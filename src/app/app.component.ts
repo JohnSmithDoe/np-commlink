@@ -58,12 +58,14 @@ import { DeckProgram } from './commlink/model/deck.types';
 import { badgeValue } from './commlink/util/deck.utils';
 import { EditPersonDialogComponent } from './people/feature/edit-person-dialog/edit-person-dialog.component';
 import { PEOPLE_LIST_ID } from './people/model/people.types';
+import { ErrorFallbackComponent } from './@shared/ui/error-fallback/error-fallback.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
   imports: [
+    ErrorFallbackComponent,
     IonApp,
     IonRouterOutlet,
     IonRouterLink,

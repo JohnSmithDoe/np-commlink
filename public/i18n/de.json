@@ -737,6 +737,8 @@
   "emoji-picker.retry": "Erneut versuchen",
   "emoji-picker.search": "Emoji suchen",
   "emoji-picker.text": "Text",
+  "error.boundary.retry": "Erneut versuchen",
+  "error.boundary.title": "Diese Ansicht konnte nicht angezeigt werden",
   "error.uncaught.message": "Unerwarteter Fehler: {{reason}}. Alle Daten sind gespeichert — ein Neuladen behebt das meist.",
   "error.uncaught.reload": "Neu laden",
   "error.uncaught.title": "Etwas ist schiefgelaufen",

@@ -737,6 +737,8 @@
   "emoji-picker.retry": "Try again",
   "emoji-picker.search": "Search emoji",
   "emoji-picker.text": "Text",
+  "error.boundary.retry": "Try again",
+  "error.boundary.title": "This view could not be shown",
   "error.uncaught.message": "Unexpected error: {{reason}}. All data is saved — reloading usually fixes this.",
   "error.uncaught.reload": "Reload",
   "error.uncaught.title": "Something went wrong",
