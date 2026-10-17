@@ -47,6 +47,12 @@ const recurring = (doneAt: string, unit: 'week' | 'year') => {
 const closedAt = (item: TaskItem, date: string) =>
   closedTask(item, dayjs(date));
 
+const missedOn = (item: TaskItem) => {
+  return (closedTask(item, NOW).closings ?? [])
+    .filter((entry) => entry.missed)
+    .map((entry) => entry.on);
+};
+
 describe('dueStatusColor', () => {
   it('gives a task without a due date no status at all', () => {
     expect(colorOf(undefined)).toBeUndefined();
@@ -328,5 +334,65 @@ describe('toggledDone', () => {
   it('leaves a non-recurring task its own due date on reopen', () => {
     const closed = mockTaskItem({ dueAt: '2026-08-01', doneAt: '2026-05-01' });
     expect(toggledDone(closed, NOW).dueAt).toBe('2026-08-01');
+  });
+});
+
+describe('closedTask — a calendar cadence catching up', () => {
+  it('logs every chosen weekday stepped over and lands on the next one', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2026-06-30',
+      interval: { unit: 'day', weekdays: [2] },
+    });
+
+    expect(nextDueOf(closedTask(item, NOW))).toBe('2026-07-28');
+    expect(missedOn(item)).toEqual(['2026-07-07', '2026-07-14', '2026-07-21']);
+  });
+
+  it('walks the months of the year across years', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2024-03-01',
+      interval: { unit: 'monthsOfYear', months: [3, 6] },
+    });
+
+    expect(nextDueOf(closedTask(item, NOW))).toBe('2027-03-01');
+    expect(missedOn(item)).toEqual([
+      '2024-06-01',
+      '2025-03-01',
+      '2025-06-01',
+      '2026-03-01',
+      '2026-06-01',
+    ]);
+  });
+
+  it('keeps only the newest misses from years of weekly catch-up', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2020-01-07',
+      interval: { unit: 'day', weekdays: [2] },
+    });
+    const closed = closedTask(item, NOW);
+
+    expect(nextDueOf(closed)).toBe('2026-07-28');
+    expect(closed.closings).toHaveLength(200);
+    expect(closed.closings?.at(-2)).toEqual({ on: '2026-07-21', missed: true });
+  });
+
+  it('still lands after today when more occurrences have passed than the walk allows', () => {
+    const item = mockTaskItem({
+      anchor: 'due',
+      dueAt: '2024-01-01',
+      interval: { unit: 'day', weekdays: [1, 2, 3, 4, 5, 6, 7] },
+    });
+
+    expect(nextDueOf(closedTask(item, NOW))).toBe('2026-07-27');
+  });
+});
+
+describe('dueStatusColor — the due day itself', () => {
+  it('warns on the day a task is due and turns red only once that day is gone', () => {
+    expect(colorOf('2026-07-26')).toBe('warning');
+    expect(colorOf('2026-07-25')).toBe('danger');
   });
 });

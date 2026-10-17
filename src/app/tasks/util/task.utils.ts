@@ -158,6 +158,7 @@ const advancePositioned = (
     if (!following?.isAfter(cursor)) break;
     cursor = following;
   }
+  if (cursor && !cursor.isAfter(now)) cursor = stepFrom(now, interval);
   return { next: cursor && isoDay(cursor), missed };
 };
 
@@ -276,7 +277,8 @@ export const dueStatusColor = (
   const target = nextDueOf(item);
   if (!target) return undefined;
   const due = dayjs(target);
-  if (due.isBefore(now)) return 'danger';
+  if (due.isBefore(now, 'day')) return 'danger';
+  if (due.isSame(now, 'day')) return 'warning';
   return due.isBefore(now.add(warnDaysBefore(item, due, shift), 'day'))
     ? 'warning'
     : 'success';
