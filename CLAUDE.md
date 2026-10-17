@@ -25,9 +25,10 @@ that has to outlive its commit belongs in one of the five documents below.
 | [next-version.md](docs/next-version.md) | work triaged into the next major |
 | [backlog.md](docs/backlog.md) | review findings, until the code answers them — and what the next reviewer should look for |
 | [jamserve-client.md](docs/jamserve-client.md) | research for SIMSENSE streaming from a jamserve server — nothing decided |
+| [dependency-update.md](docs/dependency-update.md) | the full dependency update, phase by phase — deleted when its last phase lands |
 
-**These seven are the whole list**, and `backlog.md` is the only one that empties: an entry is deleted
-once fixed, or moves to the file that owns it. A doc is updated only when a decision, a footgun, a
+**These eight are the whole list**, and `backlog.md` and `dependency-update.md` are the ones that empty:
+an entry is deleted once fixed, or moves to the file that owns it. A doc is updated only when a decision, a footgun, a
 one-way door, the next version's scope or a review's findings change — **never as a follow-up to a code
 change**. Write the current state,
 not the story that reached it: **append while a decision stands, collapse it into its successor once
