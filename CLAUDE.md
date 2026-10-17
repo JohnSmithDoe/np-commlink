@@ -137,7 +137,7 @@ that `runMigrations` would walk past a missing step. Ask when a field is dropped
 persisted key or a deck entry id moves, and before `APP_VERSION` is bumped.
 
 Real users currently hold **`ritual` (DAILY RUN), `household` and `tasks` (AGENDA), `vitals`
-(BIOMON), and `people` (SIN) from v1.6.0**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
+(BIOMON), and `people` (SIN)**, plus `deck` and `settings` by construction — a cold deck ships empty, so reaching those
 three means having switched programs on. Every other slice — `cash`, `tracking`, `officeTime`,
 `trackplay`, `notes`, `notifications`, `dashboard` — is dev-only, and its shape changes for the price
 of a cleared browser. The user base is small enough that most changes are still free, which is what

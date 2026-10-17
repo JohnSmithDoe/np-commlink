@@ -291,8 +291,8 @@ one's data.
 - **BIOMON's profiles RESET when they moved to `people`** — asked and answered, not really in use. A
   stored `profiles.items` is dropped on load (`asCurrentShape` in `profiles.reducer.ts`). The readings and
   pills keyed on those ids **are deleted by the first BIOMON load of v1.6.0** — the orphan sweep cannot
-  tell a pre-`people` profile from a removed person. Asked and answered: swept, no rung. `people` is
-  published from v1.6.0 on.
+  tell a pre-`people` profile from a removed person. Asked and answered: swept, no rung. `people` itself
+  shipped with v1.5.0.
 - **`deck` and `settings` RESET rather than migrate.** `deck` stores `visibleEntries` where a pre-v1.1.0
   document carries `hiddenEntries` + `hiddenModules` (`asCurrentShape` in `deck.reducer.ts`). `settings`
   splits `theme` into `skin` and `mode` and falls through `{...initialSettings, ...settings}`.
