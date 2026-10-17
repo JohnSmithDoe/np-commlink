@@ -26,7 +26,12 @@ import {
   linkedSignal,
   untracked,
 } from '@angular/core';
-import { FormField, SchemaPathTree, validate } from '@angular/forms/signals';
+import {
+  FormField,
+  min,
+  SchemaPathTree,
+  validate,
+} from '@angular/forms/signals';
 import {
   IonItem,
   IonListHeader,
@@ -139,6 +144,7 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
     validate(path.grams, ({ value }) =>
       value() === null ? MISSING_WEIGHT : null
     );
+    min(path.grams, 1);
   }
 
   protected blank(): Reading {

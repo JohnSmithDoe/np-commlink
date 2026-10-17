@@ -119,6 +119,32 @@ describe('EditReadingDialogComponent — the calculator', () => {
     expect(component.draft().grams).toBeNull();
   });
 
+  it('recomputes the difference when the date moves to another holder reading', () => {
+    const { component, host } = setup();
+    openFor(host, createReading(cat.id, 0, '2026-02-10'));
+    component.setHolder(holderPicked(martin.id));
+    component.setCombinedGrams(84_300);
+
+    component.draft.update((draft) => ({ ...draft, name: '2026-01-15' }));
+    TestBed.tick();
+
+    expect(component.holderGrams()).toBe(79_000);
+    expect(component.draft().grams).toBe(5300);
+  });
+
+  it('refuses to save a holder heavier than the two of them together', () => {
+    const { component, host } = setup();
+    openFor(host, createReading(cat.id, 0, '2026-02-10'));
+    component.setHolder(holderPicked(martin.id));
+
+    component.setCombinedGrams(75_000);
+
+    expect(component.draft().grams).toBe(-5000);
+    expect(component.canSave()).toBe(false);
+    component.confirm();
+    expect(TestBed.inject(ReadingsFacade).saveItem).not.toHaveBeenCalled();
+  });
+
   it('is offered for a pet being created and never for an edit', () => {
     const { component, host } = setup();
 
