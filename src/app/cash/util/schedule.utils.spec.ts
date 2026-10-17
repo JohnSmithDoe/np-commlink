@@ -193,6 +193,48 @@ describe('scheduleSightingsFor', () => {
     });
     expect(scheduleSightingsFor([first, second], [rent])).toHaveLength(1);
   });
+
+  it('does not take a refund for the payment', () => {
+    const refund = mockCashTransaction({
+      name: 'MIETE Erstattung',
+      amountCents: 12_000,
+    });
+    expect(scheduleSightingsFor([refund], [rent])).toEqual([]);
+  });
+
+  it('takes the latest of several payments in one statement', () => {
+    const march = mockCashTransaction({
+      id: 'mar',
+      name: 'MIETE',
+      amountCents: -90_000,
+      dateISO: '2026-03-01T00:00:00+01:00',
+    });
+    const may = mockCashTransaction({
+      id: 'may',
+      name: 'MIETE',
+      amountCents: -95_000,
+      dateISO: '2026-05-01T00:00:00+02:00',
+    });
+    const april = mockCashTransaction({
+      id: 'apr',
+      name: 'MIETE',
+      amountCents: -90_000,
+      dateISO: '2026-04-01T00:00:00+02:00',
+    });
+    expect(scheduleSightingsFor([march, may, april], [rent])).toMatchObject([
+      { transactionId: 'may', toCents: -95_000 },
+    ]);
+  });
+
+  it('ignores a payment no newer than the one already seen', () => {
+    const seen = { ...rent, lastSeenISO: '2026-05-01T00:00:00+02:00' };
+    const backDated = mockCashTransaction({
+      name: 'MIETE',
+      amountCents: -80_000,
+      dateISO: '2026-02-01T00:00:00+01:00',
+    });
+    expect(scheduleSightingsFor([backDated], [seen])).toEqual([]);
+  });
 });
 
 describe('advanced', () => {

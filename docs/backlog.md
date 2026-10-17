@@ -57,8 +57,9 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   text, so a PDNG row whose date or wording moves at booking gets a new key. The `plan-import` spec
   "confirms a pending row that books later" passes only because its `derivedKey` is hand-written to
   the old date — the reader would never emit it.
-- **T4 · Import sightings rewrite schedules.** `scheduleSightingsFor` / `applyAmountChanges`: a refund
-  matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
+- **T4 · A never-seen schedule advances from its own due date, not the booking's.** `advanced` moves
+  `nextDueISO` one period on from where it stands, so the first import of a year-long statement steps
+  a schedule that has no `lastSeenISO` by one period, whatever month the newest payment fell in.
 
 ### Tests that cannot fail
 

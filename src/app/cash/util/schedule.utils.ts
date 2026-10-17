@@ -139,16 +139,30 @@ export function wasSeenThisMonth(
   );
 }
 
+const isSightingOf = (
+  txn: CashTransaction,
+  schedule: CashSchedule
+): boolean => {
+  return (
+    Math.sign(txn.amountCents) === Math.sign(schedule.amountCents) &&
+    (!schedule.lastSeenISO ||
+      dayjs(txn.dateISO).isAfter(schedule.lastSeenISO)) &&
+    doesMatchSchedule(txn, schedule)
+  );
+};
+
 export function scheduleSightingsFor(
   incoming: readonly CashTransaction[],
   schedules: readonly CashSchedule[]
 ): ScheduleAmountChange[] {
   const claimed = new Set<string>();
   const sightings: ScheduleAmountChange[] = [];
-  for (const txn of incoming) {
+  const newestFirst = incoming.toSorted((a, b) =>
+    dayjs(b.dateISO).diff(a.dateISO)
+  );
+  for (const txn of newestFirst) {
     const schedule = schedules.find(
-      (candidate) =>
-        !claimed.has(candidate.id) && doesMatchSchedule(txn, candidate)
+      (candidate) => !claimed.has(candidate.id) && isSightingOf(txn, candidate)
     );
     if (!schedule) continue;
     claimed.add(schedule.id);
