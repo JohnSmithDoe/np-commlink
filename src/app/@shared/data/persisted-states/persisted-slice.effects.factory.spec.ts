@@ -82,6 +82,12 @@ const mutateLeavingStateDistinct = async (
   }
 };
 
+const brokenHop: MigrationStep[] = [
+  () => {
+    throw new Error('hop failed');
+  },
+];
+
 const writeFailedToast = NotificationsActions.toast({
   key: 'toast.storage.write-failed',
   color: 'danger',
@@ -175,6 +181,7 @@ describe('persisted-slice effects', () => {
           throw new Error('no hop should run at the current version');
         },
       ];
+      actions$ = of(ProbeActions.load());
 
       const loaded = run(
         createLoadSliceEffect(ProbeActions, 'probe', untouched)
@@ -182,6 +189,45 @@ describe('persisted-slice effects', () => {
       expect(await firstValueFrom(loaded)).toEqual(
         ProbeActions.loaded(probeState)
       );
+    });
+
+    it('reports a migration step that throws as an unreadable slice', async () => {
+      setup();
+      database.load.mockResolvedValue(wrapVersioned(1, probeState));
+      actions$ = of(ProbeActions.load());
+
+      const emitted = await firstValueFrom(
+        run(createLoadSliceEffect(ProbeActions, 'probe', brokenHop)).pipe(
+          toArray()
+        )
+      );
+
+      expect(emitted).toEqual([
+        ProbeActions.loaded(null),
+        NotificationsActions.toast({
+          key: 'toast.storage.unavailable',
+          color: 'danger',
+        }),
+      ]);
+    });
+
+    it('never overwrites a document whose migration threw', async () => {
+      setup();
+      database.load.mockResolvedValue(wrapVersioned(1, probeState));
+      actions$ = of(ProbeActions.load());
+      await firstValueFrom(
+        run(createLoadSliceEffect(ProbeActions, 'probe', brokenHop)).pipe(
+          toArray()
+        )
+      );
+
+      actions$ = of(ProbeActions.addItem('b'));
+      await drainSave();
+
+      expect(TestBed.inject(ReadBeforeWriteService).mayPersist('probe')).toBe(
+        false
+      );
+      expect(database.save).not.toHaveBeenCalled();
     });
 
     it('never writes while loading', async () => {

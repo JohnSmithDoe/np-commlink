@@ -58,6 +58,27 @@ describe('settingsReducer', () => {
     expect(state).toEqual({ ...initialSettings, mode: 'light' });
   });
 
+  it("drops every skin's custom accents when the mode changes", () => {
+    const seeded = settingsReducer(
+      settingsReducer(
+        initialSettings,
+        SettingsActions.setAccentColors('cyberpunk', {
+          primary: '#111111',
+          secondary: '#222222',
+        })
+      ),
+      SettingsActions.setAccentColors('boomer', {
+        primary: '#333333',
+        secondary: '#444444',
+      })
+    );
+
+    const state = settingsReducer(seeded, SettingsActions.setMode('light'));
+
+    expect(state.customAccents).toBeUndefined();
+    expect(state.mode).toBe('light');
+  });
+
   describe('setAccentColors', () => {
     it('stores a custom accent pair under the given skin', () => {
       const state = settingsReducer(

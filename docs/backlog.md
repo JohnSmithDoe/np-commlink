@@ -57,7 +57,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 ### Tests that cannot fail
 
-- `settings.reducer` `setMode` starts with no accents — `toEqual` cannot see `customAccents` cleared.
 - `tracking-notifications.effects` start/pause: the fixture state already equals the expected hint.
 - `office-time.utils` `targetdays` copies the production formula into the expectation.
 - `players.facade` last-played sort: that order is also the name order.
@@ -90,7 +89,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 - e2e: `e2e/office-time/first-paint.e2e.ts` banner says array, asserts a map (the legacy upgrade is untested);
   `e2e/household/manage-categories.e2e.ts` undo — no item ever carried the category; `e2e/vitals/pills.e2e.ts` "keeps the
   reminder switch on its own pill" seeds one pill, so the isolation is untested.
-- `persisted-slice.effects.factory` one case never assigns `actions$` and leans on the previous test.
 
 ### Weak oracles
 
@@ -116,9 +114,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 ### Gaps — risky code with no meaningful test
 
-- **Persistence:** a migration step that throws → `loaded(null)` + toast with saves still blocked;
-  `notes.effects` has no spec, and `collectImages$` deletes images — `loaded(null)` must not collect;
-  legacy reminders cancel-once.
 - **CREDSTICK:** `CashImportFacade.commit` (no spec); the reducer branch confirming pending rows; the
   balance check's PDNG skip; camt `ValDt` fallback, multi-statement documents, >2 decimals truncated;
   encoding — a declared ISO-8859-1 file end to end, bytes 0x80–0x9F, mixed files; burndown counting
