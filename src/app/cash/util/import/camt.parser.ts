@@ -74,7 +74,10 @@ const decimalToCents = (value: string): number | null => {
   const match = DECIMAL.exec(value);
   if (!match) return null;
   const [, whole, fraction = ''] = match;
-  return Number(whole) * 100 + Number(fraction.padEnd(2, '0').slice(0, 2));
+  const isLossless = /^0*$/.test(fraction.slice(2));
+  return isLossless
+    ? Number(whole) * 100 + Number(fraction.padEnd(2, '0').slice(0, 2))
+    : null;
 };
 
 const isoDate = (raw: string): string | null => {

@@ -6,7 +6,23 @@ import {
   TEST_COUNTERPARTY_IBAN,
   TEST_IBAN,
 } from '../../testing/camt.test-data';
+import dayjs from 'dayjs';
 import { parseCamt } from './camt.parser';
+
+const SECOND_IBAN = 'DE97100900004711000200';
+
+const withoutBookingDate = (entry: string): string =>
+  entry.replace('<BookgDt><Dt>2026-01-06</Dt></BookgDt>', '');
+
+const statement = (iban: string, closing: string, entry: string): string => {
+  return [
+    '<Rpt>',
+    `<Acct><Id><IBAN>${iban}</IBAN></Id></Acct>`,
+    camtBalance(closing),
+    entry,
+    '</Rpt>',
+  ].join('');
+};
 
 const parseOne = (entry: string) => {
   const report = parseCamt(camtDocument([entry]));
@@ -248,5 +264,60 @@ describe('parseCamt', () => {
     expect(parseCamt('<html><body>nope</body></html>')).toBeNull();
     expect(parseCamt('Buchungstag;Betrag')).toBeNull();
     expect(parseCamt('')).toBeNull();
+  });
+
+  it('dates an entry by ValDt when it carries no BookgDt', () => {
+    const entry = withoutBookingDate(camtEntry({ valueDate: '2026-01-08' }));
+
+    expect(parseOne(entry)?.dateISO).toBe(dayjs('2026-01-08').format());
+  });
+
+  it('rejects an entry with neither a booking nor a value date', () => {
+    const undated = withoutBookingDate(camtEntry());
+    const report = parseCamt(camtDocument([undated]));
+
+    expect(report?.entries).toEqual([]);
+    expect(report?.rejected).toBe(1);
+  });
+
+  it('reads a DtTm date as the calendar day it names', () => {
+    const entry = camtEntry().replace(
+      '<BookgDt><Dt>2026-01-06</Dt></BookgDt>',
+      '<BookgDt><DtTm>2026-01-06T23:30:00+01:00</DtTm></BookgDt>'
+    );
+
+    expect(parseOne(entry)?.dateISO).toBe(dayjs('2026-01-06').format());
+  });
+
+  it('takes the IBAN from the first statement and the closing balance from the last', () => {
+    const xml = [
+      '<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.08">',
+      '<BkToCstmrAcctRpt>',
+      statement(TEST_IBAN, '100.00', camtEntry({ amount: '1.00' })),
+      statement(SECOND_IBAN, '250.00', camtEntry({ amount: '2.00' })),
+      '</BkToCstmrAcctRpt></Document>',
+    ].join('');
+    const report = parseCamt(xml);
+
+    expect(report?.iban).toBe(TEST_IBAN);
+    expect(report?.closingBalanceCents).toBe(25_000);
+    expect(report?.entries.map((entry) => entry.amountCents)).toEqual([
+      -100, -200,
+    ]);
+  });
+
+  it('rejects an amount with more than two decimals rather than truncating it', () => {
+    const report = parseCamt(camtDocument([camtEntry({ amount: '1.005' })]));
+
+    expect(report?.entries).toEqual([]);
+    expect(report?.rejected).toBe(1);
+  });
+
+  it('reads trailing zeros past the cents as the same amount', () => {
+    const report = parseCamt(camtDocument([camtEntry({ amount: '12.500' })]));
+
+    expect(
+      report?.entries.map(({ amountCents }) => Math.abs(amountCents))
+    ).toEqual([1250]);
   });
 });
