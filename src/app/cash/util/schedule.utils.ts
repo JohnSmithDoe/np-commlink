@@ -182,16 +182,45 @@ export const changedAmounts = (
 ): ScheduleAmountChange[] =>
   sightings.filter(({ fromCents, toCents }) => fromCents !== toCents);
 
+const occurrence = (
+  schedule: CashSchedule,
+  dueDay: number,
+  periods: number
+): dayjs.Dayjs => {
+  const month = dayjs(schedule.nextDueISO).add(
+    periods * schedule.periodMonths,
+    'month'
+  );
+  return month.date(Math.min(dueDay, month.daysInMonth()));
+};
+
+const periodsToNearestOccurrence = (
+  schedule: CashSchedule,
+  dueDay: number,
+  seenISO: string
+): number => {
+  const seen = dayjs(seenISO);
+  const before = Math.floor(
+    seen.diff(schedule.nextDueISO, 'month', true) / schedule.periodMonths
+  );
+  const distance = (periods: number) =>
+    Math.abs(seen.diff(occurrence(schedule, dueDay, periods)));
+  return distance(before) <= distance(before + 1) ? before : before + 1;
+};
+
 export function advanced(
   schedule: CashSchedule,
   seenISO: string
 ): CashSchedule {
   const dueDay = schedule.dueDay ?? dayjs(schedule.nextDueISO).date();
-  const month = dayjs(schedule.nextDueISO).add(schedule.periodMonths, 'month');
+  const paid = Math.max(
+    periodsToNearestOccurrence(schedule, dueDay, seenISO),
+    -1
+  );
   return {
     ...schedule,
     dueDay,
     lastSeenISO: seenISO,
-    nextDueISO: month.date(Math.min(dueDay, month.daysInMonth())).format(),
+    nextDueISO: occurrence(schedule, dueDay, paid + 1).format(),
   };
 }

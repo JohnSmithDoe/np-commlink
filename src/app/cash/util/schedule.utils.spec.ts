@@ -253,10 +253,12 @@ describe('advanced', () => {
       dueDay: 31,
     });
 
-    const february = advanced(monthly, JANUARY_6);
+    const february = advanced(monthly, '2026-01-31T12:00:00+01:00');
     expect(february.nextDueISO).toContain('2026-02-28');
 
-    expect(advanced(february, JANUARY_6).nextDueISO).toContain('2026-03-31');
+    expect(
+      advanced(february, '2026-02-27T12:00:00+01:00').nextDueISO
+    ).toContain('2026-03-31');
   });
 
   it('anchors on the stored date when a schedule carries no day yet', () => {
@@ -264,9 +266,31 @@ describe('advanced', () => {
       nextDueISO: '2026-01-30T00:00:00+01:00',
     });
 
-    const february = advanced(monthly, JANUARY_6);
+    const february = advanced(monthly, '2026-01-30T12:00:00+01:00');
     expect(february.dueDay).toBe(30);
     expect(february.nextDueISO).toContain('2026-02-28');
-    expect(advanced(february, JANUARY_6).nextDueISO).toContain('2026-03-30');
+    expect(
+      advanced(february, '2026-02-27T12:00:00+01:00').nextDueISO
+    ).toContain('2026-03-30');
+  });
+
+  it('steps a never-seen schedule from the payment, not from its stale date', () => {
+    const monthly = mockCashSchedule({
+      nextDueISO: '2026-01-01T00:00:00+01:00',
+      dueDay: 1,
+    });
+
+    const seen = advanced(monthly, '2026-08-30T12:00:00+02:00');
+
+    expect(seen.nextDueISO).toContain('2026-10-01');
+  });
+
+  it('never pulls a later due date back for an earlier payment', () => {
+    const monthly = mockCashSchedule({
+      nextDueISO: '2026-06-01T00:00:00+02:00',
+      dueDay: 1,
+    });
+
+    expect(advanced(monthly, JANUARY_6).nextDueISO).toContain('2026-06-01');
   });
 });
