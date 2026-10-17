@@ -69,3 +69,27 @@ describe('findReconciliationCandidates', () => {
     expect(result.map((t) => t.id)).toEqual(['near', 'far']);
   });
 });
+
+describe('findReconciliationCandidates · the window counts days', () => {
+  it('matches a spend at 18:00 against a booking three calendar days earlier', () => {
+    const evening = { ...pending, dateISO: '2026-01-10T18:00:00+01:00' };
+    const booked = imported({ dateISO: '2026-01-07T00:00:00+01:00' });
+    expect(findReconciliationCandidates(evening, [evening, booked])).toEqual([
+      booked,
+    ]);
+  });
+
+  it('keeps three days three days across the clock change', () => {
+    const spend = { ...pending, dateISO: '2026-10-26T00:00:00+01:00' };
+    const booked = imported({ dateISO: '2026-10-23T00:00:00+02:00' });
+    expect(findReconciliationCandidates(spend, [spend, booked])).toEqual([
+      booked,
+    ]);
+  });
+
+  it('still refuses a fourth day', () => {
+    const spend = { ...pending, dateISO: '2026-01-10T08:00:00+01:00' };
+    const booked = imported({ dateISO: '2026-01-06T23:00:00+01:00' });
+    expect(findReconciliationCandidates(spend, [spend, booked])).toEqual([]);
+  });
+});

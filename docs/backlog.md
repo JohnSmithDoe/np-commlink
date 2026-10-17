@@ -59,8 +59,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   the old date — the reader would never emit it.
 - **T4 · Import sightings rewrite schedules.** `scheduleSightingsFor` / `applyAmountChanges`: a refund
   matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
-- **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
-  booking three days earlier, and DST moves the edge by an hour.
 
 ### Tests that cannot fail
 
