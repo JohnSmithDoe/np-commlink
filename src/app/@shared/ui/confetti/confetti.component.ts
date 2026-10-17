@@ -7,12 +7,7 @@
  * them, then a fixed column list that silently stacked every extra piece.
  * The consumer sets how far a piece falls with `--confetti-distance`.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 type Spark = {
   left: string;
@@ -35,7 +30,6 @@ const sparkAt = (index: number, count: number): Spark => {
 
 @Component({
   selector: 'app-confetti',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './confetti.component.html',
   styleUrl: './confetti.component.scss',
   host: { 'aria-hidden': 'true' },

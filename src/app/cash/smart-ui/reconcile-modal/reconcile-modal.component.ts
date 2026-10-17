@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -29,7 +24,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   selector: 'app-cash-reconcile-modal',
   templateUrl: './reconcile-modal.component.html',
   styleUrls: ['./reconcile-modal.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     IonHeader,

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ActionSheetButton, IonActionSheet } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -12,7 +7,6 @@ import { ShoppingFacade } from '../../data';
 @Component({
   selector: 'app-shopping-action-sheet',
   templateUrl: './shopping-action-sheet.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonActionSheet, TranslatePipe],
 })
 export class ShoppingActionSheetComponent {

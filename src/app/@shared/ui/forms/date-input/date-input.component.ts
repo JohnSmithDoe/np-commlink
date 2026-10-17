@@ -27,7 +27,6 @@
 import { DatePipe } from '@angular/common';
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   inject,
   input,
@@ -51,7 +50,6 @@ let instances = 0;
   selector: 'app-date-input',
   templateUrl: './date-input.component.html',
   imports: [DatePipe, IonDatetime, IonInput, IonItem, IonModal, TranslatePipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateInputComponent implements FormValueControl<string> {
   readonly value = model('');

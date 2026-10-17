@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -36,7 +30,6 @@ type UnitsMode = 'units' | 'money';
   selector: 'app-page-coprocessor-units',
   templateUrl: './units.page.html',
   styleUrl: './units.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MagnitudeInputComponent,
     MoneyRowComponent,

@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
   IonButton,
   IonChip,
@@ -19,7 +14,6 @@ import { Category, CategoryId } from '../../../model/category.types';
 @Component({
   selector: 'app-category-input',
   templateUrl: './category-input.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonItem, IonLabel, IonChip, IonButton, IonIcon, TranslatePipe],
 })
 export class CategoryInputComponent {

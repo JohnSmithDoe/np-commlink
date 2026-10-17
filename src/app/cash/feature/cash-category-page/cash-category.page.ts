@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonNote } from '@ionic/angular/standalone';
 import {
@@ -21,7 +16,6 @@ import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
   selector: 'app-page-cash-category',
   templateUrl: './cash-category.page.html',
   styleUrls: ['./cash-category.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     ListItemComponent,

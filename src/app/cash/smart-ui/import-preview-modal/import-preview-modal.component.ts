@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -24,7 +24,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   selector: 'app-cash-import-preview-modal',
   templateUrl: './import-preview-modal.component.html',
   styleUrls: ['./import-preview-modal.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     IonHeader,

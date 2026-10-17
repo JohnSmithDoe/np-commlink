@@ -6,7 +6,7 @@
  * would have to answer "taken when" on every render.
  * ───────────────────────────────────────────────────────────────── */
 
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormField, SchemaPathTree, validate } from '@angular/forms/signals';
 import {
   IonInput,
@@ -44,7 +44,6 @@ const NO_WEEKDAY = { kind: 'noWeekday' } as const;
 
 @Component({
   selector: 'app-edit-pill-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-pill-dialog.component.html',
   imports: [
     FormField,

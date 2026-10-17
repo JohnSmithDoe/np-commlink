@@ -11,13 +11,7 @@
  * asking where the app is now makes a leaving page answer for its successor,
  * which is a live link on a page the user is watching slide away.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -28,7 +22,6 @@ import { routeUrl } from '../../util/route-url';
 
 @Component({
   selector: 'app-page-return',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './page-return.component.html',
   styleUrl: './page-return.component.scss',
   imports: [IonIcon, RouterLink, TranslatePipe],

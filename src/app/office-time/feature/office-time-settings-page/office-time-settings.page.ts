@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   AlertButton,
   IonAlert,
@@ -37,7 +32,6 @@ import { settingsOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-page-office-time-settings',
   templateUrl: 'office-time-settings.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     PageReturnComponent,

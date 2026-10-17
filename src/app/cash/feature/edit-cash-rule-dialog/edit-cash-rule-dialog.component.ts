@@ -7,12 +7,7 @@
  * canonical de-formatted string while the field shows the user's own
  * locale, so `toCondition` / `toConditionForm` sit on the boundary.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormField, SchemaPathTree } from '@angular/forms/signals';
 import {
   IonButton,
@@ -53,7 +48,6 @@ import {
   selector: 'app-edit-cash-rule-dialog',
   templateUrl: './edit-cash-rule-dialog.component.html',
   styleUrls: ['./edit-cash-rule-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonButton,

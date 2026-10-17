@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Product } from '../../model/household-list.types';
 import { HouseholdListPageFacade, ProductsFacade } from '../../data';
 import { LIST_FACADE } from '../../../@shared/util/item-lists/list-page.facade';
@@ -13,7 +13,6 @@ import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-
 @Component({
   selector: 'app-page-products',
   templateUrl: 'products.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     ItemListQuickAddComponent,

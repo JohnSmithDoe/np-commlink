@@ -12,12 +12,7 @@
  * focusing a name nobody came to edit puts the phone's keyboard over the
  * fields that were.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -35,7 +30,6 @@ import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-in
   selector: 'app-item-edit-modal',
   templateUrl: './item-edit-modal.component.html',
   styleUrl: './item-edit-modal.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,
     IonHeader,

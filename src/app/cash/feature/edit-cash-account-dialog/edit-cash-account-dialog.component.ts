@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormField, SchemaPathTree } from '@angular/forms/signals';
 import {
   IonInput,
@@ -46,7 +41,6 @@ type AccountForm = {
 @Component({
   selector: 'app-edit-cash-account-dialog',
   templateUrl: './edit-cash-account-dialog.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonItem,

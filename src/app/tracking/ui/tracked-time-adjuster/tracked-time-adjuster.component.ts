@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import {
   InputCustomEvent,
   IonButton,
@@ -21,7 +15,6 @@ import {
 
 @Component({
   selector: 'app-tracked-time-adjuster',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tracked-time-adjuster.component.html',
   styleUrl: './tracked-time-adjuster.component.scss',
   imports: [IonButton, IonInput, MinutesFromSecondsPipe, TranslatePipe],

@@ -8,12 +8,7 @@
  * said "this month" and finding two years of bookings would answer a
  * question nobody asked.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -34,7 +29,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   selector: 'app-page-cash-uncategorized',
   templateUrl: './cash-uncategorized.page.html',
   styleUrls: ['./cash-uncategorized.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     PageHeaderComponent,

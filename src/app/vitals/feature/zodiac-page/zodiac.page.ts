@@ -12,7 +12,6 @@
 
 import { DatePipe } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -63,7 +62,6 @@ const PHASE_LABEL_KEYS: Record<SeasonPhase, Marker> = {
   selector: 'app-page-vitals-zodiac',
   templateUrl: './zodiac.page.html',
   styleUrls: ['./zodiac.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonContent,

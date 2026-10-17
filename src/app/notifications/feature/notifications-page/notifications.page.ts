@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonButton,
@@ -31,7 +31,6 @@ import { InboxNotification } from '../../../@shared/model/notifications.types';
   selector: 'app-page-notifications',
   templateUrl: 'notifications.page.html',
   styleUrls: ['notifications.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     PageHeaderComponent,

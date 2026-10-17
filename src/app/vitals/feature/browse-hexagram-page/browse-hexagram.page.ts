@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
@@ -26,7 +21,6 @@ const HEXAGRAM_ROUTE = '/vitals/browse/iching';
   selector: 'app-page-vitals-browse-hexagram',
   templateUrl: './browse-hexagram.page.html',
   styleUrls: ['./browse-hexagram.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     TranslatePipe,

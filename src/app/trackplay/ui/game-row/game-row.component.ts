@@ -8,12 +8,7 @@
  * call site and this stays dumb.
  * ───────────────────────────────────────────────────────────────── */
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { IonList, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -26,7 +21,6 @@ import { TRACKPLAY_EDIT_SWIPE_ACTION } from '../swipe-actions';
 @Component({
   selector: 'app-trackplay-game-row',
   templateUrl: './game-row.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DatePipe, IonNote, TranslatePipe, ListItemComponent],
 })
 export class GameRowComponent {

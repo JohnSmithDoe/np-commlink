@@ -15,12 +15,7 @@
  * call shape, and `this.sort()` is indistinguishable from `Array#sort()`.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -46,7 +41,6 @@ const SORT_BY_NAME: ItemListSortOption = {
   selector: 'app-item-list-toolbar',
   templateUrl: 'item-list-toolbar.component.html',
   styleUrls: ['item-list-toolbar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonToolbar, IonButtons, IonButton, IonIcon, TranslatePipe],
 })
 export class ItemListToolbarComponent {

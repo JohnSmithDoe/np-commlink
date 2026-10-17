@@ -4,13 +4,7 @@
  * and "on which days does this come round" to a task, and @shared owns
  * neither wording.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { ISO_WEEKDAYS, IsoWeekday } from '../../../model/app.types';
 import { localizedWeekday } from '../../../util/formatting/date-format.utils';
 import {
@@ -30,7 +24,6 @@ const weekdayOptions = (): ChipOption<IsoWeekday>[] =>
   selector: 'app-weekday-picker',
   templateUrl: './weekday-picker.component.html',
   styleUrl: './weekday-picker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OptionChipsComponent],
 })
 export class WeekdayPickerComponent {

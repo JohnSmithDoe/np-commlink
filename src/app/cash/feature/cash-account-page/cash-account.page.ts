@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   AlertController,
   IonButton,
@@ -57,7 +57,6 @@ const DETACH: StartSwipeAction = {
   selector: 'app-page-cash-account',
   templateUrl: './cash-account.page.html',
   styleUrls: ['./cash-account.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     ListItemComponent,

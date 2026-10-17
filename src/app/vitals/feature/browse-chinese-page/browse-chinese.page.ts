@@ -1,10 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -21,7 +16,6 @@ import {
   selector: 'app-page-vitals-browse-chinese',
   templateUrl: './browse-chinese.page.html',
   styleUrls: ['./browse-chinese.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonContent,

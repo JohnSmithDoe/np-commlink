@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -63,7 +63,6 @@ const SECTIONS: readonly BrowseSection[] = [
   selector: 'app-page-vitals-browse',
   templateUrl: './browse.page.html',
   styleUrls: ['./browse.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonContent, RouterLink, TranslatePipe, PageHeaderComponent],
 })
 export class VitalsBrowsePage {

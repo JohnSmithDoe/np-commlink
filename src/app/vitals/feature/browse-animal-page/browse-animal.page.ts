@@ -1,10 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
@@ -33,7 +28,6 @@ const ANIMAL_ROUTE = '/vitals/browse/chinese';
   selector: 'app-page-vitals-browse-animal',
   templateUrl: './browse-animal.page.html',
   styleUrls: ['./browse-animal.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonContent,

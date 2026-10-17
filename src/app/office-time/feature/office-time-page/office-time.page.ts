@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -32,7 +27,6 @@ import { DashWordclockComponent } from '../../ui/dash-wordclock/dash-wordclock.c
   selector: 'app-page-office-time',
   templateUrl: 'office-time.page.html',
   styleUrls: ['office-time.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     IonContent,

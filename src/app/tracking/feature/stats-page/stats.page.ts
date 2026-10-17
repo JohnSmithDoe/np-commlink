@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import {
@@ -35,7 +35,6 @@ const VIEW_LABEL_KEYS: Record<TrackingViewId, Marker> = {
 @Component({
   selector: 'app-page-stats',
   templateUrl: 'stats.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     TranslatePipe,

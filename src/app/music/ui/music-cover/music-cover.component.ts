@@ -1,6 +1,5 @@
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -18,7 +17,6 @@ import { CoverLoader, CoverRef } from '../../model/music.types';
   selector: 'app-music-cover',
   templateUrl: './music-cover.component.html',
   styleUrls: ['./music-cover.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonIcon],
 })
 export class MusicCoverComponent {

@@ -9,7 +9,7 @@
  * mounted, so three cash pages visited meant three live copies of the
  * same dialog element.
  * ───────────────────────────────────────────────────────────────── */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular/standalone';
 import { EditCashAccountDialogComponent } from '../edit-cash-account-dialog/edit-cash-account-dialog.component';
 import { EditCashRuleDialogComponent } from '../edit-cash-rule-dialog/edit-cash-rule-dialog.component';
@@ -19,7 +19,6 @@ import { EditCashTransactionDialogComponent } from '../edit-cash-transaction-dia
 @Component({
   selector: 'app-cash-shell',
   templateUrl: './cash-shell.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonRouterOutlet,
     EditCashAccountDialogComponent,

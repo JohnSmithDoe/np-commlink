@@ -10,7 +10,7 @@
  * ignores the reading column everything else shares.
  * ───────────────────────────────────────────────────────────────── */
 
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HouseholdCopyService, HouseholdListPageFacade } from '../../data';
 import { HouseholdSearchResultComponent } from '../../ui/household-search-result/household-search-result.component';
 
@@ -31,7 +31,6 @@ import { HouseholdSearchResultComponent } from '../../ui/household-search-result
       flex-direction: column;
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [HouseholdSearchResultComponent],
 })
 export class HouseholdSearchPanelComponent {

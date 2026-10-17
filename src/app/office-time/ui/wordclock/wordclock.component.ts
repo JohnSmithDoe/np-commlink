@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import dayjs from 'dayjs';
 import { interval, map, startWith } from 'rxjs';
@@ -19,7 +14,6 @@ const GRID_ROWS = GRID.map((row) => [...row]);
 
 @Component({
   selector: 'app-wordclock',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './wordclock.component.html',
   styleUrls: ['./wordclock.component.scss'],
   imports: [],

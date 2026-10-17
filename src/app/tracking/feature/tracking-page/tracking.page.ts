@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  isDevMode,
-} from '@angular/core';
+import { Component, inject, isDevMode } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -30,7 +25,6 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
   selector: 'app-page-tracking',
   templateUrl: 'tracking.page.html',
   styleUrls: ['tracking.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     ListPageComponent,

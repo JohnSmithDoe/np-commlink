@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
 import { IonItem, IonLabel, IonToggle } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,7 +11,6 @@ import { createGameType } from '../../util/trackplay.factory';
 
 @Component({
   selector: 'app-edit-game-type-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-game-type-dialog.component.html',
   styleUrls: ['./edit-game-type-dialog.component.scss'],
   imports: [

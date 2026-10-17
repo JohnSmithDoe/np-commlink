@@ -18,13 +18,7 @@
  * past eight weeks people say "two months", and ten years is a smoke
  * detector — the longest cadence anybody actually keeps.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   IonSegment,
@@ -77,7 +71,6 @@ const sorted = <T extends number>(values: readonly T[]): T[] =>
     TranslatePipe,
     WeekdayPickerComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntervalInputComponent {
   readonly value = input<Interval | undefined>();

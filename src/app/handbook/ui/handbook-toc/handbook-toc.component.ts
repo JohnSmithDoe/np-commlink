@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonItem,
@@ -16,7 +16,6 @@ import { HandbookTitleComponent } from '../handbook-title/handbook-title.compone
   selector: 'app-handbook-toc',
   templateUrl: 'handbook-toc.component.html',
   styleUrls: ['handbook-toc.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonItem,

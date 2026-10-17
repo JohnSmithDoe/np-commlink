@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -17,7 +17,6 @@ import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return
 @Component({
   selector: 'app-page-list-settings',
   templateUrl: 'list-settings.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     PageReturnComponent,

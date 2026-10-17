@@ -9,12 +9,7 @@
  * Unrolled, a die shows its OWN face count, so the same component labels
  * the pool editor and the tray with no second mode.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { DieFaces } from '../../model/dice.types';
 
 type DieShape = { body: string; face: string; textY: number };
@@ -48,7 +43,6 @@ const DIE_SHAPES: Record<DieFaces, DieShape> = {
   selector: 'app-trackplay-die-glyph',
   templateUrl: './die-glyph.component.html',
   styleUrls: ['./die-glyph.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: { 'aria-hidden': 'true' },
 })
 export class DieGlyphComponent {

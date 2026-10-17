@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -16,7 +16,6 @@ import { addressLines, ageOn } from '../../util/people.utils';
   selector: 'app-page-people',
   templateUrl: './people.page.html',
   styleUrls: ['./people.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonNote,

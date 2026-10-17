@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { DashboardStats } from '../../model/office-time.types';
 
 @Component({
@@ -6,7 +6,6 @@ import { DashboardStats } from '../../model/office-time.types';
   templateUrl: './dash-percentage.component.html',
   styleUrls: ['./dash-percentage.component.scss'],
   imports: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashPercentageComponent {
   readonly stats = input.required<DashboardStats>();

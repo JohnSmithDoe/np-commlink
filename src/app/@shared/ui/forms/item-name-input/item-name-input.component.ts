@@ -8,7 +8,6 @@
  * the first keystroke enough.
  * ───────────────────────────────────────────────────────────────── */
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -54,7 +53,6 @@ const ERROR_TEXT: Readonly<Partial<Record<string, Marker>>> = {
     TranslatePipe,
     EmojiPickerComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemNameInputComponent implements FormValueControl<string> {
   readonly value = model<string>('');

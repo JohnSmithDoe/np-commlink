@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -12,7 +12,6 @@ import { readNoteImage } from '../../util/notes.utils';
   templateUrl: './note-image-input.component.html',
   styleUrls: ['./note-image-input.component.scss'],
   imports: [TranslatePipe, IonButton, IonIcon],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NoteImageInputComponent {
   readonly #facade = inject(NoteEditorFacade);

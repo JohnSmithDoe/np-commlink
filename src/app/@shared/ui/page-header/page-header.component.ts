@@ -1,6 +1,5 @@
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -24,7 +23,6 @@ import { routeUrl } from '../../util/route-url';
 
 @Component({
   selector: 'app-page-header',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './page-header.component.html',
   styleUrl: './page-header.component.scss',
   imports: [

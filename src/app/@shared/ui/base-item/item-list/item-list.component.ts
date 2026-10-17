@@ -1,7 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   input,
   output,
@@ -32,7 +31,6 @@ export type ItemListTemplateContext = {
   selector: 'app-item-list',
   templateUrl: 'item-list.component.html',
   styleUrls: ['item-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonToolbar,
     IonList,

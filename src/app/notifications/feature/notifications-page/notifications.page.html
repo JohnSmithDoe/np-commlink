@@ -13,12 +13,12 @@
       <ion-label>
         <h2>
           {{ 'notifications.section.new' | translate }}
-          <ion-note>({{ openItems?.length ?? 0 }})</ion-note>
+          <ion-note>({{ openItems.length }})</ion-note>
         </h2>
       </ion-label>
     </ion-item>
 
-    @if (!openItems?.length) {
+    @if (!openItems.length) {
       <app-empty-state [label]="'notifications.empty.new' | translate" />
     }
 
@@ -76,11 +76,11 @@
       <ion-label>
         <h2>
           {{ 'notifications.section.done' | translate }}
-          <ion-note>({{ doneItems?.length ?? 0 }})</ion-note>
+          <ion-note>({{ doneItems.length }})</ion-note>
         </h2>
       </ion-label>
       <ion-buttons slot="end">
-        @if (doneItems?.length) {
+        @if (doneItems.length) {
           <ion-button
             fill="clear"
             color="medium"
@@ -103,7 +103,7 @@
 
     @if (!collapsed) {
       <div id="notifications-done-list">
-        @if (!doneItems?.length) {
+        @if (!doneItems.length) {
           <app-empty-state [label]="'notifications.empty.done' | translate" />
         }
 

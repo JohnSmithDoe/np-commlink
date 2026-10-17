@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
@@ -49,7 +44,6 @@ const SETTINGS_LABEL = marker('tasks.a11y.settings');
   selector: 'app-page-tasks',
   templateUrl: 'tasks.page.html',
   styleUrls: ['tasks.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     DatePipe,

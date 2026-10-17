@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  resource,
-} from '@angular/core';
+import { Component, inject, resource } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -40,7 +35,6 @@ const LIST_LABELS: Record<HomeList, Marker> = {
   selector: 'app-page-music-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonButton,

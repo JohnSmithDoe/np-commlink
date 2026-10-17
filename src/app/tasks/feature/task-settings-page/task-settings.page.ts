@@ -6,12 +6,7 @@
  * reach one that exists. Which kind a value is follows from whether the item
  * mirrors it; see decisions.md.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -46,7 +41,6 @@ const WARN_LABELS: Readonly<Record<TaskWarnShift, Marker>> = {
 @Component({
   selector: 'app-page-task-settings',
   templateUrl: 'task-settings.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     PageReturnComponent,

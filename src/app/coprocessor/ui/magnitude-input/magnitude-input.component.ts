@@ -5,7 +5,6 @@
  * multiplying a second time, which is what a single parse would have done.
  * ───────────────────────────────────────────────────────────────── */
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -43,7 +42,6 @@ const localized = (value: number, language: Language): string =>
   selector: 'app-magnitude-input',
   templateUrl: './magnitude-input.component.html',
   styleUrl: './magnitude-input.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, IonInput, TranslatePipe],
 })
 export class MagnitudeInputComponent {

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   FormField,
   min,
@@ -67,7 +61,6 @@ const transferRules: SchemaFn<TransferForm> = (path) => {
 @Component({
   selector: 'app-cash-transfer-modal',
   templateUrl: './transfer-modal.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonHeader,

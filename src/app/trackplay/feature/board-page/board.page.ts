@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -46,7 +40,6 @@ const PIPS = [1, 2, 3, 4, 5, 6];
   selector: 'app-page-trackplay-board',
   templateUrl: './board.page.html',
   styleUrls: ['./board.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BoardComponent,
     PageHeaderComponent,

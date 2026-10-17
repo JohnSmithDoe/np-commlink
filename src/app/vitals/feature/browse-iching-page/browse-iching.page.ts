@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -16,7 +16,6 @@ const HEXAGRAM_VIEWS = HEXAGRAMS.map((record) => ({
   selector: 'app-page-vitals-browse-iching',
   templateUrl: './browse-iching.page.html',
   styleUrls: ['./browse-iching.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     RouterLink,

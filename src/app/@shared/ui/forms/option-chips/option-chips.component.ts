@@ -12,7 +12,6 @@
  * ───────────────────────────────────────────────────────────────── */
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -35,7 +34,6 @@ export interface ChipOption<T> {
   templateUrl: './option-chips.component.html',
   styleUrl: './option-chips.component.scss',
   imports: [IonButton, IonIcon],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OptionChipsComponent<T> {
   readonly options = input.required<readonly ChipOption<T>[]>();

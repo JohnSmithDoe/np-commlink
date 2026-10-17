@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -45,7 +44,6 @@ const OUTCOME_MESSAGES: Record<ConnectOutcome, Marker> = {
   selector: 'app-page-music-sources',
   templateUrl: './sources.page.html',
   styleUrls: ['./sources.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonButton,

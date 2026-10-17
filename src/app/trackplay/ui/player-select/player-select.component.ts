@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -16,7 +15,6 @@ import { Player, TrackplayId } from '../../model/trackplay.types';
 
 @Component({
   selector: 'app-trackplay-player-select',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './player-select.component.html',
   styleUrls: ['./player-select.component.scss'],
   imports: [IonList, IonItem, IonCheckbox],

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonNote } from '@ionic/angular/standalone';
@@ -16,7 +16,6 @@ import { NO_PLAYER_STATS } from '../../util/trackplay.factory';
   selector: 'app-page-trackplay-players',
   templateUrl: './players.page.html',
   styleUrls: ['./players.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonNote,

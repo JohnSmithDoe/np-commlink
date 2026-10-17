@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -22,7 +22,6 @@ import { PEOPLE_ROUTE } from '../../../@shared/util/people/people.token';
   selector: 'app-page-trackplay-player',
   templateUrl: './player.page.html',
   styleUrls: ['./player.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonIcon,

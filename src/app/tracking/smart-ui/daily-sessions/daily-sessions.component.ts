@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonIcon,
@@ -31,7 +25,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   selector: 'app-daily-sessions',
   templateUrl: './daily-sessions.component.html',
   styleUrls: ['./daily-sessions.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     DatePipe,

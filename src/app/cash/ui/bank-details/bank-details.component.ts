@@ -8,12 +8,7 @@
  * manually typed booking renders nothing and this component disappears
  * rather than showing nine empty labels.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {
   IonAccordion,
   IonAccordionGroup,
@@ -39,7 +34,6 @@ interface DetailRow {
   selector: 'app-cash-bank-details',
   templateUrl: './bank-details.component.html',
   styleUrls: ['./bank-details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonAccordionGroup,
     IonAccordion,

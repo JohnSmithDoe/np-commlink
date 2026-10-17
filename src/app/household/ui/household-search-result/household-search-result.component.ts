@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
   HouseholdSearchResult,
@@ -20,7 +15,6 @@ import { Category } from '../../../@shared/model/category.types';
   selector: 'app-household-search-result',
   templateUrl: './household-search-result.component.html',
   styleUrl: './household-search-result.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TextItemComponent, CategoriesPipe, TranslatePipe],
 })
 export class HouseholdSearchResultComponent {

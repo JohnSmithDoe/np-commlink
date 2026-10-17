@@ -1,11 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-  OutputEmitterRef,
-} from '@angular/core';
+import { Component, input, output, OutputEmitterRef } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -48,7 +42,6 @@ marker('tracking.item.action.pause');
 
 @Component({
   selector: 'app-tracking-item',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tracking-item.component.html',
   styleUrls: ['./tracking-item.component.scss'],
   imports: [

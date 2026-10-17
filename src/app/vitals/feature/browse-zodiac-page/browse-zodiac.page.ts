@@ -1,10 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -18,7 +13,6 @@ import { zodiacSignFor, zodiacYear } from '../../util/zodiac.utils';
   selector: 'app-page-vitals-browse-zodiac',
   templateUrl: './browse-zodiac.page.html',
   styleUrls: ['./browse-zodiac.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonContent,

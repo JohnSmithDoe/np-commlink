@@ -9,14 +9,7 @@
  * control holds has to follow the survivor. The facade cannot do that — it
  * does not know which control is picking.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  model,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, model, signal } from '@angular/core';
 import { FormValueControl } from '@angular/forms/signals';
 import { matchingTxt } from '../../../@shared/util/app.utils';
 import { categoriesByIds } from '../../../@shared/util/categories/category.utils';
@@ -29,7 +22,6 @@ import { CashCategoriesFacade } from '../../data';
   selector: 'app-cash-category-picker',
   templateUrl: './cash-category-picker.component.html',
   styleUrls: ['./cash-category-picker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CategoryInputComponent, CategoriesDialogComponent],
 })
 export class CashCategoryPickerComponent implements FormValueControl<CategoryId> {

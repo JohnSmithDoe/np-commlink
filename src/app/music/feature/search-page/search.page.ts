@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  resource,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, resource, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonContent,
@@ -30,7 +23,6 @@ const SEARCH_TAB = '/music/search';
   selector: 'app-page-music-search',
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonContent,

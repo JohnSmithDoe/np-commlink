@@ -1,6 +1,5 @@
 import {
   afterRenderEffect,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -47,7 +46,6 @@ import {
   selector: 'app-page-geist',
   templateUrl: './geist.page.html',
   styleUrls: ['./geist.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     IonIcon,

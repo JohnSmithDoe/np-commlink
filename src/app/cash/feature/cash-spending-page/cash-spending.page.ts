@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -25,7 +20,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
   selector: 'app-page-cash-spending',
   templateUrl: './cash-spending.page.html',
   styleUrls: ['./cash-spending.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EmptyStateComponent,
     PageHeaderComponent,

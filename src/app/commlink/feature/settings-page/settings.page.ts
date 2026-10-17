@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -95,7 +89,6 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
   selector: 'app-page-settings',
   templateUrl: 'settings.page.html',
   styleUrls: ['settings.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     TranslatePipe,

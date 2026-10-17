@@ -6,7 +6,6 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -38,7 +37,6 @@ import { NoteImage, NoteImageId } from '../../model/notes.types';
   selector: 'app-note-image-viewer',
   templateUrl: './note-image-viewer.component.html',
   styleUrls: ['./note-image-viewer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,
     IonHeader,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { TrackingFacade } from '../../data';
@@ -16,7 +16,6 @@ import { TrackedTimeAdjusterComponent } from '../../ui/tracked-time-adjuster/tra
 
 @Component({
   selector: 'app-edit-tracking-session-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ItemEditModalComponent, TrackedTimeAdjusterComponent],
   templateUrl: './edit-tracking-session-dialog.component.html',
 })

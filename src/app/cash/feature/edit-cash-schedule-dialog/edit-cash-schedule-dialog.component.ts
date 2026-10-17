@@ -6,12 +6,7 @@
  * `uniqueName` is off for the same reason the rule dialog turns it off — the
  * name is a label, and two schedules may reasonably share one.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   FormField,
   min,
@@ -67,7 +62,6 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
   selector: 'app-edit-cash-schedule-dialog',
   templateUrl: './edit-cash-schedule-dialog.component.html',
   styleUrls: ['./edit-cash-schedule-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonButton,

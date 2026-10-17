@@ -7,7 +7,6 @@
  * ───────────────────────────────────────────────────────────────── */
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -39,7 +38,6 @@ import { BaseSwipeRow } from '../base-swipe-row';
   selector: 'app-list-item',
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonItem,
     IonLabel,

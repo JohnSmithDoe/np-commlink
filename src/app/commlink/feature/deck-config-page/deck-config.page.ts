@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   IonAccordion,
   IonAccordionGroup,
@@ -50,7 +45,6 @@ const TILE_LABEL_KEYS = {
   selector: 'app-page-deck-config',
   templateUrl: './deck-config.page.html',
   styleUrls: ['./deck-config.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgTemplateOutlet,
     IonAccordion,

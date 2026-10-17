@@ -19,12 +19,7 @@
  * "the user chose this, do not overrule it", and setting it on every save
  * froze a booking against every future rule because somebody fixed its date.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   FormField,
   min,
@@ -87,7 +82,6 @@ const MISSING_AMOUNT = { kind: 'missingAmount' } as const;
   selector: 'app-edit-cash-transaction-dialog',
   templateUrl: './edit-cash-transaction-dialog.component.html',
   styleUrls: ['./edit-cash-transaction-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonButton,

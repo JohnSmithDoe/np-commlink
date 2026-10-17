@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -30,7 +25,6 @@ dayjs.extend(weekOfYear);
     IonCardTitle,
     TranslatePipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashDateComponent {
   readonly title = input<string | undefined>();

@@ -11,13 +11,7 @@
  * so the two cannot be drawn by different rules.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -67,7 +61,6 @@ const rowOf = (line: CastLine, index: number): CastRow => ({
   selector: 'app-page-vitals-iching-cast',
   templateUrl: './iching-cast.page.html',
   styleUrls: ['./iching-cast.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

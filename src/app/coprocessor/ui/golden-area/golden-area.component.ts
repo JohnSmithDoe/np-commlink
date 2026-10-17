@@ -5,13 +5,7 @@
  * one size. Sizing the target with the dot would put a 3 mm circle on a
  * phone, which is a gesture nobody lands.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import {
   goldenGuides,
   goldenPoints,
@@ -22,7 +16,6 @@ import {
   selector: 'app-golden-area',
   templateUrl: './golden-area.component.html',
   styleUrl: './golden-area.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
 })
 export class GoldenAreaComponent {

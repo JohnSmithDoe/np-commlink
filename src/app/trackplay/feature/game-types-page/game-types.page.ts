@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { createOutline, dice, diceOutline } from 'ionicons/icons';
@@ -15,7 +15,6 @@ import { EditGameTypeDialogComponent } from '../edit-game-type-dialog/edit-game-
   selector: 'app-page-trackplay-game-types',
   templateUrl: './game-types.page.html',
   styleUrls: ['./game-types.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     ListPageComponent,

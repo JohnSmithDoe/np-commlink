@@ -21,7 +21,6 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -82,7 +81,6 @@ const GROUP_LABELS: Readonly<Record<EmojiGroupId, Marker>> = {
   selector: 'app-emoji-picker',
   templateUrl: './emoji-picker.component.html',
   styleUrl: './emoji-picker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonModal,
     IonHeader,

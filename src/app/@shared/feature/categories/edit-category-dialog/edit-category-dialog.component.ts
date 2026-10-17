@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Category } from '../../../model/category.types';
 import { CATALOG_FACADE } from '../../../util/categories/category-list.facade';
 import { createCategory } from '../../../util/app.factory';
@@ -12,7 +7,6 @@ import { BaseEditItemDialog } from '../../item-lists/edit-item-dialog/base-edit-
 
 @Component({
   selector: 'app-edit-category-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ItemEditModalComponent],
   templateUrl: './edit-category-dialog.component.html',
 })

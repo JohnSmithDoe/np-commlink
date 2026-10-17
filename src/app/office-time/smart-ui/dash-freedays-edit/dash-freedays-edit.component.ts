@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import {
   DatetimeCustomEvent,
   IonCard,
@@ -25,7 +20,6 @@ import { DateTimeHighlight } from '../../model/office-time.types';
   templateUrl: './dash-freedays-edit.component.html',
   styleUrls: ['./dash-freedays-edit.component.scss'],
   imports: [IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonDatetime],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashFreedaysEditComponent {
   readonly #facade = inject(OfficeTimeFacade);

@@ -1,10 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { EmptyStateComponent } from '../../empty-state/empty-state.component';
 import { TextItemComponent } from '../text-item/text-item.component';
@@ -13,7 +7,6 @@ import { TextItemComponent } from '../text-item/text-item.component';
   selector: 'app-item-list-empty',
   templateUrl: 'item-list-empty.component.html',
   styleUrls: ['item-list-empty.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [EmptyStateComponent, TextItemComponent, TranslatePipe],
 })
 export class ItemListEmptyComponent {

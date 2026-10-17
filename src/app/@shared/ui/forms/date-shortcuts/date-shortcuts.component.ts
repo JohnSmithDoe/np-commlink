@@ -5,14 +5,7 @@
  * moves it in practice. Clear follows the value, not the highlight: a
  * typed date matches no shortcut and is still there to clear.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Marker } from '../../../model/app.types';
@@ -41,7 +34,6 @@ const SHORTCUT_LABELS: Readonly<Record<DateShortcutId, Marker>> = {
   templateUrl: './date-shortcuts.component.html',
   styleUrl: './date-shortcuts.component.scss',
   imports: [OptionChipsComponent, TranslatePipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateShortcutsComponent {
   readonly value = input('');

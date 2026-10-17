@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -26,7 +20,6 @@ import { HandbookTocComponent } from '../../ui/handbook-toc/handbook-toc.compone
   selector: 'app-page-handbook',
   templateUrl: 'handbook.page.html',
   styleUrls: ['handbook.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

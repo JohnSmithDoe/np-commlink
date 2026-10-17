@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -19,7 +19,6 @@ const NO_SUMMARY: ProfileSummary = { count: 0 };
   selector: 'app-page-vitals-profiles',
   templateUrl: './profiles.page.html',
   styleUrls: ['./profiles.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonIcon,
     IonNote,

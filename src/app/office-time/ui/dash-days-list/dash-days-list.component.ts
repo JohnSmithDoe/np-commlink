@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -26,7 +26,6 @@ import { EmptyStateComponent } from '../../../@shared/ui/empty-state/empty-state
     IonItem,
     TranslatePipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashDaysListComponent {
   readonly title = input<string | undefined>();

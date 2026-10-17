@@ -30,7 +30,6 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -73,7 +72,6 @@ import { UndoButtonComponent } from '../../../smart-ui/undo-button/undo-button.c
   selector: 'app-list-page',
   templateUrl: './list-page.component.html',
   styleUrl: './list-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonButtons,

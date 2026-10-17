@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import {
   IonButton,
@@ -33,7 +28,6 @@ import { opsFor } from '../../util/rule-form.utils';
   selector: 'app-cash-condition-rows',
   templateUrl: './condition-rows.component.html',
   styleUrls: ['./condition-rows.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormField,
     IonButton,

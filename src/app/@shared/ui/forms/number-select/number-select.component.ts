@@ -10,7 +10,6 @@
  * ───────────────────────────────────────────────────────────────── */
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -26,7 +25,6 @@ import {
   selector: 'app-number-select',
   templateUrl: './number-select.component.html',
   imports: [OptionChipsComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberSelectComponent {
   readonly value = input<number | undefined>();

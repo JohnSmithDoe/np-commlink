@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -21,7 +21,6 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
 @Component({
   selector: 'app-page-shopping',
   templateUrl: 'shopping.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     IonButton,

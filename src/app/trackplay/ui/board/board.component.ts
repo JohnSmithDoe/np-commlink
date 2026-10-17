@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import {
   BoardField,
   BoardFieldId,
@@ -21,7 +15,6 @@ interface PlacedFigure extends BoardFigure {
   selector: 'app-trackplay-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardComponent {
   readonly layout = input.required<BoardLayout>();

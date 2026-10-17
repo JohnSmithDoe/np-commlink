@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  resource,
-} from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -31,7 +25,6 @@ import { musicTabOf } from '../../util/music-tab';
   selector: 'app-page-music-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonButton,

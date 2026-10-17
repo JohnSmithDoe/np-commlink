@@ -9,7 +9,7 @@
  * adding a program is one catalog entry, and a page one segment deeper is a
  * stack inside its tab rather than a fourth tab.
  * ───────────────────────────────────────────────────────────────── */
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonIcon,
@@ -24,7 +24,6 @@ import { routeUrl } from '../../util/route-url';
 @Component({
   selector: 'app-page-module-tabs',
   templateUrl: './module-tabs.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, TranslatePipe],
 })
 export class ModuleTabsPage {

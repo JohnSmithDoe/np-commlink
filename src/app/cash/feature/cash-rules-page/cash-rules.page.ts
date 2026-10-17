@@ -4,12 +4,7 @@
  * toolbar never renders. Its `items` are ordered by `order`, which is
  * also what a drag reports back.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AlertController,
@@ -46,7 +41,6 @@ import { Marker } from '../../../@shared/model/app.types';
   selector: 'app-page-cash-rules',
   templateUrl: './cash-rules.page.html',
   styleUrls: ['./cash-rules.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     ListItemComponent,

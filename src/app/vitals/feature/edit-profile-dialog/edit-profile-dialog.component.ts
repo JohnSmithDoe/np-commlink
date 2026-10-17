@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
 import {
   IonItem,
@@ -32,7 +26,6 @@ const NOBODY: Profile = { id: '', name: '', kind: 'person' };
 
 @Component({
   selector: 'app-edit-profile-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-profile-dialog.component.html',
   imports: [
     FormField,

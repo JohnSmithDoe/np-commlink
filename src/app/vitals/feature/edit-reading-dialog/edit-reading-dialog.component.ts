@@ -19,7 +19,6 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -62,7 +61,6 @@ const MISSING_WEIGHT = { kind: 'missingWeight' } as const;
 
 @Component({
   selector: 'app-edit-reading-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-reading-dialog.component.html',
   imports: [
     FormField,

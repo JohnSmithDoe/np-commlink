@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AlbumEntry, CoverLoader } from '../../model/music.types';
 import { MusicCoverComponent } from '../music-cover/music-cover.component';
@@ -12,7 +7,6 @@ import { MusicCoverComponent } from '../music-cover/music-cover.component';
   selector: 'app-music-album-grid',
   templateUrl: './album-grid.component.html',
   styleUrls: ['./album-grid.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslatePipe, MusicCoverComponent],
 })
 export class AlbumGridComponent {

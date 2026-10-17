@@ -14,12 +14,7 @@
  * and this page is already seven figures deep, so the two together read as
  * neither an overview nor a form.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonContent,
   IonItem,
@@ -39,7 +34,6 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   selector: 'app-page-cash-burndown',
   templateUrl: './cash-burndown.page.html',
   styleUrls: ['./cash-burndown.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     RouterLink,

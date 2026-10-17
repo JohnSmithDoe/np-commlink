@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonButtons,
@@ -26,7 +21,6 @@ import { rollPool } from '../../util/dice.utils';
   selector: 'app-page-trackplay-dice',
   templateUrl: './dice.page.html',
   styleUrls: ['./dice.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DiceRackComponent,
     DiceTrayComponent,

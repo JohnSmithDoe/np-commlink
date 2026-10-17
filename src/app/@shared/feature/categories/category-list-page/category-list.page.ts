@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -14,7 +14,6 @@ import { ListPageComponent } from '../../item-lists/list-page/list-page.componen
 @Component({
   selector: 'app-page-category-list',
   templateUrl: './category-list.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonNote,
     TranslatePipe,

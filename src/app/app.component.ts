@@ -14,13 +14,7 @@
  * bar at the shell covers every such route, so no page solves it alone.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   Event as RouterEvent,
@@ -69,7 +63,6 @@ import { PEOPLE_LIST_ID } from './people/model/people.types';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonApp,
     IonRouterOutlet,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
 import {
   IonButton,
@@ -40,7 +40,6 @@ type PersonForm = {
 
 @Component({
   selector: 'app-edit-person-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-person-dialog.component.html',
   styleUrl: './edit-person-dialog.component.scss',
   imports: [

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IonNote } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -16,7 +16,6 @@ import { WeekdaySummaryPipe } from '../../util/weekday-summary.pipe';
 @Component({
   selector: 'app-page-vitals-pills',
   templateUrl: './pills.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonNote,
     TranslatePipe,

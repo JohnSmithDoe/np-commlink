@@ -1,6 +1,5 @@
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   computed,
   input,
@@ -41,7 +40,6 @@ import { EmptyStateComponent } from '../../empty-state/empty-state.component';
 
 @Component({
   selector: 'app-categories-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './categories-dialog.component.html',
   imports: [
     TranslatePipe,

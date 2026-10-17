@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonContent,
   IonInput,
@@ -24,7 +18,6 @@ import { evaluateExpression } from '../../util/expression.utils';
   selector: 'app-page-coprocessor-calc',
   templateUrl: './calc.page.html',
   styleUrl: './calc.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     KeypadComponent,
     PageHeaderComponent,

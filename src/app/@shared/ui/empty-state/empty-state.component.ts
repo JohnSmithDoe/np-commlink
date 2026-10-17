@@ -10,13 +10,12 @@
  * again, three of fifteen said yes, and the icon-weight rule has no position
  * for one — `check-icons.mjs` reads a subject as `[leadingIcon]` alone.
  * ───────────────────────────────────────────────────────────────── */
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-empty-state',
   templateUrl: './empty-state.component.html',
   styleUrl: './empty-state.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStateComponent {
   readonly label = input.required<string>();

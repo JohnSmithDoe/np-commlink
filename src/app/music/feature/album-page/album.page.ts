@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  resource,
-} from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   IonButton,
@@ -30,7 +24,6 @@ import { TrackTimePipe } from '../../util/track-time.pipe';
   selector: 'app-page-music-album',
   templateUrl: './album.page.html',
   styleUrls: ['./album.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

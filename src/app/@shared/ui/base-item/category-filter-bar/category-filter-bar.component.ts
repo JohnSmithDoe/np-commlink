@@ -10,12 +10,7 @@
  * and also strips `?filter=`.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { IonButton } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Category, CategoryId } from '../../../model/category.types';
@@ -25,7 +20,6 @@ import { ItemFilter } from '../../../util/item-lists/list-filter';
   selector: 'app-category-filter-bar',
   templateUrl: 'category-filter-bar.component.html',
   styleUrls: ['category-filter-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, TranslatePipe],
 })
 export class CategoryFilterBarComponent {

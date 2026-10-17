@@ -13,7 +13,7 @@
 
   @if (facade.searchable?.() ?? true) {
     <app-item-list-searchbar
-      [query]="$safeNavigationMigration(facade.state()?.searchQuery)"
+      [query]="facade.state()?.searchQuery"
       (queryChange)="facade.search($event)"
       (hitEnter)="facade.addItemFromSearch()"
     />
@@ -28,7 +28,7 @@
   }
   @if (facade.hasToolbar?.() ?? true) {
     <app-item-list-toolbar
-      [activeSort]="$safeNavigationMigration(facade.state()?.sort)"
+      [activeSort]="facade.state()?.sort"
       [options]="facade.sortOptions?.() ?? []"
       [sortable]="facade.sortable?.() ?? true"
       (selectSortMode)="facade.setSortMode($event)"
@@ -50,11 +50,12 @@
       }
     </app-item-list-toolbar>
   }
-  @if (facade.catalog?.()?.length) {
+  @let catalog = facade.catalog?.();
+  @if (catalog?.length) {
     <app-category-filter-bar
-      [catalog]="facade.catalog?.() ?? []"
+      [catalog]="catalog"
       [extraFilters]="extraFilters()"
-      [active]="$safeNavigationMigration(facade.state()?.filterBy)"
+      [active]="facade.state()?.filterBy"
       (selectCategory)="facade.selectCategory?.($event)"
       (clearFilter)="clearFilter()"
     />
@@ -77,7 +78,7 @@
           ? (section.labelKey | translate)
           : ''
       "
-      [catalog]="facade.catalog?.() ?? []"
+      [catalog]="catalog ?? []"
       [itemTemplate]="itemTemplate()"
       [reorderable]="reorderArmed()"
       (reorder)="facade.reorder?.($event, section.id)"
@@ -94,7 +95,7 @@
     [isSearchable]="facade.searchable?.() ?? true"
     [isSearching]="!!facade.searchResult()"
     [isFiltered]="!!facade.state()?.filterBy"
-    [searchTerm]="$safeNavigationMigration(facade.searchResult()?.searchTerm)"
+    [searchTerm]="facade.searchResult()?.searchTerm"
     [label]="emptyLabel()"
     [note]="emptyNote()"
     (emptyList)="facade.showCreateDialog()"

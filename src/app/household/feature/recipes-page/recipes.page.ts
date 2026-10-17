@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -19,7 +14,6 @@ import { EditRecipeDialogComponent } from '../edit-recipe-dialog/edit-recipe-dia
   selector: 'app-page-recipes',
   templateUrl: './recipes.page.html',
   styleUrl: './recipes.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonNote,
     TranslatePipe,

@@ -1,10 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import {
   IonButton,
   IonIcon,
@@ -23,7 +17,6 @@ import { TrackTimePipe } from '../../util/track-time.pipe';
   selector: 'app-music-track-list',
   templateUrl: './track-list.component.html',
   styleUrls: ['./track-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonIcon,

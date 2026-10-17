@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -19,7 +19,6 @@ import { WordclockSettings } from '../../util/wordclock.utils';
     IonCardTitle,
     WordclockComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashWordclockComponent {
   readonly title = input<string | undefined>();

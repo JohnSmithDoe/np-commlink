@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -30,7 +29,6 @@ import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header
   selector: 'app-page-trackplay-game-play',
   templateUrl: './game-play.page.html',
   styleUrls: ['./game-play.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ConfettiComponent,
     EmptyStateComponent,

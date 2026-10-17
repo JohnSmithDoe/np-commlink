@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { APP_LANGUAGE } from '../../../@shared/util/theme/language.boot';
 import { MONEY_LADDERS } from '../../model/money.catalog';
@@ -16,7 +10,6 @@ import { formatNumber, humanize } from '../../util/convert.utils';
   selector: 'app-money-row',
   templateUrl: './money-row.component.html',
   styleUrl: './money-row.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslatePipe],
 })
 export class MoneyRowComponent {

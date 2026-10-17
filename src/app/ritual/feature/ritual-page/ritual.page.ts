@@ -13,13 +13,7 @@
  * ein Glas Wasser, button" and never say what pressing does — and the
  * largest target on screen would be the one that closes the day.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -40,7 +34,6 @@ const LEAVE_FALLBACK_MS = 800;
   selector: 'app-page-ritual',
   templateUrl: './ritual.page.html',
   styleUrl: './ritual.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ConfettiComponent,
     PageHeaderComponent,

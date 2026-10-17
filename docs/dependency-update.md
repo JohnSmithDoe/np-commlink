@@ -22,16 +22,6 @@ are independent.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
 
-## Phase 2 — take the opt-outs back out
-
-- Unwrap every `$safeNavigationMigration(…)`, remove the diagnostics opt-out, and delete each `?.`/`??`
-  the new diagnostics call dead.
-- Delete `changeDetection: ChangeDetectionStrategy.OnPush` from every component — it is the default,
-  so it says nothing.
-- Drop the `withXhr()` the migration added to `provideHttpClient` (`main.ts`, `test-providers.ts`,
-  `handbook.service.spec.ts`): only the translation loader and the handbook use `HttpClient`, both
-  plain GETs that the new `fetch` default serves.
-
 ## Phase 3 — `@Service`
 
 - `ng generate @angular/core:service`: root-provided classes become `@Service()`, scoped ones

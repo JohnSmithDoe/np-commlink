@@ -6,13 +6,7 @@
  * would carry the stamp back into the store on save.
  * ───────────────────────────────────────────────────────────────── */
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonIcon,
@@ -62,7 +56,6 @@ const ownLine = ({
 
 @Component({
   selector: 'app-edit-recipe-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonIcon,

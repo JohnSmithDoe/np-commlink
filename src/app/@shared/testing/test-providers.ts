@@ -1,4 +1,4 @@
-import { provideHttpClient, withXhr } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import {
   EnvironmentProviders,
   importProvidersFrom,
@@ -21,7 +21,7 @@ type TestProvider = Provider | EnvironmentProviders;
 
 const BASE_TEST_PROVIDERS: TestProvider[] = [
   provideZonelessChangeDetection(),
-  provideHttpClient(withXhr()),
+  provideHttpClient(),
   provideIonicAngular(),
   provideRouter([]),
   provideTranslateService(),

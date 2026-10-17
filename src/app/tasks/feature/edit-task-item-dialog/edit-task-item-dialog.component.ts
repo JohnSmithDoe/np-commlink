@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { IonToggle } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
@@ -41,7 +36,6 @@ import { Category, CategoryId } from '../../../@shared/model/category.types';
 
 @Component({
   selector: 'app-edit-task-item-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonToggle,
     TranslatePipe,

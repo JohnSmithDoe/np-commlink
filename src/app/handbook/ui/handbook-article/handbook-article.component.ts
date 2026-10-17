@@ -10,12 +10,7 @@
  * and `[innerHTML]` distrusts it anyway.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  ViewEncapsulation,
-} from '@angular/core';
+import { Component, input, ViewEncapsulation } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -32,7 +27,6 @@ import { HandbookTitleComponent } from '../handbook-title/handbook-title.compone
   selector: 'app-handbook-article',
   templateUrl: 'handbook-article.component.html',
   styleUrls: ['handbook-article.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [IonIcon, TranslatePipe, HandbookTitleComponent],
 })

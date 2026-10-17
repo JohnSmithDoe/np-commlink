@@ -1,11 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  linkedSignal,
-} from '@angular/core';
+import { Component, computed, inject, linkedSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -32,7 +26,6 @@ import {
   selector: 'app-page-vitals-iching',
   templateUrl: './iching.page.html',
   styleUrls: ['./iching.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonButton,

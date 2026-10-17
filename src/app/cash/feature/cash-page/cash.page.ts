@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   AlertController,
@@ -55,7 +50,6 @@ const KIND_ICON: Record<AccountKind, string> = {
   selector: 'app-page-cash',
   templateUrl: './cash.page.html',
   styleUrls: ['./cash.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     ListItemComponent,

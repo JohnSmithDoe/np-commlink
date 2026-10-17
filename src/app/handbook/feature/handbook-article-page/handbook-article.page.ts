@@ -5,13 +5,7 @@
  * reader arrived on.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-} from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -34,7 +28,6 @@ import { HandbookTitleComponent } from '../../ui/handbook-title/handbook-title.c
   selector: 'app-page-handbook-article',
   templateUrl: 'handbook-article.page.html',
   styleUrls: ['handbook-article.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonButton,

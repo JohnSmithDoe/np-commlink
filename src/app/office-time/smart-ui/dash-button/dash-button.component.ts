@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import {
   IonButton,
   IonCard,
@@ -30,7 +25,6 @@ import { OfficeTimeFacade } from '../../data';
     TranslatePipe,
     IonButton,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashButtonComponent {
   readonly #facade = inject(OfficeTimeFacade);

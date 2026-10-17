@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -48,7 +48,6 @@ const TOGGLES: RuleToggle[] = [
   selector: 'app-page-trackplay-board-rules',
   templateUrl: './board-rules.page.html',
   styleUrls: ['./board-rules.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     PageReturnComponent,

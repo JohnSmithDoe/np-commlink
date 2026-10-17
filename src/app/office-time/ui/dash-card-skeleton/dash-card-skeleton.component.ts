@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -18,6 +18,5 @@ import {
     IonCardContent,
     IonSkeletonText,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashCardSkeletonComponent {}

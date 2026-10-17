@@ -9,12 +9,7 @@
  * draft over the seed, so the rounds survive untouched.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonButton,
@@ -41,7 +36,6 @@ type GameForm = Omit<Game, 'rounds'>;
 
 @Component({
   selector: 'app-edit-game-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './edit-game-dialog.component.html',
   styleUrls: ['./edit-game-dialog.component.scss'],
   imports: [

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -21,7 +21,6 @@ import { TranslatePipe } from '@ngx-translate/core';
     DashPercentageComponent,
     TranslatePipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashStatsComponent {
   readonly title = input<string | undefined>();

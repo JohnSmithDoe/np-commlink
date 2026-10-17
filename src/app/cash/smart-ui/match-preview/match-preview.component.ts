@@ -5,13 +5,7 @@
  * predicate the form's `requireText` enforces before a save, so the preview
  * appears exactly when the rule has become answerable.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import {
   IonAccordion,
   IonAccordionGroup,
@@ -31,7 +25,6 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   selector: 'app-cash-match-preview',
   templateUrl: './match-preview.component.html',
   styleUrls: ['./match-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonAccordion,
     IonAccordionGroup,

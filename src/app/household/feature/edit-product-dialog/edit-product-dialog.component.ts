@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   IonItem,
@@ -41,7 +41,6 @@ const TIMESPAN_LABEL_KEYS: Record<BestBeforeTimespan, Marker> = {
 
 @Component({
   selector: 'app-edit-product-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonItem,
     TranslatePipe,

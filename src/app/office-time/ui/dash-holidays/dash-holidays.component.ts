@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import {
   IonCard,
   IonCardContent,
@@ -23,7 +23,6 @@ import { dayjsFromString } from '../../util/office-time.utils';
     IonList,
     IonItem,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashHolidaysComponent {
   readonly title = input<string | undefined>();

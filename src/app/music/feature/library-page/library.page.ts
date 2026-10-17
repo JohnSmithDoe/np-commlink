@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -38,7 +33,6 @@ const isLibraryView = (view: unknown): view is LibraryView =>
   selector: 'app-page-music-library',
   templateUrl: './library.page.html',
   styleUrls: ['./library.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     IonButton,

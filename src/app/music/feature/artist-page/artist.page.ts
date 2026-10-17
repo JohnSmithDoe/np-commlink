@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   IonButton,
@@ -26,7 +21,6 @@ import { musicTabOf } from '../../util/music-tab';
   selector: 'app-page-music-artist',
   templateUrl: './artist.page.html',
   styleUrls: ['./artist.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

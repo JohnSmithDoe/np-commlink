@@ -4,13 +4,7 @@
  * taken when the swipe fired would keep showing the old picture.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { IonNote, IonThumbnail } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -35,7 +29,6 @@ const VIEW_IMAGES_SWIPE: StartSwipeAction = {
   selector: 'app-page-notes',
   templateUrl: 'notes.page.html',
   styleUrls: ['notes.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     IonNote,

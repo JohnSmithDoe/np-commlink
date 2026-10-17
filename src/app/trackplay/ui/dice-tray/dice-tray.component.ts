@@ -9,7 +9,6 @@
  * same numbers, and that still has to look like a throw.
  * ───────────────────────────────────────────────────────────────── */
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -34,7 +33,6 @@ const scrambleValue = (index: number, tick: number, faces: DieFaces): number =>
   selector: 'app-trackplay-dice-tray',
   templateUrl: './dice-tray.component.html',
   styleUrls: ['./dice-tray.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DieGlyphComponent],
 })
 export class DiceTrayComponent {

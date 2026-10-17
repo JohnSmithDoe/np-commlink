@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { IonNote } from '@ionic/angular/standalone';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -22,7 +22,6 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
 @Component({
   selector: 'app-page-storage',
   templateUrl: 'storage.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     DatePipe,

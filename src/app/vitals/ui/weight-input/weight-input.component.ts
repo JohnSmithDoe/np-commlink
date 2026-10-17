@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ParseResult } from '@angular/forms/signals';
 import { IonInput, IonItem } from '@ionic/angular/standalone';
 import { Language } from '../../../@shared/model/app.types';
@@ -11,7 +11,6 @@ const NOT_A_WEIGHT = { kind: 'notAWeight' } as const;
   selector: 'app-weight-input',
   templateUrl: './weight-input.component.html',
   imports: [IonItem, IonInput],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeightInputComponent extends BaseDecimalInput {
   protected parse(raw: string): ParseResult<number | null> {

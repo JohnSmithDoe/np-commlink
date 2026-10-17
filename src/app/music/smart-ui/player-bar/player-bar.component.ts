@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -16,7 +16,6 @@ import { MusicCoverComponent } from '../../ui/music-cover/music-cover.component'
   selector: 'app-music-player-bar',
   templateUrl: './player-bar.component.html',
   styleUrls: ['./player-bar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, IonButton, IonIcon, TranslatePipe, MusicCoverComponent],
 })
 export class PlayerBarComponent {

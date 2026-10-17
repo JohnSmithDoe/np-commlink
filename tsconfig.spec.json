@@ -22,13 +22,5 @@
   // domains held theirs under the app project, where `noUncheckedIndexedAccess`
   // makes a fixture's own lookup of its own table an error.
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/app/*/testing/**/*.ts"],
-  "exclude": [],
-  "angularCompilerOptions": {
-    "extendedDiagnostics": {
-      "checks": {
-        "nullishCoalescingNotNullable": "suppress",
-        "optionalChainNotNullable": "suppress"
-      }
-    }
-  }
+  "exclude": []
 }

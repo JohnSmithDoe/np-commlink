@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -25,7 +20,6 @@ import { RitualPageFacade } from '../../data';
 @Component({
   selector: 'app-page-ritual-settings',
   templateUrl: './ritual-settings.page.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     PageHeaderComponent,
     PageReturnComponent,

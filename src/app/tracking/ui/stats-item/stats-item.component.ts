@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import {
   IonItem,
   IonItemOption,
@@ -16,7 +16,6 @@ import { BaseSwipeRow } from '../../../@shared/ui/base-item/base-swipe-row';
 
 @Component({
   selector: 'app-stats-item',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './stats-item.component.html',
   imports: [
     IonItem,

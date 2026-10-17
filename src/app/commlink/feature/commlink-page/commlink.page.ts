@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import {
@@ -39,7 +34,6 @@ import { HexPipe } from '../../util/hex.pipe';
   selector: 'app-page-commlink',
   templateUrl: './commlink.page.html',
   styleUrls: ['./commlink.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonContent,
     IonIcon,

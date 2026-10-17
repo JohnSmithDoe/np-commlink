@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { ISO_MONTHS, IsoMonth } from '../../../model/app.types';
 import { localizedMonth } from '../../../util/formatting/date-format.utils';
 import {
@@ -24,7 +18,6 @@ const monthOptions = (): ChipOption<IsoMonth>[] =>
   selector: 'app-month-picker',
   templateUrl: './month-picker.component.html',
   styleUrl: './month-picker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OptionChipsComponent],
 })
 export class MonthPickerComponent {

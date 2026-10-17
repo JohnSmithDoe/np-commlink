@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { StorageFacade } from '../../data';
 import { BaseHouseholdEditItemDialog } from '../base-household-edit-item-dialog';
@@ -16,7 +16,6 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
 
 @Component({
   selector: 'app-edit-storage-item-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     CategoryInputComponent,

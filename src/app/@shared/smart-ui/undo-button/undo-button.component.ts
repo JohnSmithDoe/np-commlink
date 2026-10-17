@@ -8,13 +8,7 @@
  * It takes the list rather than reading the route because a delete may
  * navigate away before the entry is pushed.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -25,7 +19,6 @@ import { ItemListId } from '../../model/item-list.types';
 @Component({
   selector: 'app-undo-button',
   templateUrl: './undo-button.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonButton, IonIcon, TranslatePipe],
 })
 export class UndoButtonComponent {

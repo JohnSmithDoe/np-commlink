@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -23,7 +23,6 @@ import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.co
   selector: 'app-page-trackplay-games',
   templateUrl: './games.page.html',
   styleUrls: ['./games.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonIcon,

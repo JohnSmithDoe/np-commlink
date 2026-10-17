@@ -7,13 +7,12 @@
  * accessibility tree too.
  * ───────────────────────────────────────────────────────────────── */
 
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-handbook-title',
   templateUrl: 'handbook-title.component.html',
   styleUrls: ['handbook-title.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HandbookTitleComponent {
   readonly deck = input.required<string>();

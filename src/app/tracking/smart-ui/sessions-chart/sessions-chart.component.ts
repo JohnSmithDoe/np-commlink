@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseChartDirective } from 'ng2-charts';
@@ -25,7 +20,6 @@ const REMAINDER_LABEL = marker('tracking.chart.other');
   selector: 'app-sessions-chart',
   templateUrl: './sessions-chart.component.html',
   styleUrls: ['./sessions-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BaseChartDirective],
 })
 export class SessionsChartComponent {

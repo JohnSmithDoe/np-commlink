@@ -1,10 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import { IonInput, IonItem, InputCustomEvent } from '@ionic/angular/standalone';
 import { parseNumberInput } from '../../../util/app.utils';
 
@@ -12,7 +6,6 @@ import { parseNumberInput } from '../../../util/app.utils';
   selector: 'app-number-input',
   templateUrl: './number-input.component.html',
   imports: [IonItem, IonInput],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberInputComponent {
   readonly label = input<string>();

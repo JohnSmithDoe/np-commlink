@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { IonButton, IonIcon, IonNote } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
@@ -32,7 +27,6 @@ import { EditReadingDialogComponent } from '../edit-reading-dialog/edit-reading-
   selector: 'app-page-vitals-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonButton,

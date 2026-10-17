@@ -8,12 +8,7 @@
  * this component is loaded at all — see `ReadingsPageFacade.hasTrend`.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartConfiguration, ChartData } from 'chart.js';
@@ -35,7 +30,6 @@ const SERIES_LABEL = marker('vitals.chart.weight');
   selector: 'app-weight-chart',
   templateUrl: './weight-chart.component.html',
   styleUrls: ['./weight-chart.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BaseChartDirective],
 })
 export class WeightChartComponent {

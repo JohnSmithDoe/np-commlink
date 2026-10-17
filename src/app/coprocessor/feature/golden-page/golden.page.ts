@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   InputCustomEvent,
   IonButton,
@@ -42,7 +36,6 @@ const HALF_STEP = 0.5;
   selector: 'app-page-coprocessor-golden',
   templateUrl: './golden.page.html',
   styleUrl: './golden.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     GoldenAreaComponent,
     SplitBarComponent,

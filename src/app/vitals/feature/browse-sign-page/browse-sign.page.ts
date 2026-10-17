@@ -1,10 +1,5 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
@@ -30,7 +25,6 @@ const SIGN_ROUTE = '/vitals/browse/zodiac';
   selector: 'app-page-vitals-browse-sign',
   templateUrl: './browse-sign.page.html',
   styleUrls: ['./browse-sign.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonContent,

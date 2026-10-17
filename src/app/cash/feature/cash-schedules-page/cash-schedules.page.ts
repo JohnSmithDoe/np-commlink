@@ -8,12 +8,7 @@
  * learn a new amount from, and guessing one would overwrite an estimate that
  * was right.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   AlertController,
   IonButton,
@@ -50,7 +45,6 @@ import { MoneyEurPipe } from '../../util/formatting/money.pipe';
   selector: 'app-page-cash-schedules',
   templateUrl: './cash-schedules.page.html',
   styleUrls: ['./cash-schedules.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ListPageComponent,
     IonButton,

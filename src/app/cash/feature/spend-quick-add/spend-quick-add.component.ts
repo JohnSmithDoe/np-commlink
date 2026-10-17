@@ -19,13 +19,7 @@
  * than it is exact. Tapping the chosen one again clears it, which is the only
  * way back from a mis-tap that does not summon the keypad.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
   IonItem,
@@ -64,7 +58,6 @@ const PRESET_CENTS: readonly number[] = [500, 1000, 1200, 1500];
   selector: 'app-cash-spend-quick-add',
   templateUrl: './spend-quick-add.component.html',
   styleUrls: ['./spend-quick-add.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonItem,

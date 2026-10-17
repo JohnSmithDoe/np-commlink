@@ -7,7 +7,7 @@
  * this domain, so there was never a second consumer to keep the seam for.
  * ───────────────────────────────────────────────────────────────── */
 
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HouseholdListPageFacade, QuickAddFacade } from '../../data';
 import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-item.component';
@@ -16,7 +16,6 @@ import { TextItemComponent } from '../../../@shared/ui/base-item/text-item/text-
   selector: 'app-item-list-quick-add',
   templateUrl: 'item-list-quick-add.component.html',
   styleUrls: ['item-list-quick-add.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TextItemComponent, TranslatePipe],
 })
 export class ItemListQuickAddComponent {

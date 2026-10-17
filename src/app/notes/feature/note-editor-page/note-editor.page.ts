@@ -9,14 +9,7 @@
  * is undefined and the id has to be captured on the way in.
  * ───────────────────────────────────────────────────────────────── */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnDestroy,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, OnDestroy, signal, viewChild } from '@angular/core';
 import {
   AlertButton,
   InputCustomEvent,
@@ -54,7 +47,6 @@ import { NoteImageViewerComponent } from '../../ui/note-image-viewer/note-image-
   selector: 'app-page-note-editor',
   templateUrl: 'note-editor.page.html',
   styleUrls: ['note-editor.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     TranslatePipe,
     IonContent,

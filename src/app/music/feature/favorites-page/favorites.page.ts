@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  resource,
-} from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import {
   IonButton,
   IonContent,
@@ -26,7 +20,6 @@ import { TrackListComponent } from '../../ui/track-list/track-list.component';
   selector: 'app-page-music-favorites',
   templateUrl: './favorites.page.html',
   styleUrls: ['./favorites.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

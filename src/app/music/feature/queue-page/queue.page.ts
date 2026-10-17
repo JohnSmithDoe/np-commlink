@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {
   IonButton,
@@ -45,7 +39,6 @@ const REPEAT_LABELS: Record<RepeatMode, Marker> = {
   selector: 'app-page-music-queue',
   templateUrl: './queue.page.html',
   styleUrls: ['./queue.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     IonButton,
     IonContent,

@@ -9,12 +9,7 @@
  * heading on this page — spelling it as a plain row is what made every
  * heading on SYSOP weigh the same as the values under it.
  * ───────────────────────────────────────────────────────────────── */
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import {
   IonItem,
   IonLabel,
@@ -28,7 +23,6 @@ import { TranslatePipe } from '@ngx-translate/core';
   selector: 'app-settings-segment',
   templateUrl: './settings-segment.component.html',
   styleUrl: './settings-segment.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonItem, IonLabel, IonListHeader, IonSegment, TranslatePipe],
 })
 export class SettingsSegmentComponent {
