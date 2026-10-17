@@ -54,6 +54,19 @@ export const selectAllowanceBalanceCents = createSelector(
   }
 );
 
+export const selectAllowanceTransactions = createSelector(
+  selectAllAccounts,
+  selectAllTransactions,
+  (accounts, transactions): CashTransaction[] => {
+    const excluded = new Set(
+      accounts
+        .filter((account) => account.excludedFromAllowance)
+        .map((account) => account.id)
+    );
+    return transactions.filter((txn) => !excluded.has(txn.accountId));
+  }
+);
+
 export const selectCashBalanceEuros = createSelector(
   selectNetWorthCents,
   (cents): number => Math.round(centsToEur(cents))

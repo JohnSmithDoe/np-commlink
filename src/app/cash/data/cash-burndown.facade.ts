@@ -13,7 +13,7 @@ import { burndownFor, spendsThisMonth } from '../util/burndown.utils';
 import { dueStatus } from '../util/schedule.utils';
 import {
   selectAllowanceBalanceCents,
-  selectAllTransactions,
+  selectAllowanceTransactions,
 } from './cash.selector';
 import { selectScheduleItems } from './schedules/cash-schedules.selector';
 
@@ -26,7 +26,9 @@ export class CashBurndownFacade {
   readonly #balanceCents = this.#store.selectSignal(
     selectAllowanceBalanceCents
   );
-  readonly #transactions = this.#store.selectSignal(selectAllTransactions);
+  readonly #transactions = this.#store.selectSignal(
+    selectAllowanceTransactions
+  );
   readonly schedules = this.#store.selectSignal(selectScheduleItems);
 
   readonly burndown = computed(() => {
