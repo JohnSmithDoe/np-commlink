@@ -7,7 +7,7 @@
  * passing it would point `selectCategory` at an action nothing reduces.
  * Withholding it keeps the port's promises equal to the reducer's.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import {
@@ -24,7 +24,7 @@ import {
   selectTrackingState,
 } from './tracking.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TrackingListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

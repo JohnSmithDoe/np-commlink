@@ -1,11 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
 const storageKey = (key: string) => 'npc-' + key;
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DatabaseService {
   readonly #storageService = inject(Storage);
   readonly #pendingWrites = new Set<Promise<unknown>>();

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   DashboardSettingsType,
@@ -24,7 +24,7 @@ import {
   TimePeriod,
 } from '../util/office-time.utils';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class OfficeTimeFacade {
   readonly #store = inject(Store);
 

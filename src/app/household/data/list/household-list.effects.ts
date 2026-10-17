@@ -9,7 +9,7 @@
  * its one remaining caller is genuinely list-agnostic.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { map } from 'rxjs';
 import {
@@ -56,7 +56,7 @@ export const actionsByListId = (listId: HouseholdListId) => {
   }
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HouseholdListEffects {
   readonly #actions$ = inject(Actions);
 

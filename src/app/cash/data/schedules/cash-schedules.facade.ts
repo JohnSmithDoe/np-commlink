@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
@@ -35,7 +35,7 @@ import {
   selectSchedulesState,
 } from './cash-schedules.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashSchedulesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

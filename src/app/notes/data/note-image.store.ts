@@ -15,7 +15,7 @@
  * next hydrate instead, when the notes that survived are known.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { DatabaseService } from '../../@shared/data/persistence/database.service';
 import { NoteImage, NoteImageId } from '../model/notes.types';
 
@@ -31,7 +31,7 @@ const without = (
     Object.entries(urls).filter(([id]) => !dropped.includes(id))
   );
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NoteImageStore {
   readonly #database = inject(DatabaseService);
   readonly #urls = signal<Record<NoteImageId, string>>({});

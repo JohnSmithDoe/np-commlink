@@ -5,7 +5,7 @@
  * BOTH reads — an unread roster is not an empty one.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
@@ -17,7 +17,7 @@ import { hasOrphanGames } from '../util/trackplay.cascade';
 import { TrackplayActions } from './trackplay.actions';
 import { selectTrackplayPersisted } from './trackplay.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TrackplayOrphansEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);

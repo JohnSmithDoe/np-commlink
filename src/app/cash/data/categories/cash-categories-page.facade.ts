@@ -5,7 +5,7 @@
  * own page and its own totals, so it drills there instead. `listHref` is
  * still the return target, and only that.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Router } from '@angular/router';
 import { BaseCategoryListPageFacade } from '../../../@shared/data/categories/category-list-page.facade.base';
@@ -20,7 +20,7 @@ import {
   selectCashCountByCategory,
 } from './cash-categories.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashCategoriesPageFacade extends BaseCategoryListPageFacade {
   readonly #router = inject(Router);
 

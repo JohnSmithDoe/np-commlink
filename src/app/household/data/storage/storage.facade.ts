@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { STORAGE_LIST_ID, StorageItem } from '../../model/household-list.types';
@@ -6,7 +6,7 @@ import { withQuantityChangedBy } from '../../util/household.factory';
 import { StorageActions } from './storage.actions';
 import { selectStorageItems } from './storage.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class StorageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

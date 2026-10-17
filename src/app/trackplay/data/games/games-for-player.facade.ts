@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectGamesForPlayerView } from '../trackplay.selector';
 import { GamesForPlayerActions } from './games-for-player.actions';
@@ -8,7 +8,7 @@ import {
   selectGamesForPlayerSearchResult,
 } from './games.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GamesForPlayerFacade {
   readonly #store = inject(Store);
 

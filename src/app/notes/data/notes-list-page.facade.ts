@@ -8,7 +8,7 @@
  * and a sort over a hand-dragged order offers to silently discard it.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -29,7 +29,7 @@ import {
 const PINNED_SECTION = 'pinned';
 const OTHERS_SECTION = 'others';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NotesListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);

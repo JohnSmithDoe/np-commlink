@@ -14,7 +14,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import {
   HandbookEntry,
   HandbookIndex,
@@ -22,7 +22,7 @@ import {
 } from '../model/handbook.types';
 import { HANDBOOK_INDEX_URL, handbookPageUrl } from '../util/handbook-content';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HandbookService {
   readonly #http = inject(HttpClient);
   readonly #cache = new Map<string, HandbookPageContent>();

@@ -23,7 +23,7 @@
  * (Monday 1 … Sunday 7) and the conversion stays on this side, so a
  * persisted schedule never encodes a plugin's enum.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable, InjectionToken } from '@angular/core';
+import { inject, InjectionToken, Service } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications, Weekday } from '@capacitor/local-notifications';
 import { TranslateService } from '@ngx-translate/core';
@@ -95,7 +95,7 @@ const OS_WEEKDAY: Readonly<Record<IsoWeekday, Weekday>> = {
   7: Weekday.Sunday,
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LocalNotificationsService {
   readonly #translate = inject(TranslateService);
   readonly #plugin = inject(LOCAL_NOTIFICATIONS);

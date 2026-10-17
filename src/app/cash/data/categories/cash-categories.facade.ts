@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Category, CategoryId } from '../../../@shared/model/category.types';
 import { categoryById } from '../../../@shared/util/categories/category.utils';
 import { CashCategoriesActions } from './cash-categories.actions';
 import { selectCashCategories } from './cash-categories.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashCategoriesFacade {
   readonly #store = inject(Store);
 

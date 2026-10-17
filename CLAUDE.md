@@ -97,7 +97,7 @@ banner says why it fires. Hold the ungated ones in your head.
 | --- | --- |
 | No `@ngrx/*` outside `data/` — every read and dispatch goes through a `<Domain>Facade` | `commlink/ngrx-data-layer-only` |
 | Domains are sealed; no feature imports another feature | Sheriff (`domain:* → sameTag, domain:shared`) |
-| No `@Injectable` in any `util/` — every service lives in `data/`, so `ui → util` stays inert | `no-restricted-syntax` (eslint.config.js) |
+| No `@Service` (nor `@Injectable`) in any `util/` — every service lives in `data/`, so `ui → util` stays inert | `no-restricted-syntax` (eslint.config.js) |
 | `smart-ui` is a strict leaf — a smart component never composes another | Sheriff type axis |
 | The only `index.ts` is a `<domain>/data/` facade barrel | `commlink/no-barrel-outside-data` |
 | Never compose an i18n key at the call site | `commlink/marker-argument-is-literal`, `instant-argument-is-marker` |

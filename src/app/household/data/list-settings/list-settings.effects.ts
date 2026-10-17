@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
@@ -6,7 +6,7 @@ import { map } from 'rxjs';
 import { ListSettingsActions } from './list-settings.actions';
 import { selectListSettingsState } from './list-settings.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ListSettingsEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);

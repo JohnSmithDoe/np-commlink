@@ -1,5 +1,5 @@
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
@@ -29,7 +29,7 @@ const STORAGE_SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'bestBefore', labelKey: marker('household.list-toolbar.mhd') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HouseholdListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);

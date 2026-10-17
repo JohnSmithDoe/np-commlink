@@ -13,7 +13,7 @@
  * No `addItemFromSearch`, so the base falls back to `showCreateDialog`: a
  * transaction needs an amount and a date the search box cannot supply.
  * ───────────────────────────────────────────────────────────────── */
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
@@ -34,7 +34,7 @@ import {
 
 const LEDGER_WINDOW = 200;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);

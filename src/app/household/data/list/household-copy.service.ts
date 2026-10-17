@@ -14,7 +14,7 @@
  * `#toList` no-ops on an unknown target rather than throwing: the lookup
  * is `Partial` by construction, so a same-list copy is silently correct.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Action, Store } from '@ngrx/store';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import {
@@ -52,7 +52,7 @@ const SHOPPING_COPY_TARGETS: CopyTargets<'_shopping', ShoppingItem> = {
   _products: ProductsActions.addShoppingItem,
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HouseholdCopyService {
   readonly #store = inject(Store);
   readonly #activeListId = this.#store.selectSignal(

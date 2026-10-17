@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
@@ -32,7 +32,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'servings', labelKey: marker('household.list-toolbar.servings') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RecipesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

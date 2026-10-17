@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,7 +20,7 @@ import {
 } from '../util/tracking-notifications.utils';
 import { ProjectedNotification } from '../../@shared/model/notifications.types';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TrackingNotificationsEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);

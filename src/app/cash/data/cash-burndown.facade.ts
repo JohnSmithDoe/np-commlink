@@ -6,7 +6,7 @@
  * re-arms at midnight and on `visibilitychange` — a page constructor cannot,
  * because the router outlet caches the page and never builds it again.
  * ───────────────────────────────────────────────────────────────── */
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TodayService } from '../../@shared/data/services/today.service';
 import { burndownFor, spendsThisMonth } from '../util/burndown.utils';
@@ -17,7 +17,7 @@ import {
 } from './cash.selector';
 import { selectScheduleItems } from './schedules/cash-schedules.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashBurndownFacade {
   readonly #store = inject(Store);
 

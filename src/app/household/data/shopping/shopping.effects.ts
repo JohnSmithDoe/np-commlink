@@ -1,5 +1,5 @@
 import { ShareService } from '../../../@shared/data/services/share.service';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
@@ -10,7 +10,7 @@ import { StorageActions } from '../storage/storage.actions';
 import { ShoppingActions } from './shopping.actions';
 import { selectShoppingState } from './shopping.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ShoppingEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);

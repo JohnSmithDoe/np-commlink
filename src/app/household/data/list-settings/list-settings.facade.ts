@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BooleanKeys, ListSettings } from '../../model/list-settings.types';
 import {
@@ -9,7 +9,7 @@ import { selectActiveHouseholdListId } from '../list/household-list.selector';
 import { ListSettingsActions } from './list-settings.actions';
 import { selectListSettingsState } from './list-settings.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ListSettingsFacade {
   readonly #store = inject(Store);
   readonly #activeListId = this.#store.selectSignal(

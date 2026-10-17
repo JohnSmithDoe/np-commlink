@@ -1,4 +1,4 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { Signal, signal, Service } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { AccentColors, Mode, Skin } from '../../@shared/model/app.types';
@@ -21,7 +21,7 @@ const CSS_VAR_SUFFIX: Record<keyof IonicColorSet, string> = {
   tint: '-tint',
 };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ThemeService {
   readonly #skin = signal<Skin>('cyberpunk');
   readonly #mode = signal<Mode>('dark');

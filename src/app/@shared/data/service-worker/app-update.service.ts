@@ -1,10 +1,10 @@
-import { inject, Injectable, Signal, signal } from '@angular/core';
+import { inject, Signal, signal, Service } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { AppReloadService } from './app-reload.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppUpdateService {
   readonly #updates = inject(SwUpdate);
   readonly #reload = inject(AppReloadService);

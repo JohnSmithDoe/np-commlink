@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TrackplayId } from '../../model/trackplay.types';
 import { PlayersFacade } from '../players/players.facade';
@@ -11,7 +11,7 @@ import {
   selectScoresByGame,
 } from './games.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GamePlayFacade {
   readonly #store = inject(Store);
 

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, inject, Signal, signal, Service } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Language, LOCALE_BY_LANGUAGE } from '../../model/app.types';
 import { setDayjsLocale } from '../../util/formatting/date-format.utils';
@@ -8,7 +8,7 @@ import {
   rememberBootLanguage,
 } from '../../util/theme/language.boot';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LanguageService {
   readonly #translate = inject(TranslateService);
 

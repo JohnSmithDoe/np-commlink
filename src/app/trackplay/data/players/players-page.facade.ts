@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import {
@@ -15,7 +15,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'lastPlayedAt', labelKey: marker('trackplay.list-toolbar.last') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PlayersPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #personEditor = inject(PERSON_EDITOR);

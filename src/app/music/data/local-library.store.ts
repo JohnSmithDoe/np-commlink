@@ -1,4 +1,4 @@
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DatabaseService } from '../../@shared/data/persistence/database.service';
 import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
@@ -34,7 +34,7 @@ const without = (ids: ReadonlySet<string>, id: string): Set<string> => {
   return next;
 };
 
-@Injectable()
+@Service({ autoProvided: false })
 export class LocalLibraryStore {
   readonly #plugin = inject(MUSIC_PLAYER_PLUGIN);
   readonly #database = inject(DatabaseService);

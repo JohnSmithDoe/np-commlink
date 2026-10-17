@@ -5,14 +5,14 @@
  * write whose result is somewhere else — the archive — so it is the one that
  * still says so.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { map } from 'rxjs';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { TrackingActions } from './tracking.actions';
 
-@Injectable()
+@Service({ autoProvided: false })
 export class TrackingMessageEffects {
   readonly #actions$ = inject(Actions);
 

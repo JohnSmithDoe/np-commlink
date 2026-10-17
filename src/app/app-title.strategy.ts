@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { APP_WORDMARK } from './@shared/model/app.consts';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppTitleStrategy extends TitleStrategy {
   readonly #title = inject(Title);
   readonly #translate = inject(TranslateService);

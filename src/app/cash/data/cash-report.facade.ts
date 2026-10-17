@@ -5,7 +5,7 @@
  * reason the burn-down takes it from there — a computed that reads the clock
  * never invalidates, and a cached page never rebuilds to re-arm one.
  * ───────────────────────────────────────────────────────────────── */
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TodayService } from '../../@shared/data/services/today.service';
 import { ReportScope } from '../model/report.types';
@@ -13,7 +13,7 @@ import { reportFor } from '../util/report.utils';
 import { selectAllTransactions } from './cash.selector';
 import { selectCashCategories } from './categories/cash-categories.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashReportFacade {
   readonly #store = inject(Store);
 

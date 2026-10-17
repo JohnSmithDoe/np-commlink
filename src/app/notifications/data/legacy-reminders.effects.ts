@@ -11,7 +11,7 @@
  * the switch that replaced the initializer did not exist when the cron was
  * placed, so no user had asked for one.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
@@ -20,7 +20,7 @@ import { LocalNotificationsService } from '../../@shared/data/services/local-not
 import { NotificationsInboxActions } from './notifications.actions';
 import { selectLegacyCronsCleared } from './notifications.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LegacyRemindersEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);

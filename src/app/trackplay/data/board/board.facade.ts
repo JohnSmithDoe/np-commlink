@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   BoardFieldId,
@@ -17,7 +17,7 @@ import {
   selectNextFigure,
 } from './board.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class BoardFacade {
   readonly #store = inject(Store);
 

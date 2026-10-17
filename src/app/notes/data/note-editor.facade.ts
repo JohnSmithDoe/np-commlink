@@ -21,7 +21,7 @@
  * back-tap away, resolving a `:id` no note answers to any more.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
@@ -40,7 +40,7 @@ import { selectNotes, selectRouteNote } from './notes.selector';
 
 const AUTOSAVE_DELAY = 400;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NoteEditorFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);

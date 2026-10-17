@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ThemeService } from '../theme.service';
 import {
@@ -26,7 +26,7 @@ import { DeckActions } from './deck.actions';
 import { initialDeck } from './deck.reducer';
 import { selectDeckState } from './deck.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DeckFacade {
   readonly #store = inject(Store);
   readonly #skin = inject(ThemeService).skin;

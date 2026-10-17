@@ -1,11 +1,11 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, signal, Service } from '@angular/core';
 import dayjs from 'dayjs';
 import { todayISO } from '../../util/formatting/date-format.utils';
 
 const msUntilNextMidnight = (): number =>
   dayjs().add(1, 'day').startOf('day').diff(dayjs());
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TodayService {
   readonly #today = signal(todayISO());
 

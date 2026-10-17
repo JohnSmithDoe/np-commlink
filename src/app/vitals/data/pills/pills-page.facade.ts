@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { PillsActions } from './pills.actions';
 import {
@@ -9,7 +9,7 @@ import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { ProfilesFacade } from '../profiles/profiles.facade';
 import { PillsFacade } from './pills.facade';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PillsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #pills = inject(PillsFacade);

@@ -8,7 +8,7 @@
  * Navigation closes unconditionally, and passes no id for that reason:
  * there the request itself is what has become stale.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationStart, Router } from '@angular/router';
 import { filter } from 'rxjs';
@@ -22,7 +22,7 @@ export type ItemDialogRequest<T extends BaseItem> = Readonly<{
   addToAdditionalList?: ItemListId;
 }>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ItemDialogService {
   readonly #request = signal<ItemDialogRequest<BaseItem> | null>(null);
 

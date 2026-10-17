@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../@shared/data/actions/notifications.actions';
 import { NotificationsInboxActions } from './notifications.actions';
@@ -8,7 +8,7 @@ import {
   selectOpenNotifications,
 } from './notifications.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NotificationsFacade {
   readonly #store = inject(Store);
 

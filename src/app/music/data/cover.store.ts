@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { CoverRef } from '../model/music.types';
 import { JamGateway } from './jam.gateway';
 import { MUSIC_PLAYER_PLUGIN } from './music-player.plugin';
@@ -8,7 +8,7 @@ const COVER_SIZE = 300;
 const keyOf = (reference: CoverRef): string =>
   reference.kind === 'jam' ? `jam:${reference.id}` : `local:${reference.uri}`;
 
-@Injectable()
+@Service({ autoProvided: false })
 export class CoverStore {
   readonly #jam = inject(JamGateway);
   readonly #plugin = inject(MUSIC_PLAYER_PLUGIN);

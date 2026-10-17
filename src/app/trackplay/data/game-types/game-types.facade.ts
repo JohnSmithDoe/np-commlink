@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { UndoActions } from '../../../@shared/data/undo/undo.actions';
@@ -22,7 +22,7 @@ import {
   selectGameTypesSearchResult,
 } from './game-types.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GameTypesFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
 import {
@@ -17,7 +17,7 @@ import {
 
 const UNKNOWN_PLAYER = '—';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PlayersFacade {
   readonly #store = inject(Store);
   readonly #people = inject(PEOPLE);

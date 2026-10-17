@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
@@ -33,7 +33,7 @@ const migratedSummaries = (summaryDocuments: unknown[]): DashboardSummary[] =>
     )
     .filter((summary): summary is DashboardSummary => !!summary?.source);
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DashboardEffects {
   readonly #actions$ = inject(Actions);
   readonly #database = inject(DatabaseService);

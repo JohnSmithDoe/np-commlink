@@ -1,4 +1,4 @@
-import { inject, Injectable, LOCALE_ID, Signal } from '@angular/core';
+import { inject, LOCALE_ID, Signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { formatEur } from '../../../@shared/util/formatting/money-format.utils';
@@ -16,7 +16,7 @@ import {
 } from './cash-accounts.selector';
 import { selectAccountBalances, selectNetWorthCents } from '../cash.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashAccountsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

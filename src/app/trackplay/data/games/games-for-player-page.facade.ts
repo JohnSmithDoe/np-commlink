@@ -16,7 +16,7 @@
  * context, and the chip bar no longer needs that button to exist.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { Store } from '@ngrx/store';
@@ -37,7 +37,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'updatedAt', labelKey: marker('trackplay.list-toolbar.updated') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GamesForPlayerPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #view = inject(GamesForPlayerFacade);

@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { Store } from '@ngrx/store';
@@ -9,7 +9,7 @@ import { ShoppingActions } from '../shopping/shopping.actions';
 import { selectShoppingState } from '../shopping/shopping.selector';
 import { StorageActions } from './storage.actions';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class StorageEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);

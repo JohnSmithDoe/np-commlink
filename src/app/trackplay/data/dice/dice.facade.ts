@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DieFaces } from '../../model/dice.types';
 import { selectDicePool } from '../trackplay.selector';
@@ -9,7 +9,7 @@ import {
   selectPoolDice,
 } from './dice.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DiceFacade {
   readonly #store = inject(Store);
 

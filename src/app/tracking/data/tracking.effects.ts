@@ -1,5 +1,5 @@
 import { ShareService } from '../../@shared/data/services/share.service';
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import {
@@ -30,7 +30,7 @@ import {
 import { groupSessionsByView } from '../util/sessions.utils';
 import { TodayService } from '../../@shared/data/services/today.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TrackingEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);

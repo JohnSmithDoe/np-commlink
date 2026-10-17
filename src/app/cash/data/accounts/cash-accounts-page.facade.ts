@@ -6,7 +6,7 @@
  * hand-picking three of its four fields to withhold `updateFilter` was a
  * second way of saying the same thing, and two statements can drift.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import {
@@ -26,7 +26,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'createdAt', labelKey: marker('cash.list-toolbar.created') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashAccountsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #accounts = inject(CashAccountsFacade);

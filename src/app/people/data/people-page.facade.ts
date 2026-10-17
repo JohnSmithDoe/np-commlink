@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import {
@@ -14,7 +14,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'birthDate', labelKey: marker('people.list-toolbar.birth-date') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PeoplePageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #people = inject(PeopleFacade);

@@ -1,10 +1,10 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, signal, Service } from '@angular/core';
 import { LanguageModelService } from '../../@shared/data/theme/language-model.service';
 import { LanguageService } from '../../@shared/data/theme/language.service';
 import { GeistPersona, GeistLink } from '../model/geist.types';
 import { linkForAvailability, openingLinkFor } from '../util/link.utils';
 
-@Injectable()
+@Service({ autoProvided: false })
 export class GeistSessionService {
   readonly link = signal<GeistLink>('probing');
   readonly primedPercent = signal(0);

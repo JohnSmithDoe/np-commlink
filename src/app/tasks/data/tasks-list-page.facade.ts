@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
@@ -41,7 +41,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
 const OPEN_SECTION = 'open';
 const DONE_SECTION = 'done';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TasksListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);

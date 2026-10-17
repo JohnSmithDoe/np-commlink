@@ -10,7 +10,7 @@
  * would make the gate inert for the next caller who tries.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { ToastController } from '@ionic/angular/standalone';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ import { NotificationsActions } from '../../@shared/data/actions/notifications.a
 const TOAST_DURATION_MS = 1500;
 const DEFAULT_TOAST_COLOR = 'accent';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NotificationsToastEffects {
   readonly #actions$ = inject(Actions);
   readonly #toastController = inject(ToastController);

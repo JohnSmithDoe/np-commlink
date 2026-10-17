@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, resource } from '@angular/core';
+import { computed, inject, resource, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Jam, JamObjectType, JamService, ListType } from '../../../vendor/jam';
 import {
@@ -45,7 +45,7 @@ const LIST_TYPES: Record<HomeList, ListType> = {
   random: ListType.random,
 };
 
-@Injectable()
+@Service({ autoProvided: false })
 export class LibraryFacade {
   readonly #jam = inject(JamGateway);
   readonly #local = inject(LocalLibraryStore);

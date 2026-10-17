@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   selectQuickAddCanAddLocal,
@@ -6,7 +6,7 @@ import {
   selectQuickAddState,
 } from './quick-add.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class QuickAddFacade {
   readonly #store = inject(Store);
 

@@ -9,7 +9,7 @@
  * box. Withholding it falls back to an empty `showCreateDialog`, so enter
  * does nothing — which is the answer.
  * ───────────────────────────────────────────────────────────────── */
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   BaseListPageFacade,
@@ -27,7 +27,7 @@ import {
   selectRoutedCategoryTransactionsState,
 } from './cash-transactions.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashCategoryTransactionsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #transactions = inject(CashTransactionsFacade);

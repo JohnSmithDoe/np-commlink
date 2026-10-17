@@ -1,8 +1,8 @@
 import {
   EnvironmentProviders,
-  Injectable,
   inject,
   provideAppInitializer,
+  Service,
 } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -12,7 +12,7 @@ const NATIVE_FADE_MS = 300;
 const FALLBACK_MS = 3000;
 const FADE_CEILING_MS = 1000;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SplashService {
   #revealed = false;
   #timer?: ReturnType<typeof setTimeout>;

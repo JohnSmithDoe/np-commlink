@@ -134,9 +134,10 @@ module.exports = defineConfig(
   {
     // `util/` is the pure layer, and `type:ui` may reach it. That combination is
     // only sound while `util/` holds no state: the moment a signal lives behind
-    // an `@Injectable` there, a dumb component can read store-derived state
-    // through a channel Sheriff cannot see — it sees `data -> util` and
-    // `ui -> util` as two unrelated legal edges, never the channel between them.
+    // a `@Service` there, a dumb component can read store-derived state through
+    // a channel Sheriff cannot see — it sees `data -> util` and `ui -> util` as
+    // two unrelated legal edges, never the channel between them. The selector
+    // matches the decorator by NAME, so it lists both spellings Angular accepts.
     // Hahnekamp's `type:data` is "state management AND the services that hold
     // it"; his `util` is pure functions. This is that line, enforced.
     //
@@ -150,7 +151,8 @@ module.exports = defineConfig(
         'error',
         ...READONLY_SIGNAL_MEMBERS,
         {
-          selector: 'Decorator[expression.callee.name="Injectable"]',
+          selector:
+            'Decorator[expression.callee.name=/^(Injectable|Service)$/]',
           message:
             'util/ holds no injectable service — a service that holds state or reaches a platform API belongs in data/. See CLAUDE.md.',
         },

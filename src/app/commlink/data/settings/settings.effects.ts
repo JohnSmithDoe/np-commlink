@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
 import { from, switchMap, tap } from 'rxjs';
@@ -11,7 +11,7 @@ import { ThemeService } from '../theme.service';
 import { SettingsActions } from './settings.actions';
 import { selectSettingsState } from './settings.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SettingsEffects {
   readonly #actions$ = inject(Actions);
   readonly #store = inject(Store);

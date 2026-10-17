@@ -22,16 +22,6 @@ are independent.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
 
-## Phase 3 — `@Service`
-
-- `ng generate @angular/core:service`: root-provided classes become `@Service()`, scoped ones
-  `@Service({ autoProvided: false })`. Check what it does with the route-provided facades.
-- **Same commit:** the `no-restricted-syntax` selector in `eslint.config.js` that keeps services out
-  of `util/` matches the decorator **by name**, so after the rename it fires on nothing. Widen it to
-  `/^(Injectable|Service)$/`, update CLAUDE.md's hard-rules row, and prove it with a throwaway
-  `@Service()` in a `util/` file that must fail lint. The footgun goes into
-  [footguns.md](./footguns.md).
-
 ## Phase 4 — error boundaries
 
 - **Spec first**: does `@boundary` around `ion-router-outlet` catch a routed page that throws? Yes →

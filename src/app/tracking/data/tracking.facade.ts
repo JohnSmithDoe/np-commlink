@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import dayjs from 'dayjs';
 import {
@@ -21,7 +21,7 @@ import {
   selectTrackingTime,
 } from './tracking.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TrackingFacade {
   readonly #store = inject(Store);
   readonly #today = inject(TodayService).today;

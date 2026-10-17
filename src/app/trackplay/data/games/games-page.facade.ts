@@ -12,7 +12,7 @@
  * players list keeps both, where they are genuinely different dates.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Router } from '@angular/router';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
@@ -30,7 +30,7 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
   { type: 'updatedAt', labelKey: marker('trackplay.list-toolbar.updated') },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GamesPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #games = inject(GamesFacade);

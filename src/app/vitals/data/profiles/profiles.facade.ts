@@ -5,7 +5,7 @@
  * the people program's own dialog and nothing here removes anyone.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { selectRouteEntityId } from '../../../@shared/data/router/router.selector';
@@ -30,7 +30,7 @@ import {
   selectProfileSummaries,
 } from './profiles.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProfilesFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

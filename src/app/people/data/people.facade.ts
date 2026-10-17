@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../@shared/data/item-lists/item-dialog.service';
 import { PEOPLE_LIST_ID, Person } from '../model/people.types';
@@ -11,7 +11,7 @@ import {
   selectPersonItems,
 } from './people.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PeopleFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

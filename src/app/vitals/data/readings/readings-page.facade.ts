@@ -12,7 +12,7 @@
  * component afterwards.
  * ───────────────────────────────────────────────────────────────── */
 
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ReadingsActions } from './readings.actions';
 import {
@@ -25,7 +25,7 @@ import { ReadingsFacade } from './readings.facade';
 
 const MIN_TREND_READINGS = 2;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ReadingsPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #readings = inject(ReadingsFacade);

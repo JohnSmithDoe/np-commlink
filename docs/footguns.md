@@ -95,6 +95,8 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   under `src`.
 - **A rule matching on a naming convention decays as names drift, and reports nothing while it does.** Match
   the kind, not the affix.
+- **A framework rename is a naming drift too.** The `util/` service ban matched `Injectable` by name; after
+  Angular 22's `@Service` migration it would have fired on nothing. Its selector now lists both names.
 - **Verify a diagnostic query before scoping work off it.** `grep -Lq` inverts; counting colocated
   `*.spec.ts` files is not coverage; grepping templates for `aria-live` cannot see a shadow DOM.
   `tsc … | tail -2 && echo clean` prints "clean" whenever `tail` succeeds, which is always.

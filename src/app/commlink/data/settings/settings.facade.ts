@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   AccentColors,
@@ -14,7 +14,7 @@ import {
   selectSkin,
 } from './settings.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SettingsFacade {
   readonly #store = inject(Store);
 

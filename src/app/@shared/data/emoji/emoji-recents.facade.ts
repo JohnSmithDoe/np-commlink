@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { EmojiActions } from './emoji.actions';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EmojiRecentsFacade {
   readonly #store = inject(Store);
 

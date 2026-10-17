@@ -13,7 +13,7 @@
  * load re-arms in silence; only a `refused` outcome speaks.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -46,7 +46,7 @@ const REMINDER_TITLE = marker('vitals.pill.reminder.title');
 const REMINDER_BODY = marker('vitals.pill.reminder.body');
 const REMINDER_REFUSED = marker('vitals.pill.reminder.refused');
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PillReminderEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);

@@ -2,9 +2,9 @@ import {
   EnvironmentProviders,
   ErrorHandler,
   inject,
-  Injectable,
   makeEnvironmentProviders,
   provideBrowserGlobalErrorListeners,
+  Service,
 } from '@angular/core';
 import { AlertController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ function reasonOf(error: unknown): string {
   return String(error);
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GlobalErrorHandler implements ErrorHandler {
   readonly #alerts = inject(AlertController);
   readonly #translate = inject(TranslateService);

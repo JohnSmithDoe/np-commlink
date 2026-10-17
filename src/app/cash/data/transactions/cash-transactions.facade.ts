@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { CategoryId } from '../../../@shared/model/category.types';
@@ -10,7 +10,7 @@ import { ImportConfirmation } from '../../model/import.types';
 import { CashTransactionsActions } from './cash-transactions.actions';
 import { selectAllTransactions } from '../cash.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashTransactionsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

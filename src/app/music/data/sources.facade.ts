@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { ConnectOutcome, JamConnection, Source } from '../model/music.types';
@@ -8,7 +8,7 @@ import { MusicActions } from './music.actions';
 import { MUSIC_PLAYER_PLUGIN } from './music-player.plugin';
 import { selectFolderSources } from './music.selector';
 
-@Injectable()
+@Service({ autoProvided: false })
 export class SourcesFacade {
   readonly #store = inject(Store);
   readonly #plugin = inject(MUSIC_PLAYER_PLUGIN);

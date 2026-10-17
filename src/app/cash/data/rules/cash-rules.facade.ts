@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, signal, Service } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Store } from '@ngrx/store';
 import { NotificationsActions } from '../../../@shared/data/actions/notifications.actions';
@@ -21,7 +21,7 @@ import {
   selectRuleStats,
 } from './cash-rules.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashRulesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);

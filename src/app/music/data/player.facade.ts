@@ -3,8 +3,8 @@ import {
   DestroyRef,
   effect,
   inject,
-  Injectable,
   signal,
+  Service,
 } from '@angular/core';
 import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { POSITION_POLL_MS } from '../model/music.consts';
@@ -28,7 +28,7 @@ const REPEAT_CYCLE: Record<RepeatMode, RepeatMode> = {
   one: 'off',
 };
 
-@Injectable()
+@Service({ autoProvided: false })
 export class PlayerFacade {
   readonly #player = inject(MUSIC_PLAYER);
   readonly #jam = inject(JamGateway);

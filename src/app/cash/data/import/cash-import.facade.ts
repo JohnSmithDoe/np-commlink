@@ -9,7 +9,7 @@
  * then a pure reader of one object: resolving a category or a schedule name
  * needs the same two collections `plan` already holds open.
  * ───────────────────────────────────────────────────────────────── */
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { categoryNameLookup } from '../../../@shared/util/categories/category.utils';
 import { uuidv4 } from '../../../@shared/util/app.utils';
 import { CashImportPreview } from '../../model/import.types';
@@ -30,7 +30,7 @@ import { CashRulesFacade } from '../rules/cash-rules.facade';
 import { CashSchedulesFacade } from '../schedules/cash-schedules.facade';
 import { CashTransactionsFacade } from '../transactions/cash-transactions.facade';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CashImportFacade {
   readonly #accounts = inject(CashAccountsFacade);
   readonly #categories = inject(CashCategoriesFacade);

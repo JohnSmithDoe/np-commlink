@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, signal, Service } from '@angular/core';
 import { BaseCategoryListPageFacade } from '../../../@shared/data/categories/category-list-page.facade.base';
 import { itemListCommands } from '../../../@shared/data/item-lists/list-page.facade.base';
 import { Category, CategoryId } from '../../../@shared/model/category.types';
@@ -21,7 +21,7 @@ import {
   selectHouseholdTaggedByCategory,
 } from './household-categories.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   readonly #activeListId = this.store.selectSignal(selectActiveHouseholdListId);
 

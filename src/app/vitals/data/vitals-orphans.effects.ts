@@ -8,7 +8,7 @@
  * It waits for BOTH reads. An unread roster is not an empty one.
  * ───────────────────────────────────────────────────────────────── */
 
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { concatLatestFrom } from '@ngrx/operators';
@@ -20,7 +20,7 @@ import { hasOrphans } from '../util/vitals.cascade';
 import { VitalsActions } from './vitals.actions';
 import { selectVitalsState } from './vitals.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class VitalsOrphansEffects {
   readonly #store = inject(Store);
   readonly #actions$ = inject(Actions);

@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import type { JamService } from '../../../vendor/jam';
 import { ConnectOutcome, JamConnection } from '../model/music.types';
@@ -10,7 +10,7 @@ import {
 import { JAM_CLIENT } from './jam.client';
 import { selectJamSource } from './music.selector';
 
-@Injectable()
+@Service({ autoProvided: false })
 export class JamGateway {
   readonly #jam = inject(JAM_CLIENT);
   readonly #source = inject(Store).selectSignal(selectJamSource);

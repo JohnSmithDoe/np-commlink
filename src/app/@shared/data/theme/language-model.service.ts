@@ -15,7 +15,7 @@
  * `probing`. Reading a status is not the same as paying for it.
  * ───────────────────────────────────────────────────────────────── */
 
-import { Injectable, signal } from '@angular/core';
+import { signal, Service } from '@angular/core';
 import {
   Language,
   LANGUAGES,
@@ -29,7 +29,7 @@ const languageExpectations = (
   expectedOutputs: [{ type: 'text', languages: [...outputs] }],
 });
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LanguageModelService {
   readonly #availability = signal<LanguageModelAvailability>('probing');
   readonly availability = this.#availability.asReadonly();

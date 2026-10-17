@@ -10,9 +10,9 @@
 import {
   computed,
   inject,
-  Injectable,
   linkedSignal,
   untracked,
+  Service,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TodayService } from '../../@shared/data/services/today.service';
@@ -39,7 +39,7 @@ import {
 const RITUAL_RECENT_DAYS = 7;
 const RITUAL_RECENT_DRAWS = 20;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RitualPageFacade {
   readonly #store = inject(Store);
   readonly #completions = this.#store.selectSignal(selectRitualCompletions);

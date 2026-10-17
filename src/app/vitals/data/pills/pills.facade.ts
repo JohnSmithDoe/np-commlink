@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { TodayService } from '../../../@shared/data/services/today.service';
@@ -17,7 +17,7 @@ import {
   selectRouteProfilePills,
 } from './pills.selector';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class PillsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
