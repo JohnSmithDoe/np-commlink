@@ -61,8 +61,6 @@ pipeline never emits, and gaps exactly where the risk sits. The shell is mid-mov
   `no-room-at-home`, `unknown-field`, `too-many`, and no `@default`. Check which the UI can reach.
 - **T4 · Import sightings rewrite schedules.** `scheduleSightingsFor` / `applyAmountChanges`: a refund
   matching "MIETE" flips the amount positive; a back-dated statement moves the current `nextDueISO`.
-- **T5 · Closing a recurring task from its dialog never advances it** — `updateDone` sets `doneAt`
-  without `closedTask`, so no next due date and no log entry.
 - **T6 · The reconcile ±3-day window counts milliseconds**, not calendar days: a spend at 18:00 misses a
   booking three days earlier, and DST moves the edge by an hour.
 - **T7 · `selectDashboardStatsYear` calls `dayjsToday()` inside a memoized projector** — stale across

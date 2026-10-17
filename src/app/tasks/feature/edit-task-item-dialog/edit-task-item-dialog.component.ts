@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import dayjs from 'dayjs';
 import { IonToggle } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
@@ -15,7 +16,7 @@ import {
   leadOptionsFor,
   ON_DAY_LEAD,
 } from '../../util/task-lead.utils';
-import { nextDueForCadence } from '../../util/task.utils';
+import { closedTask, nextDueForCadence } from '../../util/task.utils';
 import { CategoriesDialogComponent } from '../../../@shared/ui/categories/categories-dialog/categories-dialog.component';
 import { CategoryInputComponent } from '../../../@shared/ui/categories/category-input/category-input.component';
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
@@ -97,7 +98,11 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
   }
 
   protected override fromForm(draft: TaskItem, seed: TaskItem): TaskItem {
-    return { ...seed, ...draft, closings: seed.closings };
+    const item = { ...seed, ...draft, closings: seed.closings };
+    const wasJustClosed = !!draft.doneAt && !seed.doneAt;
+    return wasJustClosed
+      ? closedTask({ ...item, doneAt: undefined }, dayjs(draft.doneAt))
+      : item;
   }
 
   protected save(item: TaskItem): void {

@@ -148,3 +148,52 @@ describe('EditTaskItemDialogComponent · a closed task', () => {
     );
   });
 });
+
+describe('EditTaskItemDialogComponent · closing a recurring task', () => {
+  const recurring = mockTaskItem({
+    id: 'recurring',
+    name: 'Rauchmelder',
+    dueAt: '2026-08-26',
+    nextDueAt: '2026-08-26',
+    interval: { unit: 'month', every: 1 },
+  });
+
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-08-26T09:00:00.000Z'));
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('closes it the way the list does: logged, and due again next month', async () => {
+    await TestBed.configureTestingModule({
+      imports: [EditTaskItemDialogComponent],
+      providers: [
+        ...provideTestingProviders({
+          tasks: mockTasksState({ list: { items: [recurring] } }),
+        }),
+      ],
+    }).compileComponents();
+    TestBed.inject(ItemDialogService).open({
+      item: recurring,
+      listId: '_tasks',
+      editMode: 'update',
+    });
+    const component = TestBed.createComponent(
+      EditTaskItemDialogComponent
+    ).componentInstance;
+    const dispatched = vi.spyOn(TestBed.inject(MockStore), 'dispatch');
+
+    component.updateDone(true);
+    component.confirm();
+
+    expect(dispatched).toHaveBeenCalledWith(
+      TasksActions.addOrUpdateItem({
+        ...recurring,
+        doneAt: '2026-08-26T09:00:00.000Z',
+        nextDueAt: '2026-09-26',
+        closings: [{ on: '2026-08-26' }],
+      })
+    );
+  });
+});
