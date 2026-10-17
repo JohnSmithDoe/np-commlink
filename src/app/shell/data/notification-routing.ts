@@ -12,8 +12,8 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { LocalNotificationsService } from './@shared/data/services/local-notifications.service';
-import { NOTIFICATION_SOURCES } from './@shared/model/notification-sources';
+import { LocalNotificationsService } from '../../@shared/data/services/local-notifications.service';
+import { NOTIFICATION_SOURCES } from '../../@shared/model/notification-sources';
 
 export function provideNotificationRouting(): EnvironmentProviders {
   return provideAppInitializer(() => {

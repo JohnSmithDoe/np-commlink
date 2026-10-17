@@ -1,0 +1,12 @@
+<ion-toast
+  position="bottom"
+  [isOpen]="updateReady()"
+  [message]="'app.update.ready' | translate"
+  [buttons]="
+    updateActions(
+      'app.update.reload' | translate,
+      'app.update.later' | translate
+    )
+  "
+  (ionToastDidDismiss)="dismissUpdate()"
+/>

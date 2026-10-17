@@ -149,23 +149,23 @@ or a count the code owns.
 - **Four directions, and a screen answers exactly one.** OUT is the menu and the deck, ACROSS is the
   module's tab bar, DOWN is a push that `app-page-return` reverses, IN is a list row opening its item —
   content, not chrome. A header icon standing in for ACROSS is what the tab bar replaced.
-- **A module's tabs are its catalog entries exactly one segment below the shell.** `PROGRAM_CONTEXT` is
+- **A module's tabs are its catalog entries exactly one segment below its tabs page.** `PROGRAM_CONTEXT` is
   asked with a URL PREFIX, not a module name, so the answer is a fact about the address bar: a program
-  further down — `/vitals/iching/cast` under a `/vitals` shell — is a page inside a tab's stack, and the
+  further down — `/vitals/iching/cast` under a `/vitals` tabs page — is a page inside a tab's stack, and the
   same lookup says so with no second rule. Sibling programs must therefore share their module's prefix;
   `/soykaf`, `/data` and `/commlink/deck` do not yet, and each costs a move plus a redirect. **A program
   sitting AT its module's prefix is the expensive case**: the lookup answers `undefined` for a route
   equal to the prefix, so such a program can never be a tab in its own module's bar. `/cash` and
-  `/vitals` are both there, and adopting the shell for them means moving a published program URL down a
+  `/vitals` are both there, and adopting the tabs page for them means moving a published program URL down a
   segment — which for `vitals` touches a slice real users hold and owes the usual ask. It is what drove
   trackplay's restructure.
-- **The shell is `@shared/feature/module-tabs-page`, mounted on the module's EMPTY-PATH route.** `IonTabs`
+- **The tabs page is `@shared/feature/module-tabs-page`, mounted on the module's EMPTY-PATH route.** `IonTabs`
   navigates to `<its own URL>/<tab>`, so an empty path leaves the prefix at the module and every tab keeps
   the address the catalog publishes. A module root redirects to its first tab, because `ion-tab-button`
   addresses a named segment.
 - **A detail lives INSIDE its tab**, so the bar stays up and back walks that tab's own stack — the reason
   to keep `ion-tabs` rather than a bare `ion-tab-bar`, which the docs permit but which owns no outlet.
-- **A page belonging to the MODULE rather than to one tab stays beside the shell**, hides the bar, and
+- **A page belonging to the MODULE rather than to one tab stays beside the tabs page**, hides the bar, and
   names its own parent — `list-settings`, and cash's `rules`, `report`, `schedules`, `categories`. No
   catalog entry contains such a page, so `PROGRAM_CONTEXT` gives it none: `returnRoute`/`returnLabel` is
   the whole mechanism, and a page that names neither renders no return row at all.
@@ -181,8 +181,8 @@ or a count the code owns.
   nothing; a page may name a narrower parent but `isProgram` outranks it. The lookup takes the page's own
   `ActivatedRoute`, never "where is the app now" — Ionic keeps the leaving page mounted through a transition.
 - **Two `@boundary` blocks, both at an outlet: around the root `ion-router-outlet` and around `ion-tabs`
-  in the module shell.** A page an Ionic outlet inserts hangs off the outlet's view, so a page that throws
-  while RENDERING is caught by the nearest enclosing boundary — the shell's for a tab page, which keeps the
+  in the module's tabs page.** A page an Ionic outlet inserts hangs off the outlet's view, so a page that throws
+  while RENDERING is caught by the nearest enclosing boundary — the tabs page's for a tab page, which keeps the
   menu up, the root's for everything else. A page whose CONSTRUCTOR throws fails the navigation instead,
   before any boundary exists, and reaches the global handler's reload alert; a boundary per page would
   catch no more. `error-boundary.spec.ts` pins all three, and is what re-answers this on an Ionic upgrade.

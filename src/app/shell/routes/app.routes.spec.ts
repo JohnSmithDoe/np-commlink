@@ -1,6 +1,6 @@
 import { Route, Routes } from '@angular/router';
 import { routes } from './app.routes';
-import { DECK_CATALOG } from './commlink/model/deck.catalog';
+import { DECK_CATALOG } from '../../commlink/model/deck.catalog';
 
 const segmentsOf = (path: string): string[] => path.split('/').filter(Boolean);
 const isTerminal = (route: Route): boolean => {

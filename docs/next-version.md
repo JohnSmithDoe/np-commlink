@@ -159,7 +159,7 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
   second layout, against R5 — a gesture is never the only way, and here the order lens already is the other
   way. **Owes no rung:** `hiddenTiles` and `reorderWithin` already ship, so this is UI only.
 - **Price the DRAWER before either of those — it may retire the entry above.** The side menu already
-  renders the same entries in the same order, as `ion-item`s in an `ion-list` (`app.component.html:37`):
+  renders the same entries in the same order, as `ion-item`s in an `ion-list` (`shell/smart-ui/drawer-menu/drawer-menu.component.html`):
   **a single-column vertical list, which is the one thing `ion-reorder-group` does support.** Everything
   the grid cannot have comes free here — no hand-written pointer drag, no y-only problem, no second
   layout. Three things it wins outright: the drawer opens from **every page**, so a global setting stops

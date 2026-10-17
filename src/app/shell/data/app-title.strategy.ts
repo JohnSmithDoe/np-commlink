@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { APP_WORDMARK } from './@shared/model/app.consts';
+import { APP_WORDMARK } from '../../@shared/model/app.consts';
 
 @Service()
 export class AppTitleStrategy extends TitleStrategy {

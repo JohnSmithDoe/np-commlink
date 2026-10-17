@@ -55,7 +55,7 @@
   //
   // What the list IS for: typescript-eslint's `projectService` falls back to it
   // for files this project does not claim itself. Ownership is nearest-ancestor
-  // tsconfig first, so `src/app/app.component.ts` lints under *this* config, not
+  // tsconfig first, so `src/app/shell/feature/app-root/app.component.ts` lints under *this* config, not
   // under the app project — it is no `files` root there, while `**/*` matches it
   // here. A reference wins only where the child lists the file as its own root:
   // `**/*.spec.ts` is excluded here, and dropping the list once turned 178 specs

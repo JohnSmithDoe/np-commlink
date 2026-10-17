@@ -17,13 +17,13 @@ import {
 } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
-import { AppComponent } from './app/app.component';
+import { AppComponent } from './app/shell/feature/app-root/app.component';
 
-import { routes } from './app/app.routes';
-import { provideAppKernel } from './app/app.providers';
+import { routes } from './app/shell/routes/app.routes';
+import { provideAppKernel } from './app/shell/data/app.providers';
 
 import { environment } from './environments/environment';
-import { AppTitleStrategy } from './app/app-title.strategy';
+import { AppTitleStrategy } from './app/shell/data/app-title.strategy';
 
 import { provideServiceWorker } from '@angular/service-worker';
 

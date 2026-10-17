@@ -45,7 +45,6 @@ const I18N_TEMPLATE_FILES = ['src/app/**/*.html'];
 const I18N_IGNORES = ['src/app/**/*.spec.ts'];
 
 const NGRX_ALLOWED = [
-  'src/app/app.providers.ts',
   'src/app/**/data/**/*.ts',
   'src/app/@shared/testing/**/*.ts',
   'src/app/**/*.spec.ts',

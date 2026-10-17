@@ -1,0 +1,25 @@
+<ion-app>
+  <ion-split-pane contentId="main-content">
+    <ion-menu contentId="main-content">
+      <app-drawer-menu />
+    </ion-menu>
+    <div class="ion-page" id="main-content">
+      @if (navigating()) {
+        <ion-progress-bar
+          type="indeterminate"
+          class="app-navigating"
+          [attr.aria-label]="'a11y.loading' | translate"
+        />
+      }
+      @boundary {
+        <ion-router-outlet />
+      } @error {
+        <app-error-fallback [reason]="$error.message" (retry)="$reset()" />
+      }
+    </div>
+  </ion-split-pane>
+  <app-update-toast />
+  @defer (when personDialogRequested()) {
+    <app-edit-person-dialog />
+  }
+</ion-app>

@@ -12,16 +12,26 @@ const featureMayUseSharedFeature = (context: {
 }): boolean =>
   context.to === 'type:feature' && context.toModulePath.includes('/@shared/');
 
+const shellComposesSameLayer = (context: {
+  from: string;
+  to: string;
+  fromModulePath: string;
+}): boolean =>
+  context.fromModulePath.includes('/src/app/shell/') &&
+  context.from === context.to;
+
 /**
  * Sheriff config — Hahnekamp two-axis tagging.
  *
  * Each module carries a `domain:*` tag (vertical) and a `type:*` tag
- * (horizontal). The shell is special: it only carries `type:shell` so
- * the domain-axis doesn't restrict it.
+ * (horizontal). `shell` is a domain like any other, except that it is
+ * the one allowed to compose the rest: `main.ts` reaches only the shell,
+ * the shell reaches every domain, and on the type axis a shell layer
+ * may reach the SAME layer of another domain — its routes load theirs,
+ * its feature hosts theirs.
  *
  * Type axis:
- *   shell    → routes, feature, ui, data, util, model
- *   routes   → feature, data, util             (a domain's own route manifest)
+ *   routes   → feature, data, util, model      (a domain's own route manifest)
  *   feature  → smart-ui, ui, data, util, model (+ shared feature only)
  *   smart-ui → ui, data, util, model           (stateful presentational, leaf)
  *   ui       → self, util, model               (strict — pure dumb)
@@ -30,33 +40,30 @@ const featureMayUseSharedFeature = (context: {
  *   model    → self
  *   vendor   → self                         (generated clients, src/vendor)
  *
- * Domain axis: every domain sealed.
+ * Domain axis: every domain sealed, the shell excepted.
  */
 export const config: SheriffConfig = {
   entryFile: './src/main.ts',
   enableBarrelLess: true,
   modules: {
-    'src/app': ['type:shell'],
     'src/app/<domain>/<type>': ['domain:<domain>', 'type:<type>'],
     'src/vendor/<lib>': ['domain:@shared', 'type:vendor'],
   },
 
   depRules: {
-    root: ['type:shell'],
+    root: ['domain:shell'],
 
     // ─── Type axis ─────────────────────────────────────────────
-    'type:shell': [
-      'type:routes',
+    'type:routes': [
+      shellComposesSameLayer,
       'type:feature',
-      'type:ui',
       'type:data',
-      'type:model',
       'type:util',
-      specMayUseTesting,
+      'type:model',
     ],
-    'type:routes': ['type:feature', 'type:data', 'type:util'],
     'type:feature': [
       featureMayUseSharedFeature,
+      shellComposesSameLayer,
       'type:smart-ui',
       'type:ui',
       'type:data',
@@ -86,5 +93,6 @@ export const config: SheriffConfig = {
 
     // ─── Domain axis ───────────────────────────────────────────
     'domain:*': [sameTag, 'domain:@shared'],
+    'domain:shell': [anyTag],
   },
 };

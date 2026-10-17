@@ -3,10 +3,10 @@
  * `settings` merged into `commlink` because its page and `deck-config` do the
  * same job — configure the shell — and as one module they are each other's
  * tabs. `deck-config` therefore answers under `/settings/`, not `/commlink/`:
- * a tab is a segment below its module's shell, and the shell is settings'.
+ * a tab is a segment below its module's tabs page, and that page is settings'.
  *
  * `/commlink/deck` and a bare `/settings` stay as redirects. Both were
- * addressed directly — by `app.component.html`, by `deck.catalog` and by the
+ * addressed directly — by `drawer-menu.component.html`, by `deck.catalog` and by the
  * language e2e — and a move is no reason to break a bookmark.
  * ───────────────────────────────────────────────────────────────── */
 import { Routes } from '@angular/router';
