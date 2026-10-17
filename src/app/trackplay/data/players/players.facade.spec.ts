@@ -20,8 +20,8 @@ const people = [
   mockPlayer({ id: 'never', name: 'Never' }),
 ];
 const games = mockGamesState([
-  mockGame({ id: 'g1', playerIds: ['a'], updatedAt: LATER }),
-  mockGame({ id: 'g2', playerIds: ['b', 'gone'], updatedAt: EARLIER }),
+  mockGame({ id: 'g1', playerIds: ['a'], updatedAt: EARLIER }),
+  mockGame({ id: 'g2', playerIds: ['b', 'gone'], updatedAt: LATER }),
 ]);
 
 const setup = (
@@ -57,7 +57,7 @@ describe('PlayersFacade', () => {
       })
     );
 
-    expect(idsOf(facade)).toEqual(['a', 'b', 'never']);
+    expect(idsOf(facade)).toEqual(['b', 'a', 'never']);
   });
 
   it('narrows by the search term', () => {

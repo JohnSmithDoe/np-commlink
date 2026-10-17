@@ -36,16 +36,22 @@ describe('pillsReducer — slots', () => {
     expect(replacement.pills.items.map((pill) => pill.slot)).toEqual([2, 1]);
   });
 
-  it('keeps the slot across an edit', () => {
-    const added = vitalsReducer(cold, PillsActions.addItem(ibu));
+  it('keeps the slot across an edit that does not carry one', () => {
+    const first = vitalsReducer(cold, PillsActions.addItem(ibu));
+    const both = vitalsReducer(first, PillsActions.addItem(vitaminD));
+    const { slot: _held, ...unslotted } = vitaminD;
 
     const renamed = vitalsReducer(
-      added,
-      PillsActions.updateItem({ ...ibu, name: 'Ibuprofen 600' })
+      both,
+      PillsActions.updateItem({ ...unslotted, name: 'Vitamin D3' })
     );
 
-    expect(renamed.pills.items[0]?.slot).toBe(0);
-    expect(renamed.pills.items[0]?.name).toBe('Ibuprofen 600');
+    expect(
+      renamed.pills.items.find((pill) => pill.id === vitaminD.id)
+    ).toMatchObject({
+      name: 'Vitamin D3',
+      slot: 1,
+    });
   });
 });
 

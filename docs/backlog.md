@@ -37,11 +37,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 ### Tests that cannot fail
 
-- `tracking-notifications.effects` start/pause: the fixture state already equals the expected hint.
-- `players.facade` last-played sort: that order is also the name order.
-- `notifications.selector` "newest first": input already sorted.
-- `pills.reducer` "keeps the slot across an edit" sends the same slot — and `updateListItem` would
-  overwrite a different one, so the protection the name claims is absent.
 - `list-page.component` reorder calls the fake facade directly; `commlink.page` `total` and `noise`
   echo the fake's own logic; `ritual-page.facade` reads one signal twice.
 - `item-list-toolbar` emits its own `output()`; `today.service` "does not notify" tests signal

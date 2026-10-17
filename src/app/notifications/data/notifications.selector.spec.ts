@@ -37,14 +37,14 @@ const state = (over: Partial<NotificationsState> = {}): NotificationsState => {
 describe('notifications.selector', () => {
   const items = [
     notification({
-      id: 'n1',
-      status: 'open',
-      updatedAt: '2026-07-05T00:00:00.000Z',
-    }),
-    notification({
       id: 'n2',
       status: 'open',
       updatedAt: '2026-07-01T00:00:00.000Z',
+    }),
+    notification({
+      id: 'n1',
+      status: 'open',
+      updatedAt: '2026-07-05T00:00:00.000Z',
     }),
     notification({
       id: 'd1',

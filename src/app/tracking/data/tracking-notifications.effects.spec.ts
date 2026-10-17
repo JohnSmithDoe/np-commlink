@@ -114,7 +114,7 @@ describe('TrackingNotificationsEffects', () => {
 
   describe('applyNotificationCommand$', () => {
     it('toggles with a stopped hint for a tracking.start CTA', async () => {
-      const item = mockTrackingItem({ id: 't1', state: 'stopped' });
+      const item = mockTrackingItem({ id: 't1', state: 'paused' });
       setup(
         of(TrackingActions.applyNotificationCommand('tracking.start', 't1')),
         mockTrackingState({ items: [item] })
@@ -131,7 +131,7 @@ describe('TrackingNotificationsEffects', () => {
     });
 
     it('flips the hint to running for a tracking.pause CTA', async () => {
-      const item = mockTrackingItem({ id: 't1', state: 'running' });
+      const item = mockTrackingItem({ id: 't1', state: 'paused' });
       setup(
         of(TrackingActions.applyNotificationCommand('tracking.pause', 't1')),
         mockTrackingState({ items: [item] })
