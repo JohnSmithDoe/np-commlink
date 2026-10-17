@@ -148,5 +148,26 @@
       </ol>
       <p class="zd-note">{{ 'vitals.zodiac.age-estimate' | translate }}</p>
     </section>
+
+    <section class="zd-panel sr-panel sr-corners">
+      <p class="sr-hud">
+        {{ 'vitals.zodiac.heading.aquarius-onset' | translate }}
+      </p>
+      <ol class="zd-timeline">
+        @for (onset of onsets; track onset.source) {
+          <li class="zd-step" [class.zd-step--current]="onset.usedHere">
+            <span class="zd-step__title">
+              @if (onset.approximate) {
+                ≈
+              }
+              {{ onset.years.join(' / ') }}
+            </span>
+            <span class="zd-step__phase">{{ onset.source }}</span>
+            <span class="zd-step__meta">{{ onset.methodKey | translate }}</span>
+          </li>
+        }
+      </ol>
+      <p class="zd-note">{{ 'vitals.zodiac.onset-survey' | translate }}</p>
+    </section>
   </div>
 </ion-content>

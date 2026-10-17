@@ -64,6 +64,14 @@ export interface AstroAge {
   effectKey: Marker;
 }
 
+export interface AquariusOnset {
+  source: string;
+  years: readonly number[];
+  approximate?: true;
+  usedHere?: true;
+  methodKey: Marker;
+}
+
 export interface KiStar {
   number: KiNumber;
   trigram: string;

@@ -6,16 +6,18 @@
  * "up to the next entry's start", so no record carries an end date its
  * neighbour could contradict.
  *
- * `ASTRO_AGES` is 2150 years per age with Pisces at 1..2150 CE. There is no
- * consensus on those boundaries — schemes differ by centuries and some put
- * Aquarius already underway — so the page labels them an estimate rather
- * than pretending to a source. Year 0 is deliberately in no age: the era
- * labels have no year zero to print.
+ * `ASTRO_AGES` is 2150 years per age with Pisces at 1..2150 CE — Neil Mann's
+ * equal division. There is no consensus on those boundaries, so the page
+ * shows `AQUARIUS_ONSETS` beside it: what each published school answers, as
+ * cited by Wikipedia's "Age of Aquarius" and "Astrological age", Jung's
+ * *Aion* fn. 84, and Bradley for Fagan–Bradley, checked 2026-10-17. Year 0
+ * is deliberately in no age: the era labels have no year zero to print.
  * ───────────────────────────────────────────────────────────────── */
 
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { Marker } from '../../@shared/model/app.types';
 import {
+  AquariusOnset,
   AstroAge,
   ChineseAnimal,
   ChineseElement,
@@ -268,6 +270,52 @@ export const ASTRO_AGES: readonly AstroAge[] = [
     fromYear: 4301,
     toYear: 6450,
     effectKey: marker('vitals.astro.age.capricorn'),
+  },
+];
+
+export const AQUARIUS_ONSETS: readonly AquariusOnset[] = [
+  {
+    source: 'Samael Aun Weor',
+    years: [1962],
+    methodKey: marker('vitals.zodiac.onset.alignment'),
+  },
+  {
+    source: 'C. G. Jung',
+    years: [1997, 2154],
+    methodKey: marker('vitals.zodiac.onset.jung'),
+  },
+  {
+    source: 'Dane Rudhyar',
+    years: [2062],
+    methodKey: marker('vitals.zodiac.onset.equal-signs'),
+  },
+  {
+    source: 'Neil Mann',
+    years: [2150],
+    usedHere: true,
+    methodKey: marker('vitals.zodiac.onset.equal-signs'),
+  },
+  {
+    source: 'Fagan & Bradley',
+    years: [2376],
+    methodKey: marker('vitals.zodiac.onset.sidereal'),
+  },
+  {
+    source: 'Hermann Haupt',
+    years: [2595],
+    approximate: true,
+    methodKey: marker('vitals.zodiac.onset.iau'),
+  },
+  {
+    source: 'Max Heindel',
+    years: [2654],
+    approximate: true,
+    methodKey: marker('vitals.zodiac.onset.heindel'),
+  },
+  {
+    source: 'Rudolf Steiner',
+    years: [3573],
+    methodKey: marker('vitals.zodiac.onset.steiner'),
   },
 ];
 

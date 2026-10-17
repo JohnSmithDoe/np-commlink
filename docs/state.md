@@ -61,9 +61,6 @@ recognise them: clear the cash slice there rather than reading the duplicate cou
 
 ## Blocked — needs something only the owner can supply
 
-- **The world-age boundaries are a pick, not a source.** 2150 years per age with Pisces at 1..2150 CE.
-  Published schemes disagree by centuries. Swapping the table in `src/app/vitals/model/astro.consts.ts` is
-  one edit once the owner names a school.
 - **`media3Version` in `android/variables.gradle` is unverified against the latest release** — a lookup
   this project only makes when the owner asks for the network.
 

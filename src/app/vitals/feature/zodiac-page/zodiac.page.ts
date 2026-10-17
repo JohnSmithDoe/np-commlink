@@ -31,6 +31,7 @@ import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-in
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { ProfilesFacade } from '../../data';
 import {
+  AQUARIUS_ONSETS,
   ASTRO_AGES,
   CHINESE_ELEMENT_LABEL_KEYS,
   CHINESE_POLARITY_LABEL_KEYS,
@@ -77,6 +78,8 @@ export class VitalsZodiacPage {
   readonly #profiles = inject(ProfilesFacade);
 
   readonly ages = ASTRO_AGES;
+
+  readonly onsets = AQUARIUS_ONSETS;
 
   readonly signs = ZODIAC_BY_SIGN;
 
