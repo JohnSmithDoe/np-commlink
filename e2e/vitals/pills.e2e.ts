@@ -130,7 +130,9 @@ test.describe('BIOMON — pills', () => {
     ).toHaveClass(/bought/);
   });
 
-  test('keeps the reminder switch on its own pill', async ({ page }) => {
+  test('refuses a reminder where the platform cannot schedule one', async ({
+    page,
+  }) => {
     await openPills(page);
 
     await addButton(pageRoot(page, PILLS_PAGE)).click();

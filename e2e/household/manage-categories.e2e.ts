@@ -106,9 +106,7 @@ test.describe('household category catalog', () => {
     await expect(catalogRow(page, 'Tiefkuhl')).toHaveCount(0);
   });
 
-  test('undo puts a deleted category back on the rows it was stripped from', async ({
-    page,
-  }) => {
+  test('undo brings a deleted category back', async ({ page }) => {
     await addViaCatalogSearch(page, 'Tiefkuehl');
     await expect(catalogRow(page, 'Tiefkuehl')).toBeVisible({
       timeout: 10_000,

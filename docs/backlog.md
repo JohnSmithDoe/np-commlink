@@ -43,15 +43,9 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
   `board.page.spec`'s banner claims every refusal is asserted; three of six are —
   `overshoots-home`, `own-piece` and `blocked-in-home` are reachable and unasserted.
 - `geist.page` "sends the query" forces `jacked-in` with no session, so nothing streams.
-- e2e: `e2e/office-time/first-paint.e2e.ts` banner says array, asserts a map (the legacy upgrade is untested);
-  `e2e/household/manage-categories.e2e.ts` undo — no item ever carried the category; `e2e/vitals/pills.e2e.ts` "keeps the
-  reminder switch on its own pill" seeds one pill, so the isolation is untested.
 
 ### Weak oracles
 
-- **`e2e/tasks/recurring.e2e.ts` `inThreeMonths()` uses `setMonth(+3)`**, which overflows where the app
-  clamps — red on Nov 29–30 and the like. `due-date.e2e` and `notes.e2e` compute dates in the runner
-  and drift at midnight.
 - Clock assertions that are always true: trackplay "reads the clock at dispatch time" (`isAfter(2024)`),
   `tracking.facade` truthy `now`, `household.factory` truthy `bestBefore`, `note-editor.facade`,
   `clock.spec`, `notifications.reducer` `not.toBe(...)`. Fake the clock, assert the value.
@@ -64,7 +58,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 - Generic list reducer/effects mechanics re-tested in ~8 domain specs; `item-list.effects.factory.spec`
   covers only undo. Move the generic cases there, keep per-module wiring.
 - Feature-slice selectors and `state => state.x` projectors.
-- `e2e/coprocessor/coprocessor.e2e.ts` and `e2e/vitals/astro.e2e.ts` re-check unit-tested arithmetic — one wiring value per page.
 - `list-item.component` repeats `base-swipe-row.spec`; single `it.each` rows repeated in
   `golden.utils` and `ionic-color.utils`; `settings.effects` asserts a save no path makes.
 
@@ -142,7 +135,10 @@ memoized projector is not stale where it matters: its one consumer, telemetry, r
 `percentage`, which turn only with the year, and the year turning reloads the holidays and so the keys. Scoring an
 ended game is unreachable: the grid is gone once it ends. The trackplay orphan sweep against an empty
 roster deleting every game is the design — `PEOPLE` stays `undefined` until people is read, a failed
-read included.
+read included. The e2e
+`coprocessor` and `astro` suites are not duplicates of the unit specs: each test drives a distinct
+control. `due-date.e2e` and `notes.e2e` computing today in the runner is safe — runner and browser
+share one clock.
 
 Tests that earn their keep and serve as the model: the camt parser variants and `read-statement`
 occurrence keys, `money.parseMagnitude`, holidays checked against the published Berlin JSON, the
