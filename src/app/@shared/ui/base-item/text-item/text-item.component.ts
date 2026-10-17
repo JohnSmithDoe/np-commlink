@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { IonItem, IonLabel, IonNote } from '@ionic/angular/standalone';
+import { IonItem, IonLabel, IonNote } from '@ionic/angular';
 import { IonColor } from '../../../model/app.types';
 
 @Component({

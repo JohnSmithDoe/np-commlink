@@ -7,7 +7,7 @@ import {
   provideBrowserGlobalErrorListeners,
   Service,
 } from '@angular/core';
-import { AlertController } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { AppReloadService } from '../service-worker/app-reload.service';

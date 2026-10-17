@@ -7,7 +7,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonToggle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';

@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { SchemaPathTree } from '@angular/forms/signals';
-import { provideIonicAngular } from '@ionic/angular/standalone';
+import { provideIonicAngular } from '@ionic/angular';
 import { requireText } from '../../@shared/util/forms/form-rules';
 import { BaseModalDialog } from './base-modal-dialog';
 

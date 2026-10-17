@@ -17,7 +17,7 @@ import {
   IonTextarea,
   SelectCustomEvent,
   TextareaCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { trashOutline } from 'ionicons/icons';

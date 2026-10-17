@@ -6,7 +6,7 @@ import {
   IonCardTitle,
   IonItem,
   IonList,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { Dayjs } from 'dayjs';
 import { HolidayMap } from '../../model/office-time.types';
 import { dayjsFromString } from '../../util/office-time.utils';

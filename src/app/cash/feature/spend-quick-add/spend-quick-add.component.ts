@@ -29,7 +29,7 @@ import {
   IonSegmentButton,
   IonSelect,
   IonSelectOption,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CategoryId } from '../../../@shared/model/category.types';
 import {

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonIcon, IonNote } from '@ionic/angular/standalone';
+import { IonIcon, IonNote } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { createOutline, paw, person, star } from 'ionicons/icons';

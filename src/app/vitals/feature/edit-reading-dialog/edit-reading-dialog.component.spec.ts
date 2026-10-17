@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { SelectCustomEvent } from '@ionic/angular/standalone';
+import { SelectCustomEvent } from '@ionic/angular';
 import { provideTranslateService } from '@ngx-translate/core';
 import { EmojiRecentsFacade } from '../../../@shared/data/emoji/emoji-recents.facade';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';

@@ -1,11 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormField } from '@angular/forms/signals';
-import {
-  IonItem,
-  IonNote,
-  IonSelect,
-  IonSelectOption,
-} from '@ionic/angular/standalone';
+import { IonItem, IonNote, IonSelect, IonSelectOption } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemListId } from '../../../@shared/model/item-list.types';

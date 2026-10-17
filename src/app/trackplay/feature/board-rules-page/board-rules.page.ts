@@ -6,7 +6,7 @@ import {
   IonList,
   IonNote,
   IonToggle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';

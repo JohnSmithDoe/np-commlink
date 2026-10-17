@@ -53,7 +53,10 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
   the section's own rule taken one step further: locate by ROLE so the locator pierces to the native
   button that actually carries the state — `getByRole('button', { name, pressed: true })`, asserted with
   `toHaveCount`. Angular is not the culprit here and `[attr.x]="false"` does render `"false"`: Angular
-  only drops an attribute bound to `null`/`undefined`.
+  only drops an attribute bound to `null`/`undefined`. Since Ionic 9 a `MutationObserver` keeps the native
+  button in step with later host writes, so the role locator is right by construction — and an attribute
+  present at first render can no longer be REMOVED, only overwritten: bind a token attribute to its
+  default (`aria-pressed="false"`), never to `null`.
 - **`[formField]` renders a second, hidden `input`** — `@angular/forms/signals` adds an
   `input.aux-input[type=hidden]`, so `getByTestId(…).locator('input')` on a bound `ion-toggle`/`ion-input`
   resolves to **two** elements. `getByRole('switch')` is not the way out either (the real control is in the
@@ -318,8 +321,9 @@ both putting `ion-item`s straight into an `ion-list` where a wrapping `<div>` is
 - **The collected APK name follows the signature** (`np-commlink.apk` vs `-unsigned.apk`), and its source
   filename comes from AGP's `output-metadata.json`, never a glob — both outputs live in one directory and
   neither build deletes the other.
-- **`zone.js` must stay out of pnpm's hoist** (`hoistPattern` in `pnpm-workspace.yaml`). It is installed
-  as a peer of `@ionic/angular`; the `ng` shim puts `node_modules/.pnpm/node_modules` on `NODE_PATH`, and
+- **`zone.js` must stay out of pnpm's hoist** (`hoistPattern` in `pnpm-workspace.yaml`). It entered as an
+  auto-installed peer of `@ionic/angular` 8, and the lockfile keeps it although Ionic 9 and Angular now
+  declare it optional; the `ng` shim puts `node_modules/.pnpm/node_modules` on `NODE_PATH`, and
   Angular 22's unit-test builder, finding `zone.js` resolvable there, injects a top-level
   `await import('zone.js/testing')` that fails every test build with "Top-level await is not available".
 

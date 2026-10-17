@@ -14,7 +14,7 @@
 
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
-import { SelectCustomEvent } from '@ionic/angular/standalone';
+import { SelectCustomEvent } from '@ionic/angular';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { RECIPES_LIST_ID } from '../../model/recipe.types';

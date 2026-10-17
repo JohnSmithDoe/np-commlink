@@ -6,7 +6,7 @@ import {
   IonCardTitle,
   IonItem,
   IonList,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Dayjs } from 'dayjs';
 import { daysFromKeys } from '../../util/office-time.utils';

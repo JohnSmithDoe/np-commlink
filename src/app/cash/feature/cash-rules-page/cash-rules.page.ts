@@ -11,7 +11,7 @@ import {
   IonButton,
   IonButtons,
   IonIcon,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { addIcons } from 'ionicons';

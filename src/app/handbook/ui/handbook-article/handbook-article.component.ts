@@ -11,7 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { Component, input, ViewEncapsulation } from '@angular/core';
-import { IonIcon } from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { handLeftOutline, warningOutline } from 'ionicons/icons';

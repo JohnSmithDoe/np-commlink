@@ -9,7 +9,7 @@ import {
   IonLabel,
   IonList,
   IonNote,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { playOutline } from 'ionicons/icons';

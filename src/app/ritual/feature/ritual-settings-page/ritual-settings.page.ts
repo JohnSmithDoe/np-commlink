@@ -8,7 +8,7 @@ import {
   IonList,
   IonNote,
   IonToggle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { settingsOutline } from 'ionicons/icons';

@@ -34,7 +34,7 @@ import {
   IonSelect,
   IonSelectOption,
   SelectCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { ItemListId } from '../../../@shared/model/item-list.types';

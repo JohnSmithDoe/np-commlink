@@ -10,7 +10,7 @@ import {
   IonListHeader,
   IonNote,
   IonSegmentButton,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { SettingsSegmentComponent } from '../../ui/settings-segment/settings-segment.component';

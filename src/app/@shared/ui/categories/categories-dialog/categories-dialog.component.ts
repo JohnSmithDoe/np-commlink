@@ -26,7 +26,7 @@ import {
   IonSearchbar,
   IonToolbar,
   SearchbarCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkOutline, createOutline, trashOutline } from 'ionicons/icons';

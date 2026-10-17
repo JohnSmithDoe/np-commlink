@@ -1,12 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, linkedSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonIcon,
-} from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { discOutline, layersOutline } from 'ionicons/icons';

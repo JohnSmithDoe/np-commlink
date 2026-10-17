@@ -12,7 +12,7 @@ import {
   IonItem,
   IonLabel,
   IonNote,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { CategoryId } from '../../../@shared/model/category.types';
 import { CashTransactionsFacade } from '../../data';

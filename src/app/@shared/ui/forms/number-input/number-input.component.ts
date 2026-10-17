@@ -1,5 +1,5 @@
 import { booleanAttribute, Component, input, output } from '@angular/core';
-import { IonInput, IonItem, InputCustomEvent } from '@ionic/angular/standalone';
+import { IonInput, IonItem, InputCustomEvent } from '@ionic/angular';
 import { parseNumberInput } from '../../../util/app.utils';
 
 @Component({

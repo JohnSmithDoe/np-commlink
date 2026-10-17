@@ -13,8 +13,8 @@
  * teaches people to disable it.
  *
  * ionicons is read through the range `@ionic/core` DECLARES, not from
- * the installed top-level copy. The 7.4.0 at the root supplies icon
- * path data to `addIcons`; the `ion-icon` that renders is the 8.x
+ * the installed top-level copy. The copy at the root supplies icon
+ * path data to `addIcons`; the `ion-icon` that renders is the one
  * `@ionic/core` bundles, whose `exports` map hides its own
  * `package.json`. So it moves when Ionic deliberately re-bases, not
  * whenever ionicons ships inside the caret. Stencil is here because it
@@ -38,7 +38,7 @@ const majorVersionOf = (range: string): number =>
 const ASSUMPTIONS = [
   {
     packageName: '@ionic/core',
-    verifiedMajor: 8,
+    verifiedMajor: 9,
     observed: ionicCorePackage.version,
     reverify: [
       'R4 — dist/collection/components/modal/modal.js: componentWillLoad must still declare attributesToInherit = [aria-label, role], and role="dialog" + aria-modal must still sit on the shadow wrapper (a11y-overlay-has-name banner).',
@@ -51,7 +51,7 @@ const ASSUMPTIONS = [
     verifiedMajor: 8,
     observed: ionicCorePackage.dependencies.ionicons,
     reverify: [
-      'R1 — the Icon that renders is @ionic/core/components/ion-icon.js and its chunk, NOT the top-level ionicons 7.4.0: render must still emit role:"img" unconditionally, and inheritAttributes must still take only [aria-label] (a11y-icon-is-hidden-or-named banner).',
+      'R1 — the Icon that renders is @ionic/core/components/ion-icon.js and its chunk, NOT the top-level ionicons copy: render must still emit role:"img" unconditionally, and inheritAttributes must still take only [aria-label] (a11y-icon-is-hidden-or-named banner).',
     ],
   },
   {

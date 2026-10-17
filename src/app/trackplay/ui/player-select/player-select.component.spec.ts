@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CheckboxCustomEvent } from '@ionic/angular/standalone';
+import { CheckboxCustomEvent } from '@ionic/angular';
 import { Player, TrackplayId } from '../../model/trackplay.types';
 import { mockPlayer } from '../../testing/trackplay.test-data';
 import { TrackplayPlayerSelectComponent } from './player-select.component';

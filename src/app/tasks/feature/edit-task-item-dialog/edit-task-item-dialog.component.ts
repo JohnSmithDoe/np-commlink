@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { IonToggle } from '@ionic/angular/standalone';
+import { IonToggle } from '@ionic/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BaseCategoryEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import {

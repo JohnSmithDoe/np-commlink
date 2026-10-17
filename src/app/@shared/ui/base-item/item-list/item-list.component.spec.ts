@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection, TemplateRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReorderEndCustomEvent } from '@ionic/angular/standalone';
+import { ReorderEndCustomEvent } from '@ionic/angular';
 import { BaseItem } from '../../../model/base-item.types';
 import { ItemListComponent } from './item-list.component';
 

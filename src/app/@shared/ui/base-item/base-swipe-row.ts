@@ -16,7 +16,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { IonList } from '@ionic/angular/standalone';
+import { IonList } from '@ionic/angular';
 import { IonColor, IonDragEvent } from '../../model/app.types';
 import { revealedSideFromDrag } from '../../util/app.utils';
 

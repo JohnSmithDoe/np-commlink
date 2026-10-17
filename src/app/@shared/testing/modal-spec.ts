@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController } from '@ionic/angular';
 import { Store } from '@ngrx/store';
 import type { MockInstance } from 'vitest';
 import { MockState } from './test-data';

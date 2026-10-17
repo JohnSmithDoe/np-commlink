@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TodayService } from '../../../@shared/data/services/today.service';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';

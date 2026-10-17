@@ -11,7 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { Component, input, output } from '@angular/core';
-import { IonButton } from '@ionic/angular/standalone';
+import { IonButton } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Category, CategoryId } from '../../../model/category.types';
 import { ItemFilter } from '../../../util/item-lists/list-filter';

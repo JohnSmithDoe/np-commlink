@@ -8,7 +8,7 @@ import {
   IonList,
   IonNote,
   IonSearchbar,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PageHeaderComponent } from '../../../@shared/ui/page-header/page-header.component';
 import { CoverStore, LibraryFacade, PlayerFacade } from '../../data';

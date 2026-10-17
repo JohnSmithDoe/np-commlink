@@ -11,7 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { inject, Service } from '@angular/core';
-import { ToastController } from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { TranslateService } from '@ngx-translate/core';
 import { concatMap, firstValueFrom } from 'rxjs';

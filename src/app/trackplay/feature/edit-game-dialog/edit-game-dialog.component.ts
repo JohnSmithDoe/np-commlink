@@ -19,7 +19,7 @@ import {
   IonSelect,
   IonSelectOption,
   SelectCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { playCircleOutline } from 'ionicons/icons';

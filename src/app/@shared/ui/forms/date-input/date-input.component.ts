@@ -40,7 +40,7 @@ import {
   IonItem,
   IonModal,
   DatetimeCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { isoDay } from '../../../util/formatting/date-format.utils';
 

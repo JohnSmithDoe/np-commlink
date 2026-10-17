@@ -1,9 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import {
-  InputCustomEvent,
-  IonButton,
-  IonInput,
-} from '@ionic/angular/standalone';
+import { InputCustomEvent, IonButton, IonInput } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { parseNumberInput } from '../../../@shared/util/app.utils';
 import { MinutesFromSecondsPipe } from '../../util/minutes-from-seconds.pipe';

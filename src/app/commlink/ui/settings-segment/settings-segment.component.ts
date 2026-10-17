@@ -10,12 +10,7 @@
  * heading on SYSOP weigh the same as the values under it.
  * ───────────────────────────────────────────────────────────────── */
 import { Component, input, output } from '@angular/core';
-import {
-  IonItem,
-  IonLabel,
-  IonListHeader,
-  IonSegment,
-} from '@ionic/angular/standalone';
+import { IonItem, IonLabel, IonListHeader, IonSegment } from '@ionic/angular';
 import type { SegmentCustomEvent } from '@ionic/core';
 import { TranslatePipe } from '@ngx-translate/core';
 

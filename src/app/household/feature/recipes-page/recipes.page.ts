@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { IonNote } from '@ionic/angular/standalone';
+import { IonNote } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { addOutline, removeOutline } from 'ionicons/icons';

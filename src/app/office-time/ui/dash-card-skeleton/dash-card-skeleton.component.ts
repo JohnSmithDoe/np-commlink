@@ -5,7 +5,7 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonSkeletonText,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 
 @Component({
   selector: 'app-dash-card-skeleton',

@@ -1,10 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonIcon,
-} from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { diceOutline, trashOutline } from 'ionicons/icons';

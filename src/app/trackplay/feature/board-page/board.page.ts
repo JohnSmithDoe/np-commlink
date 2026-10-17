@@ -8,7 +8,7 @@ import {
   IonSegment,
   IonSegmentButton,
   IonTextarea,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {

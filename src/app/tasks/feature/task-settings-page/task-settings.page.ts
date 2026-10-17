@@ -7,12 +7,7 @@
  * mirrors it; see decisions.md.
  * ───────────────────────────────────────────────────────────────── */
 import { Component, computed, inject } from '@angular/core';
-import {
-  IonContent,
-  IonItem,
-  IonList,
-  IonListHeader,
-} from '@ionic/angular/standalone';
+import { IonContent, IonItem, IonList, IonListHeader } from '@ionic/angular';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';

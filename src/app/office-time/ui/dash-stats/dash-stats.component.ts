@@ -4,7 +4,7 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { DashboardStats } from '../../model/office-time.types';
 import { DashPercentageComponent } from '../dash-percentage/dash-percentage.component';
 import { TranslatePipe } from '@ngx-translate/core';

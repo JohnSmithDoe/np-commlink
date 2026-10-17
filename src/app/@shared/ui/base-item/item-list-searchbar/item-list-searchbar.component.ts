@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { IonSearchbar, SearchbarCustomEvent } from '@ionic/angular/standalone';
+import { IonSearchbar, SearchbarCustomEvent } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({

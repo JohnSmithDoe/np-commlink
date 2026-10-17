@@ -16,7 +16,7 @@ import { ListPageComponent } from '../../../@shared/feature/item-lists/list-page
 import { TrackingFacade, TrackingListPageFacade } from '../../data';
 import { DailySessionsComponent } from '../../smart-ui/daily-sessions/daily-sessions.component';
 
-import { IonButton, IonIcon, ViewWillEnter } from '@ionic/angular/standalone';
+import { IonButton, IonIcon, ViewWillEnter } from '@ionic/angular';
 import { TrackingItemComponent } from '../../ui/tracking-item/tracking-item.component';
 import { EditTrackingSessionDialogComponent } from '../edit-tracking-session-dialog/edit-tracking-session-dialog.component';
 import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/edit-tracking-item-dialog.component';

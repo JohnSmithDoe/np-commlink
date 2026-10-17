@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ParseResult } from '@angular/forms/signals';
-import { IonInput, IonItem } from '@ionic/angular/standalone';
+import { IonInput, IonItem } from '@ionic/angular';
 import { Language } from '../../../@shared/model/app.types';
 import { BaseDecimalInput } from '../../../@shared/ui/forms/base-decimal-input';
 import { gramsToInput, inputToGrams } from '../../util/weight.utils';

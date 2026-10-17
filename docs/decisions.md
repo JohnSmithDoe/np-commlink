@@ -338,6 +338,14 @@ The workflow file documents what it does. Two decisions are not visible there:
   access, any later workflow edit, and every third-party action sharing the job. **Automate up to the
   trust boundary and stop** — the same instinct that put Pages on a short-lived OIDC token.
 
+## Dependencies
+
+- **Angular, its cli and builder, angular-eslint, NgRx and TypeScript move in one commit or not at all.**
+  Their peer ranges pin each other to one major, so a half-moved set does not install; `ng update` takes
+  them in one invocation. Owed again at 23.
+- **A major's migration opt-outs come out in the commit after it**, not with it — the lockstep commit
+  stays a pure upgrade, and the clean-up is reviewable on its own.
+
 ## The shared list page
 
 Every `BaseItem` list renders `ListPageComponent`.

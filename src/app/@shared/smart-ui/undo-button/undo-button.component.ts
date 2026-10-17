@@ -9,7 +9,7 @@
  * navigate away before the entry is pushed.
  * ───────────────────────────────────────────────────────────────── */
 import { Component, computed, inject, input } from '@angular/core';
-import { IonButton, IonIcon } from '@ionic/angular/standalone';
+import { IonButton, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { arrowUndoOutline } from 'ionicons/icons';

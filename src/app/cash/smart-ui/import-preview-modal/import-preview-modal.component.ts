@@ -12,7 +12,7 @@ import {
   IonTitle,
   IonToolbar,
   ModalController,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
 import { CashImportFacade } from '../../data';

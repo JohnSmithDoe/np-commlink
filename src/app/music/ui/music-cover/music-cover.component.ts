@@ -8,7 +8,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { IonIcon } from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { discOutline } from 'ionicons/icons';
 import { CoverLoader, CoverRef } from '../../model/music.types';

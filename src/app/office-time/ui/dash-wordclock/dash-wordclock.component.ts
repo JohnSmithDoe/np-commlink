@@ -4,7 +4,7 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { WordclockComponent } from '../wordclock/wordclock.component';
 import { WordclockSettings } from '../../util/wordclock.utils';
 

@@ -52,8 +52,7 @@ recurrence ladder wrote the first rung, so they copy it rather than invent one.
   inside it.
   `@angular/aria` does exactly that — `ngToolbar` / `ngToolbarWidget` carry the roving tabindex, and the
   state binding loses its `attr.` prefix and its ternary because the directive declares `aria-pressed` as
-  a typed input (`[aria-pressed]="bold.selected()"`). Gated on Angular 22, which is gated on NgRx; see
-  [state.md](./state.md).
+  a typed input (`[aria-pressed]="bold.selected()"`). Ungated: Angular 22 is in.
   **The cost is not the upgrade, it is the element.** Those directives target native elements, and every
   picker renders `app-option-chips`, whose chips are `ion-button` — which relocates a host's `aria-*` into
   its shadow root ([footguns.md](./footguns.md)), so a directive writing to the host would be writing to

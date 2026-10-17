@@ -1,11 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import {
-  IonButton,
-  IonChip,
-  IonIcon,
-  IonItem,
-  IonLabel,
-} from '@ionic/angular/standalone';
+import { IonButton, IonChip, IonIcon, IonItem, IonLabel } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeCircleOutline } from 'ionicons/icons';

@@ -15,12 +15,7 @@
  * ───────────────────────────────────────────────────────────────── */
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonIcon,
-} from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, settingsOutline } from 'ionicons/icons';

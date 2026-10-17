@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Platform } from '@ionic/angular/standalone';
+import { Platform } from '@ionic/angular';
 import { provideTranslateService } from '@ngx-translate/core';
 import { BLANK_TEXT, DUPLICATE_NAME } from '../../../util/forms/form-rules';
 import { ItemNameInputComponent } from './item-name-input.component';

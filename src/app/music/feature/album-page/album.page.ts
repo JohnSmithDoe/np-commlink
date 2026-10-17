@@ -1,11 +1,6 @@
 import { Component, computed, inject, resource } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonFooter,
-  IonIcon,
-} from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonFooter, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, playOutline } from 'ionicons/icons';

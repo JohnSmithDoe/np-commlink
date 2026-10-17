@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SearchbarCustomEvent } from '@ionic/angular/standalone';
+import { SearchbarCustomEvent } from '@ionic/angular';
 import { Category, CategoryId } from '../../../model/category.types';
 import { mockCategory } from '../../../testing/test-data';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';

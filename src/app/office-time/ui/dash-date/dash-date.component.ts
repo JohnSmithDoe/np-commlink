@@ -4,7 +4,7 @@ import {
   IonCardContent,
   IonCardHeader,
   IonCardTitle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { localizedLongDate } from '../../../@shared/util/formatting/date-format.utils';

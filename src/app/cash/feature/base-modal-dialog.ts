@@ -7,7 +7,7 @@ import {
   untracked,
 } from '@angular/core';
 import { form, SchemaPathTree } from '@angular/forms/signals';
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController } from '@ionic/angular';
 
 export abstract class BaseModalDialog<TEntity, TForm extends object> {
   readonly #modalCtrl = inject(ModalController);

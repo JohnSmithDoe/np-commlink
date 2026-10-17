@@ -10,7 +10,7 @@ import {
   IonCheckbox,
   IonItem,
   IonList,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { Player, TrackplayId } from '../../model/trackplay.types';
 
 @Component({

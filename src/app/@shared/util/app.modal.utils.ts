@@ -1,4 +1,4 @@
-import { ModalController, ModalOptions } from '@ionic/angular/standalone';
+import { ModalController, ModalOptions } from '@ionic/angular';
 
 export const presentModal = async (
   modalCtrl: ModalController,

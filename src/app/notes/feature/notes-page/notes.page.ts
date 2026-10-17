@@ -6,7 +6,7 @@
 
 import { Component, computed, inject, signal } from '@angular/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
-import { IonNote, IonThumbnail } from '@ionic/angular/standalone';
+import { IonNote, IonThumbnail } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { addOutline, expandOutline, pin, removeOutline } from 'ionicons/icons';

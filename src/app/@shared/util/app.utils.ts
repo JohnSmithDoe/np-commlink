@@ -1,7 +1,4 @@
-import {
-  InputCustomEvent,
-  ReorderEndCustomEvent,
-} from '@ionic/angular/standalone';
+import { InputCustomEvent, ReorderEndCustomEvent } from '@ionic/angular';
 import { IonDragEvent } from '../model/app.types';
 import { BaseItem } from '../model/base-item.types';
 

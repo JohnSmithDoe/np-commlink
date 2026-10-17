@@ -46,7 +46,7 @@ import {
   IonToast,
   IonToolbar,
   ToastButton,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { APP_WORDMARK } from './@shared/model/app.consts';

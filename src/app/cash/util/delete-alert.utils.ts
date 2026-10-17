@@ -1,4 +1,4 @@
-import { AlertOptions } from '@ionic/angular/standalone';
+import { AlertOptions } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 

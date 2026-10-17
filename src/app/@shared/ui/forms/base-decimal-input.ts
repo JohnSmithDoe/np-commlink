@@ -15,7 +15,7 @@ import {
   ParseResult,
   transformedValue,
 } from '@angular/forms/signals';
-import { InputCustomEvent } from '@ionic/angular/standalone';
+import { InputCustomEvent } from '@ionic/angular';
 import { Language } from '../../model/app.types';
 import { APP_LANGUAGE } from '../../util/theme/language.boot';
 

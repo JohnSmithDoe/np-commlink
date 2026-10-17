@@ -10,7 +10,7 @@ import {
   IonNote,
   IonPopover,
   IonText,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import {

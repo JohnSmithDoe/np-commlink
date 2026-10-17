@@ -6,7 +6,7 @@ import {
   IonList,
   IonListHeader,
   IonNote,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HANDBOOK_GROUP_LABEL } from '../../model/handbook.consts';
 import { HandbookGroupView } from '../../util/handbook-content';

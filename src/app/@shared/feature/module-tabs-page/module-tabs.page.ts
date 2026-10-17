@@ -11,12 +11,7 @@
  * ───────────────────────────────────────────────────────────────── */
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {
-  IonIcon,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-} from '@ionic/angular/standalone';
+import { IonIcon, IonTabBar, IonTabButton, IonTabs } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PROGRAM_CONTEXT } from '../../util/program-context.token';
 import { routeUrl } from '../../util/route-url';

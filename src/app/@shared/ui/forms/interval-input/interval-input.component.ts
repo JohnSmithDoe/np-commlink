@@ -24,7 +24,7 @@ import {
   IonSegment,
   IonSegmentButton,
   SegmentCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IsoMonth, IsoWeekday, Marker } from '../../../model/app.types';
 import {

@@ -1,11 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import {
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-} from '@ionic/angular/standalone';
+import { IonItem, IonLabel, IonList, IonListHeader } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { HandbookHit } from '../../util/handbook-search';
 import { HandbookTitleComponent } from '../handbook-title/handbook-title.component';

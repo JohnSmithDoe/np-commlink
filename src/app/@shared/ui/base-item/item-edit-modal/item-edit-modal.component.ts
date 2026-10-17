@@ -21,7 +21,7 @@ import {
   IonList,
   IonModal,
   IonToolbar,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import { ItemNameInputComponent } from '../../forms/item-name-input/item-name-input.component';

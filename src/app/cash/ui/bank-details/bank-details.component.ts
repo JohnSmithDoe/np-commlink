@@ -15,7 +15,7 @@ import {
   IonItem,
   IonLabel,
   IonNote,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Marker } from '../../../@shared/model/app.types';
 import {

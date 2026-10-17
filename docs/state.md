@@ -78,6 +78,8 @@ recognise them: clear the cash slice there rather than reading the duplicate cou
   notification. Only a phone can show the screen-off run on Wi-Fi, the lock screen, surviving a swipe-away,
   and an internet server behind TLS. `media3Version` in `android/variables.gradle` is unverified against
   the latest release.
+- **The APK has not run on a device since Capacitor 8.5 and Ionic 9.** `apk:build` syncs and every
+  postsync patch applies; `pnpm run apk:debug` on a phone is the check left.
 
 ## Handbook figures flagged stale
 
@@ -97,15 +99,9 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
 
 ## Waiting on upstream
 
-- **Angular 22 is gated on NgRx.** On `21.2.18` (`v21-lts`, supported, not urgent); `@ngrx/*` latest is
-  `21.1.1` peering `@angular/core: ^21.0.0`, `next` only `22.0.0-beta.0`. **Bump when `@ngrx/*@22` is stable.**
-  - **Lockstep, one atomic commit or none:** `@angular/*` + `@angular/cli` + `@angular/build` +
-    `angular-eslint` + `@ngrx/*`. Peer ranges are mutually exclusive across the v21/v22 boundary and
-    Angular's intra-family peers are **exact**, so one held-back member pins the set.
-  - Already compatible: `@ionic/angular` 8.8.x, `@ionic/storage-angular`, `ng2-charts` 9, `@ngx-translate/*` 18, Sheriff.
-  - Run `ng update @angular/core@22 @angular/cli@22`; never hand-edit `package.json`. Its own commit.
-  - **`@angular/aria` unlocks with it** — published `22.1.7`, peering `@angular/core: ^22.0.0 || ^23.0.0`,
-    with no 21.x line. What it would be adopted FOR is scheduled in [next-version.md](./next-version.md).
+- **TypeScript 7 (the native compiler) is gated on Angular.** Angular, typescript-eslint and
+  `@ionic/angular-toolkit` all cap TypeScript `<6.1`. None of the options TS 6 deprecates for removal in 7
+  is set here.
 
 ## Open defects
 
@@ -118,6 +114,10 @@ Figures are shot at a 393px viewport, so an over-capacity toolbar shows in them.
   chrome in the app.
 
 ## Known cost, not yet paid
+
+- **The initial bundle sits over its 1.6 MB warning** — 1.67 MB after Angular 22 and Ionic 9, under the
+  1.9 MB error. `@ionic/core` is 1.07 MB of it; the root `@ionic/angular` entry is `sideEffects: false`,
+  so the weight is Ionic's own, not an import shape.
 
 - **The function-coverage floor clears by 0.34 points** (80.34% against 80 at v1.5.0). A floor on the
   aggregate lets one well-tested domain hide an untested one, so the next untested feature reds it again.

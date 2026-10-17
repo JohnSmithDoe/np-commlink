@@ -6,7 +6,7 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonDatetime,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { OfficeTimeFacade } from '../../data';
 import {

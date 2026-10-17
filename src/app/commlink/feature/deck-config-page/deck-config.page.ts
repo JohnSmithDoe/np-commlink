@@ -15,7 +15,7 @@ import {
   IonSegmentButton,
   IonToggle,
   ReorderEndCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { NgTemplateOutlet } from '@angular/common';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';
 import { TranslatePipe } from '@ngx-translate/core';

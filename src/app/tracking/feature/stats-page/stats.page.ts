@@ -8,7 +8,7 @@ import {
   IonList,
   IonSelect,
   IonSelectOption,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { ellipse, squareOutline, triangle } from 'ionicons/icons';
 import { marker } from '@colsen1991/ngx-translate-extract-marker';

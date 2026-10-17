@@ -1,11 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import {
-  IonContent,
-  IonIcon,
-  IonRouterLinkWithHref,
-} from '@ionic/angular/standalone';
+import { IonContent, IonIcon, IonRouterLinkWithHref } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { hardwareChipOutline, optionsOutline } from 'ionicons/icons';

@@ -14,7 +14,7 @@ import {
   IonReorderGroup,
   IonToolbar,
   ReorderEndCustomEvent,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { IonColor } from '../../../model/app.types';
 import { BaseItem } from '../../../model/base-item.types';
 import { Category } from '../../../model/category.types';

@@ -8,12 +8,7 @@
 
 import { Component, inject } from '@angular/core';
 import { FormField, SchemaPathTree, validate } from '@angular/forms/signals';
-import {
-  IonInput,
-  IonItem,
-  IonNote,
-  IonToggle,
-} from '@ionic/angular/standalone';
+import { IonInput, IonItem, IonNote, IonToggle } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BaseEditItemDialog } from '../../../@shared/feature/item-lists/edit-item-dialog/base-edit-item-dialog';
 import { IsoWeekday } from '../../../@shared/model/app.types';

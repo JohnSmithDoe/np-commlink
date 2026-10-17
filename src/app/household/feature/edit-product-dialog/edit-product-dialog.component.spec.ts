@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SelectCustomEvent } from '@ionic/angular/standalone';
+import { SelectCustomEvent } from '@ionic/angular';
 import { MockStore } from '@ngrx/store/testing';
 import {
   mockHouseholdState,

@@ -1,6 +1,6 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IonList } from '@ionic/angular/standalone';
+import { IonList } from '@ionic/angular';
 import { IonDragEvent } from '../../model/app.types';
 import { BaseSwipeRow, StartSwipeAction } from './base-swipe-row';
 

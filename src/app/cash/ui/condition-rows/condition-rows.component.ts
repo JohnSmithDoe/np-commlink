@@ -9,7 +9,7 @@ import {
   IonSelect,
   IonSelectOption,
   IonToggle,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { closeOutline } from 'ionicons/icons';

@@ -12,7 +12,7 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import { Component, computed, inject, signal } from '@angular/core';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonIcon } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { discOutline, refreshOutline } from 'ionicons/icons';

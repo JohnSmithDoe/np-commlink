@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
  * Extra Vitest config merged in by the `@angular/build:unit-test` builder
  * (wired via `runnerConfig` in angular.json).
  *
- * Why this exists: `@ionic/angular/standalone` re-exports its components with
+ * Why this exists: `@ionic/angular` re-exports its components with
  * directory imports of `@ionic/core/components/*`, which Vitest's Node-ESM
  * resolver rejects (`Directory import ... is not supported`). Inlining Ionic,
  * Stencil and ionicons lets Vite/esbuild bundle them, so those imports resolve

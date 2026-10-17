@@ -12,11 +12,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {
-  InputCustomEvent,
-  IonButton,
-  IonInput,
-} from '@ionic/angular/standalone';
+import { InputCustomEvent, IonButton, IonInput } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Language, LOCALE_BY_LANGUAGE } from '../../../@shared/model/app.types';
 import { APP_LANGUAGE } from '../../../@shared/util/theme/language.boot';

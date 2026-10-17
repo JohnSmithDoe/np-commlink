@@ -7,7 +7,7 @@ import {
   IonItemSliding,
   IonLabel,
   IonNote,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DataItem, TrackingViewId } from '../../model/tracking.types';
 import { TrackingTimePipe } from '../../util/tracking-time.pipe';

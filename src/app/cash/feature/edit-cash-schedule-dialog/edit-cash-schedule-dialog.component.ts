@@ -23,7 +23,7 @@ import {
   IonSegmentButton,
   IonSelect,
   IonSelectOption,
-} from '@ionic/angular/standalone';
+} from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import dayjs from 'dayjs';
 import { addIcons } from 'ionicons';

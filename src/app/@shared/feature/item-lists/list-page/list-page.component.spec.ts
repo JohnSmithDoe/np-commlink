@@ -1,6 +1,6 @@
 import { signal, TemplateRef, WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { InfiniteScrollCustomEvent } from '@ionic/angular/standalone';
+import { InfiniteScrollCustomEvent } from '@ionic/angular';
 import { COMMON_TEST_PROVIDERS } from '../../../testing/test-providers';
 import {
   LIST_FACADE,

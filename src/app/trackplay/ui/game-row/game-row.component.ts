@@ -9,7 +9,7 @@
  * ───────────────────────────────────────────────────────────────── */
 import { DatePipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { IonList, IonNote } from '@ionic/angular/standalone';
+import { IonList, IonNote } from '@ionic/angular';
 import { TranslatePipe } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import { createOutline, playCircle } from 'ionicons/icons';

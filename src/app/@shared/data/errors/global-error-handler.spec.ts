@@ -1,6 +1,6 @@
 import { ErrorDetails } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AlertController } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AppReloadService } from '../service-worker/app-reload.service';
 import { GlobalErrorHandler } from './global-error-handler';

@@ -1,7 +1,7 @@
 import { Component, ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { IonRouterOutlet, IonTabBar, IonTabs } from '@ionic/angular/standalone';
+import { IonRouterOutlet, IonTabBar, IonTabs } from '@ionic/angular';
 import { COMMON_TEST_PROVIDERS } from '../testing/test-providers';
 
 @Component({ template: '{{ boom() }}' })
