@@ -1,7 +1,6 @@
 /* ─── why ─────────────────────────────────────────────────────────
- * `uniqueName` is off because a rule's name is a label the user may
- * leave blank — it then takes its target category's name, and two rules
- * filing into the same category are a normal thing to want.
+ * `uniqueName` is off because two rules filing into the same category
+ * are a normal thing to want, and so is giving them the same label.
  *
  * The form is not the entity because a stored condition threshold is a
  * canonical de-formatted string while the field shows the user's own

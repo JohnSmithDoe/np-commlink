@@ -47,8 +47,6 @@ pipeline never emits, and gaps exactly where the risk sits. Each suspected bug g
 
 - `dashboard.effects` "persists a report that arrives before this boot read" — no such gate exists;
   the body repeats the test above it.
-- `edit-cash-rule-dialog` "refuses a blank name" contradicts the component's banner and the
-  `rule.name || categoryName` fallback — one of them is wrong.
 - `tasks.selector` sorts by `dueAt`; the app only offers `nextDueAt`.
 - `office-time.reducer` tests `addFreeday`, which nothing dispatches — delete test and action.
   `office-time.effects` "has no failure path left" asserts an undefined key.

@@ -38,7 +38,7 @@
 >
   <app-list-item
     [item]="item"
-    [title]="item.name || categoryName(item.categoryId)"
+    [title]="item.name"
     [ionList]="ionList"
     [reorderable]="reorderable"
     (selectItem)="facade.showEditDialog(item)"

@@ -106,7 +106,7 @@ export class CashRulesPage {
         headerKey: marker('cash.rule.delete.header'),
         messageKey: marker('cash.rule.delete.message'),
         messageParams: {
-          name: rule.name || this.categoryName(rule.categoryId),
+          name: rule.name,
         },
         onConfirm: () => this.facade.removeItem(rule),
       })
