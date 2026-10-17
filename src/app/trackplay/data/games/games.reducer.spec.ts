@@ -17,15 +17,11 @@ import { gamesReducer } from './games.reducer';
 
 const AT = '2026-05-01T08:00:00.000Z';
 
-const roundsOf = (state: ReturnType<typeof gamesReducer>, gameId: string) =>
-  state.items.find((game) => game.id === gameId)?.rounds ?? [];
+const roundsOf = (state: ReturnType<typeof gamesReducer>) =>
+  state.items.find((game) => game.id === 'g')?.rounds ?? [];
 
-const valuesOf = (
-  state: ReturnType<typeof gamesReducer>,
-  gameId: string,
-  roundId: string
-) =>
-  roundsOf(state, gameId).find((round) => round.id === roundId)?.values ?? {};
+const firstRoundValues = (state: ReturnType<typeof gamesReducer>) =>
+  roundsOf(state).find((round) => round.id === 'r0')?.values ?? {};
 
 describe('gamesReducer', () => {
   it('appends a trailing blank round on entering a game', () => {
@@ -35,8 +31,8 @@ describe('gamesReducer', () => {
 
     const state = gamesReducer(start, GamesActions.enterGamePage('g', 'r0'));
 
-    expect(roundsOf(state, 'g').map((round) => round.id)).toEqual(['r0']);
-    expect(valuesOf(state, 'g', 'r0')).toEqual({});
+    expect(roundsOf(state).map((round) => round.id)).toEqual(['r0']);
+    expect(firstRoundValues(state)).toEqual({});
   });
 
   it('adds no second blank round when the game already ends in one', () => {
@@ -72,8 +68,8 @@ describe('gamesReducer', () => {
       GamesActions.setRoundValue('g', 'r0', 'p1', 20, AT, 'r1')
     );
 
-    expect(valuesOf(state, 'g', 'r0')['p1']).toBe(20);
-    expect(roundsOf(state, 'g').map((round) => round.id)).toEqual(['r0', 'r1']);
+    expect(firstRoundValues(state)['p1']).toBe(20);
+    expect(roundsOf(state).map((round) => round.id)).toEqual(['r0', 'r1']);
     expect(state.items[0].updatedAt).toBe(AT);
   });
 
@@ -111,8 +107,8 @@ describe('gamesReducer', () => {
       GamesActions.setRoundValue('g', 'r0', 'p1', 7, AT, 'r2')
     );
 
-    expect(roundsOf(state, 'g').map((round) => round.id)).toEqual(['r0', 'r1']);
-    expect(valuesOf(state, 'g', 'r0')['p1']).toBe(7);
+    expect(roundsOf(state).map((round) => round.id)).toEqual(['r0', 'r1']);
+    expect(firstRoundValues(state)['p1']).toBe(7);
   });
 
   it('returns the same state for an unchanged cell or an unknown target', () => {

@@ -26,42 +26,49 @@ export const initialState: TrackingState = {
 const stopOtherItem = (
   listItem: TrackingItem,
   now: Timestamp
-): TrackingItem => ({
-  ...listItem,
-  state: 'stopped',
-  breakTime: listItem.state === 'running' ? now : listItem.breakTime,
-});
+): TrackingItem => {
+  return {
+    ...listItem,
+    state: 'stopped',
+    breakTime: listItem.state === 'running' ? now : listItem.breakTime,
+  };
+};
 
 const accruedBreakSeconds = (
   listItem: TrackingItem,
   now: Timestamp
 ): number => {
   const before = listItem.breakInSeconds ?? 0;
-  if (!listItem.breakTime) return before;
-  return before + dayjs(now).diff(dayjs(listItem.breakTime), 'seconds');
+  return listItem.breakTime
+    ? before + dayjs(now).diff(dayjs(listItem.breakTime), 'seconds')
+    : before;
 };
 
-const resumeItem = (listItem: TrackingItem, now: Timestamp): TrackingItem => ({
-  ...listItem,
-  state: 'running',
-  startTime: listItem.startTime ?? now,
-  breakTime: undefined,
-  breakInSeconds: accruedBreakSeconds(listItem, now),
-  trackedTimeInSeconds: listItem.trackedTimeInSeconds ?? 0,
-});
+const resumeItem = (listItem: TrackingItem, now: Timestamp): TrackingItem => {
+  return {
+    ...listItem,
+    state: 'running',
+    startTime: listItem.startTime ?? now,
+    breakTime: undefined,
+    breakInSeconds: accruedBreakSeconds(listItem, now),
+    trackedTimeInSeconds: listItem.trackedTimeInSeconds ?? 0,
+  };
+};
 
 const startTracking = (
   state: TrackingState,
   item: TrackingItem,
   now: Timestamp
-): TrackingState => ({
-  ...state,
-  items: state.items.map((listItem) =>
-    listItem.id === item.id
-      ? resumeItem(listItem, now)
-      : stopOtherItem(listItem, now)
-  ),
-});
+): TrackingState => {
+  return {
+    ...state,
+    items: state.items.map((listItem) => {
+      return listItem.id === item.id
+        ? resumeItem(listItem, now)
+        : stopOtherItem(listItem, now);
+    }),
+  };
+};
 const resetTracking = (
   state: TrackingState,
   item?: TrackingItem
@@ -120,10 +127,12 @@ const byStartTime = (a: TrackingItem, b: TrackingItem): number =>
 const mergeSessions = (
   state: TrackingState,
   sessions: TrackingItem[]
-): TrackingState => ({
-  ...state,
-  sessions: [...state.sessions, ...sessions].toSorted(byStartTime),
-});
+): TrackingState => {
+  return {
+    ...state,
+    sessions: [...state.sessions, ...sessions].toSorted(byStartTime),
+  };
+};
 
 const archivedSessionId = (item: TrackingItem): string =>
   `${item.id}@${item.startTime}`;
@@ -131,11 +140,13 @@ const archivedSessionId = (item: TrackingItem): string =>
 const saveAndReset = (state: TrackingState): TrackingState => {
   const archived = state.items
     .filter((item) => !!item.startTime)
-    .map((item): TrackingItem => ({
-      ...item,
-      state: 'stopped',
-      id: archivedSessionId(item),
-    }));
+    .map((item): TrackingItem => {
+      return {
+        ...item,
+        state: 'stopped',
+        id: archivedSessionId(item),
+      };
+    });
   return mergeSessions(resetTracking(state), archived);
 };
 
@@ -161,24 +172,27 @@ export const trackingReducer = createReducer(
         : startTracking(state, item, now);
     }
   ),
-  on(TrackingActions.resetTracking, (state, { item }): TrackingState => {
-    return resetTracking(state, item);
-  }),
-  on(TrackingActions.resetAllTracking, (state): TrackingState => {
-    return resetTracking(state);
-  }),
-  on(TrackingActions.saveAndResetTracking, (state): TrackingState => {
-    return saveAndReset(state);
-  }),
-  on(TrackingActions.seedDemoSessions, (state, { sessions }): TrackingState => {
-    return mergeSessions(state, sessions);
-  }),
-  on(TrackingActions.updateTracking, (state, { item, now }): TrackingState => {
-    return updateTracking(state, item, now);
-  }),
+  on(TrackingActions.resetTracking, (state, { item }): TrackingState =>
+    resetTracking(state, item)
+  ),
+  on(TrackingActions.resetAllTracking, (state): TrackingState =>
+    resetTracking(state)
+  ),
+  on(TrackingActions.saveAndResetTracking, (state): TrackingState =>
+    saveAndReset(state)
+  ),
+  on(TrackingActions.seedDemoSessions, (state, { sessions }): TrackingState =>
+    mergeSessions(state, sessions)
+  ),
+  on(TrackingActions.updateTracking, (state, { item, now }): TrackingState =>
+    updateTracking(state, item, now)
+  ),
 
   on(TrackingActions.changeDataView, (state, { viewId }): TrackingState => {
-    return { ...state, sessionsViewId: viewId };
+    return {
+      ...state,
+      sessionsViewId: viewId,
+    };
   }),
 
   on(TrackingActions.removeDataItem, (state, { item }): TrackingState => {
@@ -189,12 +203,14 @@ export const trackingReducer = createReducer(
     };
   }),
 
-  on(TrackingActions.updateSession, (state, { session }): TrackingState => ({
-    ...state,
-    sessions: state.sessions
-      .map((stored) => (stored.id === session.id ? session : stored))
-      .toSorted(byStartTime),
-  })),
+  on(TrackingActions.updateSession, (state, { session }): TrackingState => {
+    return {
+      ...state,
+      sessions: state.sessions
+        .map((stored) => (stored.id === session.id ? session : stored))
+        .toSorted(byStartTime),
+    };
+  }),
 
   on(
     TrackingActions.updateSort,

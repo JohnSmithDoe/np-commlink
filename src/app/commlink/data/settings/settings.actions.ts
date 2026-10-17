@@ -18,10 +18,12 @@ export const SettingsActions = createActionGroup({
 
     setLanguage: (language: Language) => ({ language }),
 
-    setAccentColors: (skin: Skin, colors: AccentColors) => ({
-      skin,
-      colors,
-    }),
+    setAccentColors: (skin: Skin, colors: AccentColors) => {
+      return {
+        skin,
+        colors,
+      };
+    },
     resetAccentColors: (skin: Skin) => ({ skin }),
   },
 });

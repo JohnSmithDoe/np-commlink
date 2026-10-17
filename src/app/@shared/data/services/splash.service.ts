@@ -17,19 +17,6 @@ export class SplashService {
   #revealed = false;
   #timer?: ReturnType<typeof setTimeout>;
 
-  armDeadline(): void {
-    this.#timer ??= setTimeout(() => this.reveal(), FALLBACK_MS);
-  }
-
-  reveal(): void {
-    if (this.#revealed) return;
-    this.#revealed = true;
-    if (this.#timer) clearTimeout(this.#timer);
-
-    this.#hideNativeLaunchScreen();
-    this.#fadeOutWebOverlay();
-  }
-
   #hideNativeLaunchScreen(): void {
     if (!Capacitor.isNativePlatform()) return;
     void SplashScreen.hide({ fadeOutDuration: NATIVE_FADE_MS }).catch(() => {});
@@ -43,6 +30,19 @@ export class SplashService {
     element.addEventListener('transitionend', remove, { once: true });
     setTimeout(remove, FADE_CEILING_MS);
     element.classList.add('app-splash--hidden');
+  }
+
+  armDeadline(): void {
+    this.#timer ??= setTimeout(() => this.reveal(), FALLBACK_MS);
+  }
+
+  reveal(): void {
+    if (this.#revealed) return;
+    this.#revealed = true;
+    if (this.#timer) clearTimeout(this.#timer);
+
+    this.#hideNativeLaunchScreen();
+    this.#fadeOutWebOverlay();
   }
 }
 

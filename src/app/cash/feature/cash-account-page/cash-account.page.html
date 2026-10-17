@@ -62,7 +62,7 @@
     [canDelete]="item.source === 'manual'"
     (selectItem)="facade.showEditDialog(item)"
     (startSwipe)="reconcileOrDetach(item)"
-    (deleteItem)="confirmDelete(item)"
+    (deletionRequested)="confirmDelete(item)"
   >
     <p itemDetails>
       {{ item.dateISO | localizedDate }}

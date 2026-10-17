@@ -18,19 +18,20 @@ export const addListItem = <T extends ItemList<R>, R extends BaseItem>(
   item: R
 ): T => {
   const name = item.name.trim();
-  if (name.length === 0) {
-    return state;
-  }
-  return { ...state, items: [item, ...state.items] };
+  return name.length === 0
+    ? state
+    : { ...state, items: [item, ...state.items] };
 };
 
 export const removeListItem = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
   item: R
-): T => ({
-  ...state,
-  items: state.items.filter((listItem) => listItem.id !== item.id),
-});
+): T => {
+  return {
+    ...state,
+    items: state.items.filter((listItem) => listItem.id !== item.id),
+  };
+};
 
 export const updateListItem = <T extends ItemList<R>, R extends BaseItem>(
   state: T,
@@ -59,18 +60,20 @@ export const updateListSort = <T extends { sort?: ItemListSort }>(
   state: T,
   sortBy?: ItemListSortType,
   requestedDirection?: ItemListSortDirection | 'keep' | 'toggle'
-): T => ({
-  ...state,
-  sort: sortBy
-    ? {
-        sortBy,
-        sortDirection: directionFor(
-          requestedDirection,
-          state.sort?.sortDirection
-        ),
-      }
-    : undefined,
-});
+): T => {
+  return {
+    ...state,
+    sort: sortBy
+      ? {
+          sortBy,
+          sortDirection: directionFor(
+            requestedDirection,
+            state.sort?.sortDirection
+          ),
+        }
+      : undefined,
+  };
+};
 
 export const hydratedList = <
   T extends { searchQuery?: string; filterBy?: string },

@@ -17,12 +17,14 @@ type FakeCanvas = {
   toDataURL: (type?: string, quality?: number) => string;
 };
 
-const fake2dContext = () => ({
-  translate: vi.fn(),
-  rotate: vi.fn(),
-  scale: vi.fn(),
-  drawImage: vi.fn(),
-});
+const fake2dContext = () => {
+  return {
+    translate: vi.fn(),
+    rotate: vi.fn(),
+    scale: vi.fn(),
+    drawImage: vi.fn(),
+  };
+};
 
 const givenScreen = (width = 400, height = 800) =>
   vi.stubGlobal('screen', { width, height });
@@ -30,15 +32,17 @@ const givenScreen = (width = 400, height = 800) =>
 const pickedFile = (name = 'badge.png') =>
   new File(['badge-bytes'], name, { type: 'image/png' });
 
-const list = (searchQuery?: string): NotesList => ({
-  id: NOTES_LIST_ID,
-  searchQuery,
-  items: [
-    { id: 'a', name: 'Einkauf', body: 'Milch und Brot' },
-    { id: 'b', name: 'Urlaub', body: 'Fähre buchen' },
-    { id: 'c', name: 'Ohne Text' },
-  ],
-});
+const list = (searchQuery?: string): NotesList => {
+  return {
+    id: NOTES_LIST_ID,
+    searchQuery,
+    items: [
+      { id: 'a', name: 'Einkauf', body: 'Milch und Brot' },
+      { id: 'b', name: 'Urlaub', body: 'Fähre buchen' },
+      { id: 'c', name: 'Ohne Text' },
+    ],
+  };
+};
 
 describe('notes.utils', () => {
   let canvas: FakeCanvas;
@@ -50,13 +54,15 @@ describe('notes.utils', () => {
     width: number,
     height: number,
     outcome: 'load' | 'error' = 'load'
-  ) =>
-    vi.stubGlobal(
+  ) => {
+    return vi.stubGlobal(
       'Image',
       class {
-        naturalWidth = width;
-        naturalHeight = height;
         readonly #handlers = new Map<string, (event: Event) => void>();
+
+        naturalWidth = width;
+
+        naturalHeight = height;
 
         addEventListener(type: string, handler: (event: Event) => void) {
           this.#handlers.set(type, handler);
@@ -70,6 +76,7 @@ describe('notes.utils', () => {
         }
       }
     );
+  };
 
   const givenCanvasContext = (context2d: unknown) => {
     canvas = {

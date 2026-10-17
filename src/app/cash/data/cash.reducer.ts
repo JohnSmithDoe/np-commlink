@@ -51,29 +51,36 @@ const perAggregate = combineReducers<CashState>({
 const withTransactions = (
   state: CashState,
   items: CashTransaction[]
-): CashState => ({
-  ...state,
-  transactions: { ...state.transactions, items },
-});
+): CashState => {
+  return {
+    ...state,
+    transactions: { ...state.transactions, items },
+  };
+};
 
-const withRules = (state: CashState, items: CashRule[]): CashState => ({
-  ...state,
-  rules: { ...state.rules, items },
-});
+const withRules = (state: CashState, items: CashRule[]): CashState => {
+  return {
+    ...state,
+    rules: { ...state.rules, items },
+  };
+};
 
-const withSchedules = (state: CashState, items: CashSchedule[]): CashState => ({
-  ...state,
-  schedules: { ...state.schedules, items },
-});
+const withSchedules = (state: CashState, items: CashSchedule[]): CashState => {
+  return {
+    ...state,
+    schedules: { ...state.schedules, items },
+  };
+};
 
 const remapScheduleCategory = (
   items: readonly CashSchedule[],
   from: string,
   to: string | undefined
-): CashSchedule[] =>
-  items.map((schedule) =>
+): CashSchedule[] => {
+  return items.map((schedule) =>
     schedule.categoryId === from ? { ...schedule, categoryId: to } : schedule
   );
+};
 
 const forgetManualWhenUncategorized = (
   txn: CashTransaction
@@ -92,10 +99,12 @@ const withoutOrphanRules = (state: CashState): CashState => {
 const cashCascade = createReducer(
   {} as CashState,
 
-  on(CashAccountsActions.removeItem, (state, { item }): CashState => ({
-    ...withTransactions(state, state.transactions.items.filter((txn) => txn.accountId !== item.id)),
-    accounts: removeListItem(state.accounts, item),
-  })),
+  on(CashAccountsActions.removeItem, (state, { item }): CashState => {
+    return {
+      ...withTransactions(state, state.transactions.items.filter((txn) => txn.accountId !== item.id)),
+      accounts: removeListItem(state.accounts, item),
+    };
+  }),
 
   on(CashTransactionsActions.removeItem, (state, { item }): CashState => {
     const groupId = state.transactions.items.find((txn) => txn.id === item.id)?.transferGroupId;
@@ -104,34 +113,28 @@ const cashCascade = createReducer(
     ));
   }),
 
-  on(CashCategoriesActions.removeItem, (state, { item }): CashState => ({
-    ...withSchedules(
-      withRules(
-        withTransactions(
-          state,
-          dropCategoryRef(state.transactions.items, item.id).map((txn) => forgetManualWhenUncategorized(txn))
-        ),
-        state.rules.items.filter((rule) => rule.categoryId !== item.id)
-      ),
-      remapScheduleCategory(state.schedules.items, item.id, undefined)
-    ),
-    categories: removeFromCatalog(state.categories, item.id),
-  })),
+  on(CashCategoriesActions.removeItem, (state, { item }): CashState => {
+    const transactions = dropCategoryRef(state.transactions.items, item.id).map((txn) => forgetManualWhenUncategorized(txn));
+    const rules = state.rules.items.filter((rule) => rule.categoryId !== item.id);
+    const schedules = remapScheduleCategory(state.schedules.items, item.id, undefined);
+    return {
+      ...withSchedules(withRules(withTransactions(state, transactions), rules), schedules),
+      categories: removeFromCatalog(state.categories, item.id),
+    };
+  }),
 
   on(CashCategoriesActions.updateItem, (state, { item }): CashState => {
     const { catalog, mergedInto } = renameInCatalog(state.categories, item.id, item.name ?? '');
-    const next = mergedInto
-      ? withSchedules(
-          withRules(
-            withTransactions(state, remapCategoryRef(state.transactions.items, item.id, mergedInto)),
-            state.rules.items.map((rule): CashRule =>
-              rule.categoryId === item.id ? { ...rule, categoryId: mergedInto } : rule
-            )
-          ),
-          remapScheduleCategory(state.schedules.items, item.id, mergedInto)
-        )
-      : state;
-    return { ...next, categories: catalog };
+    if (!mergedInto) return { ...state, categories: catalog };
+    const transactions = remapCategoryRef(state.transactions.items, item.id, mergedInto);
+    const rules = state.rules.items.map((rule): CashRule =>
+      rule.categoryId === item.id ? { ...rule, categoryId: mergedInto } : rule
+    );
+    const schedules = remapScheduleCategory(state.schedules.items, item.id, mergedInto);
+    return {
+      ...withSchedules(withRules(withTransactions(state, transactions), rules), schedules),
+      categories: catalog,
+    };
   }),
 
   on(CashActions.loaded, (state): CashState => withoutOrphanRules(state))

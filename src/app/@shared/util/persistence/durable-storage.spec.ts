@@ -1,10 +1,11 @@
 import { readStoragePersistence } from './durable-storage';
 
-const withStorage = (storage: unknown) =>
-  Object.defineProperty(navigator, 'storage', {
+const withStorage = (storage: unknown) => {
+  return Object.defineProperty(navigator, 'storage', {
     value: storage,
     configurable: true,
   });
+};
 
 describe('readStoragePersistence', () => {
   afterEach(() => withStorage(undefined));

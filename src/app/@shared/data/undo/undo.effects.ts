@@ -31,14 +31,14 @@ export const undoEffects = {
     (actions$ = inject(Actions)) => {
       return actions$.pipe(
         ofType(UndoActions.pushed),
-        map(({ entry }) =>
-          NotificationsActions.toast({
+        map(({ entry }) => {
+          return NotificationsActions.toast({
             key: entry.toastKey ?? marker('undo.toast.deleted'),
             parameters: { name: entry.name },
             durationMs: UNDO_TOAST_MS,
             group: UNDO_TOAST_GROUP,
-          })
-        )
+          });
+        })
       );
     },
     { functional: true }

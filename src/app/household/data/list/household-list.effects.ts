@@ -152,10 +152,11 @@ export class HouseholdListEffects {
 export const householdRouteFilterEffects = {
   drilledFilter$: categoryFilterFromRoute(
     selectDrilledCategory,
-    ({ listId, categoryId }) =>
-      categoryId
+    ({ listId, categoryId }) => {
+      return categoryId
         ? HouseholdListActions.updateFilter(listId, categoryId)
-        : undefined
+        : undefined;
+    }
   ),
 };
 

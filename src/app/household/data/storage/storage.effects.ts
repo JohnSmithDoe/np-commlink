@@ -17,9 +17,7 @@ export class StorageEffects {
   copyFromShoppingList$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(StorageActions.addShoppingList),
-      map(({ items }) => {
-        return ShoppingActions.removeItems(items);
-      })
+      map(({ items }) => ShoppingActions.removeItems(items))
     );
   });
 

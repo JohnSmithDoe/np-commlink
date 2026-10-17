@@ -4,10 +4,13 @@ import { IonList } from '@ionic/angular/standalone';
 import { IonDragEvent } from '../../model/app.types';
 import { BaseSwipeRow, StartSwipeAction } from './base-swipe-row';
 
-const fakeIonList = () =>
-  ({ closeSlidingItems: vi.fn().mockResolvedValue(undefined) }) as unknown as {
+const fakeIonList = () => {
+  return {
+    closeSlidingItems: vi.fn().mockResolvedValue(undefined),
+  } as unknown as {
     closeSlidingItems: () => Promise<void>;
   } & IonList;
+};
 
 const dragEvent = (amount: number): IonDragEvent =>
   ({ detail: { amount, ratio: 0 } }) as IonDragEvent;
@@ -35,23 +38,23 @@ describe('BaseSwipeRow', () => {
   });
 
   it('closes the sliding items before emitting a delete request', async () => {
-    let emitted = false;
-    component.deleteItem.subscribe(() => (emitted = true));
+    let isEmitted = false;
+    component.deletionRequested.subscribe(() => (isEmitted = true));
 
     await component.emitDeleteItem();
 
     expect(ionList.closeSlidingItems).toHaveBeenCalled();
-    expect(emitted).toBe(true);
+    expect(isEmitted).toBe(true);
   });
 
   it('closes the sliding items before emitting the start action', async () => {
-    let emitted = false;
-    component.startSwipe.subscribe(() => (emitted = true));
+    let isEmitted = false;
+    component.startSwipe.subscribe(() => (isEmitted = true));
 
     await component.emitStartSwipe();
 
     expect(ionList.closeSlidingItems).toHaveBeenCalled();
-    expect(emitted).toBe(true);
+    expect(isEmitted).toBe(true);
   });
 
   it('routes an end-side drag to delete and a start-side drag to the start action', () => {

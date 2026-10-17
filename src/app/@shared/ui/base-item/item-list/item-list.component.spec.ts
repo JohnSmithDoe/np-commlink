@@ -4,10 +4,11 @@ import { ReorderEndCustomEvent } from '@ionic/angular/standalone';
 import { BaseItem } from '../../../model/base-item.types';
 import { ItemListComponent } from './item-list.component';
 
-const reorderEnd = (from: number, to: number): ReorderEndCustomEvent =>
-  ({
+const reorderEnd = (from: number, to: number): ReorderEndCustomEvent => {
+  return {
     detail: { from, to, complete: () => {} },
-  }) as unknown as ReorderEndCustomEvent;
+  } as unknown as ReorderEndCustomEvent;
+};
 
 const items = (...names: string[]): BaseItem[] =>
   names.map((name) => ({ id: name, name }));
@@ -33,7 +34,9 @@ describe('ItemListComponent', () => {
   it('reports the ids in the order the drag produced', () => {
     fixture.componentRef.setInput('items', items('a', 'b', 'c'));
     const reported: string[][] = [];
-    component.reorder.subscribe((ids) => reported.push(ids));
+    component.reorder.subscribe((ids) => {
+      reported.push(ids);
+    });
 
     component.onReorderEnd(reorderEnd(2, 0));
 
@@ -53,7 +56,7 @@ describe('ItemListComponent', () => {
     await fixture.whenStable();
 
     expect(
-      fixture.nativeElement.querySelector('ion-list ion-reorder-group')
+      fixture.nativeElement.querySelector(':scope ion-list ion-reorder-group')
     ).not.toBeNull();
   });
 });

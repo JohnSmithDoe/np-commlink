@@ -24,14 +24,14 @@ export class CashReportFacade {
 
   readonly scope = this.#scope.asReadonly();
 
-  readonly report = computed(() =>
-    reportFor(
+  readonly report = computed(() => {
+    return reportFor(
       this.#transactions(),
       this.#categories(),
       this.#scope(),
       this.#todayISO()
-    )
-  );
+    );
+  });
 
   readonly totals = computed(() => this.report().totals);
   readonly monthlyTotals = computed(() => this.report().monthly);

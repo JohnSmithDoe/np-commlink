@@ -29,28 +29,28 @@ export class CashBurndownFacade {
   readonly #transactions = this.#store.selectSignal(selectAllTransactions);
   readonly schedules = this.#store.selectSignal(selectScheduleItems);
 
-  readonly burndown = computed(() =>
-    burndownFor(
+  readonly burndown = computed(() => {
+    return burndownFor(
       this.#balanceCents(),
       this.#transactions(),
       this.schedules(),
       this.#todayISO()
-    )
-  );
+    );
+  });
 
   readonly monthSpends = computed(() =>
     spendsThisMonth(this.#transactions(), this.#todayISO())
   );
 
-  readonly overdue = computed(() =>
-    this.schedules().filter(
+  readonly overdue = computed(() => {
+    return this.schedules().filter(
       (schedule) => dueStatus(schedule, this.#todayISO()) === 'overdue'
-    )
-  );
+    );
+  });
 
-  readonly upcoming = computed(() =>
-    this.schedules()
+  readonly upcoming = computed(() => {
+    return this.schedules()
       .filter((schedule) => dueStatus(schedule, this.#todayISO()) !== 'overdue')
-      .toSorted((a, b) => a.nextDueISO.localeCompare(b.nextDueISO))
-  );
+      .toSorted((a, b) => a.nextDueISO.localeCompare(b.nextDueISO));
+  });
 }

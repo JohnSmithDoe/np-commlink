@@ -46,8 +46,8 @@ export const daysRemainingInMonth = (todayISO: string): number => {
 const isSpend = (txn: CashTransaction): boolean =>
   isHouseholdMoney(txn) && txn.amountCents < 0;
 
-const inBucket = (dateISO: string, bucket: string): boolean =>
-  dateISO.slice(0, bucket.length) === bucket;
+const isInBucket = (dateISO: string, bucket: string): boolean =>
+  dateISO.startsWith(bucket);
 
 const spentWithin = (
   transactions: readonly CashTransaction[],
@@ -57,7 +57,7 @@ const spentWithin = (
   const bucket = todayISO.slice(0, length);
   let spent = 0;
   for (const txn of transactions) {
-    if (!isSpend(txn) || !inBucket(txn.dateISO, bucket)) continue;
+    if (!isSpend(txn) || !isInBucket(txn.dateISO, bucket)) continue;
     spent += Math.abs(txn.amountCents);
   }
   return spent;
@@ -79,7 +79,7 @@ export const spendsThisMonth = (
 ): CashTransaction[] => {
   const month = todayISO.slice(0, MONTH_LENGTH);
   return transactions
-    .filter((txn) => isSpend(txn) && inBucket(txn.dateISO, month))
+    .filter((txn) => isSpend(txn) && isInBucket(txn.dateISO, month))
     .toSorted((a, b) => b.dateISO.localeCompare(a.dateISO));
 };
 

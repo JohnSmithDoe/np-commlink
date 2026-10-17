@@ -9,15 +9,16 @@ import { DicePool } from '../model/trackplay.types';
 
 type RandomSource = () => number;
 
-export const prefersStill = (): boolean =>
+export const isMotionReduced = (): boolean =>
   globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 export function withDie(
   dice: readonly DieFaces[],
   faces: DieFaces
 ): DieFaces[] {
-  if (dice.length >= DICE_MAX) return [...dice];
-  return [...dice, faces].toSorted((a, b) => a - b);
+  return dice.length >= DICE_MAX
+    ? [...dice]
+    : [...dice, faces].toSorted((a, b) => a - b);
 }
 
 export function withoutDieAt(
@@ -43,10 +44,12 @@ export function rollPool(
   pool: DicePool,
   random: RandomSource = Math.random
 ): PoolRoll {
-  const dice = pool.dice.map((faces): DieRoll => ({
-    faces,
-    value: rollDie(faces, random),
-  }));
+  const dice = pool.dice.map((faces): DieRoll => {
+    return {
+      faces,
+      value: rollDie(faces, random),
+    };
+  });
 
   return { dice, total: dice.reduce((sum, die) => sum + die.value, 0) };
 }

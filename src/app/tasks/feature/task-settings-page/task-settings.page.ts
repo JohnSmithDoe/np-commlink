@@ -58,21 +58,25 @@ export class TaskSettingsPage {
 
   readonly settings = this.#facade.settings;
 
-  readonly warnOptions = computed<ChipOption<TaskWarnShift>[]>(() =>
-    TASK_WARN_SHIFTS.map((shift) => ({
-      key: shift,
-      value: shift,
-      label: this.#translate.instant(WARN_LABELS[shift]),
-    }))
-  );
+  readonly warnOptions = computed<ChipOption<TaskWarnShift>[]>(() => {
+    return TASK_WARN_SHIFTS.map((shift) => {
+      return {
+        key: shift,
+        value: shift,
+        label: this.#translate.instant(WARN_LABELS[shift]),
+      };
+    });
+  });
 
-  readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() =>
-    ANCHOR_OPTIONS.map((anchor) => ({
-      key: anchor.value,
-      value: anchor.value,
-      label: this.#translate.instant(anchor.key),
-    }))
-  );
+  readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() => {
+    return ANCHOR_OPTIONS.map((anchor) => {
+      return {
+        key: anchor.value,
+        value: anchor.value,
+        label: this.#translate.instant(anchor.key),
+      };
+    });
+  });
 
   constructor() {
     addIcons({ optionsOutline });

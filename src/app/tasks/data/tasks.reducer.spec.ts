@@ -117,18 +117,14 @@ describe('tasksReducer', () => {
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {
-    const state = tasksReducer(
-      initialState,
-      TasksActions.loaded(
-        mockTasksState({
-          list: {
-            items: [mockTaskItem()],
-            searchQuery: 'stale',
-            filterBy: 'Chores',
-          },
-        })
-      )
-    );
+    const stale = mockTasksState({
+      list: {
+        items: [mockTaskItem()],
+        searchQuery: 'stale',
+        filterBy: 'Chores',
+      },
+    });
+    const state = tasksReducer(initialState, TasksActions.loaded(stale));
     expect(state.list.items).toHaveLength(1);
     expect(state.list.searchQuery).toBeUndefined();
     expect(state.list.filterBy).toBeUndefined();

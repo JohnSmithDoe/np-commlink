@@ -39,12 +39,17 @@ import { EditTrackingItemDialogComponent } from '../edit-tracking-item-dialog/ed
 })
 export class TrackingPage implements ViewWillEnter {
   readonly #list = inject(TrackingListPageFacade);
+
   readonly #tracking = inject(TrackingFacade);
+
   readonly #route = inject(ActivatedRoute);
+
   readonly #router = inject(Router);
 
   readonly total = this.#tracking.total;
+
   readonly items = this.#list.items;
+
   readonly isDev = isDevMode();
 
   constructor() {
@@ -58,21 +63,21 @@ export class TrackingPage implements ViewWillEnter {
     });
   }
 
-  ionViewWillEnter(): void {
-    this.#applyNotificationCommand();
-  }
-
   #applyNotificationCommand(): void {
     const queryParameters = this.#route.snapshot.queryParamMap;
-    const cmd = queryParameters.get('cmd');
+    const command = queryParameters.get('cmd');
     const target = queryParameters.get('target');
-    if (!cmd || !target) return;
-    this.#tracking.applyNotificationCommand(cmd, target);
+    if (!command || !target) return;
+    this.#tracking.applyNotificationCommand(command, target);
     void this.#router.navigate([], {
       relativeTo: this.#route,
       queryParams: {},
       replaceUrl: true,
     });
+  }
+
+  ionViewWillEnter(): void {
+    this.#applyNotificationCommand();
   }
 
   removeItem(item: TrackingItem) {
@@ -90,6 +95,7 @@ export class TrackingPage implements ViewWillEnter {
   resetAll() {
     this.#tracking.resetAll();
   }
+
   resetItem(item: TrackingItem) {
     this.#tracking.resetItem(item);
   }

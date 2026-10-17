@@ -50,27 +50,7 @@ export abstract class BaseEditItemDialog<
   T extends BaseItem,
   TForm extends { name: string } = T,
 > {
-  protected readonly host = inject(ItemDialogService);
   readonly #emojiRecents = inject(EmojiRecentsFacade);
-
-  protected abstract readonly listId: ItemListId;
-  abstract readonly siblings: Signal<readonly T[]>;
-  protected abstract save(item: T): void;
-  protected abstract blank(): T;
-
-  protected uniqueName(): boolean {
-    return true;
-  }
-
-  protected toForm(item: T): TForm {
-    return { ...item } as unknown as TForm;
-  }
-
-  protected fromForm(draft: TForm, seed: T): T {
-    return { ...seed, ...draft } as unknown as T;
-  }
-
-  protected extraRules?(path: SchemaPathTree<TForm>): void;
 
   readonly #request = computed<ItemDialogRequest<T> | null>(() => {
     const request = this.host.request();
@@ -81,6 +61,11 @@ export abstract class BaseEditItemDialog<
   readonly #editMode = computed<EditItemMode>(
     () => this.#request()?.editMode ?? 'update'
   );
+
+  protected readonly host = inject(ItemDialogService);
+
+  protected abstract readonly listId: ItemListId;
+  abstract readonly siblings: Signal<readonly T[]>;
 
   readonly isOpen = computed(() => this.#request() !== null);
   readonly isCreateMode = computed(() => this.#editMode() === 'create');
@@ -117,6 +102,27 @@ export abstract class BaseEditItemDialog<
     addIcons({ closeCircleOutline });
   }
 
+  #forgetFieldInteraction() {
+    this.form().reset();
+  }
+
+  protected abstract save(item: T): void;
+  protected abstract blank(): T;
+
+  protected uniqueName(): boolean {
+    return true;
+  }
+
+  protected toForm(item: T): TForm {
+    return { ...item } as unknown as TForm;
+  }
+
+  protected fromForm(draft: TForm, seed: T): T {
+    return { ...seed, ...draft } as unknown as T;
+  }
+
+  protected extraRules?(path: SchemaPathTree<TForm>): void;
+
   protected patch(partial: Partial<TForm>) {
     this.draft.update((draft) => ({ ...draft, ...partial }));
   }
@@ -135,10 +141,6 @@ export abstract class BaseEditItemDialog<
     this.#forgetFieldInteraction();
     this.host.close(this.listId);
   }
-
-  #forgetFieldInteraction() {
-    this.form().reset();
-  }
 }
 
 export abstract class BaseCategoryEditItemDialog<
@@ -151,6 +153,19 @@ export abstract class BaseCategoryEditItemDialog<
   readonly selectedCategories = computed<Category[]>(() =>
     categoriesByIds(this.draft().categoryIds, this.categories())
   );
+
+  #remapInDraft(from: CategoryId, to: CategoryId) {
+    const [remapped] = remapCategoryRef([this.draft()], from, to);
+    if (remapped) this.draft.set(remapped);
+  }
+
+  #dropFromDraft(categoryId: CategoryId) {
+    this.patch({
+      categoryIds: (this.draft().categoryIds ?? []).filter(
+        (id) => id !== categoryId
+      ),
+    } as Partial<T>);
+  }
 
   protected abstract addCategoryToCatalog(category: Category): void;
   protected abstract removeCategoryFromCatalog(categoryId: CategoryId): void;
@@ -186,18 +201,5 @@ export abstract class BaseCategoryEditItemDialog<
     const mergedInto = mergeTargetForRename(this.categories(), id, to);
     this.renameCategoryInCatalog(id, to);
     if (mergedInto) this.#remapInDraft(id, mergedInto);
-  }
-
-  #remapInDraft(from: CategoryId, to: CategoryId) {
-    const [remapped] = remapCategoryRef([this.draft()], from, to);
-    if (remapped) this.draft.set(remapped);
-  }
-
-  #dropFromDraft(categoryId: CategoryId) {
-    this.patch({
-      categoryIds: (this.draft().categoryIds ?? []).filter(
-        (id) => id !== categoryId
-      ),
-    } as Partial<T>);
   }
 }

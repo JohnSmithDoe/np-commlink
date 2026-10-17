@@ -10,23 +10,16 @@ CLAUDE.md row go with the last one. Versions and peer ranges are as read from th
 | --- | --- | --- |
 | Ionic (angular, core) + ionicons | 8.8 → 9.0, 7.4 → 8.1 | its own major — phase 7 |
 | Vitest + coverage-v8, jsdom | 4.1 → 5.0, 29 → 30 | Angular's builder 22 accepts Vitest `^4.0.8 \|\| ^5` |
-| ESLint, unicorn, Sheriff | 9.39 → 10.12, 65 → 78, 0.19 → 0.20 | unicorn 78 requires ESLint `>=10.4`; every other plugin accepts 10 |
 | ng2-charts | 9 → 11 | 11 requires Angular `>=22` |
 | ngx-translate-extract-marker | 2.0 → 3.0 | none |
 
 TypeScript stays on 6.0: **7.x is out of reach** — Angular, typescript-eslint and the Ionic toolkit all
 cap `<6.1`.
 
-Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 5–8
+Every phase is green on lint, test and build per commit, and on `verify:all` per phase. Phases 6–8
 are independent.
 
 Owed from the in-range bumps (Capacitor 8.5): `pnpm run apk:debug` on a device.
-
-## Phase 5 — ESLint 10
-
-- ESLint 10, unicorn 78, Sheriff 0.20; read each changelog.
-- Every new unicorn rule is adopted or switched off with its reason in `eslint.config.js`.
-- `pnpm run test:plugin`, and re-check that each "gate goes silently inert" footgun still fires.
 
 ## Phase 6 — Vitest 5
 

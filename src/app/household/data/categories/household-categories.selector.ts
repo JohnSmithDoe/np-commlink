@@ -37,11 +37,13 @@ export const selectHouseholdCategoriesListItems = createSelector(
     filterAndSortItemList(catalog, result)
 );
 
-const taggableItems = (state: HouseholdState) => [
-  ...state.products.items,
-  ...state.shopping.items,
-  ...state.storage.items,
-];
+const taggableItems = (state: HouseholdState) => {
+  return [
+    ...state.products.items,
+    ...state.shopping.items,
+    ...state.storage.items,
+  ];
+};
 
 export const selectHouseholdCountByCategory = createSelector(
   selectHouseholdState,
@@ -50,7 +52,8 @@ export const selectHouseholdCountByCategory = createSelector(
 
 export const selectHouseholdTaggedByCategory = createSelector(
   selectHouseholdState,
-  (state) =>
-    (categoryId: CategoryId): string[] =>
-      idsTaggedWith(taggableItems(state), categoryId)
+  (state) => {
+    return (categoryId: CategoryId): string[] =>
+      idsTaggedWith(taggableItems(state), categoryId);
+  }
 );

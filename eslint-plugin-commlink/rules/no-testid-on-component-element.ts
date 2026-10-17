@@ -20,6 +20,7 @@
 import type { Rule } from 'eslint';
 import {
   staticAttribute,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
@@ -42,7 +43,7 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
         if (!element.name.startsWith(COMPONENT_PREFIX)) return;
         const testid = staticAttribute(element, TESTID);
@@ -55,6 +56,6 @@ export const rule: Rule.RuleModule = {
           data: { element: element.name },
         });
       },
-    };
+    });
   },
 };

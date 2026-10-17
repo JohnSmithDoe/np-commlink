@@ -34,11 +34,11 @@ test.describe('uncaught errors', () => {
     await page.goto('/#/commlink');
     await expect(page.locator('app-page-commlink')).toBeVisible();
 
-    await page.evaluate(() =>
-      setTimeout(() => {
+    await page.evaluate(() => {
+      return globalThis.setTimeout(() => {
         throw new Error('boom from outside angular');
-      })
-    );
+      }, 0);
+    });
 
     await expect(alert(page)).toBeVisible();
     await expect(alert(page)).toContainText('boom from outside angular');
@@ -51,15 +51,15 @@ test.describe('uncaught errors', () => {
     await expect(page.locator('app-page-commlink')).toBeVisible();
 
     await page.evaluate(() => {
-      setTimeout(() => {
+      globalThis.setTimeout(() => {
         throw new Error('first');
-      });
-      setTimeout(() => {
+      }, 0);
+      globalThis.setTimeout(() => {
         throw new Error('second');
-      });
-      setTimeout(() => {
+      }, 0);
+      globalThis.setTimeout(() => {
         throw new Error('third');
-      });
+      }, 0);
     });
 
     await expect(alert(page)).toBeVisible();

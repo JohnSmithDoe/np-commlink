@@ -41,8 +41,8 @@ describe('HouseholdListEffects', () => {
   let actions$: Observable<Action>;
   let effects: HouseholdListEffects;
 
-  const setup = (household: Partial<HouseholdState> = {}) => {
-    const lists = mockHouseholdState(household);
+  const setup = () => {
+    const lists = mockHouseholdState();
     TestBed.configureTestingModule({
       providers: [
         HouseholdListEffects,
@@ -138,14 +138,13 @@ describe('the per-slice list flow', () => {
   let actions$: Observable<Action>;
 
   const setup = (household: Partial<HouseholdState> = {}) => {
+    const initialState = mockKernelState({
+      household: mockHouseholdState(household),
+    });
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: mockKernelState({
-            household: mockHouseholdState(household),
-          }),
-        }),
+        provideMockStore({ initialState }),
       ],
     });
   };

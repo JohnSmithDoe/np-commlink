@@ -25,10 +25,12 @@ import {
 const PILLS_PAGE = 'app-page-vitals-pills';
 const UPDATE_BUTTON = 'Übernehmen';
 
-const openPills = async (page: Page, name = 'Martin') => {
+const PROFILE_NAME = 'Martin';
+
+const openPills = async (page: Page) => {
   await gotoPage(page, 'vitals', PROFILES_PAGE);
-  await createProfile(page, name);
-  await openProfile(page, name);
+  await createProfile(page, PROFILE_NAME);
+  await openProfile(page, PROFILE_NAME);
   await pageRoot(page, PROFILE_PAGE).getByTestId('vitals-pills-link').click();
   await expect(pageRoot(page, PILLS_PAGE)).toBeVisible({ timeout: 15_000 });
 };

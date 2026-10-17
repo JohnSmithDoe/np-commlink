@@ -37,10 +37,14 @@ import { ShoppingActionSheetComponent } from '../../smart-ui/shopping-action-she
   providers: [{ provide: LIST_FACADE, useExisting: HouseholdListPageFacade }],
 })
 export class ShoppingPage {
-  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
-  readonly facade = inject(HouseholdListPageFacade);
   readonly #shopping = inject(ShoppingFacade);
+
+  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
+
+  readonly facade = inject(HouseholdListPageFacade);
+
   readonly state = this.#shopping.state;
+
   readonly startSwipeAction: StartSwipeAction = {
     labelKey: marker('household.a11y.buy-item'),
     icon: 'cart-outline',

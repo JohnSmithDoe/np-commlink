@@ -10,7 +10,7 @@
  * Loaded straight from TypeScript source — Node >= 22.18 strips types on
  * `require()` of a `.ts` file, with no flags and no build, which is what
  * lets eslint.config.js stay `.js` (the @angular-eslint builder resolves
- * only eslint.config.{js,mjs,cjs}). Two constraints follow: stripping
+ * only eslint.config.{js,mjs,CJS}). Two constraints follow: stripping
  * does not type-check, so `pnpm run lint` runs `tsc -p` first (see that
  * tsconfig's header), and every relative import must carry an explicit
  * `.ts` — an extensionless one fails at config load with

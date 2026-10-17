@@ -16,6 +16,7 @@
   "extends": "../../tsconfig.e2e.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/handbook",
+    "rootDir": "..",
     "types": ["node"]
   },
   "include": ["**/*.ts"],

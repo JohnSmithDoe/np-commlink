@@ -34,18 +34,22 @@ const missingIngredients = (
   recipe: Recipe,
   catalog: Map<string, Product>,
   stocked: Stocked
-): string[] =>
-  recipe.ingredients
+): string[] => {
+  return recipe.ingredients
     .filter((ingredient) =>
       isMissing(catalog.get(ingredient.productId), stocked)
     )
     .map((ingredient) =>
       missingLabel(ingredient, catalog.get(ingredient.productId))
     );
+};
 
-const byMissingThenName = (a: RecipeMatch, b: RecipeMatch): number =>
-  a.missing.length - b.missing.length ||
-  a.recipe.name.localeCompare(b.recipe.name);
+const byMissingThenName = (a: RecipeMatch, b: RecipeMatch): number => {
+  return (
+    a.missing.length - b.missing.length ||
+    a.recipe.name.localeCompare(b.recipe.name)
+  );
+};
 
 export const rankRecipesByMissing = (
   recipes: Recipe[],
@@ -55,10 +59,12 @@ export const rankRecipesByMissing = (
   const catalog = productsById(products);
   const stocked = stockedFrom(storageItems);
   return recipes
-    .map((recipe) => ({
-      recipe,
-      missing: missingIngredients(recipe, catalog, stocked),
-    }))
+    .map((recipe) => {
+      return {
+        recipe,
+        missing: missingIngredients(recipe, catalog, stocked),
+      };
+    })
     .toSorted(byMissingThenName);
 };
 

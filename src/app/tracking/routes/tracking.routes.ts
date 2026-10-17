@@ -14,26 +14,29 @@ export const trackingRoutes: Routes = [
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'timers',
             title: marker('page-title.tracking'),
-            loadComponent: () =>
-              import('../feature/tracking-page/tracking.page').then(
-                (m) => m.TrackingPage
-              ),
+            loadComponent: async () => {
+              const { TrackingPage } =
+                await import('../feature/tracking-page/tracking.page');
+              return TrackingPage;
+            },
           },
           {
             path: 'data',
             title: marker('page-title.data'),
-            loadComponent: () =>
-              import('../feature/stats-page/stats.page').then(
-                (m) => m.StatsPage
-              ),
+            loadComponent: async () => {
+              const { StatsPage } =
+                await import('../feature/stats-page/stats.page');
+              return StatsPage;
+            },
           },
         ],
       },

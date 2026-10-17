@@ -46,7 +46,7 @@ import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import { CashBankDetailsComponent } from '../../ui/bank-details/bank-details.component';
 import {
-  hasOtherErrorKind,
+  otherErrorKindPresent,
   requireParseableDate,
 } from '../../../@shared/util/forms/form-rules';
 import { CASH_TRANSACTIONS_LIST_ID } from '../../model/cash.types';
@@ -111,19 +111,32 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
   protected readonly listId: ItemListId = CASH_TRANSACTIONS_LIST_ID;
   readonly siblings = this.#facade.allItems;
 
-  protected override uniqueName(): boolean {
-    return false;
-  }
+  readonly amountInvalid = otherErrorKindPresent(
+    this.form.amountCents,
+    MISSING_AMOUNT
+  );
+
+  readonly canDerive = computed(() => {
+    const seed = this.seedItem();
+    return !!seed && this.siblings().some(({ id }) => id === seed.id);
+  });
 
   constructor() {
     super();
     addIcons({ funnelOutline, repeatOutline });
   }
 
-  readonly amountInvalid = hasOtherErrorKind(
-    this.form.amountCents,
-    MISSING_AMOUNT
-  );
+  #committed(): CashTransaction | undefined {
+    const seed = this.seedItem();
+    if (!seed || !this.canSave()) return seed;
+    const edited = this.fromForm(this.draft(), seed);
+    this.#facade.saveItem(edited);
+    return edited;
+  }
+
+  protected override uniqueName(): boolean {
+    return false;
+  }
 
   protected override extraRules(path: SchemaPathTree<TransactionForm>): void {
     validate(path.amountCents, ({ value }) =>
@@ -159,7 +172,7 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
     const status: CashTransactionStatus = draft.pending
       ? 'pending'
       : 'confirmed';
-    const reclassified = categoryId !== categoryIdOf(seed);
+    const isReclassified = categoryId !== categoryIdOf(seed);
     return {
       ...seed,
       name: draft.name.trim(),
@@ -167,18 +180,13 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
       dateISO: dayjs(draft.date).format(),
       status,
       categoryIds: categoryId ? [categoryId] : undefined,
-      categoryManual: reclassified || seed.categoryManual,
+      categoryManual: isReclassified || seed.categoryManual,
     };
   }
 
   protected save(item: CashTransaction): void {
     this.#facade.saveItem(item);
   }
-
-  readonly canDerive = computed(() => {
-    const seed = this.seedItem();
-    return !!seed && this.siblings().some(({ id }) => id === seed.id);
-  });
 
   deriveRule(): void {
     const txn = this.#committed();
@@ -188,13 +196,5 @@ export class EditCashTransactionDialogComponent extends BaseEditItemDialog<
   deriveSchedule(): void {
     const txn = this.#committed();
     if (txn) this.#schedules.deriveFrom(txn);
-  }
-
-  #committed(): CashTransaction | undefined {
-    const seed = this.seedItem();
-    if (!seed || !this.canSave()) return seed;
-    const edited = this.fromForm(this.draft(), seed);
-    this.#facade.saveItem(edited);
-    return edited;
   }
 }

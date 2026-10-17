@@ -3,14 +3,16 @@ import { routes } from './app.routes';
 import { DECK_CATALOG } from './commlink/model/deck.catalog';
 
 const segmentsOf = (path: string): string[] => path.split('/').filter(Boolean);
-const isTerminal = (route: Route): boolean =>
-  !route.children?.length &&
-  (!!route.component || !!route.loadComponent || !!route.redirectTo);
+const isTerminal = (route: Route): boolean => {
+  return (
+    !route.children?.length &&
+    (!!route.component || !!route.loadComponent || !!route.redirectTo)
+  );
+};
 
 const childrenOf = async (route: Route): Promise<Routes> => {
   if (route.children) return route.children;
-  if (!route.loadChildren) return [];
-  return (await route.loadChildren()) as Routes;
+  return route.loadChildren ? ((await route.loadChildren()) as Routes) : [];
 };
 
 type ReachablePage = { pattern: string[]; title?: string };
@@ -42,22 +44,24 @@ const reachablePaths = async (
   return nested.flat();
 };
 
-const matches = (pattern: string[], url: string[]): boolean =>
-  pattern.length === url.length &&
-  pattern.every(
-    (segment, index) => segment.startsWith(':') || segment === url[index]
+const isMatches = (pattern: string[], url: string[]): boolean => {
+  return (
+    pattern.length === url.length &&
+    pattern.every(
+      (segment, index) => segment.startsWith(':') || segment === url[index]
+    )
   );
+};
 
 describe('app route table', () => {
   it('resolves every deck catalog route to a page', async () => {
     const reachable = await reachablePaths(routes);
 
-    const unresolved = DECK_CATALOG.filter(
-      (entry) =>
-        !reachable.some((page) =>
-          matches(page.pattern, segmentsOf(entry.route))
-        )
-    ).map((entry) => `${entry.id} → ${entry.route}`);
+    const unresolved = DECK_CATALOG.filter((entry) => {
+      return reachable.every(
+        (page) => !isMatches(page.pattern, segmentsOf(entry.route))
+      );
+    }).map((entry) => `${entry.id} → ${entry.route}`);
 
     expect(unresolved).toEqual([]);
   });
@@ -67,12 +71,11 @@ describe('app route table', () => {
 
     const disagreements = DECK_CATALOG.flatMap((entry) => {
       const page = reachable.find((candidate) =>
-        matches(candidate.pattern, segmentsOf(entry.route))
+        isMatches(candidate.pattern, segmentsOf(entry.route))
       );
-      if (!page || page.title === entry.titleKey) return [];
-      return [
-        `${entry.id}: catalog says ${entry.titleKey}, route says ${page.title ?? '(no title)'}`,
-      ];
+      return !page || page.title === entry.titleKey
+        ? []
+        : `${entry.id}: catalog says ${entry.titleKey}, route says ${page.title ?? '(no title)'}`;
     });
 
     expect(disagreements).toEqual([]);

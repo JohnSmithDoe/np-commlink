@@ -38,9 +38,11 @@ export const createCashSpend = (
   amountCents: number,
   method: PaymentMethod,
   categoryId?: CategoryId
-): CashTransaction => ({
-  ...createCashTransaction(name, accountId, categoryId),
-  amountCents: -Math.abs(amountCents),
-  status: method === 'card' ? 'pending' : 'confirmed',
-  categoryManual: categoryId ? true : undefined,
-});
+): CashTransaction => {
+  return {
+    ...createCashTransaction(name, accountId, categoryId),
+    amountCents: -Math.abs(amountCents),
+    status: method === 'card' ? 'pending' : 'confirmed',
+    categoryManual: categoryId ? true : undefined,
+  };
+};

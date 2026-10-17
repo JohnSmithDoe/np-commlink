@@ -62,23 +62,25 @@ const asDayjsDay = (weekday: IsoWeekday): number =>
 const soonestWeekday = (
   from: Dayjs,
   weekdays: readonly IsoWeekday[]
-): Dayjs | undefined =>
-  weekdays
+): Dayjs | undefined => {
+  return weekdays
     .map((weekday) => nextWeekday(from, asDayjsDay(weekday)))
     .toSorted((a, b) => a.valueOf() - b.valueOf())
     .at(0);
+};
 
 const soonestMonth = (
   from: Dayjs,
   months: readonly IsoMonth[]
-): Dayjs | undefined =>
-  months
+): Dayjs | undefined => {
+  return months
     .map((month) => {
       const thisYear = from.month(month - 1).startOf('month');
       return thisYear.isAfter(from) ? thisYear : thisYear.add(1, 'year');
     })
     .toSorted((a, b) => a.valueOf() - b.valueOf())
     .at(0);
+};
 
 export const stepFrom = (
   from: Dayjs,
@@ -105,7 +107,7 @@ const anchorDayOf = (item: TaskItem): number | undefined =>
 
 const seedFor = (item: TaskItem, now: Dayjs): Dayjs => {
   const due = nextDueOf(item);
-  return anchorOf(item) === 'due' && due ? dayjs(due) : now;
+  return due && anchorOf(item) === 'due' ? dayjs(due) : now;
 };
 
 const nthElapsedStep = (
@@ -218,10 +220,12 @@ export const closedTask = (item: TaskItem, now: Dayjs = dayjs()): TaskItem => {
   };
 };
 
-export const reopenedTask = (item: TaskItem): TaskItem => ({
-  ...item,
-  doneAt: undefined,
-});
+export const reopenedTask = (item: TaskItem): TaskItem => {
+  return {
+    ...item,
+    doneAt: undefined,
+  };
+};
 
 export const toggledDone = (item: TaskItem, now: Dayjs = dayjs()): TaskItem =>
   item.doneAt ? reopenedTask(item) : closedTask(item, now);
@@ -241,7 +245,7 @@ export const opensAt = (item: TaskItem): Timestamp | undefined => {
   return isoDay(earliest?.isAfter(opens) ? earliest : opens);
 };
 
-const dueToReopen = (item: TaskItem, now: Dayjs): boolean => {
+const isDueToReopen = (item: TaskItem, now: Dayjs): boolean => {
   if (!item.doneAt || !item.interval) return false;
   const opens = opensAt(item);
   return opens !== undefined && !dayjs(opens).isAfter(now, 'day');
@@ -250,7 +254,7 @@ const dueToReopen = (item: TaskItem, now: Dayjs): boolean => {
 export const tasksDueToReopen = (
   items: readonly TaskItem[],
   now: Dayjs
-): TaskItem[] => items.filter((item) => dueToReopen(item, now));
+): TaskItem[] => items.filter((item) => isDueToReopen(item, now));
 
 const warnDaysBefore = (
   item: TaskItem,
@@ -280,6 +284,8 @@ export const dueStatusColor = (
 
 export const seededTaskDefaults = (
   settings: TaskSettings
-): Pick<TaskItem, 'anchor'> => ({
-  anchor: settings.defaultAnchor,
-});
+): Pick<TaskItem, 'anchor'> => {
+  return {
+    anchor: settings.defaultAnchor,
+  };
+};

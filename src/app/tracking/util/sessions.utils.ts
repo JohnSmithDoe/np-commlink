@@ -27,13 +27,15 @@ const mergedInto = (
   row: DataItem | undefined,
   session: TrackingItem,
   bucketKey: string
-): DataItem => ({
-  ...session,
-  id: bucketKey,
-  trackedTimeInSeconds:
-    (row?.trackedTimeInSeconds ?? 0) + (session.trackedTimeInSeconds ?? 0),
-  sessionIds: [...(row?.sessionIds ?? []), session.id],
-});
+): DataItem => {
+  return {
+    ...session,
+    id: bucketKey,
+    trackedTimeInSeconds:
+      (row?.trackedTimeInSeconds ?? 0) + (session.trackedTimeInSeconds ?? 0),
+    sessionIds: [...(row?.sessionIds ?? []), session.id],
+  };
+};
 
 export const groupSessionsByView = (
   data: TrackingItem[],
@@ -86,7 +88,7 @@ export const dailySeries = (
       (totalsByName.get(s.name) ?? 0) + (s.trackedTimeInSeconds ?? 0)
     );
   }
-  const topNames = [...totalsByName.entries()]
+  const topNames = [...totalsByName]
     .toSorted((a, b) => b[1] - a[1])
     .slice(0, CHART_TOP_N)
     .map(([name]) => name);
@@ -111,7 +113,7 @@ export const dailySeries = (
   return {
     days,
     series: [
-      ...[...seriesMap.entries()].map(([name, hours]) => ({ name, hours })),
+      ...[...seriesMap].map(([name, hours]) => ({ name, hours })),
       ...(otherHours ? [{ hours: otherHours }] : []),
     ],
   };

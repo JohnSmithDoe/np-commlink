@@ -76,9 +76,9 @@ test.describe('cash manage categories', () => {
       .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Miete');
-    const createMiete = page.getByText('Miete erstellen');
-    await expect(createMiete).toBeVisible({ timeout: 10_000 });
-    await createMiete.click();
+    const mieteOption = page.getByText('Miete erstellen');
+    await expect(mieteOption).toBeVisible({ timeout: 10_000 });
+    await mieteOption.click();
     await txnModal.getByRole('button', { name: 'Anlegen' }).click();
     await expect(account.getByText('Wohnung Miete')).toBeVisible({
       timeout: 10_000,

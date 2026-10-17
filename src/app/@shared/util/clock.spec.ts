@@ -31,7 +31,9 @@ describe('currentTime$', () => {
   it('stops ticking once the page is hidden', async () => {
     vi.useFakeTimers();
     const seen: unknown[] = [];
-    const sub = currentTime$.subscribe((time) => seen.push(time));
+    const sub = currentTime$.subscribe((time) => {
+      seen.push(time);
+    });
 
     await vi.advanceTimersByTimeAsync(1000);
     const beforeHiding = seen.length;

@@ -37,8 +37,9 @@ import { EditStorageItemDialogComponent } from '../edit-storage-item-dialog/edit
   providers: [{ provide: LIST_FACADE, useExisting: HouseholdListPageFacade }],
 })
 export class StoragePage {
-  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
   readonly #storage = inject(StorageFacade);
+
+  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
 
   readonly startSwipeAction: StartSwipeAction = {
     labelKey: marker('household.a11y.to-shopping-list'),

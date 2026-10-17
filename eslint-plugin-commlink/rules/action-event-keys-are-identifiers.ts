@@ -43,14 +43,18 @@ export const rule: Rule.RuleModule = {
         const [config] = node.arguments;
         if (config?.type !== 'ObjectExpression') return;
 
-        const events = config.properties.find(
-          (candidate) =>
+        const events = config.properties.find((candidate) => {
+          return (
             candidate.type === 'Property' &&
             candidate.key.type === 'Identifier' &&
             candidate.key.name === EVENTS
-        );
-        if (events?.type !== 'Property') return;
-        if (events.value.type !== 'ObjectExpression') return;
+          );
+        });
+        if (
+          events?.type !== 'Property' ||
+          events.value.type !== 'ObjectExpression'
+        )
+          return;
 
         for (const event of events.value.properties) {
           if (event.type !== 'Property') continue;
@@ -59,11 +63,13 @@ export const rule: Rule.RuleModule = {
             const key = String(event.key.value);
             const suggestion = key
               .split(/[\s_-]+/)
-              .map((word, index) =>
-                index === 0
-                  ? word.charAt(0).toLowerCase() + word.slice(1)
-                  : word.charAt(0).toUpperCase() + word.slice(1)
-              )
+              .map((word, index) => {
+                return (
+                  (index === 0
+                    ? word.charAt(0).toLowerCase()
+                    : word.charAt(0).toUpperCase()) + word.slice(1)
+                );
+              })
               .join('');
             context.report({
               node: event.key as Rule.Node,
@@ -73,8 +79,11 @@ export const rule: Rule.RuleModule = {
             continue;
           }
 
-          if (event.key.type !== 'Identifier') continue;
-          if (IDENTIFIER.test(event.key.name)) continue;
+          if (
+            event.key.type !== 'Identifier' ||
+            IDENTIFIER.test(event.key.name)
+          )
+            continue;
           context.report({
             node: event.key as Rule.Node,
             messageId: 'nonCamelEventKey',

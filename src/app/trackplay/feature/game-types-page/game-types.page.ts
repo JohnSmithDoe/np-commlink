@@ -24,9 +24,9 @@ import { EditGameTypeDialogComponent } from '../edit-game-type-dialog/edit-game-
   providers: [{ provide: LIST_FACADE, useExisting: GameTypesPageFacade }],
 })
 export class TrackplayGameTypesPage {
-  readonly editSwipeAction = TRACKPLAY_EDIT_SWIPE_ACTION;
-
   readonly #gameTypes = inject(GameTypesFacade);
+
+  readonly editSwipeAction = TRACKPLAY_EDIT_SWIPE_ACTION;
 
   readonly defaultTypeId = DEFAULT_GAME_TYPE_ID;
 

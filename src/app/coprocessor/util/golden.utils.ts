@@ -43,11 +43,12 @@ export const goldenLadder = (
   up: number,
   down: number,
   offset: number = 0
-): number[] =>
-  Array.from(
+): number[] => {
+  return Array.from(
     { length: up + down + 1 },
     (_, step) => base * PHI ** (step - down + offset)
   );
+};
 
 const cornerPoint = (
   square: SpiralSquare,
@@ -75,10 +76,10 @@ export const spiralSquares = (
   height: number,
   steps: number = SPIRAL_STEPS
 ): SpiralPlan => {
-  const landscape = width >= height;
-  const outerWidth = landscape ? width : height / PHI;
-  const outerHeight = landscape ? width / PHI : height;
-  const seed = landscape ? 0 : 1;
+  const isLandscape = width >= height;
+  const outerWidth = isLandscape ? width : height / PHI;
+  const outerHeight = isLandscape ? width / PHI : height;
+  const seed = isLandscape ? 0 : 1;
 
   const squares: SpiralSquare[] = [];
   let left = 0;
@@ -177,17 +178,19 @@ export const goldenPoints = (
   const down = goldenGuides(height, depth);
 
   return across
-    .flatMap((x) =>
-      down.map((y) => ({
-        id: `${x.level}:${x.value}:${y.value}`,
-        level: Math.max(x.level, y.level),
-        x: x.value,
-        y: y.value,
-        fromLeft: x.value,
-        fromRight: width - x.value,
-        fromTop: y.value,
-        fromBottom: height - y.value,
-      }))
-    )
+    .flatMap((x) => {
+      return down.map((y) => {
+        return {
+          id: `${x.level}:${x.value}:${y.value}`,
+          level: Math.max(x.level, y.level),
+          x: x.value,
+          y: y.value,
+          fromLeft: x.value,
+          fromRight: width - x.value,
+          fromTop: y.value,
+          fromBottom: height - y.value,
+        };
+      });
+    })
     .toSorted((a, b) => a.level - b.level);
 };

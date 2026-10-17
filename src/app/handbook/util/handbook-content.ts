@@ -29,17 +29,19 @@ export interface HandbookGroupView {
 
 export const groupHandbookEntries = (
   entries: readonly HandbookEntry[]
-): HandbookGroupView[] =>
-  HANDBOOK_GROUPS.map((group) => ({
-    group,
-    entries: entries.filter((entry) => entry.group === group),
-  })).filter((view) => view.entries.length > 0);
+): HandbookGroupView[] => {
+  return HANDBOOK_GROUPS.map((group) => {
+    return {
+      group,
+      entries: entries.filter((entry) => entry.group === group),
+    };
+  }).filter((view) => view.entries.length > 0);
+};
 
 export const handbookNeighbours = (
   entries: readonly HandbookEntry[],
   slug: string
 ): { previous?: HandbookEntry; next?: HandbookEntry } => {
   const at = entries.findIndex((entry) => entry.slug === slug);
-  if (at === -1) return {};
-  return { previous: entries[at - 1], next: entries[at + 1] };
+  return at === -1 ? {} : { previous: entries[at - 1], next: entries[at + 1] };
 };

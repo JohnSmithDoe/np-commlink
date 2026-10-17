@@ -13,6 +13,16 @@ export class DatabaseService {
     await (this.#ready ??= this.#storageService.create());
   }
 
+  async #erase(key: string): Promise<void> {
+    await this.#ensureStorage();
+    await this.#storageService.remove(storageKey(key));
+  }
+
+  async #write<T>(key: string, value: T | null | undefined) {
+    await this.#ensureStorage();
+    return await this.#storageService.set(storageKey(key), value);
+  }
+
   async bootstrap(): Promise<void> {
     await this.#ensureStorage();
   }
@@ -56,15 +66,5 @@ export class DatabaseService {
 
   async settled(): Promise<void> {
     await Promise.allSettled(this.#pendingWrites);
-  }
-
-  async #erase(key: string): Promise<void> {
-    await this.#ensureStorage();
-    await this.#storageService.remove(storageKey(key));
-  }
-
-  async #write<T>(key: string, value: T | null | undefined) {
-    await this.#ensureStorage();
-    return await this.#storageService.set(storageKey(key), value);
   }
 }

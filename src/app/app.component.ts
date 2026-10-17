@@ -91,48 +91,25 @@ import { ErrorFallbackComponent } from './@shared/ui/error-fallback/error-fallba
   ],
 })
 export class AppComponent {
-  protected readonly wordmark = APP_WORDMARK;
   readonly #dashboard = inject(DashboardFacade);
   readonly #deck = inject(DeckFacade);
   readonly #update = inject(AppUpdateService);
 
   readonly #navigating = signal(false);
+
+  readonly #dialogs = inject(ItemDialogService);
+
+  readonly #telemetry = this.#dashboard.dashboardState;
+
+  protected readonly wordmark = APP_WORDMARK;
   readonly navigating = this.#navigating.asReadonly();
 
   readonly menuEntries = this.#deck.menuEntries;
-
-  readonly #dialogs = inject(ItemDialogService);
   readonly personDialogRequested = computed(
     () => this.#dialogs.request()?.listId === PEOPLE_LIST_ID
   );
 
-  readonly #telemetry = this.#dashboard.dashboardState;
-
-  menuBadge(entry: DeckProgram): number {
-    if (entry.currency) return 0;
-    return badgeValue(this.#telemetry(), entry) ?? 0;
-  }
-
-  menuBadgeColor(entry: DeckProgram): string {
-    return entry.source === 'notifications' ? 'danger' : 'medium';
-  }
-
   readonly updateReady = this.#update.updateReady;
-
-  updateActions(reload: string, later: string): ToastButton[] {
-    return [
-      { text: reload, role: 'destructive', handler: () => this.applyUpdate() },
-      { text: later, role: 'cancel' },
-    ];
-  }
-
-  applyUpdate(): void {
-    this.#update.applyUpdate();
-  }
-
-  dismissUpdate(): void {
-    this.#update.dismiss();
-  }
 
   constructor() {
     addIcons(DECK_ICONS);
@@ -150,5 +127,28 @@ export class AppComponent {
     ) {
       this.#navigating.set(false);
     }
+  }
+
+  menuBadge(entry: DeckProgram): number {
+    return entry.currency ? 0 : (badgeValue(this.#telemetry(), entry) ?? 0);
+  }
+
+  menuBadgeColor(entry: DeckProgram): string {
+    return entry.source === 'notifications' ? 'danger' : 'medium';
+  }
+
+  updateActions(reload: string, later: string): ToastButton[] {
+    return [
+      { text: reload, role: 'destructive', handler: () => this.applyUpdate() },
+      { text: later, role: 'cancel' },
+    ];
+  }
+
+  applyUpdate(): void {
+    this.#update.applyUpdate();
+  }
+
+  dismissUpdate(): void {
+    this.#update.dismiss();
   }
 }

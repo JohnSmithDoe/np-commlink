@@ -70,18 +70,14 @@ describe('vitalsReducer — readings', () => {
 
 describe('vitalsReducer — hydration', () => {
   it('drops a restored search query, so a list opens unfiltered', () => {
-    const next = vitalsReducer(
-      undefined,
-      VitalsActions.loaded(
-        mockVitalsState({
-          profiles: mockProfilesState({
-            searchQuery: 'mar',
-            astro: { martin: { sun: 'leo' } },
-          }),
-          readings: mockReadingsState([mine], { searchQuery: '2026' }),
-        })
-      )
-    );
+    const stored = mockVitalsState({
+      profiles: mockProfilesState({
+        searchQuery: 'mar',
+        astro: { martin: { sun: 'leo' } },
+      }),
+      readings: mockReadingsState([mine], { searchQuery: '2026' }),
+    });
+    const next = vitalsReducer(undefined, VitalsActions.loaded(stored));
 
     expect(next.profiles.astro).toEqual({ martin: { sun: 'leo' } });
     expect(next.profiles.searchQuery).toBeUndefined();

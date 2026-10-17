@@ -84,18 +84,17 @@ describe('shoppingReducer', () => {
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {
+    const stored = mockHouseholdState({
+      shopping: mockShoppingState({
+        items: [mockShoppingItem()],
+        searchQuery: 'stale',
+        filterBy: 'Dairy',
+        showActionSheet: true,
+      }),
+    });
     const state = shoppingReducer(
       initialState,
-      HouseholdActions.loaded(
-        mockHouseholdState({
-          shopping: mockShoppingState({
-            items: [mockShoppingItem()],
-            searchQuery: 'stale',
-            filterBy: 'Dairy',
-            showActionSheet: true,
-          }),
-        })
-      )
+      HouseholdActions.loaded(stored)
     );
     expect(state.items).toHaveLength(1);
     expect(state.searchQuery).toBeUndefined();

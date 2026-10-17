@@ -15,14 +15,20 @@ import { EnvironmentProviders, provideAppInitializer } from '@angular/core';
 
 export type StoragePersistence = 'granted' | 'denied' | 'unsupported';
 
-export const provideDurableStorage = (): EnvironmentProviders =>
-  provideAppInitializer(() => {
-    void navigator.storage?.persist().catch(() => {});
+export const provideDurableStorage = (): EnvironmentProviders => {
+  return provideAppInitializer(() => {
+    void globalThis.navigator.storage?.persist().catch(() => {});
   });
+};
 
 export const readStoragePersistence = async (): Promise<StoragePersistence> => {
-  if (!navigator.storage?.persisted) return 'unsupported';
-  const persisted = await navigator.storage.persisted().catch(() => null);
-  if (persisted === null) return 'unsupported';
-  return persisted ? 'granted' : 'denied';
+  const { storage } = globalThis.navigator;
+  if (!storage?.persisted) return 'unsupported';
+  let isPersisted: boolean;
+  try {
+    isPersisted = await storage.persisted();
+  } catch {
+    return 'unsupported';
+  }
+  return isPersisted ? 'granted' : 'denied';
 };

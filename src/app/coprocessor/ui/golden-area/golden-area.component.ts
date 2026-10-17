@@ -34,14 +34,16 @@ export class GoldenAreaComponent {
     goldenPoints(this.width(), this.height(), this.depth())
   );
 
-  readonly targets = computed(() =>
-    this.points().map((point) => ({
-      ...point,
-      radius:
-        (this.markerSize() / (point.level === 1 ? 1 : 3)) *
-        (point.id === this.selected() ? 1.5 : 1),
-    }))
-  );
+  readonly targets = computed(() => {
+    return this.points().map((point) => {
+      return {
+        ...point,
+        radius:
+          (this.markerSize() / (point.level === 1 ? 1 : 3)) *
+          (point.id === this.selected() ? 1.5 : 1),
+      };
+    });
+  });
 
   readonly across = computed(() => goldenGuides(this.width(), this.depth()));
   readonly down = computed(() => goldenGuides(this.height(), this.depth()));

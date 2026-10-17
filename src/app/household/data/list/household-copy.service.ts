@@ -55,9 +55,23 @@ const SHOPPING_COPY_TARGETS: CopyTargets<'_shopping', ShoppingItem> = {
 @Service()
 export class HouseholdCopyService {
   readonly #store = inject(Store);
+
   readonly #activeListId = this.#store.selectSignal(
     selectActiveHouseholdListId
   );
+
+  #toActiveList<TItem>(item: TItem, targets: CopyTargetLookup<TItem>): void {
+    this.#toList(this.#activeListId(), item, targets);
+  }
+
+  #toList<TItem>(
+    target: ItemListId,
+    item: TItem,
+    targets: CopyTargetLookup<TItem>
+  ): void {
+    const toAction = targets[target];
+    if (toAction) this.#store.dispatch(toAction(item));
+  }
 
   addProduct(item: Product): void {
     this.#toActiveList(item, PRODUCT_COPY_TARGETS);
@@ -73,18 +87,5 @@ export class HouseholdCopyService {
 
   addProductToList(target: ItemListId, product: Product): void {
     this.#toList(target, product, PRODUCT_COPY_TARGETS);
-  }
-
-  #toActiveList<TItem>(item: TItem, targets: CopyTargetLookup<TItem>): void {
-    this.#toList(this.#activeListId(), item, targets);
-  }
-
-  #toList<TItem>(
-    target: ItemListId,
-    item: TItem,
-    targets: CopyTargetLookup<TItem>
-  ): void {
-    const toAction = targets[target];
-    if (toAction) this.#store.dispatch(toAction(item));
   }
 }

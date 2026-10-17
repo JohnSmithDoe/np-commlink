@@ -75,18 +75,14 @@ describe('storageReducer', () => {
   });
 
   it('replaces the state from a loaded datastore and resets transient fields', () => {
-    const state = storageReducer(
-      initialState,
-      HouseholdActions.loaded(
-        mockHouseholdState({
-          storage: mockStorageState({
-            items: [mockStorageItem()],
-            searchQuery: 'stale',
-            filterBy: 'Dairy',
-          }),
-        })
-      )
-    );
+    const stored = mockHouseholdState({
+      storage: mockStorageState({
+        items: [mockStorageItem()],
+        searchQuery: 'stale',
+        filterBy: 'Dairy',
+      }),
+    });
+    const state = storageReducer(initialState, HouseholdActions.loaded(stored));
     expect(state.items).toHaveLength(1);
     expect(state.searchQuery).toBeUndefined();
     expect(state.filterBy).toBeUndefined();

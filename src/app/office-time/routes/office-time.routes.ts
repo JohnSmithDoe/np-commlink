@@ -10,18 +10,20 @@ export const officeTimeRoutes: Routes = [
       {
         path: '',
         title: marker('page-title.office-time'),
-        loadComponent: () =>
-          import('../feature/office-time-page/office-time.page').then(
-            (m) => m.OfficeTimePage
-          ),
+        loadComponent: async () => {
+          const { OfficeTimePage } =
+            await import('../feature/office-time-page/office-time.page');
+          return OfficeTimePage;
+        },
       },
       {
         path: 'settings',
         title: marker('page-title.office-time-settings'),
-        loadComponent: () =>
-          import('../feature/office-time-settings-page/office-time-settings.page').then(
-            (m) => m.OfficeTimeSettingsPage
-          ),
+        loadComponent: async () => {
+          const { OfficeTimeSettingsPage } =
+            await import('../feature/office-time-settings-page/office-time-settings.page');
+          return OfficeTimeSettingsPage;
+        },
       },
     ],
   },

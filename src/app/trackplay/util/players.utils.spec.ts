@@ -25,12 +25,8 @@ describe('playersFrom', () => {
       mockPlayer({ id: 'p3' }),
     ];
 
-    expect(
-      playersFrom(people, games).map(({ id, lastPlayedAt }) => [
-        id,
-        lastPlayedAt,
-      ])
-    ).toEqual([
+    const players = playersFrom(people, games);
+    expect(players.map(({ id, lastPlayedAt }) => [id, lastPlayedAt])).toEqual([
       ['p1', LATER],
       ['p2', LATER],
       ['p3', undefined],

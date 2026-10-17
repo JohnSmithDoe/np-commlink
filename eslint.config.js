@@ -45,6 +45,27 @@ const READONLY_SIGNAL_MEMBERS = [
   },
 ];
 
+// unicorn runs as `all` on TypeScript, so its taste is the default and every
+// exception below names what outranks it — ours or the runtime's.
+const UNICORN_EXCEPTIONS = {
+  // Banners are deliberately wrapped prose; `commlink/comments-header-only` owns their shape.
+  'unicorn/no-manually-wrapped-comments': 'off',
+  // The `<domain>/data/index.ts` facade barrel is sanctioned; `commlink/no-barrel-outside-data` polices the rest.
+  'unicorn/no-barrel-files': 'off',
+  // `marker(...)` and `dayjs.extend(...)` run at module level by design, as do the scripts.
+  'unicorn/no-top-level-side-effects': 'off',
+  // No WebView or Safari we ship to has Temporal; dayjs is the date library.
+  'unicorn/prefer-temporal': 'off',
+  // `Error.isError` is ES2026: absent from our `lib` and from older WebViews.
+  'unicorn/prefer-error-is-error': 'off',
+  // NgRx's `prefix-selectors-with-select` owns a selector's name.
+  'unicorn/consistent-boolean-name': ['error', { ignore: ['^select[A-Z]'] }],
+  // ionicons names its exports `addOutline`, `createOutline`; they are its API, not ours.
+  'unicorn/no-non-function-verb-prefix': ['error', { ignore: ['Outline$'] }],
+  // Its fix moves the condition inside `marker(...)`, which `commlink/marker-argument-is-literal` forbids.
+  'unicorn/prefer-minimal-ternary': 'off',
+};
+
 module.exports = defineConfig(
   globalIgnores([
     '**/.*/',
@@ -98,9 +119,10 @@ module.exports = defineConfig(
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/require-await': 'error',
+      ...UNICORN_EXCEPTIONS,
       // `null` is idiomatic across Angular/NgRx/RxJS
       'unicorn/no-null': 'off',
-      'unicorn/prevent-abbreviations': [
+      'unicorn/name-replacements': [
         'error',
         {
           allowList: { utils: true, prod: true },
@@ -189,9 +211,10 @@ module.exports = defineConfig(
     plugins: { unicorn },
     extends: ['unicorn/recommended'],
     rules: {
+      ...UNICORN_EXCEPTIONS,
       'unicorn/prefer-module': 'off',
       'unicorn/no-null': 'off',
-      'unicorn/prevent-abbreviations': [
+      'unicorn/name-replacements': [
         'error',
         {
           allowList: { utils: true, prod: true },

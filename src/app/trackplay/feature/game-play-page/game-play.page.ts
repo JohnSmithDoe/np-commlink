@@ -46,19 +46,23 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly #facade = inject(GamePlayFacade);
   readonly #games = inject(GamesFacade);
   readonly #route = inject(ActivatedRoute);
+  readonly #gameId: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
+  readonly #ranking = this.#facade.rankingByGame(this.#gameId);
+  readonly #leaders = this.#facade.leadersByGame(this.#gameId);
+  #prevRoundCount = 0;
 
-  readonly id: TrackplayId = this.#route.snapshot.paramMap.get('id') ?? '';
+  readonly id = this.#gameId;
 
-  readonly game = this.#facade.gameById(this.id);
-  readonly rounds = this.#facade.roundsByGame(this.id);
-  readonly scores = this.#facade.scoresByGame(this.id);
-  readonly #ranking = this.#facade.rankingByGame(this.id);
+  readonly game = this.#facade.gameById(this.#gameId);
+  readonly rounds = this.#facade.roundsByGame(this.#gameId);
+  readonly scores = this.#facade.scoresByGame(this.#gameId);
+
   readonly result = computed(() =>
     this.#ranking().map((id) => ({ id, name: this.playerName(id) }))
   );
-  readonly #leaders = this.#facade.leadersByGame(this.id);
 
   readonly drawn = computed(() => this.#leaders().length > 1);
+
   readonly winner = computed(() =>
     this.drawn() ? undefined : this.result()[0]
   );
@@ -72,23 +76,28 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   readonly bodyRef = viewChild<ElementRef<HTMLElement>>('bodyRegion');
   readonly footerRef = viewChild<ElementRef<HTMLElement>>('footerRow');
 
-  #prevRoundCount = 0;
-
   constructor() {
     addIcons({ playOutline, squareOutline });
 
     effect(() => {
       const count = this.rounds().length;
-      const grew = count > this.#prevRoundCount;
+      const isGrew = count > this.#prevRoundCount;
       this.#prevRoundCount = count;
-      if (grew && !this.ended()) {
+      if (isGrew && !this.ended()) {
         requestAnimationFrame(() => this.#scrollBodyToBottom());
       }
     });
   }
 
+  #scrollBodyToBottom(): void {
+    const element = this.bodyRef()?.nativeElement;
+    if (element) {
+      element.scrollTop = element.scrollHeight - element.clientHeight;
+    }
+  }
+
   ionViewWillEnter(): void {
-    this.#facade.enterGamePage(this.id);
+    this.#facade.enterGamePage(this.#gameId);
   }
 
   playerName(pid: TrackplayId): string {
@@ -102,8 +111,8 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   onValue(roundId: TrackplayId, playerId: TrackplayId, event: Event): void {
     const raw = (event.target as unknown as { value: string | number | null })
       .value;
-    const value = Number.parseInt(String(raw ?? ''), 10) || 0;
-    this.#facade.setRoundValue(this.id, roundId, playerId, value);
+    const value = Math.trunc(Number(raw ?? '')) || 0;
+    this.#facade.setRoundValue(this.#gameId, roundId, playerId, value);
   }
 
   blurInput(event: Event): void {
@@ -131,12 +140,5 @@ export class TrackplayGamePlayPage implements ViewWillEnter {
   toggleEnded(): void {
     const game = this.game();
     if (game) this.#games.toggleEnded(game);
-  }
-
-  #scrollBodyToBottom(): void {
-    const element = this.bodyRef()?.nativeElement;
-    if (element) {
-      element.scrollTop = element.scrollHeight - element.clientHeight;
-    }
   }
 }

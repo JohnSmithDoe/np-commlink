@@ -102,6 +102,29 @@ const GROUP_LABELS: Readonly<Record<EmojiGroupId, Marker>> = {
 export class EmojiPickerComponent {
   readonly #language = inject(APP_LANGUAGE);
 
+  readonly #everOpened = linkedSignal<boolean, boolean>({
+    source: () => this.isOpen(),
+    computation: (open, previous) => open || (previous?.value ?? false),
+  });
+
+  readonly #catalog = resource({
+    params: () => (this.#everOpened() ? this.#language : undefined),
+    loader: ({ params }) => loadEmojiCatalog(params),
+    defaultValue: [],
+  });
+
+  readonly #groups = computed(() =>
+    this.#catalog.hasValue() ? this.#catalog.value() : []
+  );
+
+  readonly #labelByGlyph = computed(() => {
+    return new Map(
+      this.#groups().flatMap((group) =>
+        group.entries.map((entry) => [entry.glyph, entry.label] as const)
+      )
+    );
+  });
+
   readonly isOpen = input<boolean>(false);
   readonly recent = input<readonly string[]>([]);
   readonly field = input<IonInput | undefined>(undefined);
@@ -109,10 +132,6 @@ export class EmojiPickerComponent {
   readonly changed = output<string>();
   readonly closed = output<void>();
   readonly dismissed = output<void>();
-
-  constructor() {
-    addIcons({ backspaceOutline });
-  }
 
   protected readonly groupIds = EMOJI_GROUP_IDS;
   protected readonly groupLabels = GROUP_LABELS;
@@ -126,41 +145,19 @@ export class EmojiPickerComponent {
   });
   protected readonly activeGroup = signal<EmojiGroupId>('smileys');
 
-  readonly #everOpened = linkedSignal<boolean, boolean>({
-    source: () => this.isOpen(),
-    computation: (open, previous) => open || (previous?.value ?? false),
-  });
-
-  readonly #catalog = resource({
-    params: () => (this.#everOpened() ? this.#language : undefined),
-    loader: ({ params }) => loadEmojiCatalog(params),
-    defaultValue: [],
-  });
-
   protected readonly isLoading = this.#catalog.isLoading;
   protected readonly failed = computed(
     () => this.#catalog.status() === 'error'
   );
 
-  readonly #groups = computed(() =>
-    this.#catalog.hasValue() ? this.#catalog.value() : []
-  );
-
-  readonly #labelByGlyph = computed(
-    () =>
-      new Map(
-        this.#groups().flatMap((group) =>
-          group.entries.map((entry) => [entry.glyph, entry.label] as const)
-        )
-      )
-  );
-
-  protected readonly recentEntries = computed(() =>
-    this.recent().map((glyph) => ({
-      glyph,
-      label: this.#labelByGlyph().get(glyph) ?? glyph,
-    }))
-  );
+  protected readonly recentEntries = computed(() => {
+    return this.recent().map((glyph) => {
+      return {
+        glyph,
+        label: this.#labelByGlyph().get(glyph) ?? glyph,
+      };
+    });
+  });
 
   protected readonly visible = computed<readonly EmojiEntry[]>(() => {
     const groups = this.#groups();
@@ -169,11 +166,37 @@ export class EmojiPickerComponent {
       const active = groups.find((group) => group.id === this.activeGroup());
       return active?.entries ?? [];
     }
-    const matches = emojiMatching(query);
+    const isMatches = emojiMatching(query);
     return groups.flatMap((group) =>
-      group.entries.filter((entry) => matches(entry))
+      group.entries.filter((entry) => isMatches(entry))
     );
   });
+
+  constructor() {
+    addIcons({ backspaceOutline });
+  }
+
+  async #selectionInPreview(): Promise<{ start: number; end: number }> {
+    const native = await this.preview()?.getInputElement();
+    const collapsed = this.text().length;
+    return {
+      start: native?.selectionStart ?? collapsed,
+      end: native?.selectionEnd ?? collapsed,
+    };
+  }
+
+  #apply(text: string, caret: number): void {
+    this.text.set(text);
+    this.changed.emit(text);
+    void this.#writeBack(text, caret);
+  }
+
+  async #writeBack(text: string, caret: number): Promise<void> {
+    const native = await this.preview()?.getInputElement();
+    if (!native) return;
+    native.value = text;
+    native.setSelectionRange(caret, caret);
+  }
 
   protected searchbarInput(event: SearchbarCustomEvent): void {
     this.query.set(event.detail.value ?? '');
@@ -202,30 +225,8 @@ export class EmojiPickerComponent {
     this.#apply(next.text, next.caret);
   }
 
-  async #selectionInPreview(): Promise<{ start: number; end: number }> {
-    const native = await this.preview()?.getInputElement();
-    const collapsed = this.text().length;
-    return {
-      start: native?.selectionStart ?? collapsed,
-      end: native?.selectionEnd ?? collapsed,
-    };
-  }
-
-  #apply(text: string, caret: number): void {
-    this.text.set(text);
-    this.changed.emit(text);
-    void this.#writeBack(text, caret);
-  }
-
-  async #writeBack(text: string, caret: number): Promise<void> {
-    const native = await this.preview()?.getInputElement();
-    if (!native) return;
-    native.value = text;
-    native.setSelectionRange(caret, caret);
-  }
-
   protected previewInput(event: InputCustomEvent): void {
-    const text = String(event.detail.value ?? '');
+    const text = event.detail.value ?? '';
     this.text.set(text);
     this.changed.emit(text);
   }

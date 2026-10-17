@@ -30,6 +30,11 @@ export abstract class BaseDecimalInput implements FormValueControl<
 
   protected readonly language = inject(APP_LANGUAGE);
 
+  protected readonly raw = transformedValue(this.value, {
+    parse: (raw: string) => this.parse(raw, this.language),
+    format: (value: number | null) => this.format(value, this.language),
+  });
+
   protected abstract parse(
     raw: string,
     language: Language
@@ -37,12 +42,7 @@ export abstract class BaseDecimalInput implements FormValueControl<
 
   protected abstract format(value: number | null, language: Language): string;
 
-  protected readonly raw = transformedValue(this.value, {
-    parse: (raw: string) => this.parse(raw, this.language),
-    format: (value: number | null) => this.format(value, this.language),
-  });
-
   protected onInput(event: InputCustomEvent): void {
-    this.raw.set(String(event.detail.value ?? ''));
+    this.raw.set(event.detail.value ?? '');
   }
 }

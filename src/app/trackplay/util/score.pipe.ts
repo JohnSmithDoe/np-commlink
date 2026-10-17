@@ -5,9 +5,8 @@ export class ScorePipe implements PipeTransform {
   readonly #formatter = new Intl.NumberFormat(inject(LOCALE_ID));
 
   transform(value: number | null | undefined): string {
-    if (!value || !Number.isFinite(value)) {
-      return '0';
-    }
-    return this.#formatter.format(value);
+    return value && Number.isFinite(value)
+      ? this.#formatter.format(value)
+      : '0';
   }
 }

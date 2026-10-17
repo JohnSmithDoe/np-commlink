@@ -5,7 +5,12 @@ import { OfficeTimeActions } from './office-time.actions';
 import { Store } from '@ngrx/store';
 import { selectHolidays } from './office-time.selector';
 import { berlinHolidaysFor } from '../util/holidays.utils';
-import { holidaysAreStale } from '../util/office-time.utils';
+import { areHolidaysStale } from '../util/office-time.utils';
+
+const currentYear = (): number => {
+  const now = new Date();
+  return now.getFullYear();
+};
 
 @Service()
 export class OfficeTimeEffects {
@@ -15,11 +20,11 @@ export class OfficeTimeEffects {
   loadHolidays$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(OfficeTimeActions.loadHolidays),
-      map(() =>
-        OfficeTimeActions.loadHolidaysSuccess(
-          berlinHolidaysFor(new Date().getFullYear())
-        )
-      )
+      map(() => {
+        return OfficeTimeActions.loadHolidaysSuccess(
+          berlinHolidaysFor(currentYear())
+        );
+      })
     );
   });
 
@@ -27,9 +32,7 @@ export class OfficeTimeEffects {
     return fromEvent(document, 'visibilitychange').pipe(
       filter(() => document.visibilityState === 'visible'),
       withLatestFrom(this.#store.select(selectHolidays)),
-      filter(([, holidays]) =>
-        holidaysAreStale(holidays, new Date().getFullYear())
-      ),
+      filter(([, holidays]) => areHolidaysStale(holidays, currentYear())),
       map(() => OfficeTimeActions.loadHolidays())
     );
   });

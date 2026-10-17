@@ -21,6 +21,7 @@ import {
   hasAnyAttribute,
   hasAttribute,
   staticAttribute,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
@@ -54,27 +55,27 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
         if (!hasAnyAttribute(element, ACCESSIBLE_NAME_ATTRIBUTES)) return;
 
         const role = staticAttribute(element, 'role')?.value;
-        const prohibiting = NAME_PROHIBITING_ROLES.has(role ?? '');
-        const roleless =
+        const isProhibiting = NAME_PROHIBITING_ROLES.has(role ?? '');
+        const isRoleless =
           ROLELESS_ELEMENTS.has(element.name) && !hasAttribute(element, 'role');
-        if (!prohibiting && !roleless) return;
+        if (!isProhibiting && !isRoleless) return;
 
         context.report({
           loc: services.convertElementSourceSpanToLoc(context, element),
           messageId: 'ariaLabelNeedsRole',
           data: {
             element: element.name,
-            because: prohibiting
+            because: isProhibiting
               ? ` — role="${role}" removes the naming capability`
               : ' — the implicit `generic` role does not support naming',
           },
         });
       },
-    };
+    });
   },
 };

@@ -40,10 +40,12 @@ const weighIn = async (page: Page, kg: string, on?: string) => {
   await expect(dialog).toBeHidden();
 };
 
-const openFreshProfile = async (page: Page, name = 'Martin') => {
+const PROFILE_NAME = 'Martin';
+
+const openFreshProfile = async (page: Page) => {
   await openProfiles(page);
-  await createProfile(page, name);
-  await openProfile(page, name);
+  await createProfile(page, PROFILE_NAME);
+  await openProfile(page, PROFILE_NAME);
 };
 
 test.describe('BIOMON', () => {

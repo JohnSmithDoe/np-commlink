@@ -70,10 +70,11 @@ export const cashTransactionsReducer = createReducer(
 
   on(CashTransactionsActions.recategorize, (state, { changes }): CashTransactionsState => {
     const assigned = new Map(changes.map((change) => [change.transactionId, change.categoryId]));
-    return withItems(state, state.items.map((txn): CashTransaction =>
-      assigned.has(txn.id)
+    return withItems(state, state.items.map((txn): CashTransaction => {
+      return assigned.has(txn.id)
         ? { ...withCategory(txn, assigned.get(txn.id)), categoryManual: false }
-        : txn
+        : txn;
+    }
     ));
   }),
 
@@ -84,16 +85,15 @@ export const cashTransactionsReducer = createReducer(
     const carry = manual.categoryManual && categoryIdOf(manual) && !imported.categoryManual;
     return withItems(state, state.items.map((txn): CashTransaction => {
       if (txn.id === manualId) return { ...txn, matchedTxnId: importedId, status: 'confirmed' };
-      if (txn.id === importedId && carry)
-        return { ...withCategory(txn, categoryIdOf(manual)), categoryManual: true };
-      return txn;
+      return carry && txn.id === importedId ? { ...withCategory(txn, categoryIdOf(manual)), categoryManual: true } : txn;
     }));
   }),
 
-  on(CashTransactionsActions.unreconcile, (state, { manualId }): CashTransactionsState =>
-    withItems(state, state.items.map((txn): CashTransaction =>
+  on(CashTransactionsActions.unreconcile, (state, { manualId }): CashTransactionsState => {
+    return withItems(state, state.items.map((txn): CashTransaction =>
       txn.id === manualId ? { ...txn, matchedTxnId: undefined, status: 'pending' } : txn
-    ))),
+    ));
+  }),
 
   on(CashActions.loaded, (state, { cash }): CashTransactionsState => hydratedList({ ...initialTransactionsState, ...(cash?.transactions ?? state) }))
 );

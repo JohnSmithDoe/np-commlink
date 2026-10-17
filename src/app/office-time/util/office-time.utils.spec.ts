@@ -7,7 +7,7 @@ import {
   dayKeysOf,
   dayMapFrom,
   holidayMapFrom,
-  holidaysAreStale,
+  areHolidaysStale,
   getTargetPercentage,
   isOfficeDay,
   isWeekend,
@@ -26,9 +26,12 @@ describe('office-time.utils', () => {
 
     it('matches membership by day for office days', () => {
       const day = dayjs('2026-07-01');
-      expect(isOfficeDay(day, dayMap(dayjs('2026-07-01T18:00:00')))).toBe(true);
-      expect(isOfficeDay(day, dayMap(dayjs('2026-07-02')))).toBe(false);
-      expect(isOfficeDay(day, dayMap(dayjs('2026-07-01')))).toBe(true);
+      const sameDayEvening = dayMap(dayjs('2026-07-01T18:00:00'));
+      const nextDay = dayMap(dayjs('2026-07-02'));
+      const sameDay = dayMap(day);
+      expect(isOfficeDay(day, sameDayEvening)).toBe(true);
+      expect(isOfficeDay(day, nextDay)).toBe(false);
+      expect(isOfficeDay(day, sameDay)).toBe(true);
       expect(isOfficeDay(day, dayMap())).toBe(false);
       expect(isOfficeDay(day)).toBe(false);
     });
@@ -78,17 +81,17 @@ describe('office-time.utils', () => {
     });
   });
 
-  describe('holidaysAreStale', () => {
+  describe('areHolidaysStale', () => {
     it('is stale only once the stored year is not the current one', () => {
       const holidays = holidayMapFrom({ xmas: '2026-12-25' });
 
-      expect(holidaysAreStale(holidays, 2026)).toBe(false);
-      expect(holidaysAreStale(holidays, 2027)).toBe(true);
+      expect(areHolidaysStale(holidays, 2026)).toBe(false);
+      expect(areHolidaysStale(holidays, 2027)).toBe(true);
     });
 
     it('has nothing to judge when no holiday is stored', () => {
-      expect(holidaysAreStale({}, 2027)).toBe(false);
-      expect(holidaysAreStale(undefined, 2027)).toBe(false);
+      expect(areHolidaysStale({}, 2027)).toBe(false);
+      expect(areHolidaysStale(undefined, 2027)).toBe(false);
     });
   });
 
@@ -115,13 +118,14 @@ describe('office-time.utils', () => {
       officedays: dayjs.Dayjs[] = [TODAY],
       holidays: HolidayMap = {},
       targetOfficeDaysPerWeek = 3
-    ) =>
-      statsKeysFrom({
+    ) => {
+      return statsKeysFrom({
         officedays: dayMap(...officedays),
         freedays: dayMap(),
         holidays,
         targetOfficeDaysPerWeek,
       });
+    };
 
     it('counts office days in the current month and keeps invariants', () => {
       const monthStart = TODAY.startOf('month');

@@ -20,11 +20,12 @@ import {
   boundAttribute,
   hasAttribute,
   staticAttribute,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 
-const REQUIRES_ARIA_LABEL = 'ion-modal';
+const OVERLAY_NEEDING_ARIA_LABEL = 'ion-modal';
 
 const DERIVES_NAME_FROM: Record<string, string> = {
   'ion-action-sheet': 'header',
@@ -51,9 +52,9 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
-        if (element.name === REQUIRES_ARIA_LABEL) {
+        if (element.name === OVERLAY_NEEDING_ARIA_LABEL) {
           const labelledby =
             staticAttribute(element, 'aria-labelledby') ??
             boundAttribute(element, 'aria-labelledby');
@@ -73,15 +74,18 @@ export const rule: Rule.RuleModule = {
         }
 
         const source = DERIVES_NAME_FROM[element.name];
-        if (!source) return;
-        if (hasAttribute(element, source)) return;
-        if (hasAttribute(element, 'aria-label')) return;
+        if (
+          !source ||
+          hasAttribute(element, source) ||
+          hasAttribute(element, 'aria-label')
+        )
+          return;
         context.report({
           loc: services.convertElementSourceSpanToLoc(context, element),
           messageId: 'overlayNeedsNameSource',
           data: { element: element.name, source },
         });
       },
-    };
+    });
   },
 };

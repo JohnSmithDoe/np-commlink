@@ -30,19 +30,21 @@ const AGENDA = 'AGENDA';
 const configPage = (page: Page): Locator =>
   page.locator('app-page-deck-config');
 
-const orderRow = (page: Page, label: string) =>
-  configPage(page)
+const marketOrderRow = (page: Page) => {
+  return configPage(page)
     .getByTestId('deck-config-order-row')
-    .filter({ hasText: label });
+    .filter({ hasText: MARKET });
+};
 
 const menuRow = (page: Page, label: string) =>
   page.locator('ion-menu').getByTestId('menu-row').filter({ hasText: label });
 
-const codenames = (page: Page) =>
-  page
+const codenames = (page: Page) => {
+  return page
     .locator('app-page-commlink')
     .getByTestId('deck-tile')
     .getByTestId('deck-tile-name');
+};
 
 async function openDeck(page: Page): Promise<void> {
   await page.goto('/#/commlink');
@@ -51,13 +53,13 @@ async function openDeck(page: Page): Promise<void> {
   ).toBeVisible({ timeout: 30_000 });
 }
 
-async function takeOffDeck(page: Page, label: string): Promise<void> {
+async function takeMarketOffDeck(page: Page): Promise<void> {
   await page.goto('/#/settings/deck');
   await expect(configPage(page).getByTestId('deck-config-lens')).toBeVisible({
     timeout: 30_000,
   });
   await openOrderLens(configPage(page));
-  await orderRow(page, label).getByTestId('deck-config-tile-toggle').click();
+  await marketOrderRow(page).getByTestId('deck-config-tile-toggle').click();
   await waitForPersisted(page, 'deck', '"hiddenTiles":["');
 }
 
@@ -70,8 +72,8 @@ test.describe('taking a program off the deck', () => {
   test('drops its tile but keeps its row in the order lens', async ({
     page,
   }) => {
-    await takeOffDeck(page, MARKET);
-    await expect(orderRow(page, MARKET)).toHaveCount(1);
+    await takeMarketOffDeck(page);
+    await expect(marketOrderRow(page)).toHaveCount(1);
 
     await openDeck(page);
     await expect(codenames(page)).toHaveText([AGENDA]);
@@ -80,21 +82,21 @@ test.describe('taking a program off the deck', () => {
   test('leaves it in the drawer, so it is still reachable', async ({
     page,
   }) => {
-    await takeOffDeck(page, MARKET);
+    await takeMarketOffDeck(page);
 
     await openDeck(page);
     await expect(menuRow(page, MARKET)).toHaveCount(1);
   });
 
   test('survives a reload, and the eye puts it back', async ({ page }) => {
-    await takeOffDeck(page, MARKET);
+    await takeMarketOffDeck(page);
     await openDeck(page);
     await page.reload();
     await expect(codenames(page)).toHaveText([AGENDA]);
 
     await page.goto('/#/settings/deck');
     await openOrderLens(configPage(page));
-    await orderRow(page, MARKET).getByTestId('deck-config-tile-toggle').click();
+    await marketOrderRow(page).getByTestId('deck-config-tile-toggle').click();
     await waitForPersisted(page, 'deck', '"hiddenTiles":[]');
 
     await openDeck(page);
@@ -104,7 +106,7 @@ test.describe('taking a program off the deck', () => {
   test('forgets the choice once the program is switched off and on', async ({
     page,
   }) => {
-    await takeOffDeck(page, MARKET);
+    await takeMarketOffDeck(page);
 
     await page.goto('/#/settings/deck');
     await page.reload();

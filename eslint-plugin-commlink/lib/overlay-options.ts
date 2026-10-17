@@ -44,9 +44,9 @@ const receiverName = (node: unknown): string | undefined => {
   const candidate = node as Node;
   if (candidate.type === 'Identifier' || candidate.type === 'PrivateIdentifier')
     return candidate.name;
-  if (candidate.type === 'MemberExpression')
-    return receiverName(candidate.property);
-  return undefined;
+  return candidate.type === 'MemberExpression'
+    ? receiverName(candidate.property)
+    : undefined;
 };
 
 export const overlayKind = (calleeObject: unknown): string | undefined => {
@@ -54,26 +54,31 @@ export const overlayKind = (calleeObject: unknown): string | undefined => {
   return name ? RECEIVER.exec(name)?.[1]?.toLowerCase() : undefined;
 };
 
-export const isCreateCall = (node: CallExpression): boolean =>
-  node.callee.type === 'MemberExpression' &&
-  !node.callee.computed &&
-  node.callee.property.type === 'Identifier' &&
-  node.callee.property.name === 'create';
+export const isCreateCall = (node: CallExpression): boolean => {
+  return (
+    node.callee.type === 'MemberExpression' &&
+    !node.callee.computed &&
+    node.callee.property.type === 'Identifier' &&
+    node.callee.property.name === 'create'
+  );
+};
 
 export const propertyName = (property: PropertyNode): string | undefined => {
   if (property.type !== 'Property') return undefined;
   if (property.key.type === 'Identifier') return property.key.name;
-  if (property.key.type === 'Literal') return String(property.key.value);
-  return undefined;
+  return property.key.type === 'Literal'
+    ? String(property.key.value)
+    : undefined;
 };
 
 export const property = (
   objectExpression: ObjectExpression,
   name: string
-): PropertyNode | undefined =>
-  objectExpression.properties.find(
+): PropertyNode | undefined => {
+  return objectExpression.properties.find(
     (candidate) => propertyName(candidate) === name
   );
+};
 
 export const hasProperty = (
   objectExpression: ObjectExpression,
@@ -83,12 +88,14 @@ export const hasProperty = (
 export const isDecidable = (objectExpression: ObjectExpression): boolean =>
   objectExpression.properties.every(({ type }) => type === 'Property');
 
-export const setsAriaLabelViaHtmlAttributes = (
+export const hasAriaLabelInHtmlAttributes = (
   options: ObjectExpression
 ): boolean => {
   const htmlAttributes = property(options, 'htmlAttributes');
-  if (!htmlAttributes) return false;
-  if (htmlAttributes.type !== 'Property') return true;
-  if (htmlAttributes.value.type !== 'ObjectExpression') return true;
-  return hasProperty(htmlAttributes.value, 'aria-label');
+  return (
+    htmlAttributes !== undefined &&
+    (htmlAttributes.type !== 'Property' ||
+      htmlAttributes.value.type !== 'ObjectExpression' ||
+      hasProperty(htmlAttributes.value, 'aria-label'))
+  );
 };

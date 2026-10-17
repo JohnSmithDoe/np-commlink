@@ -14,7 +14,9 @@ describe('NumberInputComponent', () => {
 
   it('emits the parsed number, falling back to 0 for blanks', () => {
     const emitted: number[] = [];
-    component.updateValue.subscribe((v) => emitted.push(v));
+    component.updateValue.subscribe((v) => {
+      emitted.push(v);
+    });
 
     component.updateInputValue({ detail: { value: '42' } } as never);
     component.updateInputValue({ detail: { value: '' } } as never);

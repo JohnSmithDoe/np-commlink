@@ -11,16 +11,18 @@ import {
 const entry = (
   slug: string,
   group: HandbookEntry['group'] = 'programme'
-): HandbookEntry => ({
-  slug,
-  title: `DECK ${slug}`,
-  plain: `Klartext ${slug}`,
-  route: `/${slug}`,
-  group,
-  summary: `Kurz zu ${slug}`,
-  tags: [slug],
-  text: `Text zu ${slug}`,
-});
+): HandbookEntry => {
+  return {
+    slug,
+    title: `DECK ${slug}`,
+    plain: `Klartext ${slug}`,
+    route: `/${slug}`,
+    group,
+    summary: `Kurz zu ${slug}`,
+    tags: [slug],
+    text: `Text zu ${slug}`,
+  };
+};
 
 describe('handbook content utils', () => {
   it('keeps every asset path relative, so both base hrefs resolve', () => {

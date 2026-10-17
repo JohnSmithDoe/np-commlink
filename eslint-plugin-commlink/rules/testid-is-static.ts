@@ -26,7 +26,11 @@
  * ───────────────────────────────────────────────────────────────── */
 
 import type { Rule } from 'eslint';
-import { boundAttribute, templateParserServices } from '../lib/template-ast.ts';
+import {
+  boundAttribute,
+  templateListener,
+  templateParserServices,
+} from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 import type { ObjectExpression } from '../lib/overlay-options.ts';
 import { property } from '../lib/overlay-options.ts';
@@ -55,7 +59,7 @@ export const rule: Rule.RuleModule = {
   create(context) {
     if (context.filename.endsWith('.html')) {
       const services = templateParserServices(context);
-      return {
+      return templateListener({
         Element(element: TemplateElement) {
           const offender =
             boundAttribute(element, TESTID) ??
@@ -68,15 +72,19 @@ export const rule: Rule.RuleModule = {
             messageId: 'composedInTemplate',
           });
         },
-      };
+      });
     }
 
     return {
       ObjectExpression(node) {
         const options = node as unknown as ObjectExpression;
         const testid = property(options, TESTID);
-        if (!testid || testid.type !== 'Property') return;
-        if (isStaticString(testid.value)) return;
+        if (
+          !testid ||
+          testid.type !== 'Property' ||
+          isStaticString(testid.value)
+        )
+          return;
         context.report({
           node: node as Rule.Node,
           messageId: 'composedInTypeScript',

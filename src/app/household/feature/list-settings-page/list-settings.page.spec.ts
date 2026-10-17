@@ -15,15 +15,12 @@ describe('ListSettingsPage', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
+    const household = mockHouseholdState({
+      listSettings: mockListSettings({ showQuickAdd: true }),
+    });
     await TestBed.configureTestingModule({
       imports: [ListSettingsPage],
-      providers: [
-        ...provideTestingProviders({
-          household: mockHouseholdState({
-            listSettings: mockListSettings({ showQuickAdd: true }),
-          }),
-        }),
-      ],
+      providers: [...provideTestingProviders({ household })],
     }).compileComponents();
     fixture = TestBed.createComponent(ListSettingsPage);
     component = fixture.componentInstance;

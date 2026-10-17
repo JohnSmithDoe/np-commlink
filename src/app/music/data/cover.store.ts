@@ -14,15 +14,6 @@ export class CoverStore {
   readonly #plugin = inject(MUSIC_PLAYER_PLUGIN);
   readonly #cache = new Map<string, Promise<string | undefined>>();
 
-  load(reference: CoverRef): Promise<string | undefined> {
-    const key = keyOf(reference);
-    const cached = this.#cache.get(key);
-    if (cached) return cached;
-    const cover = this.#fetchOrNothing(reference);
-    this.#cache.set(key, cover);
-    return cover;
-  }
-
   async #fetchOrNothing(reference: CoverRef): Promise<string | undefined> {
     try {
       return await this.#fetch(reference);
@@ -40,5 +31,14 @@ export class CoverStore {
       jam.image.imageBinary({ id: reference.id, size: COVER_SIZE })
     );
     return URL.createObjectURL(new Blob([buffer], { type: contentType }));
+  }
+
+  load(reference: CoverRef): Promise<string | undefined> {
+    const key = keyOf(reference);
+    const cached = this.#cache.get(key);
+    if (cached) return cached;
+    const cover = this.#fetchOrNothing(reference);
+    this.#cache.set(key, cover);
+    return cover;
   }
 }

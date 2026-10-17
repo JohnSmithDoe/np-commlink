@@ -16,9 +16,12 @@ export const profilesOf = (
 export const favoriteAmong = <T extends PersonRef>(
   persons: readonly T[],
   favoriteId?: PersonId
-): T | undefined =>
-  persons.find((person) => person.id === favoriteId) ??
-  (persons.length === 1 ? persons[0] : undefined);
+): T | undefined => {
+  return (
+    persons.find((person) => person.id === favoriteId) ??
+    (persons.length === 1 ? persons[0] : undefined)
+  );
+};
 
 export const summariesByProfile = (
   readings: readonly Reading[]
@@ -60,8 +63,8 @@ export const nearestReadingUpTo = (
 export function summaryFor(readings: readonly Reading[]): ProfileSummary {
   const byDate = readings.toSorted(byDateAscending);
   const latest = byDate.at(-1);
-  const previous = byDate.at(-2);
   if (!latest) return { count: 0 };
+  const previous = byDate.at(-2);
   return {
     count: readings.length,
     latestGrams: latest.grams,

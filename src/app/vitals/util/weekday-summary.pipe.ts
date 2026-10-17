@@ -12,11 +12,10 @@ export class WeekdaySummaryPipe implements PipeTransform {
   readonly #translate = inject(TranslateService);
 
   transform(weekdays: readonly IsoWeekday[]): string {
-    if (isEveryDay(weekdays)) {
-      return this.#translate.instant(EVERY_DAY_LABEL);
-    }
-    return sortedWeekdays(weekdays)
-      .map((day) => localizedWeekday(day, 'short'))
-      .join(' · ');
+    return isEveryDay(weekdays)
+      ? this.#translate.instant(EVERY_DAY_LABEL)
+      : sortedWeekdays(weekdays)
+          .map((day) => localizedWeekday(day, 'short'))
+          .join(' · ');
   }
 }

@@ -14,10 +14,11 @@ export const trackplayRoutes: Routes = [
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'players',
@@ -25,18 +26,20 @@ export const trackplayRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.trackplay-players'),
-                loadComponent: () =>
-                  import('../feature/players-page/players.page').then(
-                    (m) => m.TrackplayPlayersPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayPlayersPage } =
+                    await import('../feature/players-page/players.page');
+                  return TrackplayPlayersPage;
+                },
               },
               {
                 path: ':id',
                 title: marker('page-title.trackplay-player'),
-                loadComponent: () =>
-                  import('../feature/player-page/player.page').then(
-                    (m) => m.TrackplayPlayerPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayPlayerPage } =
+                    await import('../feature/player-page/player.page');
+                  return TrackplayPlayerPage;
+                },
               },
             ],
           },
@@ -46,36 +49,40 @@ export const trackplayRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.trackplay-games'),
-                loadComponent: () =>
-                  import('../feature/games-page/games.page').then(
-                    (m) => m.TrackplayGamesPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayGamesPage } =
+                    await import('../feature/games-page/games.page');
+                  return TrackplayGamesPage;
+                },
               },
               {
                 path: 'types',
                 title: marker('page-title.trackplay-game-types'),
-                loadComponent: () =>
-                  import('../feature/game-types-page/game-types.page').then(
-                    (m) => m.TrackplayGameTypesPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayGameTypesPage } =
+                    await import('../feature/game-types-page/game-types.page');
+                  return TrackplayGameTypesPage;
+                },
               },
               {
                 path: ':id',
                 title: marker('page-title.trackplay-game'),
-                loadComponent: () =>
-                  import('../feature/game-play-page/game-play.page').then(
-                    (m) => m.TrackplayGamePlayPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayGamePlayPage } =
+                    await import('../feature/game-play-page/game-play.page');
+                  return TrackplayGamePlayPage;
+                },
               },
             ],
           },
           {
             path: 'dice',
             title: marker('page-title.trackplay-dice'),
-            loadComponent: () =>
-              import('../feature/dice-page/dice.page').then(
-                (m) => m.TrackplayDicePage
-              ),
+            loadComponent: async () => {
+              const { TrackplayDicePage } =
+                await import('../feature/dice-page/dice.page');
+              return TrackplayDicePage;
+            },
           },
           {
             path: 'board',
@@ -83,18 +90,20 @@ export const trackplayRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.trackplay-board'),
-                loadComponent: () =>
-                  import('../feature/board-page/board.page').then(
-                    (m) => m.TrackplayBoardPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayBoardPage } =
+                    await import('../feature/board-page/board.page');
+                  return TrackplayBoardPage;
+                },
               },
               {
                 path: 'rules',
                 title: marker('page-title.trackplay-board-rules'),
-                loadComponent: () =>
-                  import('../feature/board-rules-page/board-rules.page').then(
-                    (m) => m.TrackplayBoardRulesPage
-                  ),
+                loadComponent: async () => {
+                  const { TrackplayBoardRulesPage } =
+                    await import('../feature/board-rules-page/board-rules.page');
+                  return TrackplayBoardRulesPage;
+                },
               },
             ],
           },

@@ -6,13 +6,16 @@ import {
   OptionChipsComponent,
 } from '../option-chips/option-chips.component';
 
-const monthOptions = (): ChipOption<IsoMonth>[] =>
-  ISO_MONTHS.map((month) => ({
-    key: String(month),
-    value: month,
-    label: localizedMonth(month, 'short'),
-    a11yLabel: localizedMonth(month, 'long'),
-  }));
+const monthOptions = (): ChipOption<IsoMonth>[] => {
+  return ISO_MONTHS.map((month) => {
+    return {
+      key: String(month),
+      value: month,
+      label: localizedMonth(month, 'short'),
+      a11yLabel: localizedMonth(month, 'long'),
+    };
+  });
+};
 
 @Component({
   selector: 'app-month-picker',

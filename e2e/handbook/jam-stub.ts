@@ -77,47 +77,55 @@ const TRACK_SECONDS = 180;
 const trackId = (album: StubAlbum, index: number) =>
   `${album.id}-t${index + 1}`;
 
-const trackOf = (album: StubAlbum, title: string, index: number) => ({
-  id: trackId(album, index),
-  name: `${title}.flac`,
-  objType: 'track',
-  albumID: album.id,
-  duration: 180_000 + index * 23_000,
-  tag: { title, artist: album.artist, album: album.name, trackNr: index + 1 },
-  state: { faved: index === 0 },
-});
+const trackOf = (album: StubAlbum, title: string, index: number) => {
+  return {
+    id: trackId(album, index),
+    name: `${title}.flac`,
+    objType: 'track',
+    albumID: album.id,
+    duration: 180_000 + index * 23_000,
+    tag: { title, artist: album.artist, album: album.name, trackNr: index + 1 },
+    state: { faved: index === 0 },
+  };
+};
 
 const tracksOf = (album: StubAlbum) =>
   album.tracks.map((title, index) => trackOf(album, title, index));
 
-const albumBase = (album: StubAlbum) => ({
-  id: album.id,
-  name: album.name,
-  albumType: 'album',
-  artistID: album.artistID,
-  artistName: album.artist,
-  trackCount: album.tracks.length,
-  duration: album.tracks.length * 200_000,
-});
+const albumBase = (album: StubAlbum) => {
+  return {
+    id: album.id,
+    name: album.name,
+    albumType: 'album',
+    artistID: album.artistID,
+    artistName: album.artist,
+    trackCount: album.tracks.length,
+    duration: album.tracks.length * 200_000,
+  };
+};
 
 const artists = () => {
   const byId = new Map<string, StubAlbum[]>();
   for (const album of ALBUMS)
     byId.set(album.artistID, [...(byId.get(album.artistID) ?? []), album]);
-  return [...byId].map(([id, albums]) => ({
-    id,
-    name: albums[0].artist,
-    albumCount: albums.length,
-    trackCount: albums.reduce((sum, album) => sum + album.tracks.length, 0),
-  }));
+  return [...byId].map(([id, albums]) => {
+    return {
+      id,
+      name: albums[0].artist,
+      albumCount: albums.length,
+      trackCount: albums.reduce((sum, album) => sum + album.tracks.length, 0),
+    };
+  });
 };
 
-const page = <T>(items: T[]) => ({
-  items,
-  total: items.length,
-  skip: 0,
-  take: items.length,
-});
+const page = <T>(items: T[]) => {
+  return {
+    items,
+    total: items.length,
+    skip: 0,
+    take: items.length,
+  };
+};
 
 const ROTATIONS: Record<string, number[]> = {
   recent: [0, 2, 3, 1],
@@ -163,15 +171,17 @@ const idsOf = (url: URL): string[] => url.searchParams.getAll('ids');
 const albumsByIds = (ids: string[]) =>
   ALBUMS.filter((album) => ids.includes(album.id));
 
-const matches = (text: string, query: string | null) =>
+const isMatches = (text: string, query: string | null) =>
   !!query && text.toLowerCase().includes(query.toLowerCase());
 
 const allTracks = () => ALBUMS.flatMap((album) => tracksOf(album));
 
-const indexOf = <T>(items: T[]) => ({
-  lastModified: 0,
-  groups: [{ name: '#', items }],
-});
+const indexOf = <T>(items: T[]) => {
+  return {
+    lastModified: 0,
+    groups: [{ name: '#', items }],
+  };
+};
 
 const PLAYLISTS = [
   { id: 'p1', name: 'Joggen', entriesCount: 12, duration: 2_640_000 },
@@ -179,55 +189,63 @@ const PLAYLISTS = [
 ];
 
 const ENDPOINTS: Record<string, (url: URL) => unknown> = {
-  '/session': () => ({
-    version: VERSION,
-    allowedCookieDomains: [],
-    user: USER,
-  }),
+  '/session': () => {
+    return {
+      version: VERSION,
+      allowedCookieDomains: [],
+      user: USER,
+    };
+  },
   '/auth/login': () => ({ version: VERSION, jwt: 'handbook', user: USER }),
   '/artist/index': () => indexOf(artists()),
-  '/album/index': () =>
-    indexOf(
-      ALBUMS.map(({ id, name, artist, artistID, tracks }) => ({
-        id,
-        name,
-        artist,
-        artistID,
-        trackCount: tracks.length,
-      }))
-    ),
+  '/album/index': () => {
+    return indexOf(
+      ALBUMS.map(({ id, name, artist, artistID, tracks }) => {
+        return {
+          id,
+          name,
+          artist,
+          artistID,
+          trackCount: tracks.length,
+        };
+      })
+    );
+  },
   '/folder/index': () => indexOf([{ id: 'f1', name: 'Musik', trackCount: 20 }]),
   '/album/search': (url) => {
     const query = url.searchParams.get('query');
     const picked = query
-      ? ALBUMS.filter((album) => matches(album.name, query))
+      ? ALBUMS.filter((album) => isMatches(album.name, query))
       : (ROTATIONS[url.searchParams.get('list') ?? ''] ?? []).map(
           (index) => ALBUMS[index]
         );
     return page(picked.map((album) => albumBase(album)));
   },
-  '/artist/search': (url) =>
-    page(
+  '/artist/search': (url) => {
+    return page(
       artists().filter((artist) =>
-        matches(artist.name, url.searchParams.get('query'))
+        isMatches(artist.name, url.searchParams.get('query'))
       )
-    ),
+    );
+  },
   '/album/tracks': (url) =>
     page(albumsByIds(idsOf(url)).flatMap((album) => tracksOf(album))),
-  '/artist/tracks': (url) =>
-    page(
+  '/artist/tracks': (url) => {
+    return page(
       ALBUMS.filter((album) => idsOf(url).includes(album.artistID)).flatMap(
         (album) => tracksOf(album)
       )
-    ),
-  '/track/search': (url) =>
-    page(
+    );
+  },
+  '/track/search': (url) => {
+    return page(
       url.searchParams.get('list') === 'faved'
         ? allTracks().filter((track) => track.state.faved)
         : allTracks().filter((track) =>
-            matches(track.tag.title, url.searchParams.get('query'))
+            isMatches(track.tag.title, url.searchParams.get('query'))
           )
-    ),
+    );
+  },
   '/playlist/search': () => page(PLAYLISTS),
   '/state/fav': () => ({ faved: Date.now() }),
 };
@@ -237,12 +255,14 @@ const answer = (path: string, url: URL): unknown =>
 
 export const JAM_SERVER = 'https://music.example.org';
 
-const corsFor = (route: Route): Record<string, string> => ({
-  'access-control-allow-origin': route.request().headers()['origin'] ?? '*',
-  'access-control-allow-credentials': 'true',
-  'access-control-allow-headers': 'authorization, content-type',
-  'access-control-allow-methods': 'GET, POST, OPTIONS',
-});
+const corsFor = (route: Route): Record<string, string> => {
+  return {
+    'access-control-allow-origin': route.request().headers()['origin'] ?? '*',
+    'access-control-allow-credentials': 'true',
+    'access-control-allow-headers': 'authorization, content-type',
+    'access-control-allow-methods': 'GET, POST, OPTIONS',
+  };
+};
 
 export async function stubJamserve(target: Page): Promise<void> {
   const wav = silentWav(TRACK_SECONDS);

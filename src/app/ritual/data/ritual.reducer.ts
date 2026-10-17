@@ -21,32 +21,42 @@ export const initialState: RitualState = {
 export const ritualReducer = createReducer(
   initialState,
 
-  on(RitualActions.completed, (state, { promptId, at }): RitualState => ({
-    ...state,
-    completions: [...state.completions, { promptId, completedAt: at }],
-  })),
+  on(RitualActions.completed, (state, { promptId, at }): RitualState => {
+    return {
+      ...state,
+      completions: [...state.completions, { promptId, completedAt: at }],
+    };
+  }),
 
-  on(RitualActions.setReminder, (state, { reminder }): RitualState => ({
-    ...state,
-    reminder,
-  })),
+  on(RitualActions.setReminder, (state, { reminder }): RitualState => {
+    return {
+      ...state,
+      reminder,
+    };
+  }),
 
-  on(RitualActions.dismissed, (state, { promptId }): RitualState => ({
-    ...state,
-    dismissed: state.dismissed.includes(promptId)
-      ? state.dismissed
-      : [...state.dismissed, promptId],
-  })),
+  on(RitualActions.dismissed, (state, { promptId }): RitualState => {
+    return {
+      ...state,
+      dismissed: state.dismissed.includes(promptId)
+        ? state.dismissed
+        : [...state.dismissed, promptId],
+    };
+  }),
 
-  on(RitualActions.restored, (state, { promptId }): RitualState => ({
-    ...state,
-    dismissed: state.dismissed.filter((id) => id !== promptId),
-  })),
+  on(RitualActions.restored, (state, { promptId }): RitualState => {
+    return {
+      ...state,
+      dismissed: state.dismissed.filter((id) => id !== promptId),
+    };
+  }),
 
-  on(RitualActions.restoredAll, (state): RitualState => ({
-    ...state,
-    dismissed: [],
-  })),
+  on(RitualActions.restoredAll, (state): RitualState => {
+    return {
+      ...state,
+      dismissed: [],
+    };
+  }),
 
   on(RitualActions.loaded, (state, { ritual }): RitualState => {
     if (!ritual) return state;

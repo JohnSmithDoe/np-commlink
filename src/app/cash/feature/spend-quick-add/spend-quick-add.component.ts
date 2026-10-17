@@ -109,6 +109,16 @@ export class CashSpendQuickAddComponent {
     () => !!this.account() && (this.amountCents() ?? 0) > 0
   );
 
+  #name(categoryId?: CategoryId): string {
+    const category = this.#categories
+      .allItems()
+      .find(({ id }) => id === categoryId);
+    return (
+      category?.name.trim() ||
+      this.#translate.instant(PAYMENT_METHOD_LABEL_KEYS[this.method()])
+    );
+  }
+
   setMethod(method: PaymentMethod): void {
     this.method.set(method);
   }
@@ -137,15 +147,5 @@ export class CashSpendQuickAddComponent {
       )
     );
     this.amountCents.set(null);
-  }
-
-  #name(categoryId?: CategoryId): string {
-    const category = this.#categories
-      .allItems()
-      .find(({ id }) => id === categoryId);
-    return (
-      category?.name.trim() ||
-      this.#translate.instant(PAYMENT_METHOD_LABEL_KEYS[this.method()])
-    );
   }
 }

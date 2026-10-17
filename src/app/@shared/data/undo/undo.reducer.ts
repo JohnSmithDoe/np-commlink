@@ -25,11 +25,19 @@ export const undoReducer = createReducer(
   on(UndoActions.pushed, (state, { entry }): UndoState => {
     const entries = [...state.entries, entry];
     const held = entries.filter(({ scope }) => scope === entry.scope);
-    return held.length <= UNDO_STACK_LIMIT
-      ? { entries }
-      : { entries: entries.filter((candidate) => candidate !== held[0]) };
+    return {
+      entries:
+        held.length <= UNDO_STACK_LIMIT
+          ? entries
+          : entries.filter((candidate) => candidate !== held[0]),
+    };
   }),
-  on(UndoActions.popped, (state, { scope }): UndoState => ({
-    entries: withoutIndex(state.entries, indexOfNewestIn(state.entries, scope)),
-  }))
+  on(UndoActions.popped, (state, { scope }): UndoState => {
+    return {
+      entries: withoutIndex(
+        state.entries,
+        indexOfNewestIn(state.entries, scope)
+      ),
+    };
+  })
 );

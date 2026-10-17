@@ -5,8 +5,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class MinutesFromSecondsPipe implements PipeTransform {
-  transform(value?: number): string {
-    const seconds = Math.max(0, Math.floor(value ?? 0));
-    return `${Math.floor(seconds / 60)}`;
+  transform(value = 0): string {
+    const seconds = Math.max(0, Math.floor(value));
+    return String(Math.floor(seconds / 60));
   }
 }

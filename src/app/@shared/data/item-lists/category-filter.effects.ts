@@ -23,8 +23,8 @@ import { ItemListRouteActions } from '../actions/item-list-route.actions';
 export const categoryFilterFromRoute = <T>(
   select: MemoizedSelector<object, T>,
   toAction: (context: T) => Action | undefined
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
       return actions$.pipe(
         ofType(routerNavigatedAction),
@@ -34,6 +34,7 @@ export const categoryFilterFromRoute = <T>(
     },
     { functional: true }
   );
+};
 
 export const categoryFilterRouteEffects = {
   stripCategoryFilterParam$: createEffect(
@@ -42,12 +43,11 @@ export const categoryFilterRouteEffects = {
         ofType(ItemListRouteActions.clearCategoryFilter),
         map(() => router.url),
         filter((url) => url.includes('?')),
-        tap(
-          (url) =>
-            void router.navigateByUrl(url.slice(0, url.indexOf('?')), {
-              replaceUrl: true,
-            })
-        )
+        tap((url) => {
+          return void router.navigateByUrl(url.slice(0, url.indexOf('?')), {
+            replaceUrl: true,
+          });
+        })
       );
     },
     { functional: true, dispatch: false }

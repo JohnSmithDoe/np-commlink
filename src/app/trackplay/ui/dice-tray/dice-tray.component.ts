@@ -17,7 +17,7 @@ import {
   untracked,
 } from '@angular/core';
 import { DieFaces, PoolRoll } from '../../model/dice.types';
-import { prefersStill } from '../../util/dice.utils';
+import { isMotionReduced } from '../../util/dice.utils';
 import { DieGlyphComponent } from '../die-glyph/die-glyph.component';
 
 type TrayDie = { faces: DieFaces; value: number; settle: string };
@@ -36,30 +36,32 @@ const scrambleValue = (index: number, tick: number, faces: DieFaces): number =>
   imports: [DieGlyphComponent],
 })
 export class DiceTrayComponent {
-  readonly roll = input<PoolRoll | null>(null);
-  readonly throwId = input(0);
-
   readonly #tick = signal(0);
   readonly #revealed = signal(true);
+
+  readonly roll = input<PoolRoll | null>(null);
+  readonly throwId = input(0);
 
   readonly revealed = this.#revealed.asReadonly();
 
   readonly dice = computed<TrayDie[]>(() => {
     const roll = this.roll();
     if (!roll) return [];
-    const revealed = this.#revealed();
+    const isRevealed = this.#revealed();
     const tick = this.#tick();
-    return roll.dice.map((die, index) => ({
-      faces: die.faces,
-      value: revealed ? die.value : scrambleValue(index, tick, die.faces),
-      settle: `${index * SETTLE_STEP_MS}ms`,
-    }));
+    return roll.dice.map((die, index) => {
+      return {
+        faces: die.faces,
+        value: isRevealed ? die.value : scrambleValue(index, tick, die.faces),
+        settle: `${index * SETTLE_STEP_MS}ms`,
+      };
+    });
   });
 
   constructor() {
     effect((onCleanup) => {
       this.throwId();
-      if (!untracked(this.roll) || prefersStill()) return;
+      if (!untracked(this.roll) || isMotionReduced()) return;
 
       this.#revealed.set(false);
       const scrambling = setInterval(

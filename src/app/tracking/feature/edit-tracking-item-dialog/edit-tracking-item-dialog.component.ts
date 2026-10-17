@@ -17,13 +17,15 @@ import { TrackedTimeAdjusterComponent } from '../../ui/tracked-time-adjuster/tra
   templateUrl: './edit-tracking-item-dialog.component.html',
 })
 export class EditTrackingItemDialogComponent extends BaseEditItemDialog<TrackingItem> {
+  readonly #facade = inject(TrackingListPageFacade);
+
+  protected readonly listId = TRACKING_LIST_ID;
+
+  readonly siblings = this.#facade.allItems;
+
   protected blank(): TrackingItem {
     return createTrackingItem('');
   }
-
-  readonly #facade = inject(TrackingListPageFacade);
-  protected readonly listId = TRACKING_LIST_ID;
-  readonly siblings = this.#facade.allItems;
 
   protected save(item: TrackingItem): void {
     this.#facade.saveItem(item);

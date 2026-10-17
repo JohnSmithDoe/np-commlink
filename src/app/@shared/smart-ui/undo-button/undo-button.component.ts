@@ -23,10 +23,10 @@ import { ItemListId } from '../../model/item-list.types';
 })
 export class UndoButtonComponent {
   readonly #undo = inject(UndoFacade);
+  readonly #top = computed(() => this.#undo.topIn(this.scope()));
 
   readonly scope = input.required<ItemListId>();
 
-  readonly #top = this.#undo.topIn(this.scope);
   readonly canUndo = computed(() => this.#top() !== undefined);
   readonly pendingName = computed(() => this.#top()?.name ?? '');
 

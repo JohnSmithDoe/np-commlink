@@ -1,5 +1,5 @@
 import { inject, InjectionToken } from '@angular/core';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import {
   PlayableTrack,
   PlaybackFailed,
@@ -132,103 +132,6 @@ class WebMusicPlayer implements MusicPlayer {
     this.#bindMediaSession();
   }
 
-  async setQueue(tracks: PlayableTrack[], startIndex: number): Promise<void> {
-    this.#queue = [...tracks];
-    await this.#load(startIndex);
-  }
-
-  async append(tracks: PlayableTrack[]): Promise<void> {
-    this.#queue = [...this.#queue, ...tracks];
-    if (this.#index < 0) await this.#load(0);
-    else this.#emitState();
-  }
-
-  replaceUpcoming(tracks: PlayableTrack[]): Promise<void> {
-    this.#queue = [...this.#queue.slice(0, this.#index + 1), ...tracks];
-    this.#emitState();
-    return Promise.resolve();
-  }
-
-  async removeAt(index: number): Promise<void> {
-    if (index < 0 || index >= this.#queue.length) return;
-    this.#queue = this.#queue.filter((_, index_) => index_ !== index);
-    if (index < this.#index) this.#index--;
-    else if (index === this.#index) {
-      await (this.#index < this.#queue.length
-        ? this.#load(this.#index)
-        : this.stop());
-      return;
-    }
-    this.#emitState();
-  }
-
-  skipTo(index: number): Promise<void> {
-    return this.#load(index);
-  }
-
-  seekTo(positionMs: number): Promise<void> {
-    this.#audio.currentTime = positionMs / 1000;
-    return Promise.resolve();
-  }
-
-  setRepeat(mode: RepeatMode): Promise<void> {
-    this.#repeat = mode;
-    return Promise.resolve();
-  }
-
-  setAuth(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  setArtwork(url: string | undefined): Promise<void> {
-    const metadata =
-      'mediaSession' in navigator ? navigator.mediaSession.metadata : null;
-    if (metadata)
-      metadata.artwork = url ? [{ src: url, sizes: '300x300' }] : [];
-    return Promise.resolve();
-  }
-
-  play(): Promise<void> {
-    return this.#audio
-      .play()
-      .catch(() => this.#emit({ kind: 'failed', reason: 'other' }));
-  }
-
-  pause(): Promise<void> {
-    this.#audio.pause();
-    return Promise.resolve();
-  }
-
-  async next(): Promise<void> {
-    const index = nextIndex(this.#index, this.#queue.length, 'all');
-    if (index !== undefined) await this.#load(index);
-  }
-
-  async previous(): Promise<void> {
-    if (this.#audio.currentTime * 1000 > RESTART_THRESHOLD_MS) {
-      this.#audio.currentTime = 0;
-      return;
-    }
-    await this.#load(previousIndex(this.#index));
-  }
-
-  stop(): Promise<void> {
-    this.#audio.pause();
-    this.#audio.removeAttribute('src');
-    this.#audio.load();
-    this.#index = -1;
-    this.#emitState();
-    return Promise.resolve();
-  }
-
-  getState(): Promise<PlaybackState> {
-    return Promise.resolve(this.#state());
-  }
-
-  listen(listener: (event: PlayerEvent) => void): void {
-    this.#listeners.push(listener);
-  }
-
   async #advance(): Promise<void> {
     const index = nextIndex(this.#index, this.#queue.length, this.#repeat);
     if (index === undefined) {
@@ -305,12 +208,112 @@ class WebMusicPlayer implements MusicPlayer {
         void this.seekTo(details.seekTime * 1000);
     });
   }
+
+  async setQueue(tracks: PlayableTrack[], startIndex: number): Promise<void> {
+    this.#queue = [...tracks];
+    await this.#load(startIndex);
+  }
+
+  async append(tracks: PlayableTrack[]): Promise<void> {
+    this.#queue = [...this.#queue, ...tracks];
+    if (this.#index < 0) await this.#load(0);
+    else this.#emitState();
+  }
+
+  replaceUpcoming(tracks: PlayableTrack[]): Promise<void> {
+    this.#queue = [...this.#queue.slice(0, this.#index + 1), ...tracks];
+    this.#emitState();
+    return Promise.resolve();
+  }
+
+  async removeAt(index: number): Promise<void> {
+    if (index < 0 || index >= this.#queue.length) return;
+    this.#queue = this.#queue.filter((_, index_) => index_ !== index);
+    if (index < this.#index) this.#index--;
+    else if (index === this.#index) {
+      await (this.#index < this.#queue.length
+        ? this.#load(this.#index)
+        : this.stop());
+      return;
+    }
+    this.#emitState();
+  }
+
+  skipTo(index: number): Promise<void> {
+    return this.#load(index);
+  }
+
+  seekTo(positionMs: number): Promise<void> {
+    this.#audio.currentTime = positionMs / 1000;
+    return Promise.resolve();
+  }
+
+  setRepeat(mode: RepeatMode): Promise<void> {
+    this.#repeat = mode;
+    return Promise.resolve();
+  }
+
+  setAuth(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  setArtwork(url: string | undefined): Promise<void> {
+    const metadata =
+      'mediaSession' in navigator ? navigator.mediaSession.metadata : null;
+    if (metadata)
+      metadata.artwork = url ? [{ src: url, sizes: '300x300' }] : [];
+    return Promise.resolve();
+  }
+
+  async play(): Promise<void> {
+    try {
+      await this.#audio.play();
+    } catch {
+      this.#emit({ kind: 'failed', reason: 'other' });
+    }
+  }
+
+  pause(): Promise<void> {
+    this.#audio.pause();
+    return Promise.resolve();
+  }
+
+  async next(): Promise<void> {
+    const index = nextIndex(this.#index, this.#queue.length, 'all');
+    if (index !== undefined) await this.#load(index);
+  }
+
+  async previous(): Promise<void> {
+    if (this.#audio.currentTime * 1000 > RESTART_THRESHOLD_MS) {
+      this.#audio.currentTime = 0;
+      return;
+    }
+    await this.#load(previousIndex(this.#index));
+  }
+
+  stop(): Promise<void> {
+    this.#audio.pause();
+    this.#audio.removeAttribute('src');
+    this.#audio.load();
+    this.#index = -1;
+    this.#emitState();
+    return Promise.resolve();
+  }
+
+  getState(): Promise<PlaybackState> {
+    return Promise.resolve(this.#state());
+  }
+
+  listen(listener: (event: PlayerEvent) => void): void {
+    this.#listeners.push(listener);
+  }
 }
 
 export const MUSIC_PLAYER = new InjectionToken<MusicPlayer>('Music player', {
   providedIn: 'root',
-  factory: () =>
-    inject(IS_NATIVE_PLATFORM)
+  factory: () => {
+    return inject(NATIVE_PLATFORM)
       ? new NativeMusicPlayer(inject(MUSIC_PLAYER_PLUGIN))
-      : new WebMusicPlayer(),
+      : new WebMusicPlayer();
+  },
 });

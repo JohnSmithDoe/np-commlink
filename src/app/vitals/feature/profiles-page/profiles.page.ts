@@ -31,12 +31,14 @@ const NO_SUMMARY: ProfileSummary = { count: 0 };
   providers: [{ provide: LIST_FACADE, useExisting: ProfilesPageFacade }],
 })
 export class VitalsProfilesPage {
-  readonly editSwipeAction = VITALS_EDIT_SWIPE_ACTION;
-
   readonly #profiles = inject(ProfilesFacade);
+
   readonly #router = inject(Router);
 
+  readonly editSwipeAction = VITALS_EDIT_SWIPE_ACTION;
+
   readonly summaries = this.#profiles.summaries;
+
   readonly favorite = this.#profiles.favoriteProfile;
 
   constructor() {

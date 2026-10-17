@@ -20,13 +20,14 @@ const CANONICAL_NAME: Record<string, string> = {
 const canonical = (publishedName: string): string =>
   CANONICAL_NAME[publishedName] ?? publishedName;
 
-export const publishedBerlinHolidays = (year: number): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(PUBLISHED_BY_YEAR[year]).map(([name, { datum }]) => [
-      canonical(name),
-      datum,
-    ])
+export const publishedBerlinHolidays = (
+  year: number
+): Record<string, string> => {
+  const published = Object.entries(PUBLISHED_BY_YEAR[year]);
+  return Object.fromEntries(
+    published.map(([name, { datum }]) => [canonical(name), datum])
   );
+};
 
 export const PUBLISHED_YEARS = Object.keys(PUBLISHED_BY_YEAR).map(Number);
 

@@ -63,6 +63,14 @@ const OUTCOME_MESSAGES: Record<ConnectOutcome, Marker> = {
 export class MusicSourcesPage {
   readonly #sources = inject(SourcesFacade);
 
+  readonly #draft = linkedSignal<JamConnection>(() => {
+    return {
+      server: this.jam()?.server ?? '',
+      username: this.jam()?.username ?? '',
+      password: '',
+    };
+  });
+
   readonly foldersSupported = this.#sources.foldersSupported;
   readonly jam = this.#sources.jam;
   readonly connected = this.#sources.connected;
@@ -72,18 +80,15 @@ export class MusicSourcesPage {
   readonly lostSourceIds = this.#sources.lostSourceIds;
   readonly trackCounts = this.#sources.trackCounts;
 
-  readonly #draft = linkedSignal<JamConnection>(() => ({
-    server: this.jam()?.server ?? '',
-    username: this.jam()?.username ?? '',
-    password: '',
-  }));
   readonly connection = form(this.#draft);
   readonly connecting = signal(false);
   readonly outcome = signal<ConnectOutcome | undefined>(undefined);
+
   readonly outcomeMessage = computed(() => {
     const outcome = this.outcome();
     return outcome && OUTCOME_MESSAGES[outcome];
   });
+
   readonly canConnect = computed(() => {
     const draft = this.#draft();
     return (

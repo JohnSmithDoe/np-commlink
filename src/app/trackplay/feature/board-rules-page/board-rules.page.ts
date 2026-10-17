@@ -68,8 +68,8 @@ export class TrackplayBoardRulesPage {
     return this.board.rules()[key];
   }
 
-  toggle(key: RuleToggle['key'], on: boolean): void {
-    this.board.setRules({ [key]: on });
+  toggle(key: RuleToggle['key'], isOn: boolean): void {
+    this.board.setRules({ [key]: isOn });
   }
 
   setEntryRoll(pips: number): void {

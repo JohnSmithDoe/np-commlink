@@ -57,28 +57,36 @@ export const leadKey = (lead: TaskLead): string =>
 
 const onDay: LeadOption = { lead: ON_DAY_LEAD, key: ON_DAY };
 
-const daysBefore = (days: number): LeadOption => ({
-  lead: { kind: 'days', days },
-  key: days === 1 ? DAY_BEFORE : DAYS_BEFORE,
-  params: { count: days },
-});
+const daysBefore = (days: number): LeadOption => {
+  return {
+    lead: { kind: 'days', days },
+    key: days === 1 ? DAY_BEFORE : DAYS_BEFORE,
+    params: { count: days },
+  };
+};
 
-const weeksBefore = (weeks: number): LeadOption => ({
-  lead: { kind: 'days', days: weeks * DAYS_PER_WEEK },
-  key: weeks === 1 ? WEEK_BEFORE : WEEKS_BEFORE,
-  params: { count: weeks },
-});
+const weeksBefore = (weeks: number): LeadOption => {
+  return {
+    lead: { kind: 'days', days: weeks * DAYS_PER_WEEK },
+    key: weeks === 1 ? WEEK_BEFORE : WEEKS_BEFORE,
+    params: { count: weeks },
+  };
+};
 
-const monthsBefore = (months: number): LeadOption => ({
-  lead: { kind: 'days', days: months * DAYS_PER_MONTH },
-  key: months === 1 ? MONTH_BEFORE : MONTHS_BEFORE,
-  params: { count: months },
-});
+const monthsBefore = (months: number): LeadOption => {
+  return {
+    lead: { kind: 'days', days: months * DAYS_PER_MONTH },
+    key: months === 1 ? MONTH_BEFORE : MONTHS_BEFORE,
+    params: { count: months },
+  };
+};
 
-const startOf = (unit: PeriodUnit, key: Marker): LeadOption => ({
-  lead: { kind: 'startOf', unit },
-  key,
-});
+const startOf = (unit: PeriodUnit, key: Marker): LeadOption => {
+  return {
+    lead: { kind: 'startOf', unit },
+    key,
+  };
+};
 
 const LADDER: Readonly<Record<PeriodUnit, readonly LeadOption[]>> = {
   week: [
@@ -122,10 +130,9 @@ export const gapDaysOf = (interval: Interval): number => {
   if (interval.unit === 'day') {
     return widestCycleGap(interval.weekdays, DAYS_PER_WEEK);
   }
-  if (interval.unit === 'monthsOfYear') {
-    return widestCycleGap(interval.months, MONTHS_PER_YEAR) * DAYS_PER_MONTH;
-  }
-  return interval.every * UNIT_DAYS[interval.unit];
+  return interval.unit === 'monthsOfYear'
+    ? widestCycleGap(interval.months, MONTHS_PER_YEAR) * DAYS_PER_MONTH
+    : interval.every * UNIT_DAYS[interval.unit];
 };
 
 const worstReach = (lead: TaskLead): number =>

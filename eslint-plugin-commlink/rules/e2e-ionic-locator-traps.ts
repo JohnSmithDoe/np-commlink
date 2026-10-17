@@ -22,9 +22,10 @@ const calleeName = (node: {
   callee: { type: string; property?: { type: string; name?: string } };
 }): string | undefined => {
   const { callee } = node;
-  if (callee.type !== 'MemberExpression') return undefined;
-  if (callee.property?.type !== 'Identifier') return undefined;
-  return callee.property.name;
+  return callee.type === 'MemberExpression' &&
+    callee.property?.type === 'Identifier'
+    ? callee.property.name
+    : undefined;
 };
 
 const firstStringArgument = (node: {
@@ -50,15 +51,14 @@ export const rule: Rule.RuleModule = {
         'Ionic puts `role="dialog"` on a wrapper inside `ion-modal`\'s shadow root, never on the host, so `getByRole(\'dialog\')` matches nothing and the spec fails as "not found" rather than as "wrong". Key a presented dialog off `.show-modal` plus its title — `presentedDialog` in `e2e/helpers.ts`.',
     },
   },
-  create(context) {
+  create: (context) => {
     return {
       CallExpression(node) {
         const name = calleeName(node);
 
         if (name === 'locator') {
           const selector = firstStringArgument(node);
-          if (!selector?.includes(TOAST)) return;
-          if (selector.includes(NARROWED)) return;
+          if (!selector?.includes(TOAST) || selector.includes(NARROWED)) return;
           context.report({
             node,
             messageId: 'toastNotNarrowed',

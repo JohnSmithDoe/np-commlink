@@ -21,7 +21,9 @@ describe('CategoryFilterBarComponent', () => {
     component = fixture.componentInstance;
     selected = [];
     cleared = 0;
-    component.selectCategory.subscribe((id) => selected.push(id));
+    component.selectCategory.subscribe((id) => {
+      selected.push(id);
+    });
     component.clearFilter.subscribe(() => (cleared += 1));
     fixture.componentRef.setInput('catalog', [
       { id: 'cat-1', name: 'Dairy' },

@@ -25,14 +25,15 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   templateUrl: './edit-shopping-item-dialog.component.html',
 })
 export class EditShoppingItemDialogComponent extends BaseHouseholdEditItemDialog<ShoppingItem> {
-  protected blank(): ShoppingItem {
-    return createShoppingItem('');
-  }
-
   readonly #shopping = inject(ShoppingFacade);
 
   protected readonly listId: HouseholdListId = SHOPPING_LIST_ID;
+
   readonly siblings = this.#shopping.allItems;
+
+  protected blank(): ShoppingItem {
+    return createShoppingItem('');
+  }
 
   protected save(item: ShoppingItem): void {
     this.#shopping.saveItem(item);

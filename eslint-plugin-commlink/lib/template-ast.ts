@@ -18,6 +18,9 @@
  * from inside a rule into a message naming the parser that is missing,
  * which is what a template rule configured onto a TypeScript-parsed file
  * otherwise fails as.
+ *
+ * `templateListener` exists because ESLint's `RuleListener` types only
+ * ESTree nodes: a template handler is assignable to none of its entries.
  * ───────────────────────────────────────────────────────────────── */
 
 import type { Rule } from 'eslint';
@@ -25,6 +28,7 @@ import type {
   TemplateAttribute,
   TemplateBoundAttribute,
   TemplateElement,
+  TemplateHandlers,
   TemplateNode,
   TemplateParserServices,
 } from './template-ast.types.ts';
@@ -41,10 +45,12 @@ const CHILD_KEYS = [
   'error',
 ];
 
-export const attributeNames = (element: TemplateElement): string[] => [
-  ...element.attributes.map(({ name }) => name),
-  ...element.inputs.map(({ name }) => name),
-];
+export const attributeNames = (element: TemplateElement): string[] => {
+  return [
+    ...element.attributes.map(({ name }) => name),
+    ...element.inputs.map(({ name }) => name),
+  ];
+};
 
 export const hasAttribute = (element: TemplateElement, name: string): boolean =>
   attributeNames(element).includes(name);
@@ -74,7 +80,8 @@ export const descendants = function* (
 ): Generator<TemplateNode> {
   for (const key of CHILD_KEYS) {
     const value = node[key];
-    for (const child of Array.isArray(value) ? value : [value]) {
+    const children = Array.isArray(value) ? value : [value];
+    for (const child of children) {
       if (!child || typeof child !== 'object') continue;
       yield child as TemplateNode;
       yield* descendants(child as TemplateNode);
@@ -104,7 +111,7 @@ export const hasChildInSlot = (
   return false;
 };
 
-export const containsElement = (
+export const hasDescendantElement = (
   element: TemplateElement,
   name: string
 ): boolean => {
@@ -129,3 +136,8 @@ export const templateParserServices = (
   }
   return services as TemplateParserServices;
 };
+
+export const templateListener = (
+  template: TemplateHandlers,
+  script: Rule.RuleListener = {}
+): Rule.RuleListener => ({ ...script, ...template }) as Rule.RuleListener;

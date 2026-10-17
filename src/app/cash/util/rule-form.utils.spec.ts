@@ -8,12 +8,14 @@ import {
   toConditionForm,
 } from './rule-form.utils';
 
-const amount = (value: string) => ({
-  field: 'amount' as const,
-  op: 'gt' as const,
-  value,
-  caseSensitive: true,
-});
+const amount = (value: string) => {
+  return {
+    field: 'amount' as const,
+    op: 'gt' as const,
+    value,
+    caseSensitive: true,
+  };
+};
 
 describe('rule-form.utils', () => {
   describe('opsFor', () => {

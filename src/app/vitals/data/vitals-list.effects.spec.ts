@@ -14,27 +14,23 @@ import { VITALS_STATE_KEY } from './vitals.selector';
 
 const stored = mockReading({ id: 'stored', name: '2026-08-20' });
 
-const emissions = (): Promise<Action[]> =>
-  firstValueFrom(
+const emissions = (): Promise<Action[]> => {
+  return firstValueFrom(
     TestBed.runInInjectionContext(() =>
       readingsListEffects.addOrUpdateItem$()
     ).pipe(toArray())
   );
+};
 
 describe('readingsListEffects — matching on the id alone', () => {
   let actions$: Observable<Action>;
 
   const setup = () => {
+    const vitals = mockVitalsState({ readings: mockReadingsState([stored]) });
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: {
-            [VITALS_STATE_KEY]: mockVitalsState({
-              readings: mockReadingsState([stored]),
-            }),
-          },
-        }),
+        provideMockStore({ initialState: { [VITALS_STATE_KEY]: vitals } }),
       ],
     });
   };

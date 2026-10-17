@@ -33,7 +33,7 @@
 import ionicCorePackage from '@ionic/core/package.json';
 
 const majorVersionOf = (range: string): number =>
-  Number.parseInt(/^\D*(\d+)/.exec(range)?.[1] ?? '', 10);
+  Math.trunc(Number(/^\D*(\d+)/.exec(range)?.[1]));
 
 const ASSUMPTIONS = [
   {
@@ -69,12 +69,13 @@ describe('Ionic a11y assumptions', () => {
     const expired = ASSUMPTIONS.filter(
       (assumption) =>
         majorVersionOf(assumption.observed) !== assumption.verifiedMajor
-    ).map(
-      (assumption) =>
+    ).map((assumption) => {
+      return (
         `${assumption.packageName}: read against major ${assumption.verifiedMajor}, installed ${assumption.observed}. ` +
         'This does NOT mean a fact broke — the reading expired. Re-read, then bump the constant in the same commit:\n  - ' +
         assumption.reverify.join('\n  - ')
-    );
+      );
+    });
 
     expect(expired).toEqual([]);
   });

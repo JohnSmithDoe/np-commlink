@@ -42,25 +42,33 @@ import {
 export class VitalsIChingPage {
   readonly #profiles = inject(ProfilesFacade);
 
-  readonly today = inject(TodayService).today;
   readonly #routeProfile = this.#profiles.routeProfile;
+
+  readonly today = inject(TodayService).today;
+
   readonly profile = computed(
     () => this.#routeProfile() ?? this.#profiles.favoriteProfile()
   );
+
   readonly date = linkedSignal(() => this.profile()?.birthDate ?? this.today());
 
   readonly star = computed(() => kiStarFor(this.date()));
+
   readonly kiYear = computed(() => kiYearFor(this.date()));
+
   readonly lifeNumber = computed(() => lifeNumberFor(this.date()));
+
   readonly digitSum = computed(() => birthDigitSumFor(this.date()));
 
   readonly todayStar = computed(() => kiStarFor(this.today()));
+
   readonly todayKiYear = computed(() => kiYearFor(this.today()));
 
   readonly castHref = computed(() => {
     const id = this.#routeProfile()?.id;
     return id ? `/vitals/profiles/${id}/iching/cast` : '/vitals/iching/cast';
   });
+
   readonly returnRoute = computed(() => {
     const id = this.#routeProfile()?.id;
     return id ? `/vitals/profiles/${id}` : undefined;

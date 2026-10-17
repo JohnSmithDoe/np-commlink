@@ -31,6 +31,7 @@ describe('EditGameDialogComponent', () => {
     categoryIds: ['default'],
     playerIds: ['p1'],
   });
+  const games = mockGamesState([skat]);
 
   const setup = (
     seed: Game = skat,
@@ -39,9 +40,7 @@ describe('EditGameDialogComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideTestingProviders({
-          trackplay: mockTrackplayState({
-            games: mockGamesState([skat]),
-          }),
+          trackplay: mockTrackplayState({ games }),
         }),
         providePeople([
           mockPlayer({ id: 'p1', name: 'Alice' }),
@@ -118,7 +117,7 @@ describe('EditGameDialogComponent', () => {
 
   it('saves and navigates to the game the draft already names', () => {
     setup(mockGame({ id: 'new', name: '', playerIds: ['p1'] }), 'create');
-    const navigate = vi
+    const isNavigate = vi
       .spyOn(TestBed.inject(Router), 'navigate')
       .mockResolvedValue(true);
 
@@ -130,19 +129,19 @@ describe('EditGameDialogComponent', () => {
         expect.objectContaining({ id: 'new', name: 'Canasta' }) as never
       )
     );
-    expect(navigate).toHaveBeenCalledWith(['/trackplay/games', 'new']);
+    expect(isNavigate).toHaveBeenCalledWith(['/trackplay/games', 'new']);
     expect(host.request()).toBeNull();
   });
 
   it('neither saves nor navigates without a roster', () => {
     setup(mockGame({ id: 'new', name: 'Canasta', playerIds: [] }), 'create');
-    const navigate = vi
+    const isNavigate = vi
       .spyOn(TestBed.inject(Router), 'navigate')
       .mockResolvedValue(true);
 
     component.playNow();
 
     expect(dispatch).not.toHaveBeenCalled();
-    expect(navigate).not.toHaveBeenCalled();
+    expect(isNavigate).not.toHaveBeenCalled();
   });
 });

@@ -50,15 +50,17 @@ async function openCatalog(page: Page) {
   await expect(catalogPage(page)).toBeVisible({ timeout: 10_000 });
 }
 
-async function addCategory(page: Page, name: string) {
+const CATEGORY = 'Arbeit';
+
+async function addCategory(page: Page) {
   const input = catalogPage(page).locator('ion-searchbar input');
   await input.click();
-  await input.fill(name);
+  await input.fill(CATEGORY);
   await page.waitForTimeout(400); // > the searchbar's 250ms debounce
   await input.press('Enter');
   await input.fill('');
   await page.waitForTimeout(400);
-  await expect(catalogRow(page, name)).toBeVisible({ timeout: 10_000 });
+  await expect(catalogRow(page, CATEGORY)).toBeVisible({ timeout: 10_000 });
 }
 
 const catalogRow = (page: Page, name: string) =>
@@ -72,7 +74,7 @@ test.describe('manage categories', () => {
 
   test('adds a category from the catalog page', async ({ page }) => {
     await openCatalog(page);
-    await addCategory(page, 'Arbeit');
+    await addCategory(page);
 
     await expect(catalogRow(page, 'Arbeit')).toContainText('0');
 
@@ -84,7 +86,7 @@ test.describe('manage categories', () => {
     page,
   }) => {
     await openCatalog(page);
-    await addCategory(page, 'Arbeit');
+    await addCategory(page);
     await waitForPersisted(page, 'tasks', 'Arbeit');
 
     const row = catalogRow(page, 'Arbeit');
@@ -103,7 +105,7 @@ test.describe('manage categories', () => {
 
   test('drills from a category into the filtered list', async ({ page }) => {
     await openCatalog(page);
-    await addCategory(page, 'Arbeit');
+    await addCategory(page);
     await waitForPersisted(page, 'tasks', 'Arbeit');
 
     await catalogRow(page, 'Arbeit').click();
@@ -118,7 +120,7 @@ test.describe('manage categories', () => {
     page,
   }) => {
     await openCatalog(page);
-    await addCategory(page, 'Arbeit');
+    await addCategory(page);
     await waitForPersisted(page, 'tasks', 'Arbeit');
 
     await catalogRow(page, 'Arbeit').click();

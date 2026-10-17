@@ -18,7 +18,7 @@ const createOn = (platform: string) => {
   return TestBed.createComponent(ItemNameInputComponent).componentInstance;
 };
 
-const offersPicker = (component: ItemNameInputComponent) =>
+const isOffersPicker = (component: ItemNameInputComponent) =>
   (component as unknown as { offersEmojiPicker: boolean }).offersEmojiPicker;
 
 describe('ItemNameInputComponent', () => {
@@ -79,11 +79,11 @@ describe('ItemNameInputComponent', () => {
 
   describe('the emoji picker gate', () => {
     it('offers the picker on desktop', () => {
-      expect(offersPicker(createOn('desktop'))).toBe(true);
+      expect(isOffersPicker(createOn('desktop'))).toBe(true);
     });
 
     it('leaves it to the keyboard on mobile', () => {
-      expect(offersPicker(createOn('mobile'))).toBe(false);
+      expect(isOffersPicker(createOn('mobile'))).toBe(false);
     });
   });
 });

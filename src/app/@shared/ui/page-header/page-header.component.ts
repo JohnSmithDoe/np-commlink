@@ -43,7 +43,7 @@ export class PageHeaderComponent {
   readonly icon = input<string>();
   readonly hideButtons = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
-  readonly addItem = output<void>();
+  readonly creationRequested = output<void>();
 
   readonly glyph = computed(() => this.icon() ?? this.#program.icon);
 

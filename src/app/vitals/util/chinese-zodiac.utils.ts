@@ -77,8 +77,7 @@ const lunarYearOf = (date: dayjs.Dayjs): number | undefined => {
   const opening = NEW_YEAR_CORRECTIONS.get(year);
   const following = NEW_YEAR_CORRECTIONS.get(year + 1);
   if (opening && day < opening) return year - 1;
-  if (following && day >= following) return year + 1;
-  return year;
+  return following && day >= following ? year + 1 : year;
 };
 
 export const chineseYearFor = (iso: ISODate): number | undefined => {
@@ -115,14 +114,16 @@ export const lunarNewYear = (year: number): ISODate => {
   return isoDay(windowStart.add(low, 'day'));
 };
 
-export const chineseYearWindow = (year: number): ChineseYear => ({
-  year,
-  sign: chineseSignOfYear(year),
-  element: chineseElementOfYear(year),
-  polarity: chinesePolarityOfYear(year),
-  fromISO: lunarNewYear(year),
-  toISO: isoDay(dayjs(lunarNewYear(year + 1)).subtract(1, 'day')),
-});
+export const chineseYearWindow = (year: number): ChineseYear => {
+  return {
+    year,
+    sign: chineseSignOfYear(year),
+    element: chineseElementOfYear(year),
+    polarity: chinesePolarityOfYear(year),
+    fromISO: lunarNewYear(year),
+    toISO: isoDay(dayjs(lunarNewYear(year + 1)).subtract(1, 'day')),
+  };
+};
 
 const PHASE_OFFSETS: readonly [SeasonPhase, number][] = [
   ['previous', -1],
@@ -136,10 +137,12 @@ export const chineseTimelineAround = (
   const year = chineseYearFor(iso);
   if (year === undefined) return [];
 
-  return PHASE_OFFSETS.map(([phase, offset]) => ({
-    ...chineseYearWindow(year + offset),
-    phase,
-  }));
+  return PHASE_OFFSETS.map(([phase, offset]) => {
+    return {
+      ...chineseYearWindow(year + offset),
+      phase,
+    };
+  });
 };
 
 export const chineseCycleAround = (iso: ISODate): readonly ChineseYear[] => {

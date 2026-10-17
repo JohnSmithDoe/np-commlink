@@ -46,8 +46,8 @@ export class NotesListPageFacade extends BaseListPageFacade {
   readonly hasToolbar = signal(false);
   readonly undoScope = signal(NOTES_LIST_ID);
 
-  readonly sections = computed<readonly ListSection[]>(() =>
-    [
+  readonly sections = computed<readonly ListSection[]>(() => {
+    return [
       {
         id: PINNED_SECTION,
         labelKey: marker('notes.section.pinned'),
@@ -58,8 +58,8 @@ export class NotesListPageFacade extends BaseListPageFacade {
         labelKey: marker('notes.section.others'),
         items: this.unpinned(),
       },
-    ].filter((section) => section.items.length > 0)
-  );
+    ].filter((section) => section.items.length > 0);
+  });
 
   protected readonly commands = {
     search: (term?: string) =>

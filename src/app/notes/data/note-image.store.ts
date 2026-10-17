@@ -26,10 +26,11 @@ const keyOf = (id: NoteImageId): string => `${NOTE_IMAGE_KEY_PREFIX}${id}`;
 const without = (
   urls: Record<NoteImageId, string>,
   dropped: readonly NoteImageId[]
-): Record<NoteImageId, string> =>
-  Object.fromEntries(
+): Record<NoteImageId, string> => {
+  return Object.fromEntries(
     Object.entries(urls).filter(([id]) => !dropped.includes(id))
   );
+};
 
 @Service()
 export class NoteImageStore {
@@ -39,6 +40,19 @@ export class NoteImageStore {
   #hydrated?: Promise<void>;
 
   readonly urls = this.#urls.asReadonly();
+
+  async #readAll(): Promise<void> {
+    try {
+      const stored = await this.#database.loadPrefixed<NoteImage>(
+        NOTE_IMAGE_KEY_PREFIX
+      );
+      this.#urls.set(
+        Object.fromEntries(stored.map(({ id, dataUrl }) => [id, dataUrl]))
+      );
+    } catch {
+      this.#urls.set({});
+    }
+  }
 
   hydrate(): Promise<void> {
     return (this.#hydrated ??= this.#readAll());
@@ -64,18 +78,5 @@ export class NoteImageStore {
     await this.drop(
       Object.keys(this.#urls()).filter((id) => !referenced.has(id))
     );
-  }
-
-  async #readAll(): Promise<void> {
-    try {
-      const stored = await this.#database.loadPrefixed<NoteImage>(
-        NOTE_IMAGE_KEY_PREFIX
-      );
-      this.#urls.set(
-        Object.fromEntries(stored.map(({ id, dataUrl }) => [id, dataUrl]))
-      );
-    } catch {
-      this.#urls.set({});
-    }
   }
 }

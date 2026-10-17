@@ -5,23 +5,25 @@ import {
   findMatchingItem,
   indexOfMatchingItem,
   matcherFor,
-  matchesId,
-  matchesNameExactly,
-  matchesSearchExactly,
+  isSameId,
+  isSameName,
+  isExactSearchMatch,
   matchingTxt,
-  matchingTxtIsNotEmpty,
+  hasMatchingText,
   moveInList,
   parseNumberInput,
   revealedSideFromDrag,
   uuidv4,
 } from './app.utils';
 
-const baseItem = (over: Partial<BaseItem> = {}): BaseItem => ({
-  id: 'id-1',
-  name: 'Apple',
-  createdAt: '2024-01-01',
-  ...over,
-});
+const baseItem = (over: Partial<BaseItem> = {}): BaseItem => {
+  return {
+    id: 'id-1',
+    name: 'Apple',
+    createdAt: '2024-01-01',
+    ...over,
+  };
+};
 
 const dragEvent = (amount: number): IonDragEvent =>
   ({ detail: { amount, ratio: 0 } }) as IonDragEvent;
@@ -61,33 +63,25 @@ describe('app.utils', () => {
     });
 
     it('detects non-empty text', () => {
-      expect(matchingTxtIsNotEmpty('x')).toBe(true);
-      expect(matchingTxtIsNotEmpty('  ')).toBe(false);
-      expect(matchingTxtIsNotEmpty()).toBe(false);
+      expect(hasMatchingText('x')).toBe(true);
+      expect(hasMatchingText('  ')).toBe(false);
+      expect(hasMatchingText()).toBe(false);
     });
   });
 
   describe('matching', () => {
-    it('matchesNameExactly compares normalized names', () => {
+    it('isSameName compares normalized names', () => {
       expect(
-        matchesNameExactly(
-          baseItem({ name: 'Apple' }),
-          baseItem({ name: 'apple' })
-        )
+        isSameName(baseItem({ name: 'Apple' }), baseItem({ name: 'apple' }))
       ).toBe(true);
       expect(
-        matchesNameExactly(
-          baseItem({ name: 'Apple' }),
-          baseItem({ name: 'Pear' })
-        )
+        isSameName(baseItem({ name: 'Apple' }), baseItem({ name: 'Pear' }))
       ).toBe(false);
     });
 
-    it('matchesId compares by id', () => {
-      expect(matchesId(baseItem({ id: 'a' }), baseItem({ id: 'a' }))).toBe(
-        true
-      );
-      expect(matchesId(baseItem({ id: 'a' }), baseItem({ id: 'b' }))).toBe(
+    it('isSameId compares by id', () => {
+      expect(isSameId(baseItem({ id: 'a' }), baseItem({ id: 'a' }))).toBe(true);
+      expect(isSameId(baseItem({ id: 'a' }), baseItem({ id: 'b' }))).toBe(
         false
       );
     });
@@ -117,17 +111,17 @@ describe('app.utils', () => {
     });
 
     it('matcherFor matches an item or a string, case-insensitive, needle trimmed', () => {
-      const matches = matcherFor('  BAN ');
-      expect(matches('Banana')).toBe(true);
-      expect(matches(baseItem({ name: 'Banana' }))).toBe(true);
-      expect(matches('Cherry')).toBe(false);
+      const isMatches = matcherFor('  BAN ');
+      expect(isMatches('Banana')).toBe(true);
+      expect(isMatches(baseItem({ name: 'Banana' }))).toBe(true);
+      expect(isMatches('Cherry')).toBe(false);
       expect(matcherFor()('anything')).toBe(true);
     });
 
-    it('matchesSearchExactly requires a full normalized match', () => {
-      expect(matchesSearchExactly('Milk', 'milk')).toBe(true);
-      expect(matchesSearchExactly('Milk', 'mil')).toBe(false);
-      expect(matchesSearchExactly('')).toBe(true);
+    it('isExactSearchMatch requires a full normalized match', () => {
+      expect(isExactSearchMatch('Milk', 'milk')).toBe(true);
+      expect(isExactSearchMatch('Milk', 'mil')).toBe(false);
+      expect(isExactSearchMatch('')).toBe(true);
     });
   });
 

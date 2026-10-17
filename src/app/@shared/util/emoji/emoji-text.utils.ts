@@ -1,9 +1,10 @@
 const EMOJI_SEQUENCE =
   /\p{Extended_Pictographic}(?:️|[\u{1F3FB}-\u{1F3FF}]|‍\p{Extended_Pictographic}[️]?)*/gu;
 
-export const extractEmoji = (text: string): string[] => [
-  ...new Set(text.match(EMOJI_SEQUENCE)),
-];
+export const extractEmoji = (text: string): string[] => {
+  const unique = new Set(text.match(EMOJI_SEQUENCE));
+  return [...unique];
+};
 
 const orderedWithin = (
   text: string,

@@ -39,7 +39,7 @@ export const rule: Rule.RuleModule = {
         'This is an action `type` written out as a string. Match through the creator instead — `ofType(Actions.{{event}})`, or `case Actions.{{event}}.type`. A literal is a second copy of a name the creator owns: rename the event and this one keeps compiling while it stops matching, which is precisely how the camelCase rename broke three `case` statements. (Parsing the `[Source]` prefix alone is fine — that is a slice identity, not an event name.)',
     },
   },
-  create(context) {
+  create: (context) => {
     return {
       Literal(node) {
         const { value } = node;

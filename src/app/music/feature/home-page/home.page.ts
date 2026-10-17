@@ -61,14 +61,16 @@ export class MusicHomePage {
   readonly hasSources = this.#library.hasSources;
   readonly connected = inject(JamGateway).connected;
   readonly loadCover = (cover: CoverRef) => this.#covers.load(cover);
-  readonly sections = HOME_LISTS.map((list) => ({
-    list,
-    label: LIST_LABELS[list],
-    albums: resource({
-      params: () => this.#library.albums(),
-      loader: () => this.#library.homeList(list),
-    }),
-  }));
+  readonly sections = HOME_LISTS.map((list) => {
+    return {
+      list,
+      label: LIST_LABELS[list],
+      albums: resource({
+        params: () => this.#library.albums(),
+        loader: () => this.#library.homeList(list),
+      }),
+    };
+  });
   readonly playlists = resource({
     params: () => this.connected(),
     loader: () => this.#library.playlists(),

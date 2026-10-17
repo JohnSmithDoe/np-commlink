@@ -13,15 +13,19 @@ export const CashTransactionsActions = createActionGroup({
       items: CashTransaction[],
       confirmed: ImportConfirmation[] = []
     ) => ({ items, confirmed }),
-    bookTransfer: (fromLeg: CashTransaction, toLeg: CashTransaction) => ({
-      fromLeg,
-      toLeg,
-    }),
+    bookTransfer: (fromLeg: CashTransaction, toLeg: CashTransaction) => {
+      return {
+        fromLeg,
+        toLeg,
+      };
+    },
     recategorize: (changes: CashRecategorization[]) => ({ changes }),
-    reconcile: (manualId: string, importedId: string) => ({
-      manualId,
-      importedId,
-    }),
+    reconcile: (manualId: string, importedId: string) => {
+      return {
+        manualId,
+        importedId,
+      };
+    },
     unreconcile: (manualId: string) => ({ manualId }),
   },
 });

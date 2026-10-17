@@ -13,10 +13,12 @@ const fromBase = (base: number, unit: Unit): number =>
 export const convert = (value: number, from: Unit, to: Unit): number =>
   fromBase(toBase(value, from), to);
 
-export const formatNumber = (value: number, language: Language): string =>
-  new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
+export const formatNumber = (value: number, language: Language): string => {
+  const format = new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
     maximumSignificantDigits: SIGNIFICANT_DIGITS,
-  }).format(Number(value.toPrecision(NOISE_DIGITS)));
+  });
+  return format.format(Number(value.toPrecision(NOISE_DIGITS)));
+};
 
 const readableIn = (base: number, unit: Unit): number =>
   Math.abs(fromBase(base, unit));

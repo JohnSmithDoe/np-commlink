@@ -38,62 +38,6 @@ export class CashImportFacade {
   readonly #schedules = inject(CashSchedulesFacade);
   readonly #transactions = inject(CashTransactionsFacade);
 
-  plan(parsed: ParseResult, accountId: string): CashImportPreview {
-    const plan = planImport(
-      parsed,
-      accountId,
-      this.#rules.allItems(),
-      this.#transactions.allItems(),
-      uuidv4(),
-      uuidv4
-    );
-    const sightings = scheduleSightingsFor(
-      plan.toImport,
-      this.#schedules.allItems()
-    );
-    const categoryName = categoryNameLookup(this.#categories.allItems());
-
-    return {
-      accountId,
-      plan,
-      sightings,
-      rows: plan.toImport.map((transaction) => ({
-        transaction,
-        categoryName: categoryName(categoryIdOf(transaction)),
-      })),
-      amountChanges: changedAmounts(sightings).map((change) => ({
-        scheduleId: change.scheduleId,
-        scheduleName: this.#scheduleName(change.scheduleId),
-        fromCents: change.fromCents,
-        toCents: change.toCents,
-      })),
-      hasWork: plan.toImport.length > 0 || plan.toConfirm.length > 0,
-      closingBalanceCents: parsed.closingBalanceCents,
-      asOfISO: lastEntryDateISO(parsed.rows),
-    };
-  }
-
-  commit(preview: CashImportPreview): void {
-    const { plan, sightings, amountChanges, hasWork } = preview;
-    if (hasWork) {
-      this.#transactions.importItems(plan.toImport, plan.toConfirm);
-    }
-    if (sightings.length > 0) {
-      this.#schedules.applyAmountChanges(sightings);
-      if (amountChanges.length > 0) {
-        this.#schedules.reportAmountsLearned(amountChanges.length);
-      }
-    }
-    this.#reportBalanceDrift(preview);
-  }
-
-  adoptIban(accountId: string, iban: string): void {
-    const account = this.#accountById(accountId);
-    if (account && !account.iban) {
-      this.#accounts.saveItem({ ...account, iban });
-    }
-  }
-
   #reportBalanceDrift({
     accountId,
     closingBalanceCents,
@@ -121,5 +65,65 @@ export class CashImportFacade {
     return (
       this.#schedules.allItems().find(({ id }) => id === scheduleId)?.name ?? ''
     );
+  }
+
+  plan(parsed: ParseResult, accountId: string): CashImportPreview {
+    const plan = planImport(
+      parsed,
+      accountId,
+      this.#rules.allItems(),
+      this.#transactions.allItems(),
+      uuidv4(),
+      uuidv4
+    );
+    const sightings = scheduleSightingsFor(
+      plan.toImport,
+      this.#schedules.allItems()
+    );
+    const categoryName = categoryNameLookup(this.#categories.allItems());
+
+    return {
+      accountId,
+      plan,
+      sightings,
+      rows: plan.toImport.map((transaction) => {
+        return {
+          transaction,
+          categoryName: categoryName(categoryIdOf(transaction)),
+        };
+      }),
+      amountChanges: changedAmounts(sightings).map((change) => {
+        return {
+          scheduleId: change.scheduleId,
+          scheduleName: this.#scheduleName(change.scheduleId),
+          fromCents: change.fromCents,
+          toCents: change.toCents,
+        };
+      }),
+      hasWork: plan.toImport.length > 0 || plan.toConfirm.length > 0,
+      closingBalanceCents: parsed.closingBalanceCents,
+      asOfISO: lastEntryDateISO(parsed.rows),
+    };
+  }
+
+  commit(preview: CashImportPreview): void {
+    const { plan, sightings, amountChanges, hasWork } = preview;
+    if (hasWork) {
+      this.#transactions.importItems(plan.toImport, plan.toConfirm);
+    }
+    if (sightings.length > 0) {
+      this.#schedules.applyAmountChanges(sightings);
+      if (amountChanges.length > 0) {
+        this.#schedules.reportAmountsLearned(amountChanges.length);
+      }
+    }
+    this.#reportBalanceDrift(preview);
+  }
+
+  adoptIban(accountId: string, iban: string): void {
+    const account = this.#accountById(accountId);
+    if (account && !account.iban) {
+      this.#accounts.saveItem({ ...account, iban });
+    }
   }
 }

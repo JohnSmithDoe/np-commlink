@@ -80,7 +80,8 @@ describe('DashboardEffects', () => {
       database.bootstrap.mockRejectedValue(new Error('storage unavailable'));
       actions$ = of(DashboardReadModelActions.load());
 
-      expect(await firstValueFrom(effects.load$.pipe(toArray()))).toEqual([
+      const emitted = await firstValueFrom(effects.load$.pipe(toArray()));
+      expect(emitted).toEqual([
         DashboardReadModelActions.hydrate([]),
         NotificationsActions.toast({
           key: 'toast.storage.unavailable',
@@ -101,9 +102,10 @@ describe('DashboardEffects', () => {
         })
       );
 
-      expect(
-        await firstValueFrom(effects.persistSummary$.pipe(toArray()))
-      ).toEqual([]);
+      const emitted = await firstValueFrom(
+        effects.persistSummary$.pipe(toArray())
+      );
+      expect(emitted).toEqual([]);
       expect(database.save).toHaveBeenCalledWith(
         'summary-office-time',
         wrapVersioned(APP_VERSION, {
@@ -138,9 +140,10 @@ describe('DashboardEffects', () => {
       database.save.mockRejectedValue(new Error('quota exceeded'));
       actions$ = of(report('notifications'), report('office-time'));
 
-      expect(
-        await firstValueFrom(effects.persistSummary$.pipe(toArray()))
-      ).toEqual([
+      const emitted = await firstValueFrom(
+        effects.persistSummary$.pipe(toArray())
+      );
+      expect(emitted).toEqual([
         NotificationsActions.toast({
           key: 'toast.storage.write-failed',
           color: 'danger',

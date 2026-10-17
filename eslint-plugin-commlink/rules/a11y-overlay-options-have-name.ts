@@ -19,7 +19,7 @@ import {
   isCreateCall,
   isDecidable,
   overlayKind,
-  setsAriaLabelViaHtmlAttributes,
+  hasAriaLabelInHtmlAttributes,
 } from '../lib/overlay-options.ts';
 import type { CallExpression } from '../lib/overlay-options.ts';
 
@@ -46,17 +46,20 @@ export const rule: Rule.RuleModule = {
   create(context) {
     return {
       CallExpression(node: CallExpression) {
-        if (!isCreateCall(node)) return;
-        if (node.callee.type !== 'MemberExpression') return;
+        if (!isCreateCall(node) || node.callee.type !== 'MemberExpression')
+          return;
         const kind = overlayKind(node.callee.object);
         const sources = kind ? NAME_SOURCES[kind] : undefined;
         if (!sources || !kind) return;
 
         const [options] = node.arguments;
-        if (options?.type !== 'ObjectExpression') return;
-        if (!isDecidable(options)) return;
-        if (sources.some((source) => hasProperty(options, source))) return;
-        if (setsAriaLabelViaHtmlAttributes(options)) return;
+        if (
+          options?.type !== 'ObjectExpression' ||
+          !isDecidable(options) ||
+          sources.some((source) => hasProperty(options, source)) ||
+          hasAriaLabelInHtmlAttributes(options)
+        )
+          return;
 
         context.report({
           node: options as Rule.Node,

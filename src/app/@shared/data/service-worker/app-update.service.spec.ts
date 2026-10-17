@@ -4,12 +4,13 @@ import { Subject } from 'rxjs';
 import { AppReloadService } from './app-reload.service';
 import { AppUpdateService } from './app-update.service';
 
-const versionReady = (): VersionEvent =>
-  ({
+const versionReady = (): VersionEvent => {
+  return {
     type: 'VERSION_READY',
     currentVersion: { hash: 'old' },
     latestVersion: { hash: 'new' },
-  }) as VersionEvent;
+  } as VersionEvent;
+};
 
 describe('AppUpdateService', () => {
   let versionUpdates: Subject<VersionEvent>;

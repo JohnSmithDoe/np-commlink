@@ -24,7 +24,7 @@ import {
 import { CashSchedule } from '../model/schedule.types';
 import { CashTransaction } from '../model/transaction.types';
 import { categoryIdOf } from './cash-category.utils';
-import { matchesRule } from './categorize.utils';
+import { doesMatchRule } from './categorize.utils';
 import { createCashRule, createCashSchedule } from './cash.factory';
 
 const STEM_MIN_LENGTH = 3;
@@ -113,7 +113,7 @@ export function scheduleFrom(
 ): CashSchedule {
   const conditions = conditionsFrom(txn);
   const matched = history.filter((candidate) =>
-    matchesRule(candidate, { match: 'all', conditions })
+    doesMatchRule(candidate, { match: 'all', conditions })
   );
   const dates = [...matched.map(({ dateISO }) => dateISO), txn.dateISO];
   const periodMonths = periodMonthsFrom(dates);
@@ -143,7 +143,9 @@ export function matchSummary(
   transactions: readonly CashTransaction[],
   targetCategoryId: string
 ): MatchSummary {
-  const matched = transactions.filter((txn) => matchesRule(txn, conditionSet));
+  const matched = transactions.filter((txn) =>
+    doesMatchRule(txn, conditionSet)
+  );
   const conflicting = matched.filter((txn) => {
     const current = categoryIdOf(txn);
     return !!current && current !== targetCategoryId;

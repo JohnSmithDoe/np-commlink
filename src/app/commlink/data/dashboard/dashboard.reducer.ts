@@ -7,24 +7,30 @@ export const initialDashboardState: DashboardState = { bySource: {} };
 
 export const dashboardReducer = createReducer(
   initialDashboardState,
-  on(DashboardActions.report, (state, { telemetry }): DashboardState => ({
-    bySource: {
-      ...state.bySource,
-      [telemetry.source]: { ...telemetry, status: 'online' as const },
-    },
-  })),
+  on(DashboardActions.report, (state, { telemetry }): DashboardState => {
+    return {
+      bySource: {
+        ...state.bySource,
+        [telemetry.source]: { ...telemetry, status: 'online' as const },
+      },
+    };
+  }),
   on(
     DashboardReadModelActions.hydrate,
-    (state, { summaries }): DashboardState => ({
-      bySource: {
-        ...Object.fromEntries(
-          summaries.map((summary) => [
-            summary.source,
-            { ...summary, status: 'standby' as const },
-          ])
-        ),
-        ...state.bySource,
-      },
-    })
+    (state, { summaries }): DashboardState => {
+      return {
+        bySource: {
+          ...Object.fromEntries(
+            summaries.map((summary) => {
+              return [
+                summary.source,
+                { ...summary, status: 'standby' as const },
+              ];
+            })
+          ),
+          ...state.bySource,
+        },
+      };
+    }
   )
 );

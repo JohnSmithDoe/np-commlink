@@ -37,9 +37,8 @@ const SIGN_ROUTE = '/vitals/browse/zodiac';
   ],
 })
 export class VitalsBrowseSignPage {
-  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
-
   readonly #route = inject(ActivatedRoute);
+
   readonly #today = inject(TodayService).today;
 
   readonly #name = toSignal(
@@ -48,6 +47,8 @@ export class VitalsBrowseSignPage {
     ),
     { initialValue: '' }
   );
+
+  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
 
   readonly sign = computed(() => zodiacSignNamed(this.#name()));
 

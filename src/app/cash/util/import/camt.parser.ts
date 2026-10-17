@@ -112,23 +112,23 @@ const firstOf = (
   return undefined;
 };
 
-const counterpartyOf = (details: Element[], incoming: boolean): string => {
-  const role = incoming ? 'Dbtr' : 'Cdtr';
+const counterpartyOf = (details: Element[], isIncoming: boolean): string => {
+  const role = isIncoming ? 'Dbtr' : 'Cdtr';
   return (
-    firstOf(
-      details,
-      (detail) =>
+    firstOf(details, (detail) => {
+      return (
         textAt(detail, 'RltdPties', role, 'Pty', 'Nm') ||
         textAt(detail, 'RltdPties', role, 'Nm')
-    ) ?? ''
+      );
+    }) ?? ''
   );
 };
 
 const counterpartyIbanOf = (
   details: Element[],
-  incoming: boolean
+  isIncoming: boolean
 ): string | undefined => {
-  const account = incoming ? 'DbtrAcct' : 'CdtrAcct';
+  const account = isIncoming ? 'DbtrAcct' : 'CdtrAcct';
   return firstOf(details, (detail) =>
     textAt(detail, 'RltdPties', account, 'Id', 'IBAN')
   );
@@ -136,29 +136,29 @@ const counterpartyIbanOf = (
 
 const counterpartyBicOf = (
   details: Element[],
-  incoming: boolean
+  isIncoming: boolean
 ): string | undefined => {
-  const agent = incoming ? 'DbtrAgt' : 'CdtrAgt';
-  return firstOf(
-    details,
-    (detail) =>
+  const agent = isIncoming ? 'DbtrAgt' : 'CdtrAgt';
+  return firstOf(details, (detail) => {
+    return (
       textAt(detail, 'RltdAgts', agent, 'FinInstnId', 'BICFI') ||
       textAt(detail, 'RltdAgts', agent, 'FinInstnId', 'BIC')
-  );
+    );
+  });
 };
 
 const joinRemittance = (lines: readonly string[]): string => {
   let joined = '';
-  let continues = false;
+  let isContinued = false;
   for (const line of lines) {
-    joined += continues || joined.length === 0 ? line : ` ${line}`;
-    continues = line.length >= USTRD_MAX_LENGTH;
+    joined += isContinued || joined.length === 0 ? line : ` ${line}`;
+    isContinued = line.length >= USTRD_MAX_LENGTH;
   }
   return joined;
 };
 
-const remittanceOf = (details: Element[]): string =>
-  joinRemittance(
+const remittanceOf = (details: Element[]): string => {
+  return joinRemittance(
     details
       .flatMap((detail) => {
         const info = descend(detail, 'RmtInf');
@@ -170,21 +170,25 @@ const remittanceOf = (details: Element[]): string =>
       })
       .filter((line) => line.length > 0)
   );
+};
 
-const bankTxCodeOf = (entry: Element): string | undefined =>
-  textAt(entry, 'BkTxCd', 'Prtry', 'Cd') ||
-  textAt(entry, 'BkTxCd', 'Domn', 'Cd') ||
-  undefined;
+const bankTxCodeOf = (entry: Element): string | undefined => {
+  return (
+    textAt(entry, 'BkTxCd', 'Prtry', 'Cd') ||
+    textAt(entry, 'BkTxCd', 'Domn', 'Cd') ||
+    undefined
+  );
+};
 
-const detailsOf = (entry: Element, incoming: boolean): CamtDetails => {
+const detailsOf = (entry: Element, isIncoming: boolean): CamtDetails => {
   const details = childrenNamed(entry, 'NtryDtls').flatMap((group) =>
     childrenNamed(group, 'TxDtls')
   );
   const remittance = remittanceOf(details);
   return {
-    counterpartyName: counterpartyOf(details, incoming) || undefined,
-    counterpartyIban: counterpartyIbanOf(details, incoming),
-    counterpartyBic: counterpartyBicOf(details, incoming),
+    counterpartyName: counterpartyOf(details, isIncoming) || undefined,
+    counterpartyIban: counterpartyIbanOf(details, isIncoming),
+    counterpartyBic: counterpartyBicOf(details, isIncoming),
     remittanceInfo: remittance || undefined,
     endToEndId: firstOf(details, (detail) =>
       textAt(detail, 'Refs', 'EndToEndId')
@@ -202,8 +206,8 @@ const entryFrom = (entry: Element): ParsedEntry | null => {
   const sign = signOf(entry);
   if (dateISO === null || magnitude === null || sign === null) return null;
 
-  const incoming = sign > 0;
-  const details = detailsOf(entry, incoming);
+  const isIncoming = sign > 0;
+  const details = detailsOf(entry, isIncoming);
   return {
     ...details,
     dateISO,
@@ -230,15 +234,19 @@ const closingBalanceOf = (statement: Element): number | undefined => {
   return undefined;
 };
 
-const statementsIn = (document_: Document): Element[] =>
-  REPORT_ROOTS.flatMap((root) => [
-    ...document_.getElementsByTagNameNS(ANY_NS, root),
-  ]).flatMap((report) =>
-    STATEMENTS.flatMap((name) => childrenNamed(report, name))
+function elementsNamed(document_: Document, name: string): Element[] {
+  return [...document_.getElementsByTagNameNS(ANY_NS, name)];
+}
+
+const statementsIn = (document_: Document): Element[] => {
+  return REPORT_ROOTS.flatMap((root) => elementsNamed(document_, root)).flatMap(
+    (report) => STATEMENTS.flatMap((name) => childrenNamed(report, name))
   );
+};
 
 export function parseCamt(xml: string): CamtReport | null {
-  const parsed = new DOMParser().parseFromString(xml, 'application/xml');
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(xml, 'application/xml');
   const statements = statementsIn(parsed);
   if (statements.length === 0) return null;
 

@@ -5,17 +5,19 @@ export const handbookRoutes: Routes = [
   {
     path: '',
     title: marker('page-title.handbook'),
-    loadComponent: () =>
-      import('../feature/handbook-page/handbook.page').then(
-        (m) => m.HandbookPage
-      ),
+    loadComponent: async () => {
+      const { HandbookPage } =
+        await import('../feature/handbook-page/handbook.page');
+      return HandbookPage;
+    },
   },
   {
     path: ':slug',
     title: marker('page-title.handbook-article'),
-    loadComponent: () =>
-      import('../feature/handbook-article-page/handbook-article.page').then(
-        (m) => m.HandbookArticlePage
-      ),
+    loadComponent: async () => {
+      const { HandbookArticlePage } =
+        await import('../feature/handbook-article-page/handbook-article.page');
+      return HandbookArticlePage;
+    },
   },
 ];

@@ -24,14 +24,13 @@ import { EditRecipeDialogComponent } from '../edit-recipe-dialog/edit-recipe-dia
   providers: [{ provide: LIST_FACADE, useExisting: RecipesFacade }],
 })
 export class RecipesPage {
-  readonly facade = inject(RecipesFacade);
+  readonly #missingByRecipe = computed(() => {
+    return new Map(
+      this.facade.matches().map((match) => [match.recipe.id, match.missing])
+    );
+  });
 
-  readonly #missingByRecipe = computed(
-    () =>
-      new Map(
-        this.facade.matches().map((match) => [match.recipe.id, match.missing])
-      )
-  );
+  readonly facade = inject(RecipesFacade);
 
   constructor() {
     addIcons({ addOutline, removeOutline });

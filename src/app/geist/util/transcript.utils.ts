@@ -23,15 +23,17 @@ export const appendAnswerChunk = (
   turns: readonly GeistTurn[],
   id: number,
   chunk: string
-): GeistTurn[] =>
-  turns.map((turn) =>
+): GeistTurn[] => {
+  return turns.map((turn) =>
     turn.id === id ? { ...turn, answer: turn.answer + chunk } : turn
   );
+};
 
-export const noteForStreamError = (error: unknown): Marker =>
-  error instanceof DOMException && error.name === 'AbortError'
+export const noteForStreamError = (error: unknown): Marker => {
+  return error instanceof DOMException && error.name === 'AbortError'
     ? marker('geist.note.aborted')
     : marker('geist.note.failed');
+};
 
 export const isFollowingTail = (view: TranscriptView): boolean =>
   view.scrollHeight - view.scrollTop - view.clientHeight <= TAIL_SLACK_PX;

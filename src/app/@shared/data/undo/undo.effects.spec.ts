@@ -33,10 +33,11 @@ describe('undoEffects', () => {
 
   const emissions = (
     effect: (typeof undoEffects)[keyof typeof undoEffects]
-  ): Promise<Action[]> =>
-    firstValueFrom(
+  ): Promise<Action[]> => {
+    return firstValueFrom(
       TestBed.runInInjectionContext(() => effect()).pipe(toArray())
     );
+  };
 
   afterEach(() => store.resetSelectors());
 

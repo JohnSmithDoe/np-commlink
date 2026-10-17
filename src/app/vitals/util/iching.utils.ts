@@ -35,9 +35,9 @@ export const kiYearFor = (iso: ISODate): number | undefined => {
 
 export const kiStarFor = (iso: ISODate): KiStar | undefined => {
   const year = kiYearFor(iso);
-  if (year === undefined) return undefined;
-
-  return KI_STARS[(((KI_ANCHOR_YEAR - year) % 9) + 8) % 9];
+  return year === undefined
+    ? undefined
+    : KI_STARS[(((KI_ANCHOR_YEAR - year) % 9) + 8) % 9];
 };
 
 const digitSum = (digits: string): number => {

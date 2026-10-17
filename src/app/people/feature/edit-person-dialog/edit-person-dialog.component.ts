@@ -105,12 +105,14 @@ export class EditPersonDialogComponent extends BaseEditItemDialog<
               shoe: draft.shoe || undefined,
             },
       addresses: draft.addresses
-        .map(({ street, postalCode, city, country }) => ({
-          street,
-          postalCode,
-          city,
-          country,
-        }))
+        .map(({ street, postalCode, city, country }) => {
+          return {
+            street,
+            postalCode,
+            city,
+            country,
+          };
+        })
         .filter((address) => !isBlankAddress(address)),
     };
   }

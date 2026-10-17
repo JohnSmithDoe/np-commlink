@@ -68,22 +68,24 @@ const cachedName = (key: string, read: () => string): string => {
 export const localizedWeekday = (
   day: IsoWeekday,
   style: 'short' | 'long'
-): string =>
-  cachedName(`weekday.${day}.${style}`, () =>
-    dayjs()
+): string => {
+  return cachedName(`weekday.${day}.${style}`, () => {
+    return dayjs()
       .day(DAYJS_DAY[day])
-      .format(style === 'long' ? 'dddd' : 'dd')
-  );
+      .format(style === 'long' ? 'dddd' : 'dd');
+  });
+};
 
 export const localizedMonth = (
   month: IsoMonth,
   style: 'short' | 'long'
-): string =>
-  cachedName(`month.${month}.${style}`, () =>
-    dayjs()
+): string => {
+  return cachedName(`month.${month}.${style}`, () => {
+    return dayjs()
       .month(month - 1)
-      .format(style === 'long' ? 'MMMM' : 'MMM')
-  );
+      .format(style === 'long' ? 'MMMM' : 'MMM');
+  });
+};
 
 export const padClock = (value: number): string =>
   String(value).padStart(2, '0');
@@ -105,7 +107,5 @@ export const parseClock = (
 
   const hour = Number(match[1]);
   const minute = Number(match[2]);
-  if (hour > HOUR_MAX || minute > MINUTE_MAX) return undefined;
-
-  return { hour, minute };
+  return hour > HOUR_MAX || minute > MINUTE_MAX ? undefined : { hour, minute };
 };

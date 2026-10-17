@@ -13,42 +13,51 @@ import {
 export const deletePillCascade = (
   state: VitalsState,
   pill: Pill
-): VitalsState => ({
-  ...state,
-  pills: removeListItem<PillsState, Pill>(state.pills, pill),
-  intakes: state.intakes.filter((intake) => intake.pillId !== pill.id),
-});
+): VitalsState => {
+  return {
+    ...state,
+    pills: removeListItem<PillsState, Pill>(state.pills, pill),
+    intakes: state.intakes.filter((intake) => intake.pillId !== pill.id),
+  };
+};
 
 export const restorePillCascade = (
   state: VitalsState,
   pill: Pill,
   intakes: IntakesState
-): VitalsState => ({
-  ...state,
-  pills: addListItem<PillsState, Pill>(state.pills, pill),
-  intakes: [...state.intakes, ...intakes],
-});
+): VitalsState => {
+  return {
+    ...state,
+    pills: addListItem<PillsState, Pill>(state.pills, pill),
+    intakes: [...state.intakes, ...intakes],
+  };
+};
 
-const isLive =
-  (people: ReadonlySet<PersonId>) =>
-  (item: { profileId: PersonId }): boolean =>
-    people.has(item.profileId);
+type Owned = { readonly profileId: PersonId };
+
+const ownedByAnyOf = (people: ReadonlySet<PersonId>) => {
+  const isOwned = (item: Owned): boolean => people.has(item.profileId);
+  return isOwned;
+};
 
 export const hasOrphans = (
   state: VitalsState,
   people: ReadonlySet<PersonId>
-): boolean =>
-  !state.readings.items.every(isLive(people)) ||
-  !state.pills.items.every(isLive(people)) ||
-  Object.keys(state.profiles.astro).some((id) => !people.has(id)) ||
-  (state.profiles.favoriteId !== undefined &&
-    !people.has(state.profiles.favoriteId));
+): boolean => {
+  return (
+    !state.readings.items.every(ownedByAnyOf(people)) ||
+    !state.pills.items.every(ownedByAnyOf(people)) ||
+    Object.keys(state.profiles.astro).some((id) => !people.has(id)) ||
+    (state.profiles.favoriteId !== undefined &&
+      !people.has(state.profiles.favoriteId))
+  );
+};
 
 export const sweepOrphans = (
   state: VitalsState,
   people: ReadonlySet<PersonId>
 ): VitalsState => {
-  const pills = state.pills.items.filter(isLive(people));
+  const pills = state.pills.items.filter(ownedByAnyOf(people));
   const pillIds = new Set(pills.map((pill) => pill.id));
   const { astro, favoriteId } = state.profiles;
   return {
@@ -64,7 +73,7 @@ export const sweepOrphans = (
     },
     readings: {
       ...state.readings,
-      items: state.readings.items.filter(isLive(people)),
+      items: state.readings.items.filter(ownedByAnyOf(people)),
     },
     pills: { ...state.pills, items: pills },
     intakes: state.intakes.filter((intake) => pillIds.has(intake.pillId)),

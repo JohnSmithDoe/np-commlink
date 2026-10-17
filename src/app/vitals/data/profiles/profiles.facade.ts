@@ -44,10 +44,12 @@ export class ProfilesFacade {
   readonly allItems = computed(() =>
     profilesOf(this.#people() ?? [], this.#astro())
   );
-  readonly state = computed(() => ({
-    ...this.#view(),
-    items: this.allItems(),
-  }));
+  readonly state = computed(() => {
+    return {
+      ...this.#view(),
+      items: this.allItems(),
+    };
+  });
   readonly searchResult = computed(() => filterListBySearchQuery(this.state()));
   readonly items = computed(() =>
     filterAndSortItemList(this.state(), this.searchResult())

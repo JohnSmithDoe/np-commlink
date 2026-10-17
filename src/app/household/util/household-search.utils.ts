@@ -14,7 +14,7 @@ import { Category } from '../../@shared/model/category.types';
 import { ItemList } from '../../@shared/model/item-list.types';
 import { matcherFor, matchingTxt } from '../../@shared/util/app.utils';
 import {
-  anyCategoryNameMatches,
+  hasCategoryNameMatch,
   categoryNameLookup,
 } from '../../@shared/util/categories/category.utils';
 import { filterListBySearchQuery } from '../../@shared/util/item-lists/list.selector';
@@ -34,16 +34,16 @@ const crossListMatchesFor = <R extends BaseItem, T extends BaseItem>(
   const excluded = new Set(
     [...alreadyShown, ...result.listItems].map((shown) => matchingTxt(shown))
   );
-  const matches = matcherFor(searchQuery);
+  const isMatches = matcherFor(searchQuery);
   const nameOf = categoryNameLookup(catalog);
 
   const matchedByName: T[] = [];
   const matchedByCategory: T[] = [];
   for (const item of items) {
     if (excluded.has(matchingTxt(item))) continue;
-    if (matches(item)) {
+    if (isMatches(item)) {
       matchedByName.push(item);
-    } else if (anyCategoryNameMatches(item, nameOf, matches)) {
+    } else if (hasCategoryNameMatch(item, nameOf, isMatches)) {
       matchedByCategory.push(item);
     }
   }

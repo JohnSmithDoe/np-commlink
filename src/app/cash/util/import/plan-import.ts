@@ -31,24 +31,27 @@ const scopedKey = (accountId: string, importKey: string): string =>
 
 const importedByKey = (
   existing: readonly CashTransaction[]
-): Map<string, CashTransaction> =>
-  new Map(
+): Map<string, CashTransaction> => {
+  return new Map(
     existing
       .filter((txn) => txn.source === 'imported' && txn.importKey)
       .map((txn) => [scopedKey(txn.accountId, txn.importKey ?? ''), txn])
   );
+};
 
-const detailsFromRow = (row: ParsedRow): CamtDetails => ({
-  counterpartyName: row.counterpartyName,
-  counterpartyIban: row.counterpartyIban,
-  counterpartyBic: row.counterpartyBic,
-  remittanceInfo: row.remittanceInfo,
-  endToEndId: row.endToEndId,
-  mandateId: row.mandateId,
-  purposeCode: row.purposeCode,
-  bankTxCode: row.bankTxCode,
-  valueDateISO: row.valueDateISO,
-});
+const detailsFromRow = (row: ParsedRow): CamtDetails => {
+  return {
+    counterpartyName: row.counterpartyName,
+    counterpartyIban: row.counterpartyIban,
+    counterpartyBic: row.counterpartyBic,
+    remittanceInfo: row.remittanceInfo,
+    endToEndId: row.endToEndId,
+    mandateId: row.mandateId,
+    purposeCode: row.purposeCode,
+    bankTxCode: row.bankTxCode,
+    valueDateISO: row.valueDateISO,
+  };
+};
 
 const nameFromRow = (row: ParsedRow): string =>
   row.counterpartyName?.trim() || row.remittanceInfo?.trim() || row.description;
@@ -58,18 +61,20 @@ const transactionFromRow = (
   accountId: string,
   importBatchId: string,
   id: string
-): CashTransaction => ({
-  ...detailsFromRow(row),
-  id,
-  accountId,
-  dateISO: row.dateISO,
-  amountCents: row.amountCents,
-  name: nameFromRow(row),
-  source: 'imported',
-  status: row.status,
-  importBatchId,
-  importKey: importKeyOf(row),
-});
+): CashTransaction => {
+  return {
+    ...detailsFromRow(row),
+    id,
+    accountId,
+    dateISO: row.dateISO,
+    amountCents: row.amountCents,
+    name: nameFromRow(row),
+    source: 'imported',
+    status: row.status,
+    importBatchId,
+    importKey: importKeyOf(row),
+  };
+};
 
 const autoCategorized = (
   txn: CashTransaction,

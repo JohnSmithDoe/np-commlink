@@ -100,14 +100,14 @@ export class IntervalInputComponent {
 
   protected readonly summary = computed(() => intervalSummary(this.value()));
 
-  protected pickUnit(event: SegmentCustomEvent): void {
-    this.valueChange.emit(intervalForUnit(String(event.detail.value)));
-  }
-
   protected readonly maxCount = computed(() => {
     const period = this.period();
     return period ? MAX_COUNT[period.unit] : 1;
   });
+
+  protected pickUnit(event: SegmentCustomEvent): void {
+    this.valueChange.emit(intervalForUnit(String(event.detail.value)));
+  }
 
   protected pickCount(every: number | undefined): void {
     const period = this.period();
@@ -133,10 +133,11 @@ export class IntervalInputComponent {
   }
 }
 
-const toggled = <T extends number>(values: readonly T[], value: T): T[] =>
-  values.includes(value)
+const toggled = <T extends number>(values: readonly T[], value: T): T[] => {
+  return values.includes(value)
     ? values.filter((existing) => existing !== value)
     : sorted([...values, value]);
+};
 
 const intervalForUnit = (unit: string): Interval | undefined => {
   if (unit === 'day') return { unit: 'day', weekdays: [] };

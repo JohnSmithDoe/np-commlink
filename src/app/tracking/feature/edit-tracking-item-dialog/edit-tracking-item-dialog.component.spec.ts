@@ -21,16 +21,15 @@ describe('EditTrackingItemDialogComponent', () => {
   const sibling = mockTrackingItem({ id: 'other', name: 'Standup' });
 
   beforeEach(() => {
+    const initialState = mockKernelState({
+      tracking: mockTrackingState({ items: [sibling, seed] }),
+    });
     TestBed.configureTestingModule({
       imports: [EditTrackingItemDialogComponent],
       providers: [
         provideTranslateService(),
         provideZonelessChangeDetection(),
-        provideMockStore({
-          initialState: mockKernelState({
-            tracking: mockTrackingState({ items: [sibling, seed] }),
-          }),
-        }),
+        provideMockStore({ initialState }),
       ],
     });
     store = TestBed.inject(MockStore);

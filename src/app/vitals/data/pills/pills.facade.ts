@@ -35,8 +35,10 @@ export class PillsFacade {
     return isTakenOn(this.#intakes(), pill.id, this.#today());
   }
 
-  setTakenToday(pill: Pill, taken: boolean): void {
-    this.#store.dispatch(PillsActions.setTaken(pill.id, this.#today(), taken));
+  setTakenToday(pill: Pill, isTaken: boolean): void {
+    this.#store.dispatch(
+      PillsActions.setTaken(pill.id, this.#today(), isTaken)
+    );
   }
 
   showCreateDialog(): void {
@@ -58,14 +60,14 @@ export class PillsFacade {
   }
 
   removeItem(pill: Pill): void {
+    const intakes = this.#intakes().filter(
+      (intake) => intake.pillId === pill.id
+    );
     this.#store.dispatch(
       UndoActions.pushed({
         scope: PILLS_LIST_ID,
         name: pill.name,
-        action: VitalsActions.restorePill(
-          pill,
-          this.#intakes().filter((intake) => intake.pillId === pill.id)
-        ),
+        action: VitalsActions.restorePill(pill, intakes),
       })
     );
     this.#store.dispatch(PillsActions.removeItem(pill));

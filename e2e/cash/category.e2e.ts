@@ -48,9 +48,9 @@ test.describe('cash transaction category', () => {
       .locator('input');
     await expect(pickerSearch).toBeVisible({ timeout: 10_000 });
     await pickerSearch.fill('Kaffee');
-    const createKaffee = page.getByText('Kaffee erstellen');
-    await expect(createKaffee).toBeVisible({ timeout: 10_000 });
-    await createKaffee.click();
+    const kaffeeOption = page.getByText('Kaffee erstellen');
+    await expect(kaffeeOption).toBeVisible({ timeout: 10_000 });
+    await kaffeeOption.click();
 
     await expect(
       txnModal.locator('app-category-input').getByText('Kaffee')

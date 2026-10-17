@@ -22,28 +22,24 @@ describe('VitalsOrphansEffects', () => {
 
   const emittedFor = (people: Roster): Action[] => {
     roster.set(undefined);
+    const readings = mockReadingsState([
+      mockReading({ id: 'a', profileId: 'ann' }),
+      mockReading({ id: 'c', profileId: 'carl' }),
+    ]);
+    const vitals = mockVitalsState({ readings });
     TestBed.configureTestingModule({
       providers: [
         VitalsOrphansEffects,
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: {
-            [VITALS_STATE_KEY]: mockVitalsState({
-              readings: mockReadingsState([
-                mockReading({ id: 'a', profileId: 'ann' }),
-                mockReading({ id: 'c', profileId: 'carl' }),
-              ]),
-            }),
-          },
-        }),
+        provideMockStore({ initialState: { [VITALS_STATE_KEY]: vitals } }),
         { provide: PEOPLE, useValue: roster },
       ],
     });
     actions$ = of(VitalsActions.loaded(null));
     const emitted: Action[] = [];
-    TestBed.inject(VitalsOrphansEffects).sweepOrphans$.subscribe((action) =>
-      emitted.push(action)
-    );
+    TestBed.inject(VitalsOrphansEffects).sweepOrphans$.subscribe((action) => {
+      emitted.push(action);
+    });
     TestBed.tick();
     if (people) {
       roster.set(people);

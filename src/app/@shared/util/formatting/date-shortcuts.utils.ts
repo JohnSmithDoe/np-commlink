@@ -32,11 +32,12 @@ const SUNDAY = 0;
 const FRIDAY = 5;
 const DAYS_PER_WEEK = 7;
 
-export const nextWeekday = (now: Dayjs, weekday: number): Dayjs =>
-  now.add(
+export const nextWeekday = (now: Dayjs, weekday: number): Dayjs => {
+  return now.add(
     (weekday - now.day() + DAYS_PER_WEEK) % DAYS_PER_WEEK || DAYS_PER_WEEK,
     'day'
   );
+};
 
 const RESOLVE: Readonly<Record<DateShortcutId, (now: Dayjs) => Dayjs>> = {
   today: (now) => now,

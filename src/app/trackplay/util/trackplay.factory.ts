@@ -37,8 +37,8 @@ export const NO_PLAYER_STATS: PlayerStats = {
 
 export const DEFAULT_GAME_TYPE_ID: TrackplayId = 'default';
 
-export function createGameType(name: string, winHigh: boolean): GameType {
-  return { ...createBaseItem(name), winHigh };
+export function createGameType(name: string, isWinHigh: boolean): GameType {
+  return { ...createBaseItem(name), winHigh: isWinHigh };
 }
 
 export function createGame(

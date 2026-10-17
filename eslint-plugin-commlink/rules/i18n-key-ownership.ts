@@ -23,6 +23,7 @@
 
 import type { Rule } from 'eslint';
 import { ALL_DOMAIN_PREFIXES, keyOwnershipFor } from '../i18n-owners.ts';
+import { templateListener } from '../lib/template-ast.ts';
 import type { TemplateLiteralPrimitive } from '../lib/template-ast.types.ts';
 
 const NEUTRAL_NAMESPACES =
@@ -65,9 +66,9 @@ export const rule: Rule.RuleModule = {
       context.report({ node: node as Rule.Node, messageId });
     };
 
-    return {
-      Literal: check,
-      LiteralPrimitive: (node: TemplateLiteralPrimitive) => check(node),
-    };
+    return templateListener(
+      { LiteralPrimitive: (node: TemplateLiteralPrimitive) => check(node) },
+      { Literal: check }
+    );
   },
 };

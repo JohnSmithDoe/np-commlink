@@ -47,7 +47,9 @@ describe('CategoriesDialogComponent', () => {
     it('toggles a tapped row in and out of the pending selection without emitting', () => {
       open({ selection: ['cat-dairy'] });
       const confirmed: CategoryId[][] = [];
-      component.confirmed.subscribe((ids) => confirmed.push(ids));
+      component.confirmed.subscribe((ids) => {
+        confirmed.push(ids);
+      });
 
       component.rowClick(BAKERY);
       expect(component.isChecked(BAKERY)).toBe(true);
@@ -61,7 +63,9 @@ describe('CategoriesDialogComponent', () => {
     it('commits the whole pending selection on confirm, newest first', () => {
       open({ selection: ['cat-dairy'] });
       const confirmed: CategoryId[][] = [];
-      component.confirmed.subscribe((ids) => confirmed.push(ids));
+      component.confirmed.subscribe((ids) => {
+        confirmed.push(ids);
+      });
 
       component.rowClick(BAKERY);
       component.confirmMultiple();
@@ -93,7 +97,9 @@ describe('CategoriesDialogComponent', () => {
     it('picks and confirms in one tap', () => {
       open({ selection: ['cat-dairy'], multiple: false });
       const confirmed: CategoryId[][] = [];
-      component.confirmed.subscribe((ids) => confirmed.push(ids));
+      component.confirmed.subscribe((ids) => {
+        confirmed.push(ids);
+      });
 
       component.rowClick(BAKERY);
 
@@ -105,7 +111,9 @@ describe('CategoriesDialogComponent', () => {
     it('mints a category for a new name and selects the id it just published', () => {
       open();
       const added: Category[] = [];
-      component.addNew.subscribe((category) => added.push(category));
+      component.categoryCreated.subscribe((category) => {
+        added.push(category);
+      });
 
       type('Frozen');
       component.addNewCategory();
@@ -119,7 +127,9 @@ describe('CategoriesDialogComponent', () => {
     it('selects the existing category instead of minting a duplicate', () => {
       open();
       const added: Category[] = [];
-      component.addNew.subscribe((category) => added.push(category));
+      component.categoryCreated.subscribe((category) => {
+        added.push(category);
+      });
 
       type('  dAiRy ');
       component.addNewCategory();
@@ -131,7 +141,9 @@ describe('CategoriesDialogComponent', () => {
     it('does not select an existing category twice', () => {
       open({ selection: ['cat-dairy'] });
       const added: Category[] = [];
-      component.addNew.subscribe((category) => added.push(category));
+      component.categoryCreated.subscribe((category) => {
+        added.push(category);
+      });
 
       type('Dairy');
       component.addNewCategory();
@@ -144,8 +156,12 @@ describe('CategoriesDialogComponent', () => {
       open();
       const added: Category[] = [];
       const confirmed: CategoryId[][] = [];
-      component.addNew.subscribe((category) => added.push(category));
-      component.confirmed.subscribe((ids) => confirmed.push(ids));
+      component.categoryCreated.subscribe((category) => {
+        added.push(category);
+      });
+      component.confirmed.subscribe((ids) => {
+        confirmed.push(ids);
+      });
 
       type(' ');
       component.addNewCategory();
@@ -159,8 +175,12 @@ describe('CategoriesDialogComponent', () => {
       open({ multiple: false });
       const added: Category[] = [];
       const confirmed: CategoryId[][] = [];
-      component.addNew.subscribe((category) => added.push(category));
-      component.confirmed.subscribe((ids) => confirmed.push(ids));
+      component.categoryCreated.subscribe((category) => {
+        added.push(category);
+      });
+      component.confirmed.subscribe((ids) => {
+        confirmed.push(ids);
+      });
 
       type('Frozen');
       component.addNewCategory();
@@ -203,7 +223,9 @@ describe('CategoriesDialogComponent', () => {
     it('opens the editor on the current name and emits the trimmed one', async () => {
       open();
       const renamed: { id: CategoryId; to: string }[] = [];
-      component.renamed.subscribe((rename) => renamed.push(rename));
+      component.renamed.subscribe((rename) => {
+        renamed.push(rename);
+      });
 
       await component.startEdit(DAIRY);
       expect(component.renameText()).toBe('Dairy');
@@ -218,7 +240,9 @@ describe('CategoriesDialogComponent', () => {
     it('drops a blanked rename instead of emitting an empty name', async () => {
       open();
       const renamed: unknown[] = [];
-      component.renamed.subscribe((rename) => renamed.push(rename));
+      component.renamed.subscribe((rename) => {
+        renamed.push(rename);
+      });
 
       await component.startEdit(DAIRY);
       component.renameText.set(' ');
@@ -231,7 +255,9 @@ describe('CategoriesDialogComponent', () => {
     it('emits nothing when the edit is cancelled', async () => {
       open();
       const renamed: unknown[] = [];
-      component.renamed.subscribe((rename) => renamed.push(rename));
+      component.renamed.subscribe((rename) => {
+        renamed.push(rename);
+      });
 
       await component.startEdit(DAIRY);
       component.renameText.set('Fridge');
@@ -245,7 +271,9 @@ describe('CategoriesDialogComponent', () => {
   it('emits the delete and drops the category from the pending selection', async () => {
     open({ selection: ['cat-dairy', 'cat-bakery'] });
     const deleted: CategoryId[] = [];
-    component.deleted.subscribe((id) => deleted.push(id));
+    component.deleted.subscribe((id) => {
+      deleted.push(id);
+    });
 
     await component.deleteCategory(DAIRY);
 

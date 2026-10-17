@@ -11,16 +11,17 @@ import {
 import { OfficeTimeActions } from '../../data';
 import { DashButtonComponent } from './dash-button.component';
 
-const officeTimeWith = (officedays: dayjs.Dayjs[]) =>
-  mockKernelState({
+const officeTimeWith = (officedays: dayjs.Dayjs[]) => {
+  return mockKernelState({
     officeTime: mockOfficeTimeState({ officedays: dayMap(...officedays) }),
   });
+};
 
 describe('DashButtonComponent', () => {
   let store: MockStore;
 
-  const create = (todayIsOfficeDay: boolean): DashButtonComponent => {
-    store.setState(officeTimeWith(todayIsOfficeDay ? [dayjs()] : []));
+  const create = (isTodayIsOfficeDay: boolean): DashButtonComponent => {
+    store.setState(officeTimeWith(isTodayIsOfficeDay ? [dayjs()] : []));
     return TestBed.createComponent(DashButtonComponent).componentInstance;
   };
 

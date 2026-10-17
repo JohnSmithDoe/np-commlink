@@ -16,6 +16,7 @@ import {
   hasAccessibleNameAttribute,
   staticAttribute,
   templateParserServices,
+  templateListener,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
 
@@ -40,7 +41,7 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       'Element[name="ion-icon"]'(element: TemplateElement) {
         if (isHidden(element) || hasAccessibleNameAttribute(element)) return;
         context.report({
@@ -48,6 +49,6 @@ export const rule: Rule.RuleModule = {
           messageId: 'iconNeedsHiddenOrName',
         });
       },
-    };
+    });
   },
 };

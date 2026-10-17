@@ -27,12 +27,13 @@ const base64ToArrayBuffer = (base64: string): ArrayBuffer => {
 
 const headersOf = (
   config: InternalAxiosRequestConfig
-): Record<string, string> =>
-  Object.fromEntries(
+): Record<string, string> => {
+  return Object.fromEntries(
     Object.entries(AxiosHeaders.from(config.headers).toJSON())
       .filter(([, value]) => value !== undefined && value !== null)
       .map(([key, value]) => [key, String(value)])
   );
+};
 
 const bodyOf = (config: InternalAxiosRequestConfig): unknown =>
   typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
@@ -40,41 +41,48 @@ const bodyOf = (config: InternalAxiosRequestConfig): unknown =>
 const toAxiosResponse = (
   config: InternalAxiosRequestConfig,
   response: HttpResponse
-): AxiosResponse => ({
-  data:
-    config.responseType === 'arraybuffer' && typeof response.data === 'string'
-      ? base64ToArrayBuffer(response.data)
-      : response.data,
-  status: response.status,
-  statusText: String(response.status),
-  headers: AxiosHeaders.from(response.headers),
-  config,
-});
+): AxiosResponse => {
+  return {
+    data:
+      config.responseType === 'arraybuffer' && typeof response.data === 'string'
+        ? base64ToArrayBuffer(response.data)
+        : response.data,
+    status: response.status,
+    statusText: String(response.status),
+    headers: AxiosHeaders.from(response.headers),
+    config,
+  };
+};
 
-const send = (
+const send = async (
   http: NativeHttp,
   config: InternalAxiosRequestConfig
-): Promise<HttpResponse> =>
-  http
-    .request({
-      url: axios.getUri(config),
-      method: (config.method ?? 'get').toUpperCase(),
-      headers: headersOf(config),
-      data: bodyOf(config),
-      responseType:
-        config.responseType === 'arraybuffer' ? 'arraybuffer' : 'json',
-    })
-    .catch((error: unknown) => {
-      throw new AxiosError(
-        error instanceof Error ? error.message : 'Network Error',
-        AxiosError.ERR_NETWORK,
-        config
-      );
-    });
+): Promise<HttpResponse> => {
+  const options = {
+    url: axios.getUri(config),
+    method: (config.method ?? 'get').toUpperCase(),
+    headers: headersOf(config),
+    data: bodyOf(config),
+    responseType:
+      config.responseType === 'arraybuffer'
+        ? ('arraybuffer' as const)
+        : ('json' as const),
+  };
+  try {
+    return await http.request(options);
+  } catch (error: unknown) {
+    throw new AxiosError(
+      error instanceof Error ? error.message : 'Network Error',
+      AxiosError.ERR_NETWORK,
+      config
+    );
+  }
+};
 
-export const capacitorHttpAdapter =
-  (http: NativeHttp = CapacitorHttp): AxiosAdapter =>
-  async (config) => {
+export const capacitorHttpAdapter = (
+  http: NativeHttp = CapacitorHttp
+): AxiosAdapter => {
+  return async (config) => {
     const response = await send(http, config);
     const result = toAxiosResponse(config, response);
     if (response.status >= 400) {
@@ -88,3 +96,4 @@ export const capacitorHttpAdapter =
     }
     return result;
   };
+};

@@ -6,19 +6,23 @@ import { DashboardTelemetry } from '../../../@shared/model/dashboard.types';
 
 const telemetry = (
   overrides: Partial<DashboardTelemetry> = {}
-): DashboardTelemetry => ({
-  source: 'notifications',
-  metrics: { unread: 3 },
-  ...overrides,
-});
+): DashboardTelemetry => {
+  return {
+    source: 'notifications',
+    metrics: { unread: 3 },
+    ...overrides,
+  };
+};
 
 const summary = (
   overrides: Partial<DashboardSummary> = {}
-): DashboardSummary => ({
-  source: 'notifications',
-  metrics: { unread: 3 },
-  ...overrides,
-});
+): DashboardSummary => {
+  return {
+    source: 'notifications',
+    metrics: { unread: 3 },
+    ...overrides,
+  };
+};
 
 describe('dashboardReducer', () => {
   it('starts with an empty read-model', () => {
@@ -55,10 +59,9 @@ describe('dashboardReducer', () => {
         telemetry({ source: 'office-time', metrics: { officedays: 12 } })
       )
     );
-    expect(Object.keys(state.bySource).toSorted()).toEqual([
-      'notifications',
-      'office-time',
-    ]);
+    expect(
+      Object.keys(state.bySource).toSorted((a, b) => a.localeCompare(b))
+    ).toEqual(['notifications', 'office-time']);
     expect(state.bySource['office-time'].metrics['officedays']).toBe(12);
   });
 
@@ -114,10 +117,9 @@ describe('dashboardReducer', () => {
         withReport,
         DashboardReadModelActions.hydrate([summary()])
       );
-      expect(Object.keys(state.bySource).toSorted()).toEqual([
-        'cash',
-        'notifications',
-      ]);
+      expect(
+        Object.keys(state.bySource).toSorted((a, b) => a.localeCompare(b))
+      ).toEqual(['cash', 'notifications']);
       expect(state.bySource['cash'].status).toBe('online');
       expect(state.bySource['notifications'].status).toBe('standby');
     });

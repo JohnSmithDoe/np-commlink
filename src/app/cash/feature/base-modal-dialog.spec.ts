@@ -87,11 +87,11 @@ describe('BaseModalDialog', () => {
     modal.edit('a');
     modal.patch({ name: 'half typed' });
 
-    modal.entities.update((entities) =>
-      entities.map((entity) =>
+    modal.entities.update((entities) => {
+      return entities.map((entity) =>
         entity.id === 'a' ? { ...entity, name: 'Lebensmittel' } : entity
-      )
-    );
+      );
+    });
 
     expect(modal.draft()).toEqual({ name: 'half typed' });
   });

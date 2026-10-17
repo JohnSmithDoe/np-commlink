@@ -17,13 +17,12 @@ describe('PillsPageFacade', () => {
   afterEach(() => TestBed.inject(MockStore).resetSelectors());
 
   it('opens the create dialog seeded with the search query on enter', () => {
+    const vitals = mockVitalsState({
+      pills: mockPillsState([], { searchQuery: 'Ibuprofen' }),
+    });
     TestBed.configureTestingModule({
       providers: [
-        provideTestingProviders({
-          vitals: mockVitalsState({
-            pills: mockPillsState([], { searchQuery: 'Ibuprofen' }),
-          }),
-        }),
+        provideTestingProviders({ vitals }),
         providePersonEditor({ create: vi.fn() }),
       ],
     });

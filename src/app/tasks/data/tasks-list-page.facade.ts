@@ -41,18 +41,25 @@ const SORT_OPTIONS: readonly ItemListSortOption[] = [
 const OPEN_SECTION = 'open';
 const DONE_SECTION = 'done';
 
+const REOPENED_TOAST = marker('tasks.toast.reopened');
+const DONE_TOAST = marker('tasks.toast.done');
+
 @Service()
 export class TasksListPageFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
 
+  readonly #taggedWith = this.#store.selectSignal(selectTaskTaggedByCategory);
+
+  readonly #open = this.#store.selectSignal(selectOpenTasks);
+  readonly #done = this.#store.selectSignal(selectDoneTasks);
+
   protected readonly commands = itemListCommands(this.#store, TasksActions);
 
   readonly state = this.#store.selectSignal(selectTasksList);
   readonly undoScope = signal(TASKS_LIST_ID);
 
-  readonly #taggedWith = this.#store.selectSignal(selectTaskTaggedByCategory);
   readonly items = this.#store.selectSignal(selectTasksListItems);
   readonly searchResult = this.#store.selectSignal(selectTasksListSearchResult);
   readonly catalog = this.#store.selectSignal(selectTasksCategories);
@@ -60,9 +67,6 @@ export class TasksListPageFacade extends BaseListPageFacade {
 
   readonly allItems = this.#store.selectSignal(selectTaskItems);
   readonly settings = this.#store.selectSignal(selectTaskSettings);
-
-  readonly #open = this.#store.selectSignal(selectOpenTasks);
-  readonly #done = this.#store.selectSignal(selectDoneTasks);
 
   readonly sections = computed<readonly ListSection[]>(() => {
     const open = this.#open();
@@ -80,9 +84,7 @@ export class TasksListPageFacade extends BaseListPageFacade {
         scope: TASKS_LIST_ID,
         name: item.name,
         action: TasksActions.addOrUpdateItem(item),
-        toastKey: item.doneAt
-          ? marker('tasks.toast.reopened')
-          : marker('tasks.toast.done'),
+        toastKey: item.doneAt ? REOPENED_TOAST : DONE_TOAST,
       })
     );
     this.#store.dispatch(TasksActions.addOrUpdateItem(toggledDone(item)));
@@ -131,11 +133,15 @@ export class TasksListPageFacade extends BaseListPageFacade {
   removeCategory(id: CategoryId): void {
     const category = categoryById(this.catalog(), id);
     if (!category) return;
+    const restore = TasksActions.restoreCategory(
+      category,
+      this.#taggedWith()(id)
+    );
     this.#store.dispatch(
       UndoActions.pushed({
         scope: TASK_CATEGORIES_LIST_ID,
         name: category.name,
-        action: TasksActions.restoreCategory(category, this.#taggedWith()(id)),
+        action: restore,
       })
     );
     this.#store.dispatch(TaskCategoriesActions.removeItem(category));

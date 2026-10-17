@@ -36,7 +36,7 @@ export class BoardComponent {
 
     return this.figures().flatMap((figure) => {
       const field = spots.get(figure.fieldId);
-      return field ? [{ ...figure, x: field.x, y: field.y }] : [];
+      return field ? { ...figure, x: field.x, y: field.y } : [];
     });
   });
 

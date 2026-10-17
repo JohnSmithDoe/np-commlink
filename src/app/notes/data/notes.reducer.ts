@@ -30,85 +30,105 @@ export const initialState: NotesState = {
 
 const reorderedSection = (
   items: readonly Note[],
-  pinned: boolean,
+  isPinned: boolean,
   ids: readonly string[]
 ): Note[] => {
   const byId = new Map(items.map((note) => [note.id, note]));
   const moved = ids
     .map((id) => byId.get(id))
-    .filter((note): note is Note => !!note && !!note.pinned === pinned);
-  if (moved.length !== items.filter((note) => !!note.pinned === pinned).length)
+    .filter((note): note is Note => !!note && !!note.pinned === isPinned);
+  if (
+    moved.length !== items.filter((note) => !!note.pinned === isPinned).length
+  )
     return [...items];
 
   let next = 0;
   return items.map((note) =>
-    !!note.pinned === pinned ? (moved[next++] ?? note) : note
+    !!note.pinned === isPinned ? (moved[next++] ?? note) : note
   );
 };
 
-const withoutNote = (state: NotesState, id: string): NotesState => ({
-  list: {
-    ...state.list,
-    items: state.list.items.filter((note) => note.id !== id),
-  },
-});
+const withoutNote = (state: NotesState, id: string): NotesState => {
+  return {
+    list: {
+      ...state.list,
+      items: state.list.items.filter((note) => note.id !== id),
+    },
+  };
+};
 
 const mapNote = (
   state: NotesState,
   id: string,
   patch: (note: Note) => Note
-): NotesState => ({
-  list: {
-    ...state.list,
-    items: state.list.items.map((note) =>
-      note.id === id ? patch(note) : note
-    ),
-  },
-});
+): NotesState => {
+  return {
+    list: {
+      ...state.list,
+      items: state.list.items.map((note) =>
+        note.id === id ? patch(note) : note
+      ),
+    },
+  };
+};
 
 // prettier-ignore
 export const notesReducer = createReducer(
   initialState,
 
-  on(NotesActions.addItem, (state, { item }): NotesState => ({
-    list: { ...state.list, items: [item, ...state.list.items] },
-  })),
+  on(NotesActions.addItem, (state, { item }): NotesState => {
+    return {
+      list: { ...state.list, items: [item, ...state.list.items] },
+    };
+  }),
 
-  on(NotesActions.updateItem, (state, { item }): NotesState => ({
-    list: {
-      ...state.list,
-      items: state.list.items.map((note) =>
-        note.id === item.id ? { ...note, ...item, id: note.id } : note
-      ),
-    },
-  })),
+  on(NotesActions.updateItem, (state, { item }): NotesState => {
+    return {
+      list: {
+        ...state.list,
+        items: state.list.items.map((note) =>
+          note.id === item.id ? { ...note, ...item, id: note.id } : note
+        ),
+      },
+    };
+  }),
 
   on(NotesActions.togglePin, (state, { id }): NotesState =>
     mapNote(state, id, (note) => ({ ...note, pinned: !note.pinned }))),
 
-  on(NotesActions.addImage, (state, { noteId, imageId, at }): NotesState =>
-    mapNote(state, noteId, (note) => ({
-      ...note,
-      images: [...(note.images ?? []), imageId],
-      updatedAt: at,
-    }))),
+  on(NotesActions.addImage, (state, { noteId, imageId, at }): NotesState => {
+    return mapNote(state, noteId, (note) => {
+      return {
+        ...note,
+        images: [...(note.images ?? []), imageId],
+        updatedAt: at,
+      };
+    });
+  }),
 
-  on(NotesActions.removeImage, (state, { noteId, imageId, at }): NotesState =>
-    mapNote(state, noteId, (note) => ({
-      ...note,
-      images: note.images?.filter((id) => id !== imageId),
-      updatedAt: at,
-    }))),
+  on(NotesActions.removeImage, (state, { noteId, imageId, at }): NotesState => {
+    return mapNote(state, noteId, (note) => {
+      return {
+        ...note,
+        images: note.images?.filter((id) => id !== imageId),
+        updatedAt: at,
+      };
+    });
+  }),
 
   on(NotesActions.removeItem, (state, { item }): NotesState => withoutNote(state, item.id)),
   on(NotesActions.discardBlank, (state, { id }): NotesState => withoutNote(state, id)),
 
   on(NotesActions.updateSearch, (state, { searchQuery }): NotesState => withList(state, 'list', updateListSearch(state.list, searchQuery))),
-  on(NotesActions.reorderSection, (state, { pinned, ids }): NotesState => ({
-    list: { ...state.list, items: reorderedSection(state.list.items, pinned, ids) },
-  })),
+  on(NotesActions.reorderSection, (state, { pinned, ids }): NotesState => {
+    return {
+      list: { ...state.list, items: reorderedSection(state.list.items, pinned, ids) },
+    };
+  }),
 
-  on(NotesActions.loaded, (state, { notes }): NotesState => ({
-    list: hydratedList((notes ?? state).list),
-  }))
+  on(NotesActions.loaded, (state, { notes }): NotesState => {
+    return {
+      list: hydratedList((notes ?? state).list),
+    };
+  })
 );

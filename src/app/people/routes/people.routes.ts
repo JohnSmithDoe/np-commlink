@@ -5,7 +5,9 @@ export const peopleRoutes: Routes = [
   {
     path: '',
     title: marker('page-title.people'),
-    loadComponent: () =>
-      import('../feature/people-page/people.page').then((m) => m.PeoplePage),
+    loadComponent: async () => {
+      const { PeoplePage } = await import('../feature/people-page/people.page');
+      return PeoplePage;
+    },
   },
 ];

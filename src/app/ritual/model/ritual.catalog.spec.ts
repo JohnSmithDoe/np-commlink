@@ -4,7 +4,8 @@ describe('RITUAL_PROMPTS', () => {
   it('never reuses an id — a stored completion has to stay resolvable', () => {
     const ids = RITUAL_PROMPTS.map((prompt) => prompt.id);
 
-    expect(new Set(ids).size).toBe(ids.length);
+    const unique = new Set(ids);
+    expect(unique.size).toBe(ids.length);
   });
 
   it('keys every prompt off its own id', () => {

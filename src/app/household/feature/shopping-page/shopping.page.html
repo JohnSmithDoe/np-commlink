@@ -37,7 +37,7 @@
     [showQuantityActions]="true"
     [startSwipeAction]="startSwipeAction"
     (selectItem)="showEditDialog(item)"
-    (deleteItem)="removeItem(item)"
+    (deletionRequested)="removeItem(item)"
     (increment)="changeQuantity(item, +1)"
     (decrement)="changeQuantity(item, -1)"
     (startSwipe)="buyItem(item)"

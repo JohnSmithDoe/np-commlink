@@ -24,15 +24,14 @@ describe('ShoppingEffects', () => {
   const share = vi.fn(async (_options: ShareOptions) => ({}));
 
   const setup = (shopping: ShoppingState = mockShoppingState()) => {
+    const initialState = mockKernelState({
+      household: mockHouseholdState({ shopping }),
+    });
     TestBed.configureTestingModule({
       providers: [
         ShoppingEffects,
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: mockKernelState({
-            household: mockHouseholdState({ shopping }),
-          }),
-        }),
+        provideMockStore({ initialState }),
         {
           provide: TranslateService,
           useValue: { instant: (key: string) => key },

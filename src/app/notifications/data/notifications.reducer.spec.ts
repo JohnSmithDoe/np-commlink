@@ -11,34 +11,40 @@ import {
 
 const notification = (
   over: Partial<InboxNotification> = {}
-): InboxNotification => ({
-  id: '1',
-  name: 'Notification',
-  createdAt: '2026-06-01T08:00:00.000Z',
-  body: 'body',
-  icon: 'alarm',
-  color: 'primary',
-  status: 'open',
-  updatedAt: '2026-06-01T08:00:00.000Z',
-  ...over,
-});
+): InboxNotification => {
+  return {
+    id: '1',
+    name: 'Notification',
+    createdAt: '2026-06-01T08:00:00.000Z',
+    body: 'body',
+    icon: 'alarm',
+    color: 'primary',
+    status: 'open',
+    updatedAt: '2026-06-01T08:00:00.000Z',
+    ...over,
+  };
+};
 
-const withItems = (items: InboxNotification[]) => ({
-  ...initialNotificationsState,
-  items,
-});
+const withItems = (items: InboxNotification[]) => {
+  return {
+    ...initialNotificationsState,
+    items,
+  };
+};
 
 const projected = (
   over: Partial<ProjectedNotification> = {}
-): ProjectedNotification => ({
-  id: '1',
-  name: 'Notification',
-  body: 'body',
-  icon: 'alarm',
-  color: 'primary',
-  variant: 'running',
-  ...over,
-});
+): ProjectedNotification => {
+  return {
+    id: '1',
+    name: 'Notification',
+    body: 'body',
+    icon: 'alarm',
+    color: 'primary',
+    variant: 'running',
+    ...over,
+  };
+};
 
 describe('notificationsReducer', () => {
   it('prepends a published notification and replaces one with the same id', () => {
@@ -223,11 +229,13 @@ describe('notificationsReducer', () => {
       notificationsReducer(state, NotificationsInboxActions.markPageViewed(at))
         .lastViewedAt
     ).toBe(at);
+    const project = NotificationsActions.project(
+      'tracking',
+      [projected({ id: 'a' })],
+      at
+    );
     expect(
-      notificationsReducer(
-        withItems([]),
-        NotificationsActions.project('tracking', [projected({ id: 'a' })], at)
-      ).items[0].createdAt
+      notificationsReducer(withItems([]), project).items[0].createdAt
     ).toBe(at);
   });
 

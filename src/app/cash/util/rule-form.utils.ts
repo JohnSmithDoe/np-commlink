@@ -42,58 +42,63 @@ export const defaultOpFor = (field: FilterField): FilterOperation =>
 const NO_CONDITIONS = { kind: 'noConditions' } as const;
 export const UNPARSEABLE_AMOUNT = { kind: 'unparseableAmount' } as const;
 
-export const conditionRulesFor =
-  (language: () => Language) =>
-  (conditions: SchemaPathTree<RuleForm>['conditions']): void => {
+export const conditionRulesFor = (language: () => Language) => {
+  return (conditions: SchemaPathTree<RuleForm>['conditions']): void => {
     validate(conditions, ({ value }) =>
       value().length === 0 ? NO_CONDITIONS : null
     );
     applyEach(conditions, (condition) => {
       requireText(condition.value);
       validate(condition.value, ({ value, valueOf }) => {
-        const threshold = valueOf(condition.field) === 'amount';
-        return threshold && eurToCents(value(), language()) === null
+        const isThreshold = valueOf(condition.field) === 'amount';
+        return isThreshold && eurToCents(value(), language()) === null
           ? UNPARSEABLE_AMOUNT
           : null;
       });
     });
   };
+};
 
-export const ruleRulesFor =
-  (language: () => Language): SchemaFn<RuleForm> =>
-  (path) => {
+export const ruleRulesFor = (language: () => Language): SchemaFn<RuleForm> => {
+  return (path) => {
     requireText(path.categoryId);
     conditionRulesFor(language)(path.conditions);
   };
+};
 
-export const blankCondition = (): ConditionForm => ({
-  field: 'description',
-  op: 'contains',
-  value: '',
-  caseSensitive: false,
-});
+export const blankCondition = (): ConditionForm => {
+  return {
+    field: 'description',
+    op: 'contains',
+    value: '',
+    caseSensitive: false,
+  };
+};
 
 export const toConditionForm = ({
   field,
   op,
   value,
-  caseSensitive,
-}: CashFilterCondition): ConditionForm => ({
-  field,
-  op,
-  value,
-  caseSensitive: caseSensitive ?? false,
-});
+  caseSensitive = false,
+}: CashFilterCondition): ConditionForm => {
+  return {
+    field,
+    op,
+    value,
+    caseSensitive,
+  };
+};
 
 const toStoredThreshold = (value: string, language: Language): string => {
   const cents = eurToCents(value, language);
-  return cents === null ? value.trim() : centsToInput(cents, 'de');
+  return cents === null ? value.trim() : centsToInput(cents);
 };
 
 export const toCondition = (
   { field, op, value, caseSensitive }: ConditionForm,
   language: Language
-): CashFilterCondition =>
-  isTextFilterField(field)
+): CashFilterCondition => {
+  return isTextFilterField(field)
     ? { field, op, value: value.trim(), caseSensitive }
     : { field, op, value: toStoredThreshold(value, language) };
+};

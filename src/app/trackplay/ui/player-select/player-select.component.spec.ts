@@ -12,8 +12,8 @@ const players: Player[] = [
   mockPlayer({ id: 'd', name: 'Dave' }),
 ];
 
-const toggle = (checked: boolean): CheckboxCustomEvent =>
-  ({ detail: { checked } }) as CheckboxCustomEvent;
+const toggle = (isChecked: boolean): CheckboxCustomEvent =>
+  ({ detail: { checked: isChecked } }) as CheckboxCustomEvent;
 
 describe('TrackplayPlayerSelectComponent', () => {
   let fixture: ComponentFixture<TrackplayPlayerSelectComponent>;
@@ -55,7 +55,9 @@ describe('TrackplayPlayerSelectComponent', () => {
   it('emits the checked ids in display order when a player is checked on', () => {
     setup(['d', 'b']);
     const emitted: TrackplayId[][] = [];
-    component.selectionChange.subscribe((ids) => emitted.push(ids));
+    component.selectionChange.subscribe((ids) => {
+      emitted.push(ids);
+    });
 
     component.onToggle('a', toggle(true));
 
@@ -65,7 +67,9 @@ describe('TrackplayPlayerSelectComponent', () => {
   it('drops an id from the emitted selection when unchecked', () => {
     setup(['d', 'b']);
     const emitted: TrackplayId[][] = [];
-    component.selectionChange.subscribe((ids) => emitted.push(ids));
+    component.selectionChange.subscribe((ids) => {
+      emitted.push(ids);
+    });
 
     component.onToggle('b', toggle(false));
 
@@ -75,7 +79,9 @@ describe('TrackplayPlayerSelectComponent', () => {
   it('keeps the seat of a person who is gone, so editing a game never rewrites it', () => {
     setup(['d', 'gone']);
     const emitted: TrackplayId[][] = [];
-    component.selectionChange.subscribe((ids) => emitted.push(ids));
+    component.selectionChange.subscribe((ids) => {
+      emitted.push(ids);
+    });
 
     component.onToggle('a', toggle(true));
 

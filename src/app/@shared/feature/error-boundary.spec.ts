@@ -45,11 +45,12 @@ class RootShellComponent {}
 async function visit(url: string) {
   const fixture = TestBed.createComponent(RootShellComponent);
   await fixture.whenStable();
-  const navigation = TestBed.inject(Router).navigateByUrl(url);
-  const outcome = await navigation.then(
-    () => 'navigated',
-    (error: unknown) => error
-  );
+  let outcome: unknown = 'navigated';
+  try {
+    await TestBed.inject(Router).navigateByUrl(url);
+  } catch (error) {
+    outcome = error;
+  }
   await fixture.whenStable();
   const host = fixture.nativeElement as HTMLElement;
   return {

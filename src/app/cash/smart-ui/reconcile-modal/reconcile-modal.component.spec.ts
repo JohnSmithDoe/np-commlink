@@ -16,8 +16,8 @@ const pendingManualEntry = mockCashTransaction({
   status: 'pending',
 });
 
-const importedTxn = (overrides: Partial<CashTransaction> = {}) =>
-  mockCashTransaction({
+const importedTxn = (overrides: Partial<CashTransaction> = {}) => {
+  return mockCashTransaction({
     id: 'i1',
     accountId: 'a1',
     amountCents: -4299,
@@ -25,6 +25,7 @@ const importedTxn = (overrides: Partial<CashTransaction> = {}) =>
     source: 'imported',
     ...overrides,
   });
+};
 
 describe('CashReconcileModalComponent', () => {
   let component: CashReconcileModalComponent;

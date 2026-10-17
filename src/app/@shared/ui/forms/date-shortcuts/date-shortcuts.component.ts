@@ -36,17 +36,19 @@ const SHORTCUT_LABELS: Readonly<Record<DateShortcutId, Marker>> = {
   imports: [OptionChipsComponent, TranslatePipe],
 })
 export class DateShortcutsComponent {
+  readonly #translate = inject(TranslateService);
+
   readonly value = input('');
   readonly picked = output<string>();
 
-  readonly #translate = inject(TranslateService);
-
   protected readonly options: readonly ChipOption<DateShortcutId>[] =
-    DATE_SHORTCUT_IDS.map((id) => ({
-      key: id,
-      value: id,
-      label: this.#translate.instant(SHORTCUT_LABELS[id]),
-    }));
+    DATE_SHORTCUT_IDS.map((id) => {
+      return {
+        key: id,
+        value: id,
+        label: this.#translate.instant(SHORTCUT_LABELS[id]),
+      };
+    });
 
   protected readonly activeId = computed<DateShortcutId | undefined>(() => {
     const current = this.value();

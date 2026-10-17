@@ -45,16 +45,15 @@ import { HexPipe } from '../../util/hex.pipe';
   ],
 })
 export class CommlinkPage {
-  protected readonly wordmark = APP_WORDMARK;
   readonly #dashboard = inject(DashboardFacade);
+
   readonly #deck = inject(DeckFacade);
+
   readonly #languageModel = inject(LanguageModelService);
+
   readonly #skin = inject(ThemeService).skin;
+
   readonly #locale = inject(LanguageService).locale;
-
-  readonly programs = this.#deck.programs;
-
-  readonly chrome = computed(() => DECK_CHROME_LABELS[this.#skin()]);
 
   readonly #telemetry = this.#dashboard.dashboardState;
 
@@ -65,12 +64,21 @@ export class CommlinkPage {
       programStatus(program, telemetry, availability);
   });
 
+  readonly #now = toSignal(currentTime$, { initialValue: dayjs() });
+
+  protected readonly wordmark = APP_WORDMARK;
+
+  readonly programs = this.#deck.programs;
+
+  readonly chrome = computed(() => DECK_CHROME_LABELS[this.#skin()]);
+
   readonly total = this.#deck.slotCount;
-  readonly onlineCount = computed(
-    () =>
-      this.#deck.allPrograms().filter((p) => this.#statusOf()(p) === 'online')
-        .length
-  );
+
+  readonly onlineCount = computed(() => {
+    return this.#deck
+      .allPrograms()
+      .filter((p) => this.#statusOf()(p) === 'online').length;
+  });
 
   readonly tiles = computed(() => {
     const chrome = this.chrome();
@@ -93,22 +101,23 @@ export class CommlinkPage {
   });
 
   readonly noise = this.#dashboard.notificationsUnread;
-  readonly nuyenLabel = computed(() =>
-    currencyLabel(
+
+  readonly nuyenLabel = computed(() => {
+    return currencyLabel(
       this.#skin(),
       reportedMetric(this.#telemetry(), 'cash', 'balance') ?? 0,
       this.#locale()
-    )
-  );
-  readonly resonanceRating = computed(() =>
-    resonanceRatingOf(
+    );
+  });
+
+  readonly resonanceRating = computed(() => {
+    return resonanceRatingOf(
       reportedMetric(this.#telemetry(), 'office-time', 'percentage') ?? 0
-    )
-  );
+    );
+  });
 
   readonly bootDate = dayjs().format('ddd DD MMM YYYY').toUpperCase();
 
-  readonly #now = toSignal(currentTime$, { initialValue: dayjs() });
   readonly time = computed(() => this.#now().format('HH:mm:ss'));
 
   constructor() {

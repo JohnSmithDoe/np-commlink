@@ -28,10 +28,10 @@ import {
   waitForPersisted,
 } from '../helpers';
 
-function tile(page: Page, codename: string) {
+function marketTile(page: Page) {
   return mainContent(page)
     .getByTestId('deck-tile')
-    .filter({ hasText: codename });
+    .filter({ hasText: 'MARKET' });
 }
 
 test.describe('commlink cold launch', () => {
@@ -47,9 +47,9 @@ test.describe('commlink cold launch', () => {
     await page.goto('/#/commlink');
     await page.reload();
 
-    await expect(
-      tile(page, 'MARKET').getByTestId('deck-tile-badge')
-    ).toHaveText('2');
+    await expect(marketTile(page).getByTestId('deck-tile-badge')).toHaveText(
+      '2'
+    );
   });
 
   test('reconciles the tile to the live count when the module is opened', async ({
@@ -63,17 +63,17 @@ test.describe('commlink cold launch', () => {
     await enableDeckProgram(page, 'MARKET', 'shopping');
     await page.goto('/#/commlink');
     await page.reload();
-    await expect(
-      tile(page, 'MARKET').getByTestId('deck-tile-badge')
-    ).toHaveText('2');
+    await expect(marketTile(page).getByTestId('deck-tile-badge')).toHaveText(
+      '2'
+    );
 
     await gotoFeature(page, ROUTE.shopping);
     await addViaSearch(page, 'Eggs');
     await waitForListPage(page);
 
     await page.goto('/#/commlink');
-    await expect(
-      tile(page, 'MARKET').getByTestId('deck-tile-badge')
-    ).toHaveText('3');
+    await expect(marketTile(page).getByTestId('deck-tile-badge')).toHaveText(
+      '3'
+    );
   });
 });

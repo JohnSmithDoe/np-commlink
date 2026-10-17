@@ -66,10 +66,6 @@ export class ItemNameInputComponent implements FormValueControl<string> {
   protected readonly offersEmojiPicker = inject(Platform).is('desktop');
   protected readonly input = viewChild(IonInput);
 
-  constructor() {
-    addIcons({ happyOutline });
-  }
-
   readonly touch = output<void>();
   readonly submitted = output<void>();
 
@@ -84,6 +80,10 @@ export class ItemNameInputComponent implements FormValueControl<string> {
     return kind ? ERROR_TEXT[kind] : undefined;
   });
 
+  constructor() {
+    addIcons({ happyOutline });
+  }
+
   focus(): void {
     void this.input()?.setFocus();
   }
@@ -94,6 +94,6 @@ export class ItemNameInputComponent implements FormValueControl<string> {
   }
 
   protected onInput(event: InputCustomEvent): void {
-    this.value.set(String(event.detail.value ?? ''));
+    this.value.set(event.detail.value ?? '');
   }
 }

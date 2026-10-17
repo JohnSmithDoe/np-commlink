@@ -7,7 +7,7 @@ import {
   changedAmounts,
   dueStatus,
   dueThisMonthCents,
-  matchesSchedule,
+  doesMatchSchedule,
   monthsUntilDue,
   reserveCentsPerMonth,
   reserveTotalCents,
@@ -17,13 +17,13 @@ import {
 
 const JANUARY_6 = '2026-01-06T12:00:00+01:00';
 
-describe('matchesSchedule', () => {
+describe('doesMatchSchedule', () => {
   it('recognises a booking by the same conditions a rule would use', () => {
     const rent = mockCashSchedule();
     expect(
-      matchesSchedule(mockCashTransaction({ name: 'MIETE Januar' }), rent)
+      doesMatchSchedule(mockCashTransaction({ name: 'MIETE Januar' }), rent)
     ).toBe(true);
-    expect(matchesSchedule(mockCashTransaction(), rent)).toBe(false);
+    expect(doesMatchSchedule(mockCashTransaction(), rent)).toBe(false);
   });
 
   it('picks the schedule whose conditions match, not the first in the list', () => {

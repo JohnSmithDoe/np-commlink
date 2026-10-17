@@ -28,16 +28,22 @@ const initialRulesState: CashRulesState = {
 
 const reordered = (items: readonly CashRule[], ids: string[]): CashRule[] => {
   const byId = new Map(items.map((rule) => [rule.id, rule]));
-  const moved = ids.flatMap((id, index) => {
+  const moved: CashRule[] = [];
+  for (const [index, id] of ids.entries()) {
     const rule = byId.get(id);
-    if (!rule) return [];
+    if (!rule) continue;
     byId.delete(id);
-    return [{ ...rule, order: index }];
-  });
-  const untouched = [...byId.values()].map((rule, index) => ({
-    ...rule,
-    order: moved.length + index,
-  }));
+    moved.push({ ...rule, order: index });
+  }
+  const untouched = byId
+    .values()
+    .map((rule, index) => {
+      return {
+        ...rule,
+        order: moved.length + index,
+      };
+    })
+    .toArray();
   return [...moved, ...untouched];
 };
 
@@ -51,10 +57,12 @@ export const cashRulesReducer = createReducer(
   on(CashRulesActions.updateFilter, (state, { filterBy }): CashRulesState => ({ ...state, filterBy })),
   on(CashRulesActions.updateSort, (state, { sortBy, sortDirection }): CashRulesState => updateListSort(state, sortBy, sortDirection)),
 
-  on(CashRulesActions.reorder, (state, { ids }): CashRulesState => ({
-    ...state,
-    items: reordered(state.items, ids),
-  })),
+  on(CashRulesActions.reorder, (state, { ids }): CashRulesState => {
+    return {
+      ...state,
+      items: reordered(state.items, ids),
+    };
+  }),
 
   on(CashActions.loaded, (state, { cash }): CashRulesState => hydratedList({ ...initialRulesState, ...(cash?.rules ?? state) }))
 );

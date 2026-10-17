@@ -12,11 +12,13 @@ const glyphOf = (icon?: string) => {
       ...COMMON_TEST_PROVIDERS,
       {
         provide: PROGRAM_CONTEXT,
-        useValue: () => ({
-          icon: 'wallet-outline',
-          isProgram: true,
-          siblings: [],
-        }),
+        useValue: () => {
+          return {
+            icon: 'wallet-outline',
+            isProgram: true,
+            siblings: [],
+          };
+        },
       },
     ],
   });
@@ -97,10 +99,12 @@ describe('PageHeaderComponent', () => {
     });
   });
 
-  it('emits addItem when the add button is clicked', () => {
+  it('emits creationRequested when the add button is clicked', () => {
     fixture.detectChanges();
     const emitted: void[] = [];
-    component.addItem.subscribe(() => emitted.push(undefined));
+    component.creationRequested.subscribe(() => {
+      emitted.push(undefined);
+    });
 
     getByTestId(fixture, 'page-header-add').click();
 

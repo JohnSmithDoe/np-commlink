@@ -7,8 +7,8 @@ import {
 } from '../../testing/cash.test-data';
 import { CashCategoryPickerComponent } from './cash-category-picker.component';
 
-const withCategories = () =>
-  mockCashState({
+const withCategories = () => {
+  return mockCashState({
     categories: mockCashCategoryList({
       items: [
         mockCategory({ id: 'food', name: 'Lebensmittel' }),
@@ -16,6 +16,7 @@ const withCategories = () =>
       ],
     }),
   });
+};
 
 const setup = () => {
   TestBed.configureTestingModule({

@@ -35,10 +35,11 @@ const rootWith = (
 const forAccount = (
   transactions: CashTransaction[],
   overrides: Partial<CashState['transactions']> = {}
-) =>
-  selectRoutedAccountTransactions(
+) => {
+  return selectRoutedAccountTransactions(
     rootWith(transactions, { accountId: 'a' }, overrides)
   );
+};
 
 describe('cash transaction selectors', () => {
   describe('selectRoutedAccountTransactions', () => {

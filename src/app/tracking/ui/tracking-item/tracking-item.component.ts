@@ -70,7 +70,7 @@ export class TrackingItemComponent {
   readonly ionList = input.required<IonList>();
 
   readonly selectItem = output<void>();
-  readonly deleteItem = output<void>();
+  readonly deletionRequested = output<void>();
   readonly editItem = output<void>();
   readonly resetItem = output<void>();
 

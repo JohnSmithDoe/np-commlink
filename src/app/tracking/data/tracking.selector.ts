@@ -59,35 +59,40 @@ export const selectRunningTrackingItem = createSelector(
 
 export const selectAllTrackingSessions = createSelector(
   selectTrackingState,
-  (state: TrackingState): TrackingItem[] => [
-    ...liveSessions(state),
-    ...(state?.sessions ?? []),
-  ]
+  (state: TrackingState): TrackingItem[] => {
+    const stored = state?.sessions ?? [];
+    return [...liveSessions(state), ...stored];
+  }
 );
 
-const toMinuteResolution = (session: TrackingItem): TrackingItem => ({
-  ...session,
-  trackedTimeInSeconds:
-    Math.floor((session.trackedTimeInSeconds ?? 0) / 60) * 60,
-});
+const toMinuteResolution = (session: TrackingItem): TrackingItem => {
+  return {
+    ...session,
+    trackedTimeInSeconds:
+      Math.floor((session.trackedTimeInSeconds ?? 0) / 60) * 60,
+  };
+};
 
-const sameChartSessions = (a: TrackingItem[], b: TrackingItem[]): boolean =>
-  a.length === b.length &&
-  a.every((session, index) => {
-    const other = b[index];
-    return (
-      other !== undefined &&
-      session.id === other.id &&
-      session.name === other.name &&
-      session.startTime === other.startTime &&
-      session.trackedTimeInSeconds === other.trackedTimeInSeconds
-    );
-  });
+const isSameChartSessions = (a: TrackingItem[], b: TrackingItem[]): boolean => {
+  return (
+    a.length === b.length &&
+    a.every((session, index) => {
+      const other = b[index];
+      return (
+        other !== undefined &&
+        session.id === other.id &&
+        session.name === other.name &&
+        session.startTime === other.startTime &&
+        session.trackedTimeInSeconds === other.trackedTimeInSeconds
+      );
+    })
+  );
+};
 
 export const selectLiveChartSessions = createSelectorFactory<
   object,
   TrackingItem[]
->((projector) => resultMemoize(projector, sameChartSessions))(
+>((projector) => resultMemoize(projector, isSameChartSessions))(
   selectTrackingState,
   (state: TrackingState): TrackingItem[] =>
     liveSessions(state).map((session) => toMinuteResolution(session))

@@ -52,7 +52,7 @@ const withKnownDashboardItems = (
   storedItems: OfficeTimeState['dashboardItems'] | undefined
 ): OfficeTimeState['dashboardItems'] => {
   const known = (storedItems ?? initialOfficeTime.dashboardItems).filter(
-    (item) => item in DASHBOARD_CARD_VISIBILITY
+    (item) => Object.hasOwn(DASHBOARD_CARD_VISIBILITY, item)
   );
   const missing = initialOfficeTime.dashboardItems.filter(
     (item) => !known.includes(item)
@@ -60,62 +60,82 @@ const withKnownDashboardItems = (
   return [...known, ...missing];
 };
 
-const deserializedDayCollections = (stored: OfficeTimeStateStorage) => ({
-  holidays: holidayMapFrom(stored.holidays),
-  officedays: dayMapFrom(stored.officedays),
-  freedays: dayMapFrom(stored.freedays),
-});
+const deserializedDayCollections = (stored: OfficeTimeStateStorage) => {
+  return {
+    holidays: holidayMapFrom(stored.holidays),
+    officedays: dayMapFrom(stored.officedays),
+    freedays: dayMapFrom(stored.freedays),
+  };
+};
 
 export const officeTimeReducer = createReducer(
   initialOfficeTime,
   on(
     OfficeTimeActions.loadHolidaysSuccess,
-    (state, { holidays }): OfficeTimeState => ({
-      ...state,
-      holidays: { ...holidays },
-    })
+    (state, { holidays }): OfficeTimeState => {
+      return {
+        ...state,
+        holidays: { ...holidays },
+      };
+    }
   ),
-  on(OfficeTimeActions.addOfficeTime, (state, { today }): OfficeTimeState => ({
-    ...state,
-    officedays: { ...state.officedays, [dayjsToString(today)]: true },
-  })),
+  on(OfficeTimeActions.addOfficeTime, (state, { today }): OfficeTimeState => {
+    return {
+      ...state,
+      officedays: { ...state.officedays, [dayjsToString(today)]: true },
+    };
+  }),
   on(
     OfficeTimeActions.setOfficedays,
-    (state, { officedays }): OfficeTimeState => ({
-      ...state,
-      officedays: dayMapFrom(officedays),
-    })
+    (state, { officedays }): OfficeTimeState => {
+      return {
+        ...state,
+        officedays: dayMapFrom(officedays),
+      };
+    }
   ),
   on(
     OfficeTimeActions.saveTargetOfficeDaysPerWeek,
-    (state, { daysPerWeek }): OfficeTimeState => ({
-      ...state,
-      targetOfficeDaysPerWeek: daysPerWeek,
-    })
+    (state, { daysPerWeek }): OfficeTimeState => {
+      return {
+        ...state,
+        targetOfficeDaysPerWeek: daysPerWeek,
+      };
+    }
   ),
-  on(OfficeTimeActions.resetData, (state): OfficeTimeState => ({
-    ...initialOfficeTime,
-    holidays: state.holidays,
-  })),
-  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState => ({
-    ...state,
-    freedays: { ...state.freedays, [dayjsToString(freeday)]: true },
-  })),
-  on(OfficeTimeActions.setFreedays, (state, { freedays }): OfficeTimeState => ({
-    ...state,
-    freedays: withoutHolidays(dayMapFrom(freedays), state.holidays),
-  })),
+  on(OfficeTimeActions.resetData, (state): OfficeTimeState => {
+    return {
+      ...initialOfficeTime,
+      holidays: state.holidays,
+    };
+  }),
+  on(OfficeTimeActions.addFreeday, (state, { freeday }): OfficeTimeState => {
+    return {
+      ...state,
+      freedays: { ...state.freedays, [dayjsToString(freeday)]: true },
+    };
+  }),
+  on(OfficeTimeActions.setFreedays, (state, { freedays }): OfficeTimeState => {
+    return {
+      ...state,
+      freedays: withoutHolidays(dayMapFrom(freedays), state.holidays),
+    };
+  }),
   on(
     OfficeTimeActions.saveDashboardSettings,
-    (state, { key, active }): OfficeTimeState => ({
-      ...state,
-      dashboardSettings: { ...state.dashboardSettings, [key]: active },
-    })
+    (state, { key, active }): OfficeTimeState => {
+      return {
+        ...state,
+        dashboardSettings: { ...state.dashboardSettings, [key]: active },
+      };
+    }
   ),
-  on(OfficeTimeActions.setReminder, (state, { reminder }): OfficeTimeState => ({
-    ...state,
-    reminder,
-  })),
+  on(OfficeTimeActions.setReminder, (state, { reminder }): OfficeTimeState => {
+    return {
+      ...state,
+      reminder,
+    };
+  }),
   on(OfficeTimeActions.loaded, (state, { officeTime }): OfficeTimeState => {
     if (!officeTime) return state;
     return {

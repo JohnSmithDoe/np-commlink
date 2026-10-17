@@ -82,7 +82,7 @@ test.describe('trackplay dice', () => {
     const total = dice.getByTestId('dice-total');
     await expect(total).toBeVisible({ timeout: 15_000 });
     const settled = await tray(dice).allTextContents();
-    const values = settled.map((face) => Number.parseInt(face.trim(), 10));
+    const values = settled.map((face) => Math.trunc(Number(face.trim())));
 
     expect(values).toHaveLength(3);
     expect(values.every((value) => value >= 1 && value <= 6)).toBe(true);

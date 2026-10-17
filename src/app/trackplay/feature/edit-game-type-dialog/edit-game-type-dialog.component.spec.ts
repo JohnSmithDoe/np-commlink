@@ -18,14 +18,13 @@ describe('EditGameTypeDialogComponent', () => {
   let host: ItemDialogService;
 
   const skat = mockGameType({ id: 'skat', name: 'Skat', winHigh: true });
+  const gameTypes = mockGameTypesState([skat]);
 
   const setup = (seed = skat, editMode: 'create' | 'update' = 'update') => {
     TestBed.configureTestingModule({
       providers: [
         provideTestingProviders({
-          trackplay: mockTrackplayState({
-            gameTypes: mockGameTypesState([skat]),
-          }),
+          trackplay: mockTrackplayState({ gameTypes }),
         }),
       ],
     });

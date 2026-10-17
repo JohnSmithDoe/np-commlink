@@ -25,8 +25,8 @@ import { initialState, trackplayReducer } from './trackplay.reducer';
 
 const AT = '2026-05-01T08:00:00.000Z';
 
-const gameOf = (state: TrackplayState, id: string) =>
-  state.games.items.find((game) => game.id === id);
+const theGame = (state: TrackplayState) =>
+  state.games.items.find((game) => game.id === 'g');
 
 describe('trackplayReducer — composition', () => {
   it('returns the same state for an unknown action', () => {
@@ -47,8 +47,8 @@ describe('trackplayReducer — deleting a game and a type', () => {
     const deleted = trackplayReducer(start, GamesActions.removeItem(game));
     const restored = trackplayReducer(deleted, GamesActions.addItem(game));
 
-    expect(gameOf(deleted, 'g')).toBeUndefined();
-    expect(gameOf(restored, 'g')).toBeDefined();
+    expect(theGame(deleted)).toBeUndefined();
+    expect(theGame(restored)).toBeDefined();
   });
 
   it('refuses to delete the built-in default type', () => {
@@ -71,7 +71,7 @@ describe('trackplayReducer — deleting a game and a type', () => {
 
     const state = trackplayReducer(start, GameTypesActions.removeItem(custom));
 
-    expect(gameTypeIdOf(gameOf(state, 'g')!)).toBe('default');
+    expect(gameTypeIdOf(theGame(state)!)).toBe('default');
     expect(state.games.filterBy).toBeUndefined();
     expect(state.gamesForPlayer.filterBy).toBeUndefined();
   });
@@ -107,20 +107,17 @@ describe('trackplayReducer — deleting a game and a type', () => {
     );
 
     expect(restored.gameTypes.items).toContainEqual(custom);
-    expect(gameOf(restored, 'g')).toEqual(game);
+    expect(theGame(restored)).toEqual(game);
   });
 });
 
 describe('trackplayReducer — scoring stamps the game', () => {
-  const start = mockTrackplayState({
-    games: mockGamesState([
-      mockGame({
-        id: 'g',
-        playerIds: ['p1', 'p2'],
-        rounds: [mockRound({ id: 'r0', values: { p1: 0, p2: 0 } })],
-      }),
-    ]),
+  const scored = mockGame({
+    id: 'g',
+    playerIds: ['p1', 'p2'],
+    rounds: [mockRound({ id: 'r0', values: { p1: 0, p2: 0 } })],
   });
+  const start = mockTrackplayState({ games: mockGamesState([scored]) });
 
   const state = trackplayReducer(
     start,
@@ -128,7 +125,7 @@ describe('trackplayReducer — scoring stamps the game', () => {
   );
 
   it('stamps the game with the action clock', () => {
-    expect(gameOf(state, 'g')?.updatedAt).toBe(AT);
+    expect(theGame(state)?.updatedAt).toBe(AT);
   });
 
   it('reads the clock at dispatch time, not while reducing', () => {
@@ -137,9 +134,9 @@ describe('trackplayReducer — scoring stamps the game', () => {
       GamesActions.setRoundValue('g', 'r0', 'p1', 20)
     );
 
-    expect(
-      dayjs(gameOf(defaulted, 'g')?.updatedAt).isAfter(TEST_TIMESTAMP)
-    ).toBe(true);
+    expect(dayjs(theGame(defaulted)?.updatedAt).isAfter(TEST_TIMESTAMP)).toBe(
+      true
+    );
   });
 
   it('is a pure function of the action — replayed, it lands the same state', () => {

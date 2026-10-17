@@ -20,7 +20,7 @@ export function createBaseItem(
   name: string,
   categories?: CategoryId | CategoryId[]
 ): BaseItem & { createdAt: Timestamp } {
-  let categoryIds = undefined;
+  let categoryIds;
   if (undefined !== categories) {
     const real = (Array.isArray(categories) ? categories : [categories]).filter(
       (id) => !isPseudoFilter(id)

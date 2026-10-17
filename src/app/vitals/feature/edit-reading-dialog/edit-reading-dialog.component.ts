@@ -42,7 +42,7 @@ import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-
 import { DateInputComponent } from '../../../@shared/ui/forms/date-input/date-input.component';
 import {
   DUPLICATE_NAME,
-  hasErrorKind,
+  errorKindPresent,
   requireParseableDate,
 } from '../../../@shared/util/forms/form-rules';
 import { ProfilesFacade, ReadingsFacade } from '../../data';
@@ -80,9 +80,20 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
   ReadingForm
 > {
   readonly #readings = inject(ReadingsFacade);
+
   readonly #profiles = inject(ProfilesFacade);
 
+  readonly #suggestedHolderGrams = computed((): number | null => {
+    const holderId = this.holderId();
+    if (!holderId) return null;
+    const on = isoDay(this.draft().name);
+    return (
+      nearestReadingUpTo(this.#readings.allItems(), holderId, on)?.grams ?? null
+    );
+  });
+
   protected readonly listId: ItemListId = READINGS_LIST_ID;
+
   readonly siblings = this.#readings.profileReadings;
 
   readonly holders = this.#profiles.persons;
@@ -100,16 +111,13 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
     computation: (): number | null => null,
   });
 
-  readonly #suggestedHolderGrams = computed((): number | null => {
-    const holderId = this.holderId();
-    if (!holderId) return null;
-    const on = isoDay(this.draft().name);
-    return (
-      nearestReadingUpTo(this.#readings.allItems(), holderId, on)?.grams ?? null
-    );
-  });
-
   readonly holderGrams = linkedSignal(() => this.#suggestedHolderGrams());
+
+  readonly showCalculator = computed(
+    () => this.isCreateMode() && this.#profiles.routeProfile()?.kind === 'pet'
+  );
+
+  readonly dateTaken = errorKindPresent(this.form.name, DUPLICATE_NAME);
 
   constructor() {
     super();
@@ -119,11 +127,12 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
     });
   }
 
-  readonly showCalculator = computed(
-    () => this.isCreateMode() && this.#profiles.routeProfile()?.kind === 'pet'
-  );
-
-  readonly dateTaken = hasErrorKind(this.form.name, DUPLICATE_NAME);
+  #applyDifference(): void {
+    const holder = this.holderGrams();
+    const combined = this.combinedGrams();
+    if (holder === null || combined === null) return;
+    this.patch({ grams: combined - holder });
+  }
 
   protected override extraRules(path: SchemaPathTree<ReadingForm>): void {
     requireParseableDate(path.name);
@@ -165,12 +174,5 @@ export class EditReadingDialogComponent extends BaseEditItemDialog<
   setCombinedGrams(grams: number | null): void {
     this.combinedGrams.set(grams);
     this.#applyDifference();
-  }
-
-  #applyDifference(): void {
-    const holder = this.holderGrams();
-    const combined = this.combinedGrams();
-    if (holder === null || combined === null) return;
-    this.patch({ grams: combined - holder });
   }
 }

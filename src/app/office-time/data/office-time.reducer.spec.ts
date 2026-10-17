@@ -9,13 +9,15 @@ import { initialOfficeTime, officeTimeReducer } from './office-time.reducer';
 
 const persistedWithCards = (
   dashboardItems: OfficeTimeState['dashboardItems']
-): OfficeTimeStateStorage => ({
-  ...initialOfficeTime,
-  holidays: {},
-  officedays: [],
-  freedays: [],
-  dashboardItems,
-});
+): OfficeTimeStateStorage => {
+  return {
+    ...initialOfficeTime,
+    holidays: {},
+    officedays: [],
+    freedays: [],
+    dashboardItems,
+  };
+};
 
 describe('officeTimeReducer', () => {
   it('saves the target office days per week', () => {

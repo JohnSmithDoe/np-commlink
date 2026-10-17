@@ -9,8 +9,8 @@ import { formatViewDate } from './tracking.utils';
 })
 export class TimeFromDataItemPipe implements PipeTransform {
   transform(item?: DataItem, viewId?: TrackingViewId): string {
-    if (!item?.startTime || !viewId) return '';
-    if (!dayjs(item.startTime).isValid()) return '';
-    return formatViewDate(item.startTime, viewId);
+    return viewId && item?.startTime && dayjs(item.startTime).isValid()
+      ? formatViewDate(item.startTime, viewId)
+      : '';
   }
 }

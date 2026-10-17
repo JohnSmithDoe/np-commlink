@@ -14,12 +14,12 @@ export class ListSettingsEffects {
     return this.#actions$.pipe(
       ofType(ListSettingsActions.toggleFlag),
       concatLatestFrom(() => this.#store.select(selectListSettingsState)),
-      map(([{ flag }, settings]) =>
-        ListSettingsActions.updateSettings({
+      map(([{ flag }, settings]) => {
+        return ListSettingsActions.updateSettings({
           ...settings,
           [flag]: !settings[flag],
-        })
-      )
+        });
+      })
     );
   });
 }

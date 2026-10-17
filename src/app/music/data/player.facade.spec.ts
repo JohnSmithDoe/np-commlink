@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import {
   fakeJamGateway,
   fakeLocalLibrary,
@@ -64,17 +64,18 @@ describe('PlayerFacade', () => {
         { provide: JamGateway, useValue: jam },
         { provide: LocalLibraryStore, useValue: local },
         { provide: CoverStore, useValue: { load: () => Promise.resolve() } },
-        { provide: IS_NATIVE_PLATFORM, useValue: false },
+        { provide: NATIVE_PLATFORM, useValue: false },
       ],
     });
     facade = TestBed.inject(PlayerFacade);
   });
 
-  const playing = (index: number) =>
-    player.emit({
+  const playing = (index: number) => {
+    return player.emit({
       kind: 'state',
       state: { playing: true, entryId: facade.queue()[index]?.entryId },
     });
+  };
 
   it('replaces the queue and starts at the tapped track', async () => {
     await facade.play([first, second, third], second);
@@ -96,7 +97,8 @@ describe('PlayerFacade', () => {
       'b',
       'b',
     ]);
-    expect(new Set(facade.queue().map((entry) => entry.entryId)).size).toBe(3);
+    const entryIds = new Set(facade.queue().map((entry) => entry.entryId));
+    expect(entryIds.size).toBe(3);
   });
 
   it('follows the player, not its own taps, for the current entry', async () => {
@@ -133,7 +135,7 @@ describe('PlayerFacade', () => {
         .queue()
         .slice(1)
         .map((entry) => entry.track.id)
-        .toSorted()
+        .toSorted((a, b) => a.localeCompare(b))
     ).toEqual(['b', 'c']);
     expect(player.replaceUpcoming).toHaveBeenCalledWith(
       expect.objectContaining({ length: 2 })

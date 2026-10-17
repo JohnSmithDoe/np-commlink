@@ -22,15 +22,17 @@ import { bootDeck, shot } from './shot';
 
 const ITEMS = ['Milch', 'Vollkornbrot', 'Kaffeebohnen', 'Zahnpasta'];
 
-const closeSwipe = (row: Locator) =>
-  row.evaluate((element: HTMLElement & { close(): Promise<void> }) =>
+const closeSwipe = (row: Locator) => {
+  return row.evaluate((element: HTMLElement & { close(): Promise<void> }) =>
     element.close()
   );
+};
 
-const pickerDialog = (page: Page) =>
-  page
+const pickerDialog = (page: Page) => {
+  return page
     .locator('ion-modal.show-modal')
     .filter({ has: page.getByTestId('category-picker-search') });
+};
 
 async function addCategory(page: Page, name: string): Promise<void> {
   const search = pickerDialog(page).locator('ion-searchbar input');
@@ -49,11 +51,11 @@ test('shared interaction surface', async ({ page }) => {
   await expect(listRow(page, /Zahnpasta/)).toBeVisible({ timeout: 15_000 });
   await shot(page, 'gesten-liste');
 
-  const deleteRow = listRow(page, /Zahnpasta/);
-  await openRowSwipe(deleteRow, 'end');
-  await expect(deleteRow.getByTestId('list-row-delete')).toBeVisible();
+  const zahnpastaRow = listRow(page, /Zahnpasta/);
+  await openRowSwipe(zahnpastaRow, 'end');
+  await expect(zahnpastaRow.getByTestId('list-row-delete')).toBeVisible();
   await shot(page, 'gesten-swipe-loeschen');
-  await closeSwipe(deleteRow);
+  await closeSwipe(zahnpastaRow);
 
   const buyRow = listRow(page, /Vollkornbrot/);
   await openRowSwipe(buyRow, 'start');

@@ -10,20 +10,24 @@ import {
   updateListSort,
 } from './list.utils';
 
-const item = (over: Partial<BaseItem> = {}): BaseItem => ({
-  id: 'a',
-  name: 'Item',
-  createdAt: '2026-01-01T00:00:00.000Z',
-  ...over,
-});
+const item = (over: Partial<BaseItem> = {}): BaseItem => {
+  return {
+    id: 'a',
+    name: 'Item',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    ...over,
+  };
+};
 
 const probeList = (
   over: Partial<ItemList<BaseItem>> = {}
-): ItemList<BaseItem> => ({
-  id: '_probe',
-  items: [],
-  ...over,
-});
+): ItemList<BaseItem> => {
+  return {
+    id: '_probe',
+    items: [],
+    ...over,
+  };
+};
 
 const sorted = (sortDirection: ItemListSortDirection) =>
   probeList({ sort: { sortBy: 'name', sortDirection } });

@@ -12,7 +12,7 @@ import {
 
 describe('zodiacSignNamed', () => {
   it('finds a sign by its own name', () => {
-    expect(zodiacSignNamed('scorpio')?.glyph).toBe('♏\uFE0E');
+    expect(zodiacSignNamed('scorpio')?.glyph).toBe('♏\u{FE0E}');
   });
 
   it('answers undefined for anything else', () => {

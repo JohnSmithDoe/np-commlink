@@ -9,8 +9,9 @@ export function formatEur(
   cents: number,
   locale: string = DEFAULT_LOCALE
 ): string {
-  return new Intl.NumberFormat(locale, {
+  const formatter = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'EUR',
-  }).format(cents === 0 ? 0 : cents / 100);
+  });
+  return formatter.format(cents === 0 ? 0 : cents / 100);
 }

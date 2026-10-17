@@ -40,7 +40,7 @@ export const selectCashCountByCategory = createSelector(
     const countById = new Map<CategoryId, number>();
     for (const txn of transactions) {
       const categoryId = categoryIdOf(txn);
-      if (txn.matchedTxnId || !categoryId) continue;
+      if (!categoryId || txn.matchedTxnId) continue;
       countById.set(categoryId, (countById.get(categoryId) ?? 0) + 1);
     }
     return countById;

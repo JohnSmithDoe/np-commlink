@@ -29,10 +29,28 @@ import { selectDeckState } from './deck.selector';
 @Service()
 export class DeckFacade {
   readonly #store = inject(Store);
+
   readonly #skin = inject(ThemeService).skin;
+
   readonly #config = this.#store.selectSignal(selectDeckState);
 
   readonly #labelled = computed(() => resolveLabels(this.#skin()));
+
+  readonly #grouping = groupingModules(DECK_CATALOG);
+
+  readonly #configure = computed(() => {
+    const config = this.#config();
+    return (entry: DeckProgram): DeckProgramConfig => {
+      return {
+        ...entry,
+        hidden: !config.visibleEntries.includes(entry.id),
+        hiddenOnDeck: config.hiddenTiles.includes(entry.id),
+        moduleKey: this.#grouping.has(entry.module)
+          ? DECK_MODULE_LABELS[entry.module]
+          : undefined,
+      };
+    };
+  });
 
   readonly menuEntries = computed(() =>
     entriesOnDeck(DECK_CATALOG, this.#config()).map(this.#labelled())
@@ -48,33 +66,20 @@ export class DeckFacade {
   readonly allPrograms = computed(() =>
     DECK_CATALOG.filter((entry) => entry.onDeck).map(this.#labelled())
   );
+
   readonly slotCount = DECK_SLOT_COUNT;
 
-  readonly #grouping = groupingModules(DECK_CATALOG);
-
-  readonly #configure = computed(() => {
-    const config = this.#config();
-    return (entry: DeckProgram): DeckProgramConfig => ({
-      ...entry,
-      hidden: !config.visibleEntries.includes(entry.id),
-      hiddenOnDeck: config.hiddenTiles.includes(entry.id),
-      moduleKey: this.#grouping.has(entry.module)
-        ? DECK_MODULE_LABELS[entry.module]
-        : undefined,
-    });
+  readonly configuredEntries = computed(() => {
+    return orderEntries(DECK_CATALOG, this.#config().order)
+      .map(this.#labelled())
+      .map(this.#configure());
   });
 
-  readonly configuredEntries = computed(() =>
-    orderEntries(DECK_CATALOG, this.#config().order)
-      .map(this.#labelled())
-      .map(this.#configure())
-  );
-
-  readonly orderedPrograms = computed(() =>
-    this.configuredEntries().filter(
+  readonly orderedPrograms = computed(() => {
+    return this.configuredEntries().filter(
       (entry) => entry.onDeck && !entry.hidden && entry.id !== DECK_PINNED_ENTRY
-    )
-  );
+    );
+  });
 
   readonly configuredModules = computed(() =>
     groupByModule(DECK_CATALOG.map(this.#labelled()).map(this.#configure()))

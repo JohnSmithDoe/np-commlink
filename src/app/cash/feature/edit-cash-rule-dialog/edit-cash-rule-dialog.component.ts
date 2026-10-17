@@ -72,29 +72,35 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
   protected readonly listId: ItemListId = CASH_RULES_LIST_ID;
   readonly siblings = this.#facade.allItems;
 
-  protected override uniqueName(): boolean {
-    return false;
-  }
+  readonly conditionSet = computed<ConditionSet>(() => {
+    return {
+      match: this.draft().match,
+      conditions: this.draft().conditions.map((condition) =>
+        toCondition(condition, this.#language())
+      ),
+    };
+  });
 
-  readonly conditionSet = computed<ConditionSet>(() => ({
-    match: this.draft().match,
-    conditions: this.draft().conditions.map((condition) =>
-      toCondition(condition, this.#language())
-    ),
-  }));
-
-  readonly amountInvalidRows = computed(() =>
-    [...this.form.conditions].map((condition) =>
-      condition
+  readonly amountInvalidRows = computed(() => {
+    return [...this.form.conditions].map((condition) => {
+      return condition
         .value()
         .errors()
-        .some(({ kind }) => kind === UNPARSEABLE_AMOUNT.kind)
-    )
-  );
+        .some(({ kind }) => kind === UNPARSEABLE_AMOUNT.kind);
+    });
+  });
 
   constructor() {
     super();
     addIcons({ addOutline });
+  }
+
+  #nextOrder(): number {
+    return Math.max(-1, ...this.siblings().map((rule) => rule.order)) + 1;
+  }
+
+  protected override uniqueName(): boolean {
+    return false;
   }
 
   protected override extraRules(path: SchemaPathTree<RuleForm>): void {
@@ -132,10 +138,6 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
     this.#facade.saveItem(item);
   }
 
-  #nextOrder(): number {
-    return Math.max(-1, ...this.siblings().map((rule) => rule.order)) + 1;
-  }
-
   addCondition(): void {
     this.patch({ conditions: [...this.draft().conditions, blankCondition()] });
   }
@@ -150,11 +152,11 @@ export class EditCashRuleDialogComponent extends BaseEditItemDialog<
 
   onField(index: number, field: FilterField): void {
     this.patch({
-      conditions: this.draft().conditions.map((condition, at) =>
-        at === index
+      conditions: this.draft().conditions.map((condition, at) => {
+        return at === index
           ? { ...condition, field, op: defaultOpFor(field) }
-          : condition
-      ),
+          : condition;
+      }),
     });
   }
 }

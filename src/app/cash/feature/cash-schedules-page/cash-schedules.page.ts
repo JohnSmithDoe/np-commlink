@@ -70,12 +70,12 @@ export class CashSchedulesPage {
   readonly #alertCtrl = inject(AlertController);
   readonly #translate = inject(TranslateService);
 
-  readonly commitment = this.#facade.commitment;
-  readonly schedules = this.#facade.items;
-
   readonly #categoryName = computed(() =>
     categoryNameLookup(this.#categories.allItems())
   );
+
+  readonly commitment = this.#facade.commitment;
+  readonly schedules = this.#facade.items;
 
   readonly openCents = computed(
     () => this.commitment().dueThisMonthCents - this.commitment().confirmedCents

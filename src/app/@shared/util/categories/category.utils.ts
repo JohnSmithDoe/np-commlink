@@ -8,11 +8,11 @@ export const categoryNameLookup = (
   return (id) => (id ? (nameById.get(id) ?? '') : '');
 };
 
-export const anyCategoryNameMatches = (
+export const hasCategoryNameMatch = (
   item: BaseItem | undefined,
   nameOf: (id: CategoryId | undefined) => string,
-  matches: (name: string) => boolean
-): boolean => (item?.categoryIds ?? []).some((id) => matches(nameOf(id)));
+  isMatch: (name: string) => boolean
+): boolean => (item?.categoryIds ?? []).some((id) => isMatch(nameOf(id)));
 
 export const categoryById = (
   catalog: readonly Category[],
@@ -22,15 +22,17 @@ export const categoryById = (
 export const categoriesByIds = (
   ids: readonly CategoryId[] | undefined,
   catalog: readonly Category[]
-): Category[] =>
-  (ids ?? [])
+): Category[] => {
+  return (ids ?? [])
     .map((id) => catalog.find((cat) => cat.id === id))
     .filter((cat): cat is Category => !!cat);
+};
 
 export const categoryNames = (
   item: BaseItem | undefined,
   catalog: readonly Category[]
-): string[] =>
-  categoriesByIds(item?.categoryIds, catalog)
+): string[] => {
+  return categoriesByIds(item?.categoryIds, catalog)
     .map((category) => category.name)
     .filter((name) => name.length > 0);
+};

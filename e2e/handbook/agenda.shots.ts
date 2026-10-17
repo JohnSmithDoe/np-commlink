@@ -37,7 +37,7 @@ async function seedDocument(
   await page.evaluate(
     async ([databaseName, storeName, documentKey, payload]) => {
       await new Promise<void>((resolve) => {
-        const open = indexedDB.open(databaseName as string);
+        const open = globalThis.indexedDB.open(databaseName as string);
         open.onerror = () => resolve();
         open.onsuccess = () => {
           const database = open.result;
@@ -193,89 +193,91 @@ const localDay = (offset: number, clock = '09:00:00'): string => {
   return `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}T${clock}`;
 };
 
-const tasksDocument = () => ({
-  list: {
-    id: '_tasks',
-    sort: { sortBy: 'dueAt', sortDirection: 'asc' },
-    items: [
-      {
-        id: 'task-steuer',
-        name: 'Steuererklärung abgeben',
-        createdAt: localDay(-20),
-        categoryIds: [WORK],
-        dueAt: localDay(-2),
-        prio: 1,
-      },
-      {
-        id: 'task-zahnarzt',
-        name: 'Zahnarzttermin vereinbaren',
-        createdAt: localDay(-9),
-        categoryIds: [HEALTH],
-        dueAt: localDay(2),
-        prio: 2,
-      },
-      {
-        id: 'task-rezept',
-        name: 'Rezept in der Apotheke einlösen',
-        createdAt: localDay(-4),
-        categoryIds: [HEALTH],
-        dueAt: localDay(6),
-      },
-      {
-        id: 'task-fahrrad',
-        name: 'Fahrrad zur Werkstatt bringen',
-        createdAt: localDay(-3),
-        categoryIds: [HOUSEHOLD],
-        dueAt: localDay(12),
-        prio: 3,
-      },
-      {
-        id: 'task-filter',
-        name: 'Wasserfilter wechseln',
-        createdAt: localDay(-15),
-        categoryIds: [HOUSEHOLD],
-        dueAt: localDay(20),
-        prio: 2,
-        interval: { unit: 'month', every: 3 },
-      },
-      {
-        id: 'task-regal',
-        name: 'Regal im Flur aufbauen',
-        createdAt: localDay(-6),
-        categoryIds: [HOUSEHOLD],
-      },
-      {
-        id: 'task-geschenk',
-        name: 'Geschenk für Mama besorgen',
-        createdAt: localDay(-1),
-      },
-      {
-        id: 'task-muell',
-        name: 'Müll rausbringen',
-        createdAt: localDay(-40),
-        categoryIds: [HOUSEHOLD],
-        doneAt: localDay(-1, '19:40:00'),
-        interval: { unit: 'day', weekdays: [2, 5] },
-      },
-      {
-        id: 'task-bettwaesche',
-        name: 'Bettwäsche wechseln',
-        createdAt: localDay(-30),
-        categoryIds: [HOUSEHOLD],
-        doneAt: localDay(-11, '11:00:00'),
-        interval: { unit: 'week', every: 2 },
-      },
-    ],
-  },
-  categoryList: {
-    id: '_task-categories',
-    items: [
-      { id: HOUSEHOLD, name: 'Haushalt', createdAt: localDay(-30) },
-      { id: WORK, name: 'Arbeit', createdAt: localDay(-30) },
-      { id: HEALTH, name: 'Gesundheit', createdAt: localDay(-30) },
-    ],
-  },
-});
+const tasksDocument = () => {
+  return {
+    list: {
+      id: '_tasks',
+      sort: { sortBy: 'dueAt', sortDirection: 'asc' },
+      items: [
+        {
+          id: 'task-steuer',
+          name: 'Steuererklärung abgeben',
+          createdAt: localDay(-20),
+          categoryIds: [WORK],
+          dueAt: localDay(-2),
+          prio: 1,
+        },
+        {
+          id: 'task-zahnarzt',
+          name: 'Zahnarzttermin vereinbaren',
+          createdAt: localDay(-9),
+          categoryIds: [HEALTH],
+          dueAt: localDay(2),
+          prio: 2,
+        },
+        {
+          id: 'task-rezept',
+          name: 'Rezept in der Apotheke einlösen',
+          createdAt: localDay(-4),
+          categoryIds: [HEALTH],
+          dueAt: localDay(6),
+        },
+        {
+          id: 'task-fahrrad',
+          name: 'Fahrrad zur Werkstatt bringen',
+          createdAt: localDay(-3),
+          categoryIds: [HOUSEHOLD],
+          dueAt: localDay(12),
+          prio: 3,
+        },
+        {
+          id: 'task-filter',
+          name: 'Wasserfilter wechseln',
+          createdAt: localDay(-15),
+          categoryIds: [HOUSEHOLD],
+          dueAt: localDay(20),
+          prio: 2,
+          interval: { unit: 'month', every: 3 },
+        },
+        {
+          id: 'task-regal',
+          name: 'Regal im Flur aufbauen',
+          createdAt: localDay(-6),
+          categoryIds: [HOUSEHOLD],
+        },
+        {
+          id: 'task-geschenk',
+          name: 'Geschenk für Mama besorgen',
+          createdAt: localDay(-1),
+        },
+        {
+          id: 'task-muell',
+          name: 'Müll rausbringen',
+          createdAt: localDay(-40),
+          categoryIds: [HOUSEHOLD],
+          doneAt: localDay(-1, '19:40:00'),
+          interval: { unit: 'day', weekdays: [2, 5] },
+        },
+        {
+          id: 'task-bettwaesche',
+          name: 'Bettwäsche wechseln',
+          createdAt: localDay(-30),
+          categoryIds: [HOUSEHOLD],
+          doneAt: localDay(-11, '11:00:00'),
+          interval: { unit: 'week', every: 2 },
+        },
+      ],
+    },
+    categoryList: {
+      id: '_task-categories',
+      items: [
+        { id: HOUSEHOLD, name: 'Haushalt', createdAt: localDay(-30) },
+        { id: WORK, name: 'Arbeit', createdAt: localDay(-30) },
+        { id: HEALTH, name: 'Gesundheit', createdAt: localDay(-30) },
+      ],
+    },
+  };
+};
 
 test('agenda', async ({ page }) => {
   await bootDeck(page);
@@ -343,16 +345,18 @@ test('agenda', async ({ page }) => {
   await shot(page, 'agenda-kategorie-swipe');
 });
 
-const ritualDocument = () => ({
-  completions: [
-    { promptId: 'water', completedAt: localDay(-6, '20:15:00') },
-    { promptId: 'window', completedAt: localDay(-4, '20:15:00') },
-    { promptId: 'stretch', completedAt: localDay(-3, '20:15:00') },
-    { promptId: 'one-song', completedAt: localDay(-1, '20:15:00') },
-  ],
-  dismissed: ['sock-basket', 'walk-backwards'],
-  reminder: { enabled: true, hour: 18, minute: 30 },
-});
+const ritualDocument = () => {
+  return {
+    completions: [
+      { promptId: 'water', completedAt: localDay(-6, '20:15:00') },
+      { promptId: 'window', completedAt: localDay(-4, '20:15:00') },
+      { promptId: 'stretch', completedAt: localDay(-3, '20:15:00') },
+      { promptId: 'one-song', completedAt: localDay(-1, '20:15:00') },
+    ],
+    dismissed: ['sock-basket', 'walk-backwards'],
+    reminder: { enabled: true, hour: 18, minute: 30 },
+  };
+};
 
 test('dailyrun', async ({ page }) => {
   await bootDeck(page);

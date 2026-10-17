@@ -7,10 +7,12 @@ export const TrackplayActions = createActionGroup({
   events: {
     load: emptyProps(),
     loaded: (trackplay: TrackplayState | null) => ({ trackplay }),
-    restoreGameType: (gameType: GameType, games: readonly Game[]) => ({
-      gameType,
-      games,
-    }),
+    restoreGameType: (gameType: GameType, games: readonly Game[]) => {
+      return {
+        gameType,
+        games,
+      };
+    },
     sweepOrphans: (people: readonly PersonId[]) => ({ people }),
   },
 });

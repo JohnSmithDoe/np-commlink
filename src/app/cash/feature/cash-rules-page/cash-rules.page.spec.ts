@@ -35,12 +35,13 @@ describe('CashRulesPage', () => {
     component = TestBed.createComponent(CashRulesPage).componentInstance;
   };
 
-  const recategorizations = () =>
-    (dispatch.mock.calls as Array<[{ type: string }]>)
+  const recategorizations = () => {
+    return (dispatch.mock.calls as Array<[{ type: string }]>)
       .map((call) => call[0])
       .filter(
         (action) => action.type === CashTransactionsActions.recategorize.type
       );
+  };
 
   it('files only the transactions the rules re-categorize and reports the count', () => {
     const nordkauf = mockCashRule({ id: 'r1', categoryId: 'cat-stuff' });

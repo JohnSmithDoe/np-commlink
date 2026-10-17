@@ -5,26 +5,30 @@ import { capacitorHttpAdapter } from './capacitor-http.adapter';
 
 const config = (
   overrides: Partial<InternalAxiosRequestConfig> = {}
-): InternalAxiosRequestConfig => ({
-  url: '/jam/v1/session',
-  baseURL: 'https://music.example.org',
-  method: 'post',
-  headers: new AxiosHeaders({ Authorization: 'Bearer jwt', 'X-Empty': null }),
-  data: '{"name":"runner"}',
-  ...overrides,
-});
+): InternalAxiosRequestConfig => {
+  return {
+    url: '/jam/v1/session',
+    baseURL: 'https://music.example.org',
+    method: 'post',
+    headers: new AxiosHeaders({ Authorization: 'Bearer jwt', 'X-Empty': null }),
+    data: '{"name":"runner"}',
+    ...overrides,
+  };
+};
 
-const answering = (response: Partial<HttpResponse>) => ({
-  request: vi.fn(() =>
-    Promise.resolve({
-      status: 200,
-      headers: {},
-      url: '',
-      data: {},
-      ...response,
-    })
-  ),
-});
+const answering = (response: Partial<HttpResponse>) => {
+  return {
+    request: vi.fn(() => {
+      return Promise.resolve({
+        status: 200,
+        headers: {},
+        url: '',
+        data: {},
+        ...response,
+      });
+    }),
+  };
+};
 
 describe('capacitorHttpAdapter', () => {
   it('sends the request natively with its headers and parsed body', async () => {
@@ -55,9 +59,12 @@ describe('capacitorHttpAdapter', () => {
   it('turns a refusal into the error the gateway reads as one', async () => {
     const http = answering({ status: 401 });
 
-    const failure = await capacitorHttpAdapter(http)(config()).catch(
-      (error: unknown) => error
-    );
+    let failure: unknown;
+    try {
+      await capacitorHttpAdapter(http)(config());
+    } catch (error: unknown) {
+      failure = error;
+    }
 
     expect(failure).toBeInstanceOf(AxiosError);
     expect(isAuthRefused(failure)).toBe(true);

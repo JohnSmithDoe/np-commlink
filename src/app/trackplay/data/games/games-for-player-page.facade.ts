@@ -63,10 +63,10 @@ export class GamesForPlayerPageFacade extends BaseListPageFacade {
   readonly showEndedGames = computed(() => this.state().showEndedGames);
 
   showCreateDialog(): void {
-    const { searchQuery, filterBy } = this.state();
+    const { searchQuery = '', filterBy } = this.state();
     const player = this.player();
     this.#dialogs.open({
-      item: createGame(searchQuery ?? '', filterBy, player ? [player.id] : []),
+      item: createGame(searchQuery, filterBy, player ? [player.id] : []),
       listId: GAMES_LIST_ID,
       editMode: 'create',
     });

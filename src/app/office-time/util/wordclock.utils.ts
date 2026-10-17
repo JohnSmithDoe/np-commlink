@@ -67,12 +67,14 @@ type DialPosition = { hour: number; minute: number; corners: Corners };
 
 const activeWord = (word: string, row = -1): ActiveWord => ({ word, row });
 
-const darkCorners = (): Corners => ({
-  topLeft: false,
-  topRight: false,
-  botLeft: false,
-  botRight: false,
-});
+const darkCorners = (): Corners => {
+  return {
+    topLeft: false,
+    topRight: false,
+    botLeft: false,
+    botRight: false,
+  };
+};
 
 const cornerDotsFor = (minute: number): Corners => {
   const minutesIntoFiveStep = minute % 5;
@@ -105,7 +107,7 @@ const readDialPosition = (
   };
 };
 
-const namesTheNextHour = (
+const isNamesTheNextHour = (
   minute: number,
   config?: WordclockSettings
 ): boolean =>
@@ -160,7 +162,7 @@ export function computeFace(
   config: WordclockSettings | undefined
 ): ClockFace {
   const { hour, minute, corners } = readDialPosition(now, config);
-  const spokenHour = (hour + (namesTheNextHour(minute, config) ? 1 : 0)) % 12;
+  const spokenHour = (hour + (isNamesTheNextHour(minute, config) ? 1 : 0)) % 12;
   return {
     corners,
     activeWords: [
@@ -185,7 +187,7 @@ export function isWordActive(
     const wordIndexOfRow = all.indexOf(itm.word);
     const wordEndIndexOfRow = wordIndexOfRow + itm.word.length - 1;
     return (
-      wordIndexOfRow >= 0 &&
+      wordIndexOfRow !== -1 &&
       charIndexOfWord !== -1 &&
       colIndex >= wordIndexOfRow &&
       colIndex <= wordEndIndexOfRow &&

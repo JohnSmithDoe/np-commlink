@@ -13,7 +13,12 @@ export const NotesActions = createActionGroup({
 
     discardBlank: (id: string) => ({ id }),
     togglePin: (id: string) => ({ id }),
-    reorderSection: (pinned: boolean, ids: string[]) => ({ pinned, ids }),
+    reorderSection: (isPinned: boolean, ids: string[]) => {
+      return {
+        pinned: isPinned,
+        ids,
+      };
+    },
 
     addImage: (
       noteId: string,

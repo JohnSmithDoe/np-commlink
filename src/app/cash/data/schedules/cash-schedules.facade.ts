@@ -24,7 +24,7 @@ import {
   dueStatus,
   dueThisMonthCents,
   monthlyCommitmentCents,
-  seenThisMonth,
+  wasSeenThisMonth,
 } from '../../util/schedule.utils';
 import { selectAllTransactions } from '../cash.selector';
 import { CashSchedulesActions } from './cash-schedules.actions';
@@ -40,6 +40,9 @@ export class CashSchedulesFacade extends BaseListPageFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
 
+  readonly #transactions = this.#store.selectSignal(selectAllTransactions);
+  readonly #todayISO = inject(TodayService).today;
+
   readonly state = this.#store.selectSignal(selectSchedulesState);
   readonly items = this.#store.selectSignal(selectSchedulesByDueDate);
   readonly searchResult = this.#store.selectSignal(selectSchedulesSearchResult);
@@ -52,21 +55,32 @@ export class CashSchedulesFacade extends BaseListPageFacade {
   });
 
   readonly allItems = this.#store.selectSignal(selectScheduleItems);
-  readonly #transactions = this.#store.selectSignal(selectAllTransactions);
-  readonly #todayISO = inject(TodayService).today;
 
-  readonly commitment = computed(() => ({
-    monthlyCents: monthlyCommitmentCents(this.allItems()),
-    dueThisMonthCents: dueThisMonthCents(this.allItems(), this.#todayISO()),
-    confirmedCents: confirmedThisMonthCents(this.allItems(), this.#todayISO()),
-  }));
+  readonly commitment = computed(() => {
+    return {
+      monthlyCents: monthlyCommitmentCents(this.allItems()),
+      dueThisMonthCents: dueThisMonthCents(this.allItems(), this.#todayISO()),
+      confirmedCents: confirmedThisMonthCents(
+        this.allItems(),
+        this.#todayISO()
+      ),
+    };
+  });
+
+  #openCreate(item: CashSchedule): void {
+    this.#dialogs.open({
+      item,
+      listId: CASH_SCHEDULES_LIST_ID,
+      editMode: 'create',
+    });
+  }
 
   dueStatusOf(schedule: CashSchedule): ScheduleDueStatus {
     return dueStatus(schedule, this.#todayISO());
   }
 
   confirmed(schedule: CashSchedule): boolean {
-    return seenThisMonth(schedule, this.#todayISO());
+    return wasSeenThisMonth(schedule, this.#todayISO());
   }
 
   showCreateDialog(): void {
@@ -75,14 +89,6 @@ export class CashSchedulesFacade extends BaseListPageFacade {
 
   deriveFrom(txn: CashTransaction): void {
     this.#openCreate(scheduleFrom(txn, this.#transactions()));
-  }
-
-  #openCreate(item: CashSchedule): void {
-    this.#dialogs.open({
-      item,
-      listId: CASH_SCHEDULES_LIST_ID,
-      editMode: 'create',
-    });
   }
 
   showEditDialog(item: CashSchedule): void {
@@ -102,9 +108,8 @@ export class CashSchedulesFacade extends BaseListPageFacade {
   }
 
   markSeen(schedule: CashSchedule): void {
-    this.#store.dispatch(
-      CashSchedulesActions.updateItem(advanced(schedule, dayjs().format()))
-    );
+    const next = advanced(schedule, dayjs().format());
+    this.#store.dispatch(CashSchedulesActions.updateItem(next));
   }
 
   applyAmountChanges(changes: ScheduleAmountChange[]): void {

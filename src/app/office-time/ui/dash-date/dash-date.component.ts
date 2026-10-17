@@ -27,11 +27,11 @@ dayjs.extend(weekOfYear);
   ],
 })
 export class DashDateComponent {
-  readonly title = input<string | undefined>();
-
   readonly #now = toSignal(currentTime$, { initialValue: dayjs() });
 
   readonly #day = computed(() => this.#now().format('YYYY-MM-DD'));
+
+  readonly title = input<string | undefined>();
 
   readonly data = computed(() => {
     const day = dayjs(this.#day());

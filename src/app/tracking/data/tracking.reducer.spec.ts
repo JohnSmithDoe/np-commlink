@@ -2,13 +2,15 @@ import { TrackingItem } from '../model/tracking.types';
 import { TrackingActions } from './tracking.actions';
 import { initialState, trackingReducer } from './tracking.reducer';
 
-const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
-  id: '1',
-  name: 'Task',
-  createdAt: '2026-01-01',
-  state: 'stopped',
-  ...over,
-});
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => {
+  return {
+    id: '1',
+    name: 'Task',
+    createdAt: '2026-01-01',
+    state: 'stopped',
+    ...over,
+  };
+};
 
 const withItems = (items: TrackingItem[]) => ({ ...initialState, items });
 

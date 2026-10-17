@@ -25,14 +25,24 @@ export class PlayersFacade {
   readonly #view = this.#store.selectSignal(selectPlayersList);
   readonly #routeId = this.#store.selectSignal(selectRouteEntityId);
 
+  readonly #names = computed(
+    () =>
+      new Map((this.#people() ?? []).map((person) => [person.id, person.name]))
+  );
+
   readonly allItems = computed(() =>
     playersFrom(this.#people() ?? [], this.#games())
   );
-  readonly state = computed(() => ({
-    ...this.#view(),
-    items: this.allItems(),
-  }));
+
+  readonly state = computed(() => {
+    return {
+      ...this.#view(),
+      items: this.allItems(),
+    };
+  });
+
   readonly searchResult = computed(() => filterListBySearchQuery(this.state()));
+
   readonly items = computed(() =>
     filterAndSortItemList(this.state(), this.searchResult())
   );
@@ -41,13 +51,9 @@ export class PlayersFacade {
   readonly routePlayer = computed(() =>
     this.allItems().find((player) => player.id === this.#routeId())
   );
+
   readonly routePlayerStats = this.#store.selectSignal(
     selectStatsForRoutePlayer
-  );
-
-  readonly #names = computed(
-    () =>
-      new Map((this.#people() ?? []).map((person) => [person.id, person.name]))
   );
 
   nameOf(id: TrackplayId): string {

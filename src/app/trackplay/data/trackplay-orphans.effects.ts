@@ -26,12 +26,12 @@ export class TrackplayOrphansEffects {
   sweepOrphans$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(TrackplayActions.loaded),
-      switchMap(() =>
-        this.#roster$.pipe(
+      switchMap(() => {
+        return this.#roster$.pipe(
           filter((people): people is readonly PersonRef[] => !!people),
           take(1)
-        )
-      ),
+        );
+      }),
       map((people) => new Set(people.map(({ id }) => id))),
       concatLatestFrom(() => this.#store.select(selectTrackplayPersisted)),
       filter(([people, trackplay]) => hasOrphanGames(trackplay, people)),

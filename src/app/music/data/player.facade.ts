@@ -6,7 +6,7 @@ import {
   signal,
   Service,
 } from '@angular/core';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { POSITION_POLL_MS } from '../model/music.consts';
 import {
   PlayableTrack,
@@ -34,7 +34,7 @@ export class PlayerFacade {
   readonly #jam = inject(JamGateway);
   readonly #covers = inject(CoverStore);
   readonly #local = inject(LocalLibraryStore);
-  readonly #native = inject(IS_NATIVE_PLATFORM);
+  readonly #native = inject(NATIVE_PLATFORM);
   readonly #queue = signal<QueueEntry[]>([]);
   readonly #playback = signal<PlaybackState>({ playing: false });
   readonly #repeat = signal<RepeatMode>('off');
@@ -44,12 +44,15 @@ export class PlayerFacade {
   readonly repeat = this.#repeat.asReadonly();
   readonly playing = computed(() => this.#playback().playing);
   readonly positionMs = computed(() => this.#playback().positionMs ?? 0);
+
   readonly durationMs = computed(
     () => this.#playback().durationMs ?? this.current()?.track.durationMs
   );
+
   readonly current = computed(() =>
     this.#queue().find((entry) => entry.entryId === this.#playback().entryId)
   );
+
   readonly currentIndex = computed(() => {
     const current = this.current();
     return current ? this.#queue().indexOf(current) : -1;
@@ -67,6 +70,84 @@ export class PlayerFacade {
       if (entry) void this.#started(entry);
     });
     if (this.#native) this.#pollPosition();
+  }
+
+  async #handle(event: PlayerEvent): Promise<void> {
+    if (event.kind === 'state') {
+      this.#playback.set(event.state);
+      return;
+    }
+    if (event.kind === 'authRefused') {
+      await this.#jam.expire();
+      return;
+    }
+    const failed = this.#queue().find(
+      (entry) => entry.entryId === event.entryId
+    );
+    if (failed?.track.onDevice && event.reason !== 'other') {
+      await this.#dropUnreachable(failed, event);
+      return;
+    }
+    if (this.current()?.track.onDevice !== false) {
+      return;
+    }
+
+    try {
+      await this.#jam.verify();
+    } catch {}
+    if (!this.#jam.connected()) await this.#player.stop();
+  }
+
+  async #dropUnreachable(
+    { track }: QueueEntry,
+    { reason, resume }: PlaybackFailed
+  ): Promise<void> {
+    const isUnreachable =
+      reason === 'notFound'
+        ? (entry: QueueEntry) => entry.track.uri === track.uri
+        : (entry: QueueEntry) =>
+            entry.track.onDevice && entry.track.sourceId === track.sourceId;
+    await (reason === 'notFound'
+      ? this.#local.markMissing(track.sourceId, track.uri)
+      : this.#local.markLost(track.sourceId));
+    const unreachable = this.#queue()
+      .filter((entry) => isUnreachable(entry))
+      .toReversed();
+    for (const entry of unreachable) await this.remove(entry);
+    if (resume) await this.#player.play();
+  }
+
+  #playable({ entryId, track }: QueueEntry): PlayableTrack {
+    return {
+      entryId,
+      uri: track.uri,
+      title: track.title,
+      artist: track.artist,
+      album: track.album,
+      artworkUri:
+        this.#native && track.cover?.kind === 'jam'
+          ? this.#jam.imageUrl(track.cover.id, 300)
+          : undefined,
+    };
+  }
+
+  async #started({ entryId, track }: QueueEntry): Promise<void> {
+    if (this.#announced === entryId) return;
+    this.#announced = entryId;
+    if (!this.#native && track.cover)
+      await this.#player.setArtwork(await this.#covers.load(track.cover));
+    if (track.onDevice) return;
+    try {
+      await this.#jam.scrobble(track.id);
+    } catch {}
+  }
+
+  #pollPosition(): void {
+    const timer = setInterval(() => {
+      if (this.playing())
+        void this.#player.getState().then((state) => this.#playback.set(state));
+    }, POSITION_POLL_MS);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
   play(
@@ -130,76 +211,5 @@ export class PlayerFacade {
   seek(positionMs: number): Promise<void> {
     this.#playback.update((state) => ({ ...state, positionMs }));
     return this.#player.seekTo(positionMs);
-  }
-
-  async #handle(event: PlayerEvent): Promise<void> {
-    if (event.kind === 'state') {
-      this.#playback.set(event.state);
-      return;
-    }
-    if (event.kind === 'authRefused') {
-      await this.#jam.expire();
-      return;
-    }
-    const failed = this.#queue().find(
-      (entry) => entry.entryId === event.entryId
-    );
-    if (failed?.track.onDevice && event.reason !== 'other') {
-      await this.#dropUnreachable(failed, event);
-      return;
-    }
-    if (this.current()?.track.onDevice === false) {
-      await this.#jam.verify().catch(() => {});
-      if (!this.#jam.connected()) await this.#player.stop();
-    }
-  }
-
-  async #dropUnreachable(
-    { track }: QueueEntry,
-    { reason, resume }: PlaybackFailed
-  ): Promise<void> {
-    const unreachable =
-      reason === 'notFound'
-        ? (entry: QueueEntry) => entry.track.uri === track.uri
-        : (entry: QueueEntry) =>
-            entry.track.onDevice && entry.track.sourceId === track.sourceId;
-    await (reason === 'notFound'
-      ? this.#local.markMissing(track.sourceId, track.uri)
-      : this.#local.markLost(track.sourceId));
-    for (const entry of this.#queue()
-      .filter((entry) => unreachable(entry))
-      .toReversed())
-      await this.remove(entry);
-    if (resume) await this.#player.play();
-  }
-
-  #playable({ entryId, track }: QueueEntry): PlayableTrack {
-    return {
-      entryId,
-      uri: track.uri,
-      title: track.title,
-      artist: track.artist,
-      album: track.album,
-      artworkUri:
-        this.#native && track.cover?.kind === 'jam'
-          ? this.#jam.imageUrl(track.cover.id, 300)
-          : undefined,
-    };
-  }
-
-  async #started({ entryId, track }: QueueEntry): Promise<void> {
-    if (this.#announced === entryId) return;
-    this.#announced = entryId;
-    if (!this.#native && track.cover)
-      await this.#player.setArtwork(await this.#covers.load(track.cover));
-    if (!track.onDevice) await this.#jam.scrobble(track.id).catch(() => {});
-  }
-
-  #pollPosition(): void {
-    const timer = setInterval(() => {
-      if (this.playing())
-        void this.#player.getState().then((state) => this.#playback.set(state));
-    }, POSITION_POLL_MS);
-    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 }

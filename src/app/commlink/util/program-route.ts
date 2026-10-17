@@ -25,10 +25,11 @@ const pathOf = (url: string): string => url.replace(/[#?].*$/, '');
 const entryFor = (
   catalog: readonly DeckEntry[],
   path: string
-): DeckEntry | undefined =>
-  catalog
+): DeckEntry | undefined => {
+  return catalog
     .toSorted(longestRouteFirst)
     .find(({ route }) => path === route || path.startsWith(`${route}/`));
+};
 
 const segmentBelow = (route: string, prefix: string): string | undefined => {
   if (!route.startsWith(`${prefix}/`)) return undefined;
@@ -39,13 +40,14 @@ const segmentBelow = (route: string, prefix: string): string | undefined => {
 export const programSiblingsFor = (
   catalog: readonly DeckEntry[],
   prefix: string
-): ProgramSibling[] =>
-  catalog.flatMap((entry) => {
+): ProgramSibling[] => {
+  return catalog.flatMap((entry) => {
     const segment = segmentBelow(entry.route, prefix);
     return segment
-      ? [{ id: entry.id, segment, icon: entry.icon, titleKey: entry.titleKey }]
+      ? { id: entry.id, segment, icon: entry.icon, titleKey: entry.titleKey }
       : [];
   });
+};
 
 export const programContextFor = (
   catalog: readonly DeckEntry[],

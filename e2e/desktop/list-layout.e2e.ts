@@ -83,7 +83,8 @@ test.describe('desktop list layout', () => {
       );
 
     expect(tops.length).toBe(3);
-    expect(new Set(tops).size).toBe(tops.length);
+    const distinctTops = new Set(tops);
+    expect(distinctTops.size).toBe(tops.length);
   });
 });
 

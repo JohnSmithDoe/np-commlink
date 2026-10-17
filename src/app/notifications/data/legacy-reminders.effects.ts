@@ -31,12 +31,12 @@ export class LegacyRemindersEffects {
       ofType(NotificationsInboxActions.loaded),
       concatLatestFrom(() => this.#store.select(selectLegacyCronsCleared)),
       filter(([, cleared]) => !cleared),
-      concatMap(() =>
-        from(this.#notifications.cancel('officeReminder')).pipe(
+      concatMap(() => {
+        return from(this.#notifications.cancel('officeReminder')).pipe(
           catchError(() => of(undefined)),
           map(() => NotificationsInboxActions.legacyCronsCleared())
-        )
-      )
+        );
+      })
     );
   });
 }

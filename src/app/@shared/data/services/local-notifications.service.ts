@@ -42,7 +42,7 @@ export const LOCAL_NOTIFICATIONS = new InjectionToken<
   factory: () => LocalNotifications,
 });
 
-export const IS_NATIVE_PLATFORM = new InjectionToken<boolean>(
+export const NATIVE_PLATFORM = new InjectionToken<boolean>(
   'Capacitor native platform',
   { providedIn: 'root', factory: () => Capacitor.isNativePlatform() }
 );
@@ -61,7 +61,8 @@ const asNotificationSource = (
   extra: unknown
 ): NotificationSource | undefined => {
   const source = (extra as { source?: unknown } | null | undefined)?.source;
-  return typeof source === 'string' && source in NOTIFICATION_SOURCES
+  return typeof source === 'string' &&
+    Object.hasOwn(NOTIFICATION_SOURCES, source)
     ? (source as NotificationSource)
     : undefined;
 };
@@ -99,7 +100,7 @@ const OS_WEEKDAY: Readonly<Record<IsoWeekday, Weekday>> = {
 export class LocalNotificationsService {
   readonly #translate = inject(TranslateService);
   readonly #plugin = inject(LOCAL_NOTIFICATIONS);
-  readonly #isNative = inject(IS_NATIVE_PLATFORM);
+  readonly #isNative = inject(NATIVE_PLATFORM);
 
   async requestPermission(): Promise<boolean> {
     const { display } = await this.#plugin.requestPermissions();

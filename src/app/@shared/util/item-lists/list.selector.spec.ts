@@ -10,10 +10,12 @@ import {
 
 const mockItemList = (
   overrides: Partial<ItemList<BaseItem>> = {}
-): ItemList<BaseItem> => ({
-  items: [],
-  ...overrides,
-});
+): ItemList<BaseItem> => {
+  return {
+    items: [],
+    ...overrides,
+  };
+};
 
 const named = (
   name: string,
@@ -243,11 +245,8 @@ describe('filterListBySearchQuery', () => {
     const items = [named('Milk')];
 
     expect(filterListBySearchQuery(mockItemList({ items }))).toBeUndefined();
-    expect(
-      filterListBySearchQuery(
-        mockItemList({ items, searchQuery: ' '.repeat(3) })
-      )
-    ).toBeUndefined();
+    const blank = mockItemList({ items, searchQuery: ' '.repeat(3) });
+    expect(filterListBySearchQuery(blank)).toBeUndefined();
   });
 
   it('trims the query and reports the matches', () => {

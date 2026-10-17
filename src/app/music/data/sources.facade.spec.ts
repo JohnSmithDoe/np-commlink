@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MockStore } from '@ngrx/store/testing';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
 import { FolderSource } from '../model/music.types';
 import {
@@ -46,7 +46,7 @@ const setup = () => {
       { provide: JamGateway, useValue: { ...gateway, signOut } },
       { provide: LocalLibraryStore, useValue: local },
       { provide: MUSIC_PLAYER_PLUGIN, useValue: plugin },
-      { provide: IS_NATIVE_PLATFORM, useValue: true },
+      { provide: NATIVE_PLATFORM, useValue: true },
     ],
   });
   const dispatch = vi.spyOn(TestBed.inject(MockStore), 'dispatch');

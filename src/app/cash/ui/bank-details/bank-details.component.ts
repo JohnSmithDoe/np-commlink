@@ -49,15 +49,12 @@ export class CashBankDetailsComponent {
   readonly rows = computed<DetailRow[]>(() => {
     const details = this.details();
     if (!details) return [];
-    return CAMT_DETAIL_FIELDS.flatMap((field) => {
-      const raw = details[field];
-      if (!raw) return [];
-      return [
-        {
-          labelKey: CAMT_DETAIL_LABEL_KEYS[field],
-          value: field === 'valueDateISO' ? localizedDate(raw) : raw,
-        },
-      ];
+    return CAMT_DETAIL_FIELDS.filter((field) => details[field]).map((field) => {
+      const raw = details[field] ?? '';
+      return {
+        labelKey: CAMT_DETAIL_LABEL_KEYS[field],
+        value: field === 'valueDateISO' ? localizedDate(raw) : raw,
+      };
     });
   });
 }

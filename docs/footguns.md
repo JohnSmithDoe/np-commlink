@@ -132,6 +132,12 @@ Empirical failures that do **not** reproduce from a read of the source. Nothing 
 - **pnpm withholds releases hours old** (11.9 default `minimumReleaseAge`) and it looks like a stuck
   resolver. The escape hatch is the trap: `pnpm add <pkg>@<version>` appends to `minimumReleaseAgeExclude`,
   widening a supply-chain control to win a patch bump. Prefer waiting.
+- **`eslint --fix` with a rule held out (`--rule 'x: off'`) deletes every `eslint-disable x` as unused.**
+  ESLint 10 reports unused directives and fixes them away; the Easter algorithm's pair in
+  `holidays.utils.ts` went that way. Grep the `--fix` diff for removed directives.
+- **unicorn's `consistent-arrow-return-style` and prettier can flip forever** on an arrow whose implicit
+  return runs just past the print width: prettier wraps it, the rule wants a block, the block fits on one
+  line, the rule wants it implicit again. Break the loop with a shorter name or a function declaration.
 
 ## Never compose an identifier at the call site
 

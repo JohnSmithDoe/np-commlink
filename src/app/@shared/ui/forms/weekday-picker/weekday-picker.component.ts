@@ -12,13 +12,16 @@ import {
   OptionChipsComponent,
 } from '../option-chips/option-chips.component';
 
-const weekdayOptions = (): ChipOption<IsoWeekday>[] =>
-  ISO_WEEKDAYS.map((day) => ({
-    key: String(day),
-    value: day,
-    label: localizedWeekday(day, 'short'),
-    a11yLabel: localizedWeekday(day, 'long'),
-  }));
+const weekdayOptions = (): ChipOption<IsoWeekday>[] => {
+  return ISO_WEEKDAYS.map((day) => {
+    return {
+      key: String(day),
+      value: day,
+      label: localizedWeekday(day, 'short'),
+      a11yLabel: localizedWeekday(day, 'long'),
+    };
+  });
+};
 
 @Component({
   selector: 'app-weekday-picker',

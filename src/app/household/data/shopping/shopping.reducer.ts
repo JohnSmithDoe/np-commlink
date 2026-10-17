@@ -34,7 +34,5 @@ export const shoppingReducer = createReducer(
   on(ShoppingActions.showActionSheet, (state):ShoppingState =>  ({...state, showActionSheet: true})),
   on(ShoppingActions.hideActionSheet, (state):ShoppingState =>  ({...state, showActionSheet: false})),
 
-  on(HouseholdActions.loaded,(_state, { data }): ShoppingState => {
-    return { ...hydratedList({ ...initialState, ...(data?.shopping ?? _state) }), showActionSheet: false };
-  }),
+  on(HouseholdActions.loaded,(_state, { data }): ShoppingState => ({ ...hydratedList({ ...initialState, ...(data?.shopping ?? _state) }), showActionSheet: false })),
 );

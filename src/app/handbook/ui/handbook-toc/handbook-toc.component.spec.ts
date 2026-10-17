@@ -4,16 +4,18 @@ import { HandbookEntry } from '../../model/handbook.types';
 import { HandbookGroupView } from '../../util/handbook-content';
 import { HandbookTocComponent } from './handbook-toc.component';
 
-const entry = (slug: string): HandbookEntry => ({
-  slug,
-  title: `DECK ${slug}`,
-  plain: `Klartext ${slug}`,
-  route: `/${slug}`,
-  group: 'programme',
-  summary: `Kurz zu ${slug}`,
-  tags: [slug],
-  text: `Text zu ${slug}`,
-});
+const entry = (slug: string): HandbookEntry => {
+  return {
+    slug,
+    title: `DECK ${slug}`,
+    plain: `Klartext ${slug}`,
+    route: `/${slug}`,
+    group: 'programme',
+    summary: `Kurz zu ${slug}`,
+    tags: [slug],
+    text: `Text zu ${slug}`,
+  };
+};
 
 const GROUPS: HandbookGroupView[] = [
   { group: 'einstieg', entries: [entry('start')] },

@@ -16,10 +16,12 @@ export const BoardActions = createActionGroup({
     loadSetting: (
       players: BoardPlayerCount,
       figures: readonly BoardFigure[]
-    ) => ({
-      players,
-      figures,
-    }),
+    ) => {
+      return {
+        players,
+        figures,
+      };
+    },
     setRules: (rules: Partial<BoardRules>) => ({ rules }),
     takeBack: emptyProps(),
     clearBoard: emptyProps(),

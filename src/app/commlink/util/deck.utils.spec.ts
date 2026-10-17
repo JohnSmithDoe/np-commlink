@@ -19,18 +19,20 @@ import {
   toggleIn,
 } from './deck.utils';
 
-const entry = (id: string, module: DeckEntry['module']): DeckEntry => ({
-  id,
-  module,
-  icon: 'hardware-chip-outline',
-  route: `/${id}`,
-  titleKey: `page-title.${id}`,
-  labels: {
-    cyberpunk: { nameKey: `${id}.cyber.name`, descKey: `${id}.cyber.desc` },
-    boomer: { nameKey: `${id}.plain.name`, descKey: `${id}.plain.desc` },
-  },
-  onDeck: true,
-});
+const entry = (id: string, module: DeckEntry['module']): DeckEntry => {
+  return {
+    id,
+    module,
+    icon: 'hardware-chip-outline',
+    route: `/${id}`,
+    titleKey: `page-title.${id}`,
+    labels: {
+      cyberpunk: { nameKey: `${id}.cyber.name`, descKey: `${id}.cyber.desc` },
+      boomer: { nameKey: `${id}.plain.name`, descKey: `${id}.plain.desc` },
+    },
+    onDeck: true,
+  };
+};
 
 const CATALOG: readonly DeckEntry[] = [
   entry('shopping', 'household'),
@@ -43,12 +45,14 @@ const PINNED: readonly DeckEntry[] = [
   entry('commlink', 'commlink'),
 ];
 
-const state = (overrides: Partial<DeckState> = {}): DeckState => ({
-  order: [],
-  visibleEntries: [],
-  hiddenTiles: [],
-  ...overrides,
-});
+const state = (overrides: Partial<DeckState> = {}): DeckState => {
+  return {
+    order: [],
+    visibleEntries: [],
+    hiddenTiles: [],
+    ...overrides,
+  };
+};
 
 describe('orderEntries', () => {
   it('falls back to catalog order when nothing is configured', () => {
@@ -181,10 +185,12 @@ describe('toggleIn', () => {
   });
 });
 
-const reporting = (overrides: Partial<DeckEntry>): DeckEntry => ({
-  ...entry('shopping', 'household'),
-  ...overrides,
-});
+const reporting = (overrides: Partial<DeckEntry>): DeckEntry => {
+  return {
+    ...entry('shopping', 'household'),
+    ...overrides,
+  };
+};
 
 describe('badgeValue', () => {
   const telemetry: DashboardState = {
@@ -346,14 +352,17 @@ describe('setIn', () => {
   });
 });
 
-const configured = (hidden: string[] = []) =>
-  groupByModule(
-    CATALOG.map(resolveLabels('cyberpunk')).map((program) => ({
-      ...program,
-      hidden: hidden.includes(program.id),
-      hiddenOnDeck: false,
-    }))
+const configured = (hidden: string[] = []) => {
+  return groupByModule(
+    CATALOG.map(resolveLabels('cyberpunk')).map((program) => {
+      return {
+        ...program,
+        hidden: hidden.includes(program.id),
+        hiddenOnDeck: false,
+      };
+    })
   );
+};
 
 describe('groupByModule', () => {
   it('keeps catalog order and collects a module into one group', () => {

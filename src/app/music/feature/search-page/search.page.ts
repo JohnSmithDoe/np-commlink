@@ -73,14 +73,15 @@ export class MusicSearchPage {
 
   async favorite(track: Track): Promise<void> {
     const updated = await this.#library.toggleFavorite(track);
-    this.results.update(
-      (results) =>
+    this.results.update((results) => {
+      return (
         results && {
           ...results,
           tracks: results.tracks.map((known) =>
             known.id === updated.id ? updated : known
           ),
         }
-    );
+      );
+    });
   }
 }

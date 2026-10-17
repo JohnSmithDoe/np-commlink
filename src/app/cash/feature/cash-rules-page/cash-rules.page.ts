@@ -53,19 +53,24 @@ import { Marker } from '../../../@shared/model/app.types';
   providers: [{ provide: LIST_FACADE, useExisting: CashRulesFacade }],
 })
 export class CashRulesPage {
-  readonly facade = inject(CashRulesFacade);
   readonly #transactionsFacade = inject(CashTransactionsFacade);
   readonly #categoriesFacade = inject(CashCategoriesFacade);
   readonly #alertCtrl = inject(AlertController);
   readonly #translate = inject(TranslateService);
 
-  readonly categories = this.#categoriesFacade.allItems;
-
   readonly #categoryName = computed(() =>
     categoryNameLookup(this.categories())
   );
 
-  readonly #stats = this.facade.stats;
+  readonly #stats = inject(CashRulesFacade).stats;
+
+  readonly facade = inject(CashRulesFacade);
+
+  readonly categories = this.#categoriesFacade.allItems;
+
+  constructor() {
+    addIcons({ addOutline, removeOutline, playOutline, pricetagsOutline });
+  }
 
   statLabelKey(rule: CashRule): Marker {
     const stat = this.#stats()[rule.id];
@@ -85,10 +90,6 @@ export class CashRulesPage {
 
   categoryName(id: CategoryId): string {
     return this.#categoryName()(id);
-  }
-
-  constructor() {
-    addIcons({ addOutline, removeOutline, playOutline, pricetagsOutline });
   }
 
   conditionSummaryLabel(rule: CashRule): string {

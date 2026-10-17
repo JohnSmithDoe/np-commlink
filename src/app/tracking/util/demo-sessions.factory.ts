@@ -27,14 +27,16 @@ const upTo = (spread: number): number => Math.floor(Math.random() * spread);
 const randomDemoName = (): string =>
   DEMO_NAMES[upTo(DEMO_NAMES.length)] ?? DEMO_NAMES[0];
 
-const randomSession = (start: dayjs.Dayjs, minutes: number): TrackingItem => ({
-  id: uuidv4(),
-  name: randomDemoName(),
-  createdAt: start.format(),
-  startTime: start.format(),
-  trackedTimeInSeconds: minutes * 60,
-  state: 'stopped',
-});
+const randomSession = (start: dayjs.Dayjs, minutes: number): TrackingItem => {
+  return {
+    id: uuidv4(),
+    name: randomDemoName(),
+    createdAt: start.format(),
+    startTime: start.format(),
+    trackedTimeInSeconds: minutes * 60,
+    state: 'stopped',
+  };
+};
 
 const randomSessionsForDay = (day: dayjs.Dayjs): TrackingItem[] => {
   const sessions: TrackingItem[] = [];

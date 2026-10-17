@@ -28,10 +28,11 @@ describe('NoteEditorFacade', () => {
 
   type UpdateAction = ReturnType<typeof NotesActions.updateItem>;
 
-  const lastUpdate = (): UpdateAction | undefined =>
-    (dispatch.mock.calls as UpdateAction[][])
+  const lastUpdate = (): UpdateAction | undefined => {
+    return (dispatch.mock.calls as UpdateAction[][])
       .map(([action]) => action)
       .findLast((action) => action.type === NotesActions.updateItem.type);
+  };
 
   it('writes nothing until the edit is flushed', () => {
     setup();
@@ -121,10 +122,10 @@ describe('NoteEditorFacade', () => {
 
   it('leaves no back-tap to the deleted note', () => {
     setup();
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+    const isNavigate = vi.spyOn(TestBed.inject(Router), 'navigate');
 
     facade.removeNote();
 
-    expect(navigate).toHaveBeenCalledWith(['/notes'], { replaceUrl: true });
+    expect(isNavigate).toHaveBeenCalledWith(['/notes'], { replaceUrl: true });
   });
 });

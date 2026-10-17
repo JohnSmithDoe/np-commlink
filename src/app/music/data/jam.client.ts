@@ -2,24 +2,29 @@ import { inject, InjectionToken } from '@angular/core';
 import { Store } from '@ngrx/store';
 import axios from 'axios';
 import { firstValueFrom } from 'rxjs';
-import { Auth, Jam, JamConfiguration, JamService } from '../../../vendor/jam';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import {
+  Auth,
+  Jam,
+  JamConfiguration as JamConfig,
+  JamService,
+} from '../../../vendor/jam';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { MusicActions } from './music.actions';
 import { selectJamSource } from './music.selector';
 import { capacitorHttpAdapter } from './capacitor-http.adapter';
 
-class StoreJamConfiguration extends JamConfiguration {
+class StoreJamConfig extends JamConfig {
   override clientName = 'np-commlink';
 
   constructor(
     private readonly store: Store,
-    private readonly native: boolean
+    private readonly isNative: boolean
   ) {
     super();
   }
 
   override domain(): string {
-    return this.native ? '' : location.origin;
+    return this.isNative ? '' : location.origin;
   }
 
   override userChangeNotify(): Promise<void> {
@@ -48,9 +53,9 @@ class StoreJamConfiguration extends JamConfiguration {
 export const JAM_CLIENT = new InjectionToken<JamService>('Jam client', {
   providedIn: 'root',
   factory: () => {
-    const native = inject(IS_NATIVE_PLATFORM);
+    const isNative = inject(NATIVE_PLATFORM);
     axios.defaults.paramsSerializer = { indexes: null };
-    if (native) axios.defaults.adapter = capacitorHttpAdapter();
-    return new JamService(new StoreJamConfiguration(inject(Store), native));
+    if (isNative) axios.defaults.adapter = capacitorHttpAdapter();
+    return new JamService(new StoreJamConfig(inject(Store), isNative));
   },
 });

@@ -13,17 +13,15 @@ const byIndex = (a: BoardField, b: BoardField) => a.index - b.index;
 const of = (kind: BoardField['kind'], players: BoardPlayerCount) =>
   buildBoard(players).fields.filter((field) => field.kind === kind);
 
-const ring = (players: BoardPlayerCount) =>
-  buildBoard(players)
+const ring = (players: BoardPlayerCount) => {
+  return buildBoard(players)
     .fields.filter((field) => field.kind === 'track' || field.kind === 'start')
     .toSorted(byIndex);
+};
 
 const gap = (a: BoardField, b: BoardField) => Math.hypot(a.x - b.x, a.y - b.y);
 
-const onGrid = (field: BoardField) => [
-  Math.round(field.x + 5),
-  Math.round(field.y + 5),
-];
+const onGrid = ({ x, y }: BoardField) => [Math.round(x + 5), Math.round(y + 5)];
 
 describe('buildBoard', () => {
   it.each(counts)('gives %i players one sector each', (players) => {
@@ -60,7 +58,8 @@ describe('buildBoard', () => {
     const fields = buildBoard(players).fields;
 
     for (const [index, field] of fields.entries()) {
-      for (const other of fields.slice(index + 1)) {
+      const later = fields.slice(index + 1);
+      for (const other of later) {
         expect(gap(field, other)).toBeGreaterThan(0.9);
       }
     }
@@ -77,7 +76,8 @@ describe('buildBoard', () => {
   it('reproduces the classic cross on the 11×11 grid', () => {
     const board = buildBoard(4);
 
-    for (const field of board.fields.filter((one) => one.kind !== 'nest')) {
+    for (const field of board.fields) {
+      if (field.kind === 'nest') continue;
       const [col, row] = onGrid(field);
       expect(col).toBeGreaterThanOrEqual(0);
       expect(col).toBeLessThanOrEqual(10);

@@ -37,13 +37,8 @@ export class CashRulesFacade extends BaseListPageFacade {
     updateSearch: CashRulesActions.updateSearch,
   });
 
-  showCreateDialog(): void {
-    this.#openCreate(createCashRule('', '', this.#nextOrder()));
-  }
-
-  deriveFrom(txn: CashTransaction): void {
-    this.#openCreate(ruleFrom(txn, this.#nextOrder()));
-  }
+  readonly allItems = this.#store.selectSignal(selectRuleItems);
+  readonly stats = this.#store.selectSignal(selectRuleStats);
 
   #openCreate(item: CashRule): void {
     this.#dialogs.open({
@@ -57,6 +52,14 @@ export class CashRulesFacade extends BaseListPageFacade {
     return Math.max(-1, ...this.allItems().map((rule) => rule.order)) + 1;
   }
 
+  showCreateDialog(): void {
+    this.#openCreate(createCashRule('', '', this.#nextOrder()));
+  }
+
+  deriveFrom(txn: CashTransaction): void {
+    this.#openCreate(ruleFrom(txn, this.#nextOrder()));
+  }
+
   showEditDialog(item: CashRule): void {
     this.#dialogs.open({
       item,
@@ -64,9 +67,6 @@ export class CashRulesFacade extends BaseListPageFacade {
       editMode: 'update',
     });
   }
-
-  readonly allItems = this.#store.selectSignal(selectRuleItems);
-  readonly stats = this.#store.selectSignal(selectRuleStats);
 
   saveItem(item: CashRule): void {
     this.#store.dispatch(CashRulesActions.addOrUpdateItem(item));

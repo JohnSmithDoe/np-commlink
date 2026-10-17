@@ -19,6 +19,10 @@ export class JamGateway {
   readonly sourceId = computed(() => this.#source()?.id);
   readonly connected = computed(() => !!this.#source()?.session);
 
+  async #ready(): Promise<void> {
+    if (!this.#jam.auth.isLoggedIn()) await this.#jam.auth.load();
+  }
+
   async connect(connection: JamConnection): Promise<ConnectOutcome> {
     try {
       await this.#jam.auth.login(
@@ -34,7 +38,9 @@ export class JamGateway {
 
   async signOut(): Promise<void> {
     await this.#ready();
-    await this.#jam.auth.logout().catch(() => {});
+    try {
+      await this.#jam.auth.logout();
+    } catch {}
   }
 
   async request<T>(call: (jam: JamService) => Promise<T>): Promise<T> {
@@ -66,9 +72,5 @@ export class JamGateway {
 
   imageUrl(id: string, size: number): string {
     return this.#jam.image.imageUrl({ id, size });
-  }
-
-  async #ready(): Promise<void> {
-    if (!this.#jam.auth.isLoggedIn()) await this.#jam.auth.load();
   }
 }

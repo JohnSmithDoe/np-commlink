@@ -20,20 +20,19 @@ const item: BaseItem = { id: 'a', name: 'Milk' };
 
 const TEST_LIST_ID = '_test-list';
 
-const effectsFor = (undoable: boolean) =>
-  createItemListEffects({
+const effectsFor = (isUndoable: boolean) => {
+  return createItemListEffects({
     actions: TestActions,
     select: selectTestList,
     create: (name: string) => ({ id: 'new', name }),
-    ...(undoable
-      ? {
-          undoableDelete: {
-            scope: TEST_LIST_ID,
-            removeItem: TestActions.removeItem,
-          },
-        }
-      : {}),
+    ...(isUndoable && {
+      undoableDelete: {
+        scope: TEST_LIST_ID,
+        removeItem: TestActions.removeItem,
+      },
+    }),
   });
+};
 
 describe('createItemListEffects — undoableDelete', () => {
   let actions$: Observable<Action>;

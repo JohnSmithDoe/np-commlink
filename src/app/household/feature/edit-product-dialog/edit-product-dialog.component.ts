@@ -55,18 +55,21 @@ const TIMESPAN_LABEL_KEYS: Record<BestBeforeTimespan, Marker> = {
   templateUrl: './edit-product-dialog.component.html',
 })
 export class EditProductDialogComponent extends BaseHouseholdEditItemDialog<Product> {
-  protected blank(): Product {
-    return createProduct('');
-  }
+  readonly #products = inject(ProductsFacade);
+
+  readonly #copy = inject(HouseholdCopyService);
 
   protected readonly listId: HouseholdListId = PRODUCTS_LIST_ID;
-  readonly #products = inject(ProductsFacade);
-  readonly #copy = inject(HouseholdCopyService);
 
   readonly siblings = this.#products.allItems;
 
   readonly timespans = TIMESPANS;
+
   readonly timespanLabelKeys = TIMESPAN_LABEL_KEYS;
+
+  protected blank(): Product {
+    return createProduct('');
+  }
 
   protected save(item: Product): void {
     this.#products.saveItem(item);

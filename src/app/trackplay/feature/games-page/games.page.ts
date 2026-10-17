@@ -34,9 +34,10 @@ import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.co
   providers: [{ provide: LIST_FACADE, useExisting: GamesPageFacade }],
 })
 export class TrackplayGamesPage {
-  readonly facade = inject(GamesPageFacade);
   readonly #games = inject(GamesFacade);
   readonly #router = inject(Router);
+
+  readonly facade = inject(GamesPageFacade);
 
   constructor() {
     addIcons({

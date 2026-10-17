@@ -96,11 +96,9 @@ describe('pickAnchor', () => {
 
       return rungs
         .slice(1)
-        .flatMap((value, index) =>
-          value / rungs[index]! > 100
-            ? [`${family}: ${rungs[index]} → ${value}`]
-            : []
-        );
+        .map((value, index) => ({ value, previous: rungs[index]! }))
+        .filter(({ value, previous }) => value / previous > 100)
+        .map(({ value, previous }) => `${family}: ${previous} → ${value}`);
     });
 
     expect(gaps).toEqual([]);

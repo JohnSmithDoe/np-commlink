@@ -18,15 +18,13 @@ describe('CashSpendQuickAddComponent', () => {
   const GIRO = mockCashAccount({ id: 'giro', name: 'Girokonto' });
 
   const setup = (accounts: CashAccount[] = [TIN, GIRO]) => {
+    const categories = mockCashCategoryList({
+      items: [{ id: 'cat-food', name: 'Verpflegung' }],
+    });
     TestBed.configureTestingModule({
       providers: [
         provideTestingProviders({
-          cash: mockCashState({
-            accounts,
-            categories: mockCashCategoryList({
-              items: [{ id: 'cat-food', name: 'Verpflegung' }],
-            }),
-          }),
+          cash: mockCashState({ accounts, categories }),
         }),
       ],
     });

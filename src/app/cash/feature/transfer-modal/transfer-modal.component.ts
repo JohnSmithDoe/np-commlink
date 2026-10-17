@@ -92,23 +92,25 @@ export class CashTransferModalComponent extends BaseModalDialog<
 
   protected readonly existing = signal<never | undefined>(undefined);
 
+  readonly sameAccount = computed(() => {
+    return this.form
+      .toId()
+      .errors()
+      .some(({ kind }) => kind === SAME_ACCOUNT.kind);
+  });
+
+  readonly amountInvalid = computed(() => {
+    return this.form
+      .amountCents()
+      .errors()
+      .some(({ kind }) => kind !== MISSING_AMOUNT.kind);
+  });
+
+  readonly dateInvalid = computed(() => this.form.date().invalid());
+
   protected applyRules(path: SchemaPathTree<TransferForm>): void {
     transferRules(path);
   }
-
-  readonly sameAccount = computed(() =>
-    this.form
-      .toId()
-      .errors()
-      .some(({ kind }) => kind === SAME_ACCOUNT.kind)
-  );
-  readonly amountInvalid = computed(() =>
-    this.form
-      .amountCents()
-      .errors()
-      .some(({ kind }) => kind !== MISSING_AMOUNT.kind)
-  );
-  readonly dateInvalid = computed(() => this.form.date().invalid());
 
   protected blank(): TransferForm {
     return {

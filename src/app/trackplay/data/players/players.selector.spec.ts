@@ -18,13 +18,14 @@ import {
 const stateWith = (
   trackplay: Parameters<typeof mockTrackplayState>[0],
   routePlayerId?: string
-) =>
-  mockKernelState({
+) => {
+  return mockKernelState({
     trackplay: mockTrackplayState(trackplay),
     router: mockRouterState({
       parameters: routePlayerId ? { id: routePlayerId } : {},
     }),
   });
+};
 
 describe('players.selector — stats', () => {
   const stateInput = {
@@ -49,16 +50,15 @@ describe('players.selector — stats', () => {
   });
 
   it('credits neither a win nor a loss when the top score is shared', () => {
+    const game = mockGame({
+      id: 'drawn',
+      playerIds: ['p1', 'p2'],
+      ended: true,
+      rounds: [mockRound({ id: 'r0', values: { p1: 10, p2: 10 } })],
+    });
     const drawn = stateWith({
       ...stateInput,
-      games: mockGamesState([
-        mockGame({
-          id: 'drawn',
-          playerIds: ['p1', 'p2'],
-          ended: true,
-          rounds: [mockRound({ id: 'r0', values: { p1: 10, p2: 10 } })],
-        }),
-      ]),
+      games: mockGamesState([game]),
     });
 
     expect(selectPlayerStats(drawn)).toEqual({

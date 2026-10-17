@@ -46,17 +46,14 @@ describe('EditRecipeDialogComponent', () => {
   let host: ItemDialogService;
 
   const open = async (recipe = mockRecipe({ name: 'Pancakes' })) => {
+    const household = mockHouseholdState({
+      products: mockProductsState({ items: [milk, flour] }),
+      categories: mockHouseholdCategoryList(),
+      recipes: mockRecipesState({ items: [recipe] }),
+    });
     await TestBed.configureTestingModule({
       imports: [EditRecipeDialogComponent],
-      providers: [
-        ...provideTestingProviders({
-          household: mockHouseholdState({
-            products: mockProductsState({ items: [milk, flour] }),
-            categories: mockHouseholdCategoryList(),
-            recipes: mockRecipesState({ items: [recipe] }),
-          }),
-        }),
-      ],
+      providers: [...provideTestingProviders({ household })],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);

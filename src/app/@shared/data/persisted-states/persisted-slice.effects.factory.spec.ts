@@ -113,13 +113,16 @@ describe('persisted-slice effects', () => {
   const run = <T>(effect: () => Observable<T>): Observable<T> =>
     TestBed.runInInjectionContext(() => effect());
 
-  const drainSave = (trigger = PROBE_SOURCE) =>
-    firstValueFrom(
-      run(createSaveSliceEffect(trigger, selectProbe, 'probe')).pipe(toArray())
+  const drainSave = () => {
+    return firstValueFrom(
+      run(createSaveSliceEffect(PROBE_SOURCE, selectProbe, 'probe')).pipe(
+        toArray()
+      )
     );
+  };
 
-  const probeTelemetry = () =>
-    run(
+  const probeTelemetry = () => {
+    return run(
       createTelemetrySliceEffect(
         {
           source: 'probe',
@@ -130,6 +133,7 @@ describe('persisted-slice effects', () => {
         'probe'
       )
     );
+  };
 
   describe('loadSliceEffect', () => {
     it('reads the slice key and emits loaded with the stored value', async () => {
@@ -172,11 +176,12 @@ describe('persisted-slice effects', () => {
         },
       ];
 
-      expect(
-        await firstValueFrom(
-          run(createLoadSliceEffect(ProbeActions, 'probe', untouched))
-        )
-      ).toEqual(ProbeActions.loaded(probeState));
+      const loaded = run(
+        createLoadSliceEffect(ProbeActions, 'probe', untouched)
+      );
+      expect(await firstValueFrom(loaded)).toEqual(
+        ProbeActions.loaded(probeState)
+      );
     });
 
     it('never writes while loading', async () => {
@@ -238,7 +243,9 @@ describe('persisted-slice effects', () => {
       const emitted: Action[] = [];
       const subscription = run(
         createSaveSliceEffect(PROBE_SOURCE, selectProbe, 'probe')
-      ).subscribe((action) => emitted.push(action));
+      ).subscribe((action) => {
+        emitted.push(action);
+      });
 
       await mutateLeavingStateDistinct(['b', 'c', 'd'], pushed);
       subscription.unsubscribe();
@@ -449,12 +456,12 @@ describe('persisted-slice effects', () => {
       const store = TestBed.inject(MockStore);
       const reported: number[] = [];
 
-      const sub = probeTelemetry().subscribe((action) =>
+      const sub = probeTelemetry().subscribe((action) => {
         reported.push(
           (action as ReturnType<typeof DashboardActions.report>).telemetry
             .metrics['count'] as number
-        )
-      );
+        );
+      });
 
       store.setState({ probe: { items: ['a', 'b', 'c'] } });
       store.refreshState();

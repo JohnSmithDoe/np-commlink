@@ -1,16 +1,18 @@
 import { CashTransaction } from '../../model/transaction.types';
 import { balanceDifferenceCents, lastEntryDateISO } from './balance-check';
 
-const txn = (overrides: Partial<CashTransaction> = {}): CashTransaction => ({
-  id: 'txn-1',
-  name: 'booking',
-  accountId: 'giro',
-  dateISO: '2026-01-06T00:00:00+01:00',
-  amountCents: -1000,
-  source: 'imported',
-  status: 'confirmed',
-  ...overrides,
-});
+const txn = (overrides: Partial<CashTransaction> = {}): CashTransaction => {
+  return {
+    id: 'txn-1',
+    name: 'booking',
+    accountId: 'giro',
+    dateISO: '2026-01-06T00:00:00+01:00',
+    amountCents: -1000,
+    source: 'imported',
+    status: 'confirmed',
+    ...overrides,
+  };
+};
 
 describe('balanceDifferenceCents', () => {
   it('reports zero when the derived balance matches the bank', () => {

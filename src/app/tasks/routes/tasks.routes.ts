@@ -21,25 +21,30 @@ export const tasksRoutes: Routes = [
         path: 'categories',
         title: marker('page-title.categories'),
         providers: provideCatalogFacade(TaskCategoriesPageFacade),
-        loadComponent: () =>
-          import('../../@shared/feature/categories/category-list-page/category-list.page').then(
-            (m) => m.CategoryListPage
-          ),
+        loadComponent: async () => {
+          const { CategoryListPage } =
+            await import('../../@shared/feature/categories/category-list-page/category-list.page');
+          return CategoryListPage;
+        },
       },
       {
         path: 'list',
         title: marker('page-title.tasks'),
         resolve: { reopened: reopenDueTasksResolver },
-        loadComponent: () =>
-          import('../feature/tasks-page/tasks.page').then((m) => m.TasksPage),
+        loadComponent: async () => {
+          const { TasksPage } =
+            await import('../feature/tasks-page/tasks.page');
+          return TasksPage;
+        },
       },
       {
         path: 'settings',
         title: marker('page-title.task-settings'),
-        loadComponent: () =>
-          import('../feature/task-settings-page/task-settings.page').then(
-            (m) => m.TaskSettingsPage
-          ),
+        loadComponent: async () => {
+          const { TaskSettingsPage } =
+            await import('../feature/task-settings-page/task-settings.page');
+          return TaskSettingsPage;
+        },
       },
     ],
   },

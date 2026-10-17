@@ -6,8 +6,8 @@ import {
   Track,
 } from '../model/music.types';
 
-export const libraryKey = (name: string | undefined): string =>
-  (name ?? '').trim().toLocaleLowerCase().replaceAll(/\s+/g, ' ');
+export const libraryKey = (name = ''): string =>
+  name.trim().toLocaleLowerCase().replaceAll(/\s+/g, ' ');
 
 const FEATURING = /\s*[([]?\s*\b(?:feat\.?|ft\.|featuring)\s.*$/i;
 
@@ -22,17 +22,20 @@ export const albumKeyOf = (artistKey: string, album: string | undefined) =>
 
 const byName = (a: { name?: string }, b: { name?: string }): number => {
   if (!a.name) return b.name ? 1 : 0;
-  if (!b.name) return -1;
-  return a.name.localeCompare(b.name);
+  return b.name ? a.name.localeCompare(b.name) : -1;
 };
 
-const withRef = (references: SourceRef[], reference: SourceRef): SourceRef[] =>
-  references.some(
+const withRef = (
+  references: SourceRef[],
+  reference: SourceRef
+): SourceRef[] => {
+  return references.some(
     (known) =>
       known.sourceId === reference.sourceId && known.id === reference.id
   )
     ? references
     : [...references, reference];
+};
 
 export type ServerArtist = ArtistEntry & { refs: [SourceRef] };
 export type ServerAlbum = AlbumEntry & { refs: [SourceRef] };
@@ -63,7 +66,7 @@ export const mergeArtists = (
     const serverCount = server.find((artist) => artist.key === key)?.albumCount;
     if (entry) entry.albumCount = Math.max(serverCount ?? 0, albums.size);
   }
-  return [...merged.values()].toSorted(byName);
+  return merged.values().toArray().toSorted(byName);
 };
 
 export const mergeAlbums = (
@@ -85,18 +88,20 @@ export const mergeAlbums = (
       refs: withRef(known?.refs ?? [], { sourceId: track.sourceId }),
     });
   }
-  return [...merged.values()].toSorted(byName);
+  return merged.values().toArray().toSorted(byName);
 };
 
-export const sortAlbumTracks = (tracks: readonly Track[]): Track[] =>
-  tracks.toSorted(
-    (a, b) =>
+export const sortAlbumTracks = (tracks: readonly Track[]): Track[] => {
+  return tracks.toSorted((a, b) => {
+    return (
       (a.trackNumber ?? Number.MAX_SAFE_INTEGER) -
         (b.trackNumber ?? Number.MAX_SAFE_INTEGER) ||
       a.title.localeCompare(b.title)
-  );
+    );
+  });
+};
 
-export const matchesQuery = (track: Track, query: string): boolean => {
+export const isQueryMatch = (track: Track, query: string): boolean => {
   const needle = libraryKey(query);
   return [track.title, track.artist, track.album].some((field) =>
     libraryKey(field).includes(needle)

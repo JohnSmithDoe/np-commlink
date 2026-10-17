@@ -17,11 +17,13 @@ import { TrackplayBoardPage } from './board.page';
 
 const board = buildBoard(4);
 
-const seated = (figures: readonly BoardFigure[]): BoardState => ({
-  ...initialBoardState,
-  players: 4,
-  figures,
-});
+const seated = (figures: readonly BoardFigure[]): BoardState => {
+  return {
+    ...initialBoardState,
+    players: 4,
+    figures,
+  };
+};
 
 const everyFigure = (): readonly BoardFigure[] => {
   let placed: readonly BoardFigure[] = [];

@@ -35,14 +35,18 @@ export type AccountWithBalance = CashAccount & { balanceCents: number };
 export const selectAccountsWithBalances = createSelector(
   selectAccountsListItems,
   selectAccountBalances,
-  (accounts, balances): AccountWithBalance[] =>
-    accounts.map((account) => ({
-      ...account,
-      balanceCents: balances[account.id] ?? account.openingBalanceCents,
-    }))
+  (accounts, balances): AccountWithBalance[] => {
+    return accounts.map((account) => {
+      return {
+        ...account,
+        balanceCents: balances[account.id] ?? account.openingBalanceCents,
+      };
+    });
+  }
 );
 
-export const selectAccountById = (accountId: string) =>
-  createSelector(selectAccountItems, (accounts) =>
+export const selectAccountById = (accountId: string) => {
+  return createSelector(selectAccountItems, (accounts) =>
     accounts.find((account) => account.id === accountId)
   );
+};

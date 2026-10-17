@@ -65,10 +65,9 @@ export function refuseFigure(
 
   if (!field) return 'unknown-field';
   if (figureOn(placed, fieldId)) return 'occupied';
-  if (isPrivateGround(field) && field.player !== player)
-    return 'foreign-ground';
-
-  return null;
+  return isPrivateGround(field) && field.player !== player
+    ? 'foreign-ground'
+    : null;
 }
 
 export function refuseNext(
@@ -86,9 +85,9 @@ export function placeFigure(
   fieldId: BoardFieldId
 ): readonly BoardFigure[] {
   const next = nextFigure(layout, placed);
-  if (!next || refuseNext(layout, placed, fieldId)) return placed;
-
-  return [...placed, { ...next, fieldId }];
+  return !next || refuseNext(layout, placed, fieldId)
+    ? placed
+    : [...placed, { ...next, fieldId }];
 }
 
 export function validateSetting(
@@ -125,9 +124,9 @@ export function placeNextAtHome(
   placed: readonly BoardFigure[]
 ): readonly BoardFigure[] {
   const next = nextFigure(layout, placed);
-  if (!next) return placed;
-
-  return placeFigure(layout, placed, homeFieldId(next.player, next.piece));
+  return next
+    ? placeFigure(layout, placed, homeFieldId(next.player, next.piece))
+    : placed;
 }
 
 export function takeBack(

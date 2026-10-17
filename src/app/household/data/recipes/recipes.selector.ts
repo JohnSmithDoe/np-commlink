@@ -57,13 +57,13 @@ export const selectRecipesSearchResult = createSelector(
 const ranked = (
   matches: readonly RecipeMatch[],
   result: SearchResult<Recipe> | undefined,
-  descending: boolean
+  isDescending: boolean
 ): Recipe[] => {
   const visible = result && new Set(result.listItems.map((item) => item.id));
   const recipes = matches
     .filter((match) => !visible || visible.has(match.recipe.id))
     .map((match) => match.recipe);
-  return descending ? recipes.toReversed() : recipes;
+  return isDescending ? recipes.toReversed() : recipes;
 };
 
 export const selectRecipesListItems = createSelector(

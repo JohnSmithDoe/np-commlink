@@ -19,7 +19,7 @@ import { Category, CategoryId } from '../../../model/category.types';
 export class CategoryInputComponent {
   readonly categories = input<Category[]>();
 
-  readonly removeCategory = output<CategoryId>();
+  readonly categoryRemoved = output<CategoryId>();
   readonly openDialog = output<void>();
 
   constructor() {

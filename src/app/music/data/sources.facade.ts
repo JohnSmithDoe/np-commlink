@@ -1,6 +1,6 @@
 import { computed, inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { ConnectOutcome, JamConnection, Source } from '../model/music.types';
 import { JamGateway } from './jam.gateway';
 import { LocalLibraryStore } from './local-library.store';
@@ -15,7 +15,7 @@ export class SourcesFacade {
   readonly #jam = inject(JamGateway);
   readonly #local = inject(LocalLibraryStore);
 
-  readonly foldersSupported = inject(IS_NATIVE_PLATFORM);
+  readonly foldersSupported = inject(NATIVE_PLATFORM);
   readonly jam = this.#jam.source;
   readonly connected = this.#jam.connected;
   readonly needsPassword = computed(
@@ -23,21 +23,19 @@ export class SourcesFacade {
   );
   readonly folders = this.#store.selectSignal(selectFolderSources);
   readonly scanning = this.#local.scanning;
-  readonly lostSourceIds = computed(
-    (): ReadonlySet<string> =>
-      new Set(
-        this.#local
-          .scans()
-          .filter((scan) => !scan.granted)
-          .map((scan) => scan.source.id)
-      )
-  );
-  readonly trackCounts = computed(
-    (): ReadonlyMap<string, number> =>
-      new Map(
-        this.#local.scans().map((scan) => [scan.source.id, scan.tracks.length])
-      )
-  );
+  readonly lostSourceIds = computed((): ReadonlySet<string> => {
+    return new Set(
+      this.#local
+        .scans()
+        .filter((scan) => !scan.granted)
+        .map((scan) => scan.source.id)
+    );
+  });
+  readonly trackCounts = computed((): ReadonlyMap<string, number> => {
+    return new Map(
+      this.#local.scans().map((scan) => [scan.source.id, scan.tracks.length])
+    );
+  });
 
   connect(connection: JamConnection): Promise<ConnectOutcome> {
     return this.#jam.connect(connection);

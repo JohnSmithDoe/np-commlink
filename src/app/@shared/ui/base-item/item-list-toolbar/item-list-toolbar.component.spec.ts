@@ -22,7 +22,9 @@ describe('ItemListToolbarComponent', () => {
 
   it('emits the selected sort mode', () => {
     const emitted: string[] = [];
-    component.selectSortMode.subscribe((v) => emitted.push(v));
+    component.selectSortMode.subscribe((v) => {
+      emitted.push(v);
+    });
 
     component.selectSortMode.emit('name');
 
@@ -32,7 +34,9 @@ describe('ItemListToolbarComponent', () => {
   it('emits a sort mode when the A-Z button is clicked', () => {
     fixture.detectChanges();
     const emitted: string[] = [];
-    component.selectSortMode.subscribe((v) => emitted.push(v));
+    component.selectSortMode.subscribe((v) => {
+      emitted.push(v);
+    });
 
     getByTestId(fixture, 'list-toolbar-sort-az').click();
 

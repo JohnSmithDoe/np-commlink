@@ -13,7 +13,7 @@ import { CategoryId } from '../../@shared/model/category.types';
 
 const STORED_THRESHOLD_LANGUAGE = 'de' as const;
 
-const matchesAmountCondition = (
+const doesMatchAmountCondition = (
   amountCents: number,
   condition: CashFilterCondition
 ): boolean => {
@@ -41,26 +41,27 @@ const matchesAmountCondition = (
   }
 };
 
-const matchesRegexSafely = (
+const doesMatchRegexSafely = (
   source: string,
   pattern: string,
-  caseSensitive: boolean
+  isCaseSensitive: boolean
 ): boolean => {
-  const flags = caseSensitive ? '' : 'i';
+  const flags = isCaseSensitive ? '' : 'i';
   try {
-    return new RegExp(pattern, flags).test(source);
+    const regex = new RegExp(pattern, flags);
+    return regex.test(source);
   } catch {
     return false; // an invalid regex never matches (never throws)
   }
 };
 
-const matchesDescriptionCondition = (
+const doesMatchDescriptionCondition = (
   source: string,
   condition: CashFilterCondition
 ): boolean => {
-  const caseSensitive = condition.caseSensitive ?? false;
-  const haystack = caseSensitive ? source : source.toLowerCase();
-  const needle = caseSensitive
+  const isCaseSensitive = condition.caseSensitive ?? false;
+  const haystack = isCaseSensitive ? source : source.toLowerCase();
+  const needle = isCaseSensitive
     ? condition.value
     : condition.value.toLowerCase();
   switch (condition.op) {
@@ -77,7 +78,7 @@ const matchesDescriptionCondition = (
       return haystack === needle;
     }
     case 'regex': {
-      return matchesRegexSafely(source, condition.value, caseSensitive);
+      return doesMatchRegexSafely(source, condition.value, isCaseSensitive);
     }
     default: {
       return false;
@@ -91,24 +92,27 @@ const textFieldValue = (
 ): string | undefined =>
   field === 'description' ? txn.name : (txn as CamtDetails)[field];
 
-export function matchesCondition(
+export function doesMatchCondition(
   txn: CashTransaction,
   condition: CashFilterCondition
 ): boolean {
   if (!isTextFilterField(condition.field)) {
-    return matchesAmountCondition(txn.amountCents, condition);
+    return doesMatchAmountCondition(txn.amountCents, condition);
   }
-  const source = textFieldValue(txn, condition.field);
-  return source === undefined
-    ? false // an unwritten IBAN is not the empty one
-    : matchesDescriptionCondition(source, condition);
+  const source = textFieldValue(txn, condition.field); // an unwritten IBAN is not the empty one
+  return (
+    source !== undefined && doesMatchDescriptionCondition(source, condition)
+  );
 }
 
-export function matchesRule(txn: CashTransaction, rule: ConditionSet): boolean {
+export function doesMatchRule(
+  txn: CashTransaction,
+  rule: ConditionSet
+): boolean {
   if (rule.conditions.length === 0) return false; // an empty rule never fires
   return rule.match === 'all'
-    ? rule.conditions.every((condition) => matchesCondition(txn, condition))
-    : rule.conditions.some((condition) => matchesCondition(txn, condition));
+    ? rule.conditions.every((condition) => doesMatchCondition(txn, condition))
+    : rule.conditions.some((condition) => doesMatchCondition(txn, condition));
 }
 
 export const rulesByOrder = (rules: readonly CashRule[]): CashRule[] =>
@@ -119,7 +123,7 @@ export const categorizeOrdered = (
   ordered: readonly CashRule[]
 ): CategoryId | undefined => {
   for (const rule of ordered) {
-    if (matchesRule(txn, rule)) return rule.categoryId;
+    if (doesMatchRule(txn, rule)) return rule.categoryId;
   }
   return undefined;
 };
@@ -147,7 +151,7 @@ export function ruleStats(
   for (const txn of transactions) {
     let claimedBy: string | undefined;
     for (const rule of ordered) {
-      if (!matchesRule(txn, rule)) continue;
+      if (!doesMatchRule(txn, rule)) continue;
       const stat = stats[rule.id];
       if (stat) stat.matched++;
       claimedBy ??= rule.id;

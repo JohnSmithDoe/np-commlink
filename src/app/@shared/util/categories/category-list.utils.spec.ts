@@ -8,10 +8,12 @@ import {
   renameInCatalog,
 } from './category-list.utils';
 
-const catalog = (...names: [string, string][]): CategoryList => ({
-  id: '_probe-categories',
-  items: names.map(([id, name]) => mockCategory({ id, name })),
-});
+const catalog = (...names: [string, string][]): CategoryList => {
+  return {
+    id: '_probe-categories',
+    items: names.map(([id, name]) => mockCategory({ id, name })),
+  };
+};
 
 describe('addToCatalog', () => {
   it('prepends a pre-minted category', () => {

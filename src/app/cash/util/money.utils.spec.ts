@@ -80,13 +80,13 @@ describe('money util', () => {
 
     it('reads the other language’s decimal as ITS OWN grouping, not as an error', () => {
       expect(eurToCents('12,34', 'en')).toBe(123_400);
-      expect(eurToCents('12.34', 'de')).toBe(123_400);
+      expect(eurToCents('12.34')).toBe(123_400);
     });
 
     it('round-trips through centsToInput per language', () => {
       expect(centsToInput(1234, 'en')).toBe('12.34');
       expect(eurToCents(centsToInput(-123_456, 'en'), 'en')).toBe(-123_456);
-      expect(eurToCents(centsToInput(-123_456, 'de'), 'de')).toBe(-123_456);
+      expect(eurToCents(centsToInput(-123_456))).toBe(-123_456);
     });
 
     it('does not let junk through as an English decimal', () => {

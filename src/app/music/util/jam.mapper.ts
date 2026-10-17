@@ -37,13 +37,15 @@ export const toJamTrack = (
 export const toServerArtist = (
   sourceId: string,
   artist: Jam.ArtistIndexEntry
-): ServerArtist => ({
-  key: libraryKey(artist.name),
-  name: artist.name,
-  albumCount: artist.albumCount,
-  trackCount: artist.trackCount,
-  refs: [{ sourceId, id: artist.id }],
-});
+): ServerArtist => {
+  return {
+    key: libraryKey(artist.name),
+    name: artist.name,
+    albumCount: artist.albumCount,
+    trackCount: artist.trackCount,
+    refs: [{ sourceId, id: artist.id }],
+  };
+};
 
 export const toServerAlbum = (
   sourceId: string,
@@ -65,32 +67,37 @@ export const toServerAlbum = (
 export const albumBaseToServerAlbum = (
   sourceId: string,
   album: Jam.AlbumBase
-): ServerAlbum =>
-  toServerAlbum(sourceId, {
+): ServerAlbum => {
+  return toServerAlbum(sourceId, {
     id: album.id,
     name: album.name,
     artist: album.artistName,
     artistID: album.artistID,
     trackCount: album.trackCount ?? 0,
   });
+};
 
 export const toFolderEntry = (
   sourceId: string,
   folder: Jam.FolderIndexEntry
-): FolderEntry => ({
-  id: folder.id,
-  sourceId,
-  name: folder.name,
-  trackCount: folder.trackCount,
-  onDevice: false,
-});
+): FolderEntry => {
+  return {
+    id: folder.id,
+    sourceId,
+    name: folder.name,
+    trackCount: folder.trackCount,
+    onDevice: false,
+  };
+};
 
-export const toPlaylistEntry = (playlist: Jam.PlaylistBase): PlaylistEntry => ({
-  id: playlist.id,
-  name: playlist.name,
-  trackCount: playlist.entriesCount,
-  durationMs: playlist.duration,
-});
+export const toPlaylistEntry = (playlist: Jam.PlaylistBase): PlaylistEntry => {
+  return {
+    id: playlist.id,
+    name: playlist.name,
+    trackCount: playlist.entriesCount,
+    durationMs: playlist.duration,
+  };
+};
 
 export const indexEntries = <T>(index: { groups: { items: T[] }[] }): T[] =>
   index.groups.flatMap((group) => group.items);

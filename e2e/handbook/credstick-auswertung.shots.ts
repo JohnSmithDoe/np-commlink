@@ -40,7 +40,8 @@ function iso(monthsBack: number, day: number): string {
 }
 
 function todayISO(): string {
-  return iso(0, new Date().getDate());
+  const today = new Date();
+  return iso(0, today.getDate());
 }
 
 async function createAccount(

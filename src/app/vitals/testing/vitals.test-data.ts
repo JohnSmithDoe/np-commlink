@@ -69,10 +69,12 @@ export function mockProfilesState(
   return { ...initialProfilesState, ...overrides };
 }
 
-export const providePeople = (people: readonly PersonRef[]) => ({
-  provide: PEOPLE,
-  useValue: signal(people),
-});
+export const providePeople = (people: readonly PersonRef[]) => {
+  return {
+    provide: PEOPLE,
+    useValue: signal(people),
+  };
+};
 
 export function mockReadingsState(
   items: Reading[] = [],

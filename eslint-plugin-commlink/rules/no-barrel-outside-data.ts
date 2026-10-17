@@ -35,8 +35,7 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const filename = context.filename.replaceAll('\\', '/');
-    if (!ANY_BARREL.test(filename)) return {};
-    if (DATA_BARREL.test(filename)) return {};
+    if (!ANY_BARREL.test(filename) || DATA_BARREL.test(filename)) return {};
 
     return {
       Program(node) {

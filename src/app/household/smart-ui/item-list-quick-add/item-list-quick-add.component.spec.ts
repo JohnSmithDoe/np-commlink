@@ -25,8 +25,7 @@ async function setup(household: Partial<HouseholdState> = {}) {
   return { fixture, component: fixture.componentInstance };
 }
 
-const searchingFor = (query: string) =>
-  mockShoppingState({ searchQuery: query });
+const searchingForMilk = () => mockShoppingState({ searchQuery: 'Milk' });
 
 describe('ItemListQuickAddComponent', () => {
   it('should create', async () => {
@@ -36,7 +35,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('exposes canAddLocal=true when the query is new and the setting is on', async () => {
     const { component } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       listSettings: mockListSettings({ showQuickAdd: true }),
     });
 
@@ -46,7 +45,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('exposes canAddProduct=true when the catalog lacks the name and the setting is on', async () => {
     const { component } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       listSettings: mockListSettings({ showQuickAddProduct: true }),
     });
 
@@ -56,7 +55,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('withholds canAddProduct once the catalog already holds the name', async () => {
     const { component } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       products: mockProductsState({ items: [mockProduct({ name: 'Milk' })] }),
       listSettings: mockListSettings({ showQuickAddProduct: true }),
     });
@@ -66,7 +65,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('keeps canAddLocal=false when the setting is disabled', async () => {
     const { component } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       listSettings: mockListSettings({ showQuickAdd: false }),
     });
 
@@ -75,7 +74,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('renders a quick-add text item when local quick-add is enabled', async () => {
     const { fixture } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       listSettings: mockListSettings({ showQuickAdd: true }),
     });
     fixture.detectChanges();
@@ -115,7 +114,7 @@ describe('ItemListQuickAddComponent', () => {
 
   it('reaches the facade from the rendered row, not just from the class', async () => {
     const { fixture } = await setup({
-      shopping: searchingFor('Milk'),
+      shopping: searchingForMilk(),
       listSettings: mockListSettings({ showQuickAdd: true }),
     });
     fixture.detectChanges();

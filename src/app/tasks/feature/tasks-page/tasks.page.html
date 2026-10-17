@@ -26,7 +26,7 @@
     [startSwipeAction]="swipeActionFor(item)"
     (selectItem)="showEditDialog(item)"
     (startSwipe)="toggleDone(item)"
-    (deleteItem)="removeItem(item)"
+    (deletionRequested)="removeItem(item)"
   >
     @let note = dateNote(item);
     @let repeats = cadence(item);

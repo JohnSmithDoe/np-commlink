@@ -2,17 +2,18 @@ import dayjs from 'dayjs';
 import { TrackingItem } from '../model/tracking.types';
 import { dailySeries, groupSessionsByView } from './sessions.utils';
 
-const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
-  id: Math.random().toString(36).slice(2),
-  name: 'Task',
-  createdAt: '2026-01-01',
-  state: 'stopped',
-  ...over,
-});
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => {
+  return {
+    id: Math.random().toString(36).slice(2),
+    name: 'Task',
+    createdAt: '2026-01-01',
+    state: 'stopped',
+    ...over,
+  };
+};
 
 const TODAY = '2026-07-21';
-const at = (day: string, hour = 10): string =>
-  dayjs(`${day}T00:00:00`).hour(hour).format();
+const at = (day: string): string => dayjs(`${day}T10:00:00`).format();
 
 describe('groupSessionsByView', () => {
   it('merges same-name entries within a monthly bucket', () => {

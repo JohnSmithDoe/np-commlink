@@ -21,10 +21,12 @@ export const initialState: RecipesState = {
 const dropProductFromRecipes = (
   state: RecipesState,
   productId: string
-): RecipesState => ({
-  ...state,
-  items: state.items.map((recipe) => withoutProduct(recipe, productId)),
-});
+): RecipesState => {
+  return {
+    ...state,
+    items: state.items.map((recipe) => withoutProduct(recipe, productId)),
+  };
+};
 
 // prettier-ignore
 export const recipesReducer = createReducer(

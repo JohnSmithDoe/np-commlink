@@ -12,8 +12,8 @@ import { HouseholdActions } from './household.actions';
 import { HouseholdCategoriesActions } from './categories/household-categories.actions';
 import { householdReducer } from './household.reducer';
 
-const stateWithSharedCategory = () =>
-  mockHouseholdState({
+const stateWithSharedCategory = () => {
+  return mockHouseholdState({
     categories: {
       id: '_household-categories',
       items: [
@@ -31,6 +31,7 @@ const stateWithSharedCategory = () =>
       items: [mockStorageItem({ id: 'st', categoryIds: ['dairy', 'fresh'] })],
     }),
   });
+};
 
 describe('householdReducer — the shared catalog', () => {
   it('mints a category once, into the one catalog', () => {

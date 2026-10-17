@@ -8,11 +8,12 @@ import {
 } from '../helpers';
 import { bootDeck, openPage, shot, shotOf } from './shot';
 
-const configRow = (page: Page, codename: string) =>
-  page
+const configRow = (page: Page, codename: string) => {
+  return page
     .locator('app-page-deck-config')
     .getByTestId('deck-config-row')
     .filter({ hasText: codename });
+};
 
 async function switchOn(page: Page, codename: string, id: string) {
   await configRow(page, codename).getByTestId('deck-config-row-toggle').click();

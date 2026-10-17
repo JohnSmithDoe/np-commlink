@@ -22,6 +22,10 @@ export const GamesForPlayerActions = createActionGroup({
       sortBy?: ItemListSortType,
       sortDirection?: ItemListSortDirection | 'keep' | 'toggle'
     ) => ({ sortBy, sortDirection }),
-    setShowEnded: (showEndedGames: boolean) => ({ showEndedGames }),
+    setShowEnded: (shouldShowEndedGames: boolean) => {
+      return {
+        showEndedGames: shouldShowEndedGames,
+      };
+    },
   },
 });

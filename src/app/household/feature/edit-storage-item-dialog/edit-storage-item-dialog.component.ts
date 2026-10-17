@@ -27,14 +27,15 @@ import { NumberInputComponent } from '../../../@shared/ui/forms/number-input/num
   templateUrl: './edit-storage-item-dialog.component.html',
 })
 export class EditStorageItemDialogComponent extends BaseHouseholdEditItemDialog<StorageItem> {
+  readonly #storage = inject(StorageFacade);
+
+  protected readonly listId: HouseholdListId = STORAGE_LIST_ID;
+
+  readonly siblings = this.#storage.allItems;
+
   protected blank(): StorageItem {
     return createStorageItem('');
   }
-
-  protected readonly listId: HouseholdListId = STORAGE_LIST_ID;
-  readonly #storage = inject(StorageFacade);
-
-  readonly siblings = this.#storage.allItems;
 
   protected save(item: StorageItem): void {
     this.#storage.saveItem(item);

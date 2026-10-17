@@ -22,18 +22,15 @@ describe('EditStorageItemDialogComponent', () => {
   const sibling = mockStorageItem({ id: 'other', name: 'Bread' });
 
   beforeEach(async () => {
+    const household = mockHouseholdState({
+      storage: mockStorageState({
+        searchQuery: 'Milk',
+        items: [sibling, seed],
+      }),
+    });
     await TestBed.configureTestingModule({
       imports: [EditStorageItemDialogComponent],
-      providers: [
-        ...provideTestingProviders({
-          household: mockHouseholdState({
-            storage: mockStorageState({
-              searchQuery: 'Milk',
-              items: [sibling, seed],
-            }),
-          }),
-        }),
-      ],
+      providers: [...provideTestingProviders({ household })],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);

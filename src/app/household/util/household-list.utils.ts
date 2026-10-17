@@ -14,8 +14,8 @@ import { QuickAddState } from '../model/list-settings.types';
 import { createStorageItemFromShopping } from './household.factory';
 import {
   findMatchingItem,
-  matchesSearchExactly,
-  matchingTxtIsNotEmpty,
+  isExactSearchMatch,
+  hasMatchingText,
 } from '../../@shared/util/app.utils';
 import {
   addListItem,
@@ -75,7 +75,7 @@ const LIST_NAME_MARKER: Record<HouseholdListId, string> = {
 };
 
 const hasItemNamedExactly = (items: BaseItem[], query?: string) =>
-  items.some((item) => matchesSearchExactly(item, query));
+  items.some((item) => isExactSearchMatch(item, query));
 
 export const deriveQuickAddState = (
   state: HouseholdState,
@@ -83,7 +83,7 @@ export const deriveQuickAddState = (
 ): QuickAddState => {
   const list = stateByListId(state, listId);
   const query = list.searchQuery;
-  const isTypingItemName = matchingTxtIsNotEmpty(query);
+  const isTypingItemName = hasMatchingText(query);
   return {
     searchQuery: query,
     canAddLocal: isTypingItemName && !hasItemNamedExactly(list.items, query),
@@ -102,13 +102,13 @@ export const addListItemOrIncreaseQuantity = <
 >(
   state: T,
   item: R,
-  byOne = true
+  isByOne = true
 ): T => {
   const found = findMatchingItem(item, state.items);
   if (found) {
     return updateListItem<T, R>(state, {
       ...found,
-      quantity: found.quantity + (byOne ? 1 : item.quantity),
+      quantity: found.quantity + (isByOne ? 1 : item.quantity),
     });
   }
   return addListItem<T, R>(state, item);

@@ -1,15 +1,17 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { PlayableTrack } from '../model/music.types';
 import { MUSIC_PLAYER, PlayerEvent } from './music-player';
 import { MUSIC_PLAYER_PLUGIN } from './music-player.plugin';
 
-const track = (entryId: string): PlayableTrack => ({
-  entryId,
-  uri: `https://music.example.org/stream/${entryId}`,
-  title: entryId,
-});
+const track = (entryId: string): PlayableTrack => {
+  return {
+    entryId,
+    uri: `https://music.example.org/stream/${entryId}`,
+    title: entryId,
+  };
+};
 
 describe('MUSIC_PLAYER on the web', () => {
   let states: PlayerEvent[];
@@ -21,12 +23,14 @@ describe('MUSIC_PLAYER on the web', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        { provide: IS_NATIVE_PLATFORM, useValue: false },
+        { provide: NATIVE_PLATFORM, useValue: false },
       ],
     });
     const player = TestBed.inject(MUSIC_PLAYER);
     states = [];
-    player.listen((event) => states.push(event));
+    player.listen((event) => {
+      states.push(event);
+    });
     return player;
   };
 
@@ -154,13 +158,15 @@ describe('MUSIC_PLAYER on Android', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        { provide: IS_NATIVE_PLATFORM, useValue: true },
+        { provide: NATIVE_PLATFORM, useValue: true },
         { provide: MUSIC_PLAYER_PLUGIN, useValue: plugin },
       ],
     });
     const player = TestBed.inject(MUSIC_PLAYER);
     const events: PlayerEvent[] = [];
-    player.listen((event) => events.push(event));
+    player.listen((event) => {
+      events.push(event);
+    });
 
     await player.setQueue([track('a')], 0);
     await player.append([track('b')]);

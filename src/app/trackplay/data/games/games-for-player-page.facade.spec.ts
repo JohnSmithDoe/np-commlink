@@ -24,8 +24,8 @@ import { GamesForPlayerPageFacade } from './games-for-player-page.facade';
 
 const PLAYER = 'player-1';
 
-const stateWith = (filterBy?: string) =>
-  mockTrackplayState({
+const stateWith = (filterBy?: string) => {
+  return mockTrackplayState({
     gameTypes: mockGameTypesState([mockGameType({ id: 'skat', name: 'Skat' })]),
     gamesForPlayer: mockGamesForPlayerView({ filterBy }),
     games: mockGamesState([
@@ -44,6 +44,7 @@ const stateWith = (filterBy?: string) =>
       mockGame({ id: 'g3', name: 'Someone else', playerIds: ['player-2'] }),
     ]),
   });
+};
 
 const setup = (filterBy?: string) => {
   TestBed.configureTestingModule({

@@ -125,7 +125,7 @@ export type FolderSnapshot = {
   missing: string[];
 };
 
-export type PlaybackFailure = 'notFound' | 'noPermission' | 'other';
+type PlaybackFailure = 'notFound' | 'noPermission' | 'other';
 
 export type PlaybackFailed = {
   reason: PlaybackFailure;

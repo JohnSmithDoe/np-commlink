@@ -30,10 +30,10 @@ export class DashHolidaysComponent {
     { name: string; date: Dayjs }[],
     HolidayMap | undefined | null
   >([], {
-    transform(holidays?: HolidayMap | null) {
+    transform: (holidays?: HolidayMap | null) => {
       return Object.entries(holidays ?? {}).flatMap(([name, key]) => {
         const date = dayjsFromString(key);
-        return date ? [{ name, date }] : [];
+        return date ? { name, date } : [];
       });
     },
   });

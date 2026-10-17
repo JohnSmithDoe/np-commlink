@@ -28,6 +28,6 @@ describe('queue', () => {
   it('shuffles without losing or duplicating an item', () => {
     const items = [1, 2, 3, 4, 5];
 
-    expect(shuffled(items, () => 0.3).toSorted()).toEqual(items);
+    expect(shuffled(items, () => 0.3).toSorted((a, b) => a - b)).toEqual(items);
   });
 });

@@ -42,11 +42,13 @@ export const adjustTrackedTime = (
 ): TrackingItem =>
   setTrackedSeconds(item, (item.trackedTimeInSeconds ?? 0) + deltaSeconds);
 
-export const trackedDuration = (seconds: number): TrackedDuration => ({
-  hours: Math.floor(seconds / 3600),
-  minutes: Math.floor((seconds % 3600) / 60),
-  seconds: seconds % 60,
-});
+export const trackedDuration = (seconds: number): TrackedDuration => {
+  return {
+    hours: Math.floor(seconds / 3600),
+    minutes: Math.floor((seconds % 3600) / 60),
+    seconds: seconds % 60,
+  };
+};
 
 export const setTrackedDuration = (
   item: TrackingItem,

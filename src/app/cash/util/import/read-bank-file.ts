@@ -18,9 +18,11 @@ const byPage = new Intl.Collator('en', { numeric: true });
 
 export function decodeBankFile(bytes: ArrayBuffer | Uint8Array): string {
   try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    const strictUtf8 = new TextDecoder('utf-8', { fatal: true });
+    return strictUtf8.decode(bytes);
   } catch {
-    return new TextDecoder('windows-1252').decode(bytes);
+    const latin = new TextDecoder('windows-1252');
+    return latin.decode(bytes);
   }
 }
 

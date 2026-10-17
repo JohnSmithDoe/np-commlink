@@ -1,6 +1,6 @@
 <app-category-input
   [categories]="selectedCategories()"
-  (removeCategory)="clear()"
+  (categoryRemoved)="clear()"
   (openDialog)="open()"
 />
 
@@ -12,7 +12,7 @@
   (confirmed)="pick($event)"
   (cancelled)="close()"
   (dismissed)="close()"
-  (addNew)="onAdd($event)"
+  (categoryCreated)="onAdd($event)"
   (deleted)="onDelete($event)"
   (renamed)="onRename($event)"
 />

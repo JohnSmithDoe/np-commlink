@@ -19,25 +19,27 @@ import {
   ScheduleDueStatus,
 } from '../model/schedule.types';
 import { CashTransaction } from '../model/transaction.types';
-import { matchesRule } from './categorize.utils';
+import { doesMatchRule } from './categorize.utils';
 
-const asRule = (schedule: CashSchedule) => ({
-  match: schedule.match,
-  conditions: schedule.conditions,
-});
+const asRule = (schedule: CashSchedule) => {
+  return {
+    match: schedule.match,
+    conditions: schedule.conditions,
+  };
+};
 
-export function matchesSchedule(
+export function doesMatchSchedule(
   txn: CashTransaction,
   schedule: CashSchedule
 ): boolean {
-  return matchesRule(txn, asRule(schedule));
+  return doesMatchRule(txn, asRule(schedule));
 }
 
 export function scheduleFor(
   txn: CashTransaction,
   schedules: readonly CashSchedule[]
 ): CashSchedule | undefined {
-  return schedules.find((schedule) => matchesSchedule(txn, schedule));
+  return schedules.find((schedule) => doesMatchSchedule(txn, schedule));
 }
 
 export function monthsUntilDue(
@@ -88,8 +90,11 @@ export function dueThisMonthCents(
 ): number {
   let total = 0;
   for (const schedule of schedules) {
-    if (dueStatus(schedule, todayISO) === 'upcoming') continue;
-    if (schedule.amountCents >= 0) continue;
+    if (
+      dueStatus(schedule, todayISO) === 'upcoming' ||
+      schedule.amountCents >= 0
+    )
+      continue;
     total += Math.abs(schedule.amountCents);
   }
   return total;
@@ -113,15 +118,18 @@ export function confirmedThisMonthCents(
   const month = dayjs(todayISO);
   let total = 0;
   for (const schedule of schedules) {
-    if (schedule.amountCents >= 0) continue;
-    if (!schedule.lastSeenISO) continue;
-    if (!dayjs(schedule.lastSeenISO).isSame(month, 'month')) continue;
+    if (
+      schedule.amountCents >= 0 ||
+      !schedule.lastSeenISO ||
+      !dayjs(schedule.lastSeenISO).isSame(month, 'month')
+    )
+      continue;
     total += Math.abs(schedule.amountCents);
   }
   return total;
 }
 
-export function seenThisMonth(
+export function wasSeenThisMonth(
   schedule: CashSchedule,
   todayISO: string
 ): boolean {
@@ -140,7 +148,7 @@ export function scheduleSightingsFor(
   for (const txn of incoming) {
     const schedule = schedules.find(
       (candidate) =>
-        !claimed.has(candidate.id) && matchesSchedule(txn, candidate)
+        !claimed.has(candidate.id) && doesMatchSchedule(txn, candidate)
     );
     if (!schedule) continue;
     claimed.add(schedule.id);

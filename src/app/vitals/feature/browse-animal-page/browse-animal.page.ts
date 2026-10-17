@@ -39,10 +39,8 @@ const ANIMAL_ROUTE = '/vitals/browse/chinese';
   ],
 })
 export class VitalsBrowseAnimalPage {
-  readonly elementKeys = CHINESE_ELEMENT_LABEL_KEYS;
-  readonly polarityKeys = CHINESE_POLARITY_LABEL_KEYS;
-
   readonly #route = inject(ActivatedRoute);
+
   readonly #today = inject(TodayService).today;
 
   readonly #name = toSignal(
@@ -51,6 +49,10 @@ export class VitalsBrowseAnimalPage {
     ),
     { initialValue: '' }
   );
+
+  readonly elementKeys = CHINESE_ELEMENT_LABEL_KEYS;
+
+  readonly polarityKeys = CHINESE_POLARITY_LABEL_KEYS;
 
   readonly sign = computed(() => chineseSignNamed(this.#name()));
 
@@ -66,10 +68,12 @@ export class VitalsBrowseAnimalPage {
   readonly elementYears = computed(() => {
     const record = this.sign();
     return record
-      ? sexagenaryYearsOf(record.animal, this.#today()).map((year) => ({
-          year,
-          element: chineseElementOfYear(year),
-        }))
+      ? sexagenaryYearsOf(record.animal, this.#today()).map((year) => {
+          return {
+            year,
+            element: chineseElementOfYear(year),
+          };
+        })
       : [];
   });
 

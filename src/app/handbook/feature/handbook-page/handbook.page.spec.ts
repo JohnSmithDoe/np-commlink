@@ -8,16 +8,18 @@ import { HandbookPage } from './handbook.page';
 const entry = (
   slug: string,
   group: HandbookEntry['group'] = 'programme'
-): HandbookEntry => ({
-  slug,
-  title: `DECK ${slug}`,
-  plain: `Klartext ${slug}`,
-  route: `/${slug}`,
-  group,
-  summary: `Kurz zu ${slug}`,
-  tags: [slug],
-  text: `Der Text zu ${slug} nennt einen Timer.`,
-});
+): HandbookEntry => {
+  return {
+    slug,
+    title: `DECK ${slug}`,
+    plain: `Klartext ${slug}`,
+    route: `/${slug}`,
+    group,
+    summary: `Kurz zu ${slug}`,
+    tags: [slug],
+    text: `Der Text zu ${slug} nennt einen Timer.`,
+  };
+};
 
 interface FakeHandbook {
   entries: WritableSignal<readonly HandbookEntry[]>;

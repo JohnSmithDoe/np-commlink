@@ -31,28 +31,22 @@ describe('GamesPageFacade', () => {
   };
 
   it('counts the shown games against the unfiltered total', () => {
-    setup(
-      mockTrackplayState({
-        games: mockGamesState(
-          [
-            mockGame({ id: 'skat', name: 'Skat' }),
-            mockGame({ id: 'romme', name: 'Rommé' }),
-          ],
-          { searchQuery: 'skat' }
-        ),
-      })
+    const games = mockGamesState(
+      [
+        mockGame({ id: 'skat', name: 'Skat' }),
+        mockGame({ id: 'romme', name: 'Rommé' }),
+      ],
+      { searchQuery: 'skat' }
     );
+    setup(mockTrackplayState({ games }));
 
     expect(facade.shownCount()).toBe(1);
     expect(facade.totalCount()).toBe(2);
   });
 
   it('offers the game types as its category catalog', () => {
-    setup(
-      mockTrackplayState({
-        gameTypes: mockGameTypesState([mockGameType({ id: 'skat' })]),
-      })
-    );
+    const gameTypes = mockGameTypesState([mockGameType({ id: 'skat' })]);
+    setup(mockTrackplayState({ gameTypes }));
 
     expect(facade.catalog().map((type) => type.id)).toEqual(['skat']);
   });

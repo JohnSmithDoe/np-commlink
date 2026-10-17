@@ -10,18 +10,20 @@ export const ritualRoutes: Routes = [
       {
         path: '',
         title: marker('page-title.ritual'),
-        loadComponent: () =>
-          import('../feature/ritual-page/ritual.page').then(
-            (m) => m.RitualPage
-          ),
+        loadComponent: async () => {
+          const { RitualPage } =
+            await import('../feature/ritual-page/ritual.page');
+          return RitualPage;
+        },
       },
       {
         path: 'settings',
         title: marker('page-title.ritual-settings'),
-        loadComponent: () =>
-          import('../feature/ritual-settings-page/ritual-settings.page').then(
-            (m) => m.RitualSettingsPage
-          ),
+        loadComponent: async () => {
+          const { RitualSettingsPage } =
+            await import('../feature/ritual-settings-page/ritual-settings.page');
+          return RitualSettingsPage;
+        },
       },
     ],
   },

@@ -88,7 +88,7 @@
     [startSwipeAction]="editSwipeAction"
     (selectItem)="openReadingEdit(item)"
     (startSwipe)="openReadingEdit(item)"
-    (deleteItem)="deleteReading(item)"
+    (deletionRequested)="deleteReading(item)"
   >
     <p itemDetails class="second-line">
       <ion-note>{{ item.name | date }}</ion-note>

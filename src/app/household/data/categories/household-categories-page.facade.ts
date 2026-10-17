@@ -25,7 +25,12 @@ import {
 export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   readonly #activeListId = this.store.selectSignal(selectActiveHouseholdListId);
 
+  readonly #taggedWith = this.store.selectSignal(
+    selectHouseholdTaggedByCategory
+  );
+
   readonly catalogListId = HOUSEHOLD_CATEGORIES_LIST_ID;
+
   protected readonly actions = HouseholdCategoriesActions;
 
   protected readonly commands = itemListCommands(this.store, {
@@ -35,18 +40,21 @@ export class HouseholdCategoriesPageFacade extends BaseCategoryListPageFacade {
   });
 
   readonly state = this.store.selectSignal(selectHouseholdCategoryList);
+
   readonly items = this.store.selectSignal(selectHouseholdCategoriesListItems);
+
   readonly searchResult = this.store.selectSignal(
     selectHouseholdCategoriesSearchResult
   );
+
   readonly categories = this.store.selectSignal(selectHouseholdCategories);
+
   readonly countById = this.store.selectSignal(selectHouseholdCountByCategory);
+
   readonly undoScope = signal(HOUSEHOLD_CATEGORIES_LIST_ID);
 
-  readonly #taggedWith = this.store.selectSignal(
-    selectHouseholdTaggedByCategory
-  );
   readonly listHref = computed(() => ROUTE_BY_LIST_ID[this.#activeListId()]);
+
   readonly listTitleKey = computed(
     () => TITLE_KEY_BY_LIST_ID[this.#activeListId()]
   );

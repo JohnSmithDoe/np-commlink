@@ -33,10 +33,11 @@ import {
 } from '../../../@shared/data/router/router.selector';
 import { selectHouseholdState } from '../household.selector';
 
-const asHouseholdListId = (listId: unknown): HouseholdListId | undefined =>
-  isHouseholdListId(typeof listId === 'string' ? listId : undefined)
+const asHouseholdListId = (listId: unknown): HouseholdListId | undefined => {
+  return isHouseholdListId(typeof listId === 'string' ? listId : undefined)
     ? (listId as HouseholdListId)
     : undefined;
+};
 
 export const selectListIdFromRouteData = createSelector(
   selectRouteData,

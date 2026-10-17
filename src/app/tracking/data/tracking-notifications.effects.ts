@@ -10,7 +10,7 @@ import { selectTrackingState } from './tracking.selector';
 import { TrackingActions } from './tracking.actions';
 import {
   kindForState,
-  needsStateNotification,
+  shouldNotifyState,
   runningDurationMinutes,
   stateHintForCta,
   TRACKING_NOTIFICATION_PRESETS,
@@ -61,11 +61,12 @@ export class TrackingNotificationsEffects {
     const item = trackingState.items.find(
       (candidate) => candidate.id === targetId
     );
-    if (!item) return this.#projection(trackingState, undefined);
-    return TrackingActions.toggleTrackingItem(
-      { ...item, state: stateHintForCta(command) },
-      dayjs().format()
-    );
+    return item
+      ? TrackingActions.toggleTrackingItem(
+          { ...item, state: stateHintForCta(command) },
+          dayjs().format()
+        )
+      : this.#projection(trackingState, undefined);
   }
 
   #projection(
@@ -76,7 +77,7 @@ export class TrackingNotificationsEffects {
     return NotificationsActions.project(
       TRACKING_NOTIFICATIONS_OWNER,
       trackingState.items
-        .filter((item) => needsStateNotification(item))
+        .filter((item) => shouldNotifyState(item))
         .map((item) => this.#notificationFor(item, item.id === targetId, now))
     );
   }
@@ -109,10 +110,7 @@ export class TrackingNotificationsEffects {
     };
   }
 
-  #targetIdOf(action: {
-    type: string;
-    item?: { id: string };
-  }): string | undefined {
+  #targetIdOf(action: Action & { item?: { id: string } }): string | undefined {
     return action.item?.id;
   }
 }

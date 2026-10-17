@@ -1,7 +1,7 @@
 import { computed, effect, inject, signal, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { DatabaseService } from '../../@shared/data/persistence/database.service';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import {
   FolderScan,
   FolderSnapshot,
@@ -17,16 +17,15 @@ export const FOLDER_SNAPSHOT_KEY_PREFIX = 'music-folder:';
 const keyOf = (sourceId: string): string =>
   `${FOLDER_SNAPSHOT_KEY_PREFIX}${sourceId}`;
 
-const toScan = (
-  source: FolderSource,
-  snapshot: FolderSnapshot
-): FolderScan => ({
-  source,
-  granted: snapshot.granted,
-  tracks: (snapshot.granted ? snapshot.tracks : [])
-    .filter((tags) => !snapshot.missing.includes(tags.uri))
-    .map((tags) => toLocalTrack(source, tags)),
-});
+const toScan = (source: FolderSource, snapshot: FolderSnapshot): FolderScan => {
+  return {
+    source,
+    granted: snapshot.granted,
+    tracks: (snapshot.granted ? snapshot.tracks : [])
+      .filter((tags) => !snapshot.missing.includes(tags.uri))
+      .map((tags) => toLocalTrack(source, tags)),
+  };
+};
 
 const without = (ids: ReadonlySet<string>, id: string): Set<string> => {
   const next = new Set(ids);
@@ -39,6 +38,7 @@ export class LocalLibraryStore {
   readonly #plugin = inject(MUSIC_PLAYER_PLUGIN);
   readonly #database = inject(DatabaseService);
   readonly #folders = inject(Store).selectSignal(selectFolderSources);
+
   readonly #snapshots = signal<Record<string, FolderSnapshot> | undefined>(
     undefined
   );
@@ -48,6 +48,7 @@ export class LocalLibraryStore {
   readonly scanning = computed(
     () => this.#snapshots() === undefined || this.#scanningIds().size > 0
   );
+
   readonly scans = computed((): FolderScan[] => {
     const snapshots = this.#snapshots() ?? {};
     return this.#folders().flatMap((source) => {
@@ -55,12 +56,13 @@ export class LocalLibraryStore {
       return snapshot ? [toScan(source, snapshot)] : [];
     });
   });
+
   readonly tracks = computed((): Track[] =>
     this.scans().flatMap((scan) => scan.tracks)
   );
 
   constructor() {
-    if (!inject(IS_NATIVE_PLATFORM)) {
+    if (!inject(NATIVE_PLATFORM)) {
       this.#snapshots.set({});
       return;
     }
@@ -68,43 +70,15 @@ export class LocalLibraryStore {
     effect(() => this.#reconcile(this.#folders(), this.#snapshots()));
   }
 
-  async rescan(): Promise<void> {
-    const scanning = this.#scanningIds();
-    await Promise.all(
-      this.#folders()
-        .filter((source) => !scanning.has(source.id))
-        .map((source) => this.#scan(source))
-    );
-  }
-
-  async markMissing(sourceId: string, uri: string): Promise<void> {
-    await this.#amend(sourceId, (snapshot) =>
-      snapshot.missing.includes(uri)
-        ? snapshot
-        : { ...snapshot, missing: [...snapshot.missing, uri] }
-    );
-  }
-
-  async markLost(sourceId: string): Promise<void> {
-    await this.#amend(sourceId, (snapshot) => ({
-      ...snapshot,
-      granted: false,
-    }));
-  }
-
-  async forget(sourceId: string): Promise<void> {
-    this.#snapshots.update((snapshots) =>
-      Object.fromEntries(
-        Object.entries(snapshots ?? {}).filter(([id]) => id !== sourceId)
-      )
-    );
-    await this.#database.remove(keyOf(sourceId));
-  }
-
   async #hydrate(): Promise<void> {
-    const stored = await this.#database
-      .loadPrefixed<FolderSnapshot>(FOLDER_SNAPSHOT_KEY_PREFIX)
-      .catch((): FolderSnapshot[] => []);
+    let stored: FolderSnapshot[];
+    try {
+      stored = await this.#database.loadPrefixed<FolderSnapshot>(
+        FOLDER_SNAPSHOT_KEY_PREFIX
+      );
+    } catch {
+      stored = [];
+    }
     this.#snapshots.set(
       Object.fromEntries(
         stored.map((snapshot) => [snapshot.sourceId, snapshot])
@@ -128,7 +102,11 @@ export class LocalLibraryStore {
   }
 
   async #scan(source: FolderSource): Promise<void> {
-    this.#scanningIds.update((ids) => new Set(ids).add(source.id));
+    this.#scanningIds.update((ids) => {
+      const scanning = new Set(ids);
+      scanning.add(source.id);
+      return scanning;
+    });
     try {
       const { granted, tracks } = await this.#plugin.listTracks({
         folderUri: source.uri,
@@ -152,10 +130,47 @@ export class LocalLibraryStore {
   }
 
   async #put(snapshot: FolderSnapshot): Promise<void> {
-    this.#snapshots.update((snapshots) => ({
-      ...snapshots,
-      [snapshot.sourceId]: snapshot,
-    }));
+    this.#snapshots.update((snapshots) => {
+      return {
+        ...snapshots,
+        [snapshot.sourceId]: snapshot,
+      };
+    });
     await this.#database.save(keyOf(snapshot.sourceId), snapshot);
+  }
+
+  async rescan(): Promise<void> {
+    const scanning = this.#scanningIds();
+    await Promise.all(
+      this.#folders()
+        .filter((source) => !scanning.has(source.id))
+        .map((source) => this.#scan(source))
+    );
+  }
+
+  async markMissing(sourceId: string, uri: string): Promise<void> {
+    await this.#amend(sourceId, (snapshot) => {
+      return snapshot.missing.includes(uri)
+        ? snapshot
+        : { ...snapshot, missing: [...snapshot.missing, uri] };
+    });
+  }
+
+  async markLost(sourceId: string): Promise<void> {
+    await this.#amend(sourceId, (snapshot) => {
+      return {
+        ...snapshot,
+        granted: false,
+      };
+    });
+  }
+
+  async forget(sourceId: string): Promise<void> {
+    this.#snapshots.update((snapshots) => {
+      return Object.fromEntries(
+        Object.entries(snapshots ?? {}).filter(([id]) => id !== sourceId)
+      );
+    });
+    await this.#database.remove(keyOf(sourceId));
   }
 }

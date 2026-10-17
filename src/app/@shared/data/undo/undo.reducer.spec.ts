@@ -5,11 +5,13 @@ import { initialUndoState, undoReducer } from './undo.reducer';
 const STASH = '_storage';
 const SHOPPING = '_shopping';
 
-const entry = (name: string, scope = STASH): UndoEntry => ({
-  scope,
-  name,
-  action: { type: `[Test] restore ${name}` },
-});
+const entry = (name: string, scope = STASH): UndoEntry => {
+  return {
+    scope,
+    name,
+    action: { type: `[Test] restore ${name}` },
+  };
+};
 
 const stackOf = (...entries: UndoEntry[]) => {
   let state = initialUndoState;

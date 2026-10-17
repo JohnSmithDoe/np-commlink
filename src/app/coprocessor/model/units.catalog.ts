@@ -672,11 +672,12 @@ export const QUANTITY_BY_ID: Record<QuantityId, Quantity> = Object.fromEntries(
 export const unitsNamed = (
   quantity: QuantityId,
   ids: readonly string[]
-): readonly Unit[] =>
-  ids.map((id) => {
+): readonly Unit[] => {
+  return ids.map((id) => {
     const unit = QUANTITY_BY_ID[quantity].units.find(
       (candidate) => candidate.id === id
     );
     if (!unit) throw new Error(`unknown unit ${quantity}/${id}`);
     return unit;
   });
+};

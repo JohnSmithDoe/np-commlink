@@ -3,13 +3,19 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: 'commlink',
-    loadChildren: () =>
-      import('./commlink/routes/commlink.routes').then((m) => m.commlinkRoutes),
+    loadChildren: async () => {
+      const { commlinkRoutes } =
+        await import('./commlink/routes/commlink.routes');
+      return commlinkRoutes;
+    },
   },
   {
     path: 'tracking',
-    loadChildren: () =>
-      import('./tracking/routes/tracking.routes').then((m) => m.trackingRoutes),
+    loadChildren: async () => {
+      const { trackingRoutes } =
+        await import('./tracking/routes/tracking.routes');
+      return trackingRoutes;
+    },
   },
   {
     path: 'data',
@@ -18,44 +24,57 @@ export const routes: Routes = [
   },
   {
     path: 'settings',
-    loadChildren: () =>
-      import('./commlink/routes/commlink.routes').then((m) => m.settingsRoutes),
+    loadChildren: async () => {
+      const { settingsRoutes } =
+        await import('./commlink/routes/commlink.routes');
+      return settingsRoutes;
+    },
   },
   {
     path: 'office-time',
-    loadChildren: () =>
-      import('./office-time/routes/office-time.routes').then(
-        (m) => m.officeTimeRoutes
-      ),
+    loadChildren: async () => {
+      const { officeTimeRoutes } =
+        await import('./office-time/routes/office-time.routes');
+      return officeTimeRoutes;
+    },
   },
   {
     path: 'notes',
-    loadChildren: () =>
-      import('./notes/routes/notes.routes').then((m) => m.notesRoutes),
+    loadChildren: async () => {
+      const { notesRoutes } = await import('./notes/routes/notes.routes');
+      return notesRoutes;
+    },
   },
   {
     path: 'notifications',
-    loadChildren: () =>
-      import('./notifications/routes/notifications.routes').then(
-        (m) => m.notificationsRoutes
-      ),
+    loadChildren: async () => {
+      const { notificationsRoutes } =
+        await import('./notifications/routes/notifications.routes');
+      return notificationsRoutes;
+    },
   },
   {
     path: 'handbook',
-    loadChildren: () =>
-      import('./handbook/routes/handbook.routes').then((m) => m.handbookRoutes),
+    loadChildren: async () => {
+      const { handbookRoutes } =
+        await import('./handbook/routes/handbook.routes');
+      return handbookRoutes;
+    },
   },
   {
     path: 'coprocessor',
-    loadChildren: () =>
-      import('./coprocessor/routes/coprocessor.routes').then(
-        (m) => m.coprocessorRoutes
-      ),
+    loadChildren: async () => {
+      const { coprocessorRoutes } =
+        await import('./coprocessor/routes/coprocessor.routes');
+      return coprocessorRoutes;
+    },
   },
   {
     path: 'geist',
-    loadChildren: () =>
-      import('./geist/routes/geist.routes').then((m) => m.geistRoutes),
+    loadChildren: async () => {
+      const { geistRoutes } = await import('./geist/routes/geist.routes');
+      return geistRoutes;
+    },
   },
   {
     path: 'soykaf',
@@ -64,47 +83,61 @@ export const routes: Routes = [
   },
   {
     path: 'household',
-    loadChildren: () =>
-      import('./household/routes/household.routes').then(
-        (m) => m.householdRoutes
-      ),
+    loadChildren: async () => {
+      const { householdRoutes } =
+        await import('./household/routes/household.routes');
+      return householdRoutes;
+    },
   },
   {
     path: 'tasks',
-    loadChildren: () =>
-      import('./tasks/routes/tasks.routes').then((m) => m.tasksRoutes),
+    loadChildren: async () => {
+      const { tasksRoutes } = await import('./tasks/routes/tasks.routes');
+      return tasksRoutes;
+    },
   },
   {
     path: 'ritual',
-    loadChildren: () =>
-      import('./ritual/routes/ritual.routes').then((m) => m.ritualRoutes),
+    loadChildren: async () => {
+      const { ritualRoutes } = await import('./ritual/routes/ritual.routes');
+      return ritualRoutes;
+    },
   },
   {
     path: 'cash',
-    loadChildren: () =>
-      import('./cash/routes/cash.routes').then((m) => m.cashRoutes),
+    loadChildren: async () => {
+      const { cashRoutes } = await import('./cash/routes/cash.routes');
+      return cashRoutes;
+    },
   },
   {
     path: 'people',
-    loadChildren: () =>
-      import('./people/routes/people.routes').then((m) => m.peopleRoutes),
+    loadChildren: async () => {
+      const { peopleRoutes } = await import('./people/routes/people.routes');
+      return peopleRoutes;
+    },
   },
   {
     path: 'vitals',
-    loadChildren: () =>
-      import('./vitals/routes/vitals.routes').then((m) => m.vitalsRoutes),
+    loadChildren: async () => {
+      const { vitalsRoutes } = await import('./vitals/routes/vitals.routes');
+      return vitalsRoutes;
+    },
   },
   {
     path: 'trackplay',
-    loadChildren: () =>
-      import('./trackplay/routes/trackplay.routes').then(
-        (m) => m.trackplayRoutes
-      ),
+    loadChildren: async () => {
+      const { trackplayRoutes } =
+        await import('./trackplay/routes/trackplay.routes');
+      return trackplayRoutes;
+    },
   },
   {
     path: 'music',
-    loadChildren: () =>
-      import('./music/routes/music.routes').then((m) => m.musicRoutes),
+    loadChildren: async () => {
+      const { musicRoutes } = await import('./music/routes/music.routes');
+      return musicRoutes;
+    },
   },
   {
     path: '**',

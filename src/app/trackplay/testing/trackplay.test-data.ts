@@ -35,10 +35,12 @@ export function mockPlayer(overrides: Partial<Player> = {}): Player {
   };
 }
 
-export const providePeople = (people: readonly PersonRef[]): ValueProvider => ({
-  provide: PEOPLE,
-  useValue: signal(people),
-});
+export const providePeople = (people: readonly PersonRef[]): ValueProvider => {
+  return {
+    provide: PEOPLE,
+    useValue: signal(people),
+  };
+};
 
 export function mockGameType(overrides: Partial<GameType> = {}): GameType {
   return { id: 'default', name: 'Standard', winHigh: true, ...overrides };

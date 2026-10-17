@@ -33,10 +33,11 @@ const endedLast = (a: Game, b: Game): number =>
 const gameItems = (
   list: ItemList<Game> & { showEndedGames: boolean },
   result?: SearchResult<Game>
-): Game[] =>
-  filterAndSortItemList(list, result)
+): Game[] => {
+  return filterAndSortItemList(list, result)
     .filter((game) => list.showEndedGames || !game.ended)
     .toSorted(endedLast);
+};
 
 export const computeScores = (game: Game): Record<TrackplayId, number> => {
   const scores: Record<TrackplayId, number> = {};
@@ -53,20 +54,21 @@ export const computeScores = (game: Game): Record<TrackplayId, number> => {
 const rankPlayersByScore = (
   playerIds: TrackplayId[],
   scores: Record<TrackplayId, number>,
-  winHigh: boolean
-): TrackplayId[] =>
-  playerIds.toSorted((a, b) =>
-    winHigh
+  isWinHigh: boolean
+): TrackplayId[] => {
+  return playerIds.toSorted((a, b) => {
+    return isWinHigh
       ? (scores[b] ?? 0) - (scores[a] ?? 0)
-      : (scores[a] ?? 0) - (scores[b] ?? 0)
-  );
+      : (scores[a] ?? 0) - (scores[b] ?? 0);
+  });
+};
 
 export const leadersByScore = (
   playerIds: TrackplayId[],
   scores: Record<TrackplayId, number>,
-  winHigh: boolean
+  isWinHigh: boolean
 ): TrackplayId[] => {
-  const [best, ...rest] = rankPlayersByScore(playerIds, scores, winHigh);
+  const [best, ...rest] = rankPlayersByScore(playerIds, scores, isWinHigh);
   if (best === undefined) return [];
 
   const top = scores[best] ?? 0;
@@ -94,56 +96,63 @@ export const selectGameCount = createSelector(
   (games): number => games.length
 );
 
-export const selectGameById = (gameId: TrackplayId) =>
-  createSelector(selectGameItems, (games): Game | undefined =>
+export const selectGameById = (gameId: TrackplayId) => {
+  return createSelector(selectGameItems, (games): Game | undefined =>
     games.find((game) => game.id === gameId)
   );
+};
 
 export const selectRoundsByGame = (gameId: TrackplayId) =>
   createSelector(selectGameById(gameId), (game): Round[] => game?.rounds ?? []);
 
-export const selectScoresByGame = (gameId: TrackplayId) =>
-  createSelector(selectGameById(gameId), (game): Record<TrackplayId, number> =>
-    game ? computeScores(game) : {}
+export const selectScoresByGame = (gameId: TrackplayId) => {
+  return createSelector(
+    selectGameById(gameId),
+    (game): Record<TrackplayId, number> => (game ? computeScores(game) : {})
   );
+};
 
-export const selectRankingByGame = (gameId: TrackplayId) =>
-  createSelector(
+export const selectRankingByGame = (gameId: TrackplayId) => {
+  return createSelector(
     selectGameById(gameId),
     selectGameTypesList,
     (game, gameTypes): TrackplayId[] => {
       if (!game) return [];
-      const winHigh =
+      const isWinHigh =
         gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
           ?.winHigh ?? true;
-      return rankPlayersByScore(game.playerIds, computeScores(game), winHigh);
+      return rankPlayersByScore(game.playerIds, computeScores(game), isWinHigh);
     }
   );
+};
 
-export const selectLeadersByGame = (gameId: TrackplayId) =>
-  createSelector(
+export const selectLeadersByGame = (gameId: TrackplayId) => {
+  return createSelector(
     selectGameById(gameId),
     selectGameTypesList,
     (game, gameTypes): TrackplayId[] => {
       if (!game) return [];
-      const winHigh =
+      const isWinHigh =
         gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
           ?.winHigh ?? true;
-      return leadersByScore(game.playerIds, computeScores(game), winHigh);
+      return leadersByScore(game.playerIds, computeScores(game), isWinHigh);
     }
   );
+};
 
 export const selectGamesForPlayerList = createSelector(
   selectGamesList,
   selectGamesForPlayerView,
   selectRouteEntityId,
-  (list, view, playerId): ItemList<Game> & { showEndedGames: boolean } => ({
-    ...view,
-    id: GAMES_LIST_ID,
-    items: playerId
-      ? list.items.filter((game) => game.playerIds.includes(playerId))
-      : [],
-  })
+  (list, view, playerId): ItemList<Game> & { showEndedGames: boolean } => {
+    return {
+      ...view,
+      id: GAMES_LIST_ID,
+      items: playerId
+        ? list.items.filter((game) => game.playerIds.includes(playerId))
+        : [],
+    };
+  }
 );
 
 export const selectGamesForPlayerSearchResult = createSelector(

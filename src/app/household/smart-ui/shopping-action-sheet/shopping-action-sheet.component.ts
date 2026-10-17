@@ -11,9 +11,12 @@ import { ShoppingFacade } from '../../data';
 })
 export class ShoppingActionSheetComponent {
   readonly #shopping = inject(ShoppingFacade);
+
   readonly #translate = inject(TranslateService);
-  readonly state = this.#shopping.state;
+
   readonly #hasBoughtItems = this.#shopping.hasBoughtItems;
+
+  readonly state = this.#shopping.state;
 
   readonly actionSheetButtons = computed<ActionSheetButton[]>(() => {
     const moveToStorage: ActionSheetButton = {

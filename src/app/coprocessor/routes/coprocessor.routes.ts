@@ -9,34 +9,38 @@ export const coprocessorRoutes: Routes = [
   },
   {
     path: '',
-    loadComponent: () =>
-      import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-        (m) => m.ModuleTabsPage
-      ),
+    loadComponent: async () => {
+      const { ModuleTabsPage } =
+        await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+      return ModuleTabsPage;
+    },
     children: [
       {
         path: 'calc',
         title: marker('page-title.coprocessor-calc'),
-        loadComponent: () =>
-          import('../feature/calc-page/calc.page').then(
-            (m) => m.CoprocessorCalcPage
-          ),
+        loadComponent: async () => {
+          const { CoprocessorCalcPage } =
+            await import('../feature/calc-page/calc.page');
+          return CoprocessorCalcPage;
+        },
       },
       {
         path: 'units',
         title: marker('page-title.coprocessor-units'),
-        loadComponent: () =>
-          import('../feature/units-page/units.page').then(
-            (m) => m.CoprocessorUnitsPage
-          ),
+        loadComponent: async () => {
+          const { CoprocessorUnitsPage } =
+            await import('../feature/units-page/units.page');
+          return CoprocessorUnitsPage;
+        },
       },
       {
         path: 'golden',
         title: marker('page-title.coprocessor-golden'),
-        loadComponent: () =>
-          import('../feature/golden-page/golden.page').then(
-            (m) => m.CoprocessorGoldenPage
-          ),
+        loadComponent: async () => {
+          const { CoprocessorGoldenPage } =
+            await import('../feature/golden-page/golden.page');
+          return CoprocessorGoldenPage;
+        },
       },
     ],
   },

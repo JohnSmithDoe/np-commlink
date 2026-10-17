@@ -99,10 +99,11 @@ export class PillReminderEffects {
 
   #reconcile(pills: PillsState): Observable<ReminderOutcome[]> {
     const people = this.#people();
-    if (!people) return of([]);
-    return from(this.#sweep(pills, people)).pipe(
-      catchError(() => of<ReminderOutcome[]>(['refused']))
-    );
+    return people
+      ? from(this.#sweep(pills, people)).pipe(
+          catchError(() => of<ReminderOutcome[]>(['refused']))
+        )
+      : of([]);
   }
 
   async #sweep(

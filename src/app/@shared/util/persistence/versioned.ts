@@ -5,17 +5,22 @@ interface Versioned<T> {
 
 export type MigrationStep = (data: unknown) => unknown;
 
-const isVersioned = (raw: unknown): raw is Versioned<unknown> =>
-  typeof raw === 'object' &&
-  raw !== null &&
-  'v' in raw &&
-  'data' in raw &&
-  typeof (raw as { v: unknown }).v === 'number';
+const isVersioned = (raw: unknown): raw is Versioned<unknown> => {
+  return (
+    typeof raw === 'object' &&
+    raw !== null &&
+    'v' in raw &&
+    'data' in raw &&
+    typeof (raw as { v: unknown }).v === 'number'
+  );
+};
 
-export const wrapVersioned = <T>(v: number, data: T): Versioned<T> => ({
-  v,
-  data,
-});
+export const wrapVersioned = <T>(v: number, data: T): Versioned<T> => {
+  return {
+    v,
+    data,
+  };
+};
 
 export function runMigrations<T>(
   raw: unknown,

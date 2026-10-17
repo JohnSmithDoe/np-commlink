@@ -15,9 +15,10 @@
 
 import type { Rule } from 'eslint';
 import {
-  containsElement,
+  hasDescendantElement,
   hasAccessibleNameAttribute,
   hasOwnText,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
@@ -57,17 +58,21 @@ export const rule: Rule.RuleModule = {
     const services = templateParserServices(context);
     const elements =
       (context.options[0] as Options | undefined)?.elements ?? DEFAULT_ELEMENTS;
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
-        if (!elements.includes(element.name)) return;
-        if (!containsElement(element, 'ion-icon')) return;
-        if (hasAccessibleNameAttribute(element) || hasOwnText(element)) return;
+        if (
+          !elements.includes(element.name) ||
+          !hasDescendantElement(element, 'ion-icon') ||
+          hasAccessibleNameAttribute(element) ||
+          hasOwnText(element)
+        )
+          return;
         context.report({
           loc: services.convertElementSourceSpanToLoc(context, element),
           messageId: 'iconOnlyControlNeedsName',
           data: { element: element.name },
         });
       },
-    };
+    });
   },
 };

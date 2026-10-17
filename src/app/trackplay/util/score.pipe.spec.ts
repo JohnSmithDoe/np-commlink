@@ -28,7 +28,7 @@ describe('ScorePipe', () => {
   });
 
   it('renders non-finite values as "0"', () => {
-    expect(pipe.transform(Number.NaN)).toBe('0');
+    expect(pipe.transform(NaN)).toBe('0');
     expect(pipe.transform(Infinity)).toBe('0');
     expect(pipe.transform(-Infinity)).toBe('0');
   });

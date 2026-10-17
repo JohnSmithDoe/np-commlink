@@ -15,7 +15,7 @@
     [startSwipeAction]="startSwipeAction"
     (selectItem)="facade.drillTo(item.id)"
     (startSwipe)="rename(item)"
-    (deleteItem)="facade.removeCategory(item)"
+    (deletionRequested)="facade.removeCategory(item)"
   >
     <ng-container itemDetails>
       <ion-note>

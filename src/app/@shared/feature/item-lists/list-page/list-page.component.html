@@ -3,7 +3,7 @@
   [label]="pageHeader()"
   [heading]="heading()"
   [disabled]="!!facade.searchResult()?.exactMatch"
-  (addItem)="facade.showCreateDialog()"
+  (creationRequested)="facade.showCreateDialog()"
 >
   <ion-buttons toolbar slot="end">
     @if (facade.undoScope) {

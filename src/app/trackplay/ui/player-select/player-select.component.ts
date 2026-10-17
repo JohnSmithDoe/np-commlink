@@ -20,11 +20,6 @@ import { Player, TrackplayId } from '../../model/trackplay.types';
   imports: [IonList, IonItem, IonCheckbox],
 })
 export class TrackplayPlayerSelectComponent {
-  readonly players = input.required<Player[]>();
-  readonly selectedIds = input.required<TrackplayId[]>();
-
-  readonly selectionChange = output<TrackplayId[]>();
-
   readonly #checked = linkedSignal<Record<TrackplayId, boolean>>(() => {
     const map: Record<TrackplayId, boolean> = {};
     for (const id of this.selectedIds()) {
@@ -33,29 +28,24 @@ export class TrackplayPlayerSelectComponent {
     return map;
   });
 
+  readonly players = input.required<Player[]>();
+  readonly selectedIds = input.required<TrackplayId[]>();
+
+  readonly selectionChange = output<TrackplayId[]>();
+
   readonly orderedPlayers = computed<Player[]>(() => {
     const selected = this.selectedIds();
     const selectedSet = new Set(selected);
     return this.players().toSorted((a, b) => {
-      const aSel = selectedSet.has(a.id);
-      const bSel = selectedSet.has(b.id);
-      if (aSel && bSel) {
+      const isASel = selectedSet.has(a.id);
+      const isBSel = selectedSet.has(b.id);
+      if (isASel && isBSel) {
         return selected.indexOf(a.id) - selected.indexOf(b.id);
       }
-      if (aSel) return -1;
-      if (bSel) return 1;
-      return a.name.localeCompare(b.name);
+      if (isASel) return -1;
+      return isBSel ? 1 : a.name.localeCompare(b.name);
     });
   });
-
-  isChecked(id: TrackplayId): boolean {
-    return !!this.#checked()[id];
-  }
-
-  onToggle(id: TrackplayId, event: CheckboxCustomEvent): void {
-    this.#checked.update((map) => ({ ...map, [id]: event.detail.checked }));
-    this.emitSelection();
-  }
 
   private emitSelection(): void {
     const checked = this.#checked();
@@ -65,5 +55,14 @@ export class TrackplayPlayerSelectComponent {
       .filter((id) => checked[id]);
     const absent = this.selectedIds().filter((id) => !offered.has(id));
     this.selectionChange.emit([...ids, ...absent]);
+  }
+
+  isChecked(id: TrackplayId): boolean {
+    return this.#checked()[id] === true;
+  }
+
+  onToggle(id: TrackplayId, event: CheckboxCustomEvent): void {
+    this.#checked.update((map) => ({ ...map, [id]: event.detail.checked }));
+    this.emitSelection();
   }
 }

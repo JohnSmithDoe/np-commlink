@@ -1,11 +1,12 @@
 import { GeistLink } from '../model/geist.types';
 
-export const linkForAvailability = (availability: Availability): GeistLink =>
-  availability === 'unavailable'
+export const linkForAvailability = (availability: Availability): GeistLink => {
+  return availability === 'unavailable'
     ? 'unsupported'
     : availability === 'available'
       ? 'reforging'
       : 'dormant';
+};
 
 export const openingLinkFor = (
   availability: Availability | 'probing'

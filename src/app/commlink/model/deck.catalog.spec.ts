@@ -7,11 +7,12 @@ import { DECK_CHROME_LABELS, DECK_MODULE_LABELS } from './deck.labels';
 const SKINS: readonly Skin[] = ['cyberpunk', 'boomer'];
 const CATALOGS: Record<string, Record<string, string>> = { de, en };
 
-const labelKeys = (skin: Skin): Marker[] =>
-  DECK_CATALOG.flatMap((entry) => [
-    entry.labels[skin].nameKey,
-    entry.labels[skin].descKey,
-  ]);
+const labelKeys = (skin: Skin): Marker[] => {
+  return DECK_CATALOG.flatMap((entry) => {
+    const { nameKey, descKey } = entry.labels[skin];
+    return [nameKey, descKey];
+  });
+};
 
 const chromeKeys = (skin: Skin): Marker[] =>
   DECK_CHROME_FIELDS.map((field) => DECK_CHROME_LABELS[skin][field]);
@@ -19,18 +20,22 @@ const chromeKeys = (skin: Skin): Marker[] =>
 describe('DECK_CATALOG', () => {
   describe.each(Object.entries(CATALOGS))('the %s messages', (_, messages) => {
     it.each(SKINS)('name and describe every program under %s', (skin) => {
-      const missing = labelKeys(skin).filter((key) => !(key in messages));
+      const missing = labelKeys(skin).filter(
+        (key) => !Object.hasOwn(messages, key)
+      );
       expect(missing).toEqual([]);
     });
 
     it.each(SKINS)('voice the whole HUD chrome under %s', (skin) => {
-      const missing = chromeKeys(skin).filter((key) => !(key in messages));
+      const missing = chromeKeys(skin).filter(
+        (key) => !Object.hasOwn(messages, key)
+      );
       expect(missing).toEqual([]);
     });
 
     it('label every module the catalog groups by', () => {
       const missing = Object.values(DECK_MODULE_LABELS).filter(
-        (key) => !(key in messages)
+        (key) => !Object.hasOwn(messages, key)
       );
       expect(missing).toEqual([]);
     });
@@ -38,13 +43,13 @@ describe('DECK_CATALOG', () => {
     it('name every metric a tile badges', () => {
       const missing = DECK_CATALOG.map((entry) => entry.metricKey)
         .filter((key): key is Marker => !!key)
-        .filter((key) => !(key in messages));
+        .filter((key) => !Object.hasOwn(messages, key));
       expect(missing).toEqual([]);
     });
 
     it('title every entry the side menu renders', () => {
       const missing = DECK_CATALOG.map((entry) => entry.titleKey).filter(
-        (key) => !(key in messages)
+        (key) => !Object.hasOwn(messages, key)
       );
       expect(missing).toEqual([]);
     });
@@ -52,7 +57,8 @@ describe('DECK_CATALOG', () => {
 
   it('gives every entry a unique id', () => {
     const ids = DECK_CATALOG.map((entry) => entry.id);
-    expect(new Set(ids).size).toBe(ids.length);
+    const distinctIds = new Set(ids);
+    expect(distinctIds.size).toBe(ids.length);
   });
 
   it('gives every badged tile a metric label', () => {

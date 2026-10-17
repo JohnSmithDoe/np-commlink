@@ -29,8 +29,11 @@ const NORMALISED: Record<string, string> = {
 };
 
 class BailError extends Error {
-  constructor(readonly reason: EvalFailure) {
-    super(reason);
+  constructor(
+    readonly reason: EvalFailure,
+    options?: ErrorOptions
+  ) {
+    super(reason, options);
     this.name = 'BailError';
   }
 }
@@ -38,6 +41,16 @@ class BailError extends Error {
 const charAt = (source: string, index: number): string => {
   const raw = source.charAt(index);
   return NORMALISED[raw] ?? raw;
+};
+
+const digitsAt = (source: string, start: number): string => {
+  let digits = '';
+  for (let index = start; index < source.length; index += 1) {
+    const next = charAt(source, index);
+    if (!/[0-9.]/.test(next)) return digits;
+    digits += next;
+  }
+  return digits;
 };
 
 const tokenize = (source: string): Token[] => {
@@ -53,13 +66,8 @@ const tokenize = (source: string): Token[] => {
       tokens.push({ kind: 'symbol', value: char });
       index += 1;
     } else if (/[0-9.]/.test(char)) {
-      let digits = '';
-      while (index < source.length) {
-        const next = charAt(source, index);
-        if (!/[0-9.]/.test(next)) break;
-        digits += next;
-        index += 1;
-      }
+      const digits = digitsAt(source, index);
+      index += digits.length;
       const value = Number(digits);
       if (!Number.isFinite(value)) throw new BailError('syntax');
       tokens.push({ kind: 'number', value });
@@ -76,7 +84,7 @@ const parse = (tokens: Token[]): number => {
 
   const peek = (): Token | undefined => tokens[cursor];
 
-  const eat = (symbol: string): boolean => {
+  const isEat = (symbol: string): boolean => {
     const token = peek();
     if (token?.kind === 'symbol' && token.value === symbol) {
       cursor += 1;
@@ -93,27 +101,32 @@ const parse = (tokens: Token[]): number => {
       cursor += 1;
       return token.value;
     }
-    if (eat('(')) {
-      const value = expression();
-      if (!peek()) throw new BailError('incomplete');
-      if (!eat(')')) throw new BailError('syntax');
-      return value;
-    }
+    if (isEat('(')) return closed(expression());
     throw new BailError('syntax');
   };
 
+  const closed = (value: number): number => {
+    if (!peek()) throw new BailError('incomplete');
+    if (!isEat(')')) throw new BailError('syntax');
+    return value;
+  };
+
+  const finished = (value: number): number => {
+    if (cursor < tokens.length) throw new BailError('syntax');
+    return value;
+  };
+
   const unary = (): number => {
-    if (eat('-')) return -unary();
-    if (eat('+')) return unary();
-    return primary();
+    if (isEat('-')) return -unary();
+    return isEat('+') ? unary() : primary();
   };
 
   const term = (): number => {
     let value = unary();
     for (;;) {
-      if (eat('*')) {
+      if (isEat('*')) {
         value *= unary();
-      } else if (eat('/')) {
+      } else if (isEat('/')) {
         const divisor = unary();
         if (divisor === 0) throw new BailError('divide-by-zero');
         value /= divisor;
@@ -126,21 +139,20 @@ const parse = (tokens: Token[]): number => {
   const expression = (): number => {
     let value = term();
     for (;;) {
-      if (eat('+')) value += term();
-      else if (eat('-')) value -= term();
+      if (isEat('+')) value += term();
+      else if (isEat('-')) value -= term();
       else return value;
     }
   };
 
-  const value = expression();
-  if (cursor < tokens.length) throw new BailError('syntax');
-  return value;
+  return finished(expression());
 };
 
-const settled = (value: number): EvalResult =>
-  Number.isFinite(value)
+const settled = (value: number): EvalResult => {
+  return Number.isFinite(value)
     ? { ok: true, value }
     : { ok: false, reason: 'not-finite' };
+};
 
 export const evaluateExpression = (source: string): EvalResult => {
   if (!source.trim()) return { ok: false, reason: 'empty' };

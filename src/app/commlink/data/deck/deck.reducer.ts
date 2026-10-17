@@ -43,33 +43,41 @@ export const initialDeck: DeckState = {
 
 const asCurrentShape = (deck: DeckState): DeckState | null => {
   const { order, visibleEntries, hiddenTiles } = deck as Partial<DeckState>;
-  if (!Array.isArray(order) || !Array.isArray(visibleEntries)) return null;
-  return { order, visibleEntries, hiddenTiles: hiddenTiles ?? [] };
+  return Array.isArray(order) && Array.isArray(visibleEntries)
+    ? { order, visibleEntries, hiddenTiles: hiddenTiles ?? [] }
+    : null;
 };
 
 export const deckReducer = createReducer(
   initialDeck,
-  on(DeckActions.loaded, (state, { deck }): DeckState => {
-    if (!deck) return state;
-    return asCurrentShape(deck) ?? initialDeck;
+  on(DeckActions.loaded, (state, { deck }): DeckState =>
+    deck ? (asCurrentShape(deck) ?? initialDeck) : state
+  ),
+  on(DeckActions.reorder, (state, { order }): DeckState => {
+    return {
+      ...state,
+      order,
+    };
   }),
-  on(DeckActions.reorder, (state, { order }): DeckState => ({
-    ...state,
-    order,
-  })),
-  on(DeckActions.toggleEntry, (state, { id }): DeckState => ({
-    ...state,
-    visibleEntries: toggleIn(state.visibleEntries, id),
-    hiddenTiles: setIn(state.hiddenTiles, [id], false),
-  })),
-  on(DeckActions.setEntries, (state, { ids, visible }): DeckState => ({
-    ...state,
-    visibleEntries: setIn(state.visibleEntries, ids, visible),
-    hiddenTiles: setIn(state.hiddenTiles, ids, false),
-  })),
-  on(DeckActions.toggleTile, (state, { id }): DeckState => ({
-    ...state,
-    hiddenTiles: toggleIn(state.hiddenTiles, id),
-  })),
+  on(DeckActions.toggleEntry, (state, { id }): DeckState => {
+    return {
+      ...state,
+      visibleEntries: toggleIn(state.visibleEntries, id),
+      hiddenTiles: setIn(state.hiddenTiles, [id], false),
+    };
+  }),
+  on(DeckActions.setEntries, (state, { ids, visible }): DeckState => {
+    return {
+      ...state,
+      visibleEntries: setIn(state.visibleEntries, ids, visible),
+      hiddenTiles: setIn(state.hiddenTiles, ids, false),
+    };
+  }),
+  on(DeckActions.toggleTile, (state, { id }): DeckState => {
+    return {
+      ...state,
+      hiddenTiles: toggleIn(state.hiddenTiles, id),
+    };
+  }),
   on(DeckActions.reset, (): DeckState => initialDeck)
 );

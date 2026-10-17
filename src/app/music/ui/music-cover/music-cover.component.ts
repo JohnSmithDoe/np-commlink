@@ -20,17 +20,18 @@ import { CoverLoader, CoverRef } from '../../model/music.types';
   imports: [IonIcon],
 })
 export class MusicCoverComponent {
+  readonly #visible = signal(false);
+
   readonly cover = input<CoverRef>();
   readonly loader = input.required<CoverLoader>();
   readonly label = input('');
 
   protected readonly src = signal<string | undefined>(undefined);
-  readonly #visible = signal(false);
 
   constructor() {
     addIcons({ discOutline });
     const host = inject(ElementRef<HTMLElement>);
-    const destroyRef = inject(DestroyRef);
+    const lifetime = inject(DestroyRef);
     afterNextRender(() => {
       const observer = new IntersectionObserver(([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -38,7 +39,7 @@ export class MusicCoverComponent {
         observer.disconnect();
       });
       observer.observe(host.nativeElement);
-      destroyRef.onDestroy(() => observer.disconnect());
+      lifetime.onDestroy(() => observer.disconnect());
     });
     effect(() => {
       const cover = this.cover();

@@ -43,11 +43,13 @@ const refusal = NotificationsActions.toast({
   color: 'danger',
 });
 
-const at = (hour: number, minute: number): DailyReminderSchedule => ({
-  enabled: true,
-  hour,
-  minute,
-});
+const at = (hour: number, minute: number): DailyReminderSchedule => {
+  return {
+    enabled: true,
+    hour,
+    minute,
+  };
+};
 
 describe('createDailyReminderEffects', () => {
   let actions$: Observable<Action>;
@@ -83,14 +85,15 @@ describe('createDailyReminderEffects', () => {
     });
   };
 
-  const drain = (key: string) =>
-    firstValueFrom(
+  const drain = (key: string) => {
+    return firstValueFrom(
       (
         TestBed.runInInjectionContext(() =>
           effects[key]()
         ) as Observable<unknown>
       ).pipe(toArray())
     );
+  };
 
   const restore$ = () => drain('restore_ritualReminder$');
   const change$ = () => drain('change_ritualReminder$');

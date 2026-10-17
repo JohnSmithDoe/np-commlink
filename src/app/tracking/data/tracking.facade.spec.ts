@@ -22,17 +22,16 @@ describe('TrackingFacade', () => {
   });
 
   beforeEach(() => {
+    const initialState = mockKernelState({
+      tracking: mockTrackingState({
+        sessions: [archived],
+        sessionsViewId: 'all',
+      }),
+    });
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        provideMockStore({
-          initialState: mockKernelState({
-            tracking: mockTrackingState({
-              sessions: [archived],
-              sessionsViewId: 'all',
-            }),
-          }),
-        }),
+        provideMockStore({ initialState }),
       ],
     });
     store = TestBed.inject(MockStore);

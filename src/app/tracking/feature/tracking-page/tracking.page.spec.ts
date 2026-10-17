@@ -35,10 +35,11 @@ describe('TrackingPage', () => {
     component = TestBed.createComponent(TrackingPage).componentInstance;
   };
 
-  const dispatchedTypes = (): string[] =>
-    (dispatch.mock.calls as Array<[{ type: string }]>).map(
+  const dispatchedTypes = (): string[] => {
+    return (dispatch.mock.calls as Array<[{ type: string }]>).map(
       (call) => call[0].type
     );
+  };
 
   it('applies a ?cmd deep-link: dispatches the command then strips the params', () => {
     setup({ cmd: 'tracking.pause', target: 't1' });

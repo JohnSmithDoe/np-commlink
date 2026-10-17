@@ -23,14 +23,14 @@ export const projectOwnedNotifications = (
 ): InboxNotification[] => {
   const claimed = new Set(projected.map((next) => next.id));
   return [
-    ...projected.map((next) =>
-      stampProjected(
+    ...projected.map((next) => {
+      return stampProjected(
         next,
         items.find((item) => item.id === next.id),
         owner,
         now
-      )
-    ),
+      );
+    }),
     ...items.filter(
       (item) => item.origin?.owner !== owner && !claimed.has(item.id)
     ),
@@ -42,13 +42,15 @@ const stampProjected = (
   existing: InboxNotification | undefined,
   owner: string,
   now: string
-): InboxNotification => ({
-  ...content,
-  origin: { owner, variant },
-  status: statusFor(variant, existing),
-  createdAt: existing?.createdAt ?? now,
-  updatedAt: content.updatedAt ?? touchedAt(variant, existing, now),
-});
+): InboxNotification => {
+  return {
+    ...content,
+    origin: { owner, variant },
+    status: statusFor(variant, existing),
+    createdAt: existing?.createdAt ?? now,
+    updatedAt: content.updatedAt ?? touchedAt(variant, existing, now),
+  };
+};
 
 const statusFor = (
   variant: string,
@@ -72,12 +74,15 @@ export const markNotificationDone = (
   items: InboxNotification[],
   id: string,
   now: string
-): InboxNotification[] =>
-  patchNotificationById(items, id, (n) => ({
-    ...n,
-    status: 'done',
-    updatedAt: now,
-  }));
+): InboxNotification[] => {
+  return patchNotificationById(items, id, (n) => {
+    return {
+      ...n,
+      status: 'done',
+      updatedAt: now,
+    };
+  });
+};
 
 export const removeNotificationById = (
   items: InboxNotification[],
@@ -94,7 +99,8 @@ const isUnread = (
 ): boolean =>
   notification.status === 'open' && notification.updatedAt > lastViewedAt;
 
-export const unreadCount = (state: NotificationsState): number =>
-  state.items.filter((notification) =>
+export const unreadCount = (state: NotificationsState): number => {
+  return state.items.filter((notification) =>
     isUnread(notification, state.lastViewedAt)
   ).length;
+};

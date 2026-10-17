@@ -3,13 +3,14 @@ import { provideTestingProviders } from '../../../@shared/testing/test-providers
 import { mockCashAccount, mockCashState } from '../../testing/cash.test-data';
 import { CashPage } from './cash.page';
 
-const twoAccounts = () =>
-  mockCashState({
+const twoAccounts = () => {
+  return mockCashState({
     accounts: [
       mockCashAccount({ id: 'giro-1', name: 'Giro' }),
       mockCashAccount({ id: 'save-1', name: 'Sparbuch' }),
     ],
   });
+};
 
 const setup = (searchQuery?: string) => {
   const cash = twoAccounts();

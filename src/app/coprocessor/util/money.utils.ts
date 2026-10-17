@@ -42,7 +42,7 @@ const SUFFIXES: Record<Language, Record<string, MagnitudeId>> = {
 const SEPARATORS: Record<Language, { group: RegExp; decimal: string }> = {
   de: { group: /[.\s]/g, decimal: ',' },
   en: { group: /[,\s]/g, decimal: '.' },
-  fr: { group: /[.\s ]/g, decimal: ',' },
+  fr: { group: /[.\s\u{202F}]/gu, decimal: ',' },
 };
 
 export const splitMagnitude = (
@@ -52,7 +52,7 @@ export const splitMagnitude = (
   const trimmed = raw.trim().toLowerCase();
   if (!trimmed) return null;
 
-  const match = /^(-?[\d.,\s ]+?)\s*([a-z]*)$/.exec(trimmed);
+  const match = /^(-?[\d.,\s\u{202F}]+?)\s*([a-z]*)$/u.exec(trimmed);
   if (!match) return null;
 
   const [, digits = '', suffix = ''] = match;
@@ -83,8 +83,7 @@ const magnitudeOf = (value: number): MagnitudeId => {
   if (size >= MAGNITUDE_VALUE.trillion) return 'trillion';
   if (size >= MAGNITUDE_VALUE.billion) return 'billion';
   if (size >= MAGNITUDE_VALUE.million) return 'million';
-  if (size >= MAGNITUDE_VALUE.thousand) return 'thousand';
-  return 'one';
+  return size >= MAGNITUDE_VALUE.thousand ? 'thousand' : 'one';
 };
 
 export const spellAmount = (

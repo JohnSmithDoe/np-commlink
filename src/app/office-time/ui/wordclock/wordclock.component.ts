@@ -19,9 +19,6 @@ const GRID_ROWS = GRID.map((row) => [...row]);
   imports: [],
 })
 export class WordclockComponent {
-  readonly config = input<WordclockSettings>();
-  protected readonly rows = GRID_ROWS;
-
   readonly #now = toSignal(
     interval(TICK_MS).pipe(
       startWith(0),
@@ -31,8 +28,14 @@ export class WordclockComponent {
   );
 
   readonly #face = computed(() => computeFace(this.#now(), this.config()));
-  protected readonly mins = computed(() => this.#face().corners);
+
   readonly #activeWords = computed(() => this.#face().activeWords);
+
+  readonly config = input<WordclockSettings>();
+
+  protected readonly rows = GRID_ROWS;
+
+  protected readonly mins = computed(() => this.#face().corners);
 
   isActive(
     row: string[],

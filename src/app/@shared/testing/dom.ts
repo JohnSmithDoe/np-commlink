@@ -5,10 +5,13 @@ type TestElement = HTMLElement & Record<string, unknown>;
 const query = <T>(
   fixture: ComponentFixture<T>,
   testId: string
-): TestElement | null =>
-  [...fixture.nativeElement.querySelectorAll('[data-testid]')].find(
-    (element: HTMLElement) => element.dataset['testid'] === testId
-  ) ?? null;
+): TestElement | null => {
+  return (
+    [...fixture.nativeElement.querySelectorAll('[data-testid]')].find(
+      (element: HTMLElement) => element.dataset['testid'] === testId
+    ) ?? null
+  );
+};
 
 export function getByTestId<T>(
   fixture: ComponentFixture<T>,

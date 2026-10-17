@@ -46,21 +46,25 @@ const perAggregate = combineReducers<HouseholdState>({
 const withEveryItemList = (
   state: HouseholdState,
   fix: <T extends BaseItem>(items: readonly T[]) => T[]
-): HouseholdState => ({
-  ...state,
-  storage: { ...state.storage, items: fix(state.storage.items) },
-  products: { ...state.products, items: fix(state.products.items) },
-  shopping: { ...state.shopping, items: fix(state.shopping.items) },
-});
+): HouseholdState => {
+  return {
+    ...state,
+    storage: { ...state.storage, items: fix(state.storage.items) },
+    products: { ...state.products, items: fix(state.products.items) },
+    shopping: { ...state.shopping, items: fix(state.shopping.items) },
+  };
+};
 
 // prettier-ignore
 const catalogCascade = createReducer(
   {} as HouseholdState,
 
-  on(HouseholdCategoriesActions.removeItem, (state, { item }): HouseholdState => ({
-    ...withEveryItemList(state, (items) => dropCategoryRef(items, item.id)),
-    categories: removeFromCatalog(state.categories, item.id),
-  })),
+  on(HouseholdCategoriesActions.removeItem, (state, { item }): HouseholdState => {
+    return {
+      ...withEveryItemList(state, (items) => dropCategoryRef(items, item.id)),
+      categories: removeFromCatalog(state.categories, item.id),
+    };
+  }),
 
   on(HouseholdActions.restoreCategory, (state, { category, tagged }): HouseholdState => {
     const ids = new Set(tagged);

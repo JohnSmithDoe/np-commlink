@@ -12,11 +12,13 @@ const MADN: BoardRules = {
   blockOwn: false,
 };
 
-const at = (player: number, piece: number, fieldId: string): BoardFigure => ({
-  player,
-  piece,
-  fieldId,
-});
+const at = (player: number, piece: number, fieldId: string): BoardFigure => {
+  return {
+    player,
+    piece,
+    fieldId,
+  };
+};
 
 const move = (
   figures: BoardFigure[],

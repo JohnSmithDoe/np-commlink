@@ -33,14 +33,14 @@ describe('kgToGrams', () => {
 
 describe('formatKg', () => {
   it('always shows one decimal, in the language of the app', () => {
-    expect(formatKg(78_000, 'de')).toBe('78,0');
+    expect(formatKg(78_000)).toBe('78,0');
     expect(formatKg(78_400, 'en')).toBe('78.4');
   });
 
   it('signs a delta only when asked', () => {
     expect(formatKg(300, 'de', true)).toBe('+0,3');
     expect(formatKg(-300, 'de', true)).toBe('-0,3');
-    expect(formatKg(-300, 'de')).toBe('-0,3');
+    expect(formatKg(-300)).toBe('-0,3');
   });
 });
 

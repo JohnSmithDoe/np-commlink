@@ -50,18 +50,24 @@ export class NoteEditorFacade {
 
   readonly #images = inject(NoteImageStore);
 
+  readonly #notes = this.#store.selectSignal(selectNotes);
+
   readonly note = this.#store.selectSignal(selectRouteNote);
 
   readonly images = computed<NoteImage[]>(() =>
     resolveImages(this.note()?.images, this.#images.urls())
   );
 
-  readonly #notes = this.#store.selectSignal(selectNotes);
-
   constructor() {
     this.#edits
       .pipe(debounceTime(AUTOSAVE_DELAY), takeUntilDestroyed())
       .subscribe(() => this.flush());
+  }
+
+  #save(patch: UpdateDTO<Note>): void {
+    this.#store.dispatch(
+      NotesActions.updateItem({ ...patch, updatedAt: dayjs().format() })
+    );
   }
 
   edit(patch: Pick<Partial<Note>, 'name' | 'body'>): void {
@@ -126,12 +132,6 @@ export class NoteEditorFacade {
         key: marker('notes.upload.error'),
         color: 'danger',
       })
-    );
-  }
-
-  #save(patch: UpdateDTO<Note>): void {
-    this.#store.dispatch(
-      NotesActions.updateItem({ ...patch, updatedAt: dayjs().format() })
     );
   }
 }

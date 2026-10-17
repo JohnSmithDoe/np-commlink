@@ -40,8 +40,8 @@ interface CastRow {
   changing: boolean;
 }
 
-const viewOf = (hexagram: HexagramRecord | undefined) =>
-  hexagram === undefined
+const viewOf = (hexagram: HexagramRecord | undefined) => {
+  return hexagram === undefined
     ? undefined
     : {
         record: hexagram,
@@ -49,13 +49,16 @@ const viewOf = (hexagram: HexagramRecord | undefined) =>
         lower: lowerTrigramOf(hexagram),
         upper: upperTrigramOf(hexagram),
       };
+};
 
-const rowOf = (line: CastLine, index: number): CastRow => ({
-  position: index + 1,
-  value: line.value,
-  yang: isYangLine(line.value),
-  changing: isChangingLine(line.value),
-});
+const rowOf = (line: CastLine, index: number): CastRow => {
+  return {
+    position: index + 1,
+    value: line.value,
+    yang: isYangLine(line.value),
+    changing: isChangingLine(line.value),
+  };
+};
 
 @Component({
   selector: 'app-page-vitals-iching-cast',
@@ -86,11 +89,11 @@ export class VitalsIChingCastPage {
 
   readonly complete = computed(() => this.lines().length === HEXAGRAM_LINES);
   readonly lastThrow = computed(() => this.lines().at(-1));
-  readonly rows = computed<readonly CastRow[]>(() =>
-    this.lines()
+  readonly rows = computed<readonly CastRow[]>(() => {
+    return this.lines()
       .map((line, index) => rowOf(line, index))
-      .toReversed()
-  );
+      .toReversed();
+  });
 
   readonly hexagram = computed(() => viewOf(hexagramFor(this.lines())));
   readonly transformed = computed(() =>

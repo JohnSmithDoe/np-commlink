@@ -5,15 +5,17 @@ import { HandbookArticleComponent } from './handbook-article.component';
 
 const page = (
   overrides: Partial<HandbookPageContent> = {}
-): HandbookPageContent => ({
-  slug: 'soykaf',
-  title: 'SOYKAF',
-  plain: 'Rezepte',
-  route: '/household/recipes',
-  summary: 'Was sich kochen lässt.',
-  sections: [],
-  ...overrides,
-});
+): HandbookPageContent => {
+  return {
+    slug: 'soykaf',
+    title: 'SOYKAF',
+    plain: 'Rezepte',
+    route: '/household/recipes',
+    summary: 'Was sich kochen lässt.',
+    sections: [],
+    ...overrides,
+  };
+};
 
 describe('HandbookArticleComponent', () => {
   let fixture: ComponentFixture<HandbookArticleComponent>;

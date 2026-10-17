@@ -97,7 +97,7 @@ function settingNotation(
 ): string[] {
   return figures.flatMap((figure) => {
     const placement = placementNotation(layout, figure);
-    return placement ? [placement] : [];
+    return placement || [];
   });
 }
 
@@ -208,8 +208,8 @@ export function parseField(
   if (!match) return null;
 
   const player = Number(match[1]) - 1;
-  const slot = Number(match[3]);
   if (player < 0 || player >= layout.players) return null;
+  const slot = Number(match[3]);
 
   if (match[2] === TRACK) {
     if (slot >= layout.fieldsPerPlayer) return null;
@@ -235,9 +235,7 @@ export function parsePlacement(notation: string): BoardPlacement | null {
   if (!match) return null;
 
   const [, player, field] = match;
-  if (!player || !field) return null;
-
-  return { player: Number(player) - 1, field };
+  return player && field ? { player: Number(player) - 1, field } : null;
 }
 
 export function parseMove(notation: string): BoardMove | null {

@@ -39,19 +39,28 @@ export const rule: Rule.RuleModule = {
   create(context) {
     return {
       CallExpression(node: CallExpression) {
-        if (!isCreateCall(node)) return;
-        if (node.callee.type !== 'MemberExpression') return;
-        if (overlayKind(node.callee.object) !== 'toast') return;
+        if (
+          !isCreateCall(node) ||
+          node.callee.type !== 'MemberExpression' ||
+          overlayKind(node.callee.object) !== 'toast'
+        )
+          return;
 
         const [options] = node.arguments;
         if (options?.type !== 'ObjectExpression') return;
         const buttons = property(options, 'buttons');
-        if (buttons?.type !== 'Property') return;
-        if (buttons.value.type !== 'ArrayExpression') return;
+        if (
+          buttons?.type !== 'Property' ||
+          buttons.value.type !== 'ArrayExpression'
+        )
+          return;
 
         for (const button of buttons.value.elements) {
-          if (button?.type !== 'ObjectExpression') continue;
-          if (!hasProperty(button, 'handler')) continue;
+          if (
+            button?.type !== 'ObjectExpression' ||
+            !hasProperty(button, 'handler')
+          )
+            continue;
           context.report({
             node: button as Rule.Node,
             messageId: 'toastButtonIsUnannounced',

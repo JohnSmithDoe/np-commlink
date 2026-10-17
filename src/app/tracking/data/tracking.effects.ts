@@ -67,12 +67,12 @@ export class TrackingEffects {
             this.#today.today()
           );
           const csv = this.#buildCsv(data, viewId);
+          const title = this.#translate.instant(marker('share.csv.title'));
+          const dialogTitle = this.#translate.instant(
+            marker('share.csv.dialog')
+          );
           return from(
-            this.#share.share({
-              title: this.#translate.instant(marker('share.csv.title')),
-              text: csv,
-              dialogTitle: this.#translate.instant(marker('share.csv.dialog')),
-            })
+            this.#share.share({ title, text: csv, dialogTitle })
           ).pipe(catchError(() => EMPTY));
         })
       );
@@ -87,14 +87,14 @@ export class TrackingEffects {
       this.#translate.instant(marker('csv.header.tracked-seconds')),
       this.#translate.instant(marker('csv.header.tracked-clock')),
     ]);
-    const rows = data.map((item) =>
-      csvRow([
+    const rows = data.map((item) => {
+      return csvRow([
         item.name,
         formatViewDate(item.startTime, viewId),
         item.trackedTimeInSeconds,
         formatSecondsAsClock(item.trackedTimeInSeconds ?? 0),
-      ])
-    );
+      ]);
+    });
     return [header, ...rows].join('\r\n');
   }
 }

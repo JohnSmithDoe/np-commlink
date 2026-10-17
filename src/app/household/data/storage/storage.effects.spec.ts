@@ -41,13 +41,12 @@ describe('StorageEffects', () => {
   describe('copyToShoppingList$', () => {
     it('increases the quantity when a matching shopping item already exists', async () => {
       const existing = mockShoppingItem({ name: 'Milk' });
-      setup(
-        mockKernelState({
-          household: mockHouseholdState({
-            shopping: mockShoppingState({ items: [existing] }),
-          }),
-        })
-      );
+      const state = mockKernelState({
+        household: mockHouseholdState({
+          shopping: mockShoppingState({ items: [existing] }),
+        }),
+      });
+      setup(state);
       actions$ = of(
         StorageActions.copyToShoppinglist(mockStorageItem({ name: 'Milk' }))
       );
@@ -60,13 +59,12 @@ describe('StorageEffects', () => {
     });
 
     it('adds a new shopping item when none matches', async () => {
-      setup(
-        mockKernelState({
-          household: mockHouseholdState({
-            shopping: mockShoppingState({ items: [] }),
-          }),
-        })
-      );
+      const state = mockKernelState({
+        household: mockHouseholdState({
+          shopping: mockShoppingState({ items: [] }),
+        }),
+      });
+      setup(state);
       actions$ = of(
         StorageActions.copyToShoppinglist(mockStorageItem({ name: 'Milk' }))
       );

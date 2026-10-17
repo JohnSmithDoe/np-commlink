@@ -276,12 +276,13 @@ describe('BaseCategoryEditItemDialog', () => {
     });
   });
 
-  const openWith = (categoryIds: CategoryId[]) =>
-    host.open({
+  const openWith = (categoryIds: CategoryId[]) => {
+    return host.open({
       item: mockBaseItem({ id: 'x', name: 'Milch', categoryIds }),
       listId: '_storage',
       editMode: 'update',
     });
+  };
 
   it('leaves the draft alone on a plain rename', () => {
     openWith(['obst']);

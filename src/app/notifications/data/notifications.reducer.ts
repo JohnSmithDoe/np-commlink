@@ -20,43 +20,57 @@ export const notificationsReducer = createReducer(
   initialNotificationsState,
   on(
     NotificationsActions.notify,
-    (state, { notification }): NotificationsState => ({
-      ...state,
-      items: upsertNotification(state.items, notification),
-    })
+    (state, { notification }): NotificationsState => {
+      return {
+        ...state,
+        items: upsertNotification(state.items, notification),
+      };
+    }
   ),
   on(
     NotificationsActions.project,
-    (state, { owner, notifications, at }): NotificationsState => ({
-      ...state,
-      items: projectOwnedNotifications(state.items, owner, notifications, at),
-    })
+    (state, { owner, notifications, at }): NotificationsState => {
+      return {
+        ...state,
+        items: projectOwnedNotifications(state.items, owner, notifications, at),
+      };
+    }
   ),
-  on(NotificationsActions.dismiss, (state, { id, at }): NotificationsState => ({
-    ...state,
-    items: markNotificationDone(state.items, id, at),
-  })),
-  on(NotificationsActions.remove, (state, { id }): NotificationsState => ({
-    ...state,
-    items: removeNotificationById(state.items, id),
-  })),
-  on(NotificationsInboxActions.clearDone, (state): NotificationsState => ({
-    ...state,
-    items: clearDoneNotifications(state.items),
-  })),
+  on(NotificationsActions.dismiss, (state, { id, at }): NotificationsState => {
+    return {
+      ...state,
+      items: markNotificationDone(state.items, id, at),
+    };
+  }),
+  on(NotificationsActions.remove, (state, { id }): NotificationsState => {
+    return {
+      ...state,
+      items: removeNotificationById(state.items, id),
+    };
+  }),
+  on(NotificationsInboxActions.clearDone, (state): NotificationsState => {
+    return {
+      ...state,
+      items: clearDoneNotifications(state.items),
+    };
+  }),
   on(
     NotificationsInboxActions.toggleDoneSection,
-    (state): NotificationsState => ({
-      ...state,
-      doneCollapsed: !state.doneCollapsed,
-    })
+    (state): NotificationsState => {
+      return {
+        ...state,
+        doneCollapsed: !state.doneCollapsed,
+      };
+    }
   ),
   on(
     NotificationsInboxActions.markPageViewed,
-    (state, { at }): NotificationsState => ({
-      ...state,
-      lastViewedAt: at,
-    })
+    (state, { at }): NotificationsState => {
+      return {
+        ...state,
+        lastViewedAt: at,
+      };
+    }
   ),
   on(
     NotificationsInboxActions.legacyCronsCleared,

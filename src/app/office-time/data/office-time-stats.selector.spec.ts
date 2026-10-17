@@ -5,13 +5,14 @@ import { selectDashboardStatsYear } from './office-time-stats.selector';
 
 const today = dayjs();
 
-const keysFor = (officedays: Dayjs[] = [today], freedays: Dayjs[] = []) =>
-  statsKeysFrom({
+const keysFor = (officedays: Dayjs[] = [today], freedays: Dayjs[] = []) => {
+  return statsKeysFrom({
     officedays: dayMap(...officedays),
     freedays: dayMap(...freedays),
     holidays: {},
     targetOfficeDaysPerWeek: 3,
   });
+};
 
 describe('office-time-stats.selector', () => {
   describe('selectDashboardStatsYear', () => {

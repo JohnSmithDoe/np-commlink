@@ -21,28 +21,36 @@ const withJam = (
 export const musicReducer = createReducer(
   initialState,
 
-  on(MusicActions.loaded, (state, { music }): MusicState => ({
-    sources: (music ?? state).sources,
-  })),
+  on(MusicActions.loaded, (state, { music }): MusicState => {
+    return {
+      sources: (music ?? state).sources,
+    };
+  }),
 
-  on(MusicActions.addFolder, (state, { folder, id }): MusicState =>
-    state.sources.some((source) => source.kind === 'folder' && source.uri === folder.uri)
+  on(MusicActions.addFolder, (state, { folder, id }): MusicState => {
+    return state.sources.some((source) => source.kind === 'folder' && source.uri === folder.uri)
       ? state
-      : { sources: [...state.sources, { ...folder, id, kind: 'folder' }] }
+      : { sources: [...state.sources, { ...folder, id, kind: 'folder' }] };
+  }
   ),
 
-  on(MusicActions.removeSource, (state, { id }): MusicState => ({
-    sources: state.sources.filter((source) => source.id !== id),
-  })),
+  on(MusicActions.removeSource, (state, { id }): MusicState => {
+    return {
+      sources: state.sources.filter((source) => source.id !== id),
+    };
+  }),
 
-  on(MusicActions.jamConnected, (state, { session, id }): MusicState =>
-    withJam(state, (jam) => ({
-      id: jam?.id ?? id,
-      kind: 'jam',
-      server: session.auth.server,
-      username: session.auth.username,
-      session,
-    }))
+  on(MusicActions.jamConnected, (state, { session, id }): MusicState => {
+    return withJam(state, (jam) => {
+      return {
+        id: jam?.id ?? id,
+        kind: 'jam',
+        server: session.auth.server,
+        username: session.auth.username,
+        session,
+      };
+    });
+  }
   ),
 
   on(MusicActions.jamSignedOut, (state): MusicState =>

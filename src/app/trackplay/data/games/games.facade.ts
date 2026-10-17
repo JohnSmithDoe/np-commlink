@@ -27,9 +27,9 @@ export class GamesFacade {
   }
 
   showCreateDialog(playerIds: TrackplayId[] = []): void {
-    const { searchQuery, filterBy } = this.state();
+    const { searchQuery = '', filterBy } = this.state();
     this.#dialogs.open({
-      item: createGame(searchQuery ?? '', filterBy, playerIds),
+      item: createGame(searchQuery, filterBy, playerIds),
       listId: GAMES_LIST_ID,
       editMode: 'create',
     });
@@ -47,8 +47,8 @@ export class GamesFacade {
     this.#store.dispatch(GamesActions.removeItem(game));
   }
 
-  setShowEnded(showEndedGames: boolean): void {
-    this.#store.dispatch(GamesActions.setShowEnded(showEndedGames));
+  setShowEnded(shouldShowEndedGames: boolean): void {
+    this.#store.dispatch(GamesActions.setShowEnded(shouldShowEndedGames));
   }
 
   toggleEnded(game: Game): void {

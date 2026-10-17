@@ -21,13 +21,11 @@ interface StatsInputs {
 
 const WORKDAYS_PER_WEEK = 5;
 
-const exactTargetDays = (workdays: number, daysPerWeek: number) => {
-  return (workdays * daysPerWeek) / WORKDAYS_PER_WEEK;
-};
+const exactTargetDays = (workdays: number, daysPerWeek: number) =>
+  (workdays * daysPerWeek) / WORKDAYS_PER_WEEK;
 
-const roundedTargetDays = (workdays: number, daysPerWeek: number) => {
-  return Math.round(exactTargetDays(workdays, daysPerWeek) * 2) / 2;
-};
+const roundedTargetDays = (workdays: number, daysPerWeek: number) =>
+  Math.round(exactTargetDays(workdays, daysPerWeek) * 2) / 2;
 
 const allDaysBetween = (start: Dayjs, end: Dayjs) => {
   const days: Dayjs[] = [];
@@ -47,7 +45,7 @@ export const isWeekend = (current: Dayjs) => {
 };
 
 export const isOfficeDay = (current: Dayjs, officedays?: DayMap) =>
-  !!officedays?.[dayjsToString(current)];
+  Object.hasOwn(officedays ?? {}, dayjsToString(current));
 
 export const getTargetPercentage = (
   workDays: number,
@@ -69,12 +67,14 @@ interface StatsKeys {
   targetOfficeDaysPerWeek: number;
 }
 
-export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => ({
-  officeKeys: new Set(Object.keys(inputs.officedays ?? {})),
-  freeKeys: new Set(Object.keys(inputs.freedays ?? {})),
-  holidayKeys: holidayKeysOf(inputs.holidays),
-  targetOfficeDaysPerWeek: inputs.targetOfficeDaysPerWeek,
-});
+export const statsKeysFrom = (inputs: StatsInputs): StatsKeys => {
+  return {
+    officeKeys: new Set(Object.keys(inputs.officedays ?? {})),
+    freeKeys: new Set(Object.keys(inputs.freedays ?? {})),
+    holidayKeys: holidayKeysOf(inputs.holidays),
+    targetOfficeDaysPerWeek: inputs.targetOfficeDaysPerWeek,
+  };
+};
 
 export const calculateStats = (
   period: TimePeriod,
@@ -94,21 +94,22 @@ export const calculateStats = (
   let workdays = 0;
   let remaining = 0;
 
-  for (const day of allDaysBetween(start, start.endOf(period))) {
+  const daysInPeriod = allDaysBetween(start, start.endOf(period));
+  for (const day of daysInPeriod) {
     const key = dayjsToString(day);
-    const weekend = isWeekend(day);
-    const free = freeKeys.has(key);
-    const holiday = holidayKeys.has(key);
+    const isWeekendDay = isWeekend(day);
+    const isFree = freeKeys.has(key);
+    const isHoliday = holidayKeys.has(key);
 
     if (officeKeys.has(key)) officedays++;
-    if (free) freedays++;
-    if (holiday) holidays++;
-    if (holiday && !weekend) holidaysNotOnWeekend++;
-    if (!weekend) workdaysTotal++;
+    if (isFree) freedays++;
+    if (isHoliday) holidays++;
+    if (isHoliday && !isWeekendDay) holidaysNotOnWeekend++;
+    if (!isWeekendDay) workdaysTotal++;
 
-    const workday = !weekend && !free && !holiday;
-    if (workday) workdays++;
-    if (workday && key >= todayKey) remaining++;
+    const isWorkday = !isWeekendDay && !isFree && !isHoliday;
+    if (isWorkday) workdays++;
+    if (isWorkday && key >= todayKey) remaining++;
   }
 
   return {
@@ -142,7 +143,7 @@ const dayKeyFrom = (date?: string | null): DayKey | null => {
   return parsed ? dayjsToString(parsed) : null;
 };
 
-export const holidaysAreStale = (
+export const areHolidaysStale = (
   holidays: HolidayMap | undefined | null,
   year: number
 ): boolean => {
@@ -154,9 +155,11 @@ export const holidayMapFrom = (
   named?: Record<string, string> | null
 ): HolidayMap => {
   const holidays: HolidayMap = {};
-  for (const [name, date] of Object.entries(named ?? {})) {
-    const key = dayKeyFrom(date);
-    if (key) holidays[name] = key;
+  if (named != null) {
+    for (const [name, date] of Object.entries(named)) {
+      const key = dayKeyFrom(date);
+      if (key) holidays[name] = key;
+    }
   }
   return holidays;
 };
@@ -165,7 +168,8 @@ export const dayMapFrom = (
   dates?: ReadonlyArray<string | undefined | null> | DayMap | null
 ): DayMap => {
   const days: DayMap = {};
-  for (const date of Array.isArray(dates) ? dates : Object.keys(dates ?? {})) {
+  const candidates = Array.isArray(dates) ? dates : Object.keys(dates ?? {});
+  for (const date of candidates) {
     const key = dayKeyFrom(date);
     if (key) days[key] = true;
   }
@@ -173,12 +177,13 @@ export const dayMapFrom = (
 };
 
 export const dayKeysOf = (days?: DayMap): DayKey[] =>
-  (Object.keys(days ?? {}) as DayKey[]).toSorted();
+  (Object.keys(days ?? {}) as DayKey[]).toSorted((a, b) => a.localeCompare(b));
 
-export const daysFromKeys = (keys?: readonly string[] | null): Dayjs[] =>
-  (keys ?? [])
+export const daysFromKeys = (keys?: readonly string[] | null): Dayjs[] => {
+  return (keys ?? [])
     .map((key) => dayjsFromString(key))
     .filter((day): day is Dayjs => day !== null);
+};
 
 export const withoutHolidays = (
   days: DayMap,
@@ -194,10 +199,11 @@ export const withoutHolidays = (
 
 export const datetimeValues = (
   value: string | string[] | null | undefined
-): string[] =>
-  (Array.isArray(value) ? value : [value]).filter(
+): string[] => {
+  return (Array.isArray(value) ? value : [value]).filter(
     (date): date is string => !!date
   );
+};
 
 const HOLIDAY_HIGHLIGHT_BORDER = '2px solid #8f6d11';
 const FREEDAY_HIGHLIGHT_BORDER = '1px solid #4d5061';
@@ -205,13 +211,16 @@ const FREEDAY_HIGHLIGHT_BORDER = '1px solid #4d5061';
 const calendarHighlights = (
   dates: readonly string[],
   border: string
-): DateTimeHighlight[] =>
-  dates.map((date) => ({
-    date,
-    textColor: '#fff',
-    backgroundColor: 'rgba(147,150,162,0.33)',
-    border,
-  }));
+): DateTimeHighlight[] => {
+  return dates.map((date) => {
+    return {
+      date,
+      textColor: '#fff',
+      backgroundColor: 'rgba(147,150,162,0.33)',
+      border,
+    };
+  });
+};
 
 export const holidayHighlights = (
   keys?: readonly string[] | null

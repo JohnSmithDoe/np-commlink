@@ -73,7 +73,6 @@ const DETACH: StartSwipeAction = {
   ],
 })
 export class CashAccountPage {
-  readonly facade = inject(CashAccountTransactionsPageFacade);
   readonly #transactions = inject(CashTransactionsFacade);
   readonly #accounts = inject(CashAccountsFacade);
   readonly #import = inject(CashImportFacade);
@@ -81,6 +80,7 @@ export class CashAccountPage {
   readonly #alertCtrl = inject(AlertController);
   readonly #loadingCtrl = inject(LoadingController);
   readonly #translate = inject(TranslateService);
+  readonly facade = inject(CashAccountTransactionsPageFacade);
 
   constructor() {
     addIcons({
@@ -89,50 +89,6 @@ export class CashAccountPage {
       swapHorizontalOutline,
       unlinkOutline,
     });
-  }
-
-  categoryOf(txn: AccountTransaction, catalog: readonly Category[]): string {
-    return categoryNames(txn, catalog).join(', ');
-  }
-
-  reconcileAction(txn: AccountTransaction): StartSwipeAction | undefined {
-    if (txn.status === 'pending') return RECONCILE;
-    return txn.reconciledManualId ? DETACH : undefined;
-  }
-
-  async reconcileOrDetach(txn: AccountTransaction): Promise<void> {
-    if (txn.status === 'pending') {
-      await presentModal(
-        this.#modalCtrl,
-        CashReconcileModalComponent,
-        this.#translate.instant(marker('cash.reconcile.title')),
-        { transaction: txn }
-      );
-      return;
-    }
-    if (txn.reconciledManualId) {
-      this.#transactions.unreconcile(txn.reconciledManualId);
-    }
-  }
-
-  async importStatement(event: Event): Promise<void> {
-    const files = takePickedFiles(event);
-    const account = this.facade.account();
-    if (files.length === 0 || !account) return;
-
-    const read = await this.#whileLoading(() =>
-      this.#readStatement(files, account)
-    );
-    if (read.kind === 'unreadable') {
-      this.#accounts.reportStatementUnreadable();
-      return;
-    }
-    if (read.kind === 'wrong-account') {
-      this.#accounts.reportWrongAccount(read.found);
-      return;
-    }
-    if (read.iban) this.#import.adoptIban(account.id, read.iban);
-    await this.#presentImportPreview(read.parsed);
   }
 
   async #readStatement(
@@ -165,6 +121,50 @@ export class CashAccountPage {
       this.#translate.instant(marker('cash.import.title')),
       { preview: this.#import.plan(parsed, this.facade.accountId()) }
     );
+  }
+
+  categoryOf(txn: AccountTransaction, catalog: readonly Category[]): string {
+    return categoryNames(txn, catalog).join(', ');
+  }
+
+  reconcileAction(txn: AccountTransaction): StartSwipeAction | undefined {
+    if (txn.status === 'pending') return RECONCILE;
+    return txn.reconciledManualId ? DETACH : undefined;
+  }
+
+  async reconcileOrDetach(txn: AccountTransaction): Promise<void> {
+    if (txn.status === 'pending') {
+      await presentModal(
+        this.#modalCtrl,
+        CashReconcileModalComponent,
+        this.#translate.instant(marker('cash.reconcile.title')),
+        { transaction: txn }
+      );
+      return;
+    }
+    if (txn.reconciledManualId) {
+      this.#transactions.unreconcile(txn.reconciledManualId);
+    }
+  }
+
+  async importStatement(event: Event): Promise<void> {
+    const files = takePickedFiles(event);
+    const account = this.facade.account();
+    if (!account || files.length === 0) return;
+
+    const read = await this.#whileLoading(() =>
+      this.#readStatement(files, account)
+    );
+    if (read.kind === 'unreadable') {
+      this.#accounts.reportStatementUnreadable();
+      return;
+    }
+    if (read.kind === 'wrong-account') {
+      this.#accounts.reportWrongAccount(read.found);
+      return;
+    }
+    if (read.iban) this.#import.adoptIban(account.id, read.iban);
+    await this.#presentImportPreview(read.parsed);
   }
 
   async confirmDelete(txn: CashTransaction): Promise<void> {

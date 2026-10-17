@@ -16,7 +16,7 @@
  * ───────────────────────────────────────────────────────────────── */
 import { CashTransaction } from '../../model/transaction.types';
 
-const onOrBefore = (dateISO: string, cutoffISO: string): boolean =>
+const isOnOrBefore = (dateISO: string, cutoffISO: string): boolean =>
   dateISO.slice(0, 10) <= cutoffISO.slice(0, 10);
 
 export function balanceDifferenceCents(
@@ -28,10 +28,13 @@ export function balanceDifferenceCents(
 ): number {
   let derived = openingBalanceCents;
   for (const txn of ledger) {
-    if (txn.accountId !== accountId) continue;
-    if (txn.matchedTxnId) continue;
-    if (txn.status === 'pending') continue;
-    if (!onOrBefore(txn.dateISO, asOfISO)) continue;
+    if (
+      txn.accountId !== accountId ||
+      txn.matchedTxnId ||
+      txn.status === 'pending' ||
+      !isOnOrBefore(txn.dateISO, asOfISO)
+    )
+      continue;
     derived += txn.amountCents;
   }
   return closingBalanceCents - derived;

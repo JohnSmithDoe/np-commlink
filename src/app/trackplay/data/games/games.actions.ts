@@ -22,12 +22,18 @@ export const GamesActions = createActionGroup({
   events: {
     ...createItemListActionEvents<Game>(),
 
-    setShowEnded: (showEndedGames: boolean) => ({ showEndedGames }),
+    setShowEnded: (shouldShowEndedGames: boolean) => {
+      return {
+        showEndedGames: shouldShowEndedGames,
+      };
+    },
 
-    enterGamePage: (gameId: TrackplayId, roundId: TrackplayId = uuidv4()) => ({
-      gameId,
-      roundId,
-    }),
+    enterGamePage: (gameId: TrackplayId, roundId: TrackplayId = uuidv4()) => {
+      return {
+        gameId,
+        roundId,
+      };
+    },
 
     setRoundValue: (
       gameId: TrackplayId,

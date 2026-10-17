@@ -21,35 +21,34 @@ const TestActions = createActionGroup({
   },
 });
 
-const navigated = () =>
-  routerNavigatedAction({
+const navigated = () => {
+  return routerNavigatedAction({
     payload: { routerState: {}, event: {} },
   } as never);
+};
 
 describe('categoryFilterFromRoute', () => {
   let actions$: Observable<Action>;
 
   const setup = (queryParameters: Record<string, string | string[]> = {}) => {
+    const router = mockRouterState({ url: '/tasks', queryParameters });
     TestBed.configureTestingModule({
       providers: [
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: mockKernelState({
-            router: mockRouterState({ url: '/tasks', queryParameters }),
-          }),
-        }),
+        provideMockStore({ initialState: mockKernelState({ router }) }),
       ],
     });
   };
 
-  const emissions = (): Promise<Action[]> =>
-    firstValueFrom(
-      TestBed.runInInjectionContext(() =>
-        categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
+  const emissions = (): Promise<Action[]> => {
+    return firstValueFrom(
+      TestBed.runInInjectionContext(() => {
+        return categoryFilterFromRoute(selectRouteCategoryFilter, (id) =>
           id ? TestActions.updateFilter(id) : undefined
-        )()
-      ).pipe(toArray())
+        )();
+      }).pipe(toArray())
     );
+  };
 
   it('applies the drilled category once navigation has ended', async () => {
     setup({ filter: 'cat-1' });
@@ -73,12 +72,13 @@ describe('categoryFilterFromRoute', () => {
   });
 });
 
-const drain = (): Promise<unknown[]> =>
-  firstValueFrom(
+const drain = (): Promise<unknown[]> => {
+  return firstValueFrom(
     TestBed.runInInjectionContext(() =>
       categoryFilterRouteEffects.stripCategoryFilterParam$()
     ).pipe(toArray())
   );
+};
 
 describe('categoryFilterRouteEffects', () => {
   let actions$: Observable<Action>;
@@ -93,22 +93,22 @@ describe('categoryFilterRouteEffects', () => {
   };
 
   it('navigates the filter param away, keeping the path', async () => {
-    const navigate = setup('/household/storage?filter=cat-1');
+    const isNavigate = setup('/household/storage?filter=cat-1');
     actions$ = of(ItemListRouteActions.clearCategoryFilter());
 
     await drain();
 
-    expect(navigate).toHaveBeenCalledWith('/household/storage', {
+    expect(isNavigate).toHaveBeenCalledWith('/household/storage', {
       replaceUrl: true,
     });
   });
 
   it('does not navigate when there is no query string to strip', async () => {
-    const navigate = setup('/household/storage');
+    const isNavigate = setup('/household/storage');
     actions$ = of(ItemListRouteActions.clearCategoryFilter());
 
     await drain();
 
-    expect(navigate).not.toHaveBeenCalled();
+    expect(isNavigate).not.toHaveBeenCalled();
   });
 });

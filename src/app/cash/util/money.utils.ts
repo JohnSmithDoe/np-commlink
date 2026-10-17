@@ -3,7 +3,7 @@ import { Language, LOCALE_BY_LANGUAGE } from '../../@shared/model/app.types';
 const SEPARATORS: Record<Language, { group: string; decimal: string }> = {
   de: { group: '.', decimal: ',' },
   en: { group: ',', decimal: '.' },
-  fr: { group: ' ', decimal: ',' },
+  fr: { group: '\u{202F}', decimal: ',' },
 };
 
 export function centsToEur(cents: number): number {
@@ -27,19 +27,22 @@ export function eurToCents(
   if (cleaned === '' || cleaned === decimal || !isPlainAmount(cleaned, decimal))
     return null;
 
-  const [intPart, decPart = ''] = cleaned.split(decimal);
+  const [intPart = '0', decPart = ''] = cleaned.split(decimal);
   const decCents = Number((decPart + '00').slice(0, 2));
-  const cents = Number(intPart || '0') * 100 + decCents;
+  const cents = Number(intPart) * 100 + decCents;
   return (isNegative ? -1 : 1) * cents;
 }
 
-const isPlainAmount = (value: string, decimal: string): boolean =>
-  new RegExp(String.raw`^\d*([${decimal}]\d*)?$`).test(value);
+const isPlainAmount = (value: string, decimal: string): boolean => {
+  const plainAmount = new RegExp(String.raw`^\d*([${decimal}]\d*)?$`);
+  return plainAmount.test(value);
+};
 
 export function centsToInput(cents: number, language: Language = 'de'): string {
-  return new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
+  const format = new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
     useGrouping: false,
-  }).format(cents / 100);
+  });
+  return format.format(cents / 100);
 }

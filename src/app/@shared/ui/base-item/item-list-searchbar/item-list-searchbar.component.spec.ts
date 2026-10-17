@@ -17,7 +17,9 @@ describe('ItemListSearchbarComponent', () => {
 
   it('re-emits the searchbar value, mapping null to undefined', () => {
     const emitted: (string | undefined)[] = [];
-    component.queryChange.subscribe((v) => emitted.push(v));
+    component.queryChange.subscribe((v) => {
+      emitted.push(v);
+    });
 
     component.searchTermChange({ detail: { value: 'milk' } } as never);
     component.searchTermChange({ detail: { value: null } } as never);

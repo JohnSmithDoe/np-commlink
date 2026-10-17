@@ -26,10 +26,11 @@ import {
   ],
 })
 export class VitalsBrowseChinesePage {
-  readonly elementKeys = CHINESE_ELEMENT_LABEL_KEYS;
-
   readonly #today = inject(TodayService).today;
 
+  readonly elementKeys = CHINESE_ELEMENT_LABEL_KEYS;
+
   readonly years = computed(() => chineseCycleAround(this.#today()));
+
   readonly currentYear = computed(() => chineseYearFor(this.#today()));
 }

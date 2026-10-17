@@ -62,7 +62,7 @@
     [ionList]="ionList"
     [leadingIcon]="iconFor(item)"
     (selectItem)="goToAccount(item)"
-    (deleteItem)="confirmDelete(item)"
+    (deletionRequested)="confirmDelete(item)"
   >
     <p itemDetails>{{ kindLabel(item) | translate }}</p>
     <ion-note itemDetails class="cash-account__balance">

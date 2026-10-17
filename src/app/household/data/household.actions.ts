@@ -7,9 +7,11 @@ export const HouseholdActions = createActionGroup({
   events: {
     load: emptyProps(),
     loaded: (data: HouseholdState | null) => ({ data }),
-    restoreCategory: (category: Category, tagged: readonly string[]) => ({
-      category,
-      tagged,
-    }),
+    restoreCategory: (category: Category, tagged: readonly string[]) => {
+      return {
+        category,
+        tagged,
+      };
+    },
   },
 });

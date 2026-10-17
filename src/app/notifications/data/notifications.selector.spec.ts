@@ -11,24 +11,28 @@ import {
 
 const notification = (
   over: Partial<InboxNotification> = {}
-): InboxNotification => ({
-  id: '1',
-  name: 'Notification',
-  createdAt: '2026-06-01T08:00:00.000Z',
-  body: 'body',
-  icon: 'alarm',
-  color: 'primary',
-  status: 'open',
-  updatedAt: '2026-06-01T08:00:00.000Z',
-  ...over,
-});
+): InboxNotification => {
+  return {
+    id: '1',
+    name: 'Notification',
+    createdAt: '2026-06-01T08:00:00.000Z',
+    body: 'body',
+    icon: 'alarm',
+    color: 'primary',
+    status: 'open',
+    updatedAt: '2026-06-01T08:00:00.000Z',
+    ...over,
+  };
+};
 
-const state = (over: Partial<NotificationsState> = {}): NotificationsState => ({
-  items: [],
-  doneCollapsed: true,
-  lastViewedAt: '2026-07-03T00:00:00.000Z',
-  ...over,
-});
+const state = (over: Partial<NotificationsState> = {}): NotificationsState => {
+  return {
+    items: [],
+    doneCollapsed: true,
+    lastViewedAt: '2026-07-03T00:00:00.000Z',
+    ...over,
+  };
+};
 
 describe('notifications.selector', () => {
   const items = [

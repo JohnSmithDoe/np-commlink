@@ -1220,22 +1220,22 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👨‍🦰',
-      label: 'homme : cheveux roux',
+      label: 'homme\u{202F}: cheveux roux',
       tags: 'ami garçon personne petit pote',
     },
     {
       glyph: '👨‍🦱',
-      label: 'homme : cheveux bouclés',
+      label: 'homme\u{202F}: cheveux bouclés',
       tags: 'ami garçon personne petit pote',
     },
     {
       glyph: '👨‍🦳',
-      label: 'homme : cheveux blancs',
+      label: 'homme\u{202F}: cheveux blancs',
       tags: 'ami garçon personne petit pote',
     },
     {
       glyph: '👨‍🦲',
-      label: 'homme : chauve',
+      label: 'homme\u{202F}: chauve',
       tags: 'ami garçon personne petit pote',
     },
     {
@@ -1245,42 +1245,42 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍🦰',
-      label: 'femme : cheveux roux',
+      label: 'femme\u{202F}: cheveux roux',
       tags: 'blonde coupe de personne',
     },
     {
       glyph: '🧑‍🦰',
-      label: 'adulte : cheveux roux',
+      label: 'adulte\u{202F}: cheveux roux',
       tags: 'genre neutre non genré',
     },
     {
       glyph: '👩‍🦱',
-      label: 'femme : cheveux bouclés',
+      label: 'femme\u{202F}: cheveux bouclés',
       tags: 'blonde coupe de personne',
     },
     {
       glyph: '🧑‍🦱',
-      label: 'adulte : cheveux bouclés',
+      label: 'adulte\u{202F}: cheveux bouclés',
       tags: 'genre neutre non genré',
     },
     {
       glyph: '👩‍🦳',
-      label: 'femme : cheveux blancs',
+      label: 'femme\u{202F}: cheveux blancs',
       tags: 'blonde coupe de personne',
     },
     {
       glyph: '🧑‍🦳',
-      label: 'adulte : cheveux blancs',
+      label: 'adulte\u{202F}: cheveux blancs',
       tags: 'genre neutre non genré',
     },
     {
       glyph: '👩‍🦲',
-      label: 'femme : chauve',
+      label: 'femme\u{202F}: chauve',
       tags: 'blonde coupe de cheveux personne',
     },
     {
       glyph: '🧑‍🦲',
-      label: 'adulte : chauve',
+      label: 'adulte\u{202F}: chauve',
       tags: 'genre neutre non genré',
     },
     {
@@ -2080,17 +2080,17 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🚶‍➡️',
-      label: 'personne qui marche : vers la droite',
+      label: 'personne qui marche\u{202F}: vers la droite',
       tags: 'balade en route flâner homme marcher nonchalant piéton promenade se balader',
     },
     {
       glyph: '🚶‍♀️‍➡️',
-      label: 'femme qui marche : vers la droite',
+      label: 'femme qui marche\u{202F}: vers la droite',
       tags: 'marcher piétonne randonneuse',
     },
     {
       glyph: '🚶‍♂️‍➡️',
-      label: 'homme qui marche : vers la droite',
+      label: 'homme qui marche\u{202F}: vers la droite',
       tags: 'piéton',
     },
     {
@@ -2125,17 +2125,17 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🧎‍➡️',
-      label: 'personne à genoux : vers la droite',
+      label: 'personne à genoux\u{202F}: vers la droite',
       tags: 'prière religion',
     },
     {
       glyph: '🧎‍♀️‍➡️',
-      label: 'femme à genoux : vers la droite',
+      label: 'femme à genoux\u{202F}: vers la droite',
       tags: '',
     },
     {
       glyph: '🧎‍♂️‍➡️',
-      label: 'homme à genoux : vers la droite',
+      label: 'homme à genoux\u{202F}: vers la droite',
       tags: '',
     },
     {
@@ -2145,7 +2145,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🧑‍🦯‍➡️',
-      label: 'personne avec une canne blanche : vers la droite',
+      label: 'personne avec une canne blanche\u{202F}: vers la droite',
       tags: 'accessibilité aveugle',
     },
     {
@@ -2155,7 +2155,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👨‍🦯‍➡️',
-      label: 'homme avec canne blanche : vers la droite',
+      label: 'homme avec canne blanche\u{202F}: vers la droite',
       tags: 'accessibilité aveugle déficient visuel handicap malvoyant',
     },
     {
@@ -2165,7 +2165,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍🦯‍➡️',
-      label: 'femme avec canne blanche : vers la droite',
+      label: 'femme avec canne blanche\u{202F}: vers la droite',
       tags: 'accessibilité aveugle déficiente visuelle handicap malvoyante',
     },
     {
@@ -2175,7 +2175,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🧑‍🦼‍➡️',
-      label: 'personne en fauteuil motorisé : vers la droite',
+      label: 'personne en fauteuil motorisé\u{202F}: vers la droite',
       tags: 'accessibilité roulant',
     },
     {
@@ -2185,7 +2185,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👨‍🦼‍➡️',
-      label: 'homme en fauteuil motorisé : vers la droite',
+      label: 'homme en fauteuil motorisé\u{202F}: vers la droite',
       tags: 'accessibilité roulant handicap',
     },
     {
@@ -2195,7 +2195,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍🦼‍➡️',
-      label: 'femme en fauteuil motorisé : vers la droite',
+      label: 'femme en fauteuil motorisé\u{202F}: vers la droite',
       tags: 'accessibilité roulant handicap',
     },
     {
@@ -2205,7 +2205,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🧑‍🦽‍➡️',
-      label: 'personne en fauteuil roulant manuel : vers la droite',
+      label: 'personne en fauteuil roulant manuel\u{202F}: vers la droite',
       tags: 'accessibilité',
     },
     {
@@ -2215,7 +2215,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👨‍🦽‍➡️',
-      label: 'homme en fauteuil roulant manuel : vers la droite',
+      label: 'homme en fauteuil roulant manuel\u{202F}: vers la droite',
       tags: 'accessibilité handicap',
     },
     {
@@ -2225,7 +2225,7 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍🦽‍➡️',
-      label: 'femme en fauteuil roulant manuel : vers la droite',
+      label: 'femme en fauteuil roulant manuel\u{202F}: vers la droite',
       tags: 'accessibilité handicap',
     },
     {
@@ -2245,17 +2245,17 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '🏃‍➡️',
-      label: 'personne qui court : vers la droite',
+      label: 'personne qui court\u{202F}: vers la droite',
       tags: 'arriver coureur courir course à pied homme jogging marathon marathonien pressé rapide sportif vite',
     },
     {
       glyph: '🏃‍♀️‍➡️',
-      label: 'femme qui court : vers la droite',
+      label: 'femme qui court\u{202F}: vers la droite',
       tags: 'course à pied joggeuse jogging marathon running se dépêcher vite vitesse',
     },
     {
       glyph: '🏃‍♂️‍➡️',
-      label: 'homme qui court : vers la droite',
+      label: 'homme qui court\u{202F}: vers la droite',
       tags: 'course à pied jogging marathon',
     },
     {
@@ -2590,17 +2590,17 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍❤️‍💋‍👨',
-      label: 'bisou : femme et homme',
+      label: 'bisou\u{202F}: femme et homme',
       tags: 'amour anniversaire baiser couple',
     },
     {
       glyph: '👨‍❤️‍💋‍👨',
-      label: 'bisou : homme et homme',
+      label: 'bisou\u{202F}: homme et homme',
       tags: 'amour anniversaire baiser couple femme',
     },
     {
       glyph: '👩‍❤️‍💋‍👩',
-      label: 'bisou : femme et femme',
+      label: 'bisou\u{202F}: femme et femme',
       tags: 'amour anniversaire baiser couple homme',
     },
     {
@@ -2610,142 +2610,142 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '👩‍❤️‍👨',
-      label: 'couple avec cœur : femme et homme',
+      label: 'couple avec cœur\u{202F}: femme et homme',
       tags: 'amour anniversaire rendez vous',
     },
     {
       glyph: '👨‍❤️‍👨',
-      label: 'couple avec cœur : homme et homme',
+      label: 'couple avec cœur\u{202F}: homme et homme',
       tags: 'amour anniversaire femme rendez vous',
     },
     {
       glyph: '👩‍❤️‍👩',
-      label: 'couple avec cœur : femme et femme',
+      label: 'couple avec cœur\u{202F}: femme et femme',
       tags: 'amour anniversaire homme rendez vous',
     },
     {
       glyph: '👨‍👩‍👦',
-      label: 'famille : homme, femme et garçon',
+      label: 'famille\u{202F}: homme, femme et garçon',
       tags: 'enfant avec un père une mère fils',
     },
     {
       glyph: '👨‍👩‍👧',
-      label: 'famille : homme, femme et fille',
+      label: 'famille\u{202F}: homme, femme et fille',
       tags: 'enfant avec un père une mère fils garçon',
     },
     {
       glyph: '👨‍👩‍👧‍👦',
-      label: 'famille : homme, femme, fille et garçon',
+      label: 'famille\u{202F}: homme, femme, fille et garçon',
       tags: 'enfant avec un père une mère fils',
     },
     {
       glyph: '👨‍👩‍👦‍👦',
-      label: 'famille : homme, femme, garçon et garçon',
+      label: 'famille\u{202F}: homme, femme, garçon et garçon',
       tags: 'enfant avec un père une mère fils',
     },
     {
       glyph: '👨‍👩‍👧‍👧',
-      label: 'famille : homme, femme, fille et fille',
+      label: 'famille\u{202F}: homme, femme, fille et fille',
       tags: 'enfant avec un père une mère fils garçon',
     },
     {
       glyph: '👨‍👨‍👦',
-      label: 'famille : homme, homme et garçon',
+      label: 'famille\u{202F}: homme, homme et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👨‍👧',
-      label: 'famille : homme, homme et fille',
+      label: 'famille\u{202F}: homme, homme et fille',
       tags: 'enfant avec un père une mère fils femme garçon',
     },
     {
       glyph: '👨‍👨‍👧‍👦',
-      label: 'famille : homme, homme, fille et garçon',
+      label: 'famille\u{202F}: homme, homme, fille et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👨‍👦‍👦',
-      label: 'famille : homme, homme, garçon et garçon',
+      label: 'famille\u{202F}: homme, homme, garçon et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👨‍👧‍👧',
-      label: 'famille : homme, homme, fille et fille',
+      label: 'famille\u{202F}: homme, homme, fille et fille',
       tags: 'enfant avec un père une mère fils femme garçon',
     },
     {
       glyph: '👩‍👩‍👦',
-      label: 'famille : femme, femme et garçon',
+      label: 'famille\u{202F}: femme, femme et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👩‍👧',
-      label: 'famille : femme, femme et fille',
+      label: 'famille\u{202F}: femme, femme et fille',
       tags: 'enfant avec un père une mère fils garçon homme',
     },
     {
       glyph: '👩‍👩‍👧‍👦',
-      label: 'famille : femme, femme, fille et garçon',
+      label: 'famille\u{202F}: femme, femme, fille et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👩‍👦‍👦',
-      label: 'famille : femme, femme, garçon et garçon',
+      label: 'famille\u{202F}: femme, femme, garçon et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👩‍👧‍👧',
-      label: 'famille : femme, femme, fille et fille',
+      label: 'famille\u{202F}: femme, femme, fille et fille',
       tags: 'enfant avec un père une mère fils garçon homme',
     },
     {
       glyph: '👨‍👦',
-      label: 'famille : homme et garçon',
+      label: 'famille\u{202F}: homme et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👦‍👦',
-      label: 'famille : homme, garçon et garçon',
+      label: 'famille\u{202F}: homme, garçon et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👧',
-      label: 'famille : homme et fille',
+      label: 'famille\u{202F}: homme et fille',
       tags: 'enfant avec un père une mère fils femme garçon',
     },
     {
       glyph: '👨‍👧‍👦',
-      label: 'famille : homme, fille et garçon',
+      label: 'famille\u{202F}: homme, fille et garçon',
       tags: 'enfant avec un père une mère fils femme',
     },
     {
       glyph: '👨‍👧‍👧',
-      label: 'famille : homme, fille et fille',
+      label: 'famille\u{202F}: homme, fille et fille',
       tags: 'enfant avec un père une mère fils femme garçon',
     },
     {
       glyph: '👩‍👦',
-      label: 'famille : femme et garçon',
+      label: 'famille\u{202F}: femme et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👦‍👦',
-      label: 'famille : femme, garçon et garçon',
+      label: 'famille\u{202F}: femme, garçon et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👧',
-      label: 'famille : femme et fille',
+      label: 'famille\u{202F}: femme et fille',
       tags: 'enfant avec un père une mère fils garçon homme',
     },
     {
       glyph: '👩‍👧‍👦',
-      label: 'famille : femme, fille et garçon',
+      label: 'famille\u{202F}: femme, fille et garçon',
       tags: 'enfant avec un père une mère fils homme',
     },
     {
       glyph: '👩‍👧‍👧',
-      label: 'famille : femme, fille et fille',
+      label: 'famille\u{202F}: femme, fille et fille',
       tags: 'enfant avec un père une mère fils garçon homme',
     },
     {
@@ -7812,67 +7812,67 @@ export const EMOJI_DATA_FR = {
     },
     {
       glyph: '#️⃣',
-      label: 'touches : #',
+      label: 'touches\u{202F}: #',
       tags: '',
     },
     {
       glyph: '*️⃣',
-      label: 'touches : *',
+      label: 'touches\u{202F}: *',
       tags: '',
     },
     {
       glyph: '0️⃣',
-      label: 'touches : 0',
+      label: 'touches\u{202F}: 0',
       tags: 'zéro',
     },
     {
       glyph: '1️⃣',
-      label: 'touches : 1',
+      label: 'touches\u{202F}: 1',
       tags: 'un',
     },
     {
       glyph: '2️⃣',
-      label: 'touches : 2',
+      label: 'touches\u{202F}: 2',
       tags: 'deux',
     },
     {
       glyph: '3️⃣',
-      label: 'touches : 3',
+      label: 'touches\u{202F}: 3',
       tags: 'trois',
     },
     {
       glyph: '4️⃣',
-      label: 'touches : 4',
+      label: 'touches\u{202F}: 4',
       tags: 'quatre',
     },
     {
       glyph: '5️⃣',
-      label: 'touches : 5',
+      label: 'touches\u{202F}: 5',
       tags: 'cinq',
     },
     {
       glyph: '6️⃣',
-      label: 'touches : 6',
+      label: 'touches\u{202F}: 6',
       tags: 'six',
     },
     {
       glyph: '7️⃣',
-      label: 'touches : 7',
+      label: 'touches\u{202F}: 7',
       tags: 'sept',
     },
     {
       glyph: '8️⃣',
-      label: 'touches : 8',
+      label: 'touches\u{202F}: 8',
       tags: 'huit',
     },
     {
       glyph: '9️⃣',
-      label: 'touches : 9',
+      label: 'touches\u{202F}: 9',
       tags: 'neuf',
     },
     {
       glyph: '🔟',
-      label: 'touches : 10',
+      label: 'touches\u{202F}: 10',
       tags: '',
     },
     {

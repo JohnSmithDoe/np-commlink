@@ -64,7 +64,9 @@ describe('TextItemComponent', () => {
 
   it('emits selectItem from selectCurrent()', () => {
     const emitted: unknown[] = [];
-    component.selectItem.subscribe(() => emitted.push(true));
+    component.selectItem.subscribe(() => {
+      emitted.push(true);
+    });
 
     component.selectCurrent();
 
@@ -75,7 +77,9 @@ describe('TextItemComponent', () => {
     fixture.componentRef.setInput('label', 'Label');
     fixture.detectChanges();
     const emitted: unknown[] = [];
-    component.selectItem.subscribe(() => emitted.push(true));
+    component.selectItem.subscribe(() => {
+      emitted.push(true);
+    });
 
     getByTestId(fixture, 'text-item').click();
 

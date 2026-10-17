@@ -19,7 +19,7 @@
     [startSwipeAction]="swipeActionFor(item)"
     (selectItem)="facade.openNote(item)"
     (startSwipe)="viewImages(item)"
-    (deleteItem)="facade.removeItem(item)"
+    (deletionRequested)="facade.removeItem(item)"
   >
     @if (snippet(item); as text) {
       <ng-container itemDetails>

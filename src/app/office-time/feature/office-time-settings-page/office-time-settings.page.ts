@@ -49,12 +49,11 @@ import { settingsOutline } from 'ionicons/icons';
   ],
 })
 export class OfficeTimeSettingsPage {
-  constructor() {
-    addIcons({ settingsOutline });
-  }
-
   readonly #facade = inject(OfficeTimeFacade);
+
   readonly #translate = inject(TranslateService);
+
+  readonly #dashboardSettings = this.#facade.dashboardSettings;
 
   readonly alertButtons: AlertButton[] = [
     {
@@ -74,29 +73,35 @@ export class OfficeTimeSettingsPage {
     },
   ];
 
-  readonly #dashboardSettings = this.#facade.dashboardSettings;
   readonly dashboardSettings = computed(() => {
     const settings = this.#dashboardSettings();
     if (!settings) return;
-    return (Object.keys(settings) as DashboardSettingsType[]).map((key) => ({
-      key,
-      value: settings[key],
-      labelKey: DASHBOARD_SETTING_LABEL_KEYS[key],
-    }));
+    return (Object.keys(settings) as DashboardSettingsType[]).map((key) => {
+      return {
+        key,
+        value: settings[key],
+        labelKey: DASHBOARD_SETTING_LABEL_KEYS[key],
+      };
+    });
   });
 
   readonly targetOfficeDaysPerWeek = this.#facade.targetOfficeDaysPerWeek;
 
   readonly reminder = this.#facade.reminder;
+
   readonly reminderTime = computed(() => {
     const { hour, minute } = this.reminder();
     return clockTime(hour, minute);
   });
 
-  readonly pinFormatter = (value: number) => `${value}`;
+  readonly pinFormatter = String;
 
-  toggleReminder(enabled: boolean) {
-    this.#facade.setReminder({ ...this.reminder(), enabled });
+  constructor() {
+    addIcons({ settingsOutline });
+  }
+
+  toggleReminder(isEnabled: boolean) {
+    this.#facade.setReminder({ ...this.reminder(), enabled: isEnabled });
   }
 
   setReminderTime(value: string | number | null | undefined) {

@@ -29,7 +29,5 @@ export const productsReducer = createReducer(
   on(ProductsActions.updateFilter,(state, { filterBy }): ProductsState => ({ ...state, filterBy, })),
   on(ProductsActions.updateSort, (state, { sortBy, sortDirection }): ProductsState => updateListSort(state, sortBy, sortDirection)),
 
-  on(HouseholdActions.loaded,(_state, { data }): ProductsState => {
-    return hydratedList({ ...initialState, ...(data?.products ?? _state) });
-  })
+  on(HouseholdActions.loaded,(_state, { data }): ProductsState => hydratedList({ ...initialState, ...(data?.products ?? _state) }))
 );

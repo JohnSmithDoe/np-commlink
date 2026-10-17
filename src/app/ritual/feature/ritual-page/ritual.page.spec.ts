@@ -10,12 +10,13 @@ import {
 } from '../../testing/ritual.test-data';
 import { RitualPage } from './ritual.page';
 
-const doneToday = (promptId = 'water') =>
-  mockRitualState({
+const doneToday = (promptId = 'water') => {
+  return mockRitualState({
     completions: [
       mockRitualCompletion({ promptId, completedAt: dayjs().format() }),
     ],
   });
+};
 
 describe('RitualPage', () => {
   let fixture: ComponentFixture<RitualPage>;

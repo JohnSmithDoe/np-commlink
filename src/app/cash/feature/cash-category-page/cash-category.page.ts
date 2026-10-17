@@ -28,7 +28,6 @@ import { LocalizedDatePipe } from '../../util/formatting/localized-date.pipe';
   ],
 })
 export class CashCategoryPage {
-  readonly facade = inject(CashCategoryTransactionsPageFacade);
   readonly #accountsFacade = inject(CashAccountsFacade);
   readonly #router = inject(Router);
 
@@ -36,6 +35,8 @@ export class CashCategoryPage {
     () =>
       new Map(this.#accountsFacade.allItems().map(({ id, name }) => [id, name]))
   );
+
+  readonly facade = inject(CashCategoryTransactionsPageFacade);
 
   accountName(txn: CashTransaction): string {
     return this.#accountNameById().get(txn.accountId) ?? '';

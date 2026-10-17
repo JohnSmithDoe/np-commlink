@@ -24,17 +24,43 @@ import {
 
 const languageExpectations = (
   outputs: readonly Language[]
-): LanguageModelCreateCoreOptions => ({
-  expectedInputs: [{ type: 'text', languages: [...LANGUAGES] }],
-  expectedOutputs: [{ type: 'text', languages: [...outputs] }],
-});
+): LanguageModelCreateCoreOptions => {
+  return {
+    expectedInputs: [{ type: 'text', languages: [...LANGUAGES] }],
+    expectedOutputs: [{ type: 'text', languages: [...outputs] }],
+  };
+};
 
 @Service()
 export class LanguageModelService {
   readonly #availability = signal<LanguageModelAvailability>('probing');
-  readonly availability = this.#availability.asReadonly();
 
   #probe: Promise<Availability> | null = null;
+
+  readonly availability = this.#availability.asReadonly();
+
+  async #readAvailability(): Promise<Availability> {
+    if (!this.#hasApi) return 'unavailable';
+    try {
+      return await LanguageModel.availability(languageExpectations(LANGUAGES));
+    } catch {
+      return 'unavailable';
+    }
+  }
+
+  get #hasApi(): boolean {
+    return 'LanguageModel' in globalThis;
+  }
+
+  #reportProgress(
+    monitor: CreateMonitor,
+    onProgress?: (fraction: number) => void
+  ): void {
+    if (!onProgress) return;
+    monitor.addEventListener('downloadprogress', (event) =>
+      onProgress(event.loaded)
+    );
+  }
 
   async probe(): Promise<Availability> {
     this.#probe ??= this.#readAvailability();
@@ -61,28 +87,5 @@ export class LanguageModelService {
     this.#probe = null;
     this.#availability.set('available');
     return session;
-  }
-
-  async #readAvailability(): Promise<Availability> {
-    if (!this.#hasApi) return 'unavailable';
-    try {
-      return await LanguageModel.availability(languageExpectations(LANGUAGES));
-    } catch {
-      return 'unavailable';
-    }
-  }
-
-  get #hasApi(): boolean {
-    return 'LanguageModel' in globalThis;
-  }
-
-  #reportProgress(
-    monitor: CreateMonitor,
-    onProgress?: (fraction: number) => void
-  ): void {
-    if (!onProgress) return;
-    monitor.addEventListener('downloadprogress', (event) =>
-      onProgress(event.loaded)
-    );
   }
 }

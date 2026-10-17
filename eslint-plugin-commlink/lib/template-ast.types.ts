@@ -50,6 +50,11 @@ export interface TemplateLiteralPrimitive extends TemplateNode {
   loc: AST.SourceLocation;
 }
 
+export interface TemplateHandlers {
+  [elementSelector: `Element${string}`]: (element: TemplateElement) => void;
+  LiteralPrimitive?: (node: TemplateLiteralPrimitive) => void;
+}
+
 export interface TemplateParserServices {
   convertElementSourceSpanToLoc: (
     context: Rule.RuleContext,

@@ -6,14 +6,16 @@ import {
   patchTurn,
 } from './transcript.utils';
 
-const turn = (overrides: Partial<GeistTurn> = {}): GeistTurn => ({
-  id: 1,
-  query: 'wer ist Mr. Johnson?',
-  answer: '',
-  streaming: true,
-  note: null,
-  ...overrides,
-});
+const turn = (overrides: Partial<GeistTurn> = {}): GeistTurn => {
+  return {
+    id: 1,
+    query: 'wer ist Mr. Johnson?',
+    answer: '',
+    streaming: true,
+    note: null,
+    ...overrides,
+  };
+};
 
 describe('geist transcript utils', () => {
   describe('appendAnswerChunk', () => {

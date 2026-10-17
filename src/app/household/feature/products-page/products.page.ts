@@ -24,9 +24,11 @@ import { EditProductDialogComponent } from '../edit-product-dialog/edit-product-
   providers: [{ provide: LIST_FACADE, useExisting: HouseholdListPageFacade }],
 })
 export class ProductsPage {
-  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
-  readonly facade = inject(HouseholdListPageFacade);
   readonly #products = inject(ProductsFacade);
+
+  protected readonly listSettingsLabel = LIST_SETTINGS_LABEL;
+
+  readonly facade = inject(HouseholdListPageFacade);
 
   removeItem(item: Product) {
     this.#products.removeItem(item);

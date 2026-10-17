@@ -5,9 +5,10 @@ import { ConfettiComponent } from './confetti.component';
 describe('ConfettiComponent', () => {
   let fixture: ComponentFixture<ConfettiComponent>;
 
-  const sparks = (): HTMLElement[] => [
-    ...fixture.nativeElement.querySelectorAll('.confetti__spark'),
-  ];
+  const sparks = (): HTMLElement[] => {
+    const nodes = fixture.nativeElement.querySelectorAll('.confetti__spark');
+    return [...nodes];
+  };
 
   const render = (pieces?: number) => {
     if (pieces !== undefined) fixture.componentRef.setInput('pieces', pieces);
@@ -38,13 +39,14 @@ describe('ConfettiComponent', () => {
     render(24);
 
     const columns = sparks().map((spark) =>
-      Number.parseFloat(spark.style.left)
+      Number(spark.style.left.replace(/%$/, ''))
     );
 
     expect(columns.length).toBe(24);
     expect(columns[0]).toBe(2);
     expect(columns.at(-1)).toBe(98);
-    expect(new Set(columns).size).toBe(24);
+    const distinctColumns = new Set(columns);
+    expect(distinctColumns.size).toBe(24);
   });
 
   it('gives each piece its own size and timing', () => {
@@ -53,13 +55,12 @@ describe('ConfettiComponent', () => {
     const [first, second, third] = sparks();
 
     expect(first!.style.width).toBe(first!.style.height);
-    expect(
-      new Set([
-        first!.style.animationDuration,
-        second!.style.animationDuration,
-        third!.style.animationDuration,
-      ]).size
-    ).toBeGreaterThan(1);
+    const durations = new Set([
+      first!.style.animationDuration,
+      second!.style.animationDuration,
+      third!.style.animationDuration,
+    ]);
+    expect(durations.size).toBeGreaterThan(1);
   });
 
   it('survives being asked for a single piece', () => {

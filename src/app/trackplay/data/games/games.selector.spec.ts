@@ -26,13 +26,14 @@ const LATER = '2024-06-02T10:00:00.000Z';
 const stateWith = (
   trackplay: Parameters<typeof mockTrackplayState>[0],
   routePlayerId?: string
-) =>
-  mockKernelState({
+) => {
+  return mockKernelState({
     trackplay: mockTrackplayState(trackplay),
     router: mockRouterState({
       parameters: routePlayerId ? { id: routePlayerId } : {},
     }),
   });
+};
 
 const scored = [
   mockRound({ id: 'r0', values: { p1: 10, p2: 3 } }),
@@ -66,15 +67,12 @@ describe('games.selector — scoring', () => {
   });
 
   it('counts a player with no entry in a round as zero', () => {
-    const sparse = stateWith({
-      games: mockGamesState([
-        mockGame({
-          id: 'g',
-          playerIds: ['p1', 'ghost'],
-          rounds: [mockRound({ id: 'r0', values: { p1: 4 } })],
-        }),
-      ]),
+    const game = mockGame({
+      id: 'g',
+      playerIds: ['p1', 'ghost'],
+      rounds: [mockRound({ id: 'r0', values: { p1: 4 } })],
     });
+    const sparse = stateWith({ games: mockGamesState([game]) });
 
     expect(selectScoresByGame('g')(sparse)).toEqual({ p1: 4, ghost: 0 });
   });
@@ -143,16 +141,13 @@ describe('games.selector — list', () => {
       mockGame({ id: 'done', ended: true, categoryIds: ['skat'] }),
     ];
 
-    expect(
-      selectGamesListItems(
-        stateWith({
-          games: mockGamesState(items, {
-            showEndedGames: false,
-            filterBy: 'skat',
-          }),
-        })
-      ).map((g) => g.id)
-    ).toEqual(['open']);
+    const games = mockGamesState(items, {
+      showEndedGames: false,
+      filterBy: 'skat',
+    });
+    expect(selectGamesListItems(stateWith({ games })).map((g) => g.id)).toEqual(
+      ['open']
+    );
   });
 
   it('sorts ended games last without disturbing the order inside each group', () => {
@@ -200,7 +195,7 @@ describe('games.selector — the gamesForPlayer view', () => {
     expect(
       selectGamesListItems(state)
         .map((game) => game.id)
-        .toSorted()
+        .toSorted((a, b) => a.localeCompare(b))
     ).toEqual(['mine', 'mine-done', 'theirs']);
   });
 });

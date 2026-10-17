@@ -74,30 +74,40 @@ const PHASE_LABEL_KEYS: Record<SeasonPhase, Marker> = {
   ],
 })
 export class VitalsZodiacPage {
-  readonly ages = ASTRO_AGES;
-  readonly signs = ZODIAC_BY_SIGN;
-  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
-  readonly phaseKeys = PHASE_LABEL_KEYS;
-  readonly chineseElementKeys = CHINESE_ELEMENT_LABEL_KEYS;
-  readonly polarityKeys = CHINESE_POLARITY_LABEL_KEYS;
-
   readonly #profiles = inject(ProfilesFacade);
 
+  readonly ages = ASTRO_AGES;
+
+  readonly signs = ZODIAC_BY_SIGN;
+
+  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
+
+  readonly phaseKeys = PHASE_LABEL_KEYS;
+
+  readonly chineseElementKeys = CHINESE_ELEMENT_LABEL_KEYS;
+
+  readonly polarityKeys = CHINESE_POLARITY_LABEL_KEYS;
+
   readonly today = inject(TodayService).today;
+
   readonly profile = this.#profiles.routeProfile;
+
   readonly date = linkedSignal(() => this.profile()?.birthDate ?? this.today());
+
   readonly returnRoute = computed(() => {
     const id = this.profile()?.id;
     return id ? `/vitals/profiles/${id}` : undefined;
   });
 
   readonly sign = computed(() => zodiacSignFor(this.date()));
+
   readonly ascendant = computed(() => {
     const profile = this.profile();
     return profile?.ascendant && profile.birthDate === this.date()
       ? this.signs[profile.ascendant]
       : undefined;
   });
+
   readonly storedSun = computed(() => {
     const profile = this.profile();
     return profile?.sun &&
@@ -115,9 +125,11 @@ export class VitalsZodiacPage {
   readonly timeline: Signal<readonly ZodiacSeason[]> = computed(() =>
     zodiacTimelineAround(this.today())
   );
+
   readonly chineseTimeline: Signal<readonly ChineseYearPhase[]> = computed(() =>
     chineseTimelineAround(this.today())
   );
+
   readonly currentAge = computed(() => astroAgeFor(this.today()));
 
   constructor() {

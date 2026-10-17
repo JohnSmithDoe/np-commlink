@@ -5,9 +5,10 @@ export const notificationsRoutes: Routes = [
   {
     path: '',
     title: marker('page-title.notifications'),
-    loadComponent: () =>
-      import('../feature/notifications-page/notifications.page').then(
-        (m) => m.NotificationsPage
-      ),
+    loadComponent: async () => {
+      const { NotificationsPage } =
+        await import('../feature/notifications-page/notifications.page');
+      return NotificationsPage;
+    },
   },
 ];

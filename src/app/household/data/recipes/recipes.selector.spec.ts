@@ -89,10 +89,11 @@ describe('recipes.selector', () => {
     const ids = (
       state: ReturnType<typeof mockRecipesState>,
       result?: Parameters<typeof selectRecipesListItems.projector>[1]
-    ) =>
-      selectRecipesListItems
+    ) => {
+      return selectRecipesListItems
         .projector(state, result, rankedMatches)
         .map(({ id }) => id);
+    };
 
     it('ranks by cookability while no sort is chosen', () => {
       expect(ids(mockRecipesState({ items: [alpha, beta] }))).toEqual([

@@ -16,20 +16,21 @@ import { TrackplayGamePlayPage } from './game-play.page';
 const inputEvent = (value: string): Event =>
   ({ target: { value } }) as unknown as Event;
 
-const scored = (value: number) =>
-  expect.objectContaining({
+const scored = (value: number) => {
+  return expect.objectContaining({
     type: GamesActions.setRoundValue.type,
     gameId: 'g1',
     roundId: 'r1',
     playerId: 'p1',
     value,
   });
+};
 
 describe('TrackplayGamePlayPage', () => {
   let component: TrackplayGamePlayPage;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const setup = (state = mockTrackplayState(), id = 'g1') => {
+  const setup = (state = mockTrackplayState()) => {
     TestBed.configureTestingModule({
       imports: [TrackplayGamePlayPage],
       providers: [
@@ -38,7 +39,10 @@ describe('TrackplayGamePlayPage', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: convertToParamMap({ id }), pathFromRoot: [] },
+            snapshot: {
+              paramMap: convertToParamMap({ id: 'g1' }),
+              pathFromRoot: [],
+            },
           },
         },
       ],

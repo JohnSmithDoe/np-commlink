@@ -49,12 +49,12 @@ describe('emoji catalog', () => {
     });
 
     it('drops tags the label makes redundant', () => {
-      const redundant = entries.filter((entry) =>
-        entry.tags
+      const redundant = entries.filter((entry) => {
+        return entry.tags
           .split(' ')
           .filter(Boolean)
-          .some((tag) => entry.label.toLowerCase().includes(tag))
-      );
+          .some((tag) => entry.label.toLowerCase().includes(tag));
+      });
 
       expect(redundant).toEqual([]);
     });

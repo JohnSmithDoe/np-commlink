@@ -48,6 +48,7 @@ export const matcherForFilter = (
 ): ((item: BaseItem) => boolean) => {
   if (!token) return () => true;
   const pseudo = FILTER_BY_ID.get(token);
-  if (pseudo) return pseudo.matches;
-  return (item) => !!item.categoryIds?.includes(token);
+  return pseudo
+    ? pseudo.matches
+    : (item) => !!item.categoryIds?.includes(token);
 };

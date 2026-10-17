@@ -14,24 +14,29 @@ const detailRoutes: Routes = [
   {
     path: 'artist/:key',
     title: marker('page-title.music-artist'),
-    loadComponent: () =>
-      import('../feature/artist-page/artist.page').then(
-        (m) => m.MusicArtistPage
-      ),
+    loadComponent: async () => {
+      const { MusicArtistPage } =
+        await import('../feature/artist-page/artist.page');
+      return MusicArtistPage;
+    },
   },
   {
     path: 'album/:key',
     title: marker('page-title.music-album'),
-    loadComponent: () =>
-      import('../feature/album-page/album.page').then((m) => m.MusicAlbumPage),
+    loadComponent: async () => {
+      const { MusicAlbumPage } =
+        await import('../feature/album-page/album.page');
+      return MusicAlbumPage;
+    },
   },
   {
     path: 'folder/:id',
     title: marker('page-title.music-folder'),
-    loadComponent: () =>
-      import('../feature/folder-page/folder.page').then(
-        (m) => m.MusicFolderPage
-      ),
+    loadComponent: async () => {
+      const { MusicFolderPage } =
+        await import('../feature/folder-page/folder.page');
+      return MusicFolderPage;
+    },
   },
 ];
 
@@ -56,10 +61,11 @@ export const musicRoutes: Routes = [
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'home',
@@ -68,26 +74,29 @@ export const musicRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.music-home'),
-                loadComponent: () =>
-                  import('../feature/home-page/home.page').then(
-                    (m) => m.MusicHomePage
-                  ),
+                loadComponent: async () => {
+                  const { MusicHomePage } =
+                    await import('../feature/home-page/home.page');
+                  return MusicHomePage;
+                },
               },
               {
                 path: 'playlist/:id',
                 title: marker('page-title.music-playlist'),
-                loadComponent: () =>
-                  import('../feature/playlist-page/playlist.page').then(
-                    (m) => m.MusicPlaylistPage
-                  ),
+                loadComponent: async () => {
+                  const { MusicPlaylistPage } =
+                    await import('../feature/playlist-page/playlist.page');
+                  return MusicPlaylistPage;
+                },
               },
               {
                 path: 'favorites',
                 title: marker('page-title.music-favorites'),
-                loadComponent: () =>
-                  import('../feature/favorites-page/favorites.page').then(
-                    (m) => m.MusicFavoritesPage
-                  ),
+                loadComponent: async () => {
+                  const { MusicFavoritesPage } =
+                    await import('../feature/favorites-page/favorites.page');
+                  return MusicFavoritesPage;
+                },
               },
               ...detailRoutes,
             ],
@@ -99,10 +108,11 @@ export const musicRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.music'),
-                loadComponent: () =>
-                  import('../feature/library-page/library.page').then(
-                    (m) => m.MusicLibraryPage
-                  ),
+                loadComponent: async () => {
+                  const { MusicLibraryPage } =
+                    await import('../feature/library-page/library.page');
+                  return MusicLibraryPage;
+                },
               },
               ...detailRoutes,
             ],
@@ -114,10 +124,11 @@ export const musicRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.music-search'),
-                loadComponent: () =>
-                  import('../feature/search-page/search.page').then(
-                    (m) => m.MusicSearchPage
-                  ),
+                loadComponent: async () => {
+                  const { MusicSearchPage } =
+                    await import('../feature/search-page/search.page');
+                  return MusicSearchPage;
+                },
               },
               ...detailRoutes,
             ],
@@ -125,18 +136,20 @@ export const musicRoutes: Routes = [
           {
             path: 'queue',
             title: marker('page-title.music-queue'),
-            loadComponent: () =>
-              import('../feature/queue-page/queue.page').then(
-                (m) => m.MusicQueuePage
-              ),
+            loadComponent: async () => {
+              const { MusicQueuePage } =
+                await import('../feature/queue-page/queue.page');
+              return MusicQueuePage;
+            },
           },
           {
             path: 'sources',
             title: marker('page-title.music-sources'),
-            loadComponent: () =>
-              import('../feature/sources-page/sources.page').then(
-                (m) => m.MusicSourcesPage
-              ),
+            loadComponent: async () => {
+              const { MusicSourcesPage } =
+                await import('../feature/sources-page/sources.page');
+              return MusicSourcesPage;
+            },
           },
         ],
       },

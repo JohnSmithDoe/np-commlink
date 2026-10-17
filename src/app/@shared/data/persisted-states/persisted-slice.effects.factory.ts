@@ -70,10 +70,10 @@ export type TelemetrySpec<S> = {
 const HYDRATION_EVENT = /\] (load|loaded)$/;
 const VIEW_ONLY_EVENT = /\] (updateSearch|updateFilter)$/;
 
-const persistsNothing = (type: string): boolean =>
+const isPersistsNothing = (type: string): boolean =>
   HYDRATION_EVENT.test(type) || VIEW_ONLY_EVENT.test(type);
 
-const fromSource = (type: string, source: string): boolean => {
+const isFromSource = (type: string, source: string): boolean => {
   const bare = source.replace(/]$/, '');
   return type.startsWith(`${bare}]`) || type.startsWith(`${bare} `);
 };
@@ -82,8 +82,8 @@ export const createLoadSliceEffect = <T>(
   lifecycle: SliceLifecycle<T>,
   key: string,
   ladder: MigrationStep[] = []
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (
       actions$ = inject(Actions),
       database = inject(DatabaseService),
@@ -91,28 +91,29 @@ export const createLoadSliceEffect = <T>(
     ) => {
       return actions$.pipe(
         ofType(lifecycle.load),
-        switchMap(() =>
-          from(database.load<unknown>(key)).pipe(
+        switchMap(() => {
+          return from(database.load<unknown>(key)).pipe(
             map((raw) => {
               const stored = runMigrations<T>(raw, APP_VERSION, ladder);
               reads.recordRead(key);
               return lifecycle.loaded(stored);
             }),
-            catchError(() =>
-              of(
+            catchError(() => {
+              return of(
                 lifecycle.loaded(null),
                 NotificationsActions.toast({
                   key: marker('toast.storage.unavailable'),
                   color: 'danger',
                 })
-              )
-            )
-          )
-        )
+              );
+            })
+          );
+        })
       );
     },
     { functional: true }
   );
+};
 
 export const createSaveSliceEffect = <T>(
   trigger: SaveTrigger,
@@ -122,12 +123,15 @@ export const createSaveSliceEffect = <T>(
   const triggerTypes = new Set(
     (trigger.on ?? []).map((creator) => creator.type)
   );
-  const matchesSource = (type: string): boolean =>
-    (trigger.sources ?? []).some((source) => fromSource(type, source)) &&
-    !persistsNothing(type);
+  const isMatchesSource = (type: string): boolean => {
+    return (
+      (trigger.sources ?? []).some((source) => isFromSource(type, source)) &&
+      !isPersistsNothing(type)
+    );
+  };
 
   const isMutation = (action: Action): boolean =>
-    triggerTypes.has(action.type) || matchesSource(action.type);
+    triggerTypes.has(action.type) || isMatchesSource(action.type);
 
   return createEffect(
     (
@@ -136,19 +140,21 @@ export const createSaveSliceEffect = <T>(
       database = inject(DatabaseService),
       reads = inject(ReadBeforeWriteService)
     ) => {
-      let reported = false;
+      let hasReported = false;
       return actions$.pipe(
         filter(isMutation),
         filter(() => reads.mayPersist(key)),
         withLatestFrom(store.select(select)),
         map(([, state]) => state),
         distinctUntilChanged(),
-        concatMap((state) =>
-          from(database.save(key, wrapVersioned(APP_VERSION, state))).pipe(
+        concatMap((state) => {
+          return from(
+            database.save(key, wrapVersioned(APP_VERSION, state))
+          ).pipe(
             ignoreElements(),
             catchError(() => {
-              if (reported) return EMPTY;
-              reported = true;
+              if (hasReported) return EMPTY;
+              hasReported = true;
               return of(
                 NotificationsActions.toast({
                   key: marker('toast.storage.write-failed'),
@@ -156,8 +162,8 @@ export const createSaveSliceEffect = <T>(
                 })
               );
             })
-          )
-        )
+          );
+        })
       );
     },
     { functional: true }
@@ -169,19 +175,20 @@ const hydratedFromDisk = <T>(
   lifecycle: SliceLifecycle<T>,
   reads: ReadBeforeWriteService,
   key: string
-) =>
-  actions$.pipe(
+) => {
+  return actions$.pipe(
     ofType(lifecycle.loaded),
     filter(() => reads.mayPersist(key)),
     take(1)
   );
+};
 
 export const createTelemetrySliceEffect = <S, T>(
   spec: TelemetrySpec<S>,
   lifecycle: SliceLifecycle<T>,
   key: string
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (
       actions$ = inject(Actions),
       store = inject(Store),
@@ -189,24 +196,29 @@ export const createTelemetrySliceEffect = <S, T>(
     ) => {
       return hydratedFromDisk(actions$, lifecycle, reads, key).pipe(
         switchMap(() => store.select(spec.select)),
-        map((value) =>
-          DashboardActions.report({
+        map((value) => {
+          return DashboardActions.report({
             source: spec.source,
             metrics: spec.metrics(value),
-          })
-        )
+          });
+        })
       );
     },
     { functional: true }
   );
+};
 
-export const createMetric =
-  (key: string) =>
-  (value: number | string): DashboardTelemetry['metrics'] => ({
-    [key]: value,
-  });
+export const createMetric = (key: string) => {
+  return (value: number | string): DashboardTelemetry['metrics'] => {
+    return {
+      [key]: value,
+    };
+  };
+};
 
-export const pickMetrics =
-  <T extends DashboardTelemetry['metrics']>(...keys: readonly (keyof T)[]) =>
-  (value: T): DashboardTelemetry['metrics'] =>
+export const pickMetrics = <T extends DashboardTelemetry['metrics']>(
+  ...keys: readonly (keyof T)[]
+) => {
+  return (value: T): DashboardTelemetry['metrics'] =>
     Object.fromEntries(keys.map((key) => [key, value[key]]));
+};

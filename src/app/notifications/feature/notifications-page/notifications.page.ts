@@ -53,10 +53,6 @@ export class NotificationsPage implements ViewWillEnter {
   readonly doneNotifications = this.#facade.doneNotifications;
   readonly doneCollapsed = this.#facade.doneCollapsed;
 
-  ionViewWillEnter(): void {
-    this.#facade.markPageViewed();
-  }
-
   constructor() {
     addIcons({
       checkmarkCircleOutline,
@@ -67,6 +63,10 @@ export class NotificationsPage implements ViewWillEnter {
       stopCircleOutline,
       trashOutline,
     });
+  }
+
+  ionViewWillEnter(): void {
+    this.#facade.markPageViewed();
   }
 
   triggerAction(n: InboxNotification, event: Event) {

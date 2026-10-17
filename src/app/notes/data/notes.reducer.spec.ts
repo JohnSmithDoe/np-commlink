@@ -2,15 +2,19 @@ import { Note, NOTES_LIST_ID, NotesState } from '../model/notes.types';
 import { NotesActions } from './notes.actions';
 import { initialState, notesReducer } from './notes.reducer';
 
-const note = (id: string, name = '', body?: string): Note => ({
-  id,
-  name,
-  body,
-});
+const note = (id: string, name = '', body?: string): Note => {
+  return {
+    id,
+    name,
+    body,
+  };
+};
 
-const stateWith = (...items: Note[]): NotesState => ({
-  list: { id: NOTES_LIST_ID, items },
-});
+const stateWith = (...items: Note[]): NotesState => {
+  return {
+    list: { id: NOTES_LIST_ID, items },
+  };
+};
 
 const pinnedNote = (id: string): Note => ({ ...note(id, id), pinned: true });
 
@@ -133,11 +137,12 @@ describe('notesReducer images', () => {
   });
 
   it('removes the id it is given and leaves the rest arranged', () => {
+    const withOne = notesReducer(
+      stateWith(note('a', 'Ausweis')),
+      NotesActions.addImage('a', 'img-1', 'data:a', AT)
+    );
     const withTwo = notesReducer(
-      notesReducer(
-        stateWith(note('a', 'Ausweis')),
-        NotesActions.addImage('a', 'img-1', 'data:a', AT)
-      ),
+      withOne,
       NotesActions.addImage('a', 'img-2', 'data:b', AT)
     );
 

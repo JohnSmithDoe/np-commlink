@@ -27,11 +27,12 @@ interface Occurrence {
   length: number;
 }
 
-export const handbookTerms = (query: string): string[] =>
-  query
+export const handbookTerms = (query: string): string[] => {
+  return query
     .toLowerCase()
     .split(WHITESPACE)
     .filter((term) => term.length > 0);
+};
 
 const scoreTerm = (entry: HandbookEntry, term: string): number => {
   if (`${entry.title} ${entry.plain}`.toLowerCase().includes(term))
@@ -39,8 +40,7 @@ const scoreTerm = (entry: HandbookEntry, term: string): number => {
   if (entry.tags.some((tag) => tag.toLowerCase().includes(term)))
     return TAG_SCORE;
   if (entry.summary.toLowerCase().includes(term)) return SUMMARY_SCORE;
-  if (entry.text.toLowerCase().includes(term)) return TEXT_SCORE;
-  return 0;
+  return entry.text.toLowerCase().includes(term) ? TEXT_SCORE : 0;
 };
 
 const occurrenceFrom = (
@@ -113,10 +113,20 @@ const snippetOf = (
     Math.max(start + SNIPPET_LENGTH, found.at + found.length)
   );
   const parts = highlight(source.slice(start, end), terms);
+  const lead = start > 0 ? [{ text: `${ELLIPSIS} `, match: false }] : [];
+  const trail =
+    end < source.length ? [{ text: ` ${ELLIPSIS}`, match: false }] : [];
+  return [...lead, ...parts, ...trail];
+};
 
-  if (start > 0) parts.unshift({ text: `${ELLIPSIS} `, match: false });
-  if (end < source.length) parts.push({ text: ` ${ELLIPSIS}`, match: false });
-  return parts;
+const scoreOf = (entry: HandbookEntry, terms: readonly string[]): number => {
+  let score = 0;
+  for (const term of terms) {
+    const termScore = scoreTerm(entry, term);
+    if (termScore === 0) return 0;
+    score += termScore;
+  }
+  return score;
 };
 
 export const searchHandbook = (
@@ -128,15 +138,7 @@ export const searchHandbook = (
 
   const hits: HandbookHit[] = [];
   for (const entry of entries) {
-    let score = 0;
-    for (const term of terms) {
-      const termScore = scoreTerm(entry, term);
-      if (termScore === 0) {
-        score = 0;
-        break;
-      }
-      score += termScore;
-    }
+    const score = scoreOf(entry, terms);
     if (score > 0)
       hits.push({ entry, score, snippet: snippetOf(entry, terms) });
   }

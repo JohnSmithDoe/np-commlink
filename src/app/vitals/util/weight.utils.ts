@@ -20,14 +20,15 @@ export function inputToGrams(raw: string): number | null {
 export function formatKg(
   grams: number,
   language: Language = 'de',
-  signed = false
+  isSigned = false
 ): string {
-  return new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
+  const formatter = new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
     minimumFractionDigits: FRACTION_DIGITS,
     maximumFractionDigits: FRACTION_DIGITS,
-    signDisplay: signed ? 'exceptZero' : 'auto',
+    signDisplay: isSigned ? 'exceptZero' : 'auto',
     useGrouping: false,
-  }).format(gramsToKg(grams));
+  });
+  return formatter.format(gramsToKg(grams));
 }
 
 export const gramsToInput = (

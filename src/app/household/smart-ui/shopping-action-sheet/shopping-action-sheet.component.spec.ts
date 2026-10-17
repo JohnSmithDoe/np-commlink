@@ -41,15 +41,11 @@ describe('ShoppingActionSheetComponent', () => {
   });
 
   it('adds the move button when a bought item exists', async () => {
-    await setup(
-      provideTestingProviders({
-        household: mockHouseholdState({
-          shopping: mockShoppingState({
-            items: [mockShoppingItem({ state: 'bought' })],
-          }),
-        }),
-      })
-    );
+    const shopping = mockShoppingState({
+      items: [mockShoppingItem({ state: 'bought' })],
+    });
+    const household = mockHouseholdState({ shopping });
+    await setup(provideTestingProviders({ household }));
     expect(component.actionSheetButtons()).toHaveLength(3);
   });
 

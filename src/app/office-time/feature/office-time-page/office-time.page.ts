@@ -66,12 +66,16 @@ export class OfficeTimePage implements ViewWillEnter {
     const settings = this.dashboardSettings();
     return this.dashboardItems().filter((item) => {
       const flag = DASHBOARD_CARD_VISIBILITY[item];
-      return flag ? settings[flag] : true;
+      return !flag || settings[flag];
     });
   });
 
   constructor() {
-    addIcons({ addOutline, removeOutline, settingsOutline });
+    addIcons({
+      addOutline,
+      removeOutline,
+      settingsOutline,
+    });
   }
 
   ionViewWillEnter(): void {

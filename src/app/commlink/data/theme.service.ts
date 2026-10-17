@@ -24,19 +24,12 @@ const CSS_VAR_SUFFIX: Record<keyof IonicColorSet, string> = {
 @Service()
 export class ThemeService {
   readonly #skin = signal<Skin>('cyberpunk');
-  readonly #mode = signal<Mode>('dark');
-  readonly skin: Signal<Skin> = this.#skin.asReadonly();
-  readonly mode: Signal<Mode> = this.#mode.asReadonly();
 
-  apply(skin: Skin, mode: Mode, accents?: AccentColors): void {
-    this.#skin.set(skin);
-    this.#mode.set(mode);
-    document.documentElement.dataset['skin'] = skin;
-    document.documentElement.dataset['mode'] = mode;
-    this.#applyAccentOverrides(accents);
-    this.#applyMetaThemeColor(mode);
-    this.#applyStatusBarStyle(mode);
-  }
+  readonly #mode = signal<Mode>('dark');
+
+  readonly skin: Signal<Skin> = this.#skin.asReadonly();
+
+  readonly mode: Signal<Mode> = this.#mode.asReadonly();
 
   #applyAccentOverrides(accents?: AccentColors): void {
     for (const key of ACCENT_KEYS) {
@@ -71,5 +64,15 @@ export class ThemeService {
     void StatusBar.setStyle({
       style: mode === 'light' ? Style.Light : Style.Dark,
     }).catch(() => {});
+  }
+
+  apply(skin: Skin, mode: Mode, accents?: AccentColors): void {
+    this.#skin.set(skin);
+    this.#mode.set(mode);
+    document.documentElement.dataset['skin'] = skin;
+    document.documentElement.dataset['mode'] = mode;
+    this.#applyAccentOverrides(accents);
+    this.#applyMetaThemeColor(mode);
+    this.#applyStatusBarStyle(mode);
   }
 }

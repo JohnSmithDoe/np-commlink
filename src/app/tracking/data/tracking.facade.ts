@@ -24,19 +24,25 @@ import {
 @Service()
 export class TrackingFacade {
   readonly #store = inject(Store);
+
   readonly #today = inject(TodayService).today;
+
   readonly #dialogs = inject(ItemDialogService);
 
+  readonly #liveForChart = this.#store.selectSignal(selectLiveChartSessions);
+
   readonly total = this.#store.selectSignal(selectTrackingTime);
+
   readonly viewMode = this.#store.selectSignal(selectTrackingDataViewId);
+
   readonly allSessions = this.#store.selectSignal(selectAllTrackingSessions);
 
   readonly archivedSessions = this.#store.selectSignal(selectArchivedSessions);
-  readonly #liveForChart = this.#store.selectSignal(selectLiveChartSessions);
 
   readonly sessionsByView = computed(() =>
     groupSessionsByView(this.archivedSessions(), this.viewMode(), this.#today())
   );
+
   readonly sessionsByDayAndName = computed(() =>
     dailySeries(this.archivedSessions(), this.#liveForChart(), this.#today())
   );
@@ -76,12 +82,12 @@ export class TrackingFacade {
   }
 
   showSessionDialog(session: TrackingItem): void {
-    const archived = this.archivedSessions().some(
+    const isArchived = this.archivedSessions().some(
       (stored) => stored.id === session.id
     );
     this.#dialogs.open({
       item: session,
-      listId: archived ? TRACKING_SESSIONS_LIST_ID : TRACKING_LIST_ID,
+      listId: isArchived ? TRACKING_SESSIONS_LIST_ID : TRACKING_LIST_ID,
       editMode: 'update',
     });
   }

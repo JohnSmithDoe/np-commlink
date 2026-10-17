@@ -33,7 +33,7 @@ export const isYangLine = (value: LineValue): boolean => value % 2 === 1;
 export const isChangingLine = (value: LineValue): boolean =>
   value === 6 || value === 9;
 
-const afterChange = (value: LineValue): boolean =>
+const isAfterChange = (value: LineValue): boolean =>
   isChangingLine(value) ? !isYangLine(value) : isYangLine(value);
 
 const lineValueFor = (heads: number): LineValue => {
@@ -64,26 +64,28 @@ export const castLine = (random: () => number = Math.random): CastLine => {
 
 const patternOf = (
   lines: readonly CastLine[],
-  yangOf: (value: LineValue) => boolean
-): string => lines.map((line) => (yangOf(line.value) ? '1' : '0')).join('');
+  isYangOf: (value: LineValue) => boolean
+): string => lines.map((line) => (isYangOf(line.value) ? '1' : '0')).join('');
 
 const hexagramOf = (pattern: string): HexagramRecord | undefined =>
   HEXAGRAMS.find((hexagram) => hexagram.pattern === pattern);
 
 export const hexagramFor = (
   lines: readonly CastLine[]
-): HexagramRecord | undefined =>
-  lines.length === HEXAGRAM_LINES
+): HexagramRecord | undefined => {
+  return lines.length === HEXAGRAM_LINES
     ? hexagramOf(patternOf(lines, isYangLine))
     : undefined;
+};
 
 export const transformedHexagramFor = (
   lines: readonly CastLine[]
-): HexagramRecord | undefined =>
-  lines.length === HEXAGRAM_LINES &&
-  lines.some((line) => isChangingLine(line.value))
-    ? hexagramOf(patternOf(lines, afterChange))
+): HexagramRecord | undefined => {
+  return lines.length === HEXAGRAM_LINES &&
+    lines.some((line) => isChangingLine(line.value))
+    ? hexagramOf(patternOf(lines, isAfterChange))
     : undefined;
+};
 
 export const hexagramGlyph = (hexagram: HexagramRecord): string =>
   String.fromCodePoint(HEXAGRAM_CODE_POINT + hexagram.number - 1);

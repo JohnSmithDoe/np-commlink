@@ -100,14 +100,15 @@ describe('periodMonthsFrom', () => {
   });
 });
 
-const rent = (dateISO: string, amountCents = -90_000) =>
-  mockCashTransaction({
+const rent = (dateISO: string, amountCents = -90_000) => {
+  return mockCashTransaction({
     id: `txn-${dateISO}`,
     name: 'MIETE WOHNBAU',
     mandateId: 'MND-RENT',
     amountCents,
     dateISO,
   });
+};
 
 describe('scheduleFrom', () => {
   it('takes the booking amount and the rhythm of its history', () => {

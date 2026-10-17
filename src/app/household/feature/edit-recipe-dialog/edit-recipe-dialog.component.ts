@@ -73,6 +73,49 @@ const ownLine = ({
   styleUrl: './edit-recipe-dialog.component.scss',
 })
 export class EditRecipeDialogComponent extends BaseEditItemDialog<Recipe> {
+  readonly #facade = inject(RecipesFacade);
+
+  protected readonly listId: ItemListId = RECIPES_LIST_ID;
+
+  readonly siblings = this.#facade.allItems;
+
+  readonly ingredientCatalog = this.#facade.ingredientCatalog;
+
+  readonly units = UNITS;
+
+  readonly unitLabelKeys = UNIT_LABEL_KEYS;
+
+  readonly pickerValue = signal<string | null>(null);
+
+  readonly ingredientRows = computed(() => {
+    const byId = new Map(
+      this.ingredientCatalog().map((product) => [product.id, product])
+    );
+    return this.draft().ingredients.map((line) => {
+      return {
+        line,
+        name: byId.get(line.productId)?.name ?? line.productId,
+      };
+    });
+  });
+
+  constructor() {
+    super();
+    addIcons({ trashOutline });
+  }
+
+  #patchIngredient(lineId: string, partial: Partial<RecipeIngredient>) {
+    this.#updateIngredients((lines) =>
+      lines.map((line) => (line.id === lineId ? { ...line, ...partial } : line))
+    );
+  }
+
+  #updateIngredients(
+    update: (lines: RecipeIngredient[]) => RecipeIngredient[]
+  ) {
+    this.patch({ ingredients: update(this.draft().ingredients) });
+  }
+
   protected blank(): Recipe {
     return createRecipe('');
   }
@@ -92,31 +135,6 @@ export class EditRecipeDialogComponent extends BaseEditItemDialog<Recipe> {
     };
   }
 
-  readonly #facade = inject(RecipesFacade);
-
-  protected readonly listId: ItemListId = RECIPES_LIST_ID;
-  readonly siblings = this.#facade.allItems;
-  readonly ingredientCatalog = this.#facade.ingredientCatalog;
-  readonly units = UNITS;
-  readonly unitLabelKeys = UNIT_LABEL_KEYS;
-
-  readonly pickerValue = signal<string | null>(null);
-
-  readonly ingredientRows = computed(() => {
-    const byId = new Map(
-      this.ingredientCatalog().map((product) => [product.id, product])
-    );
-    return this.draft().ingredients.map((line) => ({
-      line,
-      name: byId.get(line.productId)?.name ?? line.productId,
-    }));
-  });
-
-  constructor() {
-    super();
-    addIcons({ trashOutline });
-  }
-
   protected save(item: Recipe): void {
     this.#facade.saveItem(item);
   }
@@ -126,10 +144,8 @@ export class EditRecipeDialogComponent extends BaseEditItemDialog<Recipe> {
       ({ id }) => id === event.detail.value
     );
     if (product) {
-      this.#updateIngredients((lines) => [
-        ...lines,
-        createRecipeIngredient(product),
-      ]);
+      const ingredient = createRecipeIngredient(product);
+      this.#updateIngredients((lines) => [...lines, ingredient]);
     }
     this.pickerValue.set(null);
   }
@@ -158,17 +174,5 @@ export class EditRecipeDialogComponent extends BaseEditItemDialog<Recipe> {
 
   setSteps(event: TextareaCustomEvent) {
     this.patch({ steps: event.detail.value ?? '' });
-  }
-
-  #patchIngredient(lineId: string, partial: Partial<RecipeIngredient>) {
-    this.#updateIngredients((lines) =>
-      lines.map((line) => (line.id === lineId ? { ...line, ...partial } : line))
-    );
-  }
-
-  #updateIngredients(
-    update: (lines: RecipeIngredient[]) => RecipeIngredient[]
-  ) {
-    this.patch({ ingredients: update(this.draft().ingredients) });
   }
 }

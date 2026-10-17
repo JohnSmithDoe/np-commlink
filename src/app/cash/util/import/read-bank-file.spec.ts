@@ -4,16 +4,18 @@ import { decodeBankFile, readStatementDocuments } from './read-bank-file';
 const fileOf = (bytes: Uint8Array, name: string): File =>
   new File([bytes as BlobPart], name);
 
-const zipOf = (members: Record<string, string>): Uint8Array =>
-  zipSync(
+const zipOf = (members: Record<string, string>): Uint8Array => {
+  return zipSync(
     Object.fromEntries(
       Object.entries(members).map(([name, text]) => [name, strToU8(text)])
     )
   );
+};
 
 describe('decodeBankFile', () => {
   it('decodes a UTF-8 export (umlauts) on the first try', () => {
-    const bytes = new TextEncoder().encode('Müller;Gebühren');
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode('Müller;Gebühren');
     expect(decodeBankFile(bytes)).toBe('Müller;Gebühren');
   });
 
@@ -23,7 +25,7 @@ describe('decodeBankFile', () => {
   });
 
   it('accepts an ArrayBuffer (what File.arrayBuffer() returns)', () => {
-    const buffer = new Uint8Array([0x4d, 0xfc, 0x6c, 0x6c, 0x65, 0x72]).buffer;
+    const { buffer } = new Uint8Array([0x4d, 0xfc, 0x6c, 0x6c, 0x65, 0x72]);
     expect(decodeBankFile(buffer)).toBe('Müller');
   });
 });

@@ -39,7 +39,8 @@ export const sortedWeekdays = (weekdays: readonly IsoWeekday[]): IsoWeekday[] =>
 export const toggledWeekday = (
   weekdays: readonly IsoWeekday[],
   day: IsoWeekday
-): IsoWeekday[] =>
-  weekdays.includes(day)
+): IsoWeekday[] => {
+  return weekdays.includes(day)
     ? weekdays.filter((existing) => existing !== day)
     : sortedWeekdays([...weekdays, day]);
+};

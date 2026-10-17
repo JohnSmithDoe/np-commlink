@@ -36,6 +36,11 @@ export interface ChipOption<T> {
   imports: [IonButton, IonIcon],
 })
 export class OptionChipsComponent<T> {
+  readonly #selectedKeys = computed(() => {
+    const selected = this.selected();
+    return new Set(typeof selected === 'string' ? [selected] : selected);
+  });
+
   readonly options = input.required<readonly ChipOption<T>[]>();
   readonly selected = input<string | readonly string[] | undefined>();
   readonly label = input<string>();
@@ -46,11 +51,6 @@ export class OptionChipsComponent<T> {
   readonly columns = input(undefined, { transform: numberAttribute });
   readonly picked = output<T>();
   readonly cleared = output<void>();
-
-  readonly #selectedKeys = computed(() => {
-    const selected = this.selected();
-    return new Set(typeof selected === 'string' ? [selected] : selected);
-  });
 
   protected readonly clearOff = computed(
     () => this.clearDisabled() ?? this.#selectedKeys().size === 0

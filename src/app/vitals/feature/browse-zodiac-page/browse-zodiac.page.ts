@@ -23,10 +23,11 @@ import { zodiacSignFor, zodiacYear } from '../../util/zodiac.utils';
   ],
 })
 export class VitalsBrowseZodiacPage {
-  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
-
   readonly #today = inject(TodayService).today;
 
+  readonly elementKeys = ZODIAC_ELEMENT_LABEL_KEYS;
+
   readonly windows = computed(() => zodiacYear(this.#today()));
+
   readonly currentSign = computed(() => zodiacSignFor(this.#today())?.sign);
 }

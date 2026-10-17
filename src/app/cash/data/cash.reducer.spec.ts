@@ -119,7 +119,6 @@ describe('cashReducer', () => {
         mockCashTransaction({ id: 't3', categoryIds: ['rent'] }),
       ],
     });
-
     const state = cashReducer(
       start,
       CashTransactionsActions.recategorize([
@@ -128,13 +127,9 @@ describe('cashReducer', () => {
       ])
     );
 
-    expect(
-      state.transactions.items.map((t) => [
-        t.id,
-        categoryIdOf(t),
-        t.categoryManual,
-      ])
-    ).toEqual([
+    const { items } = state.transactions;
+    const rows = items.map((t) => [t.id, categoryIdOf(t), t.categoryManual]);
+    expect(rows).toEqual([
       ['t1', 'household', false],
       ['t2', undefined, false],
       ['t3', 'rent', undefined],
@@ -254,7 +249,6 @@ describe('cashReducer', () => {
         mockCashRule({ id: 'r2', categoryId: 'food' }),
       ],
     });
-
     const state = cashReducer(start, CashCategoriesActions.removeItem(rent));
 
     expect(state.rules.items.map((rule) => rule.id)).toEqual(['r2']);
@@ -266,7 +260,6 @@ describe('cashReducer', () => {
       categories: mockCashCategoryList({ items: [rent] }),
       schedules: [mockCashSchedule({ categoryId: 'rent' })],
     });
-
     const state = cashReducer(start, CashCategoriesActions.removeItem(rent));
 
     expect(state.schedules.items).toHaveLength(1);
@@ -280,7 +273,6 @@ describe('cashReducer', () => {
       categories: mockCashCategoryList({ items: [rent, housing] }),
       schedules: [mockCashSchedule({ categoryId: 'rent' })],
     });
-
     const state = cashReducer(
       start,
       CashCategoriesActions.updateItem({ ...rent, name: 'Housing' })
@@ -299,7 +291,6 @@ describe('cashReducer', () => {
         }),
       ],
     });
-
     const state = cashReducer(
       start,
       CashSchedulesActions.applyAmountChanges([
@@ -326,7 +317,6 @@ describe('cashReducer', () => {
         mockCashSchedule({ id: 's2', name: 'Strom' }),
       ],
     });
-
     const state = cashReducer(
       start,
       CashSchedulesActions.applyAmountChanges([
@@ -474,10 +464,8 @@ describe('cashReducer', () => {
   });
 
   it('hydrates from a loaded slice', () => {
-    const state = cashReducer(
-      initialState,
-      CashActions.loaded(mockCashState({ accounts: [mockCashAccount()] }))
-    );
+    const loaded = mockCashState({ accounts: [mockCashAccount()] });
+    const state = cashReducer(initialState, CashActions.loaded(loaded));
     expect(state.accounts.items).toHaveLength(1);
   });
 

@@ -1,40 +1,40 @@
 import { mockCashRule, mockCashTransaction } from '../testing/cash.test-data';
 import {
   categorize,
-  matchesCondition,
-  matchesRule,
+  doesMatchCondition,
+  doesMatchRule,
   recategorizations,
   ruleStats,
 } from './categorize.utils';
 
 describe('categorize util', () => {
-  describe('matchesCondition — description', () => {
+  describe('doesMatchCondition — description', () => {
     const txn = mockCashTransaction({ name: 'NORDKAUF SAGT DANKE' });
 
     it('contains / startsWith / endsWith / equals are case-insensitive by default', () => {
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'contains',
           value: 'nordkauf',
         })
       ).toBe(true);
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'startsWith',
           value: 'nordkauf',
         })
       ).toBe(true);
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'endsWith',
           value: 'danke',
         })
       ).toBe(true);
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'equals',
           value: 'nordkauf sagt danke',
@@ -44,7 +44,7 @@ describe('categorize util', () => {
 
     it('honours caseSensitive', () => {
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'contains',
           value: 'nordkauf',
@@ -55,14 +55,18 @@ describe('categorize util', () => {
 
     it('matches a regex and never throws on a bad pattern', () => {
       expect(
-        matchesCondition(txn, {
+        doesMatchCondition(txn, {
           field: 'description',
           op: 'regex',
           value: 'n.rdkauf',
         })
       ).toBe(true);
       expect(
-        matchesCondition(txn, { field: 'description', op: 'regex', value: '(' })
+        doesMatchCondition(txn, {
+          field: 'description',
+          op: 'regex',
+          value: '(',
+        })
       ).toBe(false);
     });
 
@@ -71,7 +75,7 @@ describe('categorize util', () => {
         name: 'LANDMARKT//NEUSTADT/DE',
       });
       expect(
-        matchesCondition(imported, {
+        doesMatchCondition(imported, {
           field: 'description',
           op: 'contains',
           value: 'landmarkt',
@@ -81,37 +85,41 @@ describe('categorize util', () => {
 
     it('rejects a numeric op used on description', () => {
       expect(
-        matchesCondition(txn, { field: 'description', op: 'gt', value: '0' })
+        doesMatchCondition(txn, { field: 'description', op: 'gt', value: '0' })
       ).toBe(false);
     });
   });
 
-  describe('matchesCondition — amount (signed cents vs a euro threshold)', () => {
+  describe('doesMatchCondition — amount (signed cents vs a euro threshold)', () => {
     const spend = mockCashTransaction({ amountCents: -4299 });
 
     it('compares signed cents with lt/lte/gt/gte/eq', () => {
       expect(
-        matchesCondition(spend, { field: 'amount', op: 'lt', value: '0' })
+        doesMatchCondition(spend, { field: 'amount', op: 'lt', value: '0' })
       ).toBe(true);
       expect(
-        matchesCondition(spend, { field: 'amount', op: 'gte', value: '-50' })
+        doesMatchCondition(spend, { field: 'amount', op: 'gte', value: '-50' })
       ).toBe(true);
       expect(
-        matchesCondition(spend, { field: 'amount', op: 'gt', value: '0' })
+        doesMatchCondition(spend, { field: 'amount', op: 'gt', value: '0' })
       ).toBe(false);
       expect(
-        matchesCondition(spend, { field: 'amount', op: 'eq', value: '-42,99' })
+        doesMatchCondition(spend, {
+          field: 'amount',
+          op: 'eq',
+          value: '-42,99',
+        })
       ).toBe(true);
     });
 
     it('never matches on an unparseable threshold', () => {
       expect(
-        matchesCondition(spend, { field: 'amount', op: 'lt', value: 'x' })
+        doesMatchCondition(spend, { field: 'amount', op: 'lt', value: 'x' })
       ).toBe(false);
     });
   });
 
-  describe('matchesCondition — the structured camt fields', () => {
+  describe('doesMatchCondition — the structured camt fields', () => {
     const imported = mockCashTransaction({
       name: 'NORDKAUF Markt GmbH — Einkauf',
       counterpartyName: 'NORDKAUF Markt GmbH',
@@ -122,7 +130,7 @@ describe('categorize util', () => {
 
     it('matches an IBAN exactly, where a description could only guess', () => {
       expect(
-        matchesCondition(imported, {
+        doesMatchCondition(imported, {
           field: 'counterpartyIban',
           op: 'equals',
           value: 'de68500105179876543210',
@@ -132,14 +140,14 @@ describe('categorize util', () => {
 
     it('matches the counterparty without the purpose bleeding in', () => {
       expect(
-        matchesCondition(imported, {
+        doesMatchCondition(imported, {
           field: 'counterpartyName',
           op: 'endsWith',
           value: 'GmbH',
         })
       ).toBe(true);
       expect(
-        matchesCondition(imported, {
+        doesMatchCondition(imported, {
           field: 'counterpartyName',
           op: 'contains',
           value: 'Einkauf',
@@ -150,14 +158,14 @@ describe('categorize util', () => {
     it('never matches a field the statement did not carry', () => {
       const manual = mockCashTransaction();
       expect(
-        matchesCondition(manual, {
+        doesMatchCondition(manual, {
           field: 'counterpartyIban',
           op: 'contains',
           value: 'DE',
         })
       ).toBe(false);
       expect(
-        matchesCondition(manual, {
+        doesMatchCondition(manual, {
           field: 'mandateId',
           op: 'equals',
           value: '',
@@ -166,7 +174,7 @@ describe('categorize util', () => {
     });
   });
 
-  describe('matchesRule', () => {
+  describe('doesMatchRule', () => {
     const txn = mockCashTransaction({
       name: 'NORDKAUF',
       amountCents: -4299,
@@ -182,15 +190,15 @@ describe('categorize util', () => {
         { field: 'amount' as const, op: 'gt' as const, value: '0' },
       ];
       expect(
-        matchesRule(txn, mockCashRule({ match: 'all', conditions: conds }))
+        doesMatchRule(txn, mockCashRule({ match: 'all', conditions: conds }))
       ).toBe(false);
       expect(
-        matchesRule(txn, mockCashRule({ match: 'any', conditions: conds }))
+        doesMatchRule(txn, mockCashRule({ match: 'any', conditions: conds }))
       ).toBe(true);
     });
 
     it('an empty rule never fires', () => {
-      expect(matchesRule(txn, mockCashRule({ conditions: [] }))).toBe(false);
+      expect(doesMatchRule(txn, mockCashRule({ conditions: [] }))).toBe(false);
     });
   });
 

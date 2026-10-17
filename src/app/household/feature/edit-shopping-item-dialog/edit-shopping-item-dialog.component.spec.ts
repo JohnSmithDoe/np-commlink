@@ -18,19 +18,16 @@ describe('EditShoppingItemDialogComponent', () => {
   let dispatch: ReturnType<typeof vi.spyOn>;
   let host: ItemDialogService;
 
-  const seed = createShoppingItem('Coffee', [], 1);
+  const seed = createShoppingItem('Coffee', []);
   const sibling = mockShoppingItem({ id: 'other', name: 'Tea' });
 
   beforeEach(async () => {
+    const household = mockHouseholdState({
+      shopping: mockShoppingState({ items: [sibling, seed] }),
+    });
     await TestBed.configureTestingModule({
       imports: [EditShoppingItemDialogComponent],
-      providers: [
-        ...provideTestingProviders({
-          household: mockHouseholdState({
-            shopping: mockShoppingState({ items: [sibling, seed] }),
-          }),
-        }),
-      ],
+      providers: [...provideTestingProviders({ household })],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);

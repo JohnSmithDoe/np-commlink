@@ -28,39 +28,48 @@ import {
 export class OfficeTimeFacade {
   readonly #store = inject(Store);
 
-  readonly holidays = this.#store.selectSignal(selectHolidays);
-  readonly holidayDays = this.#store.selectSignal(selectHolidayDays);
   readonly #officedays = this.#store.selectSignal(selectOfficedays);
+
+  readonly #today = signal(dayjsToday());
+
+  readonly #statsKeys = this.#store.selectSignal(selectStatsKeys);
+
+  readonly holidays = this.#store.selectSignal(selectHolidays);
+
+  readonly holidayDays = this.#store.selectSignal(selectHolidayDays);
+
   readonly officedayKeys = this.#store.selectSignal(selectOfficedayKeys);
+
   readonly freedayKeys = this.#store.selectSignal(selectFreedayKeys);
+
   readonly dashboardSettings = this.#store.selectSignal(
     selectDashboardSettings
   );
+
   readonly dashboardItems = this.#store.selectSignal(selectDashboardItems);
+
   readonly targetOfficeDaysPerWeek = this.#store.selectSignal(
     selectTargetOfficeDaysPerWeek
   );
+
   readonly reminder = this.#store.selectSignal(selectOfficeReminder);
-  readonly #today = signal(dayjsToday());
+
   readonly todayIsOfficeDay = computed(() =>
     isOfficeDay(this.#today(), this.#officedays())
   );
 
-  readonly #statsKeys = this.#store.selectSignal(selectStatsKeys);
   readonly statsWeek = this.#statsFor('week');
+
   readonly statsMonth = this.#statsFor('month');
+
   readonly statsQuarter = this.#statsFor('quarter');
+
   readonly statsYear = this.#statsFor('year');
 
   constructor() {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') this.#refreshToday();
     });
-  }
-
-  initOfficeTime(): void {
-    this.#refreshToday();
-    this.#store.dispatch(OfficeTimeActions.loadHolidays());
   }
 
   #refreshToday(): void {
@@ -72,6 +81,11 @@ export class OfficeTimeFacade {
     return computed(() =>
       calculateStats(period, this.#statsKeys(), this.#today())
     );
+  }
+
+  initOfficeTime(): void {
+    this.#refreshToday();
+    this.#store.dispatch(OfficeTimeActions.loadHolidays());
   }
 
   addOfficeToday(): void {
@@ -86,8 +100,10 @@ export class OfficeTimeFacade {
     this.#store.dispatch(OfficeTimeActions.setOfficedays(officedays));
   }
 
-  saveDashboardSettings(key: DashboardSettingsType, active: boolean): void {
-    this.#store.dispatch(OfficeTimeActions.saveDashboardSettings(key, active));
+  saveDashboardSettings(key: DashboardSettingsType, isActive: boolean): void {
+    this.#store.dispatch(
+      OfficeTimeActions.saveDashboardSettings(key, isActive)
+    );
   }
 
   setReminder(reminder: OfficeReminder): void {

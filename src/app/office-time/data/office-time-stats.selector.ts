@@ -16,13 +16,14 @@ export const selectStatsKeys = createSelector(
   selectFreedays,
   selectHolidays,
   selectTargetOfficeDaysPerWeek,
-  (officedays, freedays, holidays, targetOfficeDaysPerWeek) =>
-    statsKeysFrom({
+  (officedays, freedays, holidays, targetOfficeDaysPerWeek) => {
+    return statsKeysFrom({
       officedays,
       freedays,
       holidays,
       targetOfficeDaysPerWeek,
-    })
+    });
+  }
 );
 
 export const selectDashboardStatsYear = createSelector(

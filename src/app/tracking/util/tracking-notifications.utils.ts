@@ -70,7 +70,7 @@ export const runningDurationMinutes = (
   return Math.max(0, Math.floor(tracked / 60));
 };
 
-export const needsStateNotification = (item: TrackingItem): boolean =>
+export const shouldNotifyState = (item: TrackingItem): boolean =>
   !!item.startTime;
 
 export const stateHintForCta = (cta: string): TrackingItem['state'] =>

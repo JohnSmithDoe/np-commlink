@@ -67,10 +67,11 @@ export const createDailyReminderEffects = (config: {
   const applied = (
     notifications: LocalNotificationsService,
     reminder: DailyReminderSchedule
-  ): Observable<ArmOutcome> =>
-    from(armOrClear(notifications, reminder)).pipe(
+  ): Observable<ArmOutcome> => {
+    return from(armOrClear(notifications, reminder)).pipe(
       catchError(() => of<ArmOutcome>('refused'))
     );
+  };
 
   return {
     [`restore_${config.source}$`]: createEffect(
@@ -99,12 +100,12 @@ export const createDailyReminderEffects = (config: {
           concatLatestFrom(() => store.select(config.select)),
           concatMap(([, reminder]) => applied(notifications, reminder)),
           filter((outcome) => outcome === 'refused'),
-          map(() =>
-            NotificationsActions.toast({
+          map(() => {
+            return NotificationsActions.toast({
               key: config.refusedKey,
               color: 'danger',
-            })
-          )
+            });
+          })
         );
       },
       { functional: true }

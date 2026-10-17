@@ -43,10 +43,11 @@ const startNote = async (page: Page): Promise<void> => {
 const titleBox = (page: Page) =>
   mainContent(page).locator(`${EDITOR_PAGE} [data-testid="note-title"] input`);
 
-const bodyBox = (page: Page) =>
-  mainContent(page).locator(
+const bodyBox = (page: Page) => {
+  return mainContent(page).locator(
     `${EDITOR_PAGE} [data-testid="note-body"] textarea`
   );
+};
 
 const attach = async (page: Page): Promise<void> => {
   await page
@@ -229,7 +230,8 @@ test.describe('notes', () => {
 
     const dated = /^Termin \d{2}\.\d{2}\.\d{4} fix$/;
     await expect(bodyBox(page)).toHaveValue(dated);
-    await waitForPersisted(page, 'notes', `${new Date().getFullYear()} fix`);
+    const today = new Date();
+    await waitForPersisted(page, 'notes', `${today.getFullYear()} fix`);
     await page.reload();
     await expect(bodyBox(page)).toHaveValue(dated, { timeout: 30_000 });
   });

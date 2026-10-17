@@ -16,14 +16,13 @@ describe('EditCashRuleDialogComponent', () => {
 
   const setup = (
     seed: CashRule = createCashRule(''),
-    editMode: 'create' | 'update' = 'create',
     rules: CashRule[] = []
   ) => {
     TestBed.configureTestingModule({
       providers: [provideTestingProviders({ cash: mockCashState({ rules }) })],
     });
     host = TestBed.inject(ItemDialogService);
-    host.open({ item: seed, listId: CASH_RULES_LIST_ID, editMode });
+    host.open({ item: seed, listId: CASH_RULES_LIST_ID, editMode: 'create' });
     dispatch = vi.spyOn(TestBed.inject(MockStore), 'dispatch');
     component = TestBed.createComponent(
       EditCashRuleDialogComponent
@@ -33,19 +32,19 @@ describe('EditCashRuleDialogComponent', () => {
   const saved = (): CashRule =>
     (dispatch.mock.lastCall as unknown as [{ item: CashRule }])[0].item;
 
-  const typeValue = (index: number, value: string) =>
-    [...component.form.conditions][index].value().value.set(value);
+  const typeValue = (value: string) =>
+    [...component.form.conditions][0].value().value.set(value);
 
-  const fill = (value: string, categoryId = 'cat-1') => {
-    typeValue(0, value);
-    component.form.categoryId().value.set(categoryId);
+  const fill = (value: string) => {
+    typeValue(value);
+    component.form.categoryId().value.set('cat-1');
     component.form.name().value.set('Household');
   };
 
   it('requires a category and a non-empty value on every condition', () => {
     setup();
 
-    typeValue(0, 'NORDKAUF');
+    typeValue('NORDKAUF');
     component.form.name().value.set('Household');
     expect(component.canSave()).toBe(false);
 
@@ -77,12 +76,12 @@ describe('EditCashRuleDialogComponent', () => {
     component.form.categoryId().value.set('cat-1');
     component.form.name().value.set('Household');
     component.onField(0, 'amount');
-    typeValue(0, 'abc');
+    typeValue('abc');
 
     expect(component.amountInvalidRows()).toEqual([true]);
     expect(component.canSave()).toBe(false);
 
-    typeValue(0, '-25,00');
+    typeValue('-25,00');
 
     expect(component.amountInvalidRows()).toEqual([false]);
     expect(component.canSave()).toBe(true);
@@ -111,7 +110,7 @@ describe('EditCashRuleDialogComponent', () => {
     component.form.categoryId().value.set('cat-1');
     component.form.name().value.set('Household');
     component.onField(0, 'amount');
-    typeValue(0, '10,00');
+    typeValue('10,00');
     component.confirm();
 
     expect(saved().conditions).toEqual([
@@ -146,7 +145,7 @@ describe('EditCashRuleDialogComponent', () => {
       },
     ]);
 
-    typeValue(0, 'PRIMO');
+    typeValue('PRIMO');
     expect(stored.conditions[0].value).toBe('NORDKAUF');
 
     component.confirm();
@@ -159,7 +158,7 @@ describe('EditCashRuleDialogComponent', () => {
   it('refuses a blank name — the shared name input is the rule’s identity', () => {
     setup();
 
-    typeValue(0, 'NORDKAUF');
+    typeValue('NORDKAUF');
     component.form.categoryId().value.set('cat-1');
     component.form.name().value.set('');
 
@@ -168,7 +167,7 @@ describe('EditCashRuleDialogComponent', () => {
 
   it('allows two rules to share a name', () => {
     const twin = mockCashRule({ id: 'r1', name: 'Household' });
-    setup(createCashRule(''), 'create', [twin]);
+    setup(createCashRule(''), [twin]);
 
     fill('NORDKAUF');
 

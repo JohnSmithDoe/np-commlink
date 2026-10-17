@@ -38,13 +38,14 @@ const TRANSLATE_RECEIVER = /translate/i;
 
 type Named = { type: string; name?: unknown };
 
-const named = (node: Named): string | undefined =>
-  (node.type === 'Identifier' || node.type === 'PrivateIdentifier') &&
-  typeof node.name === 'string'
+const named = (node: Named): string | undefined => {
+  return (node.type === 'Identifier' || node.type === 'PrivateIdentifier') &&
+    typeof node.name === 'string'
     ? node.name
     : undefined;
+};
 
-const receiverReadsAsTranslate = (
+const isReceiverReadsAsTranslate = (
   object: Named & { property?: Named }
 ): boolean => {
   const direct = named(object);
@@ -53,10 +54,13 @@ const receiverReadsAsTranslate = (
   return property !== undefined && TRANSLATE_RECEIVER.test(property);
 };
 
-const isBareKey = (node: { type: string }): boolean =>
-  (node.type === 'Literal' &&
-    typeof (node as { value?: unknown }).value === 'string') ||
-  node.type === 'TemplateLiteral';
+const isBareKey = (node: { type: string }): boolean => {
+  return (
+    (node.type === 'Literal' &&
+      typeof (node as { value?: unknown }).value === 'string') ||
+    node.type === 'TemplateLiteral'
+  );
+};
 
 export const rule: Rule.RuleModule = {
   meta: {
@@ -82,11 +86,11 @@ export const rule: Rule.RuleModule = {
         const method = named(callee.property);
         if (method === undefined) return;
 
-        const checked =
+        const isChecked =
           ALWAYS_CHECKED.has(method) ||
           (CHECKED_ON_TRANSLATE_RECEIVER.has(method) &&
-            receiverReadsAsTranslate(callee.object));
-        if (!checked) return;
+            isReceiverReadsAsTranslate(callee.object));
+        if (!isChecked) return;
 
         const [key] = node.arguments;
         if (!key) return;

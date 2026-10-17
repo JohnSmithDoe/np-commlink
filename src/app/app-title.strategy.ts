@@ -19,11 +19,6 @@ export class AppTitleStrategy extends TitleStrategy {
       .subscribe(() => this.#render());
   }
 
-  override updateTitle(snapshot: RouterStateSnapshot): void {
-    this.#routeTitleKey = this.buildTitle(snapshot);
-    this.#render();
-  }
-
   #render(): void {
     const translated = this.#translated();
     this.#title.setTitle(
@@ -38,5 +33,10 @@ export class AppTitleStrategy extends TitleStrategy {
     return typeof translated === 'string' && translated !== key
       ? translated
       : undefined;
+  }
+
+  override updateTitle(snapshot: RouterStateSnapshot): void {
+    this.#routeTitleKey = this.buildTitle(snapshot);
+    this.#render();
   }
 }

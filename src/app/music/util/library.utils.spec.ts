@@ -3,7 +3,7 @@ import { ServerAlbum, ServerArtist } from './library.utils';
 import {
   albumKeyOf,
   libraryKey,
-  matchesQuery,
+  isQueryMatch,
   mergeAlbums,
   mergeArtists,
   sortAlbumTracks,
@@ -30,24 +30,28 @@ const local = (
   };
 };
 
-const serverArtist = (name: string, trackCount: number): ServerArtist => ({
-  key: libraryKey(name),
-  name,
-  albumCount: 1,
-  trackCount,
-  refs: [{ sourceId: 'jam', id: `id-${name}` }],
-});
+const serverArtist = (name: string, trackCount: number): ServerArtist => {
+  return {
+    key: libraryKey(name),
+    name,
+    albumCount: 1,
+    trackCount,
+    refs: [{ sourceId: 'jam', id: `id-${name}` }],
+  };
+};
 
-const serverAlbum = (name: string, artist: string): ServerAlbum => ({
-  key: albumKeyOf(libraryKey(artist), name),
-  name,
-  artist,
-  artistKey: libraryKey(artist),
-  trackCount: 3,
-  cover: { kind: 'jam', id: `id-${name}` },
-  onDevice: false,
-  refs: [{ sourceId: 'jam', id: `id-${name}` }],
-});
+const serverAlbum = (name: string, artist: string): ServerAlbum => {
+  return {
+    key: albumKeyOf(libraryKey(artist), name),
+    name,
+    artist,
+    artistKey: libraryKey(artist),
+    trackCount: 3,
+    cover: { kind: 'jam', id: `id-${name}` },
+    onDevice: false,
+    refs: [{ sourceId: 'jam', id: `id-${name}` }],
+  };
+};
 
 describe('library merge', () => {
   it('keys a name by its label, case and spacing aside', () => {
@@ -102,8 +106,8 @@ describe('library merge', () => {
   it('finds a track by title, artist or album', () => {
     const track = local('Nightrun', 'The Shadowrunners', "Smuggler's Run");
 
-    expect(matchesQuery(track, 'NIGHT')).toBe(true);
-    expect(matchesQuery(track, 'smuggler')).toBe(true);
-    expect(matchesQuery(track, 'soykaf')).toBe(false);
+    expect(isQueryMatch(track, 'NIGHT')).toBe(true);
+    expect(isQueryMatch(track, 'smuggler')).toBe(true);
+    expect(isQueryMatch(track, 'soykaf')).toBe(false);
   });
 });

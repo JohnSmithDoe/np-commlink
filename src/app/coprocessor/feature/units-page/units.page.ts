@@ -68,12 +68,12 @@ export class CoprocessorUnitsPage {
     () => this.#unit(this.toId()) ?? this.quantity().units[0]!
   );
 
-  readonly converted = computed(() =>
-    formatNumber(
+  readonly converted = computed(() => {
+    return formatNumber(
       convert(this.amount(), this.fromUnit(), this.toUnit()),
       this.#language
-    )
-  );
+    );
+  });
 
   readonly inverse = computed(() =>
     formatNumber(convert(1, this.toUnit(), this.fromUnit()), this.#language)
@@ -84,6 +84,10 @@ export class CoprocessorUnitsPage {
 
   constructor() {
     addIcons({ swapHorizontalOutline });
+  }
+
+  #unit(id: string) {
+    return this.quantity().units.find((candidate) => candidate.id === id);
   }
 
   selectMode(mode: string | undefined): void {
@@ -98,7 +102,7 @@ export class CoprocessorUnitsPage {
   }
 
   editAmount(event: InputCustomEvent): void {
-    const parsed = Number(String(event.detail.value ?? '').replace(',', '.'));
+    const parsed = Number((event.detail.value ?? '').replace(',', '.'));
     if (Number.isFinite(parsed)) this.amount.set(parsed);
   }
 
@@ -110,9 +114,5 @@ export class CoprocessorUnitsPage {
 
   rowsIn(group: string) {
     return this.rows().filter((row) => row.reference.group === group);
-  }
-
-  #unit(id: string) {
-    return this.quantity().units.find((candidate) => candidate.id === id);
   }
 }

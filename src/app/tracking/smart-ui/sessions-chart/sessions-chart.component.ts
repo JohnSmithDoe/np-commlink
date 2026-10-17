@@ -36,13 +36,15 @@ export class SessionsChartComponent {
     const { days, series } = this.#raw();
     return {
       labels: days.map((d) => localizedDayMonth(d, this.#language())),
-      datasets: series.map((s, index) => ({
-        label: s.name ?? this.#translate.instant(REMAINDER_LABEL),
-        data: s.hours,
-        backgroundColor: this.#series[index % this.#series.length],
-        borderWidth: 0,
-        stack: 'sessions',
-      })),
+      datasets: series.map((s, index) => {
+        return {
+          label: s.name ?? this.#translate.instant(REMAINDER_LABEL),
+          data: s.hours,
+          backgroundColor: this.#series[index % this.#series.length],
+          borderWidth: 0,
+          stack: 'sessions',
+        };
+      }),
     };
   });
 

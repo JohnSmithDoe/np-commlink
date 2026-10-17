@@ -15,16 +15,17 @@ import { DailySessionsComponent } from './daily-sessions.component';
 const session = (
   name: string,
   startTime: string,
-  trackedTimeInSeconds: number,
-  state: TrackingItem['state'] = 'stopped'
-): TrackingItem => ({
-  id: `${name}-${startTime}`,
-  name,
-  createdAt: startTime,
-  startTime,
-  trackedTimeInSeconds,
-  state,
-});
+  trackedTimeInSeconds: number
+): TrackingItem => {
+  return {
+    id: `${name}-${startTime}`,
+    name,
+    createdAt: startTime,
+    startTime,
+    trackedTimeInSeconds,
+    state: 'stopped',
+  };
+};
 
 describe('DailySessionsComponent', () => {
   let store: MockStore;

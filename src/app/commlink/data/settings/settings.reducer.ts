@@ -24,35 +24,47 @@ export const settingsReducer = createReducer(
   on(SettingsActions.loaded, (state, { settings }): SettingsState =>
     settings ? { ...initialSettings, ...settings } : state
   ),
-  on(SettingsActions.setSkin, (state, { skin }): SettingsState => ({
-    ...state,
-    skin,
-  })),
-  on(SettingsActions.setMode, (state, { mode }): SettingsState => ({
-    ...state,
-    mode,
-    customAccents: undefined,
-  })),
-  on(SettingsActions.setLanguage, (state, { language }): SettingsState => ({
-    ...state,
-    language,
-  })),
+  on(SettingsActions.setSkin, (state, { skin }): SettingsState => {
+    return {
+      ...state,
+      skin,
+    };
+  }),
+  on(SettingsActions.setMode, (state, { mode }): SettingsState => {
+    return {
+      ...state,
+      mode,
+      customAccents: undefined,
+    };
+  }),
+  on(SettingsActions.setLanguage, (state, { language }): SettingsState => {
+    return {
+      ...state,
+      language,
+    };
+  }),
   on(
     SettingsActions.setAccentColors,
-    (state, { skin, colors }): SettingsState => ({
-      ...state,
-      customAccents: { ...state.customAccents, [skin]: colors },
-    })
+    (state, { skin, colors }): SettingsState => {
+      return {
+        ...state,
+        customAccents: { ...state.customAccents, [skin]: colors },
+      };
+    }
   ),
   on(SettingsActions.resetAccentColors, (state, { skin }): SettingsState => {
     const { [skin]: _removed, ...rest } = state.customAccents ?? {};
     return { ...state, customAccents: rest };
   }),
-  on(EmojiActions.used, (state, { glyphs }): SettingsState => ({
-    ...state,
-    recentEmojis: [
-      ...glyphs,
-      ...(state.recentEmojis ?? []).filter((glyph) => !glyphs.includes(glyph)),
-    ].slice(0, RECENT_EMOJI_LIMIT),
-  }))
+  on(EmojiActions.used, (state, { glyphs }): SettingsState => {
+    return {
+      ...state,
+      recentEmojis: [
+        ...glyphs,
+        ...(state.recentEmojis ?? []).filter(
+          (glyph) => !glyphs.includes(glyph)
+        ),
+      ].slice(0, RECENT_EMOJI_LIMIT),
+    };
+  })
 );

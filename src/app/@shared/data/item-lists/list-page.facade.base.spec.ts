@@ -3,16 +3,18 @@ import { Action, Store } from '@ngrx/store';
 import { ItemListSortType } from '../../model/item-list.types';
 import { BaseListPageFacade, itemListCommands } from './list-page.facade.base';
 
-let calls: string[] = [];
+const calls: string[] = [];
 
-const searchOnlyPort = () => ({
-  search: (term?: string) => {
-    calls.push(`search:${term}`);
-  },
-  setSortMode: (type: ItemListSortType, direction?: string) => {
-    calls.push(`sort:${type}:${direction}`);
-  },
-});
+const searchOnlyPort = () => {
+  return {
+    search: (term?: string) => {
+      calls.push(`search:${term}`);
+    },
+    setSortMode: (type: ItemListSortType, direction?: string) => {
+      calls.push(`sort:${type}:${direction}`);
+    },
+  };
+};
 
 class SearchOnlyFacade extends BaseListPageFacade {
   readonly state = signal(undefined);
@@ -37,29 +39,33 @@ class AddsFromSearchFacade extends SearchOnlyFacade {
 
 describe('BaseListPageFacade', () => {
   beforeEach(() => {
-    calls = [];
+    calls.length = 0;
   });
 
   it('opens the create dialog when the port has no add-from-search action', () => {
-    new SearchOnlyFacade().addItemFromSearch();
+    const facade = new SearchOnlyFacade();
+    facade.addItemFromSearch();
 
     expect(calls).toEqual(['createDialog']);
   });
 
   it('uses the port instead of the dialog when it has one', () => {
-    new AddsFromSearchFacade().addItemFromSearch();
+    const facade = new AddsFromSearchFacade();
+    facade.addItemFromSearch();
 
     expect(calls).toEqual(['addFromSearch']);
   });
 
   it('is inert on selectCategory when the list has no category axis', () => {
-    new SearchOnlyFacade().selectCategory('cat-1');
+    const facade = new SearchOnlyFacade();
+    facade.selectCategory('cat-1');
 
     expect(calls).toEqual([]);
   });
 
   it('always asks the port to toggle the sort direction', () => {
-    new SearchOnlyFacade().setSortMode('name');
+    const facade = new SearchOnlyFacade();
+    facade.setSortMode('name');
 
     expect(calls).toEqual(['sort:name:toggle']);
   });

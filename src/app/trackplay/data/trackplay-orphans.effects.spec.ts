@@ -20,6 +20,12 @@ describe('TrackplayOrphansEffects', () => {
   const roster = signal<Roster>(undefined);
   let actions$: Observable<Action>;
 
+  const lost = mockTrackplayState({
+    games: mockGamesState([
+      mockGame({ id: 'lost', playerIds: ['ann', 'carl'] }),
+    ]),
+  });
+
   const emittedFor = (people: Roster): Action[] => {
     roster.set(undefined);
     TestBed.configureTestingModule({
@@ -27,21 +33,17 @@ describe('TrackplayOrphansEffects', () => {
         TrackplayOrphansEffects,
         provideMockActions(() => actions$),
         provideMockStore({
-          initialState: {
-            [TRACKPLAY_STATE_KEY]: mockTrackplayState({
-              games: mockGamesState([
-                mockGame({ id: 'lost', playerIds: ['ann', 'carl'] }),
-              ]),
-            }),
-          },
+          initialState: { [TRACKPLAY_STATE_KEY]: lost },
         }),
         { provide: PEOPLE, useValue: roster },
       ],
     });
     actions$ = of(TrackplayActions.loaded(null));
     const emitted: Action[] = [];
-    TestBed.inject(TrackplayOrphansEffects).sweepOrphans$.subscribe((action) =>
-      emitted.push(action)
+    TestBed.inject(TrackplayOrphansEffects).sweepOrphans$.subscribe(
+      (action) => {
+        emitted.push(action);
+      }
     );
     TestBed.tick();
     if (people) {

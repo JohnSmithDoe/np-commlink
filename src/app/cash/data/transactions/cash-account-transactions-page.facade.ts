@@ -71,17 +71,15 @@ export class CashAccountTransactionsPageFacade extends BaseListPageFacade {
   );
   readonly canImport = computed(() => this.account()?.kind !== 'cash');
 
-  readonly pendingCount = computed(
-    () =>
-      this.#transactions
-        .allItems()
-        .filter(
-          (txn) =>
-            txn.accountId === this.accountId() &&
-            txn.status === 'pending' &&
-            !txn.matchedTxnId
-        ).length
-  );
+  readonly pendingCount = computed(() => {
+    return this.#transactions.allItems().filter((txn) => {
+      return (
+        txn.accountId === this.accountId() &&
+        txn.status === 'pending' &&
+        !txn.matchedTxnId
+      );
+    }).length;
+  });
 
   showCreateDialog(): void {
     this.#transactions.showCreateDialog(

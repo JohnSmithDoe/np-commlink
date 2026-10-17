@@ -19,13 +19,13 @@ export function mockTrack(overrides: Partial<Track> = {}): Track {
   };
 }
 
-export function mockJamSource(connected = true): JamSource {
+export function mockJamSource(isConnected = true): JamSource {
   return {
     id: 'jam-1',
     kind: 'jam',
     server: 'https://music.example.org',
     username: 'runner',
-    session: connected
+    session: isConnected
       ? {
           auth: {
             server: 'https://music.example.org',

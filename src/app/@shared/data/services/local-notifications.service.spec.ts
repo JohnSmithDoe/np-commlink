@@ -3,18 +3,20 @@ import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { NOTIFICATION_SOURCES } from '../../model/notification-sources';
 import {
-  IS_NATIVE_PLATFORM,
+  NATIVE_PLATFORM,
   LOCAL_NOTIFICATIONS,
   LocalNotificationsService,
 } from './local-notifications.service';
 
-const daily = () => ({
-  source: 'ritualReminder' as const,
-  titleKey: 'ritual.reminder.title',
-  bodyKey: 'ritual.reminder.body',
-  hour: 18,
-  minute: 30,
-});
+const daily = () => {
+  return {
+    source: 'ritualReminder' as const,
+    titleKey: 'ritual.reminder.title',
+    bodyKey: 'ritual.reminder.body',
+    hour: 18,
+    minute: 30,
+  };
+};
 
 describe('LocalNotificationsService', () => {
   let service: LocalNotificationsService;
@@ -37,7 +39,7 @@ describe('LocalNotificationsService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: LOCAL_NOTIFICATIONS, useValue: plugin },
-        { provide: IS_NATIVE_PLATFORM, useValue: isNative },
+        { provide: NATIVE_PLATFORM, useValue: isNative },
         {
           provide: TranslateService,
           useValue: {
@@ -123,7 +125,9 @@ describe('LocalNotificationsService', () => {
     setup();
     const seen: unknown[] = [];
 
-    await service.onTapped((source) => seen.push(source));
+    await service.onTapped((source) => {
+      seen.push(source);
+    });
     const [, listener] = plugin.addListener.mock.calls[0];
     listener({ notification: { extra: { source: 'officeReminder' } } });
 
@@ -134,7 +138,9 @@ describe('LocalNotificationsService', () => {
     setup();
     const seen: unknown[] = [];
 
-    await service.onTapped((source) => seen.push(source));
+    await service.onTapped((source) => {
+      seen.push(source);
+    });
     const [, listener] = plugin.addListener.mock.calls[0];
     listener({ notification: { extra: { source: 'retiredReminder' } } });
     listener({ notification: { extra: {} } });

@@ -74,30 +74,34 @@ export class CoprocessorGoldenPage {
     formatNumber(this.split().minor, this.#language)
   );
 
-  readonly rungs = computed(() =>
-    [...this.#ladder(0, false), ...this.#ladder(HALF_STEP, true)]
+  readonly rungs = computed(() => {
+    return [...this.#ladder(0, false), ...this.#ladder(HALF_STEP, true)]
       .toSorted((a, b) => a.value - b.value)
-      .map((rung) => ({
-        ...rung,
-        label: formatNumber(rung.value, this.#language),
-      }))
-  );
+      .map((rung) => {
+        return {
+          ...rung,
+          label: formatNumber(rung.value, this.#language),
+        };
+      });
+  });
 
   readonly points = computed(() =>
     goldenPoints(this.width(), this.height(), this.depth())
   );
 
-  readonly measurements = computed(() =>
-    this.points().map((point) => ({
-      id: point.id,
-      fromLeft: formatNumber(point.fromLeft, this.#language),
-      fromRight: formatNumber(point.fromRight, this.#language),
-      fromTop: formatNumber(point.fromTop, this.#language),
-      fromBottom: formatNumber(point.fromBottom, this.#language),
-      x: formatNumber(point.fromLeft, this.#language),
-      y: formatNumber(point.fromBottom, this.#language),
-    }))
-  );
+  readonly measurements = computed(() => {
+    return this.points().map((point) => {
+      return {
+        id: point.id,
+        fromLeft: formatNumber(point.fromLeft, this.#language),
+        fromRight: formatNumber(point.fromRight, this.#language),
+        fromTop: formatNumber(point.fromTop, this.#language),
+        fromBottom: formatNumber(point.fromBottom, this.#language),
+        x: formatNumber(point.fromLeft, this.#language),
+        y: formatNumber(point.fromBottom, this.#language),
+      };
+    });
+  });
 
   readonly activeId = computed(() => {
     const points = this.points();
@@ -131,13 +135,15 @@ export class CoprocessorGoldenPage {
     addIcons({ swapHorizontalOutline });
   }
 
-  #ladder(offset: number, half: boolean) {
+  #ladder(offset: number, isHalf: boolean) {
     return goldenLadder(this.total(), LADDER_STEPS, LADDER_STEPS, offset).map(
-      (value) => ({
-        value,
-        half,
-        base: Math.abs(value - this.total()) < 1e-9,
-      })
+      (value) => {
+        return {
+          value,
+          half: isHalf,
+          base: Math.abs(value - this.total()) < 1e-9,
+        };
+      }
     );
   }
 
@@ -146,7 +152,7 @@ export class CoprocessorGoldenPage {
   }
 
   edit(target: 'total' | 'width' | 'height', event: InputCustomEvent): void {
-    const parsed = Number(String(event.detail.value ?? '').replace(',', '.'));
+    const parsed = Number((event.detail.value ?? '').replace(',', '.'));
     if (!Number.isFinite(parsed) || parsed <= 0) return;
     this[target].set(parsed);
   }

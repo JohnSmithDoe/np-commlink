@@ -15,11 +15,6 @@ export abstract class BaseModalDialog<TEntity, TForm extends object> {
   protected readonly editId = signal<string | undefined>(undefined);
 
   protected abstract readonly existing: Signal<TEntity | undefined>;
-  protected abstract blank(): TForm;
-  protected abstract toForm(entity: TEntity): TForm;
-  protected abstract persist(draft: TForm, existing: TEntity | undefined): void;
-
-  protected abstract applyRules(path: SchemaPathTree<TForm>): void;
 
   readonly isEdit = computed(() => !!this.existing());
 
@@ -34,6 +29,12 @@ export abstract class BaseModalDialog<TEntity, TForm extends object> {
   protected readonly form = form(this.draft, (path) => this.applyRules(path));
 
   readonly canSave = computed(() => this.form().valid());
+
+  protected abstract blank(): TForm;
+  protected abstract toForm(entity: TEntity): TForm;
+  protected abstract persist(draft: TForm, existing: TEntity | undefined): void;
+
+  protected abstract applyRules(path: SchemaPathTree<TForm>): void;
 
   patch(partial: Partial<TForm>): void {
     this.draft.update((draft) => ({ ...draft, ...partial }));

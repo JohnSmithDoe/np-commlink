@@ -18,8 +18,7 @@ const RELOAD = marker('error.uncaught.reload');
 
 function reasonOf(error: unknown): string {
   if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  return String(error);
+  return typeof error === 'string' ? error : String(error);
 }
 
 @Service()
@@ -29,6 +28,23 @@ export class GlobalErrorHandler implements ErrorHandler {
   readonly #reload = inject(AppReloadService);
 
   #presented = false;
+
+  async #present(reason: string): Promise<void> {
+    try {
+      const alert = await this.#alerts.create({
+        header: this.#translate.instant(TITLE),
+        message: this.#translate.instant(MESSAGE, { reason }),
+        backdropDismiss: false,
+        buttons: [
+          {
+            text: this.#translate.instant(RELOAD),
+            handler: () => this.#reload.reload(),
+          },
+        ],
+      });
+      await alert.present();
+    } catch {}
+  }
 
   handleError(error: unknown): void {
     console.error(error);
@@ -47,27 +63,11 @@ export class GlobalErrorHandler implements ErrorHandler {
       error
     );
   }
-
-  async #present(reason: string): Promise<void> {
-    try {
-      const alert = await this.#alerts.create({
-        header: this.#translate.instant(TITLE),
-        message: this.#translate.instant(MESSAGE, { reason }),
-        backdropDismiss: false,
-        buttons: [
-          {
-            text: this.#translate.instant(RELOAD),
-            handler: () => this.#reload.reload(),
-          },
-        ],
-      });
-      await alert.present();
-    } catch {}
-  }
 }
 
-export const provideGlobalErrorHandler = (): EnvironmentProviders =>
-  makeEnvironmentProviders([
+export const provideGlobalErrorHandler = (): EnvironmentProviders => {
+  return makeEnvironmentProviders([
     provideBrowserGlobalErrorListeners(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ]);
+};

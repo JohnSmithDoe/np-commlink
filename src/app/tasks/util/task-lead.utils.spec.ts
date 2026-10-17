@@ -1,15 +1,17 @@
 import { Interval } from '../../@shared/model/interval.types';
 import { gapDaysOf, leadOptionsFor } from './task-lead.utils';
 
-const daysOffered = (interval: Interval): number[] =>
-  leadOptionsFor(interval)
+const daysOffered = (interval: Interval): number[] => {
+  return leadOptionsFor(interval)
     .map(({ lead }) => (lead.kind === 'days' ? lead.days : -1))
     .filter((days) => days >= 0);
+};
 
-const boundariesOffered = (interval: Interval): string[] =>
-  leadOptionsFor(interval)
+const boundariesOffered = (interval: Interval): string[] => {
+  return leadOptionsFor(interval)
     .map(({ lead }) => (lead.kind === 'startOf' ? lead.unit : ''))
     .filter(Boolean);
+};
 
 describe('gapDaysOf', () => {
   it('takes the widest gap in the cycle, wrap-around included', () => {

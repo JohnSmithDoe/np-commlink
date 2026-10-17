@@ -30,17 +30,14 @@ describe('CashCategoriesPageFacade', () => {
   };
 
   it('serves the catalog as an ordinary sorted list', () => {
-    setup(
-      mockCashState({
-        categories: mockCashCategoryList({
-          items: [
-            mockCategory({ id: 'c2', name: 'Wohnen' }),
-            mockCategory({ id: 'c1', name: 'Lebensmittel' }),
-          ],
-          sort: { sortBy: 'name', sortDirection: 'asc' },
-        }),
-      })
-    );
+    const categories = mockCashCategoryList({
+      items: [
+        mockCategory({ id: 'c2', name: 'Wohnen' }),
+        mockCategory({ id: 'c1', name: 'Lebensmittel' }),
+      ],
+      sort: { sortBy: 'name', sortDirection: 'asc' },
+    });
+    setup(mockCashState({ categories }));
 
     expect(facade.items()?.map((entry) => entry.name)).toEqual([
       'Lebensmittel',
@@ -49,11 +46,10 @@ describe('CashCategoriesPageFacade', () => {
   });
 
   it('counts only live transactions per category', () => {
+    const food = mockCategory({ id: 'c1', name: 'Lebensmittel' });
     setup(
       mockCashState({
-        categories: mockCashCategoryList({
-          items: [mockCategory({ id: 'c1', name: 'Lebensmittel' })],
-        }),
+        categories: mockCashCategoryList({ items: [food] }),
         transactions: [
           mockCashTransaction({ id: 't1', categoryIds: ['c1'] }),
           mockCashTransaction({ id: 't2', categoryIds: ['c1'] }),

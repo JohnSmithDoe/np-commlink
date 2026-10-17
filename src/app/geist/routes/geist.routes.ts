@@ -5,7 +5,9 @@ export const geistRoutes: Routes = [
   {
     path: '',
     title: marker('page-title.geist'),
-    loadComponent: () =>
-      import('../feature/geist-page/geist.page').then((m) => m.GeistPage),
+    loadComponent: async () => {
+      const { GeistPage } = await import('../feature/geist-page/geist.page');
+      return GeistPage;
+    },
   },
 ];

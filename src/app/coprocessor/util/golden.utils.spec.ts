@@ -39,13 +39,12 @@ describe('goldenLadder', () => {
 
     for (const [index, rung] of half.entries()) {
       expect(rung).toBeGreaterThan(whole[index]!);
-      if (whole[index + 1] !== undefined) {
-        expect(rung).toBeLessThan(whole[index + 1]!);
-        expect(rung).toBeCloseTo(
-          Math.sqrt(whole[index]! * whole[index + 1]!),
-          6
-        );
+      if (whole[index + 1] === undefined) {
+        continue;
       }
+
+      expect(rung).toBeLessThan(whole[index + 1]!);
+      expect(rung).toBeCloseTo(Math.sqrt(whole[index]! * whole[index + 1]!), 6);
     }
   });
 
@@ -58,13 +57,14 @@ describe('goldenLadder', () => {
 const corner = (
   square: { x: number; y: number; size: number },
   index: number
-): [number, number] =>
-  [
+): [number, number] => {
+  return [
     [square.x, square.y],
     [square.x + square.size, square.y],
     [square.x + square.size, square.y + square.size],
     [square.x, square.y + square.size],
   ][index % 4] as [number, number];
+};
 
 describe('spiralSquares', () => {
   it('normalises to a golden rectangle regardless of the input ratio', () => {
@@ -144,30 +144,25 @@ describe('goldenPoints', () => {
     const points = goldenPoints(300, 200);
 
     expect(points).toHaveLength(4);
-    expect(
-      points.map((point) => point.fromLeft).toSorted((a, b) => a - b)[0]
-    ).toBeCloseTo(114.59, 2);
-    expect(
-      points.map((point) => point.fromLeft).toSorted((a, b) => b - a)[0]
-    ).toBeCloseTo(185.41, 2);
-    expect(
-      points.map((point) => point.fromTop).toSorted((a, b) => a - b)[0]
-    ).toBeCloseTo(76.39, 2);
-    expect(
-      points.map((point) => point.fromTop).toSorted((a, b) => b - a)[0]
-    ).toBeCloseTo(123.61, 2);
+    const fromLeft = points.map((point) => point.fromLeft);
+    const fromTop = points.map((point) => point.fromTop);
+    expect(Math.min(...fromLeft)).toBeCloseTo(114.59, 2);
+    expect(Math.max(...fromLeft)).toBeCloseTo(185.41, 2);
+    expect(Math.min(...fromTop)).toBeCloseTo(76.39, 2);
+    expect(Math.max(...fromTop)).toBeCloseTo(123.61, 2);
   });
 
   it('recurses into each span, and every deeper cut is golden too', () => {
-    expect(goldenGuides(100, 1)).toHaveLength(2);
+    expect(goldenGuides(100)).toHaveLength(2);
     expect(goldenGuides(100, 2)).toHaveLength(8);
     expect(goldenPoints(300, 200, 2)).toHaveLength(64);
 
     const deeper = goldenGuides(100, 2).filter((guide) => guide.level === 2);
     expect(deeper).toHaveLength(6);
 
-    const edges = [0, ...goldenGuides(100, 1).map((g) => g.value), 100];
-    for (const [index, from] of edges.slice(0, -1).entries()) {
+    const edges = [0, ...goldenGuides(100).map((g) => g.value), 100];
+    const starts = edges.slice(0, -1).entries();
+    for (const [index, from] of starts) {
       const to = edges[index + 1]!;
       const inside = deeper
         .filter((guide) => guide.value > from && guide.value < to)

@@ -58,9 +58,12 @@ import {
   providers: [GeistSessionService],
 })
 export class GeistPage {
+  readonly #session = inject(GeistSessionService);
+
+  #nextTurnId = 0;
+
   readonly personas = GEIST_PERSONAS;
 
-  readonly #session = inject(GeistSessionService);
   readonly link = this.#session.link;
   readonly primedPercent = this.#session.primedPercent;
   readonly contextPercent = this.#session.contextPercent;
@@ -74,15 +77,16 @@ export class GeistPage {
   readonly isStreaming = computed(() =>
     this.turns().some((turn) => turn.streaming)
   );
-  readonly canSend = computed(
-    () =>
+
+  readonly canSend = computed(() => {
+    return (
       this.link() === 'jacked-in' &&
       !this.isStreaming() &&
       this.query().trim().length > 0
-  );
+    );
+  });
 
   readonly transcript = viewChild<ElementRef<HTMLElement>>('transcript');
-  #nextTurnId = 0;
 
   constructor() {
     addIcons({
@@ -101,6 +105,35 @@ export class GeistPage {
     this.turns();
     const view = this.transcript()?.nativeElement;
     if (view && isFollowingTail(view)) view.scrollTop = view.scrollHeight;
+  }
+
+  #openTurn(query: string): GeistTurn {
+    const turn: GeistTurn = {
+      id: this.#nextTurnId++,
+      query,
+      answer: '',
+      streaming: true,
+      note: null,
+    };
+    this.turns.update((turns) => [...turns, turn]);
+    return turn;
+  }
+
+  async #streamInto(turn: GeistTurn): Promise<void> {
+    try {
+      await this.#session.stream(turn.query, (chunk) =>
+        this.turns.update((turns) => appendAnswerChunk(turns, turn.id, chunk))
+      );
+      this.#settleTurn(turn.id, null);
+    } catch (error) {
+      this.#settleTurn(turn.id, noteForStreamError(error));
+    }
+  }
+
+  #settleTurn(id: number, note: Marker | null): void {
+    this.turns.update((turns) =>
+      patchTurn(turns, id, { streaming: false, note })
+    );
   }
 
   typeQuery(event: TextareaCustomEvent): void {
@@ -137,34 +170,5 @@ export class GeistPage {
     this.abort();
     this.turns.set([]);
     await this.#session.open(this.persona());
-  }
-
-  #openTurn(query: string): GeistTurn {
-    const turn: GeistTurn = {
-      id: this.#nextTurnId++,
-      query,
-      answer: '',
-      streaming: true,
-      note: null,
-    };
-    this.turns.update((turns) => [...turns, turn]);
-    return turn;
-  }
-
-  async #streamInto(turn: GeistTurn): Promise<void> {
-    try {
-      await this.#session.stream(turn.query, (chunk) =>
-        this.turns.update((turns) => appendAnswerChunk(turns, turn.id, chunk))
-      );
-      this.#settleTurn(turn.id, null);
-    } catch (error) {
-      this.#settleTurn(turn.id, noteForStreamError(error));
-    }
-  }
-
-  #settleTurn(id: number, note: Marker | null): void {
-    this.turns.update((turns) =>
-      patchTurn(turns, id, { streaming: false, note })
-    );
   }
 }

@@ -15,7 +15,7 @@
     [startSwipeAction]="editSwipeAction"
     (selectItem)="openEdit(item)"
     (startSwipe)="openEdit(item)"
-    (deleteItem)="deleteType(item)"
+    (deletionRequested)="deleteType(item)"
   >
     <p itemDetails>
       {{

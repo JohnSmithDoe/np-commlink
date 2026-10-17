@@ -20,26 +20,29 @@ export const settingsRoutes: Routes = [
   },
   {
     path: '',
-    loadComponent: () =>
-      import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-        (m) => m.ModuleTabsPage
-      ),
+    loadComponent: async () => {
+      const { ModuleTabsPage } =
+        await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+      return ModuleTabsPage;
+    },
     children: [
       {
         path: 'general',
         title: marker('page-title.settings'),
-        loadComponent: () =>
-          import('../feature/settings-page/settings.page').then(
-            (m) => m.SettingsPage
-          ),
+        loadComponent: async () => {
+          const { SettingsPage } =
+            await import('../feature/settings-page/settings.page');
+          return SettingsPage;
+        },
       },
       {
         path: 'deck',
         title: marker('page-title.deck-config'),
-        loadComponent: () =>
-          import('../feature/deck-config-page/deck-config.page').then(
-            (m) => m.DeckConfigPage
-          ),
+        loadComponent: async () => {
+          const { DeckConfigPage } =
+            await import('../feature/deck-config-page/deck-config.page');
+          return DeckConfigPage;
+        },
       },
     ],
   },
@@ -54,9 +57,10 @@ export const commlinkRoutes: Routes = [
   {
     path: '',
     title: marker('page-title.commlink'),
-    loadComponent: () =>
-      import('../feature/commlink-page/commlink.page').then(
-        (m) => m.CommlinkPage
-      ),
+    loadComponent: async () => {
+      const { CommlinkPage } =
+        await import('../feature/commlink-page/commlink.page');
+      return CommlinkPage;
+    },
   },
 ];

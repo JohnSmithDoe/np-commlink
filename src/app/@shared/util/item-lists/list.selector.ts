@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { matcherFor, matchesSearchExactly } from '../app.utils';
+import { matcherFor, isExactSearchMatch } from '../app.utils';
 import { BaseItem } from '../../model/base-item.types';
 import { CategoryId } from '../../model/category.types';
 import {
@@ -18,10 +18,11 @@ const compareByName = <T extends BaseItem>(
   a: T,
   b: T,
   direction?: ItemListSort['sortDirection']
-): number =>
-  direction === 'asc'
+): number => {
+  return direction === 'asc'
     ? a.name.localeCompare(b.name)
     : b.name.localeCompare(a.name);
+};
 
 const optional = <V>(item: BaseItem, field: string): V | undefined =>
   (item as Record<string, unknown>)[field] as V | undefined;
@@ -121,13 +122,13 @@ export const filterListBySearchQuery = <R extends BaseItem>(
 ): SearchResult<R> | undefined => {
   const searchQuery = listState.searchQuery?.trim();
   if (!searchQuery || searchQuery.length === 0) return;
-  const matches = matcherFor(searchQuery);
+  const isMatches = matcherFor(searchQuery);
   const result: SearchResult<R> = {
     searchTerm: searchQuery,
-    listItems: listState.items.filter((item) => matches(item)),
+    listItems: listState.items.filter((item) => isMatches(item)),
   };
   result.exactMatch = result.listItems.find((base) =>
-    matchesSearchExactly(base, searchQuery)
+    isExactSearchMatch(base, searchQuery)
   );
   return result;
 };
@@ -137,8 +138,10 @@ export const itemCountByCategory = (
 ): Map<CategoryId, number> => {
   const counts = new Map<CategoryId, number>();
   for (const item of items) {
-    for (const categoryId of item.categoryIds ?? []) {
-      counts.set(categoryId, (counts.get(categoryId) ?? 0) + 1);
+    if (item.categoryIds != null) {
+      for (const categoryId of item.categoryIds) {
+        counts.set(categoryId, (counts.get(categoryId) ?? 0) + 1);
+      }
     }
   }
   return counts;

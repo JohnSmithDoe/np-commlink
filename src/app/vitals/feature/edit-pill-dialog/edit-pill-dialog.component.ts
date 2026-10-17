@@ -23,7 +23,7 @@ import {
   clockTime,
   parseClock,
 } from '../../../@shared/util/formatting/date-format.utils';
-import { hasErrorKind } from '../../../@shared/util/forms/form-rules';
+import { errorKindPresent } from '../../../@shared/util/forms/form-rules';
 import { PillsFacade, ProfilesFacade } from '../../data';
 import { Pill, PILLS_LIST_ID } from '../../model/vitals.types';
 import { toggledWeekday } from '../../util/pill.utils';
@@ -66,8 +66,8 @@ export class EditPillDialogComponent extends BaseEditItemDialog<
   protected readonly listId: ItemListId = PILLS_LIST_ID;
   readonly siblings = this.#pills.profilePills;
 
-  readonly doseInvalid = hasErrorKind(this.form.dose, INVALID_DOSE);
-  readonly weekdaysInvalid = hasErrorKind(this.form.weekdays, NO_WEEKDAY);
+  readonly doseInvalid = errorKindPresent(this.form.dose, INVALID_DOSE);
+  readonly weekdaysInvalid = errorKindPresent(this.form.weekdays, NO_WEEKDAY);
 
   protected override extraRules(path: SchemaPathTree<PillForm>): void {
     validate(path.dose, ({ value }) => {

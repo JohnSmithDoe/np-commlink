@@ -67,14 +67,15 @@ export class NoteEditorPage implements OnDestroy {
   readonly #facade = inject(NoteEditorFacade);
   readonly #translate = inject(TranslateService);
 
+  private readonly body = viewChild('body', { read: IonTextarea });
+
+  readonly #noteId = this.#facade.note()?.id;
+
   readonly note = this.#facade.note;
   readonly images = this.#facade.images;
   readonly openAt = signal<number | undefined>(undefined);
-  private readonly body = viewChild('body', { read: IonTextarea });
 
-  readonly #noteId = this.note()?.id;
-
-  readonly deleteAlertButtons: AlertButton[] = [
+  readonly deletionAlertButtons: AlertButton[] = [
     {
       text: this.#translate.instant(marker('notes.action.cancel')),
       role: 'cancel',

@@ -2,12 +2,14 @@ import { setDayjsLocale } from '../../@shared/util/formatting/date-format.utils'
 import { DataItem } from '../model/tracking.types';
 import { TimeFromDataItemPipe } from './time-from-data-item.pipe';
 
-const dataItem = (startTime?: string): DataItem => ({
-  id: '1',
-  name: 'task',
-  startTime,
-  sessionIds: ['s1'],
-});
+const dataItem = (startTime?: string): DataItem => {
+  return {
+    id: '1',
+    name: 'task',
+    startTime,
+    sessionIds: ['s1'],
+  };
+};
 
 describe('TimeFromDataItemPipe', () => {
   const pipe = new TimeFromDataItemPipe();

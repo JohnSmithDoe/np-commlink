@@ -12,16 +12,15 @@ describe('RitualPageFacade', () => {
   let facade: RitualPageFacade;
   let today: ReturnType<typeof signal<string>>;
 
-  const setup = (day = '2026-07-20', completions: string[] = []) => {
-    today = signal(day);
+  const setup = (completedAt: string[] = []) => {
+    today = signal('2026-07-20');
+    const completions = completedAt.map((at) =>
+      mockRitualCompletion({ completedAt: at })
+    );
     TestBed.configureTestingModule({
       providers: [
         ...provideTestingProviders({
-          ritual: mockRitualState({
-            completions: completions.map((completedAt) =>
-              mockRitualCompletion({ completedAt })
-            ),
-          }),
+          ritual: mockRitualState({ completions }),
         }),
         { provide: TodayService, useValue: { today } },
       ],
@@ -37,13 +36,13 @@ describe('RitualPageFacade', () => {
   });
 
   it('closes the day on a completion made today', () => {
-    setup('2026-07-20', ['2026-07-20T08:00:00.000']);
+    setup(['2026-07-20T08:00:00.000']);
 
     expect(facade.dayClosed()).toBe(true);
   });
 
   it('opens the new day on a different task than the last one closed on', () => {
-    setup('2026-07-20', ['2026-07-20T08:00:00.000']);
+    setup(['2026-07-20T08:00:00.000']);
     const yesterdays = facade.prompt().id;
 
     today.set('2026-07-21');

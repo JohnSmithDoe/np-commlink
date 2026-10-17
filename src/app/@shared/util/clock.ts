@@ -19,12 +19,12 @@ import {
 
 const isPageVisible = () => document.visibilityState === 'visible';
 
-const pageVisibility$ = defer(() =>
-  fromEvent(document, 'visibilitychange').pipe(
+const pageVisibility$ = defer(() => {
+  return fromEvent(document, 'visibilitychange').pipe(
     map(isPageVisible),
     startWith(isPageVisible())
-  )
-);
+  );
+});
 
 export const currentTime$: Observable<Dayjs> = pageVisibility$.pipe(
   switchMap((visible) => (visible ? interval(1000).pipe(startWith(0)) : EMPTY)),

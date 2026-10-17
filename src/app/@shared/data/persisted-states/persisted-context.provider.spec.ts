@@ -46,22 +46,24 @@ const runResolver = (bundle: ContextBundle): Promise<unknown> => {
   return Promise.resolve(TestBed.runInInjectionContext(() => resolver()));
 };
 
-const probeContext = (save = true) =>
-  providePersistedContext({
+const probeContext = (isSave = true) => {
+  return providePersistedContext({
     key: 'probe',
     reducer: probeReducer,
     lifecycle: ProbeActions,
     select: selectProbe,
-    ...(save ? { save: { sources: ['[Probe]'] } } : {}),
+    ...(isSave && { save: { sources: ['[Probe]'] } }),
   });
+};
 
-const siblingContext = () =>
-  providePersistedContext({
+const siblingContext = () => {
+  return providePersistedContext({
     key: 'sibling',
     reducer: probeReducer,
     lifecycle: SiblingActions,
     select: selectSibling,
   });
+};
 
 describe('providePersistedContext', () => {
   let database: {
@@ -186,10 +188,11 @@ describe('providePersistedContext', () => {
     const merged = mergeContexts(probeContext(), siblingContext());
     const store = storeWith(merged);
 
-    expect(Object.keys(merged.resolve).toSorted()).toEqual([
-      'probe',
-      'sibling',
-    ]);
+    expect(
+      Object.keys(merged.resolve).toSorted((left, right) =>
+        left.localeCompare(right)
+      )
+    ).toEqual(['probe', 'sibling']);
     expect(await firstValueFrom(store.select(selectProbe))).toEqual({
       items: [],
     });

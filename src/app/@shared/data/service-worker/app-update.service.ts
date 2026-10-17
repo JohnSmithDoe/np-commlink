@@ -16,17 +16,6 @@ export class AppUpdateService {
     this.#announceReadyVersions();
   }
 
-  applyUpdate(): void {
-    void this.#updates
-      .activateUpdate()
-      .then(() => this.#reload.reload())
-      .catch(() => this.#ready.set(false));
-  }
-
-  dismiss(): void {
-    this.#ready.set(false);
-  }
-
   #announceReadyVersions(): void {
     if (!this.#updates.isEnabled) return;
 
@@ -38,5 +27,16 @@ export class AppUpdateService {
         takeUntilDestroyed()
       )
       .subscribe(() => this.#ready.set(true));
+  }
+
+  applyUpdate(): void {
+    void this.#updates
+      .activateUpdate()
+      .then(() => this.#reload.reload())
+      .catch(() => this.#ready.set(false));
+  }
+
+  dismiss(): void {
+    this.#ready.set(false);
   }
 }

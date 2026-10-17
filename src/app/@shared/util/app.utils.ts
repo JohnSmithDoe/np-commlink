@@ -16,31 +16,29 @@ export const revealedSideFromDrag = (
   event: IonDragEvent
 ): 'start' | 'end' | undefined => {
   if (event.detail.amount > SWIPE_TRIGGER_AMOUNT) return 'end';
-  if (event.detail.amount < -SWIPE_TRIGGER_AMOUNT) return 'start';
-  return undefined;
+  return event.detail.amount < -SWIPE_TRIGGER_AMOUNT ? 'start' : undefined;
 };
 
 export const matchingTxt = (item: BaseItem | string) =>
   (typeof item === 'string' ? item : item.name).trim().toLowerCase();
 
-export const matchingTxtIsNotEmpty = (item?: BaseItem | string) =>
-  matchingTxt(item ?? '').length > 0;
+export const hasMatchingText = (item: BaseItem | string = '') =>
+  matchingTxt(item).length > 0;
 
-export const matchesNameExactly = (item: BaseItem, other: BaseItem) =>
+export const isSameName = (item: BaseItem, other: BaseItem) =>
   matchingTxt(item) === matchingTxt(other);
 
-export const matchesId = (item: BaseItem, other: BaseItem) =>
+export const isSameId = (item: BaseItem, other: BaseItem) =>
   item.id === other.id;
 
 export function findMatchingItem<T extends BaseItem>(item: T, others: T[]) {
   return (
-    findById(item, others) ??
-    others.find((other) => matchesNameExactly(item, other))
+    findById(item, others) ?? others.find((other) => isSameName(item, other))
   );
 }
 
 export function findById<T extends BaseItem>(item: T, others: T[]) {
-  return others.find((other) => matchesId(item, other));
+  return others.find((other) => isSameId(item, other));
 }
 
 export const indexOfMatchingItem = (item: BaseItem, others: BaseItem[]) => {
@@ -48,19 +46,17 @@ export const indexOfMatchingItem = (item: BaseItem, others: BaseItem[]) => {
   return found ? others.indexOf(found) : -1;
 };
 
-export const matcherFor = (searchQuery?: string) => {
-  const needle = matchingTxt(searchQuery ?? '');
+export const matcherFor = (searchQuery = '') => {
+  const needle = matchingTxt(searchQuery);
   return (item: BaseItem | string) => matchingTxt(item).includes(needle);
 };
 
-export const matchesSearchExactly = (
-  item: BaseItem | string,
-  searchQuery?: string
-) => matchingTxt(item) === matchingTxt(searchQuery ?? '');
+export const isExactSearchMatch = (item: BaseItem | string, searchQuery = '') =>
+  matchingTxt(item) === matchingTxt(searchQuery);
 
 export function parseNumberInput(event: InputCustomEvent) {
   const value = event.detail.value?.length ? event.detail.value : '0';
-  return Number.parseInt(value, 10);
+  return Math.trunc(Number(value));
 }
 
 export function moveInList<T>(

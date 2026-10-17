@@ -16,6 +16,8 @@ import {
 
 @Service()
 export class TaskCategoriesPageFacade extends BaseCategoryListPageFacade {
+  readonly #taggedWith = this.store.selectSignal(selectTaskTaggedByCategory);
+
   readonly catalogListId = TASK_CATEGORIES_LIST_ID;
   protected readonly actions = TaskCategoriesActions;
 
@@ -27,13 +29,13 @@ export class TaskCategoriesPageFacade extends BaseCategoryListPageFacade {
 
   readonly state = this.store.selectSignal(selectTaskCategoryList);
   readonly items = this.store.selectSignal(selectTaskCategoriesListItems);
+
   readonly searchResult = this.store.selectSignal(
     selectTaskCategoriesSearchResult
   );
   readonly countById = this.store.selectSignal(selectTaskCountByCategory);
   readonly undoScope = signal(TASK_CATEGORIES_LIST_ID);
 
-  readonly #taggedWith = this.store.selectSignal(selectTaskTaggedByCategory);
   readonly listHref = signal('/tasks/list');
   readonly listTitleKey = signal(marker('page-title.tasks'));
 

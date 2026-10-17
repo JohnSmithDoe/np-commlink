@@ -43,24 +43,26 @@ const camtFile = (...entries: string[]): File =>
 const filePicked = (...files: File[]): Event =>
   ({ target: { files, value: 'report.xml' } }) as unknown as Event;
 
-const importState = (transactions: CashTransaction[] = []): CashState =>
-  mockCashState({
+const importState = (transactions: CashTransaction[] = []): CashState => {
+  return mockCashState({
     accounts: [mockCashAccount({ iban: TEST_IBAN })],
     rules: [mockCashRule()],
     transactions,
   });
+};
 
 describe('CashAccountPage', () => {
   let component: CashAccountPage;
   let create: ReturnType<typeof vi.spyOn>;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const previewed = (): CashImportPreview =>
-    (
+  const previewed = (): CashImportPreview => {
+    return (
       create.mock.lastCall as unknown as [
         { componentProps: { preview: CashImportPreview } },
       ]
     )[0].componentProps.preview;
+  };
 
   const previewedTransactions = (): CashTransaction[] =>
     previewed().rows.map((row) => row.transaction);

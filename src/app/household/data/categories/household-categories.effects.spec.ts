@@ -24,12 +24,13 @@ describe('householdCategoriesListEffects', () => {
     });
   };
 
-  const withCategories = (...items: ReturnType<typeof createCategory>[]) =>
-    setup({
+  const withCategories = (...items: ReturnType<typeof createCategory>[]) => {
+    return setup({
       household: mockHouseholdState({
         categories: mockHouseholdCategoryList({ items }),
       }),
     });
+  };
 
   const run = <T>(effect: () => Observable<T>): Observable<T> =>
     TestBed.runInInjectionContext(() => effect());

@@ -3,18 +3,18 @@ import { MockStore } from '@ngrx/store/testing';
 import { ItemDialogService } from '../../../@shared/data/item-lists/item-dialog.service';
 import { provideTestingProviders } from '../../../@shared/testing/test-providers';
 import { PeopleActions } from '../../data';
-import { PEOPLE_LIST_ID, Person } from '../../model/people.types';
+import { PEOPLE_LIST_ID } from '../../model/people.types';
 import { mockPeopleState, mockPerson } from '../../testing/people.test-data';
 import { EditPersonDialogComponent } from './edit-person-dialog.component';
 
 const ann = mockPerson({ id: 'ann', name: 'Ann', sizes: { top: 'M' } });
 
-const setup = (seed: Person = ann) => {
+const setup = () => {
   TestBed.configureTestingModule({
     providers: [provideTestingProviders({ people: mockPeopleState([ann]) })],
   });
   TestBed.inject(ItemDialogService).open({
-    item: seed,
+    item: ann,
     listId: PEOPLE_LIST_ID,
     editMode: 'update',
   });

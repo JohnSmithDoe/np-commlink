@@ -56,12 +56,14 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
   if (save) {
     sliceEffects[`save_${key}$`] = createSaveSliceEffect(save, select, key);
   }
-  for (const spec of telemetry ?? []) {
-    sliceEffects[`report_${spec.source}$`] = createTelemetrySliceEffect(
-      spec,
-      lifecycle,
-      key
-    );
+  if (telemetry != null) {
+    for (const spec of telemetry) {
+      sliceEffects[`report_${spec.source}$`] = createTelemetrySliceEffect(
+        spec,
+        lifecycle,
+        key
+      );
+    }
   }
 
   return {
@@ -85,7 +87,9 @@ export function providePersistedContext<TState, TStored = TState, S = never>(
   };
 }
 
-export const mergeContexts = (...bundles: ContextBundle[]): ContextBundle => ({
-  providers: bundles.flatMap((bundle) => bundle.providers),
-  resolve: Object.assign({}, ...bundles.map((bundle) => bundle.resolve)),
-});
+export const mergeContexts = (...bundles: ContextBundle[]): ContextBundle => {
+  return {
+    providers: bundles.flatMap((bundle) => bundle.providers),
+    resolve: Object.assign({}, ...bundles.map((bundle) => bundle.resolve)),
+  };
+};

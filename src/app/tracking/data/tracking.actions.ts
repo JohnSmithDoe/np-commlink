@@ -16,19 +16,25 @@ export const TrackingActions = createActionGroup({
 
     ...createItemListActionEvents<TrackingItem>(),
 
-    applyNotificationCommand: (command: string, targetId: string) => ({
-      command,
-      targetId,
-    }),
+    applyNotificationCommand: (command: string, targetId: string) => {
+      return {
+        command,
+        targetId,
+      };
+    },
 
-    toggleTrackingItem: (item: TrackingItem, now: Timestamp) => ({
-      item,
-      now,
-    }),
-    updateTracking: (item: TrackingItem, now: Timestamp) => ({
-      item,
-      now,
-    }),
+    toggleTrackingItem: (item: TrackingItem, now: Timestamp) => {
+      return {
+        item,
+        now,
+      };
+    },
+    updateTracking: (item: TrackingItem, now: Timestamp) => {
+      return {
+        item,
+        now,
+      };
+    },
     resetTracking: (item: TrackingItem) => ({ item }),
     resetAllTracking: emptyProps(),
     saveAndResetTracking: emptyProps(),

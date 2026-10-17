@@ -79,8 +79,12 @@ describe('ListItemComponent', () => {
 
     const incremented: unknown[] = [];
     const decremented: unknown[] = [];
-    component.increment.subscribe(() => incremented.push(true));
-    component.decrement.subscribe(() => decremented.push(true));
+    component.increment.subscribe(() => {
+      incremented.push(true);
+    });
+    component.decrement.subscribe(() => {
+      decremented.push(true);
+    });
 
     const stopA = vi.fn();
     const stopB = vi.fn();
@@ -100,7 +104,9 @@ describe('ListItemComponent', () => {
   it('emits selectItem when ion-item is clicked', () => {
     fixture.detectChanges();
     const selected: unknown[] = [];
-    component.selectItem.subscribe(() => selected.push(true));
+    component.selectItem.subscribe(() => {
+      selected.push(true);
+    });
 
     getByTestId(fixture, 'list-row-select').click();
 
@@ -109,7 +115,9 @@ describe('ListItemComponent', () => {
 
   it('emits delete and closes sliding items', async () => {
     const deleted: unknown[] = [];
-    component.deleteItem.subscribe(() => deleted.push(true));
+    component.deletionRequested.subscribe(() => {
+      deleted.push(true);
+    });
 
     await component.emitDeleteItem();
 
@@ -119,7 +127,9 @@ describe('ListItemComponent', () => {
 
   it('emits cart and closes sliding items', async () => {
     const carted: unknown[] = [];
-    component.startSwipe.subscribe(() => carted.push(true));
+    component.startSwipe.subscribe(() => {
+      carted.push(true);
+    });
 
     await component.emitStartSwipe();
 
@@ -129,7 +139,9 @@ describe('ListItemComponent', () => {
 
   it('routes end drag to delete', async () => {
     const deleted: unknown[] = [];
-    component.deleteItem.subscribe(() => deleted.push(true));
+    component.deletionRequested.subscribe(() => {
+      deleted.push(true);
+    });
 
     component.onSwipe(dragEvent(200));
 
@@ -138,7 +150,9 @@ describe('ListItemComponent', () => {
 
   it('routes start drag to cart only once the host has named the action', async () => {
     const carted: unknown[] = [];
-    component.startSwipe.subscribe(() => carted.push(true));
+    component.startSwipe.subscribe(() => {
+      carted.push(true);
+    });
 
     component.onSwipe(dragEvent(-200));
     await settle();

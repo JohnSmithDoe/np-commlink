@@ -6,14 +6,14 @@ import { JamGateway } from './jam.gateway';
 
 const refused = new Error('Request failed with status code 401');
 
-function fakeJamClient(loggedIn = true) {
+function fakeJamClient(isLoggedIn = true) {
   return {
     auth: {
       login: vi.fn(() => Promise.resolve()),
       logout: vi.fn(() => Promise.resolve()),
       clear: vi.fn(() => Promise.resolve()),
       load: vi.fn(() => Promise.resolve()),
-      isLoggedIn: vi.fn(() => loggedIn),
+      isLoggedIn: vi.fn(() => isLoggedIn),
     },
     session: { session: vi.fn(() => Promise.resolve({ user: { id: 'u' } })) },
     nowplaying: { scrobble: vi.fn(() => Promise.resolve()) },

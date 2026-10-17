@@ -50,18 +50,19 @@ export class MusicAlbumPage {
     params: () => this.album(),
     loader: () => this.#library.albumTracks(this.#key),
   });
-  readonly cover = computed(
-    () =>
+  readonly cover = computed(() => {
+    return (
       this.album()?.cover ??
       (this.tracks.hasValue() ? firstCover(this.tracks.value()) : undefined)
-  );
-  readonly totalMs = computed(() =>
-    this.tracks.hasValue()
+    );
+  });
+  readonly totalMs = computed(() => {
+    return this.tracks.hasValue()
       ? this.tracks
           .value()
           .reduce((sum, track) => sum + (track.durationMs ?? 0), 0)
-      : 0
-  );
+      : 0;
+  });
   readonly currentId = computed(() => this.#player.current()?.track.id);
   readonly loadCover = (cover: CoverRef) => this.#covers.load(cover);
 

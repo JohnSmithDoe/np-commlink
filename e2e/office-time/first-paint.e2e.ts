@@ -57,9 +57,10 @@ test.describe('office-time (lazy)', () => {
 
     await expect(dashboard.getByText(OFFICE_DAY_LOGGED)).toBeVisible();
 
-    const today = await page.evaluate(() =>
-      new Date().toLocaleDateString('sv-SE')
-    );
+    const today = await page.evaluate(() => {
+      const now = new Date();
+      return now.toLocaleDateString('sv-SE');
+    });
     await waitForPersisted(page, 'officeTime', `"officedays":{"${today}":true`);
 
     await page.reload();

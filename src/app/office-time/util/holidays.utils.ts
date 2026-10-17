@@ -2,7 +2,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { DayKey, HolidayMap } from '../model/office-time.types';
 import { dayjsToString } from './office-time.utils';
 
-/* eslint-disable unicorn/prevent-abbreviations */
+/* eslint-disable unicorn/name-replacements */
 const easterSunday = (year: number): Dayjs => {
   const a = year % 19;
   const b = Math.floor(year / 100);
@@ -21,7 +21,7 @@ const easterSunday = (year: number): Dayjs => {
     new Date(year, Math.floor(dayOfYear / 31) - 1, (dayOfYear % 31) + 1)
   );
 };
-/* eslint-enable unicorn/prevent-abbreviations */
+/* eslint-enable unicorn/name-replacements */
 
 const fixedDay = (year: number, month: number, day: number): DayKey =>
   dayjsToString(dayjs(new Date(year, month - 1, day)));

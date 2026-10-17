@@ -11,10 +11,12 @@ export const RitualActions = createActionGroup({
   events: {
     load: emptyProps(),
     loaded: (ritual: RitualState | null) => ({ ritual }),
-    completed: (promptId: RitualPromptId, at?: string | Date) => ({
-      promptId,
-      at: dayjs(at).format(),
-    }),
+    completed: (promptId: RitualPromptId, at?: string | Date) => {
+      return {
+        promptId,
+        at: dayjs(at).format(),
+      };
+    },
     setReminder: (reminder: RitualReminder) => ({ reminder }),
     dismissed: (promptId: RitualPromptId) => ({ promptId }),
     restored: (promptId: RitualPromptId) => ({ promptId }),

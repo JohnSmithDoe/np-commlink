@@ -9,8 +9,8 @@ const source: FolderSource = {
   name: 'Music',
 };
 
-const track = (title: string, artist: string, albumArtist?: string) =>
-  toLocalTrack(source, {
+const track = (title: string, artist: string, albumArtist?: string) => {
+  return toLocalTrack(source, {
     uri: `content://${title}`,
     path: title,
     title,
@@ -18,6 +18,7 @@ const track = (title: string, artist: string, albumArtist?: string) =>
     albumArtist,
     album: 'Chrome Rain',
   });
+};
 
 describe('toLocalTrack', () => {
   it('groups by album artist, keeping the track artist for display', () => {

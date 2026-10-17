@@ -44,19 +44,22 @@ import { EditReadingDialogComponent } from '../edit-reading-dialog/edit-reading-
   providers: [{ provide: LIST_FACADE, useExisting: ReadingsPageFacade }],
 })
 export class VitalsProfilePage {
+  readonly #profiles = inject(ProfilesFacade);
+
   readonly editSwipeAction = VITALS_EDIT_SWIPE_ACTION;
 
   readonly facade = inject(ReadingsPageFacade);
-  readonly #profiles = inject(ProfilesFacade);
 
   readonly isFavorite = computed(
     () => this.facade.profile()?.id === this.#profiles.favoriteProfile()?.id
   );
-  readonly canPickFavorite = computed(
-    () =>
+
+  readonly canPickFavorite = computed(() => {
+    return (
       this.facade.profile()?.kind === 'person' &&
       this.#profiles.persons().length > 1
-  );
+    );
+  });
 
   constructor() {
     addIcons({

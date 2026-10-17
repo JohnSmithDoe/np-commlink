@@ -71,6 +71,26 @@ export class TrackplayBoardPage {
 
   readonly complete = computed(() => this.board.next() === null);
 
+  constructor() {
+    addIcons({
+      arrowUndoOutline,
+      copyOutline,
+      cubeOutline,
+      enterOutline,
+      gridOutline,
+      optionsOutline,
+      playForwardOutline,
+      refreshOutline,
+    });
+  }
+
+  #quiet(): void {
+    this.copied.set(false);
+    this.rejected.set([]);
+    this.refused.set(null);
+    this.moveRefused.set(null);
+  }
+
   selectPlayers(players: BoardPlayerCount): void {
     this.board.seatPlayers(players);
     this.#quiet();
@@ -153,25 +173,5 @@ export class TrackplayBoardPage {
     this.board.loadSetting(parsed.layout.players, parsed.figures);
     this.#quiet();
     this.rejected.set(parsed.rejected);
-  }
-
-  #quiet(): void {
-    this.copied.set(false);
-    this.rejected.set([]);
-    this.refused.set(null);
-    this.moveRefused.set(null);
-  }
-
-  constructor() {
-    addIcons({
-      arrowUndoOutline,
-      copyOutline,
-      cubeOutline,
-      enterOutline,
-      gridOutline,
-      optionsOutline,
-      playForwardOutline,
-      refreshOutline,
-    });
   }
 }

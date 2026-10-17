@@ -44,13 +44,16 @@ const startISO = (year: number, { month, day }: MonthDay): ISODate =>
 const dayBefore = (iso: ISODate): ISODate =>
   isoDay(dayjs(iso).subtract(1, 'day'));
 
-const seasonStarts = (anchorYear: number): readonly SeasonStart[] =>
-  ANCHOR_OFFSETS.flatMap((offset) =>
-    ZODIAC_SIGNS.map((sign) => ({
-      sign,
-      startISO: startISO(anchorYear + offset, sign.from),
-    }))
-  );
+const seasonStarts = (anchorYear: number): readonly SeasonStart[] => {
+  return ANCHOR_OFFSETS.flatMap((offset) => {
+    return ZODIAC_SIGNS.map((sign) => {
+      return {
+        sign,
+        startISO: startISO(anchorYear + offset, sign.from),
+      };
+    });
+  });
+};
 
 export const zodiacTimelineAround = (iso: ISODate): readonly ZodiacSeason[] => {
   const date = dayjs(iso);
@@ -64,14 +67,12 @@ export const zodiacTimelineAround = (iso: ISODate): readonly ZodiacSeason[] => {
     const season = starts[currentIndex - 1 + offset];
     const following = starts[currentIndex + offset];
     return season && following
-      ? [
-          {
-            sign: season.sign,
-            fromISO: season.startISO,
-            toISO: dayBefore(following.startISO),
-            phase,
-          },
-        ]
+      ? {
+          sign: season.sign,
+          fromISO: season.startISO,
+          toISO: dayBefore(following.startISO),
+          phase,
+        }
       : [];
   });
 };
@@ -87,13 +88,11 @@ export const zodiacYear = (iso: ISODate): readonly ZodiacWindow[] => {
     const season = starts[anchor + index];
     const following = starts[anchor + index + 1];
     return season && following
-      ? [
-          {
-            sign: season.sign,
-            fromISO: season.startISO,
-            toISO: dayBefore(following.startISO),
-          },
-        ]
+      ? {
+          sign: season.sign,
+          fromISO: season.startISO,
+          toISO: dayBefore(following.startISO),
+        }
       : [];
   });
 };

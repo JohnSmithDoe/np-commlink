@@ -36,7 +36,8 @@ export class DashOfficeDaysEditComponent {
     readonly string[] | null | undefined
   >([], { transform: freedayHighlights });
   readonly holidaysAndFreedays = computed(() => {
-    return [...this.holidays(), ...this.freedays()];
+    const holidays = this.holidays();
+    return [...holidays, ...this.freedays()];
   });
 
   updateOfficeDates(event: DatetimeCustomEvent) {

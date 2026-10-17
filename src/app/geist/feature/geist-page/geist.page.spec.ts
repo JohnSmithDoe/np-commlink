@@ -9,12 +9,14 @@ import { GeistPage } from './geist.page';
 
 const fakeSession = (
   gauge: { contextUsage?: number; contextWindow?: number } = {}
-) => ({
-  contextUsage: 0,
-  contextWindow: 0,
-  destroy: vi.fn(),
-  ...gauge,
-});
+) => {
+  return {
+    contextUsage: 0,
+    contextWindow: 0,
+    destroy: vi.fn(),
+    ...gauge,
+  };
+};
 
 const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -48,7 +50,7 @@ describe('GeistPage', () => {
 
   describe('the link state machine', () => {
     it('lands on unsupported where the platform has no model', async () => {
-      const page = setup('unavailable').componentInstance;
+      const page = setup().componentInstance;
 
       await settle();
 
@@ -58,7 +60,6 @@ describe('GeistPage', () => {
 
     it('parks on the cold-start panel while the weights still need downloading', async () => {
       const page = setup('downloadable').componentInstance;
-
       await settle();
 
       expect(page.link()).toBe('dormant');
@@ -67,7 +68,6 @@ describe('GeistPage', () => {
 
     it('jacks in without asking when the weights are already local', async () => {
       const page = setup('available').componentInstance;
-
       await settle();
 
       expect(page.link()).toBe('jacked-in');
@@ -157,7 +157,7 @@ describe('GeistPage', () => {
 
   describe('canSend', () => {
     it('needs a live link, an idle stream and a non-blank query', () => {
-      const page = setup('unavailable').componentInstance;
+      const page = setup().componentInstance;
       page.query.set('  ');
       expect(page.canSend()).toBe(false);
 
@@ -182,7 +182,7 @@ describe('GeistPage', () => {
 
   describe('the send shortcut', () => {
     it('sends the query and swallows the newline the textarea would insert', () => {
-      const page = setup('unavailable').componentInstance;
+      const page = setup().componentInstance;
       page.link.set('jacked-in');
       page.query.set('wer ist Mr. Johnson?');
       const event = { preventDefault: vi.fn() } as unknown as Event;
@@ -195,7 +195,7 @@ describe('GeistPage', () => {
     });
 
     it('does nothing while the query is blank', () => {
-      const page = setup('unavailable').componentInstance;
+      const page = setup().componentInstance;
       page.link.set('jacked-in');
       const event = { preventDefault: vi.fn() } as unknown as Event;
 
@@ -207,7 +207,7 @@ describe('GeistPage', () => {
 
   describe('contextPercent', () => {
     it('is 0 before a session reports a window, rather than NaN', () => {
-      const page = setup('unavailable').componentInstance;
+      const page = setup().componentInstance;
 
       expect(page.contextPercent()).toBe(0);
     });

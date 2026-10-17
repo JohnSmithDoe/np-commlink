@@ -14,10 +14,11 @@ export const vitalsRoutes: Routes = [
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'profiles',
@@ -25,50 +26,56 @@ export const vitalsRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.vitals'),
-                loadComponent: () =>
-                  import('../feature/profiles-page/profiles.page').then(
-                    (m) => m.VitalsProfilesPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsProfilesPage } =
+                    await import('../feature/profiles-page/profiles.page');
+                  return VitalsProfilesPage;
+                },
               },
               {
                 path: ':id',
                 title: marker('page-title.vitals-profile'),
-                loadComponent: () =>
-                  import('../feature/profile-page/profile.page').then(
-                    (m) => m.VitalsProfilePage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsProfilePage } =
+                    await import('../feature/profile-page/profile.page');
+                  return VitalsProfilePage;
+                },
               },
               {
                 path: ':id/pills',
                 title: marker('page-title.vitals-pills'),
-                loadComponent: () =>
-                  import('../feature/pills-page/pills.page').then(
-                    (m) => m.VitalsPillsPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsPillsPage } =
+                    await import('../feature/pills-page/pills.page');
+                  return VitalsPillsPage;
+                },
               },
               {
                 path: ':id/zodiac',
                 title: marker('page-title.vitals-zodiac'),
-                loadComponent: () =>
-                  import('../feature/zodiac-page/zodiac.page').then(
-                    (m) => m.VitalsZodiacPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsZodiacPage } =
+                    await import('../feature/zodiac-page/zodiac.page');
+                  return VitalsZodiacPage;
+                },
               },
               {
                 path: ':id/iching',
                 title: marker('page-title.vitals-iching'),
-                loadComponent: () =>
-                  import('../feature/iching-page/iching.page').then(
-                    (m) => m.VitalsIChingPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsIChingPage } =
+                    await import('../feature/iching-page/iching.page');
+                  return VitalsIChingPage;
+                },
               },
               {
                 path: ':id/iching/cast',
                 title: marker('page-title.vitals-iching-cast'),
-                loadComponent: () =>
-                  import('../feature/iching-cast-page/iching-cast.page').then(
-                    (m) => m.VitalsIChingCastPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsIChingCastPage } =
+                    await import('../feature/iching-cast-page/iching-cast.page');
+                  return VitalsIChingCastPage;
+                },
               },
             ],
           },
@@ -78,18 +85,20 @@ export const vitalsRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.vitals-iching'),
-                loadComponent: () =>
-                  import('../feature/iching-page/iching.page').then(
-                    (m) => m.VitalsIChingPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsIChingPage } =
+                    await import('../feature/iching-page/iching.page');
+                  return VitalsIChingPage;
+                },
               },
               {
                 path: 'cast',
                 title: marker('page-title.vitals-iching-cast'),
-                loadComponent: () =>
-                  import('../feature/iching-cast-page/iching-cast.page').then(
-                    (m) => m.VitalsIChingCastPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsIChingCastPage } =
+                    await import('../feature/iching-cast-page/iching-cast.page');
+                  return VitalsIChingCastPage;
+                },
               },
             ],
           },
@@ -99,74 +108,83 @@ export const vitalsRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.vitals-browse'),
-                loadComponent: () =>
-                  import('../feature/browse-page/browse.page').then(
-                    (m) => m.VitalsBrowsePage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowsePage } =
+                    await import('../feature/browse-page/browse.page');
+                  return VitalsBrowsePage;
+                },
               },
               {
                 path: 'zodiac',
                 title: marker('page-title.vitals-browse-zodiac'),
-                loadComponent: () =>
-                  import('../feature/browse-zodiac-page/browse-zodiac.page').then(
-                    (m) => m.VitalsBrowseZodiacPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseZodiacPage } =
+                    await import('../feature/browse-zodiac-page/browse-zodiac.page');
+                  return VitalsBrowseZodiacPage;
+                },
               },
               {
                 path: 'zodiac/:sign',
                 title: marker('page-title.vitals-browse-sign'),
-                loadComponent: () =>
-                  import('../feature/browse-sign-page/browse-sign.page').then(
-                    (m) => m.VitalsBrowseSignPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseSignPage } =
+                    await import('../feature/browse-sign-page/browse-sign.page');
+                  return VitalsBrowseSignPage;
+                },
               },
               {
                 path: 'chinese',
                 title: marker('page-title.vitals-browse-chinese'),
-                loadComponent: () =>
-                  import('../feature/browse-chinese-page/browse-chinese.page').then(
-                    (m) => m.VitalsBrowseChinesePage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseChinesePage } =
+                    await import('../feature/browse-chinese-page/browse-chinese.page');
+                  return VitalsBrowseChinesePage;
+                },
               },
               {
                 path: 'chinese/:animal',
                 title: marker('page-title.vitals-browse-animal'),
-                loadComponent: () =>
-                  import('../feature/browse-animal-page/browse-animal.page').then(
-                    (m) => m.VitalsBrowseAnimalPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseAnimalPage } =
+                    await import('../feature/browse-animal-page/browse-animal.page');
+                  return VitalsBrowseAnimalPage;
+                },
               },
               {
                 path: 'iching',
                 title: marker('page-title.vitals-browse-iching'),
-                loadComponent: () =>
-                  import('../feature/browse-iching-page/browse-iching.page').then(
-                    (m) => m.VitalsBrowseIChingPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseIChingPage } =
+                    await import('../feature/browse-iching-page/browse-iching.page');
+                  return VitalsBrowseIChingPage;
+                },
               },
               {
                 path: 'iching/:number',
                 title: marker('page-title.vitals-browse-hexagram'),
-                loadComponent: () =>
-                  import('../feature/browse-hexagram-page/browse-hexagram.page').then(
-                    (m) => m.VitalsBrowseHexagramPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseHexagramPage } =
+                    await import('../feature/browse-hexagram-page/browse-hexagram.page');
+                  return VitalsBrowseHexagramPage;
+                },
               },
               {
                 path: 'ki',
                 title: marker('page-title.vitals-browse-ki'),
-                loadComponent: () =>
-                  import('../feature/browse-ki-page/browse-ki.page').then(
-                    (m) => m.VitalsBrowseKiPage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseKiPage } =
+                    await import('../feature/browse-ki-page/browse-ki.page');
+                  return VitalsBrowseKiPage;
+                },
               },
               {
                 path: 'life',
                 title: marker('page-title.vitals-browse-life'),
-                loadComponent: () =>
-                  import('../feature/browse-life-page/browse-life.page').then(
-                    (m) => m.VitalsBrowseLifePage
-                  ),
+                loadComponent: async () => {
+                  const { VitalsBrowseLifePage } =
+                    await import('../feature/browse-life-page/browse-life.page');
+                  return VitalsBrowseLifePage;
+                },
               },
             ],
           },

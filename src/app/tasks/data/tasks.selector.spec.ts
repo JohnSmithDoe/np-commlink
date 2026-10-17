@@ -142,17 +142,15 @@ describe('open and done', () => {
 
 describe('selectOpenTaskCount', () => {
   it('counts what is still open, not what is on the list', () => {
-    expect(
-      selectOpenTaskCount.projector(
-        mockTasksList({
-          items: [
-            mockTaskItem({ id: 'a' }),
-            mockTaskItem({ id: 'b' }),
-            mockTaskItem({ id: 'c', doneAt: '2026-08-01' }),
-          ],
-        })
-      )
-    ).toBe(2);
+    const list = mockTasksList({
+      items: [
+        mockTaskItem({ id: 'a' }),
+        mockTaskItem({ id: 'b' }),
+        mockTaskItem({ id: 'c', doneAt: '2026-08-01' }),
+      ],
+    });
+
+    expect(selectOpenTaskCount.projector(list)).toBe(2);
   });
 
   it('is 0 for an unregistered slice', () => {

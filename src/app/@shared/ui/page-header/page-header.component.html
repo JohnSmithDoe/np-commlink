@@ -24,7 +24,7 @@
           data-testid="page-header-add"
           [disabled]="disabled()"
           [attr.aria-label]="'a11y.add-item' | translate"
-          (click)="addItem.emit()"
+          (click)="creationRequested.emit()"
         >
           <ion-icon name="add-outline" slot="icon-only" aria-hidden="true" />
         </ion-button>

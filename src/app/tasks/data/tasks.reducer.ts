@@ -44,11 +44,13 @@ export const tasksReducer = createReducer(
 
   on(TaskCategoriesActions.addItem, (state, { item }): TasksState => withList(state, 'categoryList', addToCatalog(state.categoryList, item))),
 
-  on(TaskCategoriesActions.removeItem, (state, { item }): TasksState => ({
-    ...state,
-    categoryList: removeFromCatalog(state.categoryList, item.id),
-    list: { ...state.list, items: dropCategoryRef(state.list.items, item.id) },
-  })),
+  on(TaskCategoriesActions.removeItem, (state, { item }): TasksState => {
+    return {
+      ...state,
+      categoryList: removeFromCatalog(state.categoryList, item.id),
+      list: { ...state.list, items: dropCategoryRef(state.list.items, item.id) },
+    };
+  }),
 
   on(TasksActions.restoreCategory, (state, { category, tagged }): TasksState => {
     const ids = new Set(tagged);
@@ -82,10 +84,12 @@ export const tasksReducer = createReducer(
     };
   }),
 
-  on(TasksActions.updateSettings, (state, { settings }): TasksState => ({
-    ...state,
-    settings: { ...state.settings, ...settings },
-  })),
+  on(TasksActions.updateSettings, (state, { settings }): TasksState => {
+    return {
+      ...state,
+      settings: { ...state.settings, ...settings },
+    };
+  }),
 
   on(TasksActions.reopenDue, (state, { items }): TasksState => {
     const due = new Set(items.map((item) => item.id));

@@ -8,11 +8,11 @@ type GlobalWithModel = typeof globalThis & { LanguageModel?: unknown };
 
 const withLanguageModel = (stub: unknown): (() => void) => {
   const target = globalThis as GlobalWithModel;
-  const had = 'LanguageModel' in target;
+  const isHad = 'LanguageModel' in target;
   const previous = target.LanguageModel;
   target.LanguageModel = stub;
   return () => {
-    if (had) target.LanguageModel = previous;
+    if (isHad) target.LanguageModel = previous;
     else delete target.LanguageModel;
   };
 };

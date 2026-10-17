@@ -16,61 +16,68 @@ export const householdRoutes: Routes = [
       {
         path: 'list-settings',
         title: marker('page-title.household-list-settings'),
-        loadComponent: () =>
-          import('../feature/list-settings-page/list-settings.page').then(
-            (m) => m.ListSettingsPage
-          ),
+        loadComponent: async () => {
+          const { ListSettingsPage } =
+            await import('../feature/list-settings-page/list-settings.page');
+          return ListSettingsPage;
+        },
       },
       {
         path: 'categories/:listId',
         title: marker('page-title.categories'),
         providers: provideCatalogFacade(HouseholdCategoriesPageFacade),
-        loadComponent: () =>
-          import('../../@shared/feature/categories/category-list-page/category-list.page').then(
-            (m) => m.CategoryListPage
-          ),
+        loadComponent: async () => {
+          const { CategoryListPage } =
+            await import('../../@shared/feature/categories/category-list-page/category-list.page');
+          return CategoryListPage;
+        },
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'soykaf',
             title: marker('page-title.soykaf'),
-            loadComponent: () =>
-              import('../feature/recipes-page/recipes.page').then(
-                (m) => m.RecipesPage
-              ),
+            loadComponent: async () => {
+              const { RecipesPage } =
+                await import('../feature/recipes-page/recipes.page');
+              return RecipesPage;
+            },
           },
           {
             path: 'shopping',
             title: marker('page-title.household-shopping'),
             data: { listId: '_shopping' },
-            loadComponent: () =>
-              import('../feature/shopping-page/shopping.page').then(
-                (m) => m.ShoppingPage
-              ),
+            loadComponent: async () => {
+              const { ShoppingPage } =
+                await import('../feature/shopping-page/shopping.page');
+              return ShoppingPage;
+            },
           },
           {
             path: 'storage',
             title: marker('page-title.household-storage'),
             data: { listId: '_storage' },
-            loadComponent: () =>
-              import('../feature/storage-page/storage.page').then(
-                (m) => m.StoragePage
-              ),
+            loadComponent: async () => {
+              const { StoragePage } =
+                await import('../feature/storage-page/storage.page');
+              return StoragePage;
+            },
           },
           {
             path: 'products',
             title: marker('page-title.household-products'),
             data: { listId: '_products' },
-            loadComponent: () =>
-              import('../feature/products-page/products.page').then(
-                (m) => m.ProductsPage
-              ),
+            loadComponent: async () => {
+              const { ProductsPage } =
+                await import('../feature/products-page/products.page');
+              return ProductsPage;
+            },
           },
         ],
       },

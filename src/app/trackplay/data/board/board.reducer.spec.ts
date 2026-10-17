@@ -7,11 +7,12 @@ import { boardReducer } from './board.reducer';
 
 const figure: BoardFigure = { player: 0, piece: 0, fieldId: 'track-5' };
 
-const seated = (over: Partial<BoardState> = {}): BoardState => ({
-  ...initialBoardState,
-  figures: [figure],
-  ...over,
-});
+const seated = (): BoardState => {
+  return {
+    ...initialBoardState,
+    figures: [figure],
+  };
+};
 
 describe('boardReducer', () => {
   it('keeps the figures when the same seat count is picked again', () => {

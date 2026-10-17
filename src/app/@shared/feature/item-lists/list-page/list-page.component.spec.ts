@@ -16,21 +16,27 @@ import { ITEM_FILTERS } from '../../../util/item-lists/list-filter';
 
 const mockListState = (
   overrides: Partial<ItemList<BaseItem>> = {}
-): ItemList<BaseItem> => ({
-  items: [],
-  ...overrides,
-});
+): ItemList<BaseItem> => {
+  return {
+    items: [],
+    ...overrides,
+  };
+};
 
-const manyItems = (count: number): BaseItem[] =>
-  Array.from({ length: count }, (_, index) => ({
-    id: `t-${index}`,
-    name: `Entry ${index}`,
-  }));
+const manyItems = (count: number): BaseItem[] => {
+  return Array.from({ length: count }, (_, index) => {
+    return {
+      id: `t-${index}`,
+      name: `Entry ${index}`,
+    };
+  });
+};
 
-const scrolledToEnd = () =>
-  ({
+const scrolledToEnd = () => {
+  return {
     target: { complete: () => Promise.resolve() },
-  }) as InfiniteScrollCustomEvent;
+  } as InfiniteScrollCustomEvent;
+};
 
 const fakeFacade = (
   state: WritableSignal<ItemList<BaseItem> | undefined>
@@ -232,10 +238,8 @@ describe('ListPageComponent', () => {
     ]);
     expect(component.showSectionHeaders()).toBe(false);
 
-    facade.sections.update((sections) => [
-      ...sections,
-      { id: 'others', labelKey: 'a.others', items: [] },
-    ]);
+    const others = { id: 'others', labelKey: 'a.others', items: [] };
+    facade.sections.update((sections) => [...sections, others]);
 
     expect(component.showSectionHeaders()).toBe(true);
   });

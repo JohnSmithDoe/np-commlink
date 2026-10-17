@@ -32,7 +32,7 @@ import { addIcons } from 'ionicons';
 import { checkmarkOutline, createOutline, trashOutline } from 'ionicons/icons';
 import {
   matcherFor,
-  matchesSearchExactly,
+  isExactSearchMatch,
   uuidv4,
 } from '../../../util/app.utils';
 import { Category, CategoryId } from '../../../model/category.types';
@@ -71,7 +71,7 @@ export class CategoriesDialogComponent {
   readonly confirmed = output<CategoryId[]>();
   readonly cancelled = output<void>();
   readonly dismissed = output<void>();
-  readonly addNew = output<Category>();
+  readonly categoryCreated = output<Category>();
   readonly deleted = output<CategoryId>();
   readonly renamed = output<{ id: CategoryId; to: string }>();
 
@@ -91,20 +91,24 @@ export class CategoriesDialogComponent {
     const query = this.searchQuery();
     const all = this.categories();
     if (query.length === 0) return all;
-    const matches = matcherFor(query);
-    return all.filter((cat) => matches(cat.name));
+    const isMatches = matcherFor(query);
+    return all.filter((cat) => isMatches(cat.name));
   });
 
   readonly searchContained = computed<boolean>(() => {
     const query = this.searchQuery();
     return (
       query.length > 0 &&
-      this.categories().some((cat) => matchesSearchExactly(cat.name, query))
+      this.categories().some((cat) => isExactSearchMatch(cat.name, query))
     );
   });
 
   constructor() {
-    addIcons({ checkmarkOutline, createOutline, trashOutline });
+    addIcons({
+      checkmarkOutline,
+      createOutline,
+      trashOutline,
+    });
   }
 
   searchbarInput(event: SearchbarCustomEvent) {
@@ -118,11 +122,11 @@ export class CategoriesDialogComponent {
   rowClick(cat: Category) {
     if (this.editing() !== null) return;
     if (this.multiple()) {
-      this.selected.update((current) =>
-        current.includes(cat.id)
+      this.selected.update((current) => {
+        return current.includes(cat.id)
           ? current.filter((id) => id !== cat.id)
-          : [cat.id, ...current]
-      );
+          : [cat.id, ...current];
+      });
     } else {
       this.confirmed.emit([cat.id]);
     }
@@ -136,19 +140,18 @@ export class CategoriesDialogComponent {
     const name = this.searchQuery().trim();
     if (name.length === 0) return;
     const existing = this.categories().find((cat) =>
-      matchesSearchExactly(cat.name, name)
+      isExactSearchMatch(cat.name, name)
     );
     const category: Category = existing ?? { id: uuidv4(), name };
-    if (!existing) this.addNew.emit(category);
+    if (!existing) this.categoryCreated.emit(category);
     if (this.multiple()) {
       if (!this.selected().includes(category.id)) {
         this.selected.update((current) => [category.id, ...current]);
       }
-      this.searchQuery.set('');
     } else {
       this.confirmed.emit([category.id]);
-      this.searchQuery.set('');
     }
+    this.searchQuery.set('');
   }
 
   async startEdit(cat: Category) {

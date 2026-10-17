@@ -225,7 +225,7 @@ describe('parseCamt', () => {
     const report = parseCamt(
       camtDocument([camtEntry()], TEST_IBAN, [
         camtBalance('100.00', 'OPBD'),
-        camtBalance('1234.56', 'CLBD'),
+        camtBalance('1234.56'),
         camtBalance('999.00', 'CLAV'),
       ])
     );
@@ -240,9 +240,8 @@ describe('parseCamt', () => {
   });
 
   it('leaves the closing balance absent when the statement carries none', () => {
-    expect(
-      parseCamt(camtDocument([camtEntry()]))?.closingBalanceCents
-    ).toBeUndefined();
+    const report = parseCamt(camtDocument([camtEntry()]));
+    expect(report?.closingBalanceCents).toBeUndefined();
   });
 
   it('rejects a document that is not camt rather than reporting it empty', () => {

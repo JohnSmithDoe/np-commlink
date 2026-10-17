@@ -28,15 +28,18 @@ import {
 import { MagnitudeId } from '../../model/money.types';
 import { splitMagnitude } from '../../util/money.utils';
 
-const decimals = (value: number): number =>
-  Number.isInteger(value)
+const decimals = (value: number): number => {
+  return Number.isSafeInteger(value)
     ? 0
     : Math.min(2, String(value).split('.', 2)[1]?.length ?? 0);
+};
 
-const localized = (value: number, language: Language): string =>
-  new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
+const localized = (value: number, language: Language): string => {
+  const format = new Intl.NumberFormat(LOCALE_BY_LANGUAGE[language], {
     maximumFractionDigits: decimals(value),
-  }).format(value);
+  });
+  return format.format(value);
+};
 
 @Component({
   selector: 'app-magnitude-input',
@@ -55,13 +58,14 @@ export class MagnitudeInputComponent {
   readonly raw = signal('1');
   readonly magnitude = signal<MagnitudeId>('million');
 
-  readonly grouped = computed(() =>
-    new Intl.NumberFormat(LOCALE_BY_LANGUAGE[this.#language], {
+  readonly grouped = computed(() => {
+    const format = new Intl.NumberFormat(LOCALE_BY_LANGUAGE[this.#language], {
       style: 'currency',
       currency: 'EUR',
       maximumFractionDigits: 0,
-    }).format(this.amount())
-  );
+    });
+    return format.format(this.amount());
+  });
 
   readonly mantissa = computed(() =>
     localized(this.amount() / MAGNITUDE_VALUE[this.magnitude()], this.#language)
@@ -73,8 +77,12 @@ export class MagnitudeInputComponent {
     return shown === 1 ? keys.one : keys.many;
   });
 
+  #emit(mantissa: number): void {
+    this.amountChange.emit(mantissa * MAGNITUDE_VALUE[this.magnitude()]);
+  }
+
   edit(event: InputCustomEvent): void {
-    const text = String(event.detail.value ?? '');
+    const text = event.detail.value ?? '';
     this.raw.set(text);
 
     const split = splitMagnitude(text, this.#language);
@@ -92,9 +100,5 @@ export class MagnitudeInputComponent {
 
   scale(factor: number): void {
     this.amountChange.emit(this.amount() * factor);
-  }
-
-  #emit(mantissa: number): void {
-    this.amountChange.emit(mantissa * MAGNITUDE_VALUE[this.magnitude()]);
   }
 }

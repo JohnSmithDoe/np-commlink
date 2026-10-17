@@ -58,7 +58,8 @@ describe('board setup', () => {
     }
 
     const identities = placed.map((one) => `${one.player}-${one.piece}`);
-    expect(new Set(identities).size).toBe(placed.length);
+    const distinct = new Set(identities);
+    expect(distinct.size).toBe(placed.length);
     expect(validateSetting(board, placed)).toEqual([]);
   });
 
@@ -157,11 +158,13 @@ describe('board setup', () => {
   it('holds a player to their own four figures', () => {
     const problems = validateSetting(
       board,
-      Array.from({ length: 5 }, (_, piece) => ({
-        player: 0,
-        piece,
-        fieldId: `track-${piece + 1}`,
-      }))
+      Array.from({ length: 5 }, (_, piece) => {
+        return {
+          player: 0,
+          piece,
+          fieldId: `track-${piece + 1}`,
+        };
+      })
     );
 
     expect(problems).toHaveLength(1);

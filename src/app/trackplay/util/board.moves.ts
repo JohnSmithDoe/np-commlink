@@ -39,7 +39,7 @@ type Landing =
   | { on: 'home'; slot: number }
   | { on: 'refused'; refusal: MoveRefusal };
 
-const same = (a: BoardFigure, b: BoardFigure): boolean =>
+const isSame = (a: BoardFigure, b: BoardFigure): boolean =>
   a.player === b.player && a.piece === b.piece;
 
 function fieldOf(layout: BoardLayout, id: BoardFieldId): BoardField | null {
@@ -82,6 +82,12 @@ function landingOf(
 ): Landing {
   const start = startIndex(layout, figure.player);
 
+  if (field.kind === 'nest') {
+    return pips === rules.entryRoll
+      ? { on: 'ring', index: start }
+      : { on: 'refused', refusal: 'needs-six' };
+  }
+
   const homeLanding = (slot: number, first: number): Landing => {
     if (slot < layout.pieces) return { on: 'home', slot };
     if (rules.exactHome) return { on: 'refused', refusal: 'overshoots-home' };
@@ -92,12 +98,6 @@ function landingOf(
       : { on: 'home', slot: absorbed };
   };
 
-  if (field.kind === 'nest') {
-    return pips === rules.entryRoll
-      ? { on: 'ring', index: start }
-      : { on: 'refused', refusal: 'needs-six' };
-  }
-
   if (field.kind === 'goal') {
     return homeLanding(field.index + pips, field.index + 1);
   }
@@ -106,14 +106,12 @@ function landingOf(
     (field.index - start + layout.trackLength) % layout.trackLength;
   const total = travelled + pips;
 
-  if (total < layout.trackLength) {
-    return { on: 'ring', index: (start + total) % layout.trackLength };
-  }
-
-  return homeLanding(total - layout.trackLength, 0);
+  return total < layout.trackLength
+    ? { on: 'ring', index: (start + total) % layout.trackLength }
+    : homeLanding(total - layout.trackLength, 0);
 }
 
-function homeRunBlocked(
+function isHomeRunBlocked(
   figures: readonly BoardFigure[],
   player: number,
   first: number,
@@ -146,7 +144,7 @@ export function planMove(
   from: BoardFieldId,
   pips: number
 ): MovePlan {
-  if (!Number.isInteger(pips) || pips < DIE_MIN || pips > DIE_MAX) {
+  if (!Number.isSafeInteger(pips) || pips < DIE_MIN || pips > DIE_MAX) {
     return { ok: false, refusal: 'bad-roll' };
   }
 
@@ -161,7 +159,7 @@ export function planMove(
 
   if (landing.on === 'home' && !rules.jumpOwnInHome) {
     const first = field.kind === 'goal' ? field.index + 1 : 0;
-    if (homeRunBlocked(figures, mover.player, first, landing.slot)) {
+    if (isHomeRunBlocked(figures, mover.player, first, landing.slot)) {
       return { ok: false, refusal: 'blocked-in-home' };
     }
   }
@@ -183,13 +181,13 @@ export function planMove(
       ok: true,
       to: target.id,
       thrown: null,
-      figures: figures.map((one) => (same(one, mover) ? moved : one)),
+      figures: figures.map((one) => (isSame(one, mover) ? moved : one)),
     };
   }
 
   const yard = freeYardSlot(
     layout,
-    figures.filter((one) => !same(one, sitting)),
+    figures.filter((one) => !isSame(one, sitting)),
     sitting.player
   );
   if (!yard) return { ok: false, refusal: 'no-room-at-home' };
@@ -201,8 +199,8 @@ export function planMove(
     to: target.id,
     thrown,
     figures: figures.map((one) => {
-      if (same(one, mover)) return moved;
-      return same(one, sitting) ? thrown : one;
+      if (isSame(one, mover)) return moved;
+      return isSame(one, sitting) ? thrown : one;
     }),
   };
 }

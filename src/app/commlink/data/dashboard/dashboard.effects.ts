@@ -26,12 +26,13 @@ import {
   summaryKey,
 } from '../../model/dashboard.types';
 
-const migratedSummaries = (summaryDocuments: unknown[]): DashboardSummary[] =>
-  summaryDocuments
+const migratedSummaries = (summaryDocuments: unknown[]): DashboardSummary[] => {
+  return summaryDocuments
     .map((summaryDocument) =>
       runMigrations<DashboardSummary>(summaryDocument, APP_VERSION, [])
     )
     .filter((summary): summary is DashboardSummary => !!summary?.source);
+};
 
 @Service()
 export class DashboardEffects {
@@ -43,30 +44,24 @@ export class DashboardEffects {
   load$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(DashboardReadModelActions.load),
-      switchMap(() =>
-        from(
-          this.#database
-            .bootstrap()
-            .then(() =>
-              this.#database.loadPrefixed<unknown>(SUMMARY_KEY_PREFIX)
-            )
-        ).pipe(
-          map((summaryDocuments) =>
-            DashboardReadModelActions.hydrate(
+      switchMap(() => {
+        return from(this.#loadSummaryDocuments()).pipe(
+          map((summaryDocuments) => {
+            return DashboardReadModelActions.hydrate(
               migratedSummaries(summaryDocuments)
-            )
-          ),
-          catchError(() =>
-            of(
+            );
+          }),
+          catchError(() => {
+            return of(
               DashboardReadModelActions.hydrate([]),
               NotificationsActions.toast({
                 key: marker('toast.storage.unavailable'),
                 color: 'warning',
               })
-            )
-          )
-        )
-      )
+            );
+          })
+        );
+      })
     );
   });
 
@@ -99,4 +94,9 @@ export class DashboardEffects {
       })
     );
   });
+
+  async #loadSummaryDocuments(): Promise<unknown[]> {
+    await this.#database.bootstrap();
+    return this.#database.loadPrefixed<unknown>(SUMMARY_KEY_PREFIX);
+  }
 }

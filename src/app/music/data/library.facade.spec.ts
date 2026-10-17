@@ -33,27 +33,29 @@ const scan: FolderScan = {
 
 const index = <T>(...items: T[]) => ({ groups: [{ items }] });
 const page = (...items: object[]) => ({ items });
-const serverTrack = (id: string, title: string, trackNr: number) => ({
-  id,
-  name: `${title}.mp3`,
-  objType: JamObjectType.track,
-  duration: 300_000,
-  tag: { title, artist: 'Portishead', album: 'Dummy', trackNr },
-});
+const serverTrack = (id: string, title: string, trackNr: number) => {
+  return {
+    id,
+    name: `${title}.mp3`,
+    objType: JamObjectType.track,
+    duration: 300_000,
+    tag: { title, artist: 'Portishead', album: 'Dummy', trackNr },
+  };
+};
 
 function serverJam() {
   return {
     artist: {
-      index: vi.fn(() =>
-        Promise.resolve(
+      index: vi.fn(() => {
+        return Promise.resolve(
           index({
             id: 'artist-p',
             name: 'portishead ',
             albumCount: 1,
             trackCount: 11,
           })
-        )
-      ),
+        );
+      }),
       tracks: vi.fn(() =>
         Promise.resolve(page(serverTrack('s3', 'Pedestal', 3)))
       ),
@@ -62,58 +64,58 @@ function serverJam() {
       ),
     },
     album: {
-      index: vi.fn(() =>
-        Promise.resolve(
+      index: vi.fn(() => {
+        return Promise.resolve(
           index({
             id: 'album-d',
             name: 'Dummy',
             artist: 'Portishead',
             trackCount: 11,
           })
-        )
-      ),
-      tracks: vi.fn(() =>
-        Promise.resolve(
+        );
+      }),
+      tracks: vi.fn(() => {
+        return Promise.resolve(
           page(serverTrack('s3', 'Pedestal', 3), {
             id: 'folder-x',
             name: 'x',
             objType: JamObjectType.folder,
           })
-        )
-      ),
-      search: vi.fn(() =>
-        Promise.resolve(
+        );
+      }),
+      search: vi.fn(() => {
+        return Promise.resolve(
           page({
             id: 'album-t',
             name: 'Third',
             artistName: 'Portishead',
             trackCount: 11,
           })
-        )
-      ),
+        );
+      }),
     },
     folder: {
       index: vi.fn(() =>
         Promise.resolve(index({ id: 'f-root', name: 'Rock', trackCount: 40 }))
       ),
-      subfolders: vi.fn(() =>
-        Promise.resolve(
+      subfolders: vi.fn(() => {
+        return Promise.resolve(
           page({ id: 'f-sub', name: 'raw', title: 'Trip-Hop', trackCount: 9 })
-        )
-      ),
+        );
+      }),
       tracks: vi.fn(() => Promise.resolve(page(serverTrack('s5', 'Numb', 5)))),
     },
     playlist: {
-      search: vi.fn(() =>
-        Promise.resolve(
+      search: vi.fn(() => {
+        return Promise.resolve(
           page({
             id: 'pl-1',
             name: 'Rainy',
             entriesCount: 4,
             duration: 900_000,
           })
-        )
-      ),
+        );
+      }),
       entries: vi.fn(() =>
         Promise.resolve(page(serverTrack('s7', 'Wandering Star', 7)))
       ),
@@ -224,7 +226,9 @@ describe('LibraryFacade', () => {
       const [artist] = facade.artists();
       expect(facade.artists()).toHaveLength(1);
       expect(
-        artist?.refs.map((reference) => reference.sourceId).toSorted()
+        artist?.refs
+          .map((reference) => reference.sourceId)
+          .toSorted((a, b) => a.localeCompare(b))
       ).toEqual(['folder-1', 'jam-1']);
       expect(facade.folders().map((entry) => entry.id)).toEqual([
         'folder-1',
@@ -316,10 +320,11 @@ describe('LibraryFacade', () => {
         'local-roads',
       ]);
       expect(results.artists).toHaveLength(1);
-      expect(results.albums.map((album) => album.name).toSorted()).toEqual([
-        'Dummy',
-        'Third',
-      ]);
+      expect(
+        results.albums
+          .map((album) => album.name)
+          .toSorted((a = '', b = '') => a.localeCompare(b))
+      ).toEqual(['Dummy', 'Third']);
     });
 
     it('flips a server track’s favourite from what the server answers', async () => {

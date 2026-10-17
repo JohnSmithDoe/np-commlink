@@ -47,22 +47,26 @@ const writtenBack = (
 export const deleteGameCascade = (
   state: TrackplayState,
   game: Game
-): TrackplayState => ({
-  ...state,
-  games: removeListItem<GamesState, Game>(state.games, game),
-});
+): TrackplayState => {
+  return {
+    ...state,
+    games: removeListItem<GamesState, Game>(state.games, game),
+  };
+};
 
 const reassignGamesToDefaultType = (
   games: GamesState,
   typeId: TrackplayId
-): GamesState => ({
-  ...games,
-  items: games.items.map((game) =>
-    gameTypeIdOf(game) === typeId
-      ? withGameTypeId(game, DEFAULT_GAME_TYPE_ID)
-      : game
-  ),
-});
+): GamesState => {
+  return {
+    ...games,
+    items: games.items.map((game) => {
+      return gameTypeIdOf(game) === typeId
+        ? withGameTypeId(game, DEFAULT_GAME_TYPE_ID)
+        : game;
+    }),
+  };
+};
 
 const clearDeletedTypeFromFilter = <T extends { filterBy?: string }>(
   view: T,
@@ -72,30 +76,33 @@ const clearDeletedTypeFromFilter = <T extends { filterBy?: string }>(
 export const deleteGameTypeCascade = (
   state: TrackplayState,
   type: GameType
-): TrackplayState => ({
-  ...state,
-  gameTypes: removeListItem<GameTypesState, GameType>(state.gameTypes, type),
-  games: clearDeletedTypeFromFilter(
-    reassignGamesToDefaultType(state.games, type.id),
-    type.id
-  ),
-  gamesForPlayer: clearDeletedTypeFromFilter(state.gamesForPlayer, type.id),
-});
+): TrackplayState => {
+  return {
+    ...state,
+    gameTypes: removeListItem<GameTypesState, GameType>(state.gameTypes, type),
+    games: clearDeletedTypeFromFilter(
+      reassignGamesToDefaultType(state.games, type.id),
+      type.id
+    ),
+    gamesForPlayer: clearDeletedTypeFromFilter(state.gamesForPlayer, type.id),
+  };
+};
 
 export const restoreGameTypeCascade = (
   state: TrackplayState,
   gameType: GameType,
   games: readonly Game[]
-): TrackplayState => ({
-  ...state,
-  gameTypes: addListItem<GameTypesState, GameType>(state.gameTypes, gameType),
-  games: writtenBack(state.games, games),
-});
+): TrackplayState => {
+  return {
+    ...state,
+    gameTypes: addListItem<GameTypesState, GameType>(state.gameTypes, gameType),
+    games: writtenBack(state.games, games),
+  };
+};
 
-const seatsResolve =
-  (people: ReadonlySet<PersonId>) =>
-  (game: Game): boolean =>
-    game.playerIds.every((id) => people.has(id));
+function seatsResolve(people: ReadonlySet<PersonId>) {
+  return (game: Game): boolean => game.playerIds.every((id) => people.has(id));
+}
 
 export const hasOrphanGames = (
   state: TrackplayState,
@@ -105,10 +112,12 @@ export const hasOrphanGames = (
 export const sweepOrphanGames = (
   state: TrackplayState,
   people: ReadonlySet<PersonId>
-): TrackplayState => ({
-  ...state,
-  games: {
-    ...state.games,
-    items: state.games.items.filter(seatsResolve(people)),
-  },
-});
+): TrackplayState => {
+  return {
+    ...state,
+    games: {
+      ...state.games,
+      items: state.games.items.filter(seatsResolve(people)),
+    },
+  };
+};

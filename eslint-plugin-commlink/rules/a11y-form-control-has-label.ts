@@ -19,6 +19,7 @@ import {
   hasAttribute,
   hasChildInSlot,
   hasOwnText,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
@@ -38,12 +39,14 @@ const SOURCE_DESCRIPTIONS: Record<string, string> = {
   text: 'slotted text',
 };
 
-const isNamed = (element: TemplateElement, sources: string[]): boolean =>
-  sources.some((source) => {
+const isNamed = (element: TemplateElement, sources: string[]): boolean => {
+  return sources.some((source) => {
     if (source === 'label') return hasAttribute(element, 'label');
-    if (source === 'slot') return hasChildInSlot(element, 'label');
-    return hasOwnText(element);
+    return source === 'slot'
+      ? hasChildInSlot(element, 'label')
+      : hasOwnText(element);
   });
+};
 
 export const rule: Rule.RuleModule = {
   meta: {
@@ -60,12 +63,15 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
         const sources = NAME_SOURCES[element.name];
-        if (!sources) return;
-        if (hasAccessibleNameAttribute(element)) return;
-        if (isNamed(element, sources)) return;
+        if (
+          !sources ||
+          hasAccessibleNameAttribute(element) ||
+          isNamed(element, sources)
+        )
+          return;
         context.report({
           loc: services.convertElementSourceSpanToLoc(context, element),
           messageId: 'controlNeedsName',
@@ -77,6 +83,6 @@ export const rule: Rule.RuleModule = {
           },
         });
       },
-    };
+    });
   },
 };

@@ -29,12 +29,12 @@ export class VitalsOrphansEffects {
   sweepOrphans$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(VitalsActions.loaded),
-      switchMap(() =>
-        this.#roster$.pipe(
+      switchMap(() => {
+        return this.#roster$.pipe(
           filter((people): people is readonly PersonRef[] => !!people),
           take(1)
-        )
-      ),
+        );
+      }),
       map((people) => new Set(people.map(({ id }) => id))),
       concatLatestFrom(() => this.#store.select(selectVitalsState)),
       filter(([people, vitals]) => hasOrphans(vitals, people)),

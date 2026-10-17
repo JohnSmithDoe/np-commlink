@@ -22,11 +22,13 @@ type ToastElement = {
   onDidDismiss: ReturnType<typeof vi.fn>;
 };
 
-const stubToast = (): ToastElement => ({
-  present: vi.fn().mockResolvedValue(undefined),
-  dismiss: vi.fn().mockResolvedValue(true),
-  onDidDismiss: vi.fn().mockReturnValue(new Promise<void>(vi.fn())),
-});
+const stubToast = (): ToastElement => {
+  return {
+    present: vi.fn().mockResolvedValue(undefined),
+    dismiss: vi.fn().mockResolvedValue(true),
+    onDidDismiss: vi.fn().mockReturnValue(new Promise<void>(vi.fn())),
+  };
+};
 
 const inGroup = (key: string) =>
   NotificationsActions.toast({ key, group: 'undo' });

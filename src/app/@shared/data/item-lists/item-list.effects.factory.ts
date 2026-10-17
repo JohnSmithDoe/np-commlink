@@ -26,43 +26,45 @@ type ListFlowActions<T extends BaseItem> = {
 
 const toastAddItemFailure = <T extends BaseItem>(
   addItemFailure: Creator<[item: T], { item: T }>
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (actions$ = inject(Actions)) => {
       return actions$.pipe(
         ofType(addItemFailure),
-        map(({ item }) =>
-          NotificationsActions.toast({
+        map(({ item }) => {
+          return NotificationsActions.toast({
             key: marker('toast.add.item.failure'),
             parameters: { name: item.name },
             color: 'medium',
-          })
-        )
+          });
+        })
       );
     },
     { functional: true }
   );
+};
 
 export const pushUndoOnDelete = <T extends BaseItem>(
   scope: ItemListId,
   removeItem: Creator<[item: T], { item: T }>,
   addItem: Creator<[item: T], { item: T }>
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (actions$ = inject(Actions)) => {
       return actions$.pipe(
         ofType(removeItem),
-        map(({ item }) =>
-          UndoActions.pushed({
+        map(({ item }) => {
+          return UndoActions.pushed({
             scope,
             name: item.name,
             action: addItem(item),
-          })
-        )
+          });
+        })
       );
     },
     { functional: true }
   );
+};
 
 type Matcher<T extends BaseItem> = (item: T, items: T[]) => T | undefined;
 type ItemFromSearch<T> = (name: string, filterBy?: string) => T;
@@ -77,8 +79,8 @@ const addFromSearch = <T extends BaseItem, S extends ItemList<T>>(
   create: ItemFromSearch<T> | null,
   match: Matcher<T>,
   defaults?: ItemDefaults<T>
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (actions$ = inject(Actions), store = inject(Store)) => {
       if (!create) return EMPTY;
       return actions$.pipe(
@@ -101,11 +103,12 @@ const addFromSearch = <T extends BaseItem, S extends ItemList<T>>(
     },
     { functional: true }
   );
+};
 
 export const createItemListEffects = <
   T extends BaseItem,
   S extends ItemList<T>,
->(cfg: {
+>(config: {
   actions: ListFlowActions<T>;
   select: MemoizedSelector<object, S>;
   create: ItemFromSearch<T> | null;
@@ -115,62 +118,63 @@ export const createItemListEffects = <
     scope: ItemListId;
     removeItem: Creator<[item: T], { item: T }>;
   };
-}) => ({
-  addItemFromSearch$: addFromSearch(
-    cfg.actions,
-    cfg.select,
-    cfg.create,
-    matcherOf(cfg.match),
-    cfg.defaults
-  ),
+}) => {
+  return {
+    addItemFromSearch$: addFromSearch(
+      config.actions,
+      config.select,
+      config.create,
+      matcherOf(config.match),
+      config.defaults
+    ),
 
-  addOrUpdateItem$: createEffect(
-    (actions$ = inject(Actions), store = inject(Store)) => {
-      const match = matcherOf(cfg.match);
-      return actions$.pipe(
-        ofType(cfg.actions.addOrUpdateItem),
-        withLatestFrom(store.select(cfg.select)),
-        map(([{ item }, list]) =>
-          match(item, list.items)
-            ? cfg.actions.updateItem(item)
-            : cfg.actions.addItem(item)
-        )
-      );
-    },
-    { functional: true }
-  ),
+    addOrUpdateItem$: createEffect(
+      (actions$ = inject(Actions), store = inject(Store)) => {
+        const match = matcherOf(config.match);
+        return actions$.pipe(
+          ofType(config.actions.addOrUpdateItem),
+          withLatestFrom(store.select(config.select)),
+          map(([{ item }, list]) => {
+            return match(item, list.items)
+              ? config.actions.updateItem(item)
+              : config.actions.addItem(item);
+          })
+        );
+      },
+      { functional: true }
+    ),
 
-  syncSearchOnRename$: createEffect(
-    (actions$ = inject(Actions), store = inject(Store)) => {
-      return actions$.pipe(
-        ofType(cfg.actions.updateItem),
-        withLatestFrom(store.select(cfg.select)),
-        map(([{ item }, list]) =>
-          cfg.actions.updateSearch(updatedSearchQuery(item, list.searchQuery))
-        )
-      );
-    },
-    { functional: true }
-  ),
+    syncSearchOnRename$: createEffect(
+      (actions$ = inject(Actions), store = inject(Store)) => {
+        return actions$.pipe(
+          ofType(config.actions.updateItem),
+          withLatestFrom(store.select(config.select)),
+          map(([{ item }, list]) => {
+            const searchQuery = updatedSearchQuery(item, list.searchQuery);
+            return config.actions.updateSearch(searchQuery);
+          })
+        );
+      },
+      { functional: true }
+    ),
 
-  addItemFailure$: toastAddItemFailure(cfg.actions.addItemFailure),
+    addItemFailure$: toastAddItemFailure(config.actions.addItemFailure),
 
-  ...(cfg.undoableDelete
-    ? {
-        undoDelete$: pushUndoOnDelete(
-          cfg.undoableDelete.scope,
-          cfg.undoableDelete.removeItem,
-          cfg.actions.addItem
-        ),
-      }
-    : {}),
-});
+    ...(config.undoableDelete && {
+      undoDelete$: pushUndoOnDelete(
+        config.undoableDelete.scope,
+        config.undoableDelete.removeItem,
+        config.actions.addItem
+      ),
+    }),
+  };
+};
 
 export const clearSearchAfter = (
   updateSearch: Creator<[searchQuery?: string], { searchQuery?: string }>,
   triggers: ActionCreator[]
-) =>
-  createEffect(
+) => {
+  return createEffect(
     (actions$ = inject(Actions)) => {
       return actions$.pipe(
         ofType(...triggers),
@@ -179,3 +183,4 @@ export const clearSearchAfter = (
     },
     { functional: true }
   );
+};

@@ -57,17 +57,19 @@ async function createAccountWithBooking(page: Page) {
   return account;
 }
 
-async function assignNewCategory(page: Page, modal: Locator, name: string) {
+const NEW_CATEGORY = 'Kaffee';
+
+async function assignNewCategory(page: Page, modal: Locator) {
   await modal.getByTestId('category-input-trigger').click();
   const search = page.getByTestId('category-picker-search').locator('input');
   await expect(search).toBeVisible({ timeout: 10_000 });
-  await search.fill(name);
-  const create = page.getByText(`${name} erstellen`);
+  await search.fill(NEW_CATEGORY);
+  const create = page.getByText(`${NEW_CATEGORY} erstellen`);
   await expect(create).toBeVisible({ timeout: 10_000 });
   await create.click();
-  await expect(modal.locator('app-category-input').getByText(name)).toBeVisible(
-    { timeout: 10_000 }
-  );
+  await expect(
+    modal.locator('app-category-input').getByText(NEW_CATEGORY)
+  ).toBeVisible({ timeout: 10_000 });
 }
 
 test.describe('deriving a rule from a booking', () => {
@@ -93,7 +95,7 @@ test.describe('deriving a rule from a booking', () => {
       'Trifft auf 1 von 1'
     );
 
-    await assignNewCategory(page, rule, 'Kaffee');
+    await assignNewCategory(page, rule);
     await rule.getByRole('button', { name: /Anlegen|Übernehmen/ }).click();
     await expect(dialog(page)).toBeHidden({ timeout: 10_000 });
 
@@ -146,21 +148,22 @@ test.describe('deriving a rule from a booking', () => {
 
     await account.getByTestId('list-row-select').first().click();
     await expect(dialog(page)).toBeVisible({ timeout: 10_000 });
-    await assignNewCategory(page, dialog(page), 'Kaffee');
+    await assignNewCategory(page, dialog(page));
     await dialog(page).getByTestId('derive-rule').click();
 
     const rule = presentedDialog(page, 'Neuen Eintrag anlegen');
     const trigger = rule.getByTestId('category-input-trigger');
     await expect(trigger.locator('ion-chip')).toBeVisible({ timeout: 10_000 });
 
-    const chipFollowsLabel = await trigger.evaluate((item) => {
-      const label = item.querySelector('ion-label > span');
+    const doesChipFollowLabel = await trigger.evaluate((item) => {
+      const label = item.querySelector(':scope ion-label > span');
       const chip = item.querySelector('ion-chip');
-      if (!label || !chip) return false;
-      return !!(
+      return Boolean(
+        label &&
+        chip &&
         label.compareDocumentPosition(chip) & Node.DOCUMENT_POSITION_FOLLOWING
       );
     });
-    expect(chipFollowsLabel).toBe(true);
+    expect(doesChipFollowLabel).toBe(true);
   });
 });

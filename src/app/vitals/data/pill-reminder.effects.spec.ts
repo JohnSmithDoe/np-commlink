@@ -63,10 +63,11 @@ describe('PillReminderEffects', () => {
   const drain = (effect: Observable<unknown>) =>
     firstValueFrom(effect.pipe(toArray()));
 
-  const stateWith = (...pills: ReturnType<typeof mockPill>[]) =>
-    mockVitalsState({
+  const stateWith = (...pills: ReturnType<typeof mockPill>[]) => {
+    return mockVitalsState({
       pills: mockPillsState(pills, { nextSlot: pills.length }),
     });
+  };
 
   it('arms one weekly cron per due weekday, at the pill’s own time', async () => {
     const pill = mockPill({ slot: 0, weekdays: [1, 4], hour: 18, minute: 30 });

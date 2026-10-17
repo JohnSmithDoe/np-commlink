@@ -25,7 +25,9 @@ export const shuffled = <T>(
   const result = [...items];
   for (let index = result.length - 1; index > 0; index--) {
     const index_ = Math.floor(random() * (index + 1));
-    [result[index], result[index_]] = [result[index_] as T, result[index] as T];
+    const swapped = result[index] as T;
+    result[index] = result[index_] as T;
+    result[index_] = swapped;
   }
   return result;
 };

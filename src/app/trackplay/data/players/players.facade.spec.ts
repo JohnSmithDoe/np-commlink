@@ -61,9 +61,8 @@ describe('PlayersFacade', () => {
   });
 
   it('narrows by the search term', () => {
-    expect(idsOf(setup(mockPlayersState({ searchQuery: 'brav' })))).toEqual([
-      'b',
-    ]);
+    const facade = setup(mockPlayersState({ searchQuery: 'brav' }));
+    expect(idsOf(facade)).toEqual(['b']);
   });
 
   it('resolves the route player, or nothing for an unknown id', () => {

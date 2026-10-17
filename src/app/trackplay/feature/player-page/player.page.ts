@@ -34,9 +34,10 @@ import { PEOPLE_ROUTE } from '../../../@shared/util/people/people.token';
   providers: [{ provide: LIST_FACADE, useExisting: GamesForPlayerPageFacade }],
 })
 export class TrackplayPlayerPage {
+  readonly #router = inject(Router);
+
   readonly facade = inject(GamesForPlayerPageFacade);
   readonly peopleRoute = PEOPLE_ROUTE;
-  readonly #router = inject(Router);
 
   constructor() {
     addIcons({

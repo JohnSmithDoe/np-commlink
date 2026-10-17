@@ -58,12 +58,14 @@ export class MusicQueuePage {
   readonly #player = inject(PlayerFacade);
   readonly #covers = inject(CoverStore);
 
+  readonly #scrubMs = signal<number | undefined>(undefined);
+
   readonly queue = this.#player.queue;
   readonly current = this.#player.current;
   readonly playing = this.#player.playing;
   readonly positionMs = this.#player.positionMs;
   readonly durationMs = this.#player.durationMs;
-  readonly #scrubMs = signal<number | undefined>(undefined);
+
   readonly shownPositionMs = computed(
     () => this.#scrubMs() ?? this.positionMs()
   );

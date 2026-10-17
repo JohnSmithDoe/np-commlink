@@ -22,15 +22,12 @@ describe('EditProductDialogComponent', () => {
   const sibling = mockProduct({ id: 'other', name: 'Margarine' });
 
   beforeEach(async () => {
+    const household = mockHouseholdState({
+      products: mockProductsState({ items: [sibling, seed] }),
+    });
     await TestBed.configureTestingModule({
       imports: [EditProductDialogComponent],
-      providers: [
-        ...provideTestingProviders({
-          household: mockHouseholdState({
-            products: mockProductsState({ items: [sibling, seed] }),
-          }),
-        }),
-      ],
+      providers: [...provideTestingProviders({ household })],
     }).compileComponents();
     store = TestBed.inject(MockStore);
     host = TestBed.inject(ItemDialogService);

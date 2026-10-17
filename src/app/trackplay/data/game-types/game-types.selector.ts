@@ -13,8 +13,7 @@ import { selectGameTypesList } from '../trackplay.selector';
 
 const defaultTypeFirst = (a: GameType, b: GameType): number => {
   if (a.id === DEFAULT_GAME_TYPE_ID) return -1;
-  if (b.id === DEFAULT_GAME_TYPE_ID) return 1;
-  return a.name.localeCompare(b.name);
+  return b.id === DEFAULT_GAME_TYPE_ID ? 1 : a.name.localeCompare(b.name);
 };
 
 export const selectGameTypeItems = createSelector(
@@ -34,7 +33,8 @@ export const selectGameTypesListItems = createSelector(
     (result?.listItems ?? list.items).toSorted(defaultTypeFirst)
 );
 
-export const selectGameTypeById = (typeId: TrackplayId) =>
-  createSelector(selectGameTypeItems, (types): GameType | undefined =>
+export const selectGameTypeById = (typeId: TrackplayId) => {
+  return createSelector(selectGameTypeItems, (types): GameType | undefined =>
     types.find((type) => type.id === typeId)
   );
+};

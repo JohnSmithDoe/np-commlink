@@ -10,7 +10,12 @@ export const DeckActions = createActionGroup({
     reorder: (order: DeckEntryId[]) => ({ order }),
     toggleEntry: (id: DeckEntryId) => ({ id }),
     toggleTile: (id: DeckEntryId) => ({ id }),
-    setEntries: (ids: DeckEntryId[], visible: boolean) => ({ ids, visible }),
+    setEntries: (ids: DeckEntryId[], isVisible: boolean) => {
+      return {
+        ids,
+        visible: isVisible,
+      };
+    },
     reset: emptyProps(),
   },
 });

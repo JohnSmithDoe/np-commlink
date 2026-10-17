@@ -39,7 +39,9 @@ export function provideTestingProviders(
 
 export const COMMON_TEST_PROVIDERS: TestProvider[] = provideTestingProviders();
 
-export const providePersonEditor = (editor: PersonEditor): ValueProvider => ({
-  provide: PERSON_EDITOR,
-  useValue: editor,
-});
+export const providePersonEditor = (editor: PersonEditor): ValueProvider => {
+  return {
+    provide: PERSON_EDITOR,
+    useValue: editor,
+  };
+};

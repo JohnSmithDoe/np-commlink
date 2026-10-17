@@ -51,10 +51,12 @@ export const cashSchedulesReducer = createReducer(
   on(CashSchedulesActions.updateFilter, (state, { filterBy }): CashSchedulesState => ({ ...state, filterBy })),
   on(CashSchedulesActions.updateSort, (state, { sortBy, sortDirection }): CashSchedulesState => updateListSort(state, sortBy, sortDirection)),
 
-  on(CashSchedulesActions.applyAmountChanges, (state, { changes }): CashSchedulesState => ({
-    ...state,
-    items: withChanges(state.items, changes),
-  })),
+  on(CashSchedulesActions.applyAmountChanges, (state, { changes }): CashSchedulesState => {
+    return {
+      ...state,
+      items: withChanges(state.items, changes),
+    };
+  }),
 
   on(CashActions.loaded, (state, { cash }): CashSchedulesState => hydratedList({ ...initialSchedulesState, ...(cash?.schedules ?? state) }))
 );

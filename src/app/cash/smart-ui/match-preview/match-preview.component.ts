@@ -50,11 +50,11 @@ export class CashMatchPreviewComponent {
     );
   });
 
-  readonly summary = computed(() =>
-    matchSummary(
+  readonly summary = computed(() => {
+    return matchSummary(
       this.conditionSet(),
       this.#transactions.allItems(),
       this.categoryId()
-    )
-  );
+    );
+  });
 }

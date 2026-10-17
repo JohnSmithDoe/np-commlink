@@ -27,13 +27,13 @@ export class RitualToastEffects {
   undoDismissToast$ = createEffect(() => {
     return this.#actions$.pipe(
       ofType(RitualActions.dismissed),
-      map(() =>
-        NotificationsActions.toast({
+      map(() => {
+        return NotificationsActions.toast({
           key: marker('ritual.toast.dismissed'),
           durationMs: UNDO_TOAST_MS,
           group: DISMISS_TOAST_GROUP,
-        })
-      )
+        });
+      })
     );
   });
 }

@@ -51,38 +51,58 @@ export type EmojiGroup = {
 type EmojiDataByGroup = Readonly<Record<string, readonly EmojiData[]>>;
 
 const DATA_BY_LANGUAGE: Record<Language, () => Promise<EmojiDataByGroup>> = {
-  de: () => import('./emoji.data.de').then((module) => module.EMOJI_DATA_DE),
-  en: () => import('./emoji.data.en').then((module) => module.EMOJI_DATA_EN),
-  fr: () => import('./emoji.data.fr').then((module) => module.EMOJI_DATA_FR),
+  de: async () => {
+    const { EMOJI_DATA_DE } = await import('./emoji.data.de');
+    return EMOJI_DATA_DE;
+  },
+  en: async () => {
+    const { EMOJI_DATA_EN } = await import('./emoji.data.en');
+    return EMOJI_DATA_EN;
+  },
+  fr: async () => {
+    const { EMOJI_DATA_FR } = await import('./emoji.data.fr');
+    return EMOJI_DATA_FR;
+  },
 };
 
-const toEntry = (data: EmojiData): EmojiEntry => ({
-  ...data,
-  keywords: `${data.label} ${data.tags}`.toLowerCase(),
-});
+const toEntry = (data: EmojiData): EmojiEntry => {
+  return {
+    ...data,
+    keywords: `${data.label} ${data.tags}`.toLowerCase(),
+  };
+};
 
-export const toGroups = (data: EmojiDataByGroup): EmojiGroup[] =>
-  EMOJI_GROUP_IDS.map((id) => ({
-    id,
-    entries: (data[id] ?? []).map((entry) => toEntry(entry)),
-  }));
+export const toGroups = (data: EmojiDataByGroup): EmojiGroup[] => {
+  return EMOJI_GROUP_IDS.map((id) => {
+    return {
+      id,
+      entries: (data[id] ?? []).map((entry) => toEntry(entry)),
+    };
+  });
+};
 
 const pending = new Map<Language, Promise<EmojiGroup[]>>();
+
+const loadGroups = async (language: Language): Promise<EmojiGroup[]> => {
+  let data: EmojiDataByGroup;
+  try {
+    data = await DATA_BY_LANGUAGE[language]();
+  } catch (error) {
+    pending.delete(language);
+    throw error;
+  }
+  return toGroups(data);
+};
 
 export const loadEmojiCatalog = (language: Language): Promise<EmojiGroup[]> => {
   const cached = pending.get(language);
   if (cached) return cached;
-  const load = DATA_BY_LANGUAGE[language]()
-    .then(toGroups)
-    .catch((error: unknown) => {
-      pending.delete(language);
-      throw error;
-    });
+  const load = loadGroups(language);
   pending.set(language, load);
   return load;
 };
 
 export const emojiMatching = (query: string) => {
-  const matches = matcherFor(query);
-  return (entry: EmojiEntry) => matches(entry.keywords);
+  const isMatches = matcherFor(query);
+  return (entry: EmojiEntry) => isMatches(entry.keywords);
 };

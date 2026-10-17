@@ -56,13 +56,13 @@ export const notesListEffects = {
     (actions$ = inject(Actions), images = inject(NoteImageStore)) => {
       return actions$.pipe(
         ofType(NotesActions.rotateImage),
-        concatMap(({ imageId }) =>
-          from(rotateBase64(images.urlOf(imageId))).pipe(
+        concatMap(({ imageId }) => {
+          return from(rotateBase64(images.urlOf(imageId))).pipe(
             filter((rotated): rotated is string => !!rotated),
             concatMap((rotated) => images.put(imageId, rotated)),
             catchError(() => EMPTY)
-          )
-        )
+          );
+        })
       );
     },
     { functional: true, dispatch: false }
@@ -73,15 +73,12 @@ export const notesListEffects = {
       return actions$.pipe(
         ofType(NotesActions.loaded),
         filter(({ notes }) => notes !== null),
-        concatMap(({ notes }) =>
-          from(
-            images.collect(
-              new Set(
-                (notes?.list.items ?? []).flatMap((note) => note.images ?? [])
-              )
-            )
-          ).pipe(catchError(() => EMPTY))
-        )
+        concatMap(({ notes }) => {
+          const referenced = new Set(
+            (notes?.list.items ?? []).flatMap((note) => note.images ?? [])
+          );
+          return from(images.collect(referenced)).pipe(catchError(() => EMPTY));
+        })
       );
     },
     { functional: true, dispatch: false }

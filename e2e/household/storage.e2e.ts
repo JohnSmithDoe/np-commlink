@@ -278,9 +278,9 @@ test.describe('storage list', () => {
       .locator('input');
     await pickerSearch.fill('Fridge');
 
-    const createFridge = page.getByText('Fridge erstellen');
-    await expect(createFridge).toBeVisible({ timeout: 10_000 });
-    await createFridge.click();
+    const fridgeOption = page.getByText('Fridge erstellen');
+    await expect(fridgeOption).toBeVisible({ timeout: 10_000 });
+    await fridgeOption.click();
     await page.getByRole('button', { name: 'Auswählen' }).click();
 
     await expect(

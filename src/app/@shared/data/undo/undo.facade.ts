@@ -1,4 +1,4 @@
-import { computed, inject, Signal, Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ItemListId } from '../../model/item-list.types';
 import { UndoEntry } from '../../model/undo.types';
@@ -11,8 +11,8 @@ export class UndoFacade {
   readonly #store = inject(Store);
   readonly #entries = this.#store.selectSignal(selectUndoEntries);
 
-  topIn(scope: Signal<ItemListId>): Signal<UndoEntry | undefined> {
-    return computed(() => newestIn(this.#entries(), scope()));
+  topIn(scope: ItemListId): UndoEntry | undefined {
+    return newestIn(this.#entries(), scope);
   }
 
   undo(scope: ItemListId): void {

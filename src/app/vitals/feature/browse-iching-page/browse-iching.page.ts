@@ -7,10 +7,12 @@ import { PageReturnComponent } from '../../../@shared/ui/page-return/page-return
 import { HEXAGRAMS } from '../../model/iching.consts';
 import { hexagramGlyph } from '../../util/hexagram.utils';
 
-const HEXAGRAM_VIEWS = HEXAGRAMS.map((record) => ({
-  record,
-  glyph: hexagramGlyph(record),
-}));
+const HEXAGRAM_VIEWS = HEXAGRAMS.map((record) => {
+  return {
+    record,
+    glyph: hexagramGlyph(record),
+  };
+});
 
 @Component({
   selector: 'app-page-vitals-browse-iching',

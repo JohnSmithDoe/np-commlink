@@ -33,7 +33,7 @@ import { LanguageService } from '../../../@shared/data/theme/language.service';
 import { ItemListId } from '../../../@shared/model/item-list.types';
 import { ItemEditModalComponent } from '../../../@shared/ui/base-item/item-edit-modal/item-edit-modal.component';
 import {
-  hasOtherErrorKind,
+  otherErrorKindPresent,
   requireParseableDate,
 } from '../../../@shared/util/forms/form-rules';
 import { CASH_SCHEDULES_LIST_ID } from '../../model/cash.types';
@@ -94,34 +94,36 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
 
   readonly periods = PERIOD_MONTHS;
 
-  protected override uniqueName(): boolean {
-    return false;
-  }
-
-  readonly amountInvalid = hasOtherErrorKind(
+  readonly amountInvalid = otherErrorKindPresent(
     this.form.amountCents,
     MISSING_AMOUNT
   );
 
-  readonly amountInvalidRows = computed(() =>
-    [...this.form.conditions].map((condition) =>
-      condition
+  readonly amountInvalidRows = computed(() => {
+    return [...this.form.conditions].map((condition) => {
+      return condition
         .value()
         .errors()
-        .some(({ kind }) => kind === UNPARSEABLE_AMOUNT.kind)
-    )
-  );
+        .some(({ kind }) => kind === UNPARSEABLE_AMOUNT.kind);
+    });
+  });
 
-  readonly conditionSet = computed<ConditionSet>(() => ({
-    match: this.draft().match,
-    conditions: this.draft().conditions.map((condition) =>
-      toCondition(condition, this.#language())
-    ),
-  }));
+  readonly conditionSet = computed<ConditionSet>(() => {
+    return {
+      match: this.draft().match,
+      conditions: this.draft().conditions.map((condition) =>
+        toCondition(condition, this.#language())
+      ),
+    };
+  });
 
   constructor() {
     super();
     addIcons({ addOutline });
+  }
+
+  protected override uniqueName(): boolean {
+    return false;
   }
 
   protected override extraRules(path: SchemaPathTree<ScheduleForm>): void {
@@ -189,11 +191,11 @@ export class EditCashScheduleDialogComponent extends BaseEditItemDialog<
 
   onField(index: number, field: FilterField): void {
     this.patch({
-      conditions: this.draft().conditions.map((condition, at) =>
-        at === index
+      conditions: this.draft().conditions.map((condition, at) => {
+        return at === index
           ? { ...condition, field, op: defaultOpFor(field) }
-          : condition
-      ),
+          : condition;
+      }),
     });
   }
 }

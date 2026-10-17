@@ -52,7 +52,7 @@ export function windowStartISO(
   }
 }
 
-const onOrAfter = (dateISO: string, cutoffISO: string): boolean =>
+const isOnOrAfter = (dateISO: string, cutoffISO: string): boolean =>
   dateISO.slice(0, 10) >= cutoffISO.slice(0, 10);
 
 export function inScope(
@@ -62,7 +62,8 @@ export function inScope(
 ): CashTransaction[] {
   const start = windowStartISO(scope, todayISO);
   return transactions.filter(
-    (txn) => isHouseholdMoney(txn) && (!start || onOrAfter(txn.dateISO, start))
+    (txn) =>
+      isHouseholdMoney(txn) && (!start || isOnOrAfter(txn.dateISO, start))
   );
 }
 
@@ -123,28 +124,36 @@ export function reportFor(
       ...totals,
       netCents: totals.incomeCents - totals.spendCents,
     },
-    monthly: [...byMonth.values()].toSorted((a, b) =>
-      a.month.localeCompare(b.month)
-    ),
-    byCategory: [...byCategory.entries()]
-      .map(([id, cents]) => ({
-        categoryId: id,
-        category: categoryName(id),
-        cents,
-      }))
+    monthly: byMonth
+      .values()
+      .toArray()
+      .toSorted((a, b) => a.month.localeCompare(b.month)),
+    byCategory: [...byCategory]
+      .map(([id, cents]) => {
+        return {
+          categoryId: id,
+          category: categoryName(id),
+          cents,
+        };
+      })
       .toSorted((a, b) => b.cents - a.cents),
     biggest: rows
       .filter((txn) => txn.amountCents < 0)
       .toSorted((a, b) => a.amountCents - b.amountCents)
       .slice(0, BIGGEST_EXPENSES_SHOWN)
-      .map((txn) => ({
-        id: txn.id,
-        name: txn.name,
-        dateISO: txn.dateISO,
-        cents: -txn.amountCents,
-        category: categoryName(categoryIdOf(txn) ?? ''),
-      })),
-    byCounterparty: [...byIban.values()].toSorted((a, b) => b.cents - a.cents),
+      .map((txn) => {
+        return {
+          id: txn.id,
+          name: txn.name,
+          dateISO: txn.dateISO,
+          cents: -txn.amountCents,
+          category: categoryName(categoryIdOf(txn) ?? ''),
+        };
+      }),
+    byCounterparty: byIban
+      .values()
+      .toArray()
+      .toSorted((a, b) => b.cents - a.cents),
     unfiled: unfiled.toSorted((a, b) => a.amountCents - b.amountCents),
     uncategorized: {
       totalCents: totals.spendCents,

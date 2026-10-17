@@ -32,7 +32,7 @@ export abstract class BaseSwipeRow {
   readonly canDelete = input(true, { transform: booleanAttribute });
   readonly startSwipeAction = input<StartSwipeAction>();
 
-  readonly deleteItem = output<void>();
+  readonly deletionRequested = output<void>();
   readonly startSwipe = output<void>();
 
   readonly hasStartSwipe = computed(() => !!this.startSwipeAction());
@@ -52,7 +52,7 @@ export abstract class BaseSwipeRow {
 
   async emitDeleteItem(): Promise<void> {
     await this.ionList().closeSlidingItems();
-    this.deleteItem.emit();
+    this.deletionRequested.emit();
   }
 
   async emitStartSwipe(): Promise<void> {

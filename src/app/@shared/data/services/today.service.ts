@@ -9,9 +9,13 @@ const msUntilNextMidnight = (): number =>
 export class TodayService {
   readonly #today = signal(todayISO());
 
-  readonly today = this.#today.asReadonly();
-
   #timer?: ReturnType<typeof setTimeout>;
+
+  readonly #onVisible = (): void => {
+    if (globalThis.document?.visibilityState === 'visible') this.refresh();
+  };
+
+  readonly today = this.#today.asReadonly();
 
   constructor() {
     this.#scheduleMidnight();
@@ -22,14 +26,6 @@ export class TodayService {
     );
     inject(DestroyRef).onDestroy(() => this.#teardown());
   }
-
-  refresh(): void {
-    this.#today.set(todayISO());
-  }
-
-  readonly #onVisible = (): void => {
-    if (globalThis.document?.visibilityState === 'visible') this.refresh();
-  };
 
   #scheduleMidnight(): void {
     this.#timer = setTimeout(() => {
@@ -45,5 +41,9 @@ export class TodayService {
       this.#onVisible,
       false
     );
+  }
+
+  refresh(): void {
+    this.#today.set(todayISO());
   }
 }

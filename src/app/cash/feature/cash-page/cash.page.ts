@@ -64,12 +64,12 @@ const KIND_ICON: Record<AccountKind, string> = {
   providers: [{ provide: LIST_FACADE, useExisting: CashAccountsPageFacade }],
 })
 export class CashPage {
-  readonly facade = inject(CashAccountsPageFacade);
   readonly #accounts = inject(CashAccountsFacade);
   readonly #router = inject(Router);
   readonly #modalCtrl = inject(ModalController);
   readonly #alertCtrl = inject(AlertController);
   readonly #translate = inject(TranslateService);
+  readonly facade = inject(CashAccountsPageFacade);
 
   readonly netWorthCents = this.#accounts.netWorthCents;
   readonly canTransfer = computed(() => this.#accounts.allItems().length >= 2);

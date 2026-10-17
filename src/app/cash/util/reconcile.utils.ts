@@ -16,15 +16,18 @@ export function findReconciliationCandidates(
   const millisApart = (txn: CashTransaction) =>
     Math.abs(dayjs(txn.dateISO).diff(pendingDate));
 
-  const couldBeSameSpend = (txn: CashTransaction): boolean =>
-    txn.source === 'imported' &&
-    txn.id !== pending.id &&
-    txn.accountId === pending.accountId &&
-    txn.amountCents === pending.amountCents &&
-    !claimedSurvivorIds.has(txn.id) &&
-    millisApart(txn) <= WINDOW_MS;
+  const isCouldBeSameSpend = (txn: CashTransaction): boolean => {
+    return (
+      txn.source === 'imported' &&
+      txn.id !== pending.id &&
+      txn.accountId === pending.accountId &&
+      txn.amountCents === pending.amountCents &&
+      !claimedSurvivorIds.has(txn.id) &&
+      millisApart(txn) <= WINDOW_MS
+    );
+  };
 
   return all
-    .filter((txn) => couldBeSameSpend(txn))
+    .filter((txn) => isCouldBeSameSpend(txn))
     .toSorted((a, b) => millisApart(a) - millisApart(b)); // closest date first
 }

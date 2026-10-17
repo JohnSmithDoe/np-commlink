@@ -41,8 +41,8 @@ const loadImage = async (source: string): Promise<HTMLImageElement> => {
   return img;
 };
 
-const readAsDataUrl = (file: File): Promise<string | undefined> =>
-  new Promise((resolve) => {
+const readAsDataUrl = (file: File): Promise<string | undefined> => {
+  return new Promise((resolve) => {
     const reader = new FileReader();
     reader.addEventListener('load', () =>
       resolve(reader.result as string | undefined)
@@ -50,6 +50,7 @@ const readAsDataUrl = (file: File): Promise<string | undefined> =>
     reader.addEventListener('error', () => resolve(undefined));
     reader.readAsDataURL(file);
   });
+};
 
 const encoded = (canvas: HTMLCanvasElement): string =>
   canvas.toDataURL(STORED_MIME_TYPE, STORED_QUALITY);
@@ -126,11 +127,12 @@ export const rotateBase64 = async (dataUrl?: string, deg = 90) => {
 export const resolveImages = (
   ids: readonly NoteImageId[] | undefined,
   urls: Record<NoteImageId, string>
-): NoteImage[] =>
-  (ids ?? []).flatMap((id) => {
+): NoteImage[] => {
+  return (ids ?? []).flatMap((id) => {
     const dataUrl = urls[id];
-    return dataUrl ? [{ id, dataUrl }] : [];
+    return dataUrl ? { id, dataUrl } : [];
   });
+};
 
 export const searchNotes = (
   list: NotesList

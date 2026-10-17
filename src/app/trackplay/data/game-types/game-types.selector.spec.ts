@@ -12,12 +12,13 @@ import {
 const stateWith = (
   items: ReturnType<typeof mockGameType>[],
   searchQuery?: string
-) =>
-  mockKernelState({
+) => {
+  return mockKernelState({
     trackplay: mockTrackplayState({
       gameTypes: { ...mockGameTypesState(items), searchQuery },
     }),
   });
+};
 
 describe('game-types.selector', () => {
   it('pins the default type first, then sorts the rest by name', () => {

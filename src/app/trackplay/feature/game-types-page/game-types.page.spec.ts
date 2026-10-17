@@ -13,10 +13,10 @@ describe('TrackplayGameTypesPage', () => {
   let component: TrackplayGameTypesPage;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const setup = (state = mockTrackplayState()) => {
+  const setup = () => {
     TestBed.configureTestingModule({
       imports: [TrackplayGameTypesPage],
-      providers: [provideTestingProviders({ trackplay: state })],
+      providers: [provideTestingProviders({ trackplay: mockTrackplayState() })],
     });
     dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
     component = TestBed.createComponent(

@@ -19,7 +19,7 @@
 
   <app-category-input
     [categories]="selectedCategories()"
-    (removeCategory)="removeCategory($event)"
+    (categoryRemoved)="removeCategory($event)"
     (openDialog)="openCategoriesDialog()"
   />
 
@@ -73,7 +73,7 @@
     (confirmed)="confirmCategories($event)"
     (cancelled)="cancelCategories()"
     (dismissed)="cancelCategories()"
-    (addNew)="addCategory($event)"
+    (categoryCreated)="addCategory($event)"
     (deleted)="deleteCategory($event)"
     (renamed)="renameCategory($event)"
   />

@@ -23,20 +23,20 @@ export const selectPlayerStats = createSelector(
         if (!game.ended) playerStats.open++;
       }
       if (!game.ended) continue;
-      const winHigh =
+      const isWinHigh =
         gameTypes.items.find((type) => type.id === gameTypeIdOf(game))
           ?.winHigh ?? true;
       const leaders = leadersByScore(
         game.playerIds,
         computeScores(game),
-        winHigh
+        isWinHigh
       );
-      const drawn = leaders.length > 1;
+      const isDrawn = leaders.length > 1;
 
       for (const playerId of game.playerIds) {
         const playerStats = statsOf(stats, playerId);
         if (!leaders.includes(playerId)) playerStats.loss++;
-        else if (!drawn) playerStats.win++;
+        else if (!isDrawn) playerStats.win++;
       }
     }
     return stats;

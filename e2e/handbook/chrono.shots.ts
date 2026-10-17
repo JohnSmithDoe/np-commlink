@@ -129,7 +129,10 @@ test('meatspace', async ({ page }) => {
   const calendar = dashboard.locator('app-dash-office-days-edit ion-datetime');
   await calendar.scrollIntoViewIfNeeded();
   await expect(calendar).toBeVisible({ timeout: 30_000 });
-  const month = await page.evaluate(() => new Date().getMonth() + 1);
+  const month = await page.evaluate(() => {
+    const today = new Date();
+    return today.getMonth() + 1;
+  });
   for (const day of [4, 5, 11, 12, 18, 19]) {
     await tapCalendarDay(calendar, month, day);
   }

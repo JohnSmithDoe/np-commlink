@@ -60,14 +60,15 @@ export class GameTypesFacade {
 
   removeItem(gameType: GameType): void {
     if (gameType.id === DEFAULT_GAME_TYPE_ID) return;
+    const restore = TrackplayActions.restoreGameType(
+      gameType,
+      gamesWithType(this.#games(), gameType.id)
+    );
     this.#store.dispatch(
       UndoActions.pushed({
         scope: GAME_TYPES_LIST_ID,
         name: gameType.name,
-        action: TrackplayActions.restoreGameType(
-          gameType,
-          gamesWithType(this.#games(), gameType.id)
-        ),
+        action: restore,
       })
     );
     this.#store.dispatch(GameTypesActions.removeItem(gameType));

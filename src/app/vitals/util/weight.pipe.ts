@@ -6,10 +6,9 @@ import { formatKg } from './weight.utils';
 export class WeightPipe implements PipeTransform {
   readonly #language = inject(APP_LANGUAGE);
 
-  transform(grams: number | null | undefined, signed = false): string {
-    if (grams === null || grams === undefined || !Number.isFinite(grams)) {
-      return '';
-    }
-    return `${formatKg(grams, this.#language, signed)} kg`;
+  transform(grams: number | null | undefined, isSigned = false): string {
+    return grams === null || grams === undefined || !Number.isFinite(grams)
+      ? ''
+      : `${formatKg(grams, this.#language, isSigned)} kg`;
   }
 }

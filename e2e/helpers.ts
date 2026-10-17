@@ -150,12 +150,12 @@ async function persistedDocument(
 ): Promise<string | null> {
   return page.evaluate(
     async ([databaseName, storeName, documentKey]) => {
-      const existing = await indexedDB.databases();
-      if (!existing.some((candidate) => candidate.name === databaseName))
+      const existing = await globalThis.indexedDB.databases();
+      if (existing.every((candidate) => candidate.name !== databaseName))
         return null;
 
       return new Promise<string | null>((resolve) => {
-        const open = indexedDB.open(databaseName);
+        const open = globalThis.indexedDB.open(databaseName);
         open.onerror = () => resolve(null);
         open.onsuccess = () => {
           const database = open.result;

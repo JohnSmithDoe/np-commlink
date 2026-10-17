@@ -82,10 +82,11 @@ const isRuleList = (payload: string): boolean => {
 
 const isSuppression = (comment: CommentLike, body: string): boolean => {
   const keyword = SUPPRESSION.exec(body);
-  if (!keyword) return false;
-  if (comment.type !== 'Block' && SUPPRESSION_NEEDING_BLOCK.test(body))
-    return false;
-  return isRuleList(body.slice(keyword[0].length));
+  return (
+    keyword !== null &&
+    (comment.type === 'Block' || !SUPPRESSION_NEEDING_BLOCK.test(body)) &&
+    isRuleList(body.slice(keyword[0].length))
+  );
 };
 
 const isGlobalDeclaration = (body: string): boolean => {
@@ -100,12 +101,12 @@ const isBundlerMagic = (body: string): boolean =>
 
 const isDirective = (comment: CommentLike): boolean => {
   const body = comment.value.trim();
-  const inBlock = comment.type === 'Block';
+  const isInBlock = comment.type === 'Block';
   return (
     isSuppression(comment, body) ||
-    (inBlock && RULE_SEVERITY_CONFIG.test(body)) ||
-    (inBlock && isGlobalDeclaration(body)) ||
-    (inBlock && isBundlerMagic(body)) ||
+    (isInBlock && RULE_SEVERITY_CONFIG.test(body)) ||
+    (isInBlock && isGlobalDeclaration(body)) ||
+    (isInBlock && isBundlerMagic(body)) ||
     TYPESCRIPT_DIRECTIVE.test(body) ||
     PRETTIER_IGNORE.test(body) ||
     COVERAGE_IGNORE.test(body) ||
@@ -161,7 +162,7 @@ export const rule: Rule.RuleModule = {
     if (comments.length === 0) return {};
 
     const tokens = sourceCode.ast.tokens ?? [];
-    const codeStartsAt = tokens[0]?.range?.[0] ?? Number.POSITIVE_INFINITY;
+    const codeStartsAt = tokens[0]?.range?.[0] ?? Infinity;
 
     const firstCodeEndByLine = new Map<number, number>();
     for (const token of tokens) {
@@ -170,13 +171,16 @@ export const rule: Rule.RuleModule = {
         firstCodeEndByLine.set(line, token.range[1]);
     }
 
-    const trailsCode = (comment: CommentLike): boolean =>
-      (firstCodeEndByLine.get(comment.loc?.start.line ?? 0) ??
-        Number.POSITIVE_INFINITY) <= (comment.range?.[0] ?? 0);
+    const isTrailsCode = (comment: CommentLike): boolean => {
+      return (
+        (firstCodeEndByLine.get(comment.loc?.start.line ?? 0) ?? Infinity) <=
+        (comment.range?.[0] ?? 0)
+      );
+    };
 
     const trailingPerLine = new Map<number, number>();
     for (const comment of comments) {
-      if (!trailsCode(comment)) continue;
+      if (!isTrailsCode(comment)) continue;
       const line = comment.loc?.start.line ?? 0;
       trailingPerLine.set(line, (trailingPerLine.get(line) ?? 0) + 1);
     }
@@ -218,10 +222,10 @@ export const rule: Rule.RuleModule = {
         report(comment, 'bannerLastLine');
         return;
       }
-      const stray = lines
+      const isStray = lines
         .slice(1, last)
         .some((line) => !BANNER_INTERIOR.test(line));
-      if (stray) {
+      if (isStray) {
         report(comment, 'bannerInteriorLine');
         return;
       }
@@ -253,7 +257,7 @@ export const rule: Rule.RuleModule = {
         let headerIndex = 0;
         for (const comment of comments) {
           if (isHashbang(comment) || isDirective(comment)) continue;
-          if (trailsCode(comment)) {
+          if (isTrailsCode(comment)) {
             checkTrailingLabel(comment);
             continue;
           }

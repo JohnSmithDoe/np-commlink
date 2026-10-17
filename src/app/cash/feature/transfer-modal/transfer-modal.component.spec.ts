@@ -22,10 +22,11 @@ describe('CashTransferModalComponent', () => {
     ));
   };
 
-  const bookedTransfer = () =>
-    dispatch.mock.calls[0][0] as unknown as ReturnType<
+  const bookedTransfer = () => {
+    return dispatch.mock.calls[0][0] as unknown as ReturnType<
       typeof CashTransactionsActions.bookTransfer
     >;
+  };
 
   it('books an outflow and an inflow of equal magnitude, linked as one group', () => {
     setup();

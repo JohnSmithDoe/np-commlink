@@ -19,6 +19,7 @@ import type { Rule } from 'eslint';
 import {
   boundAttribute,
   staticAttribute,
+  templateListener,
   templateParserServices,
 } from '../lib/template-ast.ts';
 import type { TemplateElement } from '../lib/template-ast.types.ts';
@@ -45,12 +46,10 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const services = templateParserServices(context);
-    return {
+    return templateListener({
       Element(element: TemplateElement) {
         const name = HARDCODED_ENGLISH_NAME[element.name];
-        if (!name) return;
-
-        if (boundAttribute(element, 'aria-label')) return;
+        if (!name || boundAttribute(element, 'aria-label')) return;
 
         const literal = staticAttribute(element, 'aria-label');
         if (literal) {
@@ -68,6 +67,6 @@ export const rule: Rule.RuleModule = {
           data: { element: element.name, name },
         });
       },
-    };
+    });
   },
 };

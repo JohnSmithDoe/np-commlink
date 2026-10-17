@@ -19,7 +19,7 @@
     [title]="item.name"
     [ionList]="ionList"
     (selectItem)="facade.showEditDialog(item)"
-    (deleteItem)="facade.removeItem(item)"
+    (deletionRequested)="facade.removeItem(item)"
   >
     <ng-container itemDetails>
       <ion-note>{{

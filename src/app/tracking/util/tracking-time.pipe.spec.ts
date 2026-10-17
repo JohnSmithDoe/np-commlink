@@ -1,12 +1,14 @@
 import { DataItem } from '../model/tracking.types';
 import { TrackingTimePipe } from './tracking-time.pipe';
 
-const dataItem = (trackedTimeInSeconds?: number): DataItem => ({
-  id: '1',
-  name: 'task',
-  trackedTimeInSeconds,
-  sessionIds: ['s1'],
-});
+const dataItem = (trackedTimeInSeconds?: number): DataItem => {
+  return {
+    id: '1',
+    name: 'task',
+    trackedTimeInSeconds,
+    sessionIds: ['s1'],
+  };
+};
 
 describe('TrackingTimePipe', () => {
   const pipe = new TrackingTimePipe();

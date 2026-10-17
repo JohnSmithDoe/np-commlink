@@ -13,13 +13,12 @@ import { ProfilesPageFacade } from './profiles-page.facade';
 describe('ProfilesPageFacade', () => {
   it('creates a person from the search term on enter, without leaving', () => {
     const editor: PersonEditor = { create: vi.fn() };
+    const vitals = mockVitalsState({
+      profiles: mockProfilesState({ searchQuery: 'Ronja' }),
+    });
     TestBed.configureTestingModule({
       providers: [
-        provideTestingProviders({
-          vitals: mockVitalsState({
-            profiles: mockProfilesState({ searchQuery: 'Ronja' }),
-          }),
-        }),
+        provideTestingProviders({ vitals }),
         providePersonEditor(editor),
       ],
     });

@@ -19,7 +19,9 @@ export class GamesForPlayerFacade {
     selectGamesForPlayerSearchResult
   );
 
-  setShowEnded(showEndedGames: boolean): void {
-    this.#store.dispatch(GamesForPlayerActions.setShowEnded(showEndedGames));
+  setShowEnded(shouldShowEndedGames: boolean): void {
+    this.#store.dispatch(
+      GamesForPlayerActions.setShowEnded(shouldShowEndedGames)
+    );
   }
 }

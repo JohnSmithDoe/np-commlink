@@ -84,9 +84,10 @@ export const selectTaskCountByCategory = createSelector(
 
 export const selectTaskTaggedByCategory = createSelector(
   selectTaskItems,
-  (items) =>
-    (categoryId: CategoryId): string[] =>
-      idsTaggedWith(items, categoryId)
+  (items) => {
+    return (categoryId: CategoryId): string[] =>
+      idsTaggedWith(items, categoryId);
+  }
 );
 
 export const selectTaskSettings = createSelector(

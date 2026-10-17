@@ -11,7 +11,7 @@
     [ionList]="ionList"
     [leadingIcon]="item.kind === 'pet' ? 'paw' : 'person'"
     (selectItem)="openPersonEdit(item)"
-    (deleteItem)="deletePerson(item)"
+    (deletionRequested)="deletePerson(item)"
   >
     @if (item.birthDate) {
       <p itemDetails class="second-line">

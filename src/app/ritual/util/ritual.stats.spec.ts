@@ -21,7 +21,7 @@ describe('completionOn', () => {
   });
 
   it('reports the last one, so a bonus does not hide what closed the day', () => {
-    const log = [on('2026-07-20', 'water'), on('2026-07-20', 'stretch')];
+    const log = [on('2026-07-20'), on('2026-07-20', 'stretch')];
 
     expect(completionOn(log, '2026-07-20')?.promptId).toBe('stretch');
   });
@@ -47,7 +47,7 @@ describe('recentDayFlags', () => {
   });
 
   it('counts a day once however many times it was done', () => {
-    const log = [on('2026-07-20', 'water'), on('2026-07-20', 'stretch')];
+    const log = [on('2026-07-20'), on('2026-07-20', 'stretch')];
 
     expect(recentDayFlags(log, '2026-07-20', 3)).toEqual([false, false, true]);
   });

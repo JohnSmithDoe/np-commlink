@@ -5,12 +5,14 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { TrackingItem } from '../../model/tracking.types';
 import { TrackingItemComponent } from './tracking-item.component';
 
-const track = (state: TrackingItem['state']): TrackingItem => ({
-  id: '1',
-  name: 'Task',
-  createdAt: '2026-01-01',
-  state,
-});
+const track = (state: TrackingItem['state']): TrackingItem => {
+  return {
+    id: '1',
+    name: 'Task',
+    createdAt: '2026-01-01',
+    state,
+  };
+};
 
 describe('TrackingItemComponent', () => {
   it('closes the sliding row before it emits, so no row is left open', async () => {
@@ -28,7 +30,9 @@ describe('TrackingItemComponent', () => {
       },
     } as unknown as IonList);
     const component = fixture.componentInstance;
-    component.editItem.subscribe(() => order.push('emitted'));
+    component.editItem.subscribe(() => {
+      order.push('emitted');
+    });
 
     await component.closeAndEmit(component.editItem);
 

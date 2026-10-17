@@ -14,7 +14,8 @@ describe('pill notification ids', () => {
   it('gives every (slot, weekday) pair its own id', () => {
     const ids = [0, 1, 2].flatMap((slot) => pillNotificationBlock(slot));
 
-    expect(new Set(ids).size).toBe(ids.length);
+    const distinctIds = new Set(ids);
+    expect(distinctIds.size).toBe(ids.length);
   });
 
   it('keeps one slot’s ids out of the next slot’s block', () => {

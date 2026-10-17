@@ -7,16 +7,18 @@ import { HandbookService } from '../../data/handbook.service';
 import { HandbookEntry, HandbookPageContent } from '../../model/handbook.types';
 import { HandbookArticlePage } from './handbook-article.page';
 
-const entry = (slug: string): HandbookEntry => ({
-  slug,
-  title: `DECK ${slug}`,
-  plain: `Klartext ${slug}`,
-  route: `/${slug}`,
-  group: 'programme',
-  summary: `Kurz zu ${slug}`,
-  tags: [slug],
-  text: `Text zu ${slug}`,
-});
+const entry = (slug: string): HandbookEntry => {
+  return {
+    slug,
+    title: `DECK ${slug}`,
+    plain: `Klartext ${slug}`,
+    route: `/${slug}`,
+    group: 'programme',
+    summary: `Kurz zu ${slug}`,
+    tags: [slug],
+    text: `Text zu ${slug}`,
+  };
+};
 
 const ENTRIES = [entry('start'), entry('chrono'), entry('agenda')];
 
@@ -143,7 +145,7 @@ describe('HandbookArticlePage', () => {
       fixture.nativeElement.querySelector('.hb-section[data-kind="pitfalls"]')
     ).not.toBeNull();
     expect(
-      fixture.nativeElement.querySelector('.hb-block__p strong')
+      fixture.nativeElement.querySelector(':scope .hb-block__p strong')
     ).not.toBeNull();
   });
 });

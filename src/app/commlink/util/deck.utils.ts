@@ -39,9 +39,9 @@ export const programStatus = (
   availability: LanguageModelAvailability
 ): ProgramStatus => {
   if (entry.needsLanguageModel) return LANGUAGE_MODEL_STATUS[availability];
-  if (entry.source)
-    return telemetry.bySource[entry.source]?.status ?? 'standby';
-  return entry.status ?? 'online';
+  return entry.source
+    ? (telemetry.bySource[entry.source]?.status ?? 'standby')
+    : (entry.status ?? 'online');
 };
 
 export const badgeLabel = (
@@ -115,30 +115,38 @@ export const isEntryVisible = (state: DeckState, entry: DeckEntry): boolean =>
 export const entriesOnDeck = (
   catalog: readonly DeckEntry[],
   state: DeckState
-): DeckEntry[] =>
-  orderEntries(catalog, state.order).filter((entry) =>
+): DeckEntry[] => {
+  return orderEntries(catalog, state.order).filter((entry) =>
     isEntryVisible(state, entry)
   );
+};
 
 export const resolveLabels =
   (skin: Skin) =>
   (entry: DeckEntry): DeckProgram => ({ ...entry, ...entry.labels[skin] });
 
-const sameOrder = <T>(a: readonly T[], b: readonly T[]): boolean =>
+const isSameOrder = <T>(a: readonly T[], b: readonly T[]): boolean =>
   a.length === b.length && a.every((value, index) => value === b[index]);
 
-const sameSet = <T>(a: readonly T[], b: readonly T[]): boolean =>
+const isSameSet = <T>(a: readonly T[], b: readonly T[]): boolean =>
   a.length === b.length && a.every((value) => b.includes(value));
 
-export const isFactoryDeck = (state: DeckState, factory: DeckState): boolean =>
-  sameOrder(state.order, factory.order) &&
-  sameSet(state.visibleEntries, factory.visibleEntries) &&
-  sameSet(state.hiddenTiles, factory.hiddenTiles);
+export const isFactoryDeck = (
+  state: DeckState,
+  factory: DeckState
+): boolean => {
+  return (
+    isSameOrder(state.order, factory.order) &&
+    isSameSet(state.visibleEntries, factory.visibleEntries) &&
+    isSameSet(state.hiddenTiles, factory.hiddenTiles)
+  );
+};
 
-export const toggleIn = <T>(list: readonly T[], value: T): T[] =>
-  list.includes(value)
+export const toggleIn = <T>(list: readonly T[], value: T): T[] => {
+  return list.includes(value)
     ? list.filter((entry) => entry !== value)
     : [...list, value];
+};
 
 export const reorderWithin = (
   order: readonly DeckEntryId[],
@@ -153,11 +161,12 @@ export const reorderWithin = (
 export const setIn = <T>(
   list: readonly T[],
   values: readonly T[],
-  present: boolean
-): T[] =>
-  present
+  isPresent: boolean
+): T[] => {
+  return isPresent
     ? [...list, ...values.filter((value) => !list.includes(value))]
     : list.filter((entry) => !values.includes(entry));
+};
 
 export const groupByModule = (
   programs: readonly DeckProgramConfig[]

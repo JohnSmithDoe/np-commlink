@@ -34,15 +34,14 @@ describe('TrackingNotificationsEffects', () => {
   let effects: TrackingNotificationsEffects;
 
   const setup = (actions$: Observable<Action>, tracking?: TrackingState) => {
+    const initialState = mockKernelState({
+      tracking: tracking ?? mockTrackingState({ items: [] }),
+    });
     TestBed.configureTestingModule({
       providers: [
         TrackingNotificationsEffects,
         provideMockActions(() => actions$),
-        provideMockStore({
-          initialState: mockKernelState({
-            tracking: tracking ?? mockTrackingState({ items: [] }),
-          }),
-        }),
+        provideMockStore({ initialState }),
         {
           provide: TranslateService,
           useValue: { instant: (key: string) => key },

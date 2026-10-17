@@ -51,6 +51,43 @@ import { Category, CategoryId } from '../../../@shared/model/category.types';
   templateUrl: './edit-task-item-dialog.component.html',
 })
 export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<TaskItem> {
+  readonly #facade = inject(TasksListPageFacade);
+  readonly #translate = inject(TranslateService);
+  protected readonly listId = TASKS_LIST_ID;
+  readonly categories = this.#facade.catalog;
+  readonly siblings = this.#facade.allItems;
+
+  readonly selectedLead = computed(() =>
+    leadKey(this.draft().lead ?? ON_DAY_LEAD)
+  );
+
+  readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() => {
+    return ANCHOR_OPTIONS.map((anchor) => {
+      return {
+        key: anchor.value,
+        value: anchor.value,
+        label: this.#translate.instant(anchor.key),
+      };
+    });
+  });
+
+  readonly anchorChoice = computed(() => {
+    const { interval, dueAt } = this.draft();
+    return !!dueAt && !!interval && !isCalendarInterval(interval);
+  });
+
+  readonly leadOptions = computed<ChipOption<TaskLead>[]>(() => {
+    const interval = this.draft().interval;
+    if (!interval) return [];
+    return leadOptionsFor(interval).map((option) => {
+      return {
+        key: leadKey(option.lead),
+        value: option.lead,
+        label: this.#translate.instant(option.key, option.params),
+      };
+    });
+  });
+
   protected blank(): TaskItem {
     return createTaskItem('');
   }
@@ -63,48 +100,18 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
     return { ...seed, ...draft, closings: seed.closings };
   }
 
-  readonly #facade = inject(TasksListPageFacade);
-  readonly #translate = inject(TranslateService);
-  protected readonly listId = TASKS_LIST_ID;
-  readonly categories = this.#facade.catalog;
-  readonly siblings = this.#facade.allItems;
-
-  readonly selectedLead = computed(() =>
-    leadKey(this.draft().lead ?? ON_DAY_LEAD)
-  );
-
-  readonly anchorOptions = computed<ChipOption<TaskAnchor>[]>(() =>
-    ANCHOR_OPTIONS.map((anchor) => ({
-      key: anchor.value,
-      value: anchor.value,
-      label: this.#translate.instant(anchor.key),
-    }))
-  );
-
-  readonly anchorChoice = computed(() => {
-    const { interval, dueAt } = this.draft();
-    return !!dueAt && !!interval && !isCalendarInterval(interval);
-  });
-
-  readonly leadOptions = computed<ChipOption<TaskLead>[]>(() => {
-    const interval = this.draft().interval;
-    if (!interval) return [];
-    return leadOptionsFor(interval).map((option) => ({
-      key: leadKey(option.lead),
-      value: option.lead,
-      label: this.#translate.instant(option.key, option.params),
-    }));
-  });
-
   protected save(item: TaskItem): void {
     this.#facade.saveItem(item);
   }
+
   protected addCategoryToCatalog(category: Category): void {
     this.#facade.addCategory(category);
   }
+
   protected removeCategoryFromCatalog(categoryId: CategoryId): void {
     this.#facade.removeCategory(categoryId);
   }
+
   protected renameCategoryInCatalog(id: CategoryId, to: string): void {
     this.#facade.renameCategory(id, to);
   }
@@ -133,11 +140,10 @@ export class EditTaskItemDialogComponent extends BaseCategoryEditItemDialog<Task
     this.patch({ lead });
   }
 
-  updateDone(done: boolean) {
+  updateDone(isDone: boolean) {
+    const now = new Date();
     this.patch({
-      doneAt: done
-        ? (this.draft().doneAt ?? new Date().toISOString())
-        : undefined,
+      doneAt: isDone ? (this.draft().doneAt ?? now.toISOString()) : undefined,
     });
   }
 }

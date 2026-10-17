@@ -15,16 +15,20 @@ export const notesRoutes: Routes = [
       {
         path: '',
         title: marker('page-title.notes'),
-        loadComponent: () =>
-          import('../feature/notes-page/notes.page').then((m) => m.NotesPage),
+        loadComponent: async () => {
+          const { NotesPage } =
+            await import('../feature/notes-page/notes.page');
+          return NotesPage;
+        },
       },
       {
         path: ':id',
         title: marker('page-title.note'),
-        loadComponent: () =>
-          import('../feature/note-editor-page/note-editor.page').then(
-            (m) => m.NoteEditorPage
-          ),
+        loadComponent: async () => {
+          const { NoteEditorPage } =
+            await import('../feature/note-editor-page/note-editor.page');
+          return NoteEditorPage;
+        },
       },
     ],
   },

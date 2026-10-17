@@ -36,9 +36,9 @@ interface CatalogWriteActions {
 }
 
 export abstract class BaseCategoryListPageFacade extends BaseListPageFacade {
-  protected readonly store = inject(Store);
   readonly #router = inject(Router);
   readonly #dialogs = inject(ItemDialogService);
+  protected readonly store = inject(Store);
 
   abstract readonly catalogListId: ItemListId;
   protected abstract readonly actions: CatalogWriteActions;

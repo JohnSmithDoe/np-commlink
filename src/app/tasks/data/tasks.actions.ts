@@ -8,10 +8,12 @@ export const TasksActions = createActionGroup({
   events: {
     load: emptyProps(),
     loaded: (tasks: TasksState | null) => ({ tasks }),
-    restoreCategory: (category: Category, tagged: readonly string[]) => ({
-      category,
-      tagged,
-    }),
+    restoreCategory: (category: Category, tagged: readonly string[]) => {
+      return {
+        category,
+        tagged,
+      };
+    },
     updateSettings: (settings: Partial<TaskSettings>) => ({ settings }),
     reopenDue: (items: readonly TaskItem[]) => ({ items }),
 

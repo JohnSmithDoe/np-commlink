@@ -39,12 +39,13 @@ export const I18N_OWNERS: Record<string, string[]> = {
 
 export const ALL_DOMAIN_PREFIXES: string[] = [
   ...new Set(Object.values(I18N_OWNERS).flat()),
-].toSorted();
+].toSorted((left, right) => left.localeCompare(right));
 
-const domainFolder = (filename: string): string | undefined =>
-  /(?:^|[/\\])src[/\\]app[/\\]([^/\\]+)[/\\]/.exec(
+const domainFolder = (filename: string): string | undefined => {
+  return /(?:^|[/\\])src[/\\]app[/\\]([^/\\]+)[/\\]/.exec(
     filename.replaceAll('\\', '/')
   )?.[1];
+};
 
 export interface KeyOwnership {
   kind: 'shared' | 'domain';

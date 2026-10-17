@@ -13,7 +13,9 @@ export const diceReducer = createReducer(
   on(DiceActions.removeDieAt, (state, { index }): DicePool => ({ dice: withoutDieAt(state.dice, index) })),
   on(DiceActions.clearPool, (): DicePool => initialDicePool),
 
-  on(TrackplayActions.loaded, (state, { trackplay }): DicePool => ({
-    dice: (trackplay?.dice ?? state).dice ?? [],
-  }))
+  on(TrackplayActions.loaded, (state, { trackplay }): DicePool => {
+    return {
+      dice: (trackplay?.dice ?? state).dice ?? [],
+    };
+  })
 );

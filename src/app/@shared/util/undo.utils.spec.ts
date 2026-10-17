@@ -4,11 +4,13 @@ import { indexOfNewestIn, newestIn, withoutIndex } from './undo.utils';
 const STASH = '_storage';
 const SHOPPING = '_shopping';
 
-const entry = (name: string, scope: string): UndoEntry => ({
-  scope,
-  name,
-  action: { type: `[Test] restore ${name}` },
-});
+const entry = (name: string, scope: string): UndoEntry => {
+  return {
+    scope,
+    name,
+    action: { type: `[Test] restore ${name}` },
+  };
+};
 
 const milk = entry('Milk', STASH);
 const bread = entry('Bread', STASH);

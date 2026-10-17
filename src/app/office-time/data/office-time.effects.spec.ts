@@ -36,9 +36,8 @@ describe('OfficeTimeEffects', () => {
 
       expect(emitted.type).toBe(OfficeTimeActions.loadHolidaysSuccess.type);
       expect(Object.keys(emitted.holidays)).toHaveLength(10);
-      expect(emitted.holidays['Neujahr']).toBe(
-        `${new Date().getFullYear()}-01-01`
-      );
+      const today = new Date();
+      expect(emitted.holidays['Neujahr']).toBe(`${today.getFullYear()}-01-01`);
     });
 
     it('has no failure path left that could clear the map', () => {

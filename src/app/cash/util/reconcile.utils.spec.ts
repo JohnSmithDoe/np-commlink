@@ -10,8 +10,8 @@ const pending = mockCashTransaction({
   status: 'pending',
 });
 
-const imported = (over = {}) =>
-  mockCashTransaction({
+const imported = (over = {}) => {
+  return mockCashTransaction({
     id: 'i1',
     accountId: 'a',
     amountCents: -4299,
@@ -20,6 +20,7 @@ const imported = (over = {}) =>
     status: 'confirmed',
     ...over,
   });
+};
 
 describe('findReconciliationCandidates', () => {
   it('matches same account + equal amount within ±3 days', () => {

@@ -18,10 +18,10 @@ export function setupModalSpec<T>(
     imports: [type],
     providers: [provideTestingProviders(state)],
   });
-  const dismiss = vi
+  const isDismiss = vi
     .spyOn(TestBed.inject(ModalController), 'dismiss')
     .mockResolvedValue(true);
   const dispatch = vi.spyOn(TestBed.inject(Store), 'dispatch');
   const fixture = TestBed.createComponent(type);
-  return { component: fixture.componentInstance, dispatch, dismiss };
+  return { component: fixture.componentInstance, dispatch, dismiss: isDismiss };
 }

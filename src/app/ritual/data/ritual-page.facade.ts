@@ -51,14 +51,15 @@ export class RitualPageFacade {
       drawPrompt(RITUAL_PROMPTS, this.#stale(previous?.value.id)),
   });
 
+  readonly #todaysCompletion = computed(() =>
+    completionOn(this.#completions(), this.#today())
+  );
+
   readonly count = this.#store.selectSignal(selectRitualCount);
   readonly reminder = this.#store.selectSignal(selectRitualReminder);
   readonly prompt = this.#prompt.asReadonly();
   readonly dismissedCount = computed(() => this.#dismissed().length);
 
-  readonly #todaysCompletion = computed(() =>
-    completionOn(this.#completions(), this.#today())
-  );
   readonly dayClosed = computed(() => !!this.#todaysCompletion());
   readonly todaysPrompt = computed(() =>
     promptById(RITUAL_PROMPTS, this.#todaysCompletion()?.promptId)
@@ -66,12 +67,6 @@ export class RitualPageFacade {
   readonly recentDays = computed(() =>
     recentDayFlags(this.#completions(), this.#today(), RITUAL_RECENT_DAYS)
   );
-
-  draw(): void {
-    this.#prompt.set(
-      drawPrompt(RITUAL_PROMPTS, this.#stale(this.#prompt().id))
-    );
-  }
 
   #stale(current?: RitualPromptId): ReadonlySet<RitualPromptId> {
     return untracked(() => {
@@ -81,6 +76,11 @@ export class RitualPageFacade {
       if (current) stale.add(current);
       return stale;
     });
+  }
+
+  draw(): void {
+    const stale = this.#stale(this.#prompt().id);
+    this.#prompt.set(drawPrompt(RITUAL_PROMPTS, stale));
   }
 
   complete(promptId: RitualPromptId): void {

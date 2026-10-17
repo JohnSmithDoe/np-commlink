@@ -3,15 +3,17 @@ import { JamObjectType } from '../../../vendor/jam';
 import { toJamTrack } from './jam.mapper';
 import { albumKeyOf, libraryKey } from './library.utils';
 
-const media = (patch: Partial<Jam.MediaBase>): Jam.MediaBase => ({
-  id: 'track-1',
-  name: '02 - Arcology Lights.mp3',
-  objType: JamObjectType.track,
-  created: 0,
-  duration: 5041,
-  albumID: 'album-1',
-  ...patch,
-});
+const media = (patch: Partial<Jam.MediaBase>): Jam.MediaBase => {
+  return {
+    id: 'track-1',
+    name: '02 - Arcology Lights.mp3',
+    objType: JamObjectType.track,
+    created: 0,
+    duration: 5041,
+    albumID: 'album-1',
+    ...patch,
+  };
+};
 
 describe('toJamTrack', () => {
   it('reads title, artist, album and number from the tag', () => {

@@ -92,8 +92,17 @@ import { UndoButtonComponent } from '../../../smart-ui/undo-button/undo-button.c
   ],
 })
 export class ListPageComponent {
-  readonly facade = inject(LIST_FACADE);
   readonly #categoryFilter = inject(CategoryFilterFacade);
+
+  readonly #shown = linkedSignal<string, number | undefined>({
+    source: () => {
+      const state = this.facade.state();
+      return JSON.stringify([state?.searchQuery, state?.filterBy]);
+    },
+    computation: () => this.facade.paginatedBy?.(),
+  });
+
+  readonly facade = inject(LIST_FACADE);
 
   readonly itemTemplate =
     input.required<TemplateRef<ItemListTemplateContext>>();
@@ -110,14 +119,6 @@ export class ListPageComponent {
 
   readonly isKnownEmpty = computed(() => this.facade.items()?.length === 0);
 
-  readonly #shown = linkedSignal<string, number | undefined>({
-    source: () => {
-      const state = this.facade.state();
-      return JSON.stringify([state?.searchQuery, state?.filterBy]);
-    },
-    computation: () => this.facade.paginatedBy?.(),
-  });
-
   readonly paginatedItems = computed(() => {
     const items = this.facade.items();
     const shown = this.#shown();
@@ -128,8 +129,9 @@ export class ListPageComponent {
 
   readonly hiddenCount = computed(() => {
     const shown = this.#shown();
-    if (shown === undefined) return 0;
-    return Math.max(0, (this.facade.items()?.length ?? 0) - shown);
+    return shown === undefined
+      ? 0
+      : Math.max(0, (this.facade.items()?.length ?? 0) - shown);
   });
 
   readonly sections = computed<readonly ListSection[]>(
@@ -138,19 +140,14 @@ export class ListPageComponent {
 
   readonly showSectionHeaders = computed(() => this.sections().length > 1);
 
-  readonly reorderArmed = computed(
-    () =>
+  readonly reorderArmed = computed(() => {
+    return (
       this.canReorder &&
       !this.facade.searchResult() &&
       !this.facade.state()?.filterBy &&
       this.hiddenCount() === 0
-  );
-
-  async showMore(event: InfiniteScrollCustomEvent): Promise<void> {
-    const step = this.facade.paginatedBy?.();
-    if (step) this.#shown.update((shown) => (shown ?? step) + step);
-    await event.target.complete();
-  }
+    );
+  });
 
   readonly extraFilters = computed(() => {
     const items = this.facade.state()?.items ?? [];
@@ -158,7 +155,17 @@ export class ListPageComponent {
   });
 
   constructor() {
-    addIcons({ addOutline, removeOutline, pricetagsOutline });
+    addIcons({
+      addOutline,
+      removeOutline,
+      pricetagsOutline,
+    });
+  }
+
+  async showMore(event: InfiniteScrollCustomEvent): Promise<void> {
+    const step = this.facade.paginatedBy?.();
+    if (step) this.#shown.update((shown) => (shown ?? step) + step);
+    await event.target.complete();
   }
 
   manageCategories() {

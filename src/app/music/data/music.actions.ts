@@ -8,16 +8,20 @@ export const MusicActions = createActionGroup({
     load: emptyProps(),
     loaded: (music: MusicState | null) => ({ music }),
 
-    addFolder: (folder: MusicFolder, id: string = uuidv4()) => ({
-      folder,
-      id,
-    }),
+    addFolder: (folder: MusicFolder, id: string = uuidv4()) => {
+      return {
+        folder,
+        id,
+      };
+    },
     removeSource: (id: string) => ({ id }),
 
-    jamConnected: (session: JamSession, id: string = uuidv4()) => ({
-      session,
-      id,
-    }),
+    jamConnected: (session: JamSession, id: string = uuidv4()) => {
+      return {
+        session,
+        id,
+      };
+    },
     jamSignedOut: emptyProps(),
   },
 });

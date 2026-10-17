@@ -107,8 +107,54 @@ const DEFAULT_ACCENT_SWATCHES: Record<Skin, Record<Mode, AccentColors>> = {
 })
 export class SettingsPage {
   readonly #storagePersistence = signal<StoragePersistence | null>(null);
+
+  readonly #settings = inject(SettingsFacade);
+
+  readonly #activeAccents = computed(
+    () => this.#settings.customAccents()?.[this.skin()]
+  );
+
+  readonly #defaultAccents = computed(
+    () => DEFAULT_ACCENT_SWATCHES[this.skin()][this.mode()]
+  );
+
   readonly storagePersistence = this.#storagePersistence.asReadonly();
+
   readonly storageLabelKeys = STORAGE_LABEL_KEYS;
+
+  readonly sourceUrl = SOURCE_URL;
+
+  readonly release = APP_RELEASE;
+
+  readonly copyright = COPYRIGHT;
+
+  readonly segmentLabelKeys = SEGMENT_LABEL_KEYS;
+
+  readonly skin = this.#settings.skin;
+
+  readonly skins = SKINS;
+
+  readonly skinLabelKeys = SKIN_LABEL_KEYS;
+
+  readonly mode = this.#settings.mode;
+
+  readonly modes = MODES;
+
+  readonly modeLabelKeys = MODE_LABEL_KEYS;
+
+  readonly languages = LANGUAGES;
+
+  readonly languageLabels = LANGUAGE_LABELS;
+
+  readonly language = this.#settings.language;
+
+  readonly primarySwatch = computed(
+    () => this.#activeAccents()?.primary ?? this.#defaultAccents().primary
+  );
+
+  readonly secondarySwatch = computed(
+    () => this.#activeAccents()?.secondary ?? this.#defaultAccents().secondary
+  );
 
   constructor() {
     addIcons({
@@ -124,35 +170,9 @@ export class SettingsPage {
     );
   }
 
-  readonly sourceUrl = SOURCE_URL;
-  readonly release = APP_RELEASE;
-  readonly copyright = COPYRIGHT;
-
-  readonly #settings = inject(SettingsFacade);
-
-  readonly segmentLabelKeys = SEGMENT_LABEL_KEYS;
-  readonly skin = this.#settings.skin;
-  readonly skins = SKINS;
-  readonly skinLabelKeys = SKIN_LABEL_KEYS;
-  readonly mode = this.#settings.mode;
-  readonly modes = MODES;
-  readonly modeLabelKeys = MODE_LABEL_KEYS;
-  readonly languages = LANGUAGES;
-  readonly languageLabels = LANGUAGE_LABELS;
-  readonly language = this.#settings.language;
-
-  readonly #activeAccents = computed(
-    () => this.#settings.customAccents()?.[this.skin()]
-  );
-  readonly #defaultAccents = computed(
-    () => DEFAULT_ACCENT_SWATCHES[this.skin()][this.mode()]
-  );
-  readonly primarySwatch = computed(
-    () => this.#activeAccents()?.primary ?? this.#defaultAccents().primary
-  );
-  readonly secondarySwatch = computed(
-    () => this.#activeAccents()?.secondary ?? this.#defaultAccents().secondary
-  );
+  #setAccents(colors: AccentColors) {
+    this.#settings.setAccentColors(this.skin(), colors);
+  }
 
   changeSkin(value: string) {
     this.#settings.setSkin(value as Skin);
@@ -176,9 +196,5 @@ export class SettingsPage {
 
   resetAccents() {
     this.#settings.resetAccentColors(this.skin());
-  }
-
-  #setAccents(colors: AccentColors) {
-    this.#settings.setAccentColors(this.skin(), colors);
   }
 }

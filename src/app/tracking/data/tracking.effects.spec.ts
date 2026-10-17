@@ -28,13 +28,14 @@ const trackedSession = (
   name: string,
   trackedTimeInSeconds: number,
   id: string
-) =>
-  mockTrackingItem({
+) => {
+  return mockTrackingItem({
     id,
     name,
     startTime: TEST_TIMESTAMP,
     trackedTimeInSeconds,
   });
+};
 
 describe('TrackingEffects', () => {
   let actions$: Observable<Action>;
@@ -93,7 +94,9 @@ describe('TrackingEffects', () => {
 
     const collectTicks = (): Action[] => {
       const ticks: Action[] = [];
-      subscription = effects.trackTime$.subscribe((tick) => ticks.push(tick));
+      subscription = effects.trackTime$.subscribe((tick) => {
+        ticks.push(tick);
+      });
       return ticks;
     };
 
@@ -106,11 +109,12 @@ describe('TrackingEffects', () => {
       );
       vi.advanceTimersByTime(2000);
 
-      const tickAt = (offsetMs: number) =>
-        TrackingActions.updateTracking(
+      const tickAt = (offsetMs: number) => {
+        return TrackingActions.updateTracking(
           running,
           dayjs(TEST_TIMESTAMP).add(offsetMs, 'ms').format()
         );
+      };
       expect(ticks).toEqual([tickAt(0), tickAt(1000), tickAt(2000)]);
     });
 

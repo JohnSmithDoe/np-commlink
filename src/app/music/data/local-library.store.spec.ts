@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DatabaseService } from '../../@shared/data/persistence/database.service';
-import { IS_NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
+import { NATIVE_PLATFORM } from '../../@shared/data/services/local-notifications.service';
 import { provideTestingProviders } from '../../@shared/testing/test-providers';
 import { FolderSnapshot, FolderSource } from '../model/music.types';
 import {
@@ -26,35 +26,29 @@ const roads = {
 };
 const glory = { ...roads, uri: 'content://music/glory.mp3', title: 'Glory' };
 
-const snapshot = (overrides: Partial<FolderSnapshot> = {}): FolderSnapshot => ({
-  sourceId: music.id,
-  granted: true,
-  tracks: [roads, glory],
-  missing: [],
-  ...overrides,
-});
-
-let plugin: { listTracks: ReturnType<typeof vi.fn> };
-let database: {
-  loadPrefixed: ReturnType<typeof vi.fn>;
-  save: ReturnType<typeof vi.fn>;
-  remove: ReturnType<typeof vi.fn>;
+const snapshot = (): FolderSnapshot => {
+  return {
+    sourceId: music.id,
+    granted: true,
+    tracks: [roads, glory],
+    missing: [],
+  };
 };
 
 function setup(
   stored: FolderSnapshot[],
   { native = true, sources = [music] as FolderSource[] } = {}
-): LocalLibraryStore {
-  plugin = {
-    listTracks: vi.fn(({ folderUri }: { folderUri: string }) =>
-      Promise.resolve(
+) {
+  const plugin = {
+    listTracks: vi.fn(({ folderUri }: { folderUri: string }) => {
+      return Promise.resolve(
         folderUri === music.uri
           ? { granted: true, tracks: [roads] }
           : { granted: false, tracks: [] }
-      )
-    ),
+      );
+    }),
   };
-  database = {
+  const database = {
     loadPrefixed: vi.fn().mockResolvedValue(stored),
     save: vi.fn().mockResolvedValue(undefined),
     remove: vi.fn().mockResolvedValue(undefined),
@@ -65,10 +59,10 @@ function setup(
       LocalLibraryStore,
       { provide: MUSIC_PLAYER_PLUGIN, useValue: plugin },
       { provide: DatabaseService, useValue: database },
-      { provide: IS_NATIVE_PLATFORM, useValue: native },
+      { provide: NATIVE_PLATFORM, useValue: native },
     ],
   });
-  return TestBed.inject(LocalLibraryStore);
+  return { store: TestBed.inject(LocalLibraryStore), plugin, database };
 }
 
 async function settled(store: LocalLibraryStore): Promise<void> {
@@ -80,7 +74,7 @@ async function settled(store: LocalLibraryStore): Promise<void> {
 
 describe('LocalLibraryStore', () => {
   it('reads a stored folder without scanning it', async () => {
-    const store = setup([snapshot()]);
+    const { store, plugin, database } = setup([snapshot()]);
     await settled(store);
 
     expect(database.loadPrefixed).toHaveBeenCalledWith(
@@ -99,7 +93,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('scans a folder that has no snapshot yet and stores the result', async () => {
-    const store = setup([], { sources: [music, old] });
+    const { store, plugin, database } = setup([], { sources: [music, old] });
     await settled(store);
 
     expect(plugin.listTracks).toHaveBeenCalledTimes(2);
@@ -113,7 +107,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('hides a missing file until a rescan replaces the snapshot', async () => {
-    const store = setup([snapshot()]);
+    const { store, database } = setup([snapshot()]);
     await settled(store);
 
     await store.markMissing(music.id, glory.uri);
@@ -128,7 +122,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('marks a folder lost once its grant is refused', async () => {
-    const store = setup([snapshot()]);
+    const { store } = setup([snapshot()]);
     await settled(store);
 
     await store.markLost(music.id);
@@ -138,7 +132,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('keeps the stored snapshot when a rescan cannot read the folder', async () => {
-    const store = setup([snapshot()]);
+    const { store, plugin, database } = setup([snapshot()]);
     await settled(store);
     plugin.listTracks.mockRejectedValueOnce(new Error('bridge down'));
 
@@ -149,7 +143,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('does not retry a new folder that could not be read', async () => {
-    const store = setup([]);
+    const { store, plugin } = setup([]);
     plugin.listTracks.mockRejectedValue(new Error('bridge down'));
     await settled(store);
     TestBed.tick();
@@ -158,7 +152,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('keeps snapshots while the source list is empty, and forgets on request', async () => {
-    const store = setup([snapshot()], { sources: [] });
+    const { store, database } = setup([snapshot()], { sources: [] });
     await settled(store);
     expect(database.remove).not.toHaveBeenCalled();
 
@@ -168,7 +162,7 @@ describe('LocalLibraryStore', () => {
   });
 
   it('reads no folders in the browser', async () => {
-    const store = setup([snapshot()], { native: false });
+    const { store, database } = setup([snapshot()], { native: false });
     await settled(store);
 
     expect(store.tracks()).toEqual([]);

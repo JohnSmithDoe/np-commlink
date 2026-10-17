@@ -144,8 +144,8 @@ function saveButton(scope: Locator): Locator {
   return scope.getByRole('button', { name: /Anlegen|Übernehmen/ });
 }
 
-function valueInput(scope: Locator, index: number): Locator {
-  return scope.getByTestId('condition-value').nth(index).locator('input');
+function firstValueInput(scope: Locator): Locator {
+  return scope.getByTestId('condition-value').first().locator('input');
 }
 
 async function pickField(page: Page, scope: Locator, label: string) {
@@ -210,7 +210,7 @@ async function createRule(
   await nameInput(modal).fill(name);
   await assignCategory(page, modal, category);
   if (field) await pickField(page, modal, field);
-  await valueInput(modal, 0).fill(value);
+  await firstValueInput(modal).fill(value);
   await expect(saveButton(modal)).toBeEnabled();
   await saveButton(modal).click();
   await expect(dialog(page)).toBeHidden();
@@ -233,7 +233,7 @@ async function createSchedule(
   await modal.locator('app-money-input input').fill(amount);
   await assignCategory(page, modal, category);
   if (field) await pickField(page, modal, field);
-  await valueInput(modal, 0).fill(value);
+  await firstValueInput(modal).fill(value);
   await expect(saveButton(modal)).toBeEnabled();
   await saveButton(modal).click();
   await expect(dialog(page)).toBeHidden();

@@ -51,17 +51,15 @@ export class ShoppingEffects {
           const text = activeItems
             .map((item) => item.quantity + ' x ' + item.name)
             .join('\n');
-          return from(
-            this.#share.share({
-              title: this.#translate.instant(
-                marker('household.shopping.share.title')
-              ),
-              text,
-              dialogTitle: this.#translate.instant(
-                marker('household.shopping.share.dialog')
-              ),
-            })
-          ).pipe(catchError(() => EMPTY));
+          const title = this.#translate.instant(
+            marker('household.shopping.share.title')
+          );
+          const dialogTitle = this.#translate.instant(
+            marker('household.shopping.share.dialog')
+          );
+          return from(this.#share.share({ title, text, dialogTitle })).pipe(
+            catchError(() => EMPTY)
+          );
         })
       );
     },

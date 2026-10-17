@@ -27,7 +27,7 @@ import {
   ZodiacSignRecord,
 } from './astro.types';
 
-const TEXT_PRESENTATION = '\uFE0E';
+const TEXT_PRESENTATION = '\u{FE0E}';
 
 export const asText = (symbol: string): string =>
   `${symbol}${TEXT_PRESENTATION}`;

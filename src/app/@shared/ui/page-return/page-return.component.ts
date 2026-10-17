@@ -29,20 +29,20 @@ import { routeUrl } from '../../util/route-url';
 export class PageReturnComponent {
   readonly #program = inject(PROGRAM_CONTEXT)(routeUrl(inject(ActivatedRoute)));
 
-  readonly route = input<string>();
-  readonly label = input<string>();
-
   readonly #named = computed(() => {
     const route = this.route();
     const titleKey = this.label();
     return route && titleKey ? { route, titleKey } : undefined;
   });
 
-  readonly target = computed(() =>
-    this.#program.isProgram
+  readonly route = input<string>();
+  readonly label = input<string>();
+
+  readonly target = computed(() => {
+    return this.#program.isProgram
       ? undefined
-      : (this.#named() ?? this.#program.parent)
-  );
+      : (this.#named() ?? this.#program.parent);
+  });
 
   constructor() {
     addIcons({ chevronBackOutline });

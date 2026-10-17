@@ -29,8 +29,10 @@ function calendar(page: Page): Locator {
   return page.locator('ion-modal:not(.overlay-hidden) ion-datetime');
 }
 
-async function dueDateField(page: Page, name: string): Promise<Locator> {
-  await listRow(page, new RegExp(name)).click();
+const TASK = 'Steuer';
+
+async function dueDateField(page: Page): Promise<Locator> {
+  await listRow(page, new RegExp(TASK)).click();
   const dialog = page.locator('ion-modal.show-modal').first();
   return dialog.locator('app-date-input');
 }
@@ -39,14 +41,14 @@ test.describe('the due-date picker', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/#/tasks/list');
     await waitForListPage(page);
-    await addViaSearch(page, 'Steuer');
+    await addViaSearch(page, TASK);
     await expect(listRow(page, /Steuer/)).toBeVisible({ timeout: 10_000 });
   });
 
   test('reopens on the date it holds, not the month before it', async ({
     page,
   }) => {
-    const field = await dueDateField(page, 'Steuer');
+    const field = await dueDateField(page);
     await pickDate(field, DUE);
     await expect(dateBox(field)).toHaveValue('17.11.2026');
 
@@ -58,7 +60,7 @@ test.describe('the due-date picker', () => {
   });
 
   test('opens an empty picker on today', async ({ page }) => {
-    const field = await dueDateField(page, 'Steuer');
+    const field = await dueDateField(page);
     await openPicker(field);
 
     const now = new Date();
@@ -71,7 +73,7 @@ test.describe('the due-date picker', () => {
   test('sets the date from a quick pick, without opening the calendar', async ({
     page,
   }) => {
-    await dueDateField(page, 'Steuer');
+    await dueDateField(page);
     const dialog = page.locator('ion-modal.show-modal').first();
 
     await dialog
@@ -95,7 +97,7 @@ test.describe('the due-date picker', () => {
   test('clears the date it set, and offers nothing to clear before that', async ({
     page,
   }) => {
-    await dueDateField(page, 'Steuer');
+    await dueDateField(page);
     const dialog = page.locator('ion-modal.show-modal').first();
     const clear = dialog
       .locator('app-date-shortcuts')

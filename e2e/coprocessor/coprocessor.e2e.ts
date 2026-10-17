@@ -20,13 +20,14 @@ const tabBar = (page: Page) =>
 
 const tab = (page: Page, name: string) => moduleTab(page, name);
 
-const key = (page: Page, glyph: string) =>
-  page
+const key = (page: Page, glyph: string) => {
+  return page
     .getByTestId('coprocessor-keypad')
     .getByTestId('coprocessor-key')
     .filter({
       hasText: new RegExp(String.raw`^\s*${escapeForRegExp(glyph)}\s*$`),
     });
+};
 
 test.describe('coprocessor', () => {
   test('opens the calculator from the module root and shows three tabs', async ({

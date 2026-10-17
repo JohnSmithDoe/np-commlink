@@ -7,35 +7,41 @@ import {
   selectTrackingTime,
 } from './tracking.selector';
 
-const track = (over: Partial<TrackingItem> = {}): TrackingItem => ({
-  id: Math.random().toString(36).slice(2),
-  name: 'Task',
-  createdAt: '2026-01-01',
-  state: 'stopped',
-  ...over,
-});
+const track = (over: Partial<TrackingItem> = {}): TrackingItem => {
+  return {
+    id: Math.random().toString(36).slice(2),
+    name: 'Task',
+    createdAt: '2026-01-01',
+    state: 'stopped',
+    ...over,
+  };
+};
 
-const state = (over: Partial<TrackingState> = {}): TrackingState => ({
-  items: [],
-  sessions: [],
-  sessionsViewId: 'all',
-  ...over,
-});
-
-const stateAtSecond = (trackedTimeInSeconds: number) => ({
-  tracking: state({
+const state = (over: Partial<TrackingState> = {}): TrackingState => {
+  return {
+    items: [],
     sessions: [],
-    items: [
-      track({
-        id: 'live',
-        name: 'Live',
-        state: 'running',
-        startTime: dayjs().hour(10).minute(0).second(0).format(),
-        trackedTimeInSeconds,
-      }),
-    ],
-  }),
-});
+    sessionsViewId: 'all',
+    ...over,
+  };
+};
+
+const stateAtSecond = (trackedTimeInSeconds: number) => {
+  return {
+    tracking: state({
+      sessions: [],
+      items: [
+        track({
+          id: 'live',
+          name: 'Live',
+          state: 'running',
+          startTime: dayjs().hour(10).minute(0).second(0).format(),
+          trackedTimeInSeconds,
+        }),
+      ],
+    }),
+  };
+};
 
 describe('tracking.selector', () => {
   it('selectRunningTrackingItem finds the running item', () => {

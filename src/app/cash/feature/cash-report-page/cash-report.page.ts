@@ -60,19 +60,17 @@ export class CashReportPage {
   readonly #translate = inject(TranslateService);
   readonly #colors = chartColors();
 
+  readonly #monthly = this.#facade.monthlyTotals;
+
   readonly scopes = REPORT_SCOPES;
   readonly scopeLabelKeys = SCOPE_LABEL_KEYS;
   readonly scope = this.#facade.scope;
   readonly totals = this.#facade.totals;
-  readonly #monthly = this.#facade.monthlyTotals;
+
   readonly spendByCategory = this.#facade.spendByCategory;
   readonly biggestExpenses = this.#facade.biggestExpenses;
   readonly spendByCounterparty = this.#facade.spendByCounterparty;
   readonly uncategorized = this.#facade.uncategorized;
-
-  selectScope(scope: ReportScope): void {
-    this.#facade.setScope(scope);
-  }
 
   readonly hasData = computed(
     () => this.#monthly().length > 0 || this.spendByCategory().length > 0
@@ -132,4 +130,8 @@ export class CashReportPage {
     ...BASE_CHART_OPTIONS,
     plugins: { legend: LEGEND_BOTTOM },
   };
+
+  selectScope(scope: ReportScope): void {
+    this.#facade.setScope(scope);
+  }
 }

@@ -17,18 +17,18 @@ describe('TrackplayPlayerPage', () => {
   let component: TrackplayPlayerPage;
   let dispatch: ReturnType<typeof vi.spyOn>;
 
-  const setup = (id = 'p1') => {
+  const games = mockGamesState([
+    mockGame({ id: 'g1', playerIds: ['p1'] }),
+    mockGame({ id: 'g2', playerIds: ['p2'] }),
+  ]);
+
+  const setup = () => {
     TestBed.configureTestingModule({
       imports: [TrackplayPlayerPage],
       providers: [
         provideTestingProviders({
-          trackplay: mockTrackplayState({
-            games: mockGamesState([
-              mockGame({ id: 'g1', playerIds: ['p1'] }),
-              mockGame({ id: 'g2', playerIds: ['p2'] }),
-            ]),
-          }),
-          router: mockRouterState({ parameters: { id } }),
+          trackplay: mockTrackplayState({ games }),
+          router: mockRouterState({ parameters: { id: 'p1' } }),
         }),
         providePeople([mockPlayer({ id: 'p1', name: 'Ada' })]),
       ],

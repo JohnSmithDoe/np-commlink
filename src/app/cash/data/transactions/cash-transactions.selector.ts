@@ -49,12 +49,14 @@ const NEWEST_FIRST: ItemListSort = {
 
 const scopedTo = (
   state: CashTransactionsState,
-  keep: (txn: CashTransaction) => boolean
-): CashTransactionsState => ({
-  ...state,
-  items: state.items.filter((txn) => keep(txn)),
-  sort: NEWEST_FIRST,
-});
+  isKeep: (txn: CashTransaction) => boolean
+): CashTransactionsState => {
+  return {
+    ...state,
+    items: state.items.filter((txn) => isKeep(txn)),
+    sort: NEWEST_FIRST,
+  };
+};
 
 const withReconciledLeg = (
   items: CashTransaction[],
@@ -64,10 +66,12 @@ const withReconciledLeg = (
   for (const txn of all) {
     if (txn.matchedTxnId) manualLegBySurvivorId.set(txn.matchedTxnId, txn.id);
   }
-  return items.map((txn) => ({
-    ...txn,
-    reconciledManualId: manualLegBySurvivorId.get(txn.id),
-  }));
+  return items.map((txn) => {
+    return {
+      ...txn,
+      reconciledManualId: manualLegBySurvivorId.get(txn.id),
+    };
+  });
 };
 
 export const selectRoutedAccountId = createSelector(
@@ -104,11 +108,12 @@ export const selectRoutedAccountTransactions = createSelector(
 export const selectRoutedCategoryTransactionsState = createSelector(
   selectTransactionsState,
   selectRoutedCategoryId,
-  (state, categoryId) =>
-    scopedTo(
+  (state, categoryId) => {
+    return scopedTo(
       state,
       (txn) => categoryIdOf(txn) === categoryId && !txn.matchedTxnId
-    )
+    );
+  }
 );
 
 export const selectRoutedCategorySearchResult = createSelector(

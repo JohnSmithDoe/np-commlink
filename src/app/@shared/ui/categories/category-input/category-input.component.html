@@ -13,7 +13,7 @@
             fill="clear"
             size="small"
             [attr.aria-label]="'a11y.remove-category' | translate"
-            (click)="removeCategory.emit(cat.id); $event.stopPropagation()"
+            (click)="categoryRemoved.emit(cat.id); $event.stopPropagation()"
           >
             <ion-icon
               name="close-circle-outline"

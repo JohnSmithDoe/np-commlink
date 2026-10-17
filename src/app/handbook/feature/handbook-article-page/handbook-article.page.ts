@@ -44,6 +44,10 @@ export class HandbookArticlePage {
   readonly #handbook = inject(HandbookService);
   readonly #route = inject(ActivatedRoute);
 
+  readonly #neighbours = computed(() =>
+    handbookNeighbours(this.#handbook.entries(), this.slug())
+  );
+
   readonly slug = toSignal(
     this.#route.paramMap.pipe(
       map((routeParameters) => routeParameters.get('slug') ?? '')
@@ -55,9 +59,6 @@ export class HandbookArticlePage {
   readonly pending = this.#handbook.pagePending;
   readonly failed = this.#handbook.pageFailed;
 
-  readonly #neighbours = computed(() =>
-    handbookNeighbours(this.#handbook.entries(), this.slug())
-  );
   readonly previous = computed(() => this.#neighbours().previous);
   readonly next = computed(() => this.#neighbours().next);
 

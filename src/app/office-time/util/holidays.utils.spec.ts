@@ -11,12 +11,13 @@ const on = (year: number, name: string): string =>
 const computedDates = (year: number): Record<string, string> =>
   berlinHolidaysFor(year);
 
-const ruleBasedDates = (year: number): Record<string, string> =>
-  Object.fromEntries(
+const ruleBasedDates = (year: number): Record<string, string> => {
+  return Object.fromEntries(
     Object.entries(publishedBerlinHolidays(year)).filter(
       ([name]) => name !== ONE_OFF_LIBERATION_DAY_2025
     )
   );
+};
 
 describe('berlinHolidaysFor', () => {
   it.each(PUBLISHED_YEARS)(

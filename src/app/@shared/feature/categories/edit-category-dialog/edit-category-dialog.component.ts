@@ -13,13 +13,13 @@ import { BaseEditItemDialog } from '../../item-lists/edit-item-dialog/base-edit-
 export class EditCategoryDialogComponent extends BaseEditItemDialog<Category> {
   readonly #facade = inject(CATALOG_FACADE);
 
-  protected get listId() {
-    return this.#facade.catalogListId;
-  }
-
   readonly siblings = computed<readonly Category[]>(
     () => this.#facade.state()?.items ?? []
   );
+
+  protected get listId() {
+    return this.#facade.catalogListId;
+  }
 
   protected blank(): Category {
     return createCategory('');

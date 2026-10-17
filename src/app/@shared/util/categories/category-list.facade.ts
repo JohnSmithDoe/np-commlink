@@ -36,7 +36,9 @@ export const CATALOG_FACADE = new InjectionToken<CatalogFacade>(
 
 export const provideCatalogFacade = (
   facade: Type<CatalogFacade>
-): Provider[] => [
-  { provide: LIST_FACADE, useExisting: facade },
-  { provide: CATALOG_FACADE, useExisting: facade },
-];
+): Provider[] => {
+  return [
+    { provide: LIST_FACADE, useExisting: facade },
+    { provide: CATALOG_FACADE, useExisting: facade },
+  ];
+};

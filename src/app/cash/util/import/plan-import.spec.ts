@@ -5,23 +5,27 @@ import {
 import { ParsedRow, ParseResult } from './parsed-row';
 import { planImport } from './plan-import';
 
-const row = (over: Partial<ParsedRow> = {}): ParsedRow => ({
-  dateISO: '2026-01-06T00:00:00+01:00',
-  amountCents: -4299,
-  description: 'NORDKAUF',
-  status: 'confirmed',
-  bankRef: '2026010638472910064',
-  derivedKey: '20260106|-4299|NORDKAUF|1',
-  ...over,
-});
+const row = (over: Partial<ParsedRow> = {}): ParsedRow => {
+  return {
+    dateISO: '2026-01-06T00:00:00+01:00',
+    amountCents: -4299,
+    description: 'NORDKAUF',
+    status: 'confirmed',
+    bankRef: '2026010638472910064',
+    derivedKey: '20260106|-4299|NORDKAUF|1',
+    ...over,
+  };
+};
 
-const parsed = (rows: ParsedRow[], rejected = 0): ParseResult => ({
-  rows,
-  rejected,
-});
+const parsed = (rows: ParsedRow[], rejected = 0): ParseResult => {
+  return {
+    rows,
+    rejected,
+  };
+};
 
-const imported = (over = {}) =>
-  mockCashTransaction({
+const imported = (over = {}) => {
+  return mockCashTransaction({
     accountId: 'acc',
     dateISO: '2026-01-06T00:00:00+01:00',
     amountCents: -4299,
@@ -30,6 +34,7 @@ const imported = (over = {}) =>
     importKey: '2026010638472910064',
     ...over,
   });
+};
 
 const ids = () => {
   let n = 0;
@@ -187,8 +192,7 @@ describe('planImport', () => {
   });
 
   it('carries the rejected count through untouched', () => {
-    expect(
-      planImport(parsed([row()], 3), 'acc', [], [], 'batch', ids()).rejected
-    ).toBe(3);
+    const plan = planImport(parsed([row()], 3), 'acc', [], [], 'batch', ids());
+    expect(plan.rejected).toBe(3);
   });
 });

@@ -22,8 +22,10 @@ export const playersFrom = (
   const lastPlayedAt = lastPlayedAtById(games);
   return people
     .filter((person) => person.kind === 'person')
-    .map((person) => ({
-      ...person,
-      lastPlayedAt: lastPlayedAt.get(person.id),
-    }));
+    .map((person) => {
+      return {
+        ...person,
+        lastPlayedAt: lastPlayedAt.get(person.id),
+      };
+    });
 };

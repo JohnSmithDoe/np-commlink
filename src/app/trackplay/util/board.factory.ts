@@ -40,7 +40,7 @@ function sectorAngle(players: number): number {
   return (2 * Math.PI) / players;
 }
 
-function sharesCorner(players: number): boolean {
+function isSharesCorner(players: number): boolean {
   return players >= SHARE_MIN && players <= SHARE_MAX;
 }
 
@@ -64,7 +64,7 @@ function standoffInner(players: number): number {
 }
 
 function armInner(players: number): number {
-  return sharesCorner(players)
+  return isSharesCorner(players)
     ? 1 / Math.tan(Math.PI / players)
     : standoffInner(players);
 }
@@ -95,7 +95,7 @@ function field(
 function trackFields(players: number, inner: number): BoardField[] {
   const step = sectorAngle(players);
   const outer = inner + PIECES;
-  const firstOutbound = sharesCorner(players) ? 1 : 0;
+  const firstOutbound = isSharesCorner(players) ? 1 : 0;
   const fields: BoardField[] = [];
 
   for (let player = 0; player < players; player++) {
@@ -113,12 +113,12 @@ function trackFields(players: number, inner: number): BoardField[] {
 
     for (const [offset, at] of sector.entries()) {
       const index = player * sector.length + offset;
-      const entry = offset === 0;
+      const isEntry = offset === 0;
       fields.push(
         field(
-          entry ? `start-${player}` : `track-${index}`,
-          entry ? 'start' : 'track',
-          entry ? player : null,
+          isEntry ? `start-${player}` : `track-${index}`,
+          isEntry ? 'start' : 'track',
+          isEntry ? player : null,
           index,
           at
         )
@@ -193,7 +193,7 @@ function frame(fields: readonly BoardField[]): string {
 
 export function buildBoard(players: BoardPlayerCount): BoardLayout {
   const inner = armInner(players);
-  const fieldsPerPlayer = 2 * (PIECES + 1) + (sharesCorner(players) ? 0 : 1);
+  const fieldsPerPlayer = 2 * (PIECES + 1) + (isSharesCorner(players) ? 0 : 1);
   const fields = [
     ...trackFields(players, inner),
     ...goalFields(players, inner),

@@ -70,20 +70,25 @@ export class DeckConfigPage {
   readonly #deck = inject(DeckFacade);
 
   readonly lenses = LENSES;
+
   readonly lensLabelKeys = LENS_LABEL_KEYS;
+
   readonly tileLabelKeys = TILE_LABEL_KEYS;
+
   readonly lens = signal<DeckConfigLens>('programs');
 
   readonly shown = this.#deck.orderedPrograms;
-  readonly modules = this.#deck.configuredModules;
-  readonly hasCustomConfig = this.#deck.hasCustomConfig;
 
-  selectLens(lens: string): void {
-    this.lens.set(lens as DeckConfigLens);
-  }
+  readonly modules = this.#deck.configuredModules;
+
+  readonly hasCustomConfig = this.#deck.hasCustomConfig;
 
   constructor() {
     addIcons({ eyeOffOutline, eyeOutline });
+  }
+
+  selectLens(lens: string): void {
+    this.lens.set(lens as DeckConfigLens);
   }
 
   toggleEntry(id: DeckEntryId): void {

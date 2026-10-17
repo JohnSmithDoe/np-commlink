@@ -32,7 +32,7 @@ export class GameRowComponent {
 
   readonly selectGame = output<void>();
   readonly editGame = output<void>();
-  readonly deleteGame = output<void>();
+  readonly deletion = output<void>();
 
   constructor() {
     addIcons({ createOutline, playCircle });

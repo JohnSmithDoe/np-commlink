@@ -30,10 +30,10 @@ import { evaluateExpression } from '../../util/expression.utils';
 export class CoprocessorCalcPage {
   readonly #language = inject(APP_LANGUAGE);
 
+  readonly #result = computed(() => evaluateExpression(this.expression()));
+
   readonly keys = CALC_KEYS;
   readonly expression = signal('');
-
-  readonly #result = computed(() => evaluateExpression(this.expression()));
 
   readonly value = computed(() => {
     const result = this.#result();
@@ -42,17 +42,20 @@ export class CoprocessorCalcPage {
 
   readonly errorKey = computed(() => {
     const result = this.#result();
-    if (
-      result.ok ||
+    return result.ok ||
       result.reason === 'empty' ||
       result.reason === 'incomplete'
-    ) {
-      return null;
-    }
-    return CALC_ERROR_KEYS[result.reason];
+      ? null
+      : CALC_ERROR_KEYS[result.reason];
   });
 
   readonly canCommit = computed(() => this.#result().ok);
+
+  private commit(): void {
+    const result = this.#result();
+    if (!result.ok) return;
+    this.expression.set(formatNumber(result.value, this.#language));
+  }
 
   press(key: CalcKey): void {
     if (key.emit === 'clear') {
@@ -71,12 +74,6 @@ export class CoprocessorCalcPage {
   }
 
   edit(event: InputCustomEvent): void {
-    this.expression.set(String(event.detail.value ?? ''));
-  }
-
-  private commit(): void {
-    const result = this.#result();
-    if (!result.ok) return;
-    this.expression.set(formatNumber(result.value, this.#language));
+    this.expression.set(event.detail.value ?? '');
   }
 }

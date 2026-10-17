@@ -147,14 +147,14 @@ describe('wordclock.utils', () => {
 
   describe('computeFace — corner minute dots', () => {
     it('lights corners cumulatively for minutes past the five-step', () => {
-      const cfg = { ...base, showCorners: true };
-      expect(computeFace(at('09:03'), cfg).corners).toEqual({
+      const config = { ...base, showCorners: true };
+      expect(computeFace(at('09:03'), config).corners).toEqual({
         topLeft: true,
         topRight: true,
         botRight: true,
         botLeft: false,
       });
-      expect(computeFace(at('09:04'), cfg).corners).toEqual({
+      expect(computeFace(at('09:04'), config).corners).toEqual({
         topLeft: true,
         topRight: true,
         botRight: true,

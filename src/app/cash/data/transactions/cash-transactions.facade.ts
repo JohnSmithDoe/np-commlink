@@ -15,6 +15,8 @@ export class CashTransactionsFacade {
   readonly #store = inject(Store);
   readonly #dialogs = inject(ItemDialogService);
 
+  readonly allItems = this.#store.selectSignal(selectAllTransactions);
+
   showCreateDialog(accountId: string, categoryId?: CategoryId): void {
     this.#dialogs.open({
       item: createCashTransaction('', accountId, categoryId),
@@ -30,8 +32,6 @@ export class CashTransactionsFacade {
       editMode: 'update',
     });
   }
-
-  readonly allItems = this.#store.selectSignal(selectAllTransactions);
 
   saveItem(item: CashTransaction): void {
     const isKnown = this.allItems().some(({ id }) => id === item.id);

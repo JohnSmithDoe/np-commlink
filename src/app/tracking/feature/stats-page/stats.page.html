@@ -30,7 +30,7 @@
         [view]="viewMode()"
         [ionList]="ionList"
         [canDelete]="viewMode() === 'raw'"
-        (deleteItem)="deleteItem(item)"
+        (deletionRequested)="deleteItem(item)"
       />
     } @empty {
       <app-empty-state

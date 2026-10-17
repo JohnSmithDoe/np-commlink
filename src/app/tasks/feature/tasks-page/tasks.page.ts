@@ -55,10 +55,11 @@ const SETTINGS_LABEL = marker('tasks.a11y.settings');
   providers: [{ provide: LIST_FACADE, useExisting: TasksListPageFacade }],
 })
 export class TasksPage {
-  protected readonly settingsLabel = SETTINGS_LABEL;
   readonly #facade = inject(TasksListPageFacade);
   readonly #today = inject(TodayService).today;
   readonly #now = computed(() => dayjs(this.#today()));
+
+  protected readonly settingsLabel = SETTINGS_LABEL;
 
   constructor() {
     addIcons({

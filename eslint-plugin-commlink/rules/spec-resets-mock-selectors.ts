@@ -28,9 +28,10 @@ const calleeName = (node: {
   callee: { type: string; property?: { type: string; name?: string } };
 }): string | undefined => {
   const { callee } = node;
-  if (callee.type !== 'MemberExpression') return undefined;
-  if (callee.property?.type !== 'Identifier') return undefined;
-  return callee.property.name;
+  return callee.type === 'MemberExpression' &&
+    callee.property?.type === 'Identifier'
+    ? callee.property.name
+    : undefined;
 };
 
 export const rule: Rule.RuleModule = {
@@ -48,16 +49,16 @@ export const rule: Rule.RuleModule = {
   },
   create(context) {
     const overrides: Rule.Node[] = [];
-    let resets = false;
+    let isResets = false;
 
     return {
       CallExpression(node) {
         const name = calleeName(node);
         if (name === OVERRIDE) overrides.push(node);
-        if (name === RESET) resets = true;
+        if (name === RESET) isResets = true;
       },
       'Program:exit'() {
-        if (resets) return;
+        if (isResets) return;
         for (const node of overrides) {
           context.report({ node, messageId: 'overrideWithoutReset' });
         }

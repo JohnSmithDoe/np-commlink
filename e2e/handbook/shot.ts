@@ -35,10 +35,10 @@ async function switchOn(toggles: Locator): Promise<void> {
   for (let index = 0; index < (await toggles.count()); index++) {
     const toggle = toggles.nth(index);
     if (!(await toggle.isVisible())) continue;
-    const on = await toggle.evaluate(
+    const isOn = await toggle.evaluate(
       (element: HTMLElement & { checked: boolean }) => element.checked
     );
-    if (!on) await toggle.click();
+    if (!isOn) await toggle.click();
   }
 }
 

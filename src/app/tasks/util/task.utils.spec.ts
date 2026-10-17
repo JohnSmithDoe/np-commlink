@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { TaskItem } from '../model/task.types';
 import { mockTaskItem } from '../testing/tasks.test-data';
 import {
   closedTask,
@@ -17,28 +18,34 @@ const MONTHLY = { every: 1, unit: 'month' } as const;
 const colorOf = (dueAt?: string) =>
   dueStatusColor(mockTaskItem({ dueAt }), NOW);
 
-const closedOn = (doneAt: string) =>
-  dueStatusColor(
+const closedOn = (doneAt: string) => {
+  return dueStatusColor(
     closedTask(mockTaskItem({ interval: MONTHLY }), dayjs(doneAt)),
     NOW
   );
+};
 
-const closedOnWeekdays = (weekdays: (1 | 4 | 7)[]) =>
-  nextDueOf(
+const closedOnWeekdays = (weekdays: (1 | 4 | 7)[]) => {
+  return nextDueOf(
     closedTask(
       mockTaskItem({ interval: { unit: 'day', weekdays } }),
       dayjs('2026-07-20')
     )
   );
+};
 
 const openingWith = (overrides: Partial<Parameters<typeof mockTaskItem>[0]>) =>
   opensAt(mockTaskItem({ dueAt: '2026-07-15', ...overrides }));
 
-const recurring = (doneAt: string, every: number, unit: 'week' | 'year') =>
-  dueStatusColor(
-    closedTask(mockTaskItem({ interval: { unit, every } }), dayjs(doneAt)),
+const recurring = (doneAt: string, unit: 'week' | 'year') => {
+  return dueStatusColor(
+    closedTask(mockTaskItem({ interval: { unit, every: 1 } }), dayjs(doneAt)),
     NOW
   );
+};
+
+const closedAt = (item: TaskItem, date: string) =>
+  closedTask(item, dayjs(date));
 
 describe('dueStatusColor', () => {
   it('gives a task without a due date no status at all', () => {
@@ -70,11 +77,11 @@ describe('dueStatusColor', () => {
   });
 
   it('scales the warning window to the cadence', () => {
-    expect(recurring('2026-07-21', 1, 'week')).toBe('warning');
-    expect(recurring('2026-07-23', 1, 'week')).toBe('success');
+    expect(recurring('2026-07-21', 'week')).toBe('warning');
+    expect(recurring('2026-07-23', 'week')).toBe('success');
 
-    expect(recurring('2025-08-05', 1, 'year')).toBe('warning');
-    expect(recurring('2025-09-01', 1, 'year')).toBe('success');
+    expect(recurring('2025-08-05', 'year')).toBe('warning');
+    expect(recurring('2025-09-01', 'year')).toBe('success');
   });
 
   it('moves the whole window when the shift says earlier', () => {
@@ -112,7 +119,7 @@ describe('nextDueForCadence', () => {
 describe('closedTask', () => {
   it('counts from the close when the task is anchored to it', () => {
     const item = mockTaskItem({ interval: { every: 2, unit: 'week' } });
-    expect(nextDueOf(closedTask(item, dayjs('2026-07-20T18:00:00.000Z')))).toBe(
+    expect(nextDueOf(closedAt(item, '2026-07-20T18:00:00.000Z'))).toBe(
       '2026-08-03'
     );
   });
@@ -123,7 +130,7 @@ describe('closedTask', () => {
       dueAt: '2026-07-20',
       interval: { every: 2, unit: 'week' },
     });
-    expect(nextDueOf(closedTask(item, dayjs('2026-07-24')))).toBe('2026-08-03');
+    expect(nextDueOf(closedAt(item, '2026-07-24'))).toBe('2026-08-03');
   });
 
   it('rolls a due-anchored task forward past every date already gone', () => {
@@ -145,7 +152,7 @@ describe('closedTask', () => {
       interval: { every: 1, unit: 'week' },
     });
 
-    const once = closedTask(item, dayjs('2026-07-21'));
+    const once = closedAt(item, '2026-07-21');
     expect(nextDueOf(once)).toBe('2026-07-28');
 
     const twice = closedTask(reopenedTask(once), dayjs('2026-07-21'));
@@ -199,8 +206,8 @@ describe('closedTask', () => {
     const item = mockTaskItem({
       interval: { unit: 'monthsOfYear', months: [3, 6] },
     });
-    expect(nextDueOf(closedTask(item, dayjs('2026-07-20')))).toBe('2027-03-01');
-    expect(nextDueOf(closedTask(item, dayjs('2026-04-20')))).toBe('2026-06-01');
+    expect(nextDueOf(closedAt(item, '2026-07-20'))).toBe('2027-03-01');
+    expect(nextDueOf(closedAt(item, '2026-04-20'))).toBe('2026-06-01');
   });
 
   it('keeps the old due date when no occurrence can be computed', () => {
@@ -213,7 +220,7 @@ describe('closedTask', () => {
 
   it('clamps a month step onto a shorter month', () => {
     const item = mockTaskItem({ interval: MONTHLY });
-    expect(nextDueOf(closedTask(item, dayjs('2026-01-31')))).toBe('2026-02-28');
+    expect(nextDueOf(closedAt(item, '2026-01-31'))).toBe('2026-02-28');
   });
 
   it('comes back to the day the reader chose after a short month', () => {
@@ -281,22 +288,22 @@ describe('tasksDueToReopen', () => {
     lead: { kind: 'days', days: 3 },
   });
 
-  const armed = (overrides: Partial<typeof closed>, now = NOW) =>
+  const isArmed = (overrides: Partial<typeof closed>, now = NOW) =>
     tasksDueToReopen([{ ...closed, ...overrides }], now).length === 1;
 
   it('re-arms once the lead window is reached', () => {
-    expect(armed({}, dayjs('2026-07-23'))).toBe(false);
-    expect(armed({}, dayjs('2026-07-24'))).toBe(true);
+    expect(isArmed({}, dayjs('2026-07-23'))).toBe(false);
+    expect(isArmed({}, dayjs('2026-07-24'))).toBe(true);
   });
 
   it('re-arms every repeating task, with no opting out', () => {
-    expect(armed({ lead: undefined }, dayjs('2026-07-26'))).toBe(false);
-    expect(armed({ lead: undefined }, dayjs('2026-07-27'))).toBe(true);
+    expect(isArmed({ lead: undefined }, dayjs('2026-07-26'))).toBe(false);
+    expect(isArmed({ lead: undefined }, dayjs('2026-07-27'))).toBe(true);
   });
 
   it('never re-arms an open task or one with no cadence', () => {
-    expect(armed({ doneAt: undefined })).toBe(false);
-    expect(armed({ interval: undefined })).toBe(false);
+    expect(isArmed({ doneAt: undefined })).toBe(false);
+    expect(isArmed({ interval: undefined })).toBe(false);
   });
 
   it('picks only the armed tasks out of a list', () => {

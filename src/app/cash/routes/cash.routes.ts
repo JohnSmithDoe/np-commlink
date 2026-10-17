@@ -7,10 +7,11 @@ export const cashRoutes: Routes = [
   {
     path: '',
     ...cashContext,
-    loadComponent: () =>
-      import('../feature/cash-shell/cash-shell.component').then(
-        (m) => m.CashShellComponent
-      ),
+    loadComponent: async () => {
+      const { CashShellComponent } =
+        await import('../feature/cash-shell/cash-shell.component');
+      return CashShellComponent;
+    },
     children: [
       {
         path: '',
@@ -20,58 +21,65 @@ export const cashRoutes: Routes = [
       {
         path: 'rules',
         title: marker('page-title.cash-rules'),
-        loadComponent: () =>
-          import('../feature/cash-rules-page/cash-rules.page').then(
-            (m) => m.CashRulesPage
-          ),
+        loadComponent: async () => {
+          const { CashRulesPage } =
+            await import('../feature/cash-rules-page/cash-rules.page');
+          return CashRulesPage;
+        },
       },
       {
         path: 'report',
         title: marker('page-title.cash-report'),
-        loadComponent: () =>
-          import('../feature/cash-report-page/cash-report.page').then(
-            (m) => m.CashReportPage
-          ),
+        loadComponent: async () => {
+          const { CashReportPage } =
+            await import('../feature/cash-report-page/cash-report.page');
+          return CashReportPage;
+        },
       },
       {
         path: 'schedules',
         title: marker('page-title.cash-schedules'),
-        loadComponent: () =>
-          import('../feature/cash-schedules-page/cash-schedules.page').then(
-            (m) => m.CashSchedulesPage
-          ),
+        loadComponent: async () => {
+          const { CashSchedulesPage } =
+            await import('../feature/cash-schedules-page/cash-schedules.page');
+          return CashSchedulesPage;
+        },
       },
       {
         path: 'uncategorized',
         title: marker('page-title.cash-uncategorized'),
-        loadComponent: () =>
-          import('../feature/cash-uncategorized-page/cash-uncategorized.page').then(
-            (m) => m.CashUncategorizedPage
-          ),
+        loadComponent: async () => {
+          const { CashUncategorizedPage } =
+            await import('../feature/cash-uncategorized-page/cash-uncategorized.page');
+          return CashUncategorizedPage;
+        },
       },
       {
         path: 'categories',
         title: marker('page-title.categories'),
         providers: provideCatalogFacade(CashCategoriesPageFacade),
-        loadComponent: () =>
-          import('../../@shared/feature/categories/category-list-page/category-list.page').then(
-            (m) => m.CategoryListPage
-          ),
+        loadComponent: async () => {
+          const { CategoryListPage } =
+            await import('../../@shared/feature/categories/category-list-page/category-list.page');
+          return CategoryListPage;
+        },
       },
       {
         path: 'category/:categoryId',
         title: marker('page-title.categories'),
-        loadComponent: () =>
-          import('../feature/cash-category-page/cash-category.page').then(
-            (m) => m.CashCategoryPage
-          ),
+        loadComponent: async () => {
+          const { CashCategoryPage } =
+            await import('../feature/cash-category-page/cash-category.page');
+          return CashCategoryPage;
+        },
       },
       {
         path: '',
-        loadComponent: () =>
-          import('../../@shared/feature/module-tabs-page/module-tabs.page').then(
-            (m) => m.ModuleTabsPage
-          ),
+        loadComponent: async () => {
+          const { ModuleTabsPage } =
+            await import('../../@shared/feature/module-tabs-page/module-tabs.page');
+          return ModuleTabsPage;
+        },
         children: [
           {
             path: 'accounts',
@@ -79,36 +87,40 @@ export const cashRoutes: Routes = [
               {
                 path: '',
                 title: marker('page-title.cash'),
-                loadComponent: () =>
-                  import('../feature/cash-page/cash.page').then(
-                    (m) => m.CashPage
-                  ),
+                loadComponent: async () => {
+                  const { CashPage } =
+                    await import('../feature/cash-page/cash.page');
+                  return CashPage;
+                },
               },
               {
                 path: ':accountId',
                 title: marker('page-title.cash'),
-                loadComponent: () =>
-                  import('../feature/cash-account-page/cash-account.page').then(
-                    (m) => m.CashAccountPage
-                  ),
+                loadComponent: async () => {
+                  const { CashAccountPage } =
+                    await import('../feature/cash-account-page/cash-account.page');
+                  return CashAccountPage;
+                },
               },
             ],
           },
           {
             path: 'burndown',
             title: marker('page-title.cash-burndown'),
-            loadComponent: () =>
-              import('../feature/cash-burndown-page/cash-burndown.page').then(
-                (m) => m.CashBurndownPage
-              ),
+            loadComponent: async () => {
+              const { CashBurndownPage } =
+                await import('../feature/cash-burndown-page/cash-burndown.page');
+              return CashBurndownPage;
+            },
           },
           {
             path: 'spending',
             title: marker('page-title.cash-spending'),
-            loadComponent: () =>
-              import('../feature/cash-spending-page/cash-spending.page').then(
-                (m) => m.CashSpendingPage
-              ),
+            loadComponent: async () => {
+              const { CashSpendingPage } =
+                await import('../feature/cash-spending-page/cash-spending.page');
+              return CashSpendingPage;
+            },
           },
         ],
       },

@@ -14,20 +14,26 @@ export const OfficeTimeActions = createActionGroup({
     loaded: (officeTime: OfficeTimeStateStorage | null) => ({ officeTime }),
 
     loadHolidays: emptyProps(),
-    loadHolidaysSuccess: (holidays: HolidayMap) => ({
-      holidays,
-    }),
-    saveTargetOfficeDaysPerWeek: (daysPerWeek: number) => ({
-      daysPerWeek,
-    }),
+    loadHolidaysSuccess: (holidays: HolidayMap) => {
+      return {
+        holidays,
+      };
+    },
+    saveTargetOfficeDaysPerWeek: (daysPerWeek: number) => {
+      return {
+        daysPerWeek,
+      };
+    },
     addOfficeTime: (today: Dayjs) => ({ today }),
     setOfficedays: (officedays: string[]) => ({ officedays }),
     addFreeday: (freeday: Dayjs) => ({ freeday }),
     setFreedays: (freedays: string[]) => ({ freedays }),
-    saveDashboardSettings: (key: DashboardSettingsType, active: boolean) => ({
-      key,
-      active,
-    }),
+    saveDashboardSettings: (key: DashboardSettingsType, isActive: boolean) => {
+      return {
+        key,
+        active: isActive,
+      };
+    },
     setReminder: (reminder: OfficeReminder) => ({ reminder }),
     resetData: emptyProps(),
   },

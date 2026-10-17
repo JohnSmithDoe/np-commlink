@@ -19,12 +19,14 @@ const coins = (...faces: number[]): (() => number) => {
   return () => faces[index++] ?? 0;
 };
 
-const record = (number: number, pattern: string): HexagramRecord => ({
-  number,
-  pattern,
-  nameKey: '',
-  judgementKey: '',
-});
+const record = (number: number, pattern: string): HexagramRecord => {
+  return {
+    number,
+    pattern,
+    nameKey: '',
+    judgementKey: '',
+  };
+};
 
 const reverse = (pattern: string) => [...pattern].toReversed().join('');
 
@@ -33,7 +35,8 @@ const complement = (pattern: string) =>
 
 describe('the King Wen table', () => {
   it('holds all 64 six-bit patterns exactly once', () => {
-    expect(new Set(HEXAGRAMS.map((entry) => entry.pattern)).size).toBe(64);
+    const patterns = new Set(HEXAGRAMS.map((entry) => entry.pattern));
+    expect(patterns.size).toBe(64);
   });
 
   it('numbers them 1..64 in table order', () => {
@@ -43,12 +46,13 @@ describe('the King Wen table', () => {
   });
 
   it('gives every hexagram its own name and judgement key', () => {
-    const keys = HEXAGRAMS.flatMap((entry) => [
-      entry.nameKey,
-      entry.judgementKey,
-    ]);
+    const keys = HEXAGRAMS.flatMap((entry) => {
+      const { nameKey, judgementKey } = entry;
+      return [nameKey, judgementKey];
+    });
 
-    expect(new Set(keys).size).toBe(128);
+    const distinctKeys = new Set(keys);
+    expect(distinctKeys.size).toBe(128);
     expect(
       HEXAGRAMS.every(
         (entry) =>

@@ -68,9 +68,10 @@ export function readStatement(
 
   const ibans = [
     ...new Set(
-      reports.flatMap((report) =>
-        report.iban ? [normalizeIban(report.iban)] : []
-      )
+      reports
+        .map((report) => report.iban)
+        .filter((iban): iban is string => !!iban)
+        .map((iban) => normalizeIban(iban))
     ),
   ];
   const expected = expectedIban ? normalizeIban(expectedIban) : ibans[0];

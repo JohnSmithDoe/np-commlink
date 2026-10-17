@@ -48,13 +48,14 @@ const LEAVE_FALLBACK_MS = 800;
 export class RitualPage {
   readonly #facade = inject(RitualPageFacade);
 
+  readonly #bonus = signal(false);
+
   readonly prompt = this.#facade.prompt;
   readonly count = this.#facade.count;
   readonly recentDays = this.#facade.recentDays;
   readonly todaysPrompt = this.#facade.todaysPrompt;
 
   protected readonly leaving = signal(false);
-  readonly #bonus = signal(false);
 
   readonly showCard = computed(
     () => !this.#facade.dayClosed() || this.#bonus()

@@ -8,15 +8,19 @@ const isRoundBlank = (round?: Round): boolean =>
 const gameById = (games: GamesState, gameId: TrackplayId): Game | undefined =>
   games.items.find((game) => game.id === gameId);
 
-const withGame = (games: GamesState, next: Game): GamesState => ({
-  ...games,
-  items: games.items.map((game) => (game.id === next.id ? next : game)),
-});
+const withGame = (games: GamesState, next: Game): GamesState => {
+  return {
+    ...games,
+    items: games.items.map((game) => (game.id === next.id ? next : game)),
+  };
+};
 
-const withBlankRound = (game: Game, roundId: TrackplayId): Game => ({
-  ...game,
-  rounds: [...game.rounds, createRound(roundId)],
-});
+const withBlankRound = (game: Game, roundId: TrackplayId): Game => {
+  return {
+    ...game,
+    rounds: [...game.rounds, createRound(roundId)],
+  };
+};
 
 export const ensureTrailingBlankRound = (
   games: GamesState,
@@ -25,8 +29,9 @@ export const ensureTrailingBlankRound = (
 ): GamesState => {
   const game = gameById(games, gameId);
   if (!game || game.ended) return games;
-  if (game.rounds.length > 0 && isRoundBlank(game.rounds.at(-1))) return games;
-  return withGame(games, withBlankRound(game, roundId));
+  return game.rounds.length > 0 && isRoundBlank(game.rounds.at(-1))
+    ? games
+    : withGame(games, withBlankRound(game, roundId));
 };
 
 const withRoundValue = (
@@ -34,14 +39,16 @@ const withRoundValue = (
   roundId: TrackplayId,
   playerId: TrackplayId,
   value: number
-): Game => ({
-  ...game,
-  rounds: game.rounds.map((round) =>
-    round.id === roundId
-      ? { ...round, values: { ...round.values, [playerId]: value } }
-      : round
-  ),
-});
+): Game => {
+  return {
+    ...game,
+    rounds: game.rounds.map((round) => {
+      return round.id === roundId
+        ? { ...round, values: { ...round.values, [playerId]: value } }
+        : round;
+    }),
+  };
+};
 
 const shouldAppendBlankRound = (
   game: Game,
@@ -60,8 +67,7 @@ export const setRoundValue = (
 ): GamesState => {
   const game = gameById(games, gameId);
   const round = game?.rounds.find((r) => r.id === roundId);
-  if (!game || !round) return games;
-  if (round.values[playerId] === value) return games;
+  if (!game || !round || round.values[playerId] === value) return games;
   const scored = withRoundValue(game, roundId, playerId, value);
   const grown = shouldAppendBlankRound(game, roundId, value)
     ? withBlankRound(scored, nextRoundId)

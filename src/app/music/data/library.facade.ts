@@ -26,7 +26,7 @@ import {
   toServerArtist,
 } from '../util/jam.mapper';
 import {
-  matchesQuery,
+  isQueryMatch,
   mergeAlbums,
   mergeArtists,
   sortAlbumTracks,
@@ -50,16 +50,17 @@ export class LibraryFacade {
   readonly #jam = inject(JamGateway);
   readonly #local = inject(LocalLibraryStore);
   readonly #folderSources = inject(Store).selectSignal(selectFolderSources);
+
   readonly #server = resource({
     params: () => (this.#jam.connected() ? this.#jam.sourceId() : undefined),
     loader: async ({ params: sourceId }) => {
-      const [artists, albums, folders] = await this.#jam.request((jam) =>
-        Promise.all([
+      const [artists, albums, folders] = await this.#jam.request((jam) => {
+        return Promise.all([
           jam.artist.index({}),
           jam.album.index({}),
           jam.folder.index({ level: 1 }),
-        ])
-      );
+        ]);
+      });
       return {
         artists: indexEntries(artists).map((a) => toServerArtist(sourceId, a)),
         albums: indexEntries(albums).map((a) => toServerAlbum(sourceId, a)),
@@ -68,34 +69,67 @@ export class LibraryFacade {
     },
   });
 
+  readonly #serverData = computed(() => {
+    return this.#server.hasValue()
+      ? this.#server.value()
+      : { artists: [], albums: [], folders: [] };
+  });
+
   readonly loading = computed(
     () => this.#server.isLoading() || this.#local.scanning()
   );
   readonly serverFailed = computed(() => this.#server.status() === 'error');
+
   readonly hasSources = computed(
     () => !!this.#jam.source() || this.#folderSources().length > 0
   );
-  readonly #serverData = computed(() =>
-    this.#server.hasValue()
-      ? this.#server.value()
-      : { artists: [], albums: [], folders: [] }
-  );
+
   readonly artists = computed((): ArtistEntry[] =>
     mergeArtists(this.#serverData().artists, this.#local.tracks())
   );
+
   readonly albums = computed((): AlbumEntry[] =>
     mergeAlbums(this.#serverData().albums, this.#local.tracks())
   );
-  readonly folders = computed((): FolderEntry[] => [
-    ...this.#local.scans().map((scan) => ({
-      id: scan.source.id,
-      sourceId: scan.source.id,
-      name: scan.source.name,
-      trackCount: scan.tracks.length,
-      onDevice: true,
-    })),
-    ...this.#serverData().folders,
-  ]);
+
+  readonly folders = computed((): FolderEntry[] => {
+    return [
+      ...this.#local.scans().map((scan) => {
+        return {
+          id: scan.source.id,
+          sourceId: scan.source.id,
+          name: scan.source.name,
+          trackCount: scan.tracks.length,
+          onDevice: true,
+        };
+      }),
+      ...this.#serverData().folders,
+    ];
+  });
+
+  async #serverAlbums(list: HomeList): Promise<AlbumEntry[]> {
+    const sourceId = this.#jam.sourceId();
+    if (!sourceId || !this.#jam.connected()) return [];
+    const page = await this.#jam.request((jam) =>
+      jam.album.search({ list: LIST_TYPES[list], take: HOME_LIST_SIZE })
+    );
+    return page.items.map((album) => albumBaseToServerAlbum(sourceId, album));
+  }
+
+  #serverIds(references: { id?: string }[] | undefined): string[] {
+    return (references ?? []).flatMap((reference) => reference.id || []);
+  }
+
+  async #jamTracks(
+    call: (jam: JamService) => Promise<{ items: Jam.MediaBase[] }>
+  ): Promise<Track[]> {
+    const sourceId = this.#jam.sourceId();
+    if (!sourceId || !this.#jam.connected()) return [];
+    const page = await this.#jam.request(call);
+    return page.items
+      .filter((item) => item.objType === JamObjectType.track)
+      .map((item) => toJamTrack(sourceId, item, this.#jam.streamUrl(item.id)));
+  }
 
   artist(key: string): ArtistEntry | undefined {
     return this.artists().find((artist) => artist.key === key);
@@ -113,13 +147,13 @@ export class LibraryFacade {
     const ids = this.#serverIds(this.artist(key)?.refs);
     const server =
       ids.length > 0
-        ? await this.#jamTracks((jam) =>
-            jam.artist.tracks({
+        ? await this.#jamTracks((jam) => {
+            return jam.artist.tracks({
               ids,
               ...TRACK_INCLUDES,
               take: DETAIL_PAGE_SIZE,
-            })
-          )
+            });
+          })
         : [];
     const local = this.#local.tracks().filter((t) => t.artistKey === key);
     return [...server, ...local];
@@ -146,22 +180,22 @@ export class LibraryFacade {
       this.#jam.request((jam) =>
         jam.folder.subfolders({ ids: [id], take: DETAIL_PAGE_SIZE })
       ),
-      this.#jamTracks((jam) =>
-        jam.folder.tracks({
+      this.#jamTracks((jam) => {
+        return jam.folder.tracks({
           ids: [id],
           ...TRACK_INCLUDES,
           take: DETAIL_PAGE_SIZE,
-        })
-      ),
+        });
+      }),
     ]);
     return {
-      folders: subfolders.items.map((folder) =>
-        toFolderEntry(sourceId, {
+      folders: subfolders.items.map((folder) => {
+        return toFolderEntry(sourceId, {
           id: folder.id,
           name: folder.title ?? folder.name,
           trackCount: folder.trackCount ?? 0,
-        })
-      ),
+        });
+      }),
       tracks: sortAlbumTracks(tracks),
     };
   }
@@ -190,23 +224,23 @@ export class LibraryFacade {
   }
 
   playlistTracks(id: string): Promise<Track[]> {
-    return this.#jamTracks((jam) =>
-      jam.playlist.entries({
+    return this.#jamTracks((jam) => {
+      return jam.playlist.entries({
         ids: [id],
         ...TRACK_INCLUDES,
         take: DETAIL_PAGE_SIZE,
-      })
-    );
+      });
+    });
   }
 
   favoriteTracks(): Promise<Track[]> {
-    return this.#jamTracks((jam) =>
-      jam.track.search({
+    return this.#jamTracks((jam) => {
+      return jam.track.search({
         list: ListType.faved,
         ...TRACK_INCLUDES,
         take: DETAIL_PAGE_SIZE,
-      })
-    );
+      });
+    });
   }
 
   async search(query: string): Promise<SearchResults> {
@@ -215,8 +249,8 @@ export class LibraryFacade {
     const sourceId = this.#jam.sourceId();
     const [server, tracks] = await Promise.all([
       sourceId && this.#jam.connected()
-        ? this.#jam.request((jam) =>
-            Promise.all([
+        ? this.#jam.request((jam) => {
+            return Promise.all([
               jam.artist.search({
                 query: needle,
                 take: SEARCH_PAGE_SIZE,
@@ -224,29 +258,29 @@ export class LibraryFacade {
                 artistIncAlbumCount: true,
               }),
               jam.album.search({ query: needle, take: SEARCH_PAGE_SIZE }),
-            ])
-          )
+            ]);
+          })
         : undefined,
-      this.#jamTracks((jam) =>
-        jam.track.search({
+      this.#jamTracks((jam) => {
+        return jam.track.search({
           query: needle,
           ...TRACK_INCLUDES,
           take: SEARCH_PAGE_SIZE,
-        })
-      ),
+        });
+      }),
     ]);
-    const local = this.#local.tracks().filter((t) => matchesQuery(t, needle));
+    const local = this.#local.tracks().filter((t) => isQueryMatch(t, needle));
     const [artistPage, albumPage] = server ?? [undefined, undefined];
     return {
       artists: mergeArtists(
-        (artistPage?.items ?? []).map((artist) =>
-          toServerArtist(sourceId ?? '', {
+        (artistPage?.items ?? []).map((artist) => {
+          return toServerArtist(sourceId ?? '', {
             id: artist.id,
             name: artist.name,
             albumCount: artist.albumCount ?? 0,
             trackCount: artist.trackCount ?? 0,
-          })
-        ),
+          });
+        }),
         local
       ),
       albums: mergeAlbums(
@@ -268,31 +302,5 @@ export class LibraryFacade {
 
   canFavorite(track: Track): boolean {
     return !track.onDevice && this.#jam.connected();
-  }
-
-  async #serverAlbums(list: HomeList): Promise<AlbumEntry[]> {
-    const sourceId = this.#jam.sourceId();
-    if (!sourceId || !this.#jam.connected()) return [];
-    const page = await this.#jam.request((jam) =>
-      jam.album.search({ list: LIST_TYPES[list], take: HOME_LIST_SIZE })
-    );
-    return page.items.map((album) => albumBaseToServerAlbum(sourceId, album));
-  }
-
-  #serverIds(references: { id?: string }[] | undefined): string[] {
-    return (references ?? []).flatMap((reference) =>
-      reference.id ? [reference.id] : []
-    );
-  }
-
-  async #jamTracks(
-    call: (jam: JamService) => Promise<{ items: Jam.MediaBase[] }>
-  ): Promise<Track[]> {
-    const sourceId = this.#jam.sourceId();
-    if (!sourceId || !this.#jam.connected()) return [];
-    const page = await this.#jam.request(call);
-    return page.items
-      .filter((item) => item.objType === JamObjectType.track)
-      .map((item) => toJamTrack(sourceId, item, this.#jam.streamUrl(item.id)));
   }
 }

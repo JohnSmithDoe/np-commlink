@@ -34,10 +34,11 @@ const rowIn = (root: Locator, name: string | RegExp) =>
 const startOption = (row: Locator) =>
   row.locator('ion-item-options[side="start"] ion-item-option');
 
-const closeSwipe = (row: Locator) =>
-  row.evaluate((element: HTMLElement & { close(): Promise<void> }) =>
+const closeSwipe = (row: Locator) => {
+  return row.evaluate((element: HTMLElement & { close(): Promise<void> }) =>
     element.close()
   );
+};
 
 async function addCategories(
   page: Page,

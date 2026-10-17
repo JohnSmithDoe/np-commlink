@@ -53,8 +53,8 @@ export class RitualSettingsPage {
     this.#facade.restoreAll();
   }
 
-  toggleReminder(enabled: boolean): void {
-    this.#facade.setReminder({ ...this.reminder(), enabled });
+  toggleReminder(isEnabled: boolean): void {
+    this.#facade.setReminder({ ...this.reminder(), enabled: isEnabled });
   }
 
   setReminderTime(value: string | number | null | undefined): void {
