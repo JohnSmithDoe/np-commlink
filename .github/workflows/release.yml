@@ -154,29 +154,61 @@ jobs:
           cat > notes.md <<'EOF'
           ## Breaking
 
-          - **BIOMON starts with an empty profile list** — people and pets now come from SIN,
-            the new shared list, and existing BIOMON profiles are not carried over. Add them
-            again in SIN; their weights and medicines from before stay hidden.
+          - **BIOMON clears the records left from before SIN** — the weights and medicines that
+            belonged to the old BIOMON profiles, hidden since the last release, are removed the first
+            time you open BIOMON.
 
           ## New
 
-          - **SIMSENSE · Your own music, on your own deck** — a music player for the songs you
-            already have: in the Android app, pick a folder on your phone and play albums, artists or whole folders.
-            It keeps playing with the screen off, with controls on the lock screen.
-          - **SIMSENSE · Stream from your jamserve server** — connect your own jamserve server
-            and its library sits right beside the music on your phone, in one list and one
-            queue, with recently played, favourites and playlists.
-          - **SIN · Everyone in one place** — the people and pets on your deck now live in one
-            list, with birthdays, clothing and shoe sizes and addresses. BIOMON and TRACKPLAY
-            both read it, so you add someone once and they turn up in both.
-          - **CHRONO · Fix the time you tracked** — the clock ran through lunch, or you forgot
-            to start it: correct the tracked time in steps or to the second, even while the
-            clock is still running, and after saving from the day's log.
-          - **BIOMON · The Chinese zodiac** — next to the star sign you now see the Chinese
-            animal, its element and yin or yang, with the year starting at the lunar new year
-            and a page for each of the twelve animals.
-          - **SIGIL · Today's date in one tap** — a button puts the date where you are typing,
-            so a running log stays one tap per entry.
+          - **SIN · Add someone without leaving the page** — the add button in BIOMON and TRACKPLAY
+            now opens the person form right where you are, instead of sending you to SIN.
+          - **SIN · Removing someone tidies up after them** — when you delete a person, their
+            weights, medicines, star signs and games go with them.
+          - **BIOMON · When does the Age of Aquarius begin?** — the zodiac page now shows what eight
+            schools answer, from 1962 to 3573, how each one counts, and which one the page itself uses.
+          - **SIMSENSE · Your folders open at once** — a folder is read when you add it or ask for a
+            rescan, not on every visit. A song that has gone missing is skipped, and a folder the app
+            lost access to says so.
+          - **A page that breaks stays contained** — if one screen fails to show, it alone offers a
+            retry, and the rest of the app keeps working.
+          - **Handbook · SIN and SIMSENSE explained** — two new handbook pages, and every figure in
+            the handbook shows the app as it looks today.
+
+          ## Fixed
+
+          - **SIMSENSE · Seeking and albums** — the position knob stays where you drag it, and an
+            album with guest artists stays one album instead of splitting per "feat." credit.
+          - **TRACKPLAY · SOYKAF · Editing a played game or a saved recipe** — the edit form opens and
+            closes properly again.
+          - **SIN · A fresh form every time** — adding someone from BIOMON or TRACKPLAY no longer fills
+            in whatever you last searched for in SIN.
+          - **AGENDA · Recurring tasks behave** — changing a task's rhythm plans the next date from
+            today instead of making it look overdue; closing a task from its form moves it on and logs
+            it, just like ticking it in the list; a task you add from search gets your default
+            settings; a long-neglected task catches up to a date after today; and a task due today
+            warns you that day rather than turning red at midnight.
+          - **BIOMON · Pill reminders stay on** — they could switch themselves off when the app
+            started. The weight calculator also refuses a result of zero or less.
+          - **CREDSTICK · Bank imports you can trust** — a pending booking is no longer imported a
+            second time once the bank books it; umlauts survive a file with mixed text encodings; and
+            an amount finer than a cent is refused instead of quietly rounded.
+          - **CREDSTICK · Rules, schedules and the burndown** — a rule's amount no longer grows a
+            hundredfold when saved in English; a refund no longer flips a schedule to income, and a
+            schedule's next date follows your actual payments; a cash spend finds its bank booking
+            within three calendar days; and spends from accounts you excluded no longer eat into the
+            allowance.
+          - **COMMS · The unread count** — it counts again after an update.
+          - **Every program's tabs fit** — tab bars show icons only, so five tabs fit a phone screen;
+            each keeps its name for screen readers.
+          - **Easier to read** — dimmed text keeps its contrast in both looks, and the SYSOP colour
+            pickers match the app's style.
+
+          ## Faster
+
+          - **AGENDA · Old recurring tasks catch up at once** — however many dates a task missed, its
+            next one is worked out in a single step.
+          - **SIGIL · A lighter notes list** — the list shows small previews of your pictures instead
+            of loading every full-size image.
 
           ---
 

@@ -1,6 +1,5 @@
 {
   "slug": "comms",
-  "shotsStale": true,
   "title": "COMMS",
   "plain": "Nachrichten",
   "route": "/notifications",

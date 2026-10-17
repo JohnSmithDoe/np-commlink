@@ -1,6 +1,5 @@
 {
   "slug": "market",
-  "shotsStale": true,
   "title": "MARKET",
   "plain": "Einkaufsliste",
   "route": "/household/shopping",

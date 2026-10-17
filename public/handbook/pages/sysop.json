@@ -1,6 +1,5 @@
 {
   "slug": "sysop",
-  "shotsStale": true,
   "title": "SYSOP",
   "plain": "Einstellungen",
   "route": "/settings",

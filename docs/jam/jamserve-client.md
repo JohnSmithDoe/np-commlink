@@ -1,6 +1,6 @@
 # jamserve client — SIMSENSE against a server on the internet
 
-**Research; what got decided lives in [domains.md](domains.md) under SIMSENSE.** What it takes for SIMSENSE to stream from a self-hosted
+**Research; what got decided lives in [domains.md](../domains.md) under SIMSENSE.** What it takes for SIMSENSE to stream from a self-hosted
 [jamserve](https://github.com/ffalt/jamserve) (v0.6.17, Jam API 0.2.1) on the internet as well as from
 the local folder grant. Server facts were checked in the jamserve source on 2026-10-11 (paths below are
 relative to the jamserve checkout); the general infra lessons are in
@@ -26,7 +26,7 @@ localhost.
   status a wrong path gets, so a client cannot tell the two apart.
 - **On a phone, `localhost` is the phone.** `adb reverse tcp:4040 tcp:4040` maps it to the dev machine,
   or use `10.0.2.2:4040` on the emulator. Debug builds permit cleartext to exactly those two hosts
-  (`android/app/src/debug/res/xml/network_security_config.xml`); verified 2026-10-11 on an API 36
+  (`../../android/app/src/debug/res/xml/network_security_config.xml`); verified 2026-10-11 on an API 36
   emulator: login, browsing and ExoPlayer streaming over `http://localhost`.
 
 ## The server as it would run on the internet
@@ -66,7 +66,7 @@ JWTs live **one year** unless `JAM_JWT_MAXAGE` is set.
 - **CORS binds the PWA only.** jamserve accepts an origin only if it is listed in
   `JAM_ALLOWED_COOKIE_DOMAINS`, which is also its CORS allow-list despite the name; requests with no
   `Origin` pass. The APK sends none — its Jam client runs on a `CapacitorHttp` adapter
-  (`src/app/music/data/capacitor-http.adapter.ts`), verified on the emulator. **Assume a third-party
+  (`../../src/app/music/data/capacitor-http.adapter.ts`), verified on the emulator. **Assume a third-party
   server whose list this app does not control.** Then:
   - **PWA:** cannot browse such a server. A browser always sends `Origin`, so the only options are the
     server's admin adding the Pages origin, or a proxy run by this app's owner, which then sees every

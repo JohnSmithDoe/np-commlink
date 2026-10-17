@@ -1,6 +1,5 @@
 {
   "slug": "agenda",
-  "shotsStale": true,
   "title": "AGENDA",
   "plain": "Aufgaben",
   "route": "/tasks/list",

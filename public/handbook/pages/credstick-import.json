@@ -1,6 +1,5 @@
 {
   "slug": "credstick-import",
-  "shotsStale": true,
   "title": "CREDSTICK · Import & Regeln",
   "plain": "Kontoauszug-Import",
   "route": "/cash/rules",

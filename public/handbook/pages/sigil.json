@@ -1,6 +1,5 @@
 {
   "slug": "sigil",
-  "shotsStale": true,
   "title": "SIGIL",
   "plain": "Notizen",
   "route": "/notes",

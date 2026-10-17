@@ -1,6 +1,5 @@
 {
   "slug": "catalog",
-  "shotsStale": true,
   "title": "CATALOG",
   "plain": "Produkte",
   "route": "/household/products",
